@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+    <ui:define name="running_head">
+        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+        <h:outputScript library="js" name="forms.js" target="head"/>
+    </ui:define>
+
+    <ui:define name="header_top">
+        <span>Пользователи по фамилии</span>
+    </ui:define>
+
+    <ui:define name="header_buttons">
+        <div class="defbutton">
+            <h:outputLink value="#{contextPath}/component/user.xhtml" target="_blank">
+                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
+                Новый пользователь
+                <f:param name="docAction" value="create"/>
+            </h:outputLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{firedUsers.importLDAPUsers()}">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                Импортировать пользователей из LDAP
+                <e5ui:formPartTarget formPart="main_table_part"/>
+            </h:commandLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{firedUsers.refresh()}">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                Обновить
+                <e5ui:formPartTarget formPart="main_table_part"/>
+            </h:commandLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{firedUsers.previewDocument()}">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                Prevew in web
+                <e5ui:formPartTarget formPart="main_table_part"/>
+            </h:commandLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="content">
+        <script type="text/javascript">
+            document.ondblclick = function DoubleClick(evt) {
+                if (window.getSelection)
+                    window.getSelection().removeAllRanges();
+                else if (document.selection)
+                    document.selection.empty();
+            }
+        </script>
+        <h:outputScript>
+            function goToDocument(id) {
+            if (id != 0) {
+            window.open('#{facesContext.externalContext.requestContextPath}/component/user.xhtml?docId=' + id,'_blank');
+            }
+            }
+        </h:outputScript>
+        <e5ui:formPart id="main_table_part">
+            <div id="main_table">
+                <div id="searchbar" class="main_searchbar">
+                    <h:inputText id="filter_string" value="#{firedUsers.filter}"
+                                 style="display:block; float:left; width:60%; margin:2px 10px;"
+                                 title="Поиск"/>
+                    <h:commandButton value=" "
+                                     action="#{firedUsers.changePageOffset(0)}"
+                                     styleClass="searchbutton">
+                        <f:ajax execute=":main_content_form:filter_string"
+                                render=":main_content_form:main_data_tbl"/>
+                    </h:commandButton>
+
+                </div>
+                <div class="wrap_main" id="table_wrap">
+                    <div class="inner" id="table_inner">
+                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
+                                        value="#{firedUsers.documents}" var="row" grouping="false">
+                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:column style="min-width:9em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{firedUsers.sort('lastName,firstName,middleName')}">
+                                        ФИО
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText value="#{row.description}"/>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:10em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{firedUsers.sort('jobDepartment')}">
+                                        Подразделение
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText value="#{row.jobDepartment}"/>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:10em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{firedUsers.sort('jobPosition')}">
+                                        Должность
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText value="#{row.jobPosition}"/>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:10em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{firedUsers.sort('email')}">
+                                        Email
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText value="#{row.email}"/>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:6em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{firedUsers.sort('workPhone')}">
+                                        Рабочий телефон
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText
+                                        value="#{row.getInternalNumber().isEmpty()?row.getWorkPhone():row.getWorkPhone().concat(' (внутр. ').concat(row.getInternalNumber()).concat(')')}"/>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:6em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{firedUsers.sort('mobilePhone')}">
+                                        Мобильный телефон
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText value="#{row.mobilePhone}"/>
+                            </e5ui:column>
+                        </e5ui:dataTable>
+                    </div>
+                </div>
+                <div id="table_paging">
+                    <e5ui-comp:tablePager documentListHolder="#{firedUsers}" style="display:inline;"/>
+                    <e5ui-comp:tablePageSizeSelector documentListHolder="#{firedUsers}"
+                                                     style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                </div>
+            </div>
+        </e5ui:formPart>
+    </ui:define>
+
+</ui:composition>
+
+</html>

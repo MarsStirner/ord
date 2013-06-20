@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<h:outputStylesheet library="css" name="style.css" />
+	<!--[if lte ie 8]> 
+		<link rel="stylesheet" type="text/css" href="/e5_dms/resources/css/ie.css" />
+	<![endif]--> 
+
+	<title>Документооборот ФНКЦ ДГОИ</title>
+</h:head>
+
+<h:body id="main_body">
+	<div id="main_global">
+		<div id="first">
+			<div class="head">
+				<h:graphicImage value="/resources/images/logo.png" /><br />
+				<h2>
+				ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздравсоцразвития России
+				</h2>
+				<h1>Организационно-распорядительный документооборот</h1>
+			</div>
+			
+			<h:form id="main_content">
+				<div class="main_content">
+        			<h:panelGroup rendered="#{not(sessionManagement.loggedIn)}">
+        				<h2>Вход в систему</h2>
+	        			<div>Логин</div>
+	        			<div>
+	        				<input class="inp" type="text" name="j_username" required="true" />
+	        			</div>
+	        			<div>Пароль</div>
+	        			<div>
+	        				<input class="inp" type="password" name="j_password" required="true" />
+	        			</div>
+	        			<div>
+	        				<h:commandButton styleClass="but" type="submit" action="#{sessionManagement.logIn}" value="Войти" />
+	        			</div>
+	                    <div class="forget"><a href="http://korus.hat-trick.ru/forget/">Забыли пароль?</a></div>
+	        		</h:panelGroup>
+	        		<h:panelGroup rendered="#{sessionManagement.loggedIn}">
+	        			<h:outputScript>
+	        				location.href = "#{sessionManagement.backUrl}";
+	        			</h:outputScript>
+	        		</h:panelGroup>
+	        		<div>
+	                	<h:messages errorClass="e5ui-error" layout="table" globalOnly="true" showSummary="true" showDetail="false" />
+	            	</div>
+	        	</div>
+        	</h:form>
+        </div>
+	</div>
+</h:body>
+
+</html>

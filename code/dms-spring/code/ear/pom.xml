@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project 
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>ru.efive.dms</groupId>
+    <artifactId>dms-ear</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>ear</packaging>
+	
+    <name>E5 Documents management system Enterprise Application</name>
+    <description>E5 Documents management system Enterprise Application</description>
+    
+    <parent>
+	<groupId>ru.efive.dms</groupId>
+        <artifactId>dms-app</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>ru.efive.dao</groupId>
+            <artifactId>sql-dao</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.efive.dao</groupId>
+            <artifactId>alfresco-dao</artifactId>
+        </dependency>
+
+	<dependency>
+	    <groupId>ru.efive.dms</groupId>
+	    <artifactId>dms</artifactId>
+	    <version>0.0.1-SNAPSHOT</version>
+	    <type>war</type>
+	</dependency>
+
+    </dependencies>
+    
+    <build>
+    	<plugins>
+    	    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+    	        <artifactId>maven-ear-plugin</artifactId>
+    	        <configuration>
+                    <defaultLibBundleDir>/lib</defaultLibBundleDir>
+                    <version>${version.app.ear}</version>
+                    <modules>
+
+                        <webModule>
+                            <groupId>ru.efive.dms</groupId>
+                            <artifactId>dms</artifactId>
+                            <bundleDir>/</bundleDir>
+                       		<context-root>/</context-root>
+                        </webModule>
+
+                    </modules>
+    	        </configuration>
+    	    </plugin>
+    	</plugins>
+    </build>
+    
+</project>

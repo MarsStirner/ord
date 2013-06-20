@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:e5ui="http://efive.ru/uitemplates"
+	xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+	<ui:define name="running_head">
+		<!-- #{contragent.document.id}  -->
+		<e5ui-comp:userSessionUpdate
+			rendered="#{contragent.editState or contragent.createState}"
+			interval="300" />
+		<h:outputScript library="js" name="datepicker_init_ru.js"
+			target="head" />
+		<e5ui-comp:outputUtilScript />
+	</ui:define>
+
+	<ui:define name="header">
+		<div id="form_header">
+			<div class="actionbar">
+				<div class="menu">
+					<div class="defbutton">
+						<h:outputLink value="#{contextPath}/component/contragents.xhtml">
+							<h:graphicImage value="#{resource['images:button-back.png']}" />
+							Назад
+						</h:outputLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{contragent.edit}"
+							rendered="#{contragent.viewState}">
+							<h:graphicImage value="#{resource['images:edit_buttn.png']}" />
+							Редактировать
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{contragent.cancel}"
+							rendered="#{contragent.editState or contragent.createState}">
+							<h:graphicImage value="#{resource['images:button-cancel.png']}" />
+							Отменить
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{contragent.save}"
+							rendered="#{contragent.editState or contragent.createState}">
+							<h:graphicImage value="#{resource['images:save_buttn.png']}" />
+							Сохранить
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{contragent.delete()}"
+							rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
+							<h:graphicImage value="#{resource['images:dell_buttn.png']}" />
+							Удалить
+							<f:param name="docAction" value="delete" />
+						</h:commandLink>
+					</div>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="left_menu"></ui:define>
+
+	<ui:define name="content">
+		<div id="header_content">
+			<div>
+				<h:messages errorClass="e5ui-error" layout="table" globalOnly="true"
+					showSummary="true" showDetail="false" />
+			</div>
+			<h:panelGroup rendered="#{contragent.createState}">
+				<div class="name">Новый контрагент</div>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{contragent.editState or contragent.viewState}">
+				<div class="name">
+					<h:outputText value="#{contragent.document.shortName}" />
+				</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{contragent.notFoundState}">
+				<div class="name">404 - Контрагент не найден</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{contragent.forbiddenState}">
+				<div class="name">403 - Действие запрещено</div>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{not(contragent.createState or contragent.editState or contragent.viewState or contragent.notFoundState or contragent.forbiddenState)}">
+				<div class="name">В доступе отказано</div>
+			</h:panelGroup>
+		</div>
+
+		<div class="main_content">
+			<h:panelGroup rendered="#{contragent.viewState}">
+				<div class="row">
+					<table class="form_grid">
+						<tr class="row">
+							<td class="first"><label> <span class="title">Краткое
+										наименование:</span> </label>
+							</td>
+							<td><h:outputText value="#{contragent.document.shortName}" />
+							</td>
+						</tr>
+						<tr class="row">
+							<td class="first"><label> <span class="title">Полное
+										наименование:</span> </label>
+							</td>
+							<td><h:outputText value="#{contragent.document.fullName}" />
+							</td>
+						</tr>
+						<tr>
+							<td class="first"><label> <span class="title">Номенклатура
+										контрагента:</span> </label>
+							</td>
+							<td><h:outputText
+									value="#{contragent.document.nomenclature}"
+									converter="ContragentNomenclatureConverter" />
+							</td>
+						</tr>
+					</table>
+				</div>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{contragent.createState or contragent.editState}">
+				<div class="row">
+					<table class="form_grid">
+						<tr class="row">
+							<td class="first"><label> <span class="title">Краткое
+										наименование:</span> </label>
+							</td>
+							<td><label> <h:inputText style="width:90%"
+										value="#{contragent.document.shortName}" /> </label>
+							</td>
+						</tr>
+						<tr class="row">
+							<td class="first"><label> <span class="title">Полное
+										наименование:</span> </label>
+							</td>
+							<td><label> <h:inputText style="width:90%"
+										value="#{contragent.document.fullName}" /> </label>
+							</td>
+						</tr>
+						<tr class="row">
+							<td class="first"><label> <span class="title">
+										<h:outputLink title="Номенклатура контрагента:"
+											onclick="nomenclatureIndexModalVar.clickOpen('nomenclatureIndexModal'); return false;">
+											Номенклатура
+										</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="nomenclatureIndexModal"
+									modalWindowHolder="#{contragent.nomenclatureIndexSelectModal}"
+									render=":main_content_form:nomenclatureIndex"
+									execute="select_table" showButtons="false"
+									style="width: 500px;" widgetVar="nomenclatureIndexModalVar">
+									<div id="title">Выбор номенклатуры контрагента</div>
+									<div id="modal_container" style="margin-top: 0;">
+										<div class="wrap" style="height: 150px;">
+											<div class="inner" style="height: 150px;">
+												<e5ui:dataTable id="select_table" border="0" cellpadding="0"
+													cellspacing="0"
+													value="#{dictionaryManagement.contragentNomenclature}"
+													var="row" grouping="false" width="100%">
+													<e5ui:row
+														onclick="e5ui_util.clickElement(this, 'selectLink$');"
+														styleClass="#{contragent.nomenclatureIndexSelectModal.selected(row)? 'grid_row_selected': ''}" />
+													<e5ui:column>
+														<f:facet name="header">
+															<p>Номенклатура контрагента</p>
+														</f:facet>
+														<h:outputText value="#{row.description}" />
+														<h:commandLink id="selectLink" style="display: none;"
+															rendered="#{not contragent.nomenclatureIndexSelectModal.selected(row)}"
+															action="#{contragent.nomenclatureIndexSelectModal.select(row)}" />
+													</e5ui:column>
+												</e5ui:dataTable>
+											</div>
+										</div>
+									</div>
+									<div class="e5ui-modal-bottombuttons">
+										<h:button
+											onclick="nomenclatureIndexModalVar.clickSave(); return false;"
+											value="Выбрать" />
+										<h:button
+											onclick="nomenclatureIndexModalVar.clickClose(); return false;"
+											value="Отмена" />
+									</div>
+								</e5ui-comp:modalWindow>
+							</td>
+							<td><h:outputText id="nomenclatureIndex"
+									value="#{contragent.document.nomenclature}"
+									converter="ContragentNomenclatureConverter" />
+							</td>
+						</tr>
+					</table>
+				</div>
+			</h:panelGroup>
+		</div>
+	</ui:define>
+
+	<ui:define name="footer">
+		<e5ui-comp:splashScreen id="splash_screen_2"
+			widgetVar="splash_screen_2" timeout="0">
+			<f:facet name="timeoutPanel">
+				<div
+					style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+					Пожалуйста, подождите...</div>
+			</f:facet>
+		</e5ui-comp:splashScreen>
+		<script>
+			e5ui_splashScreen.startShowOnSubmit('splash_screen_2',
+					[ 'file_upload_form' ]);
+		</script>
+		<e5ui:multiMarker id="main_form_marker" rendered="true"
+			hintWindowStyleClass="e5ui-marker-hintWindow"
+			hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
+			hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
+			hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
+			hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
+			displayMode="window">
+			<h:button
+				onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
+				value="ОК" />
+		</e5ui:multiMarker>
+		<h:outputStylesheet library="css" name="datatable.css" />
+		<h:outputStylesheet library="css" name="modalWindow.css" />
+		<h:outputStylesheet library="css" name="multiMarker.css" />
+		<h:outputStylesheet library="css" name="tabPanel.css" />
+	</ui:define>
+
+</ui:composition>
+
+</html>

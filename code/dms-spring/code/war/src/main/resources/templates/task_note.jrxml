@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.210000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="Tasks">
+		<parameter name="DocumentID" class="java.lang.String"/>
+		<queryString>
+			<![CDATA[SELECT
+     dms_system_persons.`lastName` AS dms_system_persons_lastName,
+     dms_system_persons.`firstName` AS dms_system_persons_firstName,
+     dms_system_persons.`middleName` AS dms_system_persons_middleName,
+     dms_tasks.`id` AS dms_tasks_id,
+     dms_tasks.`taskNumber` AS dms_tasks_taskNumber,
+     dms_tasks.`executionDate` AS dms_tasks_executionDate,
+     dms_tasks.`status_id` AS dms_tasks_status_id,
+     dms_tasks.`shortDescription` AS dms_tasks_shortDescription,
+     wf_history.`startDate` AS wf_history_startDate,
+     wf_history.`to_status_id` AS wf_history_to_status_id,
+wf_history.`commentary` as commentary
+FROM
+     `dms_tasks` dms_tasks LEFT OUTER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
+     RIGHT OUTER JOIN `dms_system_persons` dms_system_persons ON dms_tasks_executors.`executor_id` = dms_system_persons.`id`
+     INNER JOIN `dms_task_history` dms_task_history ON dms_tasks.`id` = dms_task_history.`task_id`
+     INNER JOIN `wf_history` wf_history ON dms_task_history.`history_entry_id` = wf_history.`id`
+WHERE
+     dms_tasks.`parentId` = concat('task_',$P{DocumentID})
+ AND ((dms_tasks.`status_id` <> 3
+ AND wf_history.`to_status_id` <> 3)
+  OR (dms_tasks.`status_id` = 3
+ AND wf_history.`to_status_id` = 3))
+ AND dms_tasks.`deleted` = 0
+GROUP BY
+     dms_tasks.`id`]]>
+		</queryString>
+		<field name="dms_system_persons_lastName" class="java.lang.String"/>
+		<field name="dms_system_persons_firstName" class="java.lang.String"/>
+		<field name="dms_system_persons_middleName" class="java.lang.String"/>
+		<field name="dms_tasks_id" class="java.lang.Integer"/>
+		<field name="dms_tasks_taskNumber" class="java.lang.String"/>
+		<field name="dms_tasks_executionDate" class="java.sql.Timestamp"/>
+		<field name="dms_tasks_status_id" class="java.lang.Integer"/>
+		<field name="dms_tasks_shortDescription" class="java.lang.String"/>
+		<field name="wf_history_startDate" class="java.sql.Timestamp"/>
+		<field name="wf_history_to_status_id" class="java.lang.Integer"/>
+		<field name="commentary" class="java.lang.String"/>
+	</subDataset>
+	<subDataset name="ExecDate">
+		<parameter name="TaskId" class="java.lang.Integer"/>
+		<queryString>
+			<![CDATA[SELECT
+     dms_tasks.`id` AS dms_tasks_id,
+     wf_history.`to_status_id` AS wf_history_to_status_id,
+     wf_history.`startDate` AS wf_history_startDate
+FROM
+     `wf_history` wf_history RIGHT OUTER JOIN `dms_task_history` dms_task_history ON wf_history.`id` = dms_task_history.`history_entry_id`
+     RIGHT OUTER JOIN `dms_tasks` dms_tasks ON dms_task_history.`task_id` = dms_tasks.`id`
+WHERE
+     dms_tasks.`id` = $P{TaskId}
+ AND wf_history.`to_status_id` = 3
+GROUP BY dms_tasks.`id`]]>
+		</queryString>
+		<field name="dms_tasks_id" class="java.lang.Integer"/>
+		<field name="wf_history_to_status_id" class="java.lang.Integer"/>
+		<field name="wf_history_startDate" class="java.sql.Timestamp"/>
+	</subDataset>
+	<parameter name="docId" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     dms_system_persons.`firstName` AS dms_system_persons_firstName,
+     dms_system_persons.`lastName` AS dms_system_persons_lastName,
+     dms_system_persons.`middleName` AS dms_system_persons_middleName,
+     dms_system_persons_A.`firstName` AS dms_system_persons_A_firstName,
+     dms_system_persons_A.`lastName` AS dms_system_persons_A_lastName,
+     dms_system_persons_A.`middleName` AS dms_system_persons_A_middleName,
+     dms_tasks.`executionDate` AS dms_tasks_executionDate,
+     dms_tasks.`shortDescription` AS dms_tasks_shortDescription,
+     dms_tasks.`status_id` AS dms_tasks_status_id,
+     dms_tasks.`controlDate` AS dms_tasks_controlDate,
+     dms_tasks.`id` AS dms_tasks_id,
+     dms_tasks.`taskNumber` AS dms_tasks_taskNumber
+FROM
+     `dms_tasks` dms_tasks INNER JOIN `dms_tasks_authors` dms_tasks_authors ON dms_tasks.`id` = dms_tasks_authors.`id`
+     INNER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
+     INNER JOIN `dms_system_persons` dms_system_persons ON dms_tasks_executors.`executor_id` = dms_system_persons.`id`
+     INNER JOIN `dms_system_persons` dms_system_persons_A ON dms_tasks_authors.`author_id` = dms_system_persons_A.`id`
+WHERE
+     dms_tasks.`id` = $P{docId}]]>
+	</queryString>
+	<field name="dms_system_persons_firstName" class="java.lang.String"/>
+	<field name="dms_system_persons_lastName" class="java.lang.String"/>
+	<field name="dms_system_persons_middleName" class="java.lang.String"/>
+	<field name="dms_system_persons_A_firstName" class="java.lang.String"/>
+	<field name="dms_system_persons_A_lastName" class="java.lang.String"/>
+	<field name="dms_system_persons_A_middleName" class="java.lang.String"/>
+	<field name="dms_tasks_executionDate" class="java.sql.Timestamp"/>
+	<field name="dms_tasks_shortDescription" class="java.lang.String"/>
+	<field name="dms_tasks_status_id" class="java.lang.Integer"/>
+	<field name="dms_tasks_controlDate" class="java.sql.Timestamp"/>
+	<field name="dms_tasks_id" class="java.lang.Integer"/>
+	<field name="dms_tasks_taskNumber" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="118" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="741" y="78" width="61" height="40"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma"/>
+					<paragraph leftIndent="5" spacingBefore="5" spacingAfter="5"/>
+				</textElement>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="802" height="20"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="16"/>
+				</textElement>
+				<text><![CDATA[Справка о ходе выполнения поручения]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="0" y="33" width="53" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<text><![CDATA[Номер поручения]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="438" y="33" width="212" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<text><![CDATA[Краткое содержание]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="438" y="78" width="212" height="40"/>
+				<textElement>
+					<font fontName="Tahoma"/>
+					<paragraph leftIndent="5" spacingBefore="2" spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dms_tasks_shortDescription}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="78" width="53" height="40"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma"/>
+					<paragraph leftIndent="5" spacingBefore="2" spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dms_tasks_taskNumber}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" x="650" y="33" width="91" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<text><![CDATA[Статус]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="53" y="33" width="169" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<text><![CDATA[Автор]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="222" y="33" width="155" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<text><![CDATA[Руководитель]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="377" y="33" width="61" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<text><![CDATA[Срок исполнения]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="650" y="78" width="91" height="40"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma"/>
+					<paragraph leftIndent="5" spacingBefore="2" spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{dms_tasks_status_id}.toString()).replace("120","Черновик").replace("100","Архив").replace("90","Исполнен").replace("80","На исполнении").replace("4","Отказ").replace("3","Исполнено").replace("2","На исполнении").replace("1","Черновик")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="53" y="78" width="169" height="40"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma"/>
+					<paragraph leftIndent="5" spacingBefore="2" spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dms_system_persons_A_lastName}+" "+$F{dms_system_persons_A_firstName}+" "+$F{dms_system_persons_A_middleName}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="222" y="78" width="155" height="40"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma"/>
+					<paragraph leftIndent="5" spacingBefore="2" spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dms_system_persons_lastName}+" "+$F{dms_system_persons_firstName}+" "+$F{dms_system_persons_middleName}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="377" y="78" width="61" height="40"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma"/>
+					<paragraph leftIndent="5" spacingBefore="2" spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{dms_tasks_executionDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" x="741" y="33" width="61" height="45"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="10"/>
+				</textElement>
+				<text><![CDATA[Дата выполнения]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement key="table 3" x="741" y="78" width="61" height="40"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="ExecDate">
+						<datasetParameter name="TaskId">
+							<datasetParameterExpression><![CDATA[$F{dms_tasks_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="61">
+						<jr:detailCell height="40" rowSpan="1">
+							<textField pattern="dd.MM.yyyy">
+								<reportElement x="0" y="0" width="61" height="40"/>
+								<textElement textAlignment="Center">
+									<font fontName="Tahoma"/>
+									<paragraph spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{wf_history_startDate}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band splitType="Stretch"/>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="61" splitType="Stretch">
+			<componentElement>
+				<reportElement key="table 2" x="0" y="9" width="548" height="52"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Tasks">
+						<datasetParameter name="DocumentID">
+							<datasetParameterExpression><![CDATA[$F{dms_tasks_id}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="90">
+						<jr:tableHeader height="30" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="90" height="30"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+									<paragraph leftIndent="5"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dms_system_persons_lastName}==null?"":"Поручения"]]></textFieldExpression>
+							</textField>
+						</jr:tableHeader>
+						<jr:columnHeader height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="table_TD" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+								</textElement>
+								<text><![CDATA[Номер]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="25" rowSpan="1">
+							<textField isBlankWhenNull="true">
+								<reportElement style="table_TD" x="0" y="0" width="90" height="25"/>
+								<textElement verticalAlignment="Top">
+									<font fontName="Tahoma"/>
+									<paragraph leftIndent="5" spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dms_tasks_taskNumber}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="104">
+						<jr:columnHeader height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="table_TD" x="0" y="0" width="104" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+								</textElement>
+								<text><![CDATA[Исполнитель]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table_TD" height="25" rowSpan="1">
+							<textField isBlankWhenNull="true">
+								<reportElement style="table_TD" x="0" y="0" width="104" height="25"/>
+								<textElement verticalAlignment="Top">
+									<font fontName="Tahoma" size="9"/>
+									<paragraph leftIndent="5" spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dms_system_persons_lastName}+" "+$F{dms_system_persons_firstName}+" "+$F{dms_system_persons_middleName}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="76">
+						<jr:columnHeader height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="table_TD" x="0" y="0" width="76" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+								</textElement>
+								<text><![CDATA[Срок исполнения]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="25" rowSpan="1">
+							<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
+								<reportElement style="table_TD" x="0" y="0" width="76" height="25"/>
+								<textElement verticalAlignment="Top">
+									<font fontName="Tahoma"/>
+									<paragraph leftIndent="5" spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dms_tasks_executionDate}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="218">
+						<jr:columnHeader height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="table_TD" x="0" y="0" width="218" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+								</textElement>
+								<text><![CDATA[Краткое содержание]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="25" rowSpan="1">
+							<textField isBlankWhenNull="true">
+								<reportElement style="table_TD" x="0" y="0" width="218" height="25"/>
+								<textElement verticalAlignment="Top">
+									<font fontName="Tahoma"/>
+									<paragraph leftIndent="5" spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dms_tasks_shortDescription}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90">
+						<jr:columnHeader height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="table_TD" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+								</textElement>
+								<text><![CDATA[Статус]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="25" rowSpan="1">
+							<textField isBlankWhenNull="true">
+								<reportElement style="table_TD" x="0" y="0" width="90" height="25"/>
+								<textElement textAlignment="Center" verticalAlignment="Top">
+									<font fontName="Tahoma"/>
+									<paragraph leftIndent="5" spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[($F{dms_tasks_status_id}.toString()).replace("4","Черновик").replace("3","Исполненo").replace("2","На исполнении").replace("1","Черновик")]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90">
+						<jr:columnHeader height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="table_TD" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+								</textElement>
+								<text><![CDATA[Дата выполнения]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="25" rowSpan="1">
+							<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
+								<reportElement style="table_TD" x="0" y="0" width="90" height="25"/>
+								<textElement textAlignment="Center">
+									<font fontName="Tahoma"/>
+									<paragraph spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{wf_history_to_status_id}==3?new SimpleDateFormat("dd.MM.yyyy").format($F{wf_history_startDate}):""]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90">
+						<jr:tableHeader height="30" rowSpan="1"/>
+						<jr:columnHeader height="30" rowSpan="1">
+							<staticText>
+								<reportElement style="table_TD" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Tahoma"/>
+								</textElement>
+								<text><![CDATA[Комментарий]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell height="25" rowSpan="1">
+							<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
+								<reportElement style="table_TD" x="0" y="0" width="90" height="25"/>
+								<textElement textAlignment="Center">
+									<font fontName="Tahoma"/>
+									<paragraph spacingBefore="2"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{wf_history_to_status_id}==4?$F{commentary}:""]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</summary>
+</jasperReport>

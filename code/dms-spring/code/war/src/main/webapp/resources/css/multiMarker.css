@@ -1,0 +1,55 @@
+.e5ui-multimarker {
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    height: 16px;
+    width: 16px;
+    margin-left: 4px;
+    margin-right: 12px;
+    display: inline-block;
+}
+
+.e5ui-multimarker-info {
+    background-image: url('e5ui-marker-info.png.xhtml?ln=e5ui/images');
+}
+
+.e5ui-multimarker-warn {
+    background-image: url('e5ui-marker-warn.png.xhtml?ln=e5ui/images');
+}
+
+.e5ui-multimarker-error {
+    background-image: url('e5ui-marker-error.png.xhtml?ln=e5ui/images');
+}
+
+.e5ui-multimarker-fatal {
+    background-image: url('e5ui-marker-fatal.png.xhtml?ln=e5ui/images');
+}
+
+.e5ui-modal-overlay {
+
+}
+.e5ui-multimarker-window-container {
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100%;
+    vertical-align: middle;
+    border: none;
+}
+.e5ui-multimarker-window {
+    z-index: auto;
+    position: absolute;
+    left: auto;
+    top: auto;
+    width: auto;
+    display: inherit;
+    padding:10px;
+}
+.e5ui-multimarker-window-close {
+    font-weight: bold;
+    float: right;
+    margin: 5px;
+    padding: 2px;
+    border: 1px solid darkgray;
+    cursor: pointer;
+}

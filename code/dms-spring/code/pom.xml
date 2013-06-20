@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project 
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>ru.efive.dms</groupId>
+    <artifactId>dms-app</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+	
+    <name>E5 Documents management system</name>
+    <description>E5 Documents management system</description>
+ 
+    <repositories>
+        <repository>
+            <id>repo</id>
+            <url>http://10.0.17.228/artifactory/repo</url>
+        </repository>
+    </repositories>
+    <modules>
+       <module>sql-dao</module>
+       <module>alfresco-dao</module>
+       <module>workflow_core</module>
+       <module>war</module>
+       <module>ear</module>
+    </modules>
+
+    <properties>
+        <!-- Sources -->
+        <version.jdk>1.6</version.jdk>
+        <source.encoding>UTF-8</source.encoding>
+
+	<!-- Target -->
+	<version.app.ear>6</version.app.ear>
+        <version.jdk.target>1.6</version.jdk.target>
+    
+	<!-- Components -->
+	<version.javaee-api>6.0</version.javaee-api>
+    
+    	<!-- Test Environment -->
+    	<version.junit>4.8.2</version.junit>
+    	
+    	<!-- Maven plugins version -->
+    	<version.mvn.plugin.compiler>2.3.2</version.mvn.plugin.compiler>
+    	<version.mvn.plugin.resource>2.5</version.mvn.plugin.resource>
+    	<version.mvn.plugin.javadoc>2.8</version.mvn.plugin.javadoc>
+    	<version.mvn.plugin.site>3.0-beta-3</version.mvn.plugin.site>
+    	<version.mvn.plugin.surefire-report>2.8.1</version.mvn.plugin.surefire-report>
+    	<version.mvn.plugin.ear>2.5</version.mvn.plugin.ear>
+	<version.mvn.plugin.war>2.1.1</version.mvn.plugin.war>
+    	
+    	<!-- Mojo maven plugins version -->
+    	<version.mojo.findbugs>2.3.2</version.mojo.findbugs>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${version.javaee-api}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.efive.dao</groupId>
+                <artifactId>sql-dao</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.efive.dao</groupId>
+                <artifactId>alfresco-dao</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.efive.workflow</groupId>
+                <artifactId>workflow-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.efive.dms</groupId>
+                <artifactId>dms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
+    <prerequisites>
+        <maven>3.0.0</maven>
+    </prerequisites>
+
+
+    <!-- Build section -->
+    <build>
+
+        <pluginManagement>
+
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${version.mvn.plugin.compiler}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+        	    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${version.mvn.plugin.resource}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${version.mojo.findbugs}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${version.mvn.plugin.javadoc}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${version.mvn.plugin.site}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${version.mvn.plugin.surefire-report}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ear-plugin</artifactId>
+                    <version>${version.mvn.plugin.ear}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+
+                <plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-ejb-plugin</artifactId>
+			<configuration>
+				<ejbVersion>3.0</ejbVersion>
+			</configuration>
+		</plugin>
+
+	    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${version.jdk}</source>
+                    <target>${version.jdk.target}</target>
+                    <encoding>${source.encoding}</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+        	<artifactId>maven-resources-plugin</artifactId>
+        	<configuration>
+          	    <encoding>${source.encoding}</encoding>
+        	</configuration>
+      	    </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <show>private</show>
+                </configuration>
+            </plugin>
+
+            <!-- plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin -->
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <configuration>
+                                <encoding>${source.encoding}</encoding>
+                                <charset>${source.encoding}</charset>
+                                <show>public</show>
+                            </configuration>
+                        </plugin>
+                        
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                            <configuration>
+                                <effort>Max</effort>
+                                <threshold>Low</threshold>
+                            </configuration>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-report-plugin</artifactId>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+            </plugin>
+	</plugins>
+
+	<finalName>${project.artifactId}-${project.version}</finalName>
+
+    </build>
+    
+</project>

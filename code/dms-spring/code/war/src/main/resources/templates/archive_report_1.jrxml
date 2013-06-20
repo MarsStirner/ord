@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.2100000000000066"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<queryString>
+		<![CDATA[SELECT
+     dms_internal_documents.`registrationNumber` AS dms_internal_documents_registrationNumber
+FROM
+     `dms_internal_documents` dms_internal_documents]]>
+	</queryString>
+	<field name="dms_internal_documents_registrationNumber" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="350" splitType="Stretch">
+			<textField>
+				<reportElement x="370" y="0" width="185" height="27"/>
+				<textElement markup="styled">
+					<font fontName="Tahoma" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Приложение № 1\n"+
+"к пп. 2.11.5, 2.11.7.2, 3.7.2, 4.3.1."]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="17" width="166" height="202"/>
+				<textElement markup="styled">
+					<font fontName="Tahoma" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["__________________________\n"+
+"         (название архива)\n"+
+"\n"+
+"<style isBold='true'>	      АКТ		</style>\n"+
+"\n"+
+"___________ № ___________	\n"+
+"    (дата) 				\n"	+
+"\n"+
+"о неисправимых повреждениях	\n"+
+"архивных документов\n"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="-1" y="230" width="555" height="65"/>
+				<textElement markup="styled">
+					<font fontName="Tahoma" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Название фонда _______________________________________________________\n"+
+"______________________________________________________________________\n"+
+"\n"+
+"\n"+
+"В фонде обнаружены единицы хранения, признанные неисправимо поврежденными"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" x="0" y="295" width="20" height="40"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[№
+пп
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="20" y="295" width="50" height="40"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[Номер описи]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="70" y="295" width="45" height="40"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[Номер ед. хр]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="115" y="295" width="114" height="40"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[Заголовок  поврежденной
+ед. хр.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="229" y="295" width="130" height="40"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[Крайние
+даты
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="0" y="335" width="20" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[1]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="20" y="335" width="50" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[2]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="70" y="335" width="45" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[3]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="115" y="335" width="114" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[4]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="229" y="335" width="130" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[5]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="243" y="59" width="313" height="160"/>
+				<textElement markup="styled">
+					<font fontName="Tahoma" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["<style isBold='true'>УТВЕРЖДАЮ</style>\n"+
+"\n"+
+"Директор ___________________________\n"+
+"                           (название архива)\n"+
+"\n"+
+"Подпись	        Румянцев А.Г.\n"+
+"\n"+
+"Дата\n"+
+"\n"+
+"Фонд № ____________"
+]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="table_TD" x="359" y="295" width="100" height="40"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[Количество лис-
+тов (время зву-чания, метраж)
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="459" y="295" width="95" height="40"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[Сущность и причины
+повреждения
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="359" y="335" width="100" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[6]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="table_TD" x="459" y="335" width="95" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<text><![CDATA[7]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="20" y="0" width="50" height="30"/>
+				<textElement>
+					<font fontName="Tahoma"/>
+				</textElement>
+			</textField>
+			<textField>
+				<reportElement style="table_TD" x="0" y="0" width="20" height="30"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="70" y="0" width="45" height="30"/>
+				<textElement>
+					<font fontName="Tahoma"/>
+				</textElement>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="359" y="0" width="100" height="30"/>
+				<textElement>
+					<font fontName="Tahoma"/>
+				</textElement>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="459" y="0" width="95" height="30"/>
+				<textElement>
+					<font fontName="Tahoma"/>
+				</textElement>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="115" y="0" width="114" height="30"/>
+				<textElement>
+					<font fontName="Tahoma"/>
+				</textElement>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="229" y="0" width="130" height="30"/>
+				<textElement>
+					<font fontName="Tahoma"/>
+				</textElement>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="354" splitType="Stretch">
+			<textField>
+				<reportElement x="86" y="0" width="456" height="29"/>
+				<textElement verticalAlignment="Bottom" markup="styled">
+					<font fontName="Tahoma" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Итого обнаружено неисправимо поврежденных _______________________ ед. хр.\n"+
+"                                                                          (цифрами и прописью)"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="-1" y="42" width="555" height="199"/>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="Tahoma" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Заведующий отделом ___________________________________________________\n"+
+"(подпись, расшифровка подписи)\n"+
+"\n"+
+"Заведующий архивохранилищем _________________________________________\n"+
+"(подпись, расшифровка подписи)\n"+
+"\n"+
+"Перечисленные архивные документы подлежат списанию ввиду___ ____________\n"+
+"______________________________________________________________________\n"+
+"\n"+
+"\n"+
+"Эксперты: _____________________________________________________________\n"+
+"(наименование должностей экспертов, подписи, расшифровка подписей, дата)\n"+
+"_______ __________________\n"+
+"(№ и дата приказа руководителя архива о снятии неисправимо поврежденных архивных\n"+
+"документов с учета)"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="241" width="554" height="89"/>
+				<textElement verticalAlignment="Bottom" markup="styled">
+					<font fontName="Tahoma" size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Изменения в учетные документы внесены\n"+
+"\n"+
+"Наименование\n"+
+"должности\n"+
+"работника		 Подпись			Расшифровка подписи\n"+
+"\n"+
+"Дата"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="330" width="554" height="24"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" markup="styled">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Форма акта о неисправимых повреждениях архивных документов"]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

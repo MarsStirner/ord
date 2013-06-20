@@ -1,0 +1,477 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:e5ui="http://efive.ru/uitemplates"
+	xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+	<ui:define name="running_head">
+		<!-- #{officeKeepingFile.document.id}  -->
+		<e5ui-comp:userSessionUpdate interval="300" />
+	</ui:define>
+
+	<ui:define name="left_menu"></ui:define>
+
+	<ui:define name="header">
+		<div id="form_header">
+			<div class="actionbar">
+				<div class="menu">
+					<div class="defbutton">
+						<h:commandLink action="#{officeKeepingFile.edit}"
+							rendered="#{officeKeepingFile.viewState}">
+							<h:graphicImage value="#{resource['images:edit_buttn.png']}" />
+							Редактировать
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{officeKeepingFile.cancel}"
+							rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
+							<h:graphicImage value="#{resource['images:button-cancel.png']}" />
+							Отменить
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{officeKeepingFile.save}"
+							rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
+							<h:graphicImage value="#{resource['images:save_buttn.png']}" />
+							Сохранить
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<e5ui:formPart id="actions_fp">
+							<h:commandLink
+								onclick="actionsModal.clickOpen('actionsModal'); return false;">
+								<h:graphicImage value="#{resource['images:button-do.png']}" />
+								Действия								
+							</h:commandLink>
+							<e5ui-comp:modalWindow id="actionsModal"
+								modalWindowHolder="#{officeKeepingFile.processorModal}"
+								render="main_content_form:" execute="@this" showButtons="false"
+								widgetVar="actionsModal">
+								<h:panelGroup
+									rendered="#{not(officeKeepingFile.processorModal.processingState)}">
+									<div id="title">Действия</div>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{officeKeepingFile.processorModal.actionsAvailable}">
+									<div class="wrap"
+										style="height: 90px; background-color: #fff; clear: both;">
+										<div class="inner" style="height: 90px;">
+											<e5ui:dataTable id="action_select_table" border="0"
+												cellpadding="0" cellspacing="0"
+												value="#{officeKeepingFile.processorModal.availableActions}"
+												var="row" grouping="false" width="100%">
+												<e5ui:row
+													onclick="e5ui_util.clickElement(this, 'selectLink$');"
+													styleClass="#{officeKeepingFile.processorModal.selected(row)? 'grid_row_selected': ''}" />
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Доступные действия</p>
+													</f:facet>
+													<h:outputText value="#{row.name}" />
+													<h:commandLink id="selectLink" style="display: none;"
+														rendered="#{not officeKeepingFile.processorModal.selected(row)}"
+														action="#{officeKeepingFile.processorModal.select(row)}" />
+												</e5ui:column>
+											</e5ui:dataTable>
+										</div>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}">
+									<h:outputText style="padding-left:10px;"
+										value="#{officeKeepingFile.processorModal.actionResult}" />
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{officeKeepingFile.processorModal.processingState}">
+									<e5ui:include
+										data="#{officeKeepingFile.processorModal.processedActivity.document.form}" />
+								</h:panelGroup>
+								<div class="e5ui-modal-bottombuttons">
+									<h:commandButton
+										action="#{officeKeepingFile.processorModal.process()}"
+										rendered="#{officeKeepingFile.processorModal.actionsAvailable or officeKeepingFile.processorModal.processingState}"
+										value="Выполнить">
+									</h:commandButton>
+									<h:button
+										rendered="#{officeKeepingFile.processorModal.actionsAvailable or officeKeepingFile.processorModal.processingState}"
+										onclick="actionsModal.clickClose(); return false;"
+										value="Отмена" />
+									<h:button
+										rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}"
+										onclick="actionsModal.clickClose(); return false;"
+										value="Закрыть" />
+								</div>
+							</e5ui-comp:modalWindow>
+						</e5ui:formPart>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<div id="header_content">
+			<h:panelGroup
+				rendered="#{officeKeepingFile.createState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() eq 1)}">
+				<e5ui:formPart id="editHeaderPart">
+					<div class="name">
+						Номенклатура дела №
+						<h:inputText value="#{officeKeepingFile.document.fileIndex}" immediate="true"/>
+					</div>
+					<div class="title">
+						<h:outputText value="#{officeKeepingFile.document.getDocumentStatus().getName()}" />
+					</div>
+				</e5ui:formPart>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{officeKeepingFile.viewState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() ge 1)}">
+				<div class="name">
+					<div>
+						Номенклатура дел №
+						<h:outputText value="#{officeKeepingFile.document.fileIndex}" />
+					</div>
+				</div>
+				<div class="title">
+					<h:outputText value="#{officeKeepingFile.document.getDocumentStatus().getName()}" />
+				</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{officeKeepingFile.notFoundState}">
+				<div class="name">404 - Роль не найдена</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{officeKeepingFile.forbiddenState}">
+				<div class="name">403 - Действие запрещено</div>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{not(officeKeepingFile.createState or officeKeepingFile.editState or officeKeepingFile.viewState or officeKeepingFile.notFoundState or officeKeepingFile.forbiddenState)}">
+				<div class="name">В доступе отказано</div>
+			</h:panelGroup>
+		</div>
+
+		<div class="main_content">
+			<e5ui:formPart id="editFormPart">
+				<e5ui:tabPanel id="content_table">
+					<e5ui:tabPage headerText="#{officeKeepingFile.requisitesTabHeader}"
+						actionBehavior="#{officeKeepingFile.viewState? 'client': 'submit'}"
+						selected="#{officeKeepingFile.requisitesTabSelected}">
+						<h:panelGroup rendered="#{officeKeepingFile.viewState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first">Заголовок:</td>
+										<td><h:outputText
+												value="#{officeKeepingFile.document.shortDescription}"
+												class="wide" />
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first">Срок хранения и № статей по перечню:</td>
+										<td><h:outputText
+												value="#{officeKeepingFile.document.keepingPeriodReasons}"
+												class="wide" />
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first">Примечания:</td>
+										<td><h:outputText
+												value="#{officeKeepingFile.document.comments}" class="wide" />
+										</td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup
+							rendered="#{officeKeepingFile.createState or officeKeepingFile.editState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first">Заголовок:</td>
+										<td><h:inputText
+												value="#{officeKeepingFile.document.shortDescription}"
+												class="wide" immediate="true"/>
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first">Срок хранения и № статей по перечню::</td>
+										<td><h:inputText
+												value="#{officeKeepingFile.document.keepingPeriodReasons}"
+												class="wide" immediate="true"/>
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first">Примечания:</td>
+										<td><h:inputText
+												value="#{officeKeepingFile.document.comments}" class="wide" immediate="true"/>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+					</e5ui:tabPage>
+					<e5ui:tabPage headerText="#{officeKeepingFile.volumesTabHeader}"
+						actionBehavior="client"
+						selected="#{officeKeepingFile.volumesTabSelected}">
+						<fieldset>
+							<legend>Тома дела</legend>
+							<script type="text/javascript">
+								document.ondblclick = function DoubleClick(evt) {
+									if (window.getSelection)
+										window.getSelection().removeAllRanges();
+									else if (document.selection)
+										document.selection.empty();
+								}
+							</script>
+							<h:outputScript>
+			        	function goToDocument(id) {
+			        		if (id != "") {
+			        			window.open('#{facesContext.externalContext.requestContextPath}/component/office_keeping_volume.xhtml?docId=' + id,'_blank');
+							}
+						}
+			        </h:outputScript>
+							<div class="actionbar">
+								<div class="menu">
+									<h:panelGroup
+										rendered="#{officeKeepingFile.document.getDocumentStatus().getId() eq 2}">
+										<div class="defbutton">
+											<h:outputLink
+												value="#{contextPath}/component/office_keeping_volume.xhtml"
+												target="_blank">
+												<h:graphicImage
+													value="#{resource['images:newf_buttn_icon.png']}" />
+	            							Новый том
+	           								<f:param name="docAction" value="create" />
+												<f:param name="parentId"
+													value="#{officeKeepingFile.document.id}" />
+											</h:outputLink>
+										</div>
+									</h:panelGroup>
+									<div class="defbutton">
+										<h:commandLink action="officeKeepingVolumes.refresh()">
+											<f:ajax render=":main_content_form:select_table" />
+											<h:graphicImage
+												value="#{resource['images:button-refresh.png']}" />									
+	            						Обновить
+	           						</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<h:panelGroup>
+								<div id="modal_container" style="margin-top: 0;">
+									<div class="wrap"
+										style="height: 250px; width: 100%; margin: 0px;">
+										<div class="inner" style="height: 250px;">
+											<e5ui:dataTable id="select_table" border="0" cellpadding="0"
+												cellspacing="0"
+												value="#{officeKeepingVolumes.getAllVolumesByParentFileId(officeKeepingFile.document.id)}"
+												var="row" style="width:100%">
+												<e5ui:row ondblclick="goToDocument('#{row.id}');" />
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Индекс</p>
+													</f:facet>
+													<h:outputText value="#{row.volumeIndex}" />
+												</e5ui:column>
+												<e5ui:column style="min-width:15em">
+													<f:facet name="header">
+														<p>Заголовок</p>
+													</f:facet>
+													<h:outputText value="#{row.shortDescription}" />
+												</e5ui:column>
+												<e5ui:column style="min-width:8em">
+													<f:facet name="header">
+														<p>Срок хранения</p>
+													</f:facet>
+													<h:outputText value="#{row.keepingPeriodReasons}" />
+												</e5ui:column>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Статус</p>
+													</f:facet>
+													<h:outputText value="#{row.getDocumentStatus().getName()}" />
+												</e5ui:column>
+											</e5ui:dataTable>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+						</fieldset>
+					</e5ui:tabPage>
+					<e5ui:tabPage headerText="#{officeKeepingFile.locationTabHeader}"
+						actionBehavior="client"
+						selected="#{officeKeepingFile.locationTabSelected}">
+						<h:panelGroup rendered="#{officeKeepingFile.viewState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first"><label><span class="title">Фонд</span>
+										</label></td>
+										<td class="second"><h:outputText
+												value="#{officeKeepingFile.document.fundNumber}"
+												class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label><span class="title">Стеллаж</span>
+										</label>
+										</td>
+										<td class="second"><h:outputText
+												value="#{officeKeepingFile.document.standNumber}"
+												class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Полка</span>
+										</label>
+										</td>
+										<td class="second"><h:outputText
+												value="#{officeKeepingFile.document.shelfNumber}"
+												class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Короб</span>
+										</label>
+										</td>
+										<td class="second"><h:outputText
+												value="#{officeKeepingFile.document.boxNumber}"
+												class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup
+							rendered="#{officeKeepingFile.createState or officeKeepingFile.editState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:fundNumber"><span
+												class="title">Фонд</span> </label></td>
+										<td class="second"><h:inputText
+												value="#{officeKeepingFile.document.fundNumber}"
+												id="fundNumber" class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:standNumber"><span
+												class="title">Стеллаж</span> </label>
+										</td>
+										<td class="second"><h:inputText
+												value="#{officeKeepingFile.document.standNumber}"
+												id="standNumber" class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:shelfNumber"> <span
+												class="title">Полка</span> </label>
+										</td>
+										<td class="second"><h:inputText
+												value="#{officeKeepingFile.document.shelfNumber}"
+												id="shelfNumber" class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:boxNumber"> <span
+												class="title">Короб</span> </label>
+										</td>
+										<td class="second"><h:inputText
+												value="#{officeKeepingFile.document.boxNumber}"
+												id="boxNumber" class="short" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+					</e5ui:tabPage>
+					<e5ui:tabPage headerText="#{officeKeepingFile.historyTabHeader}"
+						actionBehavior="client"
+						selected="#{officeKeepingFile.historyTabSelected}">
+						<div class="row">
+							<div class="wrap" style="width: 100%; margin: 0px">
+								<div class="inner">
+									<e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+										id="history_list"
+										value="#{officeKeepingFile.document.historyList}" var="row"
+										grouping="false">
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Дата</p>
+											</f:facet>
+											<h:outputText value="#{row.startDate}">
+												<f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm" />
+											</h:outputText>
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Статус</p>
+											</f:facet>
+											<h:outputText value="#{row.fromStatusName}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Действие</p>
+											</f:facet>
+											<h:outputText value="#{row.actionName}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Автор</p>
+											</f:facet>
+											<h:outputText value="#{row.owner.descriptionShort}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Комментарий</p>
+											</f:facet>
+											<h:outputText value="#{row.commentary}" />
+										</e5ui:column>
+									</e5ui:dataTable>
+								</div>
+							</div>
+						</div>
+					</e5ui:tabPage>
+
+				</e5ui:tabPanel>
+			</e5ui:formPart>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="footer">
+		<e5ui-comp:splashScreen id="splash_screen" timeout="0">
+			<f:facet name="timeoutPanel">
+				<div
+					style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+					Пожалуйста, подождите...</div>
+			</f:facet>
+		</e5ui-comp:splashScreen>
+		<script>
+			e5ui_splashScreen.startShowOnSubmit('splash_screen',
+					[ 'main_content_form' ]);
+		</script>
+		<h:outputStylesheet library="css" name="datatable.css" />
+		<h:outputStylesheet library="css" name="modalWindow.css" />
+		<h:outputStylesheet library="css" name="multiMarker.css" />
+		<h:outputStylesheet library="css" name="tabPanel.css" />
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,30 @@
+.e5ui-menuItem-collapsed-right {
+    display: none;
+}
+.e5ui-menuItem-collapsed-left {
+	display: table-cell;
+}
+.e5ui-menuItem.collapsable .e5ui-menuItem-collapsed-left {
+    cursor: pointer;
+    height: 18px;
+    width: 32px;
+    padding-right: 5px;
+    background: url('#{resource['images:arrows.gif']}') no-repeat scroll -32px 0;
+}
+
+.e5ui-menuItem.collapsable .e5ui-menuItem-collapsed-left:hover {
+    background-position: -96px;
+}
+.e5ui-menuItem.collapsable.collapsed .e5ui-menuItem-collapsed-left:hover {
+    background-position: -64px;
+}
+
+.e5ui-menuItem-content:hover {background:#EEEEEE;}
+.e5ui-menuItem[e5ui-level="1"]:hover {background:#EEEEEE;}
+
+.e5ui-menuItem.collapsable.collapsed .e5ui-menuItem-collapsed-left {
+    background-position: 0px;
+}
+.e5ui-menuItem.collapsable.empty .e5ui-menuItem-collapsed-left {
+    display: none;
+}

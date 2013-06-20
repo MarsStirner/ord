@@ -1,0 +1,17 @@
+.e5ui-modal {
+	background-color: #D1F3DB;
+	border: 2px solid #7AD6B4;
+	margin: 100px auto;
+	padding:0;
+}
+.e5ui-modal-content {
+   overflow: visible;
+}
+.e5ui-marker-hintWindow-error div {
+  margin: 10px 0;
+}
+.e5ui-modal-bottombuttons {
+  margin: 10px;
+  float:left;
+  clear:both;
+}

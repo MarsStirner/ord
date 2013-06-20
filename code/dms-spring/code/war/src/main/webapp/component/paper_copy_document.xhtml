@@ -1,0 +1,841 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:e5ui="http://efive.ru/uitemplates"
+	xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+	<ui:define name="running_head">
+		<!-- #{paper_copy_document.document.id}  -->
+		<e5ui-comp:userSessionUpdate
+			rendered="#{paper_copy_document.editState or paper_copy_document.createState}"
+			interval="300" />
+		<h:outputScript library="js" name="datepicker_init_ru.js"
+			target="head" />
+		<e5ui-comp:outputUtilScript />
+	</ui:define>
+
+	<ui:define name="header">
+		<div id="form_header">
+			<div class="actionbar">
+				<div class="menu">
+					<div class="defbutton">
+						<h:commandLink action="#{paper_copy_document.edit}"
+							rendered="#{paper_copy_document.viewState}">
+							<h:graphicImage value="#{resource['images:edit_buttn.png']}" />
+							Редактировать
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{paper_copy_document.save}"
+							rendered="#{paper_copy_document.editState or paper_copy_document.createState}">
+							<h:graphicImage value="#{resource['images:save_buttn.png']}" />
+							Сохранить							
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{paper_copy_document.delete()}"
+							rendered="#{paper_copy_document.editState and (paper_copy_document.document.getDocumentStatus().getId() eq 1)}">
+							<h:graphicImage value="#{resource['images:dell_buttn.png']}" />
+							Удалить
+							<f:param name="docAction" value="delete" />
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<e5ui:formPart id="actions_fp">
+							<h:commandLink
+								onclick="actionsModal.clickOpen('actionsModal'); return false;"
+								rendered="#{not(paper_copy_document.document.parentDocument.statusName.equals('Зарегистрирован') or paper_copy_document.document.parentDocument.statusName.equals('В архиве'))}">
+								<h:graphicImage value="#{resource['images:button-do.png']}" />
+								Действия								
+							</h:commandLink>
+							<e5ui-comp:modalWindow id="actionsModal"
+								modalWindowHolder="#{paper_copy_document.processorModal}"
+								render="main_content_form:" execute="@this" showButtons="false"
+								widgetVar="actionsModal">
+								<h:panelGroup
+									rendered="#{not(paper_copy_document.processorModal.processingState)}">
+									<div id="title">Действия</div>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{paper_copy_document.processorModal.actionsAvailable}">
+									<div class="wrap"
+										style="height: 90px; background-color: #fff; clear: both;">
+										<div class="inner" style="height: 90px;">
+											<e5ui:dataTable id="action_select_table" border="0"
+												cellpadding="0" cellspacing="0"
+												value="#{paper_copy_document.processorModal.availableActions}"
+												var="row" grouping="false" width="100%">
+												<e5ui:row
+													onclick="e5ui_util.clickElement(this, 'selectLink$');"
+													styleClass="#{paper_copy_document.processorModal.selected(row)? 'grid_row_selected': ''}" />
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Доступные действия</p>
+													</f:facet>
+													<h:outputText value="#{row.name}" />
+													<h:commandLink id="selectLink" style="display: none;"
+														rendered="#{not paper_copy_document.processorModal.selected(row)}"
+														action="#{paper_copy_document.processorModal.select(row)}" />
+												</e5ui:column>
+											</e5ui:dataTable>
+										</div>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{paper_copy_document.processorModal.noActionsAvailable or paper_copy_document.processorModal.failureState or paper_copy_document.processorModal.processedState}">
+									<h:outputText style="padding-left:10px;"
+										value="#{paper_copy_document.processorModal.actionResult}" />
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{paper_copy_document.processorModal.processingState}">
+									<e5ui:include
+										data="#{paper_copy_document.processorModal.processedActivity.document.form}" />
+								</h:panelGroup>
+								<div class="e5ui-modal-bottombuttons">
+									<h:commandButton
+										action="#{paper_copy_document.processorModal.process()}"
+										rendered="#{paper_copy_document.processorModal.actionsAvailable or paper_copy_document.processorModal.processingState}"
+										value="Выполнить">
+									</h:commandButton>
+									<h:button
+										rendered="#{paper_copy_document.processorModal.actionsAvailable or paper_copy_document.processorModal.processingState}"
+										onclick="actionsModal.clickClose(); return false;"
+										value="Отмена" />
+									<h:button
+										rendered="#{paper_copy_document.processorModal.noActionsAvailable or paper_copy_document.processorModal.failureState or paper_copy_document.processorModal.processedState}"
+										onclick="actionsModal.clickClose(); return false;"
+										value="Закрыть" />
+								</div>
+							</e5ui-comp:modalWindow>
+						</e5ui:formPart>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="left_menu"></ui:define>
+
+	<ui:define name="content">
+		<div id="header_content">
+			<h:panelGroup rendered="#{paper_copy_document.createState}">
+				<e5ui:formPart id="editHeaderPart">
+					<div class="name">Новый оригинал</div>
+				</e5ui:formPart>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{(paper_copy_document.editState or paper_copy_document.viewState)}">
+				<div class="name">
+					Оригинал №
+					<h:outputText
+						value="#{paper_copy_document.document.registrationNumber}" />
+				</div>
+				<div class="title">
+					<h:outputText value="#{paper_copy_document.document.getDocumentStatus().getName()}" />
+				</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{paper_copy_document.notFoundState}">
+				<div class="name">404 - Документ не найден</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{paper_copy_document.forbiddenState}">
+				<div class="name">403 - Действие запрещено</div>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{not(paper_copy_document.createState or paper_copy_document.editState or paper_copy_document.viewState or paper_copy_document.notFoundState or paper_copy_document.forbiddenState)}">
+				<div class="name">В доступе отказано</div>
+			</h:panelGroup>
+		</div>
+
+		<div class="main_content">
+			<e5ui:formPart id="editFormPart">
+				<h:panelGroup rendered="#{paper_copy_document.viewState}">
+					<div class="row">
+						<table class="form_grid">
+							<tr class="row">
+								<td class="first"><label> <span class="title">Дата
+											создания:</span> </label></td>
+								<td class="second"><h:outputText
+										value="#{paper_copy_document.document.creationDate}">
+										<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+									</h:outputText></td>
+								<td class="first"><label> <span class="title">Автор:</span>
+								</label>
+								</td>
+								<td class="second"><h:outputText
+										value="#{paper_copy_document.document.author}"
+										converter="PersonConverter" /></td>
+							</tr>
+						</table>
+					</div>
+					<h:panelGroup
+						rendered="#{(paper_copy_document.document.getDocumentStatus().getId() eq 99) or (paper_copy_document.document.getDocumentStatus().getId() eq 110)}">
+						<div class="row">
+							<table class="form_grid">
+								<tr class="row">
+									<td class="first"><label> <span class="title">Кому
+												передан на руки:</span> </label></td>
+									<td class="second"><h:outputText
+											value="#{paper_copy_document.document.collector}"
+											converter="PersonConverter" class="wide" />
+									</td>
+									<td class="first"><label><span class="title">Срок
+												возврата</span> </label>
+									</td>
+									<td class="second"><h:outputText
+											value="#{paper_copy_document.document.returnDate}" lang="ru">
+											<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+										</h:outputText>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+
+				<h:panelGroup rendered="#{paper_copy_document.editState}">
+					<div class="row">
+						<table class="form_grid">
+							<tr class="row">
+								<td class="first"><label> <span class="title">Дата
+											создания:</span> </label></td>
+								<td class="second"><h:outputText
+										value="#{paper_copy_document.document.creationDate}">
+										<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+									</h:outputText></td>
+								<td class="first"><label> <span class="title">Автор:</span>
+								</label>
+								</td>
+								<td class="second"><h:outputText
+										value="#{paper_copy_document.document.author}"
+										converter="PersonConverter" /></td>
+							</tr>
+						</table>
+					</div>
+					<h:panelGroup
+						rendered="#{paper_copy_document.document.getDocumentStatus().getId() eq 99}">
+						<div class="row">
+							<table class="form_grid">
+								<tr class="row">
+									<td class="first"><label> <span class="title">
+												<h:outputLink
+													onclick="collectorSelectModalVar.clickOpen('collectorSelectModal'); return false;">
+												Кому передан на руки:
+											</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="collectorSelectModal"
+											modalWindowHolder="#{paper_copy_document.collectorSelectModal}"
+											render=":main_content_form:collector" execute="select_table"
+											showButtons="false" style="width: 500px;"
+											widgetVar="collectorSelectModalVar">
+											<div id="title">Выбор пользователя</div>
+											<div id="modal_container" style="margin-top: 0;">
+												<div class="searchbar">
+													<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+													<h:inputText id="filter_string"
+														value="#{paper_copy_document.collectorSelectModal.userList.filter}"
+														style="display:block; float:left; margin-right:10px;"
+														title="Поиск" />
+													<h:commandButton value=" "
+														action="#{paper_copy_document.collectorSelectModal.userList.changePageOffset(0)}"
+														styleClass="searchbutton">
+														<f:ajax
+															execute=":main_content_form:collectorSelectModal:filter_string"
+															render=":main_content_form:collectorSelectModal:ajaxModal :main_content_form:collectorSelectModal:collector_modal_paging" />
+													</h:commandButton>
+												</div>
+												<div class="wrap" style="height: 300px;">
+													<div class="inner" style="height: 300px;">
+														<e5ui:dataTable id="select_table" border="0"
+															cellpadding="0" cellspacing="0"
+															value="#{paper_copy_document.collectorSelectModal.userList.documents}"
+															var="row" grouping="false" width="100%">
+															<e5ui:row
+																onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																styleClass="#{paper_copy_document.collectorSelectModal.selected(row)? 'grid_row_selected': ''}" />
+															<e5ui:column>
+																<f:facet name="header">
+																	<p>Пользователь</p>
+																</f:facet>
+																<h:outputText value="#{row}" converter="PersonConverter" />
+																<h:commandLink id="selectLink" style="display: none;"
+																	rendered="#{not paper_copy_document.collectorSelectModal.selected(row)}"
+																	action="#{paper_copy_document.collectorSelectModal.select(row)}" />
+															</e5ui:column>
+														</e5ui:dataTable>
+													</div>
+												</div>
+												<div style="clear: both;">
+													<h:panelGroup id="collector_modal_paging">
+														<e5ui-comp:tablePager id="collector_pager"
+															documentListHolder="#{paper_copy_document.collectorSelectModal.userList}" />
+													</h:panelGroup>
+												</div>
+											</div>
+											<div class="e5ui-modal-bottombuttons">
+												<h:button
+													onclick="collectorSelectModalVar.clickSave(); return false;"
+													value="Выбрать" />
+												<h:button
+													onclick="collectorSelectModalVar.clickClose(); return false;"
+													value="Отмена" />
+											</div>
+										</e5ui-comp:modalWindow></td>
+									<td class="second"><h:outputText id="collector"
+											value="#{paper_copy_document.document.collector}"
+											converter="PersonConverter"/></td>
+									<td class="third"><label
+										for="main_content_form:returnDate:dateEditor"> <span
+											class="title">Срок возврата</span> </label>
+									</td>
+									<td class="fourth"><e5ui-comp:inputDate id="returnDate"
+											value="#{paper_copy_document.document.returnDate}" lang="ru"
+											immediate="true" />
+									</td>
+								</tr>
+							</table>
+						</div>
+					</h:panelGroup>
+					<h:panelGroup
+						rendered="#{(paper_copy_document.document.getDocumentStatus().getId() eq 110)}">
+						<div class="row">
+							<table class="form_grid">
+								<tr class="row">
+									<td class="first"><label> <span class="title">Кому
+												передан на руки:</span> </label></td>
+									<td class="second"><h:outputText
+											value="#{paper_copy_document.document.collector}"
+											converter="PersonConverter" class="wide" />
+									</td>
+									<td class="first"><label><span class="title">Срок
+												возврата</span> </label>
+									</td>
+									<td class="second"><h:outputText
+											value="#{paper_copy_document.document.returnDate}" lang="ru">
+											<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+										</h:outputText>
+									</td>
+									<td class="third"></td>
+									<td class="fourth"></td>
+								</tr>
+							</table>
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+
+				<e5ui:tabPanel id="content_table">
+					<e5ui:tabPage
+						headerText="#{paper_copy_document.requisitesTabHeader}"
+						actionBehavior="#{paper_copy_document.viewState? 'client': 'submit'}"
+						selected="#{paper_copy_document.requisitesTabSelected}">
+						<h:panelGroup rendered="#{paper_copy_document.viewState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first"><label> <span class="title">Номер:</span>
+										</label></td>
+										<td class="second" colspan="3"><h:outputText
+												value="#{paper_copy_document.document.registrationNumber}" />
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Материал:</span>
+										</label></td>
+										<td class="second" colspan="3"><h:outputText
+												value="#{paper_copy_document.document.material}" />
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Том
+													дела:</span> </label>
+										</td>
+										<td class="second"><h:outputText
+												value="#{paper_copy_document.document.officeKeepingVolume}"
+												converter="OfficeKeepingVolumeConverter" class="wide" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label><span class="title">Листов</span>
+										</label></td>
+										<td class="second"><h:outputText
+												value="#{paper_copy_document.document.sheetsCount}"
+												class="short" />
+										</td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Краткое
+													содержание:</span> </label>
+										</td>									
+										<td class="second" colspan="3"><h:inputTextarea
+												rows="6"
+												value="#{paper_copy_document.document.shortDescription}" 
+												readonly="true"
+												style="border: 0"/>
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Архив 
+										для передачи:</span> </label>
+										</td>									
+										<td class="second" colspan="3"><h:outputText												
+												value="#{paper_copy_document.document.archiveTo}"/>
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"></td>
+										<td class="second"></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup
+							rendered="#{paper_copy_document.createState or paper_copy_document.editState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:registrationNumber"> <span
+												class="title">Номер</span> </label></td>
+										<td class="second" colspan="3"><h:inputText
+												id="registrationNumber"
+												value="#{paper_copy_document.document.registrationNumber}"
+												class="wide" immediate="true" /> <e5ui:marker
+												for="registrationNumber" />
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label for="main_content_form:material">
+												<span class="title">Материал</span> </label></td>
+										<td class="second" colspan="3"><h:selectOneMenu
+												id="material"
+												value="#{paper_copy_document.document.material}"
+												converter="PaperCopyDocumentFormConverter">
+												<f:selectItems
+													value="#{dictionaryManagement.getDocumentFormsByCategory('Бумажные экземпляры')}" />
+											</h:selectOneMenu>
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">
+													<h:outputLink title="Том дела"
+														onclick="officeKeepingVolumeSelectModalVar.clickOpen('officeKeepingVolumeSelectModal'); return false;">
+														Том дела														
+													</h:outputLink> </span> </label> <e5ui-comp:modalWindow
+												id="officeKeepingVolumeSelectModal"
+												modalWindowHolder="#{paper_copy_document.officeKeepingVolumeSelectModal}"
+												render=":main_content_form:office_keeping_Volume"
+												execute="select_table" showButtons="false"
+												style="width: 500px;"
+												widgetVar="officeKeepingVolumeSelectModalVar">
+												<div id="title">Выбор тома дела</div>
+												<div id="modal_container" style="margin-top: 0;">
+													<div class="searchbar">
+														<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+														<h:inputText id="filter_string"
+															value="#{paper_copy_document.officeKeepingVolumeSelectModal.officeKeepingVolumes.filter}"
+															style="display:block; float:left; margin-right:10px;"
+															title="Поиск" />
+														<h:commandButton value=" "
+															action="#{paper_copy_document.officeKeepingVolumeSelectModal.officeKeepingVolumes.changePageOffset(0)}"
+															styleClass="searchbutton">
+															<f:ajax
+																execute=":main_content_form:officeKeepingVolumeSelectModal:filter_string"
+																render=":main_content_form:officeKeepingVolumeSelectModal:ajaxModal :main_content_form:officeKeepingVolumeSelectModal:office_keeping_volume_modal_paging" />
+														</h:commandButton>
+													</div>
+													<div class="wrap" style="height: 300px;">
+														<div class="inner" style="height: 300px;">
+															<e5ui:dataTable id="select_table" border="0"
+																cellpadding="0" cellspacing="0"
+																value="#{paper_copy_document.officeKeepingVolumeSelectModal.officeKeepingVolumes.documents}"
+																var="row" grouping="false" width="100%">
+																<e5ui:row
+																	onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																	styleClass="#{paper_copy_document.officeKeepingVolumeSelectModal.selected(row)? 'grid_row_selected': ''}" />
+																<e5ui:column>
+																	<f:facet name="header">
+																		<p>Индекс</p>
+																	</f:facet>
+																	<h:outputText value="#{row.volumeIndex}" />
+																	<h:commandLink id="selectLink" style="display: none;"
+																		rendered="#{not paper_copy_document.officeKeepingVolumeSelectModal.selected(row)}"
+																		action="#{paper_copy_document.officeKeepingVolumeSelectModal.select(row)}" />
+																</e5ui:column>
+																<e5ui:column>
+																	<f:facet name="header">
+																		<p>Заголовок</p>
+																	</f:facet>
+																	<h:outputText value="#{row.shortDescription}" />
+																	<h:commandLink style="display: none;"
+																		rendered="#{not paper_copy_document.officeKeepingVolumeSelectModal.selected(row)}"
+																		action="#{paper_copy_document.officeKeepingVolumeSelectModal.select(row)}" />
+																</e5ui:column>
+																<e5ui:column>
+																	<f:facet name="header">
+																		<p>Статус</p>
+																	</f:facet>
+																	<h:outputText value="#{row.getDocumentStatus().getName()}" />
+																	<h:commandLink style="display: none;"
+																		rendered="#{not paper_copy_document.officeKeepingVolumeSelectModal.selected(row)}"
+																		action="#{paper_copy_document.officeKeepingVolumeSelectModal.select(row)}" />
+																</e5ui:column>
+															</e5ui:dataTable>
+														</div>
+													</div>
+													<div style="clear: both;">
+														<h:panelGroup id="office_keeping_volume_modal_paging">
+															<e5ui-comp:tablePager id="office_keeping_volume_pager"
+																documentListHolder="#{paper_copy_document.officeKeepingVolumeSelectModal.officeKeepingVolumes}" />
+														</h:panelGroup>
+													</div>
+												</div>
+												<div class="e5ui-modal-bottombuttons">
+													<h:button
+														onclick="officeKeepingVolumeSelectModalVar.clickSave(); return false;"
+														value="Выбрать" />
+													<h:button
+														onclick="officeKeepingVolumeSelectModalVar.clickClose(); return false;"
+														value="Отмена" />
+												</div>
+											</e5ui-comp:modalWindow>
+										</td>
+										<td class="second"><h:outputText
+												id="office_keeping_Volume"
+												value="#{paper_copy_document.document.officeKeepingVolume}"
+												converter="OfficeKeepingVolumeConverter" class="wide" />
+										</td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:sheetsCount"><span
+												class="title">Листов</span> </label>
+										</td>
+										<td class="second"><h:inputText id="sheetsCount"
+												value="#{paper_copy_document.document.sheetsCount}"
+												class="short" immediate="true" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:shortDescription"> <span
+												class="title">Краткое содержание</span> </label></td>
+										<td class="second" colspan="3"><h:inputTextarea
+												id="shortDescription"
+												rows="6"												
+												value="#{paper_copy_document.document.shortDescription}"
+												class="wide" immediate="true" /> <e5ui:marker
+												for="shortDescription" />
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:archiveTo"> <span
+												class="title">Архив для передачи</span> </label></td>
+										<td class="second" colspan="3"><h:inputText
+												id="archiveTo"											
+												value="#{paper_copy_document.document.archiveTo}"
+												class="wide" immediate="true" /> <e5ui:marker
+												for="archiveTo" />
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"></td>
+										<td class="second"></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+					</e5ui:tabPage>
+					<e5ui:tabPage headerText="#{paper_copy_document.relationTabHeader}"
+						actionBehavior="client"
+						selected="#{paper_copy_document.relationTabSelected}">
+					</e5ui:tabPage>
+
+					<e5ui:tabPage headerText="#{paper_copy_document.historyTabHeader}"
+						actionBehavior="client"
+						selected="#{paper_copy_document.historyTabSelected}">
+						<div class="row">
+							<div class="wrap" style="width: 100%; margin: 0px">
+								<div class="inner">
+									<e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+										id="history_list"
+										value="#{paper_copy_document.document.historyList}" var="row"
+										grouping="false">
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Дата</p>
+											</f:facet>
+											<h:outputText value="#{row.startDate}">
+												<f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm" />
+											</h:outputText>
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Статус</p>
+											</f:facet>
+											<h:outputText value="#{row.fromStatusName}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Действие</p>
+											</f:facet>
+											<h:outputText value="#{row.actionName}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Автор</p>
+											</f:facet>
+											<h:outputText value="#{row.owner.descriptionShort}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Комментарий</p>
+											</f:facet>
+											<h:outputText value="#{row.commentary}" />
+										</e5ui:column>
+									</e5ui:dataTable>
+								</div>
+							</div>
+						</div>
+					</e5ui:tabPage>
+				</e5ui:tabPanel>
+
+			</e5ui:formPart>
+		</div>
+
+		<e5ui-comp:splashScreen id="splash_screen" timeout="0">
+			<f:facet name="timeoutPanel">
+				<div
+					style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+					Пожалуйста, подождите...</div>
+			</f:facet>
+		</e5ui-comp:splashScreen>
+		<script>
+			e5ui_splashScreen.startShowOnSubmit('splash_screen',
+					[ 'main_content_form' ]);
+		</script>
+		<e5ui-comp:ajaxStatusGlobal timeout="300">
+			<f:facet name="waitPanel">
+				<div
+					style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+					Пожалуйста, подождите...</div>
+			</f:facet>
+		</e5ui-comp:ajaxStatusGlobal>
+	</ui:define>
+
+	<ui:define name="footer">
+		<h:form id="file_upload_form" enctype="multipart/form-data">
+			<div style="padding-top: 10px;">
+				<fieldset>
+					<legend>Файлы</legend>
+					<div class="menu">
+						<div class="defbutton">
+							<e5ui:fileUpload id="file_upload" multiple="true"
+								actionBehavior="separate" maxFilesCount="0"
+								uploadHandler="#{fileManagement.uploadHandler}"
+								action="#{paper_copy_document.uploadAttachments(fileManagement.details)}"
+								onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
+								onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
+								<f:ajax render=":file_upload_form" />
+							</e5ui:fileUpload>
+						</div>
+						<div class="defbutton">
+							<h:commandLink
+								action="#{paper_copy_document.updateAttachments()}">
+								<h:graphicImage value="#{resource['images:button-refresh.png']}" />
+				            	Обновить
+				            	<f:ajax render=":file_upload_form" />
+							</h:commandLink>
+						</div>
+					</div>
+					<div style="margin-top: 10px;">
+						<div class="wrap_main" id="table_wrap">
+							<div class="inner" id="table_inner">
+								<e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+									id="file_table" value="#{paper_copy_document.attachments}"
+									var="row">
+									<e5ui:column>
+										<h:outputText value="#{row.currentRevision.fileName}" />
+									</e5ui:column>
+									<e5ui:column>
+										<h:outputText value="#{row.currentRevision.version}" />
+									</e5ui:column>
+									<e5ui:column>
+										<h:outputText
+											value="#{userList.getUserDescription(row.currentRevision.authorId)}" />
+									</e5ui:column>
+									<e5ui:column>
+										<h:outputLink
+											value="#{contextPath}/component/file/download.xhtml"
+											target="_blank">
+											<h:graphicImage value="/resources/images/download_doc.gif" />
+											<f:param name="id" value="#{row.id}" />
+											Скачать
+										</h:outputLink>
+									</e5ui:column>
+									<e5ui:column>
+										<h:commandLink
+											action="#{paper_copy_document.initializeVersionAppender(row)}">
+											<h:graphicImage value="/resources/images/CheckOut_icon.gif" />
+											<f:ajax render=":file_upload_form" />
+											Добавить версию документа
+										</h:commandLink>
+									</e5ui:column>
+									<e5ui:column>
+										<h:commandLink
+											action="#{paper_copy_document.initializeVersionHistory(row)}">
+											<h:graphicImage value="/resources/images/CheckOut_icon.gif" />
+											<f:ajax render=":file_upload_form" />
+											История версий
+										</h:commandLink>
+									</e5ui:column>
+									<e5ui:column>
+										<h:commandLink
+											action="#{paper_copy_document.deleteAttachment(row)}">
+											<h:graphicImage value="/resources/images/delete.gif" />
+											<f:ajax render=":file_upload_form" />
+											Удалить
+										</h:commandLink>
+									</e5ui:column>
+								</e5ui:dataTable>
+
+								<e5ui-comp:modalWindow id="versionAppenderModal"
+									modalWindowHolder="#{paper_copy_document.versionAppenderModal}"
+									render=":file_upload_form" execute=":file_upload_form"
+									style="width:300px;" showButtons="false"
+									widgetVar="versionAppenderModal">
+									<div id="title">Добавление версии документа</div>
+									<div id="modal_container" style="margin-top: 0;">
+										<div>
+											Документ:
+											<h:outputText
+												value="#{paper_copy_document.versionAppenderModal.attachment.currentRevision.fileName}" />
+										</div>
+										<div>
+											Текущая версия:
+											<h:outputText
+												value="#{paper_copy_document.versionAppenderModal.attachment.currentRevision.version}" />
+										</div>
+										<div>
+											<h:selectBooleanCheckbox
+												value="#{paper_copy_document.versionAppenderModal.majorVersion}" />
+											Увеличить старший номер
+										</div>
+										<div style="margin-top: 5px;">
+											<e5ui:fileUpload id="version_upload" multiple="false"
+												actionBehavior="separate" maxFilesCount="1"
+												uploadHandler="#{fileManagement.uploadHandler}"
+												action="#{paper_copy_document.versionAppenderModal.saveAttachment}"
+												onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
+												onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
+												<f:ajax render=":file_upload_form"
+													execute=":file_upload_form:versionAppenderModal" />
+											</e5ui:fileUpload>
+										</div>
+									</div>
+									<div class="e5ui-modal-bottombuttons">
+										<h:button
+											onclick="versionAppenderModal.clickClose(); return false;"
+											value="Отмена" />
+									</div>
+								</e5ui-comp:modalWindow>
+								
+								<e5ui-comp:modalWindow id="versionHistoryModal"
+									modalWindowHolder="#{paper_copy_document.versionHistoryModal}"
+									render=":file_upload_form" execute=":file_upload_form"
+									style="width:500px;" showButtons="false"
+									widgetVar="versionHistoryModal">
+									<div id="title">История версий документа</div>
+									<div id="modal_container" style="margin-top: 0;">
+										<div class="wrap_main" id="table_wrap">
+											<div class="inner" id="table_inner">
+												<e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+													id="version_table"
+													value="#{paper_copy_document.versionHistoryModal.versionList}"
+													var="row">
+													<e5ui:column style="min-width:8em;">
+														<h:outputText value="#{row.fileName eq null? paper_copy_document.versionHistoryModal.attachment.fileName: row.fileName}" />
+													</e5ui:column>
+													<e5ui:column style="min-width:5em;">
+														<h:outputText value="#{row.version}" />
+													</e5ui:column>
+													<e5ui:column style="min-width:12em;">
+														<h:outputText
+															value="#{userList.getUserDescription(row.authorId eq 0? paper_copy_document.versionHistoryModal.attachment.authorId: row.authorId)}" />
+													</e5ui:column>
+													<e5ui:column style="min-width:7em;">
+														<h:outputLink
+															value="#{contextPath}/component/file/download.xhtml"
+															target="_blank">
+															<h:graphicImage
+																value="/resources/images/download_doc.gif" />
+															<f:param name="id"
+																value="#{paper_copy_document.versionHistoryModal.attachment.id}" />
+															<f:param name="revision" value="#{row.version}" />
+															Скачать
+														</h:outputLink>
+													</e5ui:column>
+												</e5ui:dataTable>
+											</div>
+										</div>
+									</div>
+									<div class="e5ui-modal-bottombuttons">
+										<h:button
+											onclick="versionHistoryModal.clickClose(); return false;"
+											value="Закрыть" />
+									</div>
+								</e5ui-comp:modalWindow>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+
+			<e5ui-comp:splashScreen id="splash_screen_2"
+				widgetVar="splash_screen_2" timeout="0">
+				<f:facet name="timeoutPanel">
+					<div
+						style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+						Пожалуйста, подождите...</div>
+				</f:facet>
+			</e5ui-comp:splashScreen>
+			<script>
+				e5ui_splashScreen.startShowOnSubmit('splash_screen_2',
+						[ 'file_upload_form' ]);
+			</script>
+		</h:form>
+
+		<e5ui:multiMarker id="main_form_marker" rendered="true"
+			hintWindowStyleClass="e5ui-marker-hintWindow"
+			hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
+			hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
+			hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
+			hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
+			displayMode="window">
+			<h:button
+				onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
+				value="ОК" />
+		</e5ui:multiMarker>
+		<h:outputStylesheet library="css" name="datatable.css" />
+		<h:outputStylesheet library="css" name="modalWindow.css" />
+		<h:outputStylesheet library="css" name="multiMarker.css" />
+		<h:outputStylesheet library="css" name="tabPanel.css" />
+	</ui:define>
+
+</ui:composition>
+
+</html>

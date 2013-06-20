@@ -1,0 +1,1753 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:e5ui="http://efive.ru/uitemplates"
+	xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+	<ui:define name="running_head">
+		<!-- #{request_doc.document.id}  -->
+		<e5ui-comp:userSessionUpdate
+			rendered="#{request_doc.editState or request_doc.createState}"
+			interval="300" />
+		<h:outputScript library="js" name="datepicker_init_ru.js"
+			target="head" />
+		<e5ui-comp:outputUtilScript />
+	</ui:define>
+
+	<ui:define name="header">
+		<div id="form_header">
+			<div class="actionbar">
+				<div class="menu">
+					<div class="defbutton">
+						<h:commandLink action="#{request_doc.edit}"
+							rendered="#{request_doc.viewState and request_doc.currentUserDocEditor}">
+							<h:graphicImage value="#{resource['images:edit_buttn.png']}" />
+							Редактировать
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<h:commandLink action="#{request_doc.save}"
+							rendered="#{request_doc.editState or request_doc.createState}">
+							<h:graphicImage value="#{resource['images:save_buttn.png']}" />
+							Сохранить
+						</h:commandLink>
+					</div>
+					<div class="defbutton">
+						<e5ui:formPart id="actions_fp">
+							<h:commandLink
+								onclick="actionsModal.clickOpen('actionsModal'); return false;"
+								rendered="#{not(request_doc.currentUserAdvDocReader)}">
+								<h:graphicImage value="#{resource['images:button-do.png']}" />
+								Действия
+							</h:commandLink>
+							<e5ui-comp:modalWindow id="actionsModal"
+								modalWindowHolder="#{request_doc.processorModal}"
+								render=":main_content_form" execute="selectedAction"
+								showButtons="false" widgetVar="actionsModal">
+								<h:panelGroup
+									rendered="#{not(request_doc.processorModal.processingState)}">
+									<div id="title">Действия</div>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{request_doc.processorModal.actionsAvailable}">
+									<div class="wrap"
+										style="height: 90px; background-color: #fff; clear: both;">
+										<div class="inner" style="height: 90px;">
+											<e5ui:dataTable id="action_select_table" border="0"
+												cellpadding="0" cellspacing="0"
+												value="#{request_doc.processorModal.availableActions}"
+												var="row" grouping="false" width="100%">
+												<e5ui:row
+													onclick="e5ui_util.clickElement(this, 'selectLink$');"
+													styleClass="#{request_doc.processorModal.selected(row)? 'grid_row_selected': ''}" />
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Доступные действия</p>
+													</f:facet>
+													<h:outputText value="#{row.name}" />
+													<h:commandLink id="selectLink" style="display: none;"
+														rendered="#{not request_doc.processorModal.selected(row)}"
+														action="#{request_doc.processorModal.select(row)}" />
+												</e5ui:column>
+											</e5ui:dataTable>
+										</div>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{request_doc.processorModal.noActionsAvailable or request_doc.processorModal.failureState or request_doc.processorModal.processedState}">
+									<div style="padding-left: 10px;">
+										<ui:repeat
+											value="#{request_doc.processorModal.actionResult.split(':')}"
+											var="element">
+											<h:outputText value="#{element}" />
+											<br />
+										</ui:repeat>
+									</div>
+								</h:panelGroup>
+								<h:panelGroup
+									rendered="#{request_doc.processorModal.processingState}">
+									<e5ui:include
+										data="#{request_doc.processorModal.processedActivity.document.form}" />
+								</h:panelGroup>
+								<div class="e5ui-modal-bottombuttons">
+									<h:commandButton
+										action="#{request_doc.processorModal.process()}"
+										rendered="#{request_doc.processorModal.actionsAvailable or request_doc.processorModal.processingState}"
+										value="Выполнить" />
+									<h:button
+										rendered="#{request_doc.processorModal.actionsAvailable or request_doc.processorModal.processingState}"
+										onclick="actionsModal.clickClose(); return false;"
+										value="Отмена" />
+									<h:button
+										rendered="#{request_doc.processorModal.noActionsAvailable or request_doc.processorModal.failureState or request_doc.processorModal.processedState}"
+										onclick="actionsModal.clickClose(); return false;"
+										value="Закрыть" />
+								</div>
+							</e5ui-comp:modalWindow>
+						</e5ui:formPart>
+					</div>
+					<div class="top">
+						<h:commandLink styleClass="top_link" onclick="return false;">
+							<span> <h:graphicImage
+									value="#{resource['images:button-print.png']}" /> Печать </span>
+						</h:commandLink>
+						<div class="sub">
+							<div class="item">
+								<h:commandLink
+									action='#{reports.previewSqlReportByRequestParams()}'>
+									<h:graphicImage value="#{resource['images:blank.png']}" />
+									<f:param name="reportName" value="request_note.jrxml" />
+									<f:param name="docId" value="#{request_doc.document.id}" />
+							        Справка о ходе выполнения документа
+						        </h:commandLink>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="left_menu"></ui:define>
+
+	<ui:define name="content">
+		<div id="header_content">
+			<h:panelGroup
+				rendered="#{(request_doc.editState and request_doc.document.registrationNumber==null) or request_doc.createState }">
+				<e5ui:formPart id="editHeaderPart">
+					<div class="name">
+						Обращение
+						<h:selectOneMenu id="form" value="#{request_doc.document.form}"
+							converter="RequestDocumentFormConverter" immediate="true">
+							<f:selectItems
+								value="#{dictionaryManagement.getAllUserDocumentFormsByCategory(sessionManagement.getLoggedUser('false'),'Обращения граждан')}" />
+						</h:selectOneMenu>
+					</div>
+				</e5ui:formPart>
+				<div class="title">
+					<h:outputText value="#{request_doc.document.getDocumentStatus().getName()}" />
+				</div>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{(request_doc.editState and request_doc.document.registrationNumber!=null) or request_doc.viewState}">
+				<div class="name">
+					Обращение
+					<h:outputText value="#{request_doc.document.form}"
+						converter="RequestDocumentFormConverter" />
+					№
+					<h:outputText value="#{request_doc.document.registrationNumber}" />
+					от
+					<h:outputText value="#{request_doc.document.deliveryDate}">
+						<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+					</h:outputText>
+				</div>
+				<div class="title">
+					<h:outputText value="#{request_doc.document.getDocumentStatus().getName()}" />
+				</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{request_doc.notFoundState}">
+				<div class="name">404 - Документ не найден</div>
+			</h:panelGroup>
+			<h:panelGroup rendered="#{request_doc.forbiddenState}">
+				<div class="name">403 - Действие запрещено.<h:outputText value="#{request_doc.stateComment}" lang="ru"/></div>
+			</h:panelGroup>
+			<h:panelGroup
+				rendered="#{not(request_doc.createState or request_doc.editState or request_doc.viewState or request_doc.notFoundState or request_doc.forbiddenState)}">
+				<div class="name">В доступе отказано</div>
+			</h:panelGroup>
+		</div>
+
+		<div class="main_content">
+			<e5ui:formPart id="editFormPart">
+				<h:panelGroup
+					rendered="#{request_doc.createState or (request_doc.editState and request_doc.document.registrationNumber==null)}">
+					<div class="row">
+						<table class="form_grid">
+							<tr class="row">
+								<td class="first"><label
+									for="main_content_form:deliveryDate:dateEditor"> <span
+										class="title">Дата поступления: </span> </label>
+								</td>
+								<td class="second"><e5ui-comp:inputDate id="deliveryDate"
+										value="#{request_doc.document.deliveryDate}" lang="ru"
+										required="true" /> <e5ui:marker for="deliveryDate" /></td>
+								<td class="third"><label for="main_content_form:author">
+										<span class="title">Автор: </span> </label>
+								</td>
+								<td class="fourth"><h:outputText id="author"
+										value="#{request_doc.document.author.description}" lang="ru" />
+								</td>
+							</tr>
+							<tr class="row">
+								<td class="first"><label
+									for="main_content_form:executionDate:dateEditor"> <span
+										class="title">Срок исполнения: </span> </label>
+								</td>
+								<td class="second"><e5ui-comp:inputDate id="executionDate"
+										value="#{request_doc.document.executionDate}" lang="ru" 
+										immediate="true"/></td>
+								<td class="third"><label> <span class="title">
+											<h:outputLink title="Ответственный исполнитель"
+												onclick="executorSelectModalVar.clickOpen('executorSelectModal'); return false;">
+														Ответственный исполнитель:
+													</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="executorSelectModal"
+										modalWindowHolder="#{request_doc.executorSelectModal}"
+										render=":main_content_form:executor" execute="select_table"
+										showButtons="false" style="width: 500px;"
+										widgetVar="executorSelectModalVar">
+										<div id="title">Выбор исполнителя</div>
+										<div id="modal_container" style="margin-top: 0;">
+											<div class="searchbar">
+												<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+												<h:inputText id="filter_string"
+													value="#{request_doc.executorSelectModal.userList.filter}"
+													style="display:block; float:left; margin-right:10px;"
+													title="Поиск" />
+												<h:commandButton value=" "
+													action="#{request_doc.executorSelectModal.userList.changePageOffset(0)}"
+													styleClass="searchbutton">
+													<f:ajax
+														execute=":main_content_form:executorSelectModal:filter_string"
+														render=":main_content_form:executorSelectModal:ajaxModal :main_content_form:executorSelectModal:executors_modal_paging" />
+												</h:commandButton>
+											</div>
+											<div class="wrap" style="height: 300px;">
+												<div class="inner" style="height: 300px;">
+													<e5ui:dataTable id="select_table" border="0"
+														cellpadding="0" cellspacing="0"
+														value="#{request_doc.executorSelectModal.userList.documents}"
+														var="row" grouping="false" width="100%">
+														<e5ui:row
+															onclick="e5ui_util.clickElement(this, 'selectLink$');"
+															styleClass="#{request_doc.executorSelectModal.selected(row)? 'grid_row_selected': ''}" />
+														<e5ui:column>
+															<f:facet name="header">
+																<p>Ответственный исполнитель</p>
+															</f:facet>
+															<h:outputText value="#{row}" converter="PersonConverter" />
+															<h:commandLink id="selectLink" style="display: none;"
+																rendered="#{not request_doc.executorSelectModal.selected(row)}"
+																action="#{request_doc.executorSelectModal.select(row)}" />
+														</e5ui:column>
+													</e5ui:dataTable>
+												</div>
+											</div>
+											<div style="clear: both;">
+												<h:panelGroup id="executors_modal_paging">
+													<e5ui-comp:tablePager id="executors_pager"
+														documentListHolder="#{request_doc.executorSelectModal.userList}" />
+												</h:panelGroup>
+											</div>
+										</div>
+										<div class="e5ui-modal-bottombuttons">
+											<h:button
+												onclick="executorSelectModalVar.clickSave(); return false;"
+												value="Выбрать" />
+											<h:button
+												onclick="executorSelectModalVar.clickClose(); return false;"
+												value="Отмена" />
+										</div>
+									</e5ui-comp:modalWindow></td>
+								<td class="fourth" colspan="3"><h:outputText id="executor"
+										value="#{request_doc.document.executor}"
+										converter="PersonConverter" class="wide" /></td>
+							</tr>
+						</table>
+					</div>
+				</h:panelGroup>
+				<h:panelGroup
+					rendered="#{(request_doc.editState and request_doc.document.registrationNumber!=null) or request_doc.viewState}">
+					<div class="row">
+						<table class="form_grid">
+							<tr class="row">
+								<td class="first"><label> <span class="title">Дата
+											поступления: </span> </label>
+								</td>
+								<td class="second"><h:outputText
+										value="#{request_doc.document.deliveryDate}" lang="ru">
+										<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+									</h:outputText>
+								</td>
+								<td class="third"><label> <span class="title">Автор:</span>
+								</label>
+								</td>
+								<td class="fourth"><h:outputText
+										value="#{request_doc.document.author}"
+										converter="PersonConverter" lang="ru" /></td>
+							</tr>
+							<tr class="row">
+								<td class="first"><label><span class="title">Срок
+											исполнения: </span> </label>
+								</td>
+								<td class="second"><h:outputText
+										value="#{request_doc.document.executionDate}" lang="ru">
+										<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+									</h:outputText>
+								</td>
+								<td class="third"><label> <span class="title">Ответственный
+											исполнитель: </span> </label></td>
+								<td class="fourth"><h:outputText
+										value="#{request_doc.document.executor}"
+										converter="PersonConverter" class="wide" />
+								</td>
+							</tr>
+						</table>
+					</div>
+				</h:panelGroup>
+				<e5ui:tabPanel id="content_table">
+					<e5ui:tabPage headerText="#{request_doc.requisitesTabHeader}"
+						actionBehavior="#{request_doc.viewState? 'client': 'submit'}"
+						selected="#{request_doc.requisitesTabSelected}">
+						<h:panelGroup rendered="#{request_doc.viewState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first"><label> <span class="title">Тип
+													доставки:</span> </label>
+										</td>
+										<td class="second"><h:outputText
+												value="#{request_doc.document.deliveryType.value}" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Тип
+													отправителя:</span> </label>
+										</td>
+										<td class="second"><h:outputText
+												value="#{request_doc.document.senderType.value}" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Регион:</span>
+										</label>
+										</td>
+										<td class="second"><h:outputText
+												value="#{request_doc.document.region}"
+												converter="RegionConverter" /></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<h:panelGroup
+										rendered="#{request_doc.document.senderType.value.equals('Юридическое лицо')}">
+										<tr class="row">
+											<td class="first"><label> <span class="title">Корреспондент</span>
+											</label></td>
+											<td class="second"><h:outputText
+													value="#{request_doc.document.contragent}"
+													converter="ContragentConverter" />
+											</td>
+											<td class="third"></td>
+											<td class="fourth"></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup
+										rendered="#{request_doc.document.senderType.value.equals('Физическое лицо') or request_doc.document.senderType.value.equals('Юридическое лицо')}">
+										<tr class="row">
+											<td class="first"><label> <span class="title">Фамилия:</span>
+											</label>
+											</td>
+											<td class="second" colspan="3"><h:outputText
+													value="#{request_doc.document.senderLastName}"
+													style="font-weight:bold;" class="wide" /></td>
+										</tr>
+										<tr class="row">
+											<td class="first"><label> <span class="title">Имя:</span>
+											</label>
+											</td>
+											<td class="second" colspan="3"><h:outputText
+													value="#{request_doc.document.senderFirstName}"
+													style="font-weight:bold;" class="wide" /></td>
+										</tr>
+										<tr class="row">
+											<td class="first"><label> <span class="title">Отчество:</span>
+											</label>
+											</td>
+											<td class="second" colspan="3"><h:outputText
+													value="#{request_doc.document.senderMiddleName}"
+													style="font-weight:bold;" class="wide" /></td>
+										</tr>
+									</h:panelGroup>
+									<tr class="row">
+										<td class="first"><label> <span class="title">Краткое
+													содержание:</span> </label></td>
+										<td class="second" colspan="3"><h:outputText
+												value="#{request_doc.document.shortDescription}" /></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label> <span class="title">
+													Адресаты</span> </label>
+										</td>
+										<td class="second" colspan="3"><div class="width"
+												style="overflow-y: scroll; height: 120px">
+												<ui:repeat value="#{request_doc.document.recipientUsers}"
+													var="element">
+													<h:outputText value="#{element}"
+														converter="PersonConverter" class="width" />
+													<br />
+												</ui:repeat>
+												<ui:repeat
+													value="#{request_doc.document.recipientGroupsList}"
+													var="element">
+													<h:outputText value="#{element}" converter="GroupConverter"
+														class="width" />
+													<br />
+												</ui:repeat>
+											</div></td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+						<h:panelGroup
+							rendered="#{request_doc.createState or request_doc.editState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:deliveryType"> <span
+												class="title">Тип доставки: </span> </label></td>
+										<td class="second"><h:selectOneMenu id="deliveryType"
+												value="#{request_doc.document.deliveryType}"
+												converter="DeliveryTypeConverter" style="font-size:10pt;"
+												immediate="true">
+												<f:selectItems value="#{dictionaryManagement.deliveryTypes}" />
+											</h:selectOneMenu>
+										</td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:senderType"> <span
+												class="title">Тип отправителя: </span> </label></td>
+										<td class="second"><h:selectOneMenu id="senderType"
+												value="#{request_doc.document.senderType}"
+												converter="SenderTypeConverter" style="font-size:10pt;"
+												immediate="true">
+												<f:selectItems value="#{dictionaryManagement.senderTypes}" />
+												<f:ajax execute=":main_content_form:senderType"
+													render=":main_content_form:content_table" />
+											</h:selectOneMenu>
+										</td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+									<tr class="row">
+											<td class="first"><label> <span class="title">
+														<h:outputLink title="Регион"
+															onclick="regionSelectModalVar.clickOpen('regionSelectModal'); return false;">
+														Регион
+													</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="regionSelectModal"
+													modalWindowHolder="#{request_doc.regionSelectModal}"
+													render=":main_content_form:region" execute="select_table"
+													showButtons="false" style="width: 500px;"
+													widgetVar="regionSelectModalVar">
+													<div id="title">Выбор региона</div>
+													<div id="modal_container" style="margin-top: 0;">
+														<div class="searchbar">
+															<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+															<h:inputText id="filter_string"
+																value="#{dictionaryManagement.filter}"
+																style="display:block; float:left; margin-right:10px;"
+																title="Поиск" />
+															<h:commandButton value=" " action="null"
+																styleClass="searchbutton">
+																<f:ajax
+																	execute=":main_content_form:regionSelectModal:filter_string"
+																	render=":main_content_form:regionSelectModal:ajaxModal" />
+															</h:commandButton>
+														</div>
+														<div class="wrap" style="height: 300px;">
+															<div class="inner" style="height: 300px;">
+																<e5ui:dataTable id="select_table" border="0"
+																	cellpadding="0" cellspacing="0"
+																	value="#{dictionaryManagement.regions}" var="row"
+																	grouping="false" width="100%">
+																	<e5ui:row
+																		onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																		styleClass="#{request_doc.regionSelectModal.selected(row)? 'grid_row_selected': ''}" />
+																	<e5ui:column>
+																		<f:facet name="header">
+																			<p>Регион</p>
+																		</f:facet>
+																		<h:outputText value="#{row.value}" />
+																		<h:commandLink id="selectLink" style="display: none;"
+																			rendered="#{not request_doc.regionSelectModal.selected(row)}"
+																			action="#{request_doc.regionSelectModal.select(row)}" />
+																	</e5ui:column>
+																	<e5ui:column>
+																		<f:facet name="header">
+																			<p>Категория</p>
+																		</f:facet>
+																		<h:outputText value="#{row.category}" />
+																		<h:commandLink style="display: none;"
+																			rendered="#{not request_doc.regionSelectModal.selected(row)}"
+																			action="#{request_doc.regionSelectModal.select(row)}" />
+																		<h:commandLink style="display: none;"
+																			rendered="#{request_doc.regionSelectModal.selected(row)}"
+																			action="#{request_doc.regionSelectModal.unselect()}" />
+																	</e5ui:column>
+																</e5ui:dataTable>
+															</div>
+														</div>
+													</div>
+													<div class="e5ui-modal-bottombuttons">
+														<h:button
+															onclick="regionSelectModalVar.clickSave(); return false;"
+															value="Выбрать" />
+														<h:button
+															onclick="regionSelectModalVar.clickClose(); return false;"
+															value="Отмена" />
+													</div>
+												</e5ui-comp:modalWindow></td>
+											<td class="second"><h:outputText id="region"
+													value="#{request_doc.document.region}"
+													converter="RegionConverter" /></td>
+										</tr>
+									<h:panelGroup
+										rendered="#{request_doc.document.senderType.value.equals('Юридическое лицо')}">
+										<tr class="row">
+											<td class="first"><label> <span class="title">
+														<h:outputLink title="Корреспондент:"
+															onclick="contragentSelectModalVar.clickOpen('contragentSelectModal'); return false;">
+														Корреспондент
+													</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="contragentSelectModal"
+													modalWindowHolder="#{request_doc.contragentSelectModal}"
+													render=":main_content_form:contragent"
+													execute="select_table" showButtons="false"
+													style="width: 500px;" widgetVar="contragentSelectModalVar">
+													<div id="title">Выбор корреспондента</div>
+													<div id="modal_container" style="margin-top: 0;">
+														<div class="searchbar">
+															<h:inputText id="filter_string"
+																value="#{request_doc.contragentSelectModal.contragentList.filter}"
+																style="display:block; float:left; margin-right:10px;"
+																title="Поиск" />
+															<h:commandButton value=" "
+																action="#{request_doc.contragentSelectModal.contragentList.changePageOffset(0)}"
+																styleClass="searchbutton">
+																<f:ajax
+																	execute=":main_content_form:contragentSelectModal:filter_string"
+																	render=":main_content_form:contragentSelectModal:ajaxModal :main_content_form:contragentSelectModal:modal_paging" />
+															</h:commandButton>
+														</div>
+														<div class="wrap" style="height: 300px;">
+															<div class="inner" style="height: 300px;">
+																<e5ui:dataTable id="select_table" border="0"
+																	cellpadding="0" cellspacing="0"
+																	value="#{request_doc.contragentSelectModal.contragentList.documents}"
+																	var="row" grouping="false" width="100%">
+																	<e5ui:row
+																		onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																		styleClass="#{request_doc.contragentSelectModal.selected(row)? 'grid_row_selected': ''}" />
+																	<e5ui:column>
+																		<f:facet name="header">
+																			<p>Контрагент</p>
+																		</f:facet>
+																		<h:outputText value="#{row}"
+																			converter="ContragentConverter" />
+																		<h:commandLink id="selectLink" style="display: none;"
+																			rendered="#{not request_doc.contragentSelectModal.selected(row)}"
+																			action="#{request_doc.contragentSelectModal.select(row)}" />
+																	</e5ui:column>
+																</e5ui:dataTable>
+															</div>
+														</div>
+														<div style="clear: both;">
+															<h:panelGroup id="modal_paging">
+																<e5ui-comp:tablePager id="pager"
+																	documentListHolder="#{request_doc.contragentSelectModal.contragentList}" />
+															</h:panelGroup>
+														</div>
+													</div>
+													<div class="e5ui-modal-bottombuttons">
+														<h:button
+															onclick="contragentSelectModalVar.clickSave(); return false;"
+															value="Выбрать" />
+														<h:button
+															onclick="contragentSelectModalVar.clickClose(); return false;"
+															value="Отмена" />
+													</div>
+												</e5ui-comp:modalWindow></td>
+											<td class="second" colspan="3"><h:outputText
+													id="contragent" value="#{request_doc.document.contragent}"
+													converter="ContragentConverter" class="wide" /></td>
+										</tr>
+									</h:panelGroup>
+									<h:panelGroup
+										rendered="#{request_doc.document.senderType.value.equals('Физическое лицо')or request_doc.document.senderType.value.equals('Юридическое лицо')}">
+
+										<tr class="row">
+											<td class="first"><label
+												for="main_content_form:senderLastName"> <span
+													class="title">Фамилия:</span> </label></td>
+											<td class="second" colspan="3"><h:inputText
+													id="senderLastName"
+													value="#{request_doc.document.senderLastName}"
+													immediate="true" class="wide" /></td>
+										</tr>
+										<tr class="row">
+											<td class="first"><label
+												for="main_content_form:senderFirstName"> <span
+													class="title">Имя:</span> </label></td>
+											<td class="second" colspan="3"><h:inputText
+													id="senderFirstName"
+													value="#{request_doc.document.senderFirstName}"
+													immediate="true" class="wide" /></td>
+										</tr>
+										<tr class="row">
+											<td class="first"><label
+												for="main_content_form:senderMiddleName"> <span
+													class="title">Отчество:</span> </label></td>
+											<td class="second" colspan="3"><h:inputText
+													id="senderMiddleName"
+													value="#{request_doc.document.senderMiddleName}"
+													immediate="true" class="wide" />
+											</td>
+										</tr>
+									</h:panelGroup>
+									<tr class="row">
+										<td class="first"><label
+											for="main_content_form:shortDescription"> <span
+												class="title">Краткое содержание</span> </label></td>
+										<td class="second" colspan="3"><h:inputText
+												id="shortDescription"
+												value="#{request_doc.document.shortDescription}"
+												class="wide" immediate="true" /> <e5ui:marker
+												for="shortDescription" /></td>
+									</tr>
+																		<tr class="row">
+										<td class="first"><label> <span class="title">
+													<h:outputLink title="Адресаты:"
+														onclick="userListSelectModalVar.clickOpen('recipientUnitsSelectModal'); return false;">
+														Адресаты
+													</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="recipientUnitsSelectModal"
+												modalWindowHolder="#{request_doc.recipientUnitsSelectModal}"
+												render=":main_content_form:recipients" execute="users_select_table"
+												showButtons="false" style="width: 500px;"
+												widgetVar="userListSelectModalVar">
+												<div id="title">Выбор адресатов</div>
+												<div id="modal_container" style="margin-top: 0;">
+													<h:panelGroup
+														rendered="#{request_doc.isUsersDialogSelected()}">
+														<div class="searchbar">
+															<h:inputText id="users_filter_string"
+																value="#{request_doc.recipientUnitsSelectModal.userList.filter}"
+																style="display:block; float:left; margin-right:10px;"
+																title="Поиск" />
+															<h:commandButton value=" "
+																action="#{request_doc.recipientUnitsSelectModal.userList.changePageOffset(0)}"
+																styleClass="searchbutton">
+																<f:ajax
+																	execute=":main_content_form:recipientUnitsSelectModal:users_filter_string"
+																	render=":main_content_form:recipientUnitsSelectModal:ajaxModal :main_content_form:recipientUnitsSelectModal:users_modal_paging" />
+															</h:commandButton>
+														</div>
+														<div class="wrap" style="height: 300px;">
+															<div class="inner" style="height: 300px;">
+																<e5ui:dataTable id="select_table_users" border="0"
+																	cellpadding="0" cellspacing="0"
+																	value="#{request_doc.recipientUnitsSelectModal.userList.documents}"
+																	var="row" grouping="false" width="100%"
+																	style="width:80%;">
+																	<e5ui:row
+																		onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																		styleClass="#{request_doc.recipientUnitsSelectModal.selectedUser(row)? 'grid_row_selected': ''}" />
+																	<e5ui:column>
+																		<f:facet name="header">
+																			<p>Адресаты</p>
+																		</f:facet>
+																		<h:outputText value="#{row}"
+																			converter="PersonConverter" />
+																		<h:commandLink id="selectLink" style="display: none;"
+																			rendered="#{not request_doc.recipientUnitsSelectModal.selectedUser(row)}"
+																			action="#{request_doc.recipientUnitsSelectModal.selectUser(row)}" />
+																		<h:commandLink id="unselectLink"
+																			style="display: none;"
+																			rendered="#{request_doc.recipientUnitsSelectModal.selectedUser(row)}"
+																			action="#{request_doc.recipientUnitsSelectModal.unselectUser(row)}" />
+																	</e5ui:column>
+																</e5ui:dataTable>
+															</div>
+														</div>
+														<div style="clear: both;">
+															<h:panelGroup id="users_modal_paging">
+																<e5ui-comp:tablePager id="usersPager"
+																	documentListHolder="#{request_doc.recipientUnitsSelectModal.userList}" />
+															</h:panelGroup>
+														</div>
+
+													</h:panelGroup>
+
+													<h:panelGroup
+														rendered="#{request_doc.isGroupsDialogSelected()}">
+														<div class="searchbar">
+															<h:inputText id="groups_filter_string"
+																value="#{request_doc.recipientUnitsSelectModal.groupsView.filter}"
+																style="display:block; float:left; margin-right:10px;"
+																title="Поиск" />
+															<h:commandButton value=" "
+																action="#{request_doc.recipientUnitsSelectModal.groupsView.changePageOffset(0)}"
+																styleClass="searchbutton">
+																<f:ajax
+																	execute=":main_content_form:recipientUnitsSelectModal:groups_filter_string"
+																	render=":main_content_form:recipientUnitsSelectModal:ajaxModal :main_content_form:recipientUnitsSelectModal:groups_modal_paging" />
+															</h:commandButton>
+														</div>
+														<div class="wrap" style="height: 300px;">
+															<div class="inner" style="height: 300px;">
+																<e5ui:dataTable id="select_table_groups" border="0"
+																	cellpadding="0" cellspacing="0"
+																	value="#{request_doc.recipientUnitsSelectModal.groupsView.documents}"
+																	var="row" grouping="false" width="100%"
+																	style="width:80%;">
+																	<e5ui:row
+																		onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																		styleClass="#{request_doc.recipientUnitsSelectModal.selectedGroup(row)? 'grid_row_selected': ''}" />
+																	<e5ui:column>
+																		<f:facet name="header">
+																			<p>Адресаты</p>
+																		</f:facet>
+																		<h:outputText value="#{row}"
+																			converter="GroupConverter" />
+																		<h:commandLink id="selectLink" style="display: none;"
+																			rendered="#{not request_doc.recipientUnitsSelectModal.selectedGroup(row)}"
+																			action="#{request_doc.recipientUnitsSelectModal.selectGroup(row)}" />
+																		<h:commandLink id="unselectLink"
+																			style="display: none;"
+																			rendered="#{request_doc.recipientUnitsSelectModal.selectedGroup(row)}"
+																			action="#{request_doc.recipientUnitsSelectModal.unselectGroup(row)}" />
+																	</e5ui:column>
+																</e5ui:dataTable>
+
+															</div>
+														</div>
+														<div style="clear: both;">
+															<h:panelGroup id="groups_modal_paging">
+																<e5ui-comp:tablePager id="groupsPager"
+																	documentListHolder="#{request_doc.recipientUnitsSelectModal.groupsView}" />
+															</h:panelGroup>
+														</div>
+													</h:panelGroup>
+												</div>
+
+												<div class="e5ui-modal-bottombuttons">
+													<div class="defbutton">
+														<h:commandButton value="Группы пользователей"
+															rendered="#{request_doc.isUsersDialogSelected()}"
+															action="#{request_doc.setGroupsDialogSelected(true)}">
+															<f:ajax
+																render=":main_content_form:recipientUnitsSelectModal:ajaxModal"
+																execute=":main_content_form:recipientUnitsSelectModal:ajaxModal" />
+														</h:commandButton>
+														<h:commandButton value="Пользователи"
+															rendered="#{request_doc.isGroupsDialogSelected()}"
+															action="#{request_doc.setUsersDialogSelected(true)}">
+															<f:ajax
+																render=":main_content_form:recipientUnitsSelectModal:ajaxModal"
+																execute=":main_content_form:recipientUnitsSelectModal:ajaxModal" />
+														</h:commandButton>
+													</div>
+													<h:button
+														onclick="userListSelectModalVar.clickSave(); return false;"
+														value="Выбрать" />
+													<h:button
+														onclick="userListSelectModalVar.clickClose(); return false;"
+														value="Отмена" />
+												</div>
+											</e5ui-comp:modalWindow>
+										</td>
+										<td class="second" colspan="3"><div
+												style="overflow-y: scroll; height: 120px">
+												<h:panelGroup id="recipients">
+													<label><ui:repeat
+															value="#{request_doc.document.recipientUsers}"
+															var="element">
+															<h:outputText value="#{element}"
+																converter="PersonConverter" class="width" />
+															<br />
+														</ui:repeat> </label>
+													<label><ui:repeat
+															value="#{request_doc.document.recipientGroupsList}"
+															var="element">
+															<h:outputText value="#{element}"
+																converter="GroupConverter" class="width" />
+															<br />
+														</ui:repeat> </label>
+												</h:panelGroup>
+											</div></td>
+									</tr>
+
+									<tr class="row">
+									</tr>
+									<tr class="row"></tr>
+
+								</table>
+
+							</div>
+						</h:panelGroup>
+					</e5ui:tabPage>
+					<e5ui:tabPage headerText="#{request_doc.routeTabHeader}"
+						actionBehavior="client" selected="#{request_doc.routeTabSelected}">
+						<fieldset>
+							<legend>Поручения</legend>
+							<script type="text/javascript">
+								document.ondblclick = function DoubleClick(evt) {
+									if (window.getSelection)
+										window.getSelection().removeAllRanges();
+									else if (document.selection)
+										document.selection.empty();
+								}
+							</script>
+							<h:outputScript>
+			        	function goToTask(id) {
+			        		if (id != "") {
+			        			window.open('#{facesContext.externalContext.requestContextPath}/component/task.xhtml?docId=' + id,'_blank');
+							}
+						}
+			        </h:outputScript>
+							<div class="actionbar">
+								<div class="menu">
+									<h:panelGroup rendered="#{request_doc.document.getDocumentStatus().getId()==2}">
+										<div class="defbutton">
+											<h:outputLink value="#{contextPath}/component/task.xhtml"
+												target="_blank">
+												<h:graphicImage
+													value="#{resource['images:newf_buttn_icon.png']}" />
+	            							Новое поручение
+	           								<f:param name="docAction" value="create" />
+												<f:param name="parentId"
+													value="#{request_doc.document.uniqueId}" />
+												<f:param name="rootDocumentId"
+													value="#{request_doc.document.uniqueId}" />
+											</h:outputLink>
+										</div>
+									</h:panelGroup>
+									<div class="defbutton">
+										<h:commandLink action="#{tasks.refresh()}">
+											<f:ajax render=":main_content_form:select_table" />
+											<h:graphicImage
+												value="#{resource['images:button-refresh.png']}" />
+	            						Обновить
+	           						</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<h:panelGroup>
+								<div id="modal_container" style="margin-top: 0;">
+									<div class="wrap"
+										style="height: 250px; width: 100%; margin: 0px;">
+										<div class="inner" style="height: 250px;">
+											<e5ui:dataTable id="select_table" border="0" cellpadding="0"
+												cellspacing="0"
+												value="#{tasks.getDocumentsTreeByParent(request_doc.document.uniqueId)}"
+												var="row" grouping="true" levelCount="10" style="width:100%">
+												<e5ui:row ondblclick="goToTask('#{row.id}');"
+													level="#{row.grouping}" group="#{row.parent}"
+													fullRow="false" collapsed="false">
+													<f:facet name="fullRowDefault">
+														<b><h:outputText value="#{row.taskNumber}" /> </b>
+													</f:facet>
+												</e5ui:row>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Номер</p>
+													</f:facet>
+													<h:outputText value="#{row.taskNumber}" />
+												</e5ui:column>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Исполнитель</p>
+													</f:facet>
+													<h:outputText value="#{row.executor}"
+														converter="PersonConverter" />
+												</e5ui:column>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Срок исполнения</p>
+													</f:facet>
+													<h:outputText value="#{row.controlDate}">
+														<f:convertDateTime type="date" pattern="dd.MM.yyyy" />
+													</h:outputText>
+												</e5ui:column>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Автор</p>
+													</f:facet>
+													<h:outputText value="#{row.author.description}" />
+												</e5ui:column>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Содержание</p>
+													</f:facet>
+													<h:outputText value="#{row.shortDescription}" />
+												</e5ui:column>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Статус</p>
+													</f:facet>
+													<h:outputText value="#{row.getDocumentStatus().getName()}" />
+												</e5ui:column>
+											</e5ui:dataTable>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+						</fieldset>
+					</e5ui:tabPage>
+					<e5ui:tabPage headerText="#{request_doc.relationTabHeader}"
+						actionBehavior="client"
+						selected="#{request_doc.relationTabSelected}">
+					</e5ui:tabPage>
+					<e5ui:tabPage headerText="#{request_doc.originalTabHeader}"
+						actionBehavior="client"
+						selected="#{request_doc.originalTabSelected}">
+						<fieldset>
+							<script type="text/javascript">
+								document.ondblclick = function DoubleClick(evt) {
+									if (window.getSelection)
+										window.getSelection().removeAllRanges();
+									else if (document.selection)
+										document.selection.empty();
+								}
+							</script>
+							<h:outputScript>
+			        	function goToPaperCopy(id) {
+			        		if (id != "") {
+			        			window.open('#{facesContext.externalContext.requestContextPath}/component/paper_copy_document.xhtml?docId=' + id,'_blank');
+							}
+						}
+			        </h:outputScript>
+							<div class="actionbar">
+								<div class="menu">
+									<h:panelGroup rendered="#{request_doc.document.getDocumentStatus().getId() gt 0}">
+										<div class="defbutton">
+											<h:outputLink
+												value="#{contextPath}/component/paper_copy_document.xhtml"
+												target="_blank">
+												<h:graphicImage
+													value="#{resource['images:newf_buttn_icon.png']}" />
+	            							Новый оригинал
+	           								<f:param name="docAction" value="create" />
+												<f:param name="parentDocumentId"
+													value="#{request_doc.document.uniqueId}" />
+											</h:outputLink>
+										</div>
+									</h:panelGroup>
+									<div class="defbutton">
+										<h:commandLink action="paperCopyDocuments.refresh()">
+											<f:ajax render=":main_content_form:select_table_2" />
+											<h:graphicImage
+												value="#{resource['images:button-refresh.png']}" />
+	            						Обновить
+	           						</h:commandLink>
+									</div>
+								</div>
+							</div>
+							<h:panelGroup>
+								<div id="modal_container" style="margin-top: 0;">
+									<div class="wrap"
+										style="height: 250px; width: 100%; margin: 0px;">
+										<div class="inner" style="height: 250px;">
+											<e5ui:dataTable id="select_table_2" border="0"
+												cellpadding="0" cellspacing="0"
+												value="#{paperCopyDocuments.getAllDocumentsByParentDocumentId(request_doc.document.uniqueId)}"
+												var="row" style="width:100%">
+												<e5ui:row ondblclick="goToPaperCopy('#{row.id}');" />
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Номер</p>
+													</f:facet>
+													<h:outputText value="#{row.registrationNumber}" />
+												</e5ui:column>
+												<e5ui:column style="min-width:15em">
+													<f:facet name="header">
+														<p>Заголовок</p>
+													</f:facet>
+													<h:outputText value="#{row.shortDescription}" />
+												</e5ui:column>
+												<e5ui:column>
+													<f:facet name="header">
+														<p>Статус</p>
+													</f:facet>
+													<h:outputText value="#{row.getDocumentStatus().getName()}" />
+												</e5ui:column>
+											</e5ui:dataTable>
+										</div>
+									</div>
+								</div>
+							</h:panelGroup>
+						</fieldset>
+					</e5ui:tabPage>
+
+					<e5ui:tabPage headerText="#{request_doc.accessTabHeader}"
+						actionBehavior="client"
+						selected="#{request_doc.accessTabSelected}">
+						<h:panelGroup
+							rendered="#{request_doc.createState or request_doc.editState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first" colspan="2">
+											<fieldset>
+												<legend>Пользователи</legend>
+												<table class="form_grid">
+													<tr class="row">
+														<td class="first"><label> <span class="title">
+																	<h:outputLink title="Читатели:"
+																		onclick="personReadersPickListWidget.clickOpen('personReadersPickList'); return false;">
+																		Читатели:
+																	</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="personReadersPickList"
+																modalWindowHolder="#{request_doc.personReadersPickList}"
+																render=":main_content_form:personReaders"
+																execute="select_table" showButtons="false"
+																style="width: 500px;"
+																widgetVar="personReadersPickListWidget">
+																<div id="title">Выбор читателей</div>
+																<div id="modal_container" style="margin-top: 0;">
+																	<div class="searchbar">
+																		<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+																		<h:inputText id="filter_string"
+																			value="#{request_doc.personReadersPickList.userList.filter}"
+																			style="display:block; float:left; margin-right:10px;"
+																			title="Поиск" />
+																		<h:commandButton value=" "
+																			action="#{request_doc.personReadersPickList.userList.changePageOffset(0)}"
+																			styleClass="searchbutton">
+																			<f:ajax
+																				execute=":main_content_form:personReadersPickList:filter_string"
+																				render=":main_content_form:personReadersPickList:select_table :main_content_form:personReadersPickList:modal_paging" />
+																		</h:commandButton>
+																	</div>
+																	<div class="wrap" style="height: 300px;">
+																		<div class="inner" style="height: 300px;">
+																			<e5ui:dataTable id="select_table" border="0"
+																				cellpadding="0" cellspacing="0"
+																				value="#{userList.documents}" var="row"
+																				grouping="false" width="100%">
+																				<e5ui:row
+																					onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																					styleClass="#{request_doc.personReadersPickList.selected(row)? 'grid_row_selected': ''}" />
+																				<e5ui:column>
+																					<f:facet name="header">
+																						<p>Читатели</p>
+																					</f:facet>
+																					<h:outputText value="#{row}"
+																						converter="PersonConverter" />
+																					<h:commandLink id="selectLink"
+																						style="display: none;"
+																						rendered="#{not request_doc.personReadersPickList.selected(row)}"
+																						action="#{request_doc.personReadersPickList.select(row)}" />
+																					<h:commandLink id="unselectLink"
+																						style="display: none;"
+																						rendered="#{request_doc.personReadersPickList.selected(row)}"
+																						action="#{request_doc.personReadersPickList.unselect(row)}" />
+																				</e5ui:column>
+																			</e5ui:dataTable>
+																		</div>
+																	</div>
+																	<div style="clear: both;">
+																		<h:panelGroup id="modal_paging">
+																			<e5ui-comp:tablePager id="pager"
+																				documentListHolder="#{request_doc.personReadersPickList.userList}" />
+																		</h:panelGroup>
+																	</div>
+																</div>
+																<div class="e5ui-modal-bottombuttons">
+																	<h:button
+																		onclick="personReadersPickListWidget.clickSave(); return false;"
+																		value="Выбрать" />
+																	<h:button
+																		onclick="personReadersPickListWidget.clickClose(); return false;"
+																		value="Отмена" />
+																</div>
+															</e5ui-comp:modalWindow>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<h:panelGroup id="personReaders">
+																	<label><ui:repeat
+																			value="#{request_doc.document.personReaders}"
+																			var="element">
+																			<h:outputText value="#{element}"
+																				converter="PersonConverter" class="width" />
+																			<br />
+																		</ui:repeat> </label>
+																</h:panelGroup>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"><label> <span class="title">
+																	<h:outputLink title="Редакторы:"
+																		onclick="personEditorsPickListWidget.clickOpen('personEditorsPickList'); return false;">
+																		Редакторы:
+																	</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="personEditorsPickList"
+																modalWindowHolder="#{request_doc.personEditorsPickList}"
+																render=":main_content_form:personEditors"
+																execute="select_table" showButtons="false"
+																style="width: 500px;"
+																widgetVar="personEditorsPickListWidget">
+																<div id="title">Выбор редакторов</div>
+																<div id="modal_container" style="margin-top: 0;">
+																	<div class="searchbar">
+																		<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+																		<h:inputText id="filter_string"
+																			value="#{request_doc.personEditorsPickList.userList.filter}"
+																			style="display:block; float:left; margin-right:10px;"
+																			title="Поиск" />
+																		<h:commandButton value=" "
+																			action="#{request_doc.personEditorsPickList.userList.changePageOffset(0)}"
+																			styleClass="searchbutton">
+																			<f:ajax
+																				execute=":main_content_form:personEditorsPickList:filter_string"
+																				render=":main_content_form:personEditorsPickList:select_table :main_content_form:personEditorsPickList:modal_paging" />
+																		</h:commandButton>
+																	</div>
+																	<div class="wrap" style="height: 300px;">
+																		<div class="inner" style="height: 300px;">
+																			<e5ui:dataTable id="select_table" border="0"
+																				cellpadding="0" cellspacing="0"
+																				value="#{userList.documents}" var="row"
+																				grouping="false" width="100%">
+																				<e5ui:row
+																					onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																					styleClass="#{request_doc.personEditorsPickList.selected(row)? 'grid_row_selected': ''}" />
+																				<e5ui:column>
+																					<f:facet name="header">
+																						<p>Редакторы</p>
+																					</f:facet>
+																					<h:outputText value="#{row}"
+																						converter="PersonConverter" />
+																					<h:commandLink id="selectLink"
+																						style="display: none;"
+																						rendered="#{not request_doc.personEditorsPickList.selected(row)}"
+																						action="#{request_doc.personEditorsPickList.select(row)}" />
+																					<h:commandLink id="unselectLink"
+																						style="display: none;"
+																						rendered="#{request_doc.personEditorsPickList.selected(row)}"
+																						action="#{request_doc.personEditorsPickList.unselect(row)}" />
+																				</e5ui:column>
+																			</e5ui:dataTable>
+																		</div>
+																	</div>
+																	<div style="clear: both;">
+																		<h:panelGroup id="modal_paging">
+																			<e5ui-comp:tablePager id="pager"
+																				documentListHolder="#{request_doc.personEditorsPickList.userList}" />
+																		</h:panelGroup>
+																	</div>
+																</div>
+																<div class="e5ui-modal-bottombuttons">
+																	<h:button
+																		onclick="personEditorsPickListWidget.clickSave(); return false;"
+																		value="Выбрать" />
+																	<h:button
+																		onclick="personEditorsPickListWidget.clickClose(); return false;"
+																		value="Отмена" />
+																</div>
+															</e5ui-comp:modalWindow>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<h:panelGroup id="personEditors">
+																	<label><ui:repeat
+																			value="#{request_doc.document.personEditors}"
+																			var="element">
+																			<h:outputText value="#{element}"
+																				converter="PersonConverter" class="width" />
+																			<br />
+																		</ui:repeat> </label>
+																</h:panelGroup>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"></td>
+														<td class="second"></td>
+														<td class="third"></td>
+														<td class="fourth"></td>
+													</tr>
+												</table>
+											</fieldset>
+										</td>
+										<td class="third" colspan="2">
+											<fieldset>
+												<legend>Роли</legend>
+												<table class="form_grid">
+													<tr class="row">
+														<td class="first"><label> <span class="title">
+																	<h:outputLink title="Читатели:"
+																		onclick="roleReadersPickListWidget.clickOpen('roleReadersPickList'); return false;">
+																		На чтение:
+																	</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="roleReadersPickList"
+																modalWindowHolder="#{request_doc.roleReadersPickList}"
+																render=":main_content_form:roleReaders"
+																execute="select_table" showButtons="false"
+																style="width: 500px;"
+																widgetVar="roleReadersPickListWidget">
+																<div id="title">Выбор ролей читателей</div>
+																<div id="modal_container" style="margin-top: 0;">
+																	<div class="searchbar">
+																		<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+																		<h:inputText id="filter_string"
+																			value="#{request_doc.roleReadersPickList.roleList.filter}"
+																			style="display:block; float:left; margin-right:10px;"
+																			title="Поиск" />
+																		<h:commandButton value=" "
+																			action="#{request_doc.roleReadersPickList.roleList.changePageOffset(0)}"
+																			styleClass="searchbutton">
+																			<f:ajax
+																				execute=":main_content_form:roleReadersPickList:filter_string"
+																				render=":main_content_form:roleReadersPickList:select_table :main_content_form:roleReadersPickList:modal_paging" />
+																		</h:commandButton>
+																	</div>
+																	<div class="wrap" style="height: 300px;">
+																		<div class="inner" style="height: 300px;">
+																			<e5ui:dataTable id="select_table" border="0"
+																				cellpadding="0" cellspacing="0"
+																				value="#{roleList.documents}" var="row"
+																				grouping="false" width="100%">
+																				<e5ui:row
+																					onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																					styleClass="#{request_doc.roleReadersPickList.selected(row)? 'grid_row_selected': ''}" />
+																				<e5ui:column>
+																					<f:facet name="header">
+																						<p>Роли-читатели</p>
+																					</f:facet>
+																					<h:outputText value="#{row}"
+																						converter="RoleConverter" />
+																					<h:commandLink id="selectLink"
+																						style="display: none;"
+																						rendered="#{not request_doc.roleReadersPickList.selected(row)}"
+																						action="#{request_doc.roleReadersPickList.select(row)}" />
+																					<h:commandLink id="unselectLink"
+																						style="display: none;"
+																						rendered="#{request_doc.roleReadersPickList.selected(row)}"
+																						action="#{request_doc.roleReadersPickList.unselect(row)}" />
+																				</e5ui:column>
+																			</e5ui:dataTable>
+																		</div>
+																	</div>
+																	<div style="clear: both;">
+																		<h:panelGroup id="modal_paging">
+																			<e5ui-comp:tablePager id="pager"
+																				documentListHolder="#{request_doc.roleReadersPickList.roleList}" />
+																		</h:panelGroup>
+																	</div>
+																</div>
+																<div class="e5ui-modal-bottombuttons">
+																	<h:button
+																		onclick="roleReadersPickListWidget.clickSave(); return false;"
+																		value="Выбрать" />
+																	<h:button
+																		onclick="roleReadersPickListWidget.clickClose(); return false;"
+																		value="Отмена" />
+																</div>
+															</e5ui-comp:modalWindow>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<h:panelGroup id="roleReaders">
+																	<label><ui:repeat
+																			value="#{request_doc.document.roleReaders}"
+																			var="element">
+																			<h:outputText value="#{element}"
+																				converter="RoleConverter" class="width" />
+																			<br />
+																		</ui:repeat> </label>
+																</h:panelGroup>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"><label> <span class="title">
+																	<h:outputLink title="Редакторы:"
+																		onclick="roleEditorsPickListWidget.clickOpen('roleEditorsPickList'); return false;">
+																		На редактирование:
+																	</h:outputLink> </span> </label> <e5ui-comp:modalWindow id="roleEditorsPickList"
+																modalWindowHolder="#{request_doc.roleEditorsPickList}"
+																render=":main_content_form:roleEditors"
+																execute="select_table" showButtons="false"
+																style="width: 500px;"
+																widgetVar="roleEditorsPickListWidget">
+																<div id="title">Выбор ролей редакторов</div>
+																<div id="modal_container" style="margin-top: 0;">
+																	<div class="searchbar">
+																		<span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+																		<h:inputText id="filter_string"
+																			value="#{request_doc.roleEditorsPickList.roleList.filter}"
+																			style="display:block; float:left; margin-right:10px;"
+																			title="Поиск" />
+																		<h:commandButton value=" "
+																			action="#{request_doc.roleEditorsPickList.roleList.changePageOffset(0)}"
+																			styleClass="searchbutton">
+																			<f:ajax
+																				execute=":main_content_form:roleEditorsPickList:filter_string"
+																				render=":main_content_form:roleEditorsPickList:select_table :main_content_form:roleEditorsPickList:modal_paging" />
+																		</h:commandButton>
+																	</div>
+																	<div class="wrap" style="height: 300px;">
+																		<div class="inner" style="height: 300px;">
+																			<e5ui:dataTable id="select_table" border="0"
+																				cellpadding="0" cellspacing="0"
+																				value="#{roleList.documents}" var="row"
+																				grouping="false" width="100%">
+																				<e5ui:row
+																					onclick="e5ui_util.clickElement(this, 'selectLink$');"
+																					styleClass="#{request_doc.roleEditorsPickList.selected(row)? 'grid_row_selected': ''}" />
+																				<e5ui:column>
+																					<f:facet name="header">
+																						<p>Роли-редакторы</p>
+																					</f:facet>
+																					<h:outputText value="#{row}"
+																						converter="RoleConverter" />
+																					<h:commandLink id="selectLink"
+																						style="display: none;"
+																						rendered="#{not request_doc.roleEditorsPickList.selected(row)}"
+																						action="#{request_doc.roleEditorsPickList.select(row)}" />
+																					<h:commandLink id="unselectLink"
+																						style="display: none;"
+																						rendered="#{request_doc.roleEditorsPickList.selected(row)}"
+																						action="#{request_doc.roleEditorsPickList.unselect(row)}" />
+																				</e5ui:column>
+																			</e5ui:dataTable>
+																		</div>
+																	</div>
+																	<div style="clear: both;">
+																		<h:panelGroup id="modal_paging">
+																			<e5ui-comp:tablePager id="pager"
+																				documentListHolder="#{request_doc.roleEditorsPickList.roleList}" />
+																		</h:panelGroup>
+																	</div>
+																</div>
+																<div class="e5ui-modal-bottombuttons">
+																	<h:button
+																		onclick="roleEditorsPickListWidget.clickSave(); return false;"
+																		value="Выбрать" />
+																	<h:button
+																		onclick="roleEditorsPickListWidget.clickClose(); return false;"
+																		value="Отмена" />
+																</div>
+															</e5ui-comp:modalWindow>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<h:panelGroup id="roleEditors">
+																	<label><ui:repeat
+																			value="#{request_doc.document.roleEditors}"
+																			var="element">
+																			<h:outputText value="#{element}"
+																				converter="RoleConverter" class="width" />
+																			<br />
+																		</ui:repeat> </label>
+																</h:panelGroup>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"></td>
+														<td class="second"></td>
+														<td class="third"></td>
+														<td class="fourth"></td>
+													</tr>
+												</table>
+											</fieldset>
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"></td>
+										<td class="second"></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+
+						<h:panelGroup rendered="#{request_doc.viewState}">
+							<div class="row">
+								<table class="form_grid">
+									<tr class="row">
+										<td class="first" colspan="2">
+											<fieldset>
+												<legend>Пользователи</legend>
+												<table class="form_grid">
+													<tr class="row">
+														<td class="first"><label> <span class="title">
+																	Читатели: </span> </label>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<label><ui:repeat
+																		value="#{request_doc.document.personReaders}"
+																		var="element">
+																		<h:outputText value="#{element}"
+																			converter="PersonConverter" class="width" />
+																		<br />
+																	</ui:repeat> </label>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"><label> <span class="title">
+																	Редакторы: </span> </label>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<label><ui:repeat
+																		value="#{request_doc.document.personEditors}"
+																		var="element">
+																		<h:outputText value="#{element}"
+																			converter="PersonConverter" class="width" />
+																		<br />
+																	</ui:repeat> </label>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"></td>
+														<td class="second"></td>
+														<td class="third"></td>
+														<td class="fourth"></td>
+													</tr>
+												</table>
+											</fieldset>
+										</td>
+										<td class="third" colspan="2">
+											<fieldset>
+												<legend>Роли</legend>
+												<table class="form_grid">
+													<tr class="row">
+														<td class="first"><label> <span class="title">
+																	На чтение: </span> </label>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<label><ui:repeat
+																		value="#{request_doc.document.roleReaders}"
+																		var="element">
+																		<h:outputText value="#{element}"
+																			converter="RoleConverter" class="width" />
+																		<br />
+																	</ui:repeat> </label>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"><label><span class="title">На
+																	редактирование:</span> </label>
+														</td>
+														<td class="second" colspan="3"><div
+																style="overflow-y: scroll; height: 90px">
+																<label><ui:repeat
+																		value="#{request_doc.document.roleEditors}"
+																		var="element">
+																		<h:outputText value="#{element}"
+																			converter="RoleConverter" class="width" />
+																		<br />
+																	</ui:repeat> </label>
+															</div></td>
+													</tr>
+													<tr class="row">
+														<td class="first"></td>
+														<td class="second"></td>
+														<td class="third"></td>
+														<td class="fourth"></td>
+													</tr>
+												</table>
+											</fieldset>
+										</td>
+									</tr>
+									<tr class="row">
+										<td class="first"></td>
+										<td class="second"></td>
+										<td class="third"></td>
+										<td class="fourth"></td>
+									</tr>
+								</table>
+							</div>
+						</h:panelGroup>
+					</e5ui:tabPage>
+
+					<e5ui:tabPage headerText="#{request_doc.historyTabHeader}"
+						actionBehavior="client"
+						selected="#{request_doc.historyTabSelected}">
+						<fieldset>
+							<legend>
+								<label><span class="title">История</span> </label>
+							</legend>
+							<div class="wrap" style="width: 100%; margin: 0px">
+								<div class="inner">
+									<e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+										id="history_list" value="#{request_doc.document.historyList}"
+										var="row" grouping="false">
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Дата</p>
+											</f:facet>
+											<h:outputText value="#{row.startDate}">
+												<f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm" />
+											</h:outputText>
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Статус</p>
+											</f:facet>
+											<h:outputText value="#{row.fromStatusName}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Действие</p>
+											</f:facet>
+											<h:outputText value="#{row.actionName}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Автор</p>
+											</f:facet>
+											<h:outputText value="#{row.owner.descriptionShort}" />
+										</e5ui:column>
+										<e5ui:column>
+											<f:facet name="header">
+												<p>Комментарий</p>
+											</f:facet>
+											<h:outputText value="#{row.commentary}" />
+										</e5ui:column>
+									</e5ui:dataTable>
+								</div>
+							</div>
+						</fieldset>
+					</e5ui:tabPage>
+				</e5ui:tabPanel>
+			</e5ui:formPart>
+		</div>
+
+		<e5ui-comp:splashScreen id="splash_screen" timeout="0">
+			<f:facet name="timeoutPanel">
+				<div
+					style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+					Пожалуйста, подождите...</div>
+			</f:facet>
+		</e5ui-comp:splashScreen>
+		<script>
+			e5ui_splashScreen.startShowOnSubmit('splash_screen',
+					[ 'main_content_form' ]);
+		</script>
+		<e5ui-comp:ajaxStatusGlobal timeout="300">
+			<f:facet name="waitPanel">
+				<div
+					style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+					Пожалуйста, подождите...</div>
+			</f:facet>
+		</e5ui-comp:ajaxStatusGlobal>
+	</ui:define>
+
+	<ui:define name="footer">
+		<h:form id="file_upload_form" enctype="multipart/form-data">
+			<div style="padding-top: 10px;">
+				<fieldset>
+					<legend>Файлы</legend>
+					<div class="menu">
+						<div class="defbutton">
+							<e5ui:fileUpload id="file_upload" multiple="true"
+								actionBehavior="separate" maxFilesCount="0"
+								uploadHandler="#{fileManagement.uploadHandler}"
+								action="#{request_doc.uploadAttachments(fileManagement.details)}"
+								onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
+								onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
+								<f:ajax render=":file_upload_form" />
+							</e5ui:fileUpload>
+						</div>
+						<div class="defbutton">
+							<h:commandLink action="#{request_doc.updateAttachments()}">
+								<h:graphicImage value="#{resource['images:button-refresh.png']}" />
+				            	Обновить
+				            	<f:ajax render=":file_upload_form" />
+							</h:commandLink>
+						</div>
+					</div>
+					<div style="margin-top: 10px;">
+						<div class="wrap_main" id="table_wrap">
+							<div class="inner" id="table_inner">
+								<e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+									id="file_table" value="#{request_doc.attachments}" var="row">
+									<e5ui:column>
+										<h:outputText value="#{row.currentRevision.fileName}" />
+									</e5ui:column>
+									<e5ui:column>
+										<h:outputText value="#{row.currentRevision.version}" />
+									</e5ui:column>
+									<e5ui:column>
+										<h:outputText
+											value="#{userList.getUserDescription(row.currentRevision.authorId)}" />
+									</e5ui:column>
+									<e5ui:column>
+										<h:outputLink
+											value="#{contextPath}/component/file/download.xhtml"
+											target="_blank">
+											<h:graphicImage value="/resources/images/download_doc.gif" />
+											<f:param name="id" value="#{row.id}" />
+											Скачать
+										</h:outputLink>
+									</e5ui:column>
+									<e5ui:column>
+										<h:commandLink
+											action="#{request_doc.initializeVersionAppender(row)}">
+											<h:graphicImage value="/resources/images/CheckOut_icon.gif" />
+											<f:ajax render=":file_upload_form" />
+											Добавить версию документа
+										</h:commandLink>
+									</e5ui:column>
+									<e5ui:column>
+										<h:commandLink action="#{request_doc.initializeVersionHistory(row)}">
+											<h:graphicImage value="/resources/images/CheckOut_icon.gif" />
+											<f:ajax render=":file_upload_form" />
+											История версий
+										</h:commandLink>
+									</e5ui:column>
+									<e5ui:column>
+										<h:commandLink action="#{request_doc.deleteAttachment(row)}">
+											<h:graphicImage value="/resources/images/delete.gif" />
+											<f:ajax render=":file_upload_form" />
+											Удалить
+										</h:commandLink>
+									</e5ui:column>
+								</e5ui:dataTable>
+
+								<e5ui-comp:modalWindow id="versionAppenderModal"
+									modalWindowHolder="#{request_doc.versionAppenderModal}"
+									render=":file_upload_form" execute=":file_upload_form"
+									style="width:300px;" showButtons="false"
+									widgetVar="versionAppenderModal">
+									<div id="title">Добавление версии документа</div>
+									<div id="modal_container" style="margin-top: 0;">
+										<div>
+											Документ:
+											<h:outputText
+												value="#{request_doc.versionAppenderModal.attachment.currentRevision.fileName}" />
+										</div>
+										<div>
+											Текущая версия:
+											<h:outputText
+												value="#{request_doc.versionAppenderModal.attachment.currentRevision.version}" />
+										</div>
+										<div>
+											<h:selectBooleanCheckbox
+												value="#{request_doc.versionAppenderModal.majorVersion}" />
+											Увеличить старший номер
+										</div>
+										<div style="margin-top: 5px;">
+											<e5ui:fileUpload id="version_upload" multiple="false"
+												actionBehavior="separate" maxFilesCount="1"
+												uploadHandler="#{fileManagement.uploadHandler}"
+												action="#{request_doc.versionAppenderModal.saveAttachment}"
+												onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
+												onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
+												<f:ajax render=":file_upload_form"
+													execute=":file_upload_form:versionAppenderModal" />
+											</e5ui:fileUpload>
+										</div>
+									</div>
+									<div class="e5ui-modal-bottombuttons">
+										<h:button
+											onclick="versionAppenderModal.clickClose(); return false;"
+											value="Отмена" />
+									</div>
+								</e5ui-comp:modalWindow>
+
+								<e5ui-comp:modalWindow id="versionHistoryModal"
+									modalWindowHolder="#{request_doc.versionHistoryModal}"
+									render=":file_upload_form" execute=":file_upload_form"
+									style="width:500px;" showButtons="false"
+									widgetVar="versionHistoryModal">
+									<div id="title">История версий документа</div>
+									<div id="modal_container" style="margin-top: 0;">
+										<div class="wrap_main" id="table_wrap">
+											<div class="inner" id="table_inner">
+												<e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+															id="version_table" value="#{request_doc.versionHistoryModal.versionList}" var="row">
+													<e5ui:column style="min-width:8em;">
+														<h:outputText value="#{row.fileName eq null? request_doc.versionHistoryModal.attachment.fileName: row.fileName}" />
+													</e5ui:column>
+													<e5ui:column style="min-width:5em;">
+														<h:outputText value="#{row.version}" />
+													</e5ui:column>
+													<e5ui:column style="min-width:12em;">
+														<h:outputText value="#{userList.getUserDescription(row.authorId eq 0? request_doc.versionHistoryModal.attachment.authorId: row.authorId)}" />
+													</e5ui:column>
+													<e5ui:column style="min-width:7em;">
+														<h:outputLink value="#{contextPath}/component/file/download.xhtml" target="_blank">
+															<h:graphicImage value="/resources/images/download_doc.gif" />
+															<f:param name="id" value="#{request_doc.versionHistoryModal.attachment.id}" />
+															<f:param name="revision" value="#{row.version}" />
+															Скачать
+														</h:outputLink>
+													</e5ui:column>
+												</e5ui:dataTable>
+											</div>
+										</div>
+									</div>
+									<div class="e5ui-modal-bottombuttons">
+										<h:button onclick="versionHistoryModal.clickClose(); return false;" value="Закрыть" />
+									</div>
+								</e5ui-comp:modalWindow>
+							</div>
+						</div>
+					</div>
+				</fieldset>
+			</div>
+			<e5ui-comp:splashScreen id="splash_screen_2"
+				widgetVar="splash_screen_2" timeout="0">
+				<f:facet name="timeoutPanel">
+					<div
+						style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+						Пожалуйста, подождите...</div>
+				</f:facet>
+			</e5ui-comp:splashScreen>
+			<script>
+				e5ui_splashScreen.startShowOnSubmit('splash_screen_2',
+						[ 'file_upload_form' ]);
+			</script>
+		</h:form>
+
+		<e5ui:multiMarker id="main_form_marker" rendered="true"
+			hintWindowStyleClass="e5ui-marker-hintWindow"
+			hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
+			hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
+			hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
+			hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
+			displayMode="window">
+			<h:button
+				onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
+				value="ОК" />
+		</e5ui:multiMarker>
+		<h:outputStylesheet library="css" name="datatable.css" />
+		<h:outputStylesheet library="css" name="modalWindow.css" />
+		<h:outputStylesheet library="css" name="multiMarker.css" />
+		<h:outputStylesheet library="css" name="tabPanel.css" />
+	</ui:define>
+
+</ui:composition>
+
+</html>

@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="propertyConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc/jdbc.properties</value>
+                <value>classpath:alfresco.properties</value>
+                <value>classpath:workflow.properties</value>
+                <value>classpath:ldap.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ldapImportService" class="ru.efive.dms.util.LDAPImportService">
+        <property name="ldapAddressName" value="${ldap.address.name}"/>
+        <property name="ldapAddressValue" value="${ldap.address.value}"/>
+        <property name="loginName" value="${ldap.login.name}"/>
+        <property name="loginValue" value="${ldap.address.value}"/>
+        <property name="passwordName" value="${ldap.password.name}"/>
+        <property name="passwordValue" value="${ldap.password.value}"/>
+        <property name="filterValue" value="${ldap.filter.value}"/>
+        <property name="baseValue" value="${ldap.base.value}"/>
+    </bean>
+
+    <bean id="alfrescoDao" class="ru.efive.dao.alfresco.AlfrescoDAO">
+        <property name="serverUrl" value="${alfresco.server.url}"/>
+        <property name="login" value="${alfresco.server.login}"/>
+        <property name="password" value="${alfresco.server.password}"/>
+        <property name="path" value="${alfresco.server.path}"/>
+    </bean>
+
+    <bean id="mailSettings" class="ru.efive.wf.core.MailSettings">
+        <property name="jndi" value="${jndi.server}"/>
+        <property name="smtpHost" value="${smtp.server}"/>
+        <property name="smtpUser" value="${smtp.user}"/>
+        <property name="smptPassword" value="${smtp.password}"/>
+        <property name="smtpFlag" value="${smtp.flag}"/>
+        <property name="testServer" value="${mail.test}"/>
+        <property name="sendTo" value="${mail.sendTo}"/>
+        <property name="sendFrom" value="${mail.sendFrom}"/>
+        <property name="smtpPort" value="${smtp.port}"/>
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="defaultAutoCommit" value="true"/>
+        <property name="maxWait" value="-1"/>
+        <property name="maxIdle" value="10"/>
+        <property name="maxActive" value="100"/>
+        <property name="removeAbandoned" value="true"/>
+        <property name="logAbandoned" value="true"/>
+        <property name="removeAbandonedTimeout" value="600"/>
+        <property name="initialSize" value="10"/>
+    </bean>
+
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <!-- "Abstract" @MappedSuperclass entities -->
+                <value>ru.efive.sql.entity.AbstractEntity</value>
+                <value>ru.efive.sql.entity.IdentifiedEntity</value>
+                <!-- /"Abstract" @MappedSuperclass entities -->
+
+                <value>ru.efive.sql.entity.user.User</value>
+                <value>ru.efive.sql.entity.user.Role</value>
+                <value>ru.efive.sql.entity.user.Permission</value>
+                <value>ru.efive.sql.entity.user.Group</value>
+                <value>ru.efive.sql.entity.enums.GroupType</value>
+                <value>ru.efive.sql.entity.user.UserAccessLevel</value>
+
+                <!-- documents -->
+                <value>ru.efive.sql.entity.document.Document</value>
+
+                <value>ru.efive.dms.data.IncomingDocument</value>
+                <value>ru.efive.dms.data.InternalDocument</value>
+                <value>ru.efive.dms.data.OutgoingDocument</value>
+                <value>ru.efive.dms.data.RequestDocument</value>
+                <value>ru.efive.dms.data.PaperCopyDocument</value>
+                <value>ru.efive.dms.data.ScanCopyDocument</value>
+                <value>ru.efive.dms.data.OfficeKeepingFile</value>
+                <value>ru.efive.dms.data.OfficeKeepingVolume</value>
+                <value>ru.efive.dms.data.Task</value>
+                <value>ru.efive.dms.data.RecordBookDocument</value>
+                <value>ru.efive.dms.data.Person</value>
+                <value>ru.efive.dms.data.Nomenclature</value>
+                <value>ru.efive.dms.data.DeliveryType</value>
+                <value>ru.efive.dms.data.SenderType</value>
+                <value>ru.efive.dms.data.Region</value>
+                <value>ru.efive.dms.data.DocumentForm</value>
+                <value>ru.efive.crm.data.Contragent</value>
+                <value>ru.efive.crm.data.Contact</value>
+                <value>ru.efive.crm.data.ContragentNomenclature</value>
+                <value>ru.efive.dms.data.Numerator</value>
+
+                <value>ru.efive.dms.data.ReportTemplate</value>
+
+                <!-- /documents -->
+
+                <!-- workflow -->
+                <value>ru.efive.dms.data.HistoryEntry</value>
+                <value>ru.efive.wf.core.data.impl.RouteTemplate</value>
+                <value>ru.efive.wf.core.data.HumanTaskTreeNode</value>
+                <value>ru.efive.wf.core.data.HumanTaskTree</value>
+                <value>ru.efive.wf.core.data.HumanTask</value>
+                <!-- /workflow -->
+
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="format_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
+                <prop key="hibernate.default_batch_fetch_size">10</prop>
+                <prop key="hibernate.max_fetch_depth">2</prop>
+                <prop key="hibernate.generate_statistics">false</prop>
+                <prop key="hibernate.jdbc.use_get_generated_keys">true</prop>
+                <prop key="hibernate.cache.use_query_cache">true</prop>
+                <prop key="hibernate.jdbc.fetch_size">10</prop>
+                <prop key="hibernate.jdbc.batch_size">10</prop>
+                <prop key="hibernate.dbcp.whenExhaustedAction">2</prop>
+                <prop key="hibernate.connection.autocommit">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
+
+    <!-- Data access object: Hibernate implementation. -->
+
+    <!-- Transaction manager for a single Hibernate SessionFactory (alternative
+         to JTA) -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="transactionInterceptor"
+          class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="transactionAttributes">
+            <props>
+                <prop key="save">PROPAGATION_REQUIRED</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="userDao" class="ru.efive.sql.dao.user.UserDAOHibernate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="userDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="userDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="roleDao" class="ru.efive.sql.dao.user.RoleDAOHibernate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="roleDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="roleDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="groupDao" class="ru.efive.sql.dao.user.GroupDAOHibernate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="groupDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="groupDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="incomingDao" class="ru.efive.dms.dao.IncomingDocumentDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="incomingDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="incomingDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="numeratorDao" class="ru.efive.dms.dao.NumeratorDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="numeratorDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="numeratorDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="scanDao" class="ru.efive.dms.dao.ScanCopyDocumentDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="scanDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="scanDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="internalDao" class="ru.efive.dms.dao.InternalDocumentDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="internalDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="internalDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="outgoingDao" class="ru.efive.dms.dao.OutgoingDocumentDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="outgoingDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="outgoingDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="paperCopyDao" class="ru.efive.dms.dao.PaperCopyDocumentDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="paperCopyDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="paperCopyDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="requestDao" class="ru.efive.dms.dao.RequestDocumentDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="requestDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="requestDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="taskDao" class="ru.efive.dms.dao.TaskDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="taskDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="taskDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="recordBookDao" class="ru.efive.dms.dao.RecordBookDocumentDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="recordBookDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="recordBookDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="officeKeepingFileDao" class="ru.efive.dms.dao.OfficeKeepingFileDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="OfficeKeepingFileDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="officeKeepingFileDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="officeKeepingVolumeDao" class="ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="OfficeKeepingVolumeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="officeKeepingVolumeDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="documentFormDao" class="ru.efive.dms.dao.DocumentFormDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="documentFormDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="documentFormDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="userAccessLevelDao" class="ru.efive.sql.dao.user.UserAccessLevelDAO">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="userAccessLevelDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="userAccessLevelDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="nomenclatureDao" class="ru.efive.dms.dao.NomenclatureDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="nomenclatureDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="nomenclatureDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="deliveryTypeDao" class="ru.efive.dms.dao.DeliveryTypeDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="deliveryTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="deliveryTypeDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="groupTypeDao" class="ru.efive.sql.dao.user.GroupTypeDAO">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="groupTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="groupTypeDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="senderTypeDao" class="ru.efive.dms.dao.SenderTypeDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="senderTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="senderTypeDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="regionDao" class="ru.efive.dms.dao.RegionDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="RegionDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="regionDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contragentDao" class="ru.efive.crm.dao.ContragentDAOHibernate">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="contragentDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="contragentDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="contragentNomenclatureDao" class="ru.efive.crm.dao.NomenclatureDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="contragentNomenclatureDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="contragentNomenclatureDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="historyDao" class="ru.efive.dms.dao.HistoryDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="historyDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="historyDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="engineDao" class="ru.efive.wf.core.dao.EngineDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="engineDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="engineDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="reportDao" class="ru.efive.dms.dao.ReportDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="reportDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="reportDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+
+</beans>

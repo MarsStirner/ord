@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+    <ui:define name="running_head">
+        <h:outputScript library="js" name="forms.js" target="head"/>
+    </ui:define>
+
+    <ui:define name="header_top">
+        <div id="viewtitle">Внутренние документы по номеру</div>
+    </ui:define>
+
+    <ui:define name="header_buttons">
+        <div class="defbutton">
+            <h:outputLink value="#{contextPath}/component/internal/internal_document.xhtml" target="_blank">
+                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
+                Новый документ
+                <f:param name="docAction" value="create"/>
+            </h:outputLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{internal_documents.refresh()}">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                Обновить
+                <e5ui:formPartTarget formPart="main_table_part"/>
+            </h:commandLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="content">
+        <script type="text/javascript">
+            document.ondblclick = function DoubleClick(evt) {
+                if (window.getSelection)
+                    window.getSelection().removeAllRanges();
+                else if (document.selection)
+                    document.selection.empty();
+            }
+        </script>
+        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+        <h:outputScript>
+            function goToDocument(id) {
+            if (id != 0) {
+            window.open('#{facesContext.externalContext.requestContextPath}/component/internal/internal_document.xhtml?docId=' + id, '_blank')
+            }
+            }
+        </h:outputScript>
+        <e5ui:formPart id="main_table_part">
+            <div id="main_table">
+                <div id="searchbar" class="main_searchbar">
+                    <h:inputText id="filter_string" value="#{internal_documents.filter}"
+                                 style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
+                    <h:commandButton value=" " action="#{internal_documents.changePageOffset(0)}"
+                                     styleClass="searchbutton">
+                        <f:ajax execute=":main_content_form:filter_string"
+                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
+                    </h:commandButton>
+
+                    <h:outputLink
+                            target="_blank"
+                            value="#{contextPath}/component/internal/internal_document_search_form.xhtml"
+                            title="Перейти к форме расширенного поиска"
+                            style="margin: 0pt 20px;">
+                        Расширенный поиск
+                    </h:outputLink>
+                </div>
+                <div class="wrap_main" id="table_wrap">
+                    <div class="inner" id="table_inner">
+                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%"
+                                        value="#{internal_documents.getDocuments()}" var="row" id="main_data_tbl">
+                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:column style="min-width:12em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{internal_documents.sort('registrationNumber')}">
+                                        Номер
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <b><h:outputText value="#{row.registrationNumber}"/></b>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:8em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{internal_documents.sort('signatureDate')}">
+                                        Дата подписания
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText value="#{row.signatureDate}">
+                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:10em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{internal_documents.sort('initiator')}">
+                                        Автор
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <b><h:outputText value="#{row.initiator}" converter="PersonConverter"/></b>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:7em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{internal_documents.sort('form')}">
+                                        Вид документа
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <b><h:outputText value="#{row.form}"/></b>
+                            </e5ui:column>
+
+                            <e5ui:column style="min-width:10em">
+                                <f:facet name="header">
+                                    <h:commandLink action="#{internal_documents.sort('status_id')}">
+                                        Статус
+                                        <f:ajax render="main_data_tbl"/>
+                                    </h:commandLink>
+                                </f:facet>
+                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                            </e5ui:column>
+                            <e5ui:column style="min-width:12em">
+                                <f:facet name="header">
+                                    <p>Краткое содержание</p>
+                                </f:facet>
+                                <h:outputText value="#{row.shortDescription}"/>
+                            </e5ui:column>
+                        </e5ui:dataTable>
+                    </div>
+                </div>
+                <div id="table_paging">
+                    <h:panelGroup id="main_data_paging">
+                        <e5ui-comp:tablePager documentListHolder="#{internal_documents}" style="display:inline;"/>
+                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{internal_documents}"
+                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                    </h:panelGroup>
+                </div>
+            </div>
+        </e5ui:formPart>
+    </ui:define>
+
+</ui:composition>
+
+</html>

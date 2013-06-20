@@ -1,0 +1,719 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+<ui:define name="running_head">
+
+    <e5ui-comp:userSessionUpdate rendered="true" interval="300"/>
+    <h:outputScript library="js" name="datepicker_init_ru.js"
+                    target="head"/>
+    <e5ui-comp:outputUtilScript/>
+</ui:define>
+
+<ui:define name="header">
+    <div id="form_header">
+        <div class="actionbar">
+            <div class="menu">
+                <div class="defbutton">
+                    <h:outputLink value="#{contextPath}/component/in/in_documents.xhtml">
+                        <h:graphicImage value="#{resource['images:home.png']}"/>
+                    </h:outputLink>
+                </div>
+                <div class="defbutton">
+                    <h:commandLink action="#{in_search_documents.search}"
+                                   styleClass="searchbutton">
+                        <h:graphicImage value="#{resource['images:button-search.png']}"/>
+                        Найти
+                    </h:commandLink>
+                </div>
+                <div class="defbutton">
+                    <h:commandLink action="#{in_search_documents.clear}"
+                                   styleClass="searchbutton">
+                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                        Очистить
+                    </h:commandLink>
+                </div>
+            </div>
+        </div>
+    </div>
+</ui:define>
+
+<ui:define name="left_menu"></ui:define>
+
+<ui:define name="content">
+<div id="header_content">
+    <h:panelGroup rendered="true">
+        <div class="name">Форма поиска</div>
+    </h:panelGroup>
+</div>
+
+<div class="main_content">
+<e5ui:formPart id="editFormPart">
+<!-- <e5ui:tabPanel id="content_table">
+                    <e5ui:tabPage headerText="Реквизиты" actionBehavior="submit"
+                        selected="true"> -->
+<h:panelGroup rendered="true">
+<div class="row">
+<table class="form_grid">
+<tr class="row">
+    <td class="first"><label for="main_content_form:statusId">
+        <span class="title">Статус документа: </span>
+    </label></td>
+    <td class="second" colspan="3"><h:selectOneMenu
+            id="statusId" value="#{in_search_documents.statusId}">
+        <f:selectItem itemLabel="" itemValue=""/>
+        <f:selectItem itemLabel="Зарегистрирован" itemValue="2"/>
+        <f:selectItem itemLabel="На исполнении" itemValue="80"/>
+        <f:selectItem itemLabel="Исполнен" itemValue="90"/>
+        <f:selectItem itemLabel="В архиве" itemValue="100"/>
+        <f:selectItem itemLabel="Изъят из архива" itemValue="110"/>
+        <f:selectItem itemLabel="Документ уничтожен" itemValue="120"/>
+    </h:selectOneMenu></td>
+</tr>
+
+<tr class="row">
+    <td class="first"><label> <span class="title">
+											<h:outputLink title="Автор"
+                                                          onclick="authorSelectModalVar.clickOpen('authorSelectModal'); return false;">
+                                                Автор
+                                            </h:outputLink>
+									</span>
+    </label> <e5ui-comp:modalWindow id="authorSelectModal"
+                                    modalWindowHolder="#{in_search_documents.authorSelectModal}"
+                                    render=":main_content_form:author" execute="select_table"
+                                    showButtons="false" style="width: 500px;"
+                                    widgetVar="authorSelectModalVar">
+        <div id="title">Выбор автора</div>
+        <div id="modal_container" style="margin-top: 0;">
+            <div class="searchbar">
+                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                <h:inputText id="filter_string"
+                             value="#{in_search_documents.authorSelectModal.userList.filter}"
+                             style="display:block; float:left; margin-right:10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" "
+                                 action="#{in_search_documents.authorSelectModal.userList.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax
+                            execute=":main_content_form:authorSelectModal:filter_string"
+                            render=":main_content_form:authorSelectModal:ajaxModal :main_content_form:authorSelectModal:authors_modal_paging"/>
+                </h:commandButton>
+            </div>
+            <div class="wrap" style="height: 300px;">
+                <div class="inner" style="height: 300px;">
+                    <e5ui:dataTable id="select_table" border="0"
+                                    cellpadding="0" cellspacing="0"
+                                    value="#{in_search_documents.authorSelectModal.userList.getEmployes()}"
+                                    var="row" grouping="false" width="100%">
+                        <e5ui:row
+                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                styleClass="#{in_search_documents.authorSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Автор</p>
+                            </f:facet>
+                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                            <h:commandLink id="selectLink" style="display: none;"
+                                           rendered="#{not in_search_documents.authorSelectModal.selected(row)}"
+                                           action="#{in_search_documents.authorSelectModal.select(row)}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
+                </div>
+            </div>
+            <div style="clear: both;">
+                <h:panelGroup id="authors_modal_paging">
+                    <e5ui-comp:tablePager id="authors_pager"
+                                          documentListHolder="#{in_search_documents.authorSelectModal.userList}"/>
+                </h:panelGroup>
+            </div>
+        </div>
+        <div class="e5ui-modal-bottombuttons">
+            <h:button
+                    onclick="authorSelectModalVar.clickSave(); return false;"
+                    value="Выбрать"/>
+            <h:button
+                    onclick="authorSelectModalVar.clickClose(); return false;"
+                    value="Отмена"/>
+        </div>
+    </e5ui-comp:modalWindow></td>
+    <td class="second" colspan="3"><h:outputText id="author"
+                                                 value="#{in_search_documents.author}"
+                                                 converter="PersonConverter" class="wide"/></td>
+</tr>
+<tr class="row">
+    <td class="first"><label> <span class="title">
+											<h:outputLink
+                                                    onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
+                                                Руководитель
+                                            </h:outputLink>
+									</span>
+    </label> <e5ui-comp:modalWindow id="controllerSelectModal"
+                                    modalWindowHolder="#{in_search_documents.controllerSelectModal}"
+                                    render=":main_content_form:controller" execute="select_table"
+                                    showButtons="false" style="width: 500px;"
+                                    widgetVar="controllerSelectModalVar">
+        <div id="title">Выбор руководителя</div>
+        <div id="modal_container" style="margin-top: 0;">
+            <div class="wrap" style="height: 300px;">
+                <div class="inner" style="height: 300px;">
+                    <e5ui:dataTable id="select_table" border="0"
+                                    cellpadding="0" cellspacing="0"
+                                    value="#{staffManagement.findGroupByAlias('TopManagers').membersListWithEmptyUser}"
+                                    var="row" grouping="false" width="100%">
+                        <e5ui:row
+                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                styleClass="#{in_search_documents.controllerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Руководитель</p>
+                            </f:facet>
+                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                            <h:commandLink id="selectLink" style="display: none;"
+                                           rendered="#{not in_search_documents.controllerSelectModal.selected(row)}"
+                                           action="#{in_search_documents.controllerSelectModal.select(row)}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
+                </div>
+            </div>
+        </div>
+        <div class="e5ui-modal-bottombuttons">
+            <h:button
+                    onclick="controllerSelectModalVar.clickSave(); return false;"
+                    value="Выбрать"/>
+            <h:button
+                    onclick="controllerSelectModalVar.clickClose(); return false;"
+                    value="Отмена"/>
+        </div>
+    </e5ui-comp:modalWindow></td>
+    <td class="second" colspan="3"><h:outputText
+            id="controller" value="#{in_search_documents.controller}"
+            converter="PersonConverter" class="wide"/></td>
+</tr>
+<tr class="row">
+    <td class="first"><label for="main_content_form:form">
+        <span class="title">Вид документа: </span>
+    </label></td>
+    <td class="second" colspan="3"><h:selectOneMenu id="form"
+                                                    value="#{in_search_documents.form}"
+                                                    converter="IncomingDocumentFormConverter"
+                                                    style="font-size:10pt;">
+        <f:selectItems
+                value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Входящие документы')}"/>
+    </h:selectOneMenu></td>
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:registrationNumber"> <span
+            class="title">Регистрационный номер</span>
+    </label></td>
+    <td class="second" colspan="3"><h:inputText
+            id="registrationNumber"
+            value="#{in_search_documents.registrationNumber}">
+    </h:inputText></td>
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:startCreationDate:dateEditor"> <span
+            class="title">Дата создания от</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="startCreationDate"
+            value="#{in_search_documents.startCreationDate}" lang="ru"/>
+    </td>
+    <td class="first"><label
+            for="main_content_form:endCreationDate:dateEditor"> <span
+            class="title">до</span>
+    </label></td>
+    <td class="second"><e5ui:marker for="endCreationDate"/> <e5ui-comp:inputDate
+            id="endCreationDate"
+            value="#{in_search_documents.endCreationDate}" lang="ru"/> <e5ui:marker
+            for="endCreationDate"/></td>
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:startRegistrationDate:dateEditor">
+        <span class="title">Дата регистрации от</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="startRegistrationDate"
+            value="#{in_search_documents.startRegistrationDate}" lang="ru"/>
+    </td>
+    <td class="first"><label
+            for="main_content_form:endRegistrationDate:dateEditor">
+        <span class="title">до</span>
+    </label></td>
+    <td class="second"><e5ui:marker for="endRegistrationDate"/>
+        <e5ui-comp:inputDate id="endRegistrationDate"
+                             value="#{in_search_documents.endRegistrationDate}" lang="ru"/>
+        <e5ui:marker for="endRegistrationDate"/></td>
+
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:startDeliveryDate:dateEditor"> <span
+            class="title">Дата поступления от</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="startDeliveryDate"
+            value="#{in_search_documents.startDeliveryDate}" lang="ru"/>
+        <e5ui:marker for="startDeliveryDate"/></td>
+    <td class="first"><label
+            for="main_content_form:endDeliveryDate:dateEditor"> <span
+            class="title">до</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="endDeliveryDate"
+            value="#{in_search_documents.endDeliveryDate}" lang="ru"/> <e5ui:marker
+            for="endDeliveryDate"/></td>
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:startExecutionDate:dateEditor">
+        <span class="title">Срок исполнения от</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="startExecutionDate"
+            value="#{in_search_documents.startExecutionDate}" lang="ru"/>
+    </td>
+    <td class="first"><label
+            for="main_content_form:endExecutionDate:dateEditor"> <span
+            class="title">до</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="endExecutionDate"
+            value="#{in_search_documents.endExecutionDate}" lang="ru"/>
+    </td>
+
+</tr>
+
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:startReceivedDocDate"> <span
+            class="title">Дата поступившего от</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="startReceivedDocDate"
+            value="#{in_search_documents.startReceivedDocumentDate}"
+            lang="ru"/></td>
+    <td class="first"><label
+            for="main_content_form:endReceivedDocDate"> <span
+            class="title">до</span>
+    </label></td>
+    <td class="second"><e5ui-comp:inputDate
+            id="endReceivedDocDate"
+            value="#{in_search_documents.endReceivedDocumentDate}"
+            lang="ru"/></td>
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:deliveryType"> <span
+            class="title">Тип доставки: </span>
+    </label></td>
+    <td class="second" colspan="3"><h:selectOneMenu
+            id="deliveryType" value="#{in_search_documents.deliveryType}"
+            converter="DeliveryTypeConverter" style="font-size:10pt;">
+        <f:selectItems
+                value="#{dictionaryManagement.deliveryTypesWithEmptyValue}"/>
+    </h:selectOneMenu></td>
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:receivedDocNumber"> <span
+            class="title">Номер поступившего</span>
+    </label></td>
+    <td class="second" colspan="3"><h:inputText
+            id="receivedDocNumber"
+            value="#{in_search_documents.receivedDocumentNumber}">
+        <!-- <f:ajax render="main_content_form:receivedDocNumber" /> -->
+    </h:inputText></td>
+</tr>
+<tr class="row">
+    <td class="first"><label> <span class="title">
+											<h:outputLink
+                                                    onclick="contragentSelectModalVar.clickOpen('contragentSelectModal'); return false;">
+                                                Корреспондент
+                                            </h:outputLink>
+									</span>
+    </label> <e5ui-comp:modalWindow id="contragentSelectModal"
+                                    modalWindowHolder="#{in_search_documents.contragentSelectModal}"
+                                    render=":main_content_form:contragent" execute="select_table"
+                                    showButtons="false" style="width: 500px;"
+                                    widgetVar="contragentSelectModalVar">
+        <div id="title">Выбор корреспондента</div>
+        <div id="modal_container" style="margin-top: 0;">
+            <div class="searchbar">
+                <h:inputText id="filter_string"
+                             value="#{in_search_documents.contragentSelectModal.contragentList.filter}"
+                             style="display:block; float:left; margin-right:10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" "
+                                 action="#{in_search_documents.contragentSelectModal.contragentList.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax
+                            execute=":main_content_form:contragentSelectModal:filter_string"
+                            render=":main_content_form:contragentSelectModal:ajaxModal :main_content_form:contragentSelectModal:modal_paging"/>
+                </h:commandButton>
+            </div>
+            <div class="wrap" style="height: 300px;">
+                <div class="inner" style="height: 300px;">
+                    <e5ui:dataTable id="select_table" border="0"
+                                    cellpadding="0" cellspacing="0"
+                                    value="#{in_search_documents.contragentSelectModal.contragentList.documents}"
+                                    var="row" grouping="false" width="100%">
+                        <e5ui:row
+                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                styleClass="#{in_search_documents.contragentSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Корреспондент</p>
+                            </f:facet>
+                            <h:outputText value="#{row}"
+                                          converter="ContragentConverter"/>
+                            <h:commandLink id="selectLink" style="display: none;"
+                                           rendered="#{not in_search_documents.contragentSelectModal.selected(row)}"
+                                           action="#{in_search_documents.contragentSelectModal.select(row)}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
+                </div>
+            </div>
+            <div style="clear: both;">
+                <h:panelGroup id="modal_paging">
+                    <e5ui-comp:tablePager id="pager"
+                                          documentListHolder="#{in_search_documents.contragentSelectModal.contragentList}"/>
+                </h:panelGroup>
+            </div>
+        </div>
+        <div class="e5ui-modal-bottombuttons">
+            <h:button
+                    onclick="contragentSelectModalVar.clickSave(); return false;"
+                    value="Выбрать"/>
+            <h:button
+                    onclick="contragentSelectModalVar.clickClose(); return false;"
+                    value="Отмена"/>
+        </div>
+    </e5ui-comp:modalWindow></td>
+    <td class="second" colspan="3"><h:outputText
+            id="contragent" value="#{in_search_documents.contragent}"
+            converter="ContragentConverter" class="wide"/></td>
+</tr>
+<tr class="row">
+    <td class="first"><label> <span class="title">
+											<h:outputLink title="Исполнители"
+                                                          onclick="executorsSelectModalVar.clickOpen('executorsSelectModal'); return false;">
+                                                Исполнители
+                                            </h:outputLink>
+									</span>
+    </label> <e5ui-comp:modalWindow id="executorsSelectModal"
+                                    modalWindowHolder="#{in_search_documents.executorsSelectModal}"
+                                    render=":main_content_form:executors" execute="select_table"
+                                    showButtons="false" style="width: 500px;"
+                                    widgetVar="executorsSelectModalVar">
+        <div id="title">Выбор исполнителей</div>
+        <div id="modal_container" style="margin-top: 0;">
+            <div class="searchbar">
+                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                <h:inputText id="filter_string"
+                             value="#{in_search_documents.executorsSelectModal.userList.filter}"
+                             style="display:block; float:left; margin-right:10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" "
+                                 action="#{in_search_documents.executorsSelectModal.userList.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax
+                            execute=":main_content_form:executorsSelectModal:filter_string"
+                            render=":main_content_form:executorsSelectModal:ajaxModal :main_content_form:executorsSelectModal:executors_modal_paging"/>
+                </h:commandButton>
+            </div>
+            <div class="wrap" style="height: 300px;">
+                <div class="inner" style="height: 300px;">
+                    <e5ui:dataTable id="select_table" border="0"
+                                    cellpadding="0" cellspacing="0"
+                                    value="#{in_search_documents.executorsSelectModal.userList.getEmployes()}"
+                                    var="row" grouping="false" width="100%">
+                        <e5ui:row
+                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                styleClass="#{in_search_documents.executorsSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Исполнители</p>
+                            </f:facet>
+                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                            <h:commandLink id="selectLink" style="display: none;"
+                                           rendered="#{not in_search_documents.executorsSelectModal.selected(row)}"
+                                           action="#{in_search_documents.executorsSelectModal.select(row)}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
+                </div>
+            </div>
+            <div style="clear: both;">
+                <h:panelGroup id="executors_modal_paging">
+                    <e5ui-comp:tablePager id="executors_pager"
+                                          documentListHolder="#{in_search_documents.executorsSelectModal.userList}"/>
+                </h:panelGroup>
+            </div>
+        </div>
+        <div class="e5ui-modal-bottombuttons">
+            <h:button
+                    onclick="executorsSelectModalVar.clickSave(); return false;"
+                    value="Выбрать"/>
+            <h:button
+                    onclick="executorsSelectModalVar.clickClose(); return false;"
+                    value="Отмена"/>
+        </div>
+    </e5ui-comp:modalWindow></td>
+    <td class="second" colspan="3">
+        <div class="width"
+             style="overflow-y: scroll; height: 60px">
+            <h:panelGroup id="executors">
+                <ui:repeat value="#{in_search_documents.executors}"
+                           var="element">
+                    <h:outputText value="#{element}" converter="PersonConverter"
+                                  class="width"/>
+                    <br/>
+                </ui:repeat>
+            </h:panelGroup>
+        </div>
+    </td>
+</tr>
+<tr class="row">
+    <td class="first"><label> <span class="title">
+											<h:outputLink title="Адресаты:"
+                                                          onclick="userListSelectModalVar.clickOpen('recipientUsersSelectModal'); return false;">
+                                                Адресаты
+                                            </h:outputLink>
+									</span>
+    </label> <e5ui-comp:modalWindow id="recipientUsersSelectModal"
+                                    modalWindowHolder="#{in_search_documents.recipientUsersSelectModal}"
+                                    render=":main_content_form:recipients" execute="select_table"
+                                    showButtons="false" style="width: 500px;"
+                                    widgetVar="userListSelectModalVar">
+        <div id="title">Выбор адресатов</div>
+        <div id="modal_container" style="margin-top: 0;">
+            <div class="searchbar">
+                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                <h:inputText id="filter_string"
+                             value="#{in_search_documents.recipientUsersSelectModal.userList.filter}"
+                             style="display:block; float:left; margin-right:10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" "
+                                 action="#{in_search_documents.recipientUsersSelectModal.userList.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax
+                            execute=":main_content_form:recipientUsersSelectModal:filter_string"
+                            render=":main_content_form:recipientUsersSelectModal:ajaxModal :main_content_form:recipientUsersSelectModal:modal_paging"/>
+                </h:commandButton>
+            </div>
+            <div class="wrap" style="height: 300px;">
+                <div class="inner" style="height: 300px;">
+                    <e5ui:dataTable id="select_table" border="0"
+                                    cellpadding="0" cellspacing="0"
+                                    value="#{userList.getEmployes()}" var="row"
+                                    grouping="false" width="100%">
+                        <e5ui:row
+                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                styleClass="#{in_search_documents.recipientUsersSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Адресаты</p>
+                            </f:facet>
+                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                            <h:commandLink id="selectLink" style="display: none;"
+                                           rendered="#{not in_search_documents.recipientUsersSelectModal.selected(row)}"
+                                           action="#{in_search_documents.recipientUsersSelectModal.select(row)}"/>
+                            <h:commandLink id="unselectLink" style="display: none;"
+                                           rendered="#{in_search_documents.recipientUsersSelectModal.selected(row)}"
+                                           action="#{in_search_documents.recipientUsersSelectModal.unselect(row)}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
+                </div>
+            </div>
+            <div style="clear: both;">
+                <h:panelGroup id="modal_paging">
+                    <e5ui-comp:tablePager id="pager"
+                                          documentListHolder="#{in_search_documents.recipientUsersSelectModal.userList}"/>
+                </h:panelGroup>
+            </div>
+        </div>
+        <div class="e5ui-modal-bottombuttons">
+            <h:button
+                    onclick="userListSelectModalVar.clickSave(); return false;"
+                    value="Выбрать"/>
+            <h:button
+                    onclick="userListSelectModalVar.clickClose(); return false;"
+                    value="Отмена"/>
+        </div>
+    </e5ui-comp:modalWindow></td>
+    <td class="second" colspan="3">
+        <div
+                style="overflow-y: scroll; height: 60px">
+            <h:panelGroup id="recipients">
+                <label><ui:repeat
+                        value="#{in_search_documents.recipientUsers}" var="element">
+                    <h:outputText value="#{element}"
+                                  converter="PersonConverter" class="width"/>
+                    <br/>
+                </ui:repeat> </label>
+            </h:panelGroup>
+        </div>
+    </td>
+</tr>
+<tr class="row">
+    <td class="first"><label> <span class="title">
+											<h:outputLink title="Том дела"
+                                                          onclick="officeKeepingVolumeSelectModalVar.clickOpen('officeKeepingVolumeSelectModal'); return false;">
+                                                Том дела
+                                            </h:outputLink>
+									</span>
+    </label> <e5ui-comp:modalWindow id="officeKeepingVolumeSelectModal"
+                                    modalWindowHolder="#{in_search_documents.officeKeepingVolumeSelectModal}"
+                                    render=":main_content_form:office_keeping_Volume"
+                                    execute="select_table" showButtons="false"
+                                    style="width: 500px;"
+                                    widgetVar="officeKeepingVolumeSelectModalVar">
+        <div id="title">Выбор тома дела</div>
+        <div id="modal_container" style="margin-top: 0;">
+            <div class="searchbar">
+                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                <h:inputText id="filter_string"
+                             value="#{in_search_documents.officeKeepingVolumeSelectModal.officeKeepingVolumes.filter}"
+                             style="display:block; float:left; margin-right:10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" "
+                                 action="#{in_search_documents.officeKeepingVolumeSelectModal.officeKeepingVolumes.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax
+                            execute=":main_content_form:officeKeepingVolumeSelectModal:filter_string"
+                            render=":main_content_form:officeKeepingVolumeSelectModal:ajaxModal :main_content_form:officeKeepingVolumeSelectModal:office_keeping_volume_modal_paging"/>
+                </h:commandButton>
+            </div>
+            <div class="wrap" style="height: 300px;">
+                <div class="inner" style="height: 300px;">
+                    <e5ui:dataTable id="select_table" border="0"
+                                    cellpadding="0" cellspacing="0"
+                                    value="#{in_search_documents.officeKeepingVolumeSelectModal.officeKeepingVolumes.documents}"
+                                    var="row" grouping="false" width="100%">
+                        <e5ui:row
+                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                styleClass="#{in_search_documents.officeKeepingVolumeSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Индекс</p>
+                            </f:facet>
+                            <h:outputText value="#{row.volumeIndex}"/>
+                            <h:commandLink id="selectLink" style="display: none;"
+                                           rendered="#{not in_search_documents.officeKeepingVolumeSelectModal.selected(row)}"
+                                           action="#{in_search_documents.officeKeepingVolumeSelectModal.select(row)}"/>
+                        </e5ui:column>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Заголовок</p>
+                            </f:facet>
+                            <h:outputText value="#{row.shortDescription}"/>
+                            <h:commandLink style="display: none;"
+                                           rendered="#{not in_search_documents.officeKeepingVolumeSelectModal.selected(row)}"
+                                           action="#{in_search_documents.officeKeepingVolumeSelectModal.select(row)}"/>
+                        </e5ui:column>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Статус</p>
+                            </f:facet>
+                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                            <h:commandLink style="display: none;"
+                                           rendered="#{not in_search_documents.officeKeepingVolumeSelectModal.selected(row)}"
+                                           action="#{pin_search_documents.officeKeepingVolumeSelectModal.select(row)}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
+                </div>
+            </div>
+            <div style="clear: both;">
+                <h:panelGroup id="office_keeping_volume_modal_paging">
+                    <e5ui-comp:tablePager id="office_keeping_volume_pager"
+                                          documentListHolder="#{in_search_documents.officeKeepingVolumeSelectModal.officeKeepingVolumes}"/>
+                </h:panelGroup>
+            </div>
+        </div>
+        <div class="e5ui-modal-bottombuttons">
+            <h:button
+                    onclick="officeKeepingVolumeSelectModalVar.clickSave(); return false;"
+                    value="Выбрать"/>
+            <h:button
+                    onclick="officeKeepingVolumeSelectModalVar.clickClose(); return false;"
+                    value="Отмена"/>
+        </div>
+    </e5ui-comp:modalWindow></td>
+    <td class="second"><h:outputText id="office_keeping_Volume"
+                                     value="#{in_search_documents.officeKeepingVolume}"
+                                     converter="OfficeKeepingVolumeConverter" class="wide"/></td>
+    <td class="third"></td>
+    <td class="fourth"></td>
+</tr>
+<tr class="row">
+    <td class="first"><label
+            for="main_content_form:shortDescription"> <span
+            class="title">Краткое содержание</span>
+    </label></td>
+    <td class="second" colspan="3"><h:inputText
+            id="shortDescription"
+            value="#{in_search_documents.shortDescription}" class="wide">
+        <!-- <f:ajax render="main_content_form:shortDescription" />-->
+    </h:inputText> <e5ui:marker for="shortDescription"/></td>
+</tr>
+<tr class="row">
+    <td class="first"></td>
+    <td class="second"></td>
+    <td class="third"></td>
+    <td class="fourth"></td>
+</tr>
+</table>
+</div>
+</h:panelGroup>
+<!-- </e5ui:tabPage>
+                </e5ui:tabPanel> -->
+
+</e5ui:formPart>
+</div>
+
+<e5ui-comp:splashScreen id="splash_screen" timeout="0">
+    <f:facet name="timeoutPanel">
+        <div
+                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+            Пожалуйста, подождите...
+        </div>
+    </f:facet>
+</e5ui-comp:splashScreen>
+<script>
+    e5ui_splashScreen.startShowOnSubmit('splash_screen',
+            [ 'main_content_form' ]);
+</script>
+</ui:define>
+
+<ui:define name="footer">
+    <e5ui:multiMarker id="main_form_marker" rendered="true"
+                      hintWindowStyleClass="e5ui-marker-hintWindow"
+                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
+                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
+                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
+                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
+                      displayMode="window">
+        <h:button
+                onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
+                value="ОК"/>
+    </e5ui:multiMarker>
+    <h:outputStylesheet library="css" name="datatable.css"/>
+    <h:outputStylesheet library="css" name="modalWindow.css"/>
+    <h:outputStylesheet library="css" name="multiMarker.css"/>
+    <h:outputStylesheet library="css" name="tabPanel.css"/>
+</ui:define>
+
+</ui:composition>
+
+</html>
