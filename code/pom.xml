@@ -41,7 +41,13 @@
             <name>SpringSource Milestones Proxy</name>
             <url>https://oss.sonatype.org/content/repositories/springsource-milestones</url>
         </repository>
+
+        <repository>     
+     		<id>alfresco-public</id>      
+     		<url>https://artifacts.alfresco.com/nexus/content/groups/public</url>   
+	</repository>          
     </repositories>
+
 
 
     <modules>

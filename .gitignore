@@ -6,4 +6,7 @@
 .idea/
 *.iml
 .svn/
+*.project
+*.classpath
+.settings/
 target/
