@@ -1,0 +1,49 @@
+.e5uiFileUpload {
+    display: inline-block;
+    max-width: 400px;
+    min-width: 200px;
+}
+
+.e5uiFileUploadButton {
+    cursor: pointer;
+    text-align: center;
+    padding: 4px;
+    margin: 2px;
+    border: 1px solid black;
+    background-color: #e0e0e0;
+}
+
+.e5uiFileUploadButton.select {
+    position: relative;
+    overflow: hidden;
+}
+.e5uiFileUploadButton.upload {
+}
+.e5uiFileUploadButton.remove {
+}
+.e5uiFileUploadButton.select.disabled, .e5uiFileUploadButton.upload.disabled {
+    cursor: default;
+    background-color: white;
+}
+.e5uiFileUploadButton.remove.sending {
+}
+.e5uiFileUploadBtnText.select {
+}
+.e5uiFileUploadBtnText.upload {
+}
+.e5uiFileUploadBtnText.remove {
+}
+.e5uiFileUploadBtnText.remove.sending {
+}
+
+.e5uiFileUploadList {
+    width: 100%;
+}
+.e5uiFileUploadList .row {
+}
+.e5uiFileUploadList .row .cell {
+    vertical-align: middle;
+}
+.e5uiFileUploadList .row .cell.text {
+    width: 100%;
+}

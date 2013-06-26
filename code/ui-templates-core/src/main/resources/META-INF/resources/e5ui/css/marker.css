@@ -1,0 +1,26 @@
+.e5ui-marker {
+    background-position: center;
+    background-repeat: no-repeat;
+    border: none;
+    height: 16px;
+    width: 16px;
+    margin-left: 4px;
+    margin-right: 12px;
+    display: inline-block;
+}
+
+.e5ui-marker-info {
+    background-image: url('e5ui-marker-info.png.xhtml?ln=e5ui/images');
+}
+
+.e5ui-marker-warn {
+    background-image: url('e5ui-marker-warn.png.xhtml?ln=e5ui/images');
+}
+
+.e5ui-marker-error {
+    background-image: url('e5ui-marker-error.png.xhtml?ln=e5ui/images');
+}
+
+.e5ui-marker-fatal {
+    background-image: url('e5ui-marker-fatal.png.xhtml?ln=e5ui/images');
+}

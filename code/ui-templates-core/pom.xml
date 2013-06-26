@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project 
+        xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>ru.efive.ui-templates</groupId>
+    <artifactId>ui-templates-core</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <packaging>jar</packaging>
+	
+    <name>UI Templates Core Library</name>
+    <description>JSF2-based framework for quick building applications. Core components library.</description>
+    
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>http://repo1.maven.org/maven2</url>
+        </repository>
+        
+        <repository>
+            <id>Codehaus Snapshots</id>
+            <url>https://nexus.codehaus.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        
+        <repository>
+            <id>prime-repo</id>
+            <name>PrimeFaces Maven Repository</name>
+            <url>http://repository.primefaces.org</url>
+            <layout>default</layout>  
+        </repository> 
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>Codehaus Snapshots</id>
+            <url>https://nexus.codehaus.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <properties>
+        <!-- Sources -->
+        <version.jdk>1.6</version.jdk>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+	<!-- Target -->
+	<version.app.ear>6</version.app.ear>
+        <version.jdk.target>1.6</version.jdk.target>
+    
+	<!-- Components -->
+	<version.javaee-api>6.0</version.javaee-api>
+	<version.lib.primefaces>3.3</version.lib.primefaces>
+    
+    	<!-- Test Environment -->
+    	<version.junit>4.4</version.junit>
+    	
+    	<!-- Maven plugins version -->
+    	<version.mvn.plugin.compiler>2.3.2</version.mvn.plugin.compiler>
+    	<version.mvn.plugin.resource>2.5</version.mvn.plugin.resource>
+    	<version.mvn.plugin.javadoc>2.8</version.mvn.plugin.javadoc>
+    	<version.mvn.plugin.site>3.0-beta-3</version.mvn.plugin.site>
+    	<version.mvn.plugin.surefire-report>2.8.1</version.mvn.plugin.surefire-report>
+    	<version.mvn.plugin.ear>2.5</version.mvn.plugin.ear>
+    	<version.mvn.plugin.war>2.1.1</version.mvn.plugin.war>
+    	<version.mvn.plugin.checkstyle>2.6</version.mvn.plugin.checkstyle>
+    	
+    	<!-- Mojo maven plugins version -->
+    	<version.mojo.findbugs>2.3.3-SNAPSHOT</version.mojo.findbugs>
+    </properties>
+
+	<dependencies>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${version.javaee-api}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.primefaces</groupId>
+                <artifactId>primefaces</artifactId>
+                <version>${version.lib.primefaces}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.2.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>1.3.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+
+
+    <prerequisites>
+        <maven>3.0.0</maven>
+    </prerequisites>
+
+
+    <!-- Build section -->
+    <build>
+
+        <pluginManagement>
+
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${version.mvn.plugin.compiler}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+        	    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${version.mvn.plugin.resource}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
+                    <version>${version.mojo.findbugs}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${version.mvn.plugin.javadoc}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${version.mvn.plugin.site}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${version.mvn.plugin.surefire-report}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-ear-plugin</artifactId>
+                    <version>${version.mvn.plugin.ear}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${version.mvn.plugin.war}</version>
+                    <configuration>
+                        <webResources>
+                            <resource>
+                                <filtering>true</filtering>
+                                <directory>src/main/webapp</directory>
+                                <includes>
+                                    <include>**/*.xhtml</include>
+                                </includes>
+                            </resource>
+                        </webResources>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>${version.mvn.plugin.checkstyle}</version>
+                    <configuration>
+                        <configLocation>checkstyle.xml</configLocation>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.1</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+
+	    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${version.jdk}</source>
+                    <target>${version.jdk.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+	    
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+        	<artifactId>maven-resources-plugin</artifactId>
+        	<configuration>
+          	    <encoding>${project.build.sourceEncoding}</encoding>
+        	</configuration>
+      	    </plugin>
+
+            <!-- Generate javadoc for project sources -->
+            <!-- Usage: javadoc:javadoc, javadoc:jar, javadoc:aggregate -->
+            <plugin>
+            	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <charset>utf-8</charset>
+                    <show>protected</show>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-headers</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <configuration>
+                     <effort>Max</effort>
+                     <threshold>Min</threshold>
+                </configuration>
+                <!-- executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions -->
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <reportPlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <configuration>
+                                <encoding>${project.build.sourceEncoding}</encoding>
+                                <charset>${project.build.sourceEncoding}</charset>
+                                <show>public</show>
+                            </configuration>
+                        </plugin>
+                        
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-report-plugin</artifactId>
+                        </plugin>
+
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <configuration>
+                                <configLocation>checkstyle.xml</configLocation>
+                            </configuration>
+                        </plugin>
+                    </reportPlugins>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${project.build.directory}/classes/META-INF"/>
+                                <tstamp>
+                                    <format property="last.updated" pattern="yyyy-MM-dd HH:mm:ss.SSS"/>
+                                </tstamp>
+                                <echo file="${basedir}/target/classes/META-INF/version.properties" message="build.time=${last.updated}"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+	</plugins>
+
+    </build>
+    
+</project>

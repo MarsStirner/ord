@@ -1,0 +1,135 @@
+.e5uiCalendar table.widget.year td {
+    border: none;
+    vertical-align: top;
+    padding: 4px;
+}
+.e5uiCalendar table.layout.month td {
+    border: none;
+    vertical-align: top;
+    padding: 2px;
+}
+.e5uiCalendar table.widget.month {
+    border-collapse: collapse;
+}
+.e5uiCalendar table.widget.month td {
+    border: 1px solid black;
+    padding: 2px;
+}
+.e5uiCalendar table.widget.week {
+    border-collapse: collapse;
+}
+.e5uiCalendar table.widget.week td {
+    border: 1px solid black;
+    padding: 2px;
+}
+.e5uiCalendar table.widget.week .header .dayDate {
+    display: block;
+    text-align: center;
+}
+.e5uiCalendar table.widget.day {
+    border-collapse: collapse;
+    width: 100%;
+}
+.e5uiCalendar table.widget.day td {
+    border: 1px solid black;
+    padding: 2px;
+}
+.e5uiCalendar table.widget.day .cell {
+    width: 100%;
+}
+.e5uiCalendar.day table {
+    width: 100%;
+}
+.e5uiCalendar table.widget.week .cell {
+    width: 14%;
+}
+.e5uiCalendar.week table {
+    width: 100%;
+}
+.e5uiCalendar .header {
+    text-align: center;
+    vertical-align: middle;
+}
+.e5uiCalendar .dayName {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+.e5uiCalendar .dayDate {
+    text-align: right;
+}
+.e5uiCalendar .monthName {
+    text-align: center;
+}
+.e5uiCalendar .yearName {
+    text-align: center;
+}
+.e5uiCalendar td.cell {
+    width: 2em;
+}
+.e5uiCalendar .caption .button {
+    cursor: pointer;
+    font-weight: bold;
+}
+.e5uiCalendar table.caption {
+    width: 100%;
+}
+.e5uiCalendar .caption.month .space {
+    width: 30%;
+}
+.e5uiCalendar .caption.year .space {
+    width: 50%;
+}
+.e5uiCalendar .caption.week .space {
+    width: 30%;
+}
+.e5uiCalendar .caption.day .space {
+    width: 30%;
+}
+.e5uiCalendar .link {
+    white-space: nowrap;
+}
+.e5uiCalendar .select {
+    cursor: pointer;
+    text-decoration: underline;
+}
+.e5uiCalendar table.widget.month .space {
+    border: none;
+}
+.e5uiCalendar .select.weekName {
+    text-decoration: none;
+    text-align: center;
+}
+.e5uiCalendar .dayoff {
+    color: dimgray;
+}
+.e5uiCalendar .weekend {
+    color: maroon;
+}
+.e5uiCalendar .holyday {
+    color: red;
+}
+.e5uiCalendar .nowDay {
+    background-color: lightyellow;
+}
+.e5uiCalendar .excluded {
+    color: lightgray;
+}
+.e5uiCalendar .withEvents {
+    font-weight: bold;
+}
+.e5uiCalendar .event.highlight {
+    background-color: lightblue;
+}
+.e5uiCalendar .dayTooltip {
+    position: absolute;
+    background-color: aliceblue;
+    color: black;
+    border: 1px solid darkgray;
+    font-weight: normal;
+    text-align: left;
+}
+.e5uiCalendar .dayTooltip > ul {
+    padding-left: 25px;
+    padding-right: 5px;
+}
+

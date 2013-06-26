@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <h:head/>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="documentListHolder" required="false" type="java.lang.Object" shortDescription="An object that holds document list state." />
+            <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="ID of composite component" />
+            <composite:attribute name="useLinks" required="false" type="java.lang.Boolean" default="false" shortDescription="Use links instead of buttons." />
+            <composite:attribute name="style" required="false" type="java.lang.String" shortDescription="CSS style(s) to be applied when this component is rendered." />
+            <composite:attribute name="styleClass" required="false" type="java.lang.String" shortDescription="Space-separated list of CSS style class(es) to be applied when this element is rendered. This value must be passed through as the 'class' attribute on generated markup." />
+        </composite:interface>
+        <composite:implementation>
+            <h:outputScript library="e5ui/js" name="jquery.js" target="head" />
+            <h:outputScript library="e5ui/js" name="pagerHead.js" target="head" />
+            <h:outputStylesheet library="e5ui/css" name="tablePager.css" target="head" />
+            <div class="e5ui-tablePager #{cc.attrs.styleClass}" style="#{cc.attrs.style}">
+                <h:commandButton
+                        styleClass="e5ui-tablePager-elem go-to-first"
+                        value="|&lt;"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(0)}"
+                        rendered="#{not cc.attrs.useLinks}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset eq 0}">
+
+                    <e5ui:formPartTarget/>
+                </h:commandButton>
+                <h:commandLink
+                        styleClass="e5ui-tablePager-elem go-to-first"
+                        value="|&lt;"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(0)}"
+                        rendered="#{cc.attrs.useLinks}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset eq 0}">
+                    <e5ui:formPartTarget/>
+                </h:commandLink>
+                
+                <h:commandButton
+                        styleClass="e5ui-tablePager-elem go-to-prev"
+                        value="&lt;"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(cc.attrs.documentListHolder.pagination.pageOffset - 1)}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset eq 0}"
+                        rendered="#{not cc.attrs.useLinks}">
+
+                    <e5ui:formPartTarget/>
+                </h:commandButton>
+                <h:commandLink
+                        styleClass="e5ui-tablePager-elem go-to-prev"
+                        value="&lt;"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(cc.attrs.documentListHolder.pagination.pageOffset - 1)}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset eq 0}"
+                        rendered="#{cc.attrs.useLinks}">
+                    <e5ui:formPartTarget/>
+                </h:commandLink>
+
+                <e5ui:formPart id="pageSelectorSubform">
+                    <span class="e5ui-tablePager-elem">
+                        <input
+                                id="#{cc.clientId}:currentPage"
+                                type="text"
+                                class="pageSelector"
+                                size="2"
+                                value="#{cc.attrs.documentListHolder.pageToGo}"
+                                autocomplete="off"/>
+                        &nbsp;
+                        <h:outputText
+                                value="из #{cc.attrs.documentListHolder.pagination.pageCount}"/>
+                        
+                        <h:inputHidden
+                                value="#{cc.attrs.documentListHolder.pageToGo}"
+                                id="currentPageHidden"/>
+
+                        <h:commandButton 
+                                id="goToPage"
+                                action="#{cc.attrs.documentListHolder.goToPage()}"
+                                style="display: none;"
+                                value="Go">
+                            <e5ui:formPartTarget formPart="pageSelectorSubform"/>
+                        </h:commandButton>
+
+                    </span>
+                </e5ui:formPart>
+
+                <h:outputScript>
+                    jQuery(function($) {
+                        e5ui_pager.addEnterEvent(
+                                '#{cc.clientId}:currentPage',
+                                '#{cc.clientId}:currentPageHidden',
+                                '#{cc.clientId}:goToPage');
+                    });
+                </h:outputScript>
+
+
+                <h:commandButton
+                        styleClass="e5ui-tablePager-elem go-to-next"
+                        value="&gt;"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(cc.attrs.documentListHolder.pagination.pageOffset + 1)}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset ge (cc.attrs.documentListHolder.pagination.pageCount - 1)}"
+                        rendered="#{not cc.attrs.useLinks}">
+                    <e5ui:formPartTarget/>
+                </h:commandButton>
+                <h:commandLink 
+                        styleClass="e5ui-tablePager-elem go-to-next"
+                        value="&gt;"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(cc.attrs.documentListHolder.pagination.pageOffset + 1)}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset ge (cc.attrs.documentListHolder.pagination.pageCount - 1)}"
+                        rendered="#{cc.attrs.useLinks}">
+                    <e5ui:formPartTarget/>
+                </h:commandLink>
+                
+                <h:commandButton 
+                        styleClass="e5ui-tablePager-elem go-to-last"
+                        value="&gt;|"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(cc.attrs.documentListHolder.pagination.pageCount - 1)}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset ge (cc.attrs.documentListHolder.pagination.pageCount - 1)}"
+                        rendered="#{not cc.attrs.useLinks}">
+                    <e5ui:formPartTarget/>
+                </h:commandButton>
+                <h:commandLink 
+                        styleClass="e5ui-tablePager-elem go-to-last"
+                        value="&gt;|"
+                        action="#{cc.attrs.documentListHolder.changePageOffset(cc.attrs.documentListHolder.pagination.pageCount - 1)}"
+                        disabled="#{cc.attrs.documentListHolder.pagination.pageOffset ge (cc.attrs.documentListHolder.pagination.pageCount - 1)}"
+                        rendered="#{cc.attrs.useLinks}">
+                    <e5ui:formPartTarget/>
+                </h:commandLink>
+                
+                <h:outputText value="#{cc.attrs.documentListHolder.documents.size()}" styleClass="e5ui-tablePager-elem e5ui-tablePager-page-size" />
+            </div>
+        </composite:implementation>
+    </h:body>
+</html>

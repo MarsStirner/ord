@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <h:head/>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="ID of composite component" />
+            <composite:attribute name="documentListHolder" required="false" type="java.lang.Object" shortDescription="An object that holds document list state." />
+            <composite:attribute name="style" required="false" type="java.lang.String" shortDescription="CSS style(s) to be applied when this component is rendered." />
+            <composite:attribute name="styleClass" required="false" type="java.lang.String" shortDescription="Space-separated list of CSS style class(es) to be applied when this element is rendered. This value must be passed through as the 'class' attribute on generated markup." />
+            <composite:attribute name="pageSizes" required="false" type="java.lang.String" default="10, 15, 20, 30, 50" shortDescription="Comma-separated list of size of pages." />
+        </composite:interface>
+        <composite:implementation>
+            <h:outputScript library="e5ui/js" name="jquery.js" target="head" />
+            <h:outputScript library="e5ui/js" name="tablePageSizeSelector.js" target="head" />
+            <div style="#{cc.attrs.style}" class="#{cc.attrs.styleClass}">
+                <e5ui:formPart id="tablePageSizeSelectorSubform">
+                    <select id="#{cc.clientId}:currentPageSizeToSelect" />
+                    <h:inputHidden
+                            value="#{cc.attrs.documentListHolder.pageSizeToSelect}"
+                            id="currentPageSizeToSelectHidden"/>
+                    <h:commandButton 
+                            id="selectPageSize"
+                            action="#{cc.attrs.documentListHolder.selectPageSize()}"
+                            style="display: none;"
+                            value="">
+                        <e5ui:formPartTarget formPart="tablePageSizeSelectorSubform"/>
+                    </h:commandButton>
+                </e5ui:formPart>
+                <script type="text/javascript">e5ui_tablePageSizeSelector.makeUp("#{cc.clientId}", "#{cc.attrs.pageSizes}", #{cc.attrs.documentListHolder.pagination.pageSize})</script>
+            </div>
+        </composite:implementation>
+    </h:body>
+</html>

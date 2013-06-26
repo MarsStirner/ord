@@ -1,0 +1,147 @@
+.e5ui-inputTime {
+    border-width: 0px; border-spacing: 0px; border-collapse: collapse; table-layout: auto;
+}
+
+.e5ui-inputTime-selector {
+    position: absolute;
+    display: none;
+    padding: 10px;
+    border: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    z-index: 110;
+}
+
+.e5ui-inputTime-Container {
+    background: #121212;
+    color: white;
+}
+
+.e5ui-inputTime-BorderT {
+    position: absolute;
+    left: 10px;
+    top: 0;
+    right: 10px;
+    height: 10px;
+    background: url(datepicker_t.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-BorderB {
+    position: absolute;
+    left: 10px;
+    bottom: 0;
+    right: 10px;
+    height: 10px;
+    background: url(datepicker_b.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-BorderL {
+    position: absolute;
+    left: 0;
+    bottom: 10px;
+    top: 10px;
+    width: 10px;
+    background: url(datepicker_l.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-BorderR {
+    position: absolute;
+    right: 0;
+    bottom: 10px;
+    top: 10px;
+    width: 10px;
+    background: url(datepicker_r.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-BorderTL {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background: url(datepicker_tl.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-BorderTR {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: url(datepicker_tr.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-BorderBL {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background: url(datepicker_bl.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-BorderBR {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background: url(datepicker_br.png.xhtml?ln=e5ui/images);
+}
+
+.e5ui-inputTime-selector-table {
+    border-width: 0px;
+    border-spacing: 0px;
+    border-collapse: collapse;
+    table-layout: auto;
+    width: 100%;
+}
+
+.e5ui-inputTime-selector-table-names {
+}
+.e5ui-inputTime-selector-table-names > td {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.e5ui-inputTime-selector-table-values {
+    text-align: right;
+}
+
+.e5ui-inputTime-selector-buttons {
+    background: #121212;
+    border-top: 1px solid gray;
+    margin-top: 4px;
+    padding-top: 4px;
+}
+
+.e5ui-inputTime-selector-buttons .select, .e5ui-inputTime-selector-buttons .cancel {
+    float: right;
+    background: #121212;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.e5ui-inputTime-selector-table-values select {
+    background: #121212;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+.e5ui-inputTime-button {
+    background: url(clock.png.xhtml?ln=e5ui/images);
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    cursor: pointer;
+    width: 16px;
+}
+
+.e5ui-inputTime-button.disabled {
+    background: url(clockd.png.xhtml?ln=e5ui/images);
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: default;
+}
