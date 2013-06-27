@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+
+    <ui:composition template="/WEB-INF/jsf-template/main.xhtml">
+        <ui:define name="content">
+            <h2>Work with Calendar Plan component.</h2>
+
+            <h:form id="ca1Form">
+                <e5ui:calendarPlan holder="#{testCalendarBean.holder}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

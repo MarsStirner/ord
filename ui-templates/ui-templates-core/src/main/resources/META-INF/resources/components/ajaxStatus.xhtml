@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <h:head/>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="The component identifier for this component. This value must be unique within the closest parent component that is a naming container."/>
+            <composite:attribute name="onBegin" required="false" type="java.lang.String" shortDescription="Javascript code to be executed when ajax request has started."/>
+            <composite:attribute name="onSuccess" required="false" type="java.lang.String" shortDescription="Javascript code to be executed when ajax request has completed successufully."/>
+            <composite:attribute name="onError" required="false" type="java.lang.String" shortDescription="Javascript code to be executed when ajax request has completed with error."/>
+            <composite:facet name="success" shortDescription="Rendered when ajax request completed or there was no ajax requests."/>
+            <composite:facet name="processing" shortDescription="Rendered when ajax request processing."/>
+            <composite:facet name="error" shortDescription="Rendered when ajax request completed with error."/>
+        </composite:interface>
+        <composite:implementation>
+            <h:outputScript library="e5ui/js" name="jquery.js" target="head"/>
+            <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+            <h:outputScript library="e5ui/js" name="ajaxStatus.js" target="head"/>
+            <c:if test="#{not empty cc.attrs.onBegin}">
+                <script type="text/javascript">e5ui_ajaxStatus.eventBegin['#{cc.clientId}']=function(event){#{cc.attrs.onBegin}};</script>
+            </c:if>
+            <c:if test="#{not empty cc.attrs.onSuccess}">
+                <script type="text/javascript">e5ui_ajaxStatus.eventSuccess['#{cc.clientId}']=function(event){#{cc.attrs.onSuccess}};</script>
+            </c:if>
+            <c:if test="#{not empty cc.attrs.onError}">
+                <script type="text/javascript">e5ui_ajaxStatus.eventError['#{cc.clientId}']=function(event){#{cc.attrs.onError}};</script>
+            </c:if>
+
+            <div class="e5uiAjaxStatusIndicatorSuccess">
+                <composite:renderFacet name="success"/>
+            </div>
+            <div class="e5uiAjaxStatusIndicatorProcessing" style="display: none">
+                <composite:renderFacet name="processing"/>
+            </div>
+            <div class="e5uiAjaxStatusIndicatorError" style="display: none">
+                <composite:renderFacet name="error"/>
+            </div>
+        </composite:implementation>
+    </h:body>
+</html>

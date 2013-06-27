@@ -1,0 +1,68 @@
+/* "first" icon of table pager"  */
+.contracts-pager .e5ui-tablePager-elem.go-to-first {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-image: url('#{resource['theme/images:pager_goto_first.png']}');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: buttonface;
+    margin-left: 2px;
+    margin-right: 2px;
+    color: transparent;
+    padding: 0 0 0 16px !important;
+    text-align: left;
+    line-height: 1 !important;
+    overflow: hidden;
+}
+/* "prev" icon of table pager"  */
+.contracts-pager .e5ui-tablePager-elem.go-to-prev {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-image: url('#{resource['theme/images:pager_goto_prev.png']}');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: buttonface;
+    margin-left: 2px;
+    margin-right: 2px;
+    color: transparent;
+    padding: 0 0 0 16px !important;
+    text-align: left;
+    line-height: 1 !important;
+    overflow: hidden;
+}
+/* "next" icon of table pager"  */
+.contracts-pager .e5ui-tablePager-elem.go-to-next {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-image: url('#{resource['theme/images:pager_goto_next.png']}');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: buttonface;
+    margin-left: 2px;
+    margin-right: 2px;
+    color: transparent;
+    padding: 0 0 0 16px !important;
+    text-align: left;
+    line-height: 1 !important;
+    overflow: hidden;
+}
+/* "last" icon of table pager"  */
+.contracts-pager .e5ui-tablePager-elem.go-to-last {
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    background-image: url('#{resource['theme/images:pager_goto_last.png']}');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: buttonface;
+    margin-left: 2px;
+    margin-right: 2px;
+    color: transparent;
+    padding: 0 0 0 16px !important;
+    text-align: left;
+    line-height: 1 !important;
+    overflow: hidden;
+}

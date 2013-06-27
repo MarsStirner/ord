@@ -1,0 +1,40 @@
+.e5uiTabPanel {
+}
+
+.e5uiTabPanelHeader {
+    padding-left: 2px;
+    padding-right: 2px;
+    border-bottom: 1px solid black;
+    padding-top: 1px;
+}
+
+.e5uiTabPanelHeaderPage {
+    background-color: #e0e0e0;
+    cursor: pointer;
+    border-left: 1px solid black;
+    border-top: 1px solid black;
+    border-right: 1px solid black;
+    margin-left: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.e5uiTabPanelHeaderPage.selected {
+    background-color: white;
+    border-bottom: 1px solid white;
+}
+
+.e5uiTabPanelContent {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    padding: 1px;
+}
+
+.e5uiTabPanelContentPage {
+    display: none;
+}
+
+.e5uiTabPanelContentPage.selected {
+    display: block;
+}

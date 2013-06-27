@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+    <ui:composition template="/WEB-INF/jsf-template/main.xhtml">
+        <ui:define name="content">
+            <e5ui:document canCreate="#{true}"
+                           canEdit="#{!(testDocumentBean.currentDocument.name eq 'edit403')}"
+                           canView="#{!(testDocumentBean.currentDocument.name eq 'view403')}"
+                           idParam="#{testDocumentBean.idRequestParameterName}"
+                           editParam="edit"
+                           editModeControl="button"
+                           editModeCaption="Edit"
+                           document="#{testDocumentBean.currentDocument}">
+                <f:facet name="headerCreate">
+                    <h2>Create Document</h2>
+                </f:facet>
+                <f:facet name="headerEdit">
+                    <h2>Edit Document</h2>
+                </f:facet>
+                <f:facet name="headerView">
+                    <h2>View Document</h2>
+                </f:facet>
+                <f:facet name="notFound">
+                    <b>404 - Not Found</b>
+                </f:facet>
+                <f:facet name="forbidden">
+                    <b>403 - Forbidden</b>
+                </f:facet>
+                <f:facet name="edit">
+                    <h:outputStylesheet library="css" name="marker.css" target="head" />
+                    <h:outputScript library="js" name="inputdate_init_ru.js" target="head" />
+
+                    <h:form id="testDocumentForm" >
+                        <input type="hidden" id="#{testDocumentBean.idRequestParameterName}" name="#{testDocumentBean.idRequestParameterName}" value="#{param[testDocumentBean.idRequestParameterName]}" />
+                        <table>
+                            <tr>
+                                <td><h:outputText value="Name:" /></td>
+                                <td>
+                                    <h:inputText id="name" value="#{testDocumentBean.currentDocument.name}">
+                                        <f:validateRegex pattern="[ABCabc]+"/>
+                                    </h:inputText>
+                                    &nbsp;<e5ui:multiMarker rendered="true" for="name"
+                                                      hintWindowStyleClass="e5ui-marker-hintWindow"
+                                                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
+                                                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
+                                                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
+                                                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
+                                                      />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h:outputText value="Description:" /></td>
+                                <td>
+                                    <h:inputText id="desc" value="#{testDocumentBean.currentDocument.description}">
+                                        <f:validateRegex pattern="[ABCabc]+"/>
+                                    </h:inputText>
+                                    <!--<h:message for="desc"/>-->
+                                    <e5ui:multiMarker rendered="desc" for="name"
+                                                      hintWindowStyleClass="e5ui-marker-hintWindow"
+                                                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
+                                                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
+                                                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
+                                                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
+                                                      displayMode="text"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h:outputText value="Date:" /></td>
+                                <td style="white-space:nowrap;">
+                                    <e5ui-comp:inputDate id="id_4378" value="#{testDocumentBean.currentDocument.date}" lang="ru" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h:outputText value="Date (disabled):" /></td>
+                                <td style="white-space:nowrap;">
+                                    <e5ui-comp:inputDate id="id_4379" value="#{testDocumentBean.currentDocument.date}" lang="ru" disabled="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h:outputText value="Date (readonly):" /></td>
+                                <td style="white-space:nowrap;">
+                                    <e5ui-comp:inputDate id="id_4380" value="#{testDocumentBean.currentDocument.date}" lang="ru" readonly="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><h:outputText value="Date (disable editor):" /></td>
+                                <td>
+                                    <e5ui-comp:inputDate id="id_4381" value="#{testDocumentBean.currentDocument.date}" lang="ru" disableEditor="true" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><h:outputText value="Pay attention: all date fields get the same value if document has been saved." /></td>
+                            </tr>
+                        </table>
+                        <div class="e5ui-document-save-button">
+                            <h:commandButton action="#{testDocumentBean.saveCurrentDocument}" value="Save">
+                                <e5ui:formPartTarget formPart="validate"/>
+                                <f:param name="edit" value="true"/>
+                            </h:commandButton>
+                        </div>
+                    </h:form>
+                </f:facet>
+                <f:facet name="view">
+                    <table>
+                        <tr>
+                            <td><h:outputText value="Name:" /></td>
+                            <td><h:inputText value="#{testDocumentBean.currentDocument.name}" disabled="true" /></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><h:outputText value="Description:" /></td>
+                            <td><h:inputText id="input_5431" value="#{testDocumentBean.currentDocument.description}" disabled="true" /></td>
+                            <td>
+                                <e5ui-comp:simpleModal id="simplemodal_2004" value=".." closeClass="close_0164">
+                                    <f:facet name="title">
+                                        <h4>MODAL WINDOW</h4>
+                                    </f:facet>
+                                    <f:facet name="content">
+                                        <h:form>
+                                            <table>
+                                                <tr>
+                                                    <td><h:outputText value="Description:" /></td>
+                                                    <td>
+                                                        <h:inputText value="#{testDocumentBean.currentDocument.description}" />
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <div class="e5ui-document-save-button">
+                                                <h:commandButton action="#{testDocumentBean.saveCurrentDocument}" styleClass="close_0164" value="Save">
+                                                    <f:ajax execute="@form" render=":input_5431">
+                                                        <f:param name="#{testDocumentBean.idRequestParameterName}" value="#{testDocumentBean.currentDocument.id}" />
+                                                    </f:ajax>
+                                                </h:commandButton>
+                                                <input type="button" class="close_0164" value="Cancel" />
+                                            </div>
+                                        </h:form>
+                                    </f:facet>
+                                </e5ui-comp:simpleModal>
+                            </td>
+                        </tr>
+                    </table>
+                </f:facet>
+            </e5ui:document>
+            <div>
+                <!--<h:messages errorClass="e5ui-error" infoClass="e5ui-info" layout="table" globalOnly="true" showSummary="true" showDetail="false" />-->
+                <e5ui:multiMarker id="mm1"
+                                  rendered="true"
+                                  hintWindowStyleClass="e5ui-marker-hintWindow"
+                                  hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
+                                  hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
+                                  hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
+                                  hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
+                                  displayMode="window">
+                    <div class="e5ui-multimarker-window-close" onclick="e5ui_multiMarker.remove('mm1');">Ok</div>
+                </e5ui:multiMarker>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>

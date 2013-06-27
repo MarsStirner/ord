@@ -1,0 +1,20 @@
+.e5ui-menuItem.collapsed .e5ui-menuItem-children {
+    display: none;
+}
+
+.e5ui-menuItem-collapsed-left {
+    display: none;
+}
+.e5ui-menuItem.collapsable .e5ui-menuItem-collapsed-right {
+    cursor: pointer;
+    width: 8px;
+    background-image: url('marker_collapse.png.xhtml?ln=e5ui/images');
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+.e5ui-menuItem.collapsable.collapsed .e5ui-menuItem-collapsed-right {
+    background-image: url('marker_expand.png.xhtml?ln=e5ui/images');
+}
+.e5ui-menuItem.collapsable.empty .e5ui-menuItem-collapsed-right {
+    display: none;
+}

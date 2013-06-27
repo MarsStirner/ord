@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+
+    <ui:composition template="/WEB-INF/jsf-template/main.xhtml">
+        <ui:define name="content">
+            <e5ui-comp:outputUtilScript/>
+            <e5ui-comp:splashScreen widgetVar="fuspsc1" timeout="0"/>
+
+            <h2>Work with File Upload component.</h2>
+
+            <h:form id="fu1Form" enctype="multipart/form-data">
+                <fieldset style="margin: 10px; padding: 5px;">
+                    <legend>Separate upload</legend>
+                    <e5ui:fileUpload id="fu1" multiple="true" actionBehavior="separate" maxFilesCount="2"
+                                     uploadHandler="#{fileUploadData.uploadHandler}"
+                                     action="#{fileUploadData.action}"
+                                     onuploading="e5ui_ajaxStatus.ajsgStopped=true;fuspsc1.startShow();"
+                                     onuploaded="fuspsc1.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
+                        <f:ajax render=":dp1"/>
+                    </e5ui:fileUpload>
+
+                </fieldset>
+            </h:form>
+
+            <h:form id="fu2Form" enctype="multipart/form-data">
+                <fieldset style="margin: 10px; padding: 5px;">
+                    <legend>Form upload</legend>
+                    <e5ui:fileUpload id="fu2" multiple="true" actionBehavior="form" maxFilesCount="2"
+                                     uploadHandler="#{fileUploadData.uploadHandler}">
+                    </e5ui:fileUpload>
+
+                    <br/>
+                    <h:commandButton value="Submit" action="#{fileUploadData.action}" onclick="fuspsc1.startShow();"/>
+                </fieldset>
+            </h:form>
+
+            <h:panelGroup id="dp1" layout="block" style="margin-top: 20px;">
+                Uploaded files:<br/>
+                #{fileUploadData.filesInfo}
+            </h:panelGroup>
+        </ui:define>
+    </ui:composition>
+</html>

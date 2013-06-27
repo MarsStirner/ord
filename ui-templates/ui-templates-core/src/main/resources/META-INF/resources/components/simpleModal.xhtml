@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <cc:interface>
+        <cc:attribute name="id" shortDescription="ID of component."/>
+        <cc:attribute name="value" default=".." shortDescription="Open window button label." />
+        <cc:attribute name="closeClass" shortDescription="CSS class that identifies the tag that closes the window." />
+    </cc:interface>
+    <cc:implementation>
+        <h:outputStylesheet library="e5ui/css" name="simplemodal.css" target="head" />
+        
+        <h:outputScript library="e5ui/js" name="jquery.js" target="head" />
+        <h:outputScript library="e5ui/js" name="jquery.simplemodal.js" target="head" />
+        
+        <input type="button" value="#{cc.attrs.value}" onclick="javascript: $('##{cc.attrs.id}-simplemodal').modal({close: true, escClose: true, overlayClose: false, closeClass: '#{cc.attrs.closeClass}'});" />
+        
+        <div id="#{cc.attrs.id}-simplemodal" class="simplemodal">
+            <div class="simplemodal-title">
+                <cc:renderFacet name="title" />
+            </div>
+            <div class="simplemodal-content">
+                <cc:renderFacet name="content" />
+            </div>
+        </div>
+    </cc:implementation>
+</html>

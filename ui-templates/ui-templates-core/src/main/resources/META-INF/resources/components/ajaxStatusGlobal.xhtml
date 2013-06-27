@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:composite="http://java.sun.com/jsf/composite"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+
+    <composite:interface>
+        <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="The component identifier for this component. This value must be unique within the closest parent component that is a naming container."/>
+        <composite:attribute name="onBegin" required="false" type="java.lang.String" shortDescription="Javascript code to be executed when ajax request has started."/>
+        <composite:attribute name="onSuccess" required="false" type="java.lang.String" shortDescription="Javascript code to be executed when ajax request has completed successufully."/>
+        <composite:attribute name="onError" required="false" type="java.lang.String" shortDescription="Javascript code to be executed when ajax request has completed with error."/>
+        <composite:attribute name="timeout" required="false" type="java.lang.String" delault="3000" shortDescription="Defines timeout duration after which facet 'waitPanel' will be shown. Assumes value in milliseconds."/>
+        <composite:facet name="waitPanel" shortDescription="Rendered when timeout expired after ajax request started."/>
+    </composite:interface>
+    <composite:implementation>
+        <e5ui-comp:ajaxStatus onBegin="#{cc.attrs.onBegin}" onSuccess="#{cc.attrs.onSuccess}" onError="#{cc.attrs.onError}"/>
+        <script type="text/javascript">
+            //<![CDATA[
+            e5ui_ajaxStatus.eventBegin['ajsg']=function(){if (!e5ui_ajaxStatus.ajsgStopped) e5ui_splashScreen.startShow('ajsg');};
+            e5ui_ajaxStatus.eventSuccess['ajsg']=e5ui_ajaxStatus.eventError['ajsg']=function(){if (!e5ui_ajaxStatus.ajsgStopped) e5ui_splashScreen.stopShow('ajsg');};
+            //]]>
+        </script>
+        <e5ui-comp:splashScreen id="ajsg" timeout="#{cc.attrs.timeout}"/>
+        <div id="#{cc.clientId}-waitPanel">
+            <composite:renderFacet name="waitPanel"/>
+        </div>
+        <script type="text/javascript">jQuery('##{cc.clientId.replaceAll(':', '\\\\\\\\:')}\\:ajsg-e5uiSplashScreen .e5ui-spsc-timeoutPanel').append(jQuery('##{cc.clientId.replaceAll(':', '\\\\\\\\:')}-waitPanel'));</script>
+    </composite:implementation>
+</html>

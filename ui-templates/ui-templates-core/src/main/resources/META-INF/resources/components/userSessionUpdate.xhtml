@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <h:head/>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="The component identifier for this component. This value must be unique within the closest parent component that is a naming container." />
+            <composite:attribute name="rendered" required="false" type="java.lang.Boolean" shortDescription="Flag indicating whether or not this component should be rendered (during Render Response Phase), or processed on any subsequent form submit. The default value for this property is true." />
+            <composite:attribute name="interval" required="false" type="java.lang.Integer" shortDescription="Interval in seconds to update user session." />
+        </composite:interface>
+        <composite:implementation>
+            <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+            <h:outputScript library="e5ui/js" name="jquery.js" target="head" />
+            <h:outputScript library="e5ui/js" name="userSessionHead.js" target="head" />
+
+            <h:outputText id="submitter" value="#{e5ui_sessionUpdateBean.updateCount}" style="display: none"/>
+            <script type="text/javascript">
+                jQuery(function($) {
+                    var id = "#{cc.clientId}:submitter";
+                    var found = false;
+                    for (var i in e5ui_updateSession.list) {
+                        if (i == id) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (found) {
+                        clearInterval(e5ui_updateSession.list[id]);
+                    } 
+                    
+                    e5ui_updateSession.list[id] = setInterval(function() {e5ui_updateSession.update("#{cc.clientId}:submitter");}, #{cc.attrs.interval}000);
+                });
+
+            </script>
+        </composite:implementation>
+    </h:body>
+</html>

@@ -1,0 +1,16 @@
+.e5ui-tablePager {
+    padding: 4px 0;
+    text-align: center;
+}
+
+.e5ui-tablePager-elem {
+    padding: 0 6px;
+}
+
+.e5ui-tablePager-elem input.pageSelector {
+    text-align: right;
+}
+
+.e5ui-tablePager-page-size {
+    margin-left: 5px;
+}

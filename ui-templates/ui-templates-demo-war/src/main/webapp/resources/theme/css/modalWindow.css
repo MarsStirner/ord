@@ -1,0 +1,13 @@
+/*
+    modal window
+    edit this class to change presentation of entire window
+*/
+.e5ui-modal {
+    background-color: #f5f5b5;
+    border: 1px solid #d3d3d3;
+    margin: 5px;
+    padding: 10px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <h:head/>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="The component identifier for this component. This value must be unique within the closest parent component that is a naming container."/>
+            <composite:attribute name="action" required="true" type="javax.el.MethodExpression" method-signature="java.lang.Object action()" shortDescription="MethodExpression representing an action to be executed when navigator event has fired." />
+            <composite:attribute name="event" required="false" type="java.lang.String" shortDescription="Type of navigator event to handle."/>
+            <composite:attribute name="render" required="false" type="java.lang.String" shortDescription="Determines id’s of components to be rendered." />
+            <composite:attribute name="execute" required="false" type="java.lang.String" shortDescription="Determines id’s of components to be executed." />
+        </composite:interface>
+        <composite:implementation>
+            <h:outputScript library="e5ui/js" name="util.js" target="head" />
+            <h:outputScript library="e5ui/js" name="navigator.js" target="head"/>
+            <h:outputScript library="e5ui/js" name="navigator.jsf.js" target="head"/>
+            <script type="text/javascript">window.onload=function(){setTimeout("e5ui_navigator.setup();", 50);};</script>
+            <div style="display: none;">
+                <h:commandButton id="e5uiNavigatorAction" action="#{cc.attrs.action}"/>
+                <input id="#{cc.clientId}:execute" type="hidden" value="#{cc.attrs.execute}"/>
+                <input id="#{cc.clientId}:render" type="hidden" value="#{cc.attrs.render}"/>
+            </div>
+            <c:choose>
+                <c:when test="#{cc.attrs.event eq 'back'}">
+                    <script type="text/javascript">e5ui_navigator.eventBack['#{cc.clientId}']=function(event){e5ui_navigator.click('#{cc.clientId}');};</script>
+                </c:when>
+                <c:when test="#{cc.attrs.event eq 'forward'}">
+                    <script type="text/javascript">e5ui_navigator.eventForward['#{cc.clientId}']=function(event){e5ui_navigator.click('#{cc.clientId}');};</script>
+                </c:when>
+                <c:when test="#{cc.attrs.event eq 'both'}">
+                    <script type="text/javascript">e5ui_navigator.eventForward['#{cc.clientId}']=e5ui_navigator.eventBack['#{cc.clientId}']=function(event){e5ui_navigator.click('#{cc.clientId}');};</script>
+                </c:when>
+            </c:choose>
+        </composite:implementation>
+    </h:body>
+</html>

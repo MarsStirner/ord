@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+    
+    <ui:composition template="/WEB-INF/jsf-template/main.xhtml">
+        <ui:define name="content">
+            <e5ui-comp:outputUtilScript/>
+
+            <h2>Work with Tab Panel component.</h2>
+
+            <h:form id="tabForm">
+                <e5ui:tabPanel id="tp1" style="width: 450px;">
+                    <e5ui:tabPage headerText="Page 1"
+                                  action="#{tabPanelData.page1Action}"
+                                  actionBehavior="ajax" selected="#{tabPanelData.page1Selected}">
+                        <div style="background-color: red; width: 200px; height: 100px;">
+                            ajax page<br/>
+                            current time = #{tabPanelData.text1}<br/>
+                            last action = #{tabPanelData.lastAction}
+                        </div>
+                    </e5ui:tabPage>
+                    <e5ui:tabPage action="#{tabPanelData.page2Action}"
+                                  actionBehavior="submit" selected="#{tabPanelData.page2Selected}">
+                        <f:facet name="header">
+                            <span style="background-color: greenyellow">Page 2</span>
+                        </f:facet>
+                        submit page<br/>
+                        next random int = #{tabPanelData.rand1}<br/>
+                        last action = #{tabPanelData.lastAction}
+                    </e5ui:tabPage>
+                    <e5ui:tabPage headerText="Page 3"
+                                  action="#{tabPanelData.page3Action}"
+                                  actionBehavior="client" selected="#{tabPanelData.page3Selected}">
+                        client-only page<br/>
+                        last action = #{tabPanelData.lastAction}
+                        <div style="padding-top: 30px;">
+                            <div style="width: 100px; height: 50px; background-color: cyan; cursor: pointer; text-align: center; margin: 10px auto;"
+                                 onclick="e5ui_splashScreen.startShow('spsc1');">
+                                click to show splash screen
+                            </div>
+                            <e5ui-comp:splashScreen id="spsc1" onTimeout="alert('splash screen timeout expired');" timeout="2000" widgetVar="spsc1">
+                                <f:facet name="timeoutPanel">
+                                    <div style="width: 100px; height: 50px; background-color: greenyellow; cursor: pointer; text-align: center; margin: 50px;"
+                                         onclick="spsc1.stopShow();">
+                                        click to hide splash screen
+                                    </div>
+                                </f:facet>
+                            </e5ui-comp:splashScreen>
+                        </div>
+                    </e5ui:tabPage>
+                    <e5ui:tabPage headerText="Page 4"
+                                  action="#{tabPanelData.page4Action}"
+                                  actionBehavior="submit" selected="#{tabPanelData.page4Selected}">
+                        <f:ajax execute="tp1" render="tp1"/>
+                        submit page with f:ajax<br/>
+                        next random int = #{tabPanelData.rand1}<br/>
+                        last action = #{tabPanelData.lastAction}
+                    </e5ui:tabPage>
+                    <e5ui:tabPage headerText="Disabled page"
+                                  actionBehavior="submit"
+                                  disabled="true">
+                        next random int = #{tabPanelData.rand1}<br/>
+                        last action = #{tabPanelData.lastAction}
+                    </e5ui:tabPage>
+                </e5ui:tabPanel>
+            <br/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

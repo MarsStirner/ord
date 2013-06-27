@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <h:head/>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="ID of component." />
+            <composite:attribute name="modalWindowHolder" required="true" type="ru.efive.uifaces.bean.ModalWindowHolderBean" shortDescription="The bean holds modal window state." />
+            <composite:attribute name="saveButton" required="false" type="java.lang.String" default="Save" shortDescription="The caption of the saving button." />
+            <composite:attribute name="closeButton" required="false" type="java.lang.String" default="Close" shortDescription="The caption of the closing button." />
+            <composite:attribute name="render" required="false" type="java.lang.String" shortDescription="Determines id’s of components to be rendered." />
+            <composite:attribute name="execute" required="false" type="java.lang.String" shortDescription="Determines id’s of components to be executed." />
+            <composite:attribute name="style" required="false" type="java.lang.String" shortDescroption="CSS style"/>
+            <composite:attribute name="styleClass" required="false" type="java.lang.String" shortDescroption="CSS style class."/>
+            <composite:attribute name="showButtons" required="false" type="java.lang.String" default="true" shortDescroption="Determines if Save and Close buttons should be displayed."/>
+            <composite:attribute name="widgetVar" required="false" type="java.lang.String" shortDescroption="Defines widget variable's name for this modal window. If value isn't defined widget variable won't be generated."/>
+            <composite:facet name="header" shortDescription="Window's header."/>
+            <composite:facet name="footer" shortDescription="Window's footer."/>
+            <composite:facet name="content" shortDescription="Window's content."/>
+        </composite:interface>
+        <composite:implementation>
+            <h:outputScript library="e5ui/js" name="jquery.js" target="head"/>
+            <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+            <h:outputScript library="e5ui/js" name="util.js" target="head" />
+            <h:outputScript library="e5ui/js" name="ajaxStatus.js" target="head"/>
+            <h:outputScript library="e5ui/js" name="modalWindow.js" target="head"/>
+            <h:outputStylesheet library="e5ui/css" name="modalWindow.css" />
+            <c:if test="#{cc.attrs.widgetVar ne null}" >
+                <script type="text/javascript">
+                    //<![CDATA[
+                    var #{cc.attrs.widgetVar} = {
+                        clickOpen: function() {
+                            e5ui_modalWindow.clickOpen('#{cc.clientId}');
+                        },
+                        clickSave: function() {
+                            e5ui_modalWindow.clickSave('#{cc.clientId}');
+                        },
+                        clickClose: function() {
+                            e5ui_modalWindow.clickClose('#{cc.clientId}');
+                        }
+                    }
+                    //]]>
+                </script>
+            </c:if>
+            <script type="text/javascript">
+                //<![CDATA[
+                document['#{cc.clientId}-hideOnEsc']=function (event) {
+                    if (event.keyCode == '27') {
+                        e5ui_modalWindow.clickClose('#{cc.clientId}');
+                    }
+                };
+                //]]>
+            </script>
+            <div style="display: none;">
+                <h:commandButton id="e5uiModalWindowOpenButton" action="#{cc.attrs.modalWindowHolder.show}"/>
+                <h:commandButton id="e5uiModalWindowSaveButton" action="#{cc.attrs.modalWindowHolder.save}"/>
+                <h:commandButton id="e5uiModalWindowCloseButton" action="#{cc.attrs.modalWindowHolder.hide}"/>
+                <input id="#{cc.clientId}:execute" type="hidden" value="#{cc.attrs.execute}"/>
+                <input id="#{cc.clientId}:render" type="hidden" value="#{cc.attrs.render}"/>
+            </div>
+            <h:panelGroup id="ajaxModal" layout="block">
+                <ui:fragment rendered="#{cc.attrs.modalWindowHolder.modalVisible}">
+                    <div class="e5ui-modal-overlay-shadow"/>
+                    <div class="e5ui-modal-overlay">
+                        <div class="e5ui-modal #{cc.attrs.styleClass}" style="#{cc.attrs.style}">
+                            <div class="e5ui-modal-content">
+                                <composite:insertChildren/>
+                                <composite:renderFacet name="footer"/>
+                                <ui:fragment rendered="#{cc.attrs.showButtons}">
+                                    <h:commandButton value="#{cc.attrs.saveButton}" onclick="e5ui_modalWindow.clickSave('#{cc.clientId}'); return false;"/>
+                                    <composite:renderFacet name="actions" />
+                                    <h:commandButton value="#{cc.attrs.closeButton}" onclick="e5ui_modalWindow.clickClose('#{cc.clientId}'); return false;"/>
+                                </ui:fragment>
+                            </div>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        jQuery(document).bind('keydown keypress keyup', document['#{cc.clientId}-hideOnEsc']);
+                        jQuery(document).bind('ready', function(){e5ui_modalWindow.place('#{cc.clientId}')});
+                        e5ui_modalWindow.place('#{cc.clientId}');
+                        e5ui_ajaxStatus.eventSuccess['#{cc.clientId}:ajaxSatus']=function(event){e5ui_modalWindow.place('#{cc.clientId}');};
+                    </script>
+                </ui:fragment>
+                <ui:fragment rendered="#{not cc.attrs.modalWindowHolder.modalVisible}">
+                    <script type="text/javascript">jQuery(document).unbind('keydown keypress keyup', document['#{cc.clientId}-hideOnEsc']);</script>
+                </ui:fragment>
+            </h:panelGroup>
+        </composite:implementation>
+    </h:body>
+</html>

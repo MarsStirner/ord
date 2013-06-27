@@ -1,0 +1,38 @@
+/* multiMarker's popup window style */
+.e5ui-marker-hintWindow {
+	background-color: #f5f5b5;
+	border: 1px solid #DECA7E;
+	color: #303030;
+	font-family: sans-serif;
+	font-size: 12px;
+	line-height: 18px;
+	padding: 10px;
+}
+
+/* multiMarker's "info" icon */
+.e5ui-marker-hintWindow-info {
+	background-image: url('#{resource['theme/images:marker-info.png']}');
+	background-repeat: no-repeat;
+	padding-left: 20px;
+}
+
+/* multiMarker's "warn" icon */
+.e5ui-marker-hintWindow-warn {
+	background-image: url('#{resource['theme/images:marker-warn.png']}');
+	background-repeat: no-repeat;
+	padding-left: 20px;
+}
+
+/* multiMarker's "error" icon */
+.e5ui-marker-hintWindow-error {
+	background-image: url('#{resource['theme/images:marker-error.png']}');
+	background-repeat: no-repeat;
+	padding-left: 20px;
+}
+
+/* multiMarker's "fatal" icon */
+.e5ui-marker-hintWindow-fatal {
+	background-image: url('#{resource['theme/images:marker-fatal.png']}');
+	background-repeat: no-repeat;
+	padding-left: 20px;
+}

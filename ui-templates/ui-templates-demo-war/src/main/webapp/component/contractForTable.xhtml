@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+    
+    <ui:composition template="/WEB-INF/jsf-template/main.xhtml">
+        <ui:define name="content">
+            <e5ui-comp:outputUtilScript/>
+
+            <h2>Document linked with table</h2>
+
+            <h2>
+                <h:outputText value="Create contract" rendered="#{contractWorkflow.state.name eq 'create'}"/>
+                <h:outputText value="Edit contract" rendered="#{contractWorkflow.state.name eq 'edit'}"/>
+                <h:outputText value="View contract" rendered="#{contractWorkflow.state.name eq 'view'}"/>
+            </h2>
+
+            <h:form>
+                <h:commandButton value="Edit" 
+                                 rendered="#{contractWorkflow.actionAllowed('edit')}"
+                                 action="#{contractWorkflow.doAction('edit')}"/>
+                <h:commandButton value="Save"
+                                 rendered="#{contractWorkflow.actionAllowed('saveAndView')}"
+                                 action="#{contractWorkflow.doAction('saveAndView')}"/>
+                <h:commandButton value="Cancel"
+                                 rendered="#{contractWorkflow.actionAllowed('cancelAndView')}"
+                                 action="#{contractWorkflow.doAction('cancelAndView')}"/>
+                <h:commandButton value="Back"
+                                 title="No changes will be saved"
+                                 action="#{contractWorkflow.doAction('cancel', null)}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:composite="http://java.sun.com/jsf/composite">
+
+    <h:head/>
+    <h:body>
+        <composite:interface>
+            <composite:attribute name="actionListener" required="false" type="javax.el.MethodExpression" method-signature="java.lang.Object action()" shortDescription="MethodExpression representing an action listener method that will be notified when this component is activated by the user. The expression must evaluate to a public method that takes an ActionEvent parameter, with a return type of void." />
+            <composite:attribute name="id" required="false" type="java.lang.String" shortDescription="The component identifier for this component. This value must be unique within the closest parent component that is a naming container." />
+            <composite:attribute name="immediate" required="false" type="java.lang.Boolean" shortDescription="Flag indicating that, if this component is activated by the user, notifications should be delivered to interested listeners and actions immediately (that is, during Apply Request Values phase) rather than waiting until Invoke Application phase." />
+            <composite:attribute name="rendered" required="false" type="java.lang.Boolean" shortDescription="Flag indicating whether or not this component should be rendered (during Render Response Phase), or processed on any subsequent form submit. The default value for this property is true." />
+            <composite:attribute name="value" required="false" type="java.lang.Object" shortDescription="The current value of this component." />
+            <composite:attribute name="accesskey" required="false" type="java.lang.String" shortDescription="Access key that, when pressed, transfers focus to this element." />
+            <composite:attribute name="charset" required="false" type="java.lang.String" shortDescription="The character encoding of the resource designated by this hyperlink." />
+            <composite:attribute name="coords" required="false" type="java.lang.String" shortDescription="The position and shape of the hot spot on the screen (for use in client-side image maps)." />
+            <composite:attribute name="dir" required="false" type="java.lang.String" shortDescription="Direction indication for text that does not inherit directionality. Valid values are LTR (left-to-right) and RTL (right-to-left)." />
+            <composite:attribute name="disabled" required="false" type="java.lang.Boolean" shortDescription="Flag indicating that this element must never receive focus or be included in a subsequent submit. A value of false causes no attribute to be rendered, while a value of true causes the attribute to be rendered as disabled='disabled'" />
+            <composite:attribute name="hreflang" required="false" type="java.lang.String" shortDescription="The language code of the resource designated by this hyperlink." />
+            <composite:attribute name="lang" required="false" type="java.lang.String" shortDescription="Code describing the language used in the generated markup for this component." />
+            <composite:attribute name="onblur" required="false" type="java.lang.String" shortDescription="Javascript code executed when this element loses focus." />
+            <composite:attribute name="onclick" required="false" type="java.lang.String" shortDescription="Javascript code executed when a pointer button is clicked over this element." />
+            <composite:attribute name="ondblclick" required="false" type="java.lang.String" shortDescription="Javascript code executed when a pointer button is double clicked over this element." />
+            <composite:attribute name="onfocus" required="false" type="java.lang.String" shortDescription="Javascript code executed when this element receives focus." />
+            <composite:attribute name="onkeydown" required="false" type="java.lang.String" shortDescription="Javascript code executed when a key is pressed down over this element." />
+            <composite:attribute name="onkeypress" required="false" type="java.lang.String" shortDescription="Javascript code executed when a key is pressed and released over this element." />
+            <composite:attribute name="onkeyup" required="false" type="java.lang.String" shortDescription="Javascript code executed when a key is released over this element." />
+            <composite:attribute name="onmousedown" required="false" type="java.lang.String" shortDescription="Javascript code executed when a pointer button is pressed down over this element." />
+            <composite:attribute name="onmousemove" required="false" type="java.lang.String" shortDescription="Javascript code executed when a pointer button is moved within this element." />
+            <composite:attribute name="onmouseout" required="false" type="java.lang.String" shortDescription="Javascript code executed when a pointer button is moved away from this element." />
+            <composite:attribute name="onmouseover" required="false" type="java.lang.String" shortDescription="Javascript code executed when a pointer button is moved onto this element." />
+            <composite:attribute name="onmouseup" required="false" type="java.lang.String" shortDescription="Javascript code executed when a pointer button is released over this element." />
+            <composite:attribute name="rel" required="false" type="java.lang.String" shortDescription="The relationship from the current document to the anchor specified by this hyperlink. The value of this attribute is a space-separated list of link types." />
+            <composite:attribute name="rev" required="false" type="java.lang.String" shortDescription="A reverse link from the anchor specified by this hyperlink to the current document. The value of this attribute is a space-separated list of link types." />
+            <composite:attribute name="shape" required="false" type="java.lang.String" shortDescription="The shape of the hot spot on the screen (for use in client-side image maps). Valid values are: default (entire region); rect (rectangular region); circle (circular region); and poly (polygonal region)." />
+            <composite:attribute name="style" required="false" type="java.lang.String" shortDescription="CSS style(s) to be applied when this component is rendered." />
+            <composite:attribute name="styleClass" required="false" type="java.lang.String" shortDescription="Space-separated list of CSS style class(es) to be applied when this element is rendered. This value must be passed through as the 'class' attribute on generated markup." />
+            <composite:attribute name="tabindex" required="false" type="java.lang.String" shortDescription="Position of this element in the tabbing order for the current document. This value must be an integer between 0 and 32767." />
+            <composite:attribute name="target" required="false" type="java.lang.String" shortDescription="Name of a frame where the resource retrieved via this hyperlink is to be displayed." />
+            <composite:attribute name="title" required="false" type="java.lang.String" shortDescription="Advisory title information about markup elements generated for this component." />
+            <composite:attribute name="type" required="false" type="java.lang.String" shortDescription="Type of button to create. Valid values are 'submit' and 'reset'. If not specified, or not a valid value, the default value is 'submit'." />
+            <composite:attribute name="binding" required="false" type="javax.el.ValueExpression" shortDescription="The ValueExpression linking this component to a property in a backing bean." />
+            
+            <composite:attribute name="targetWindow" required="true" type="java.lang.String" shortDescription="The identifier of an window to be opened." />
+            <composite:attribute name="modalWindowHolder" required="true" type="ru.efive.uifaces.bean.ModalWindowHolderBean" shortDescription="The bean holds modal window state." />
+        </composite:interface>
+        <composite:implementation>
+            <h:commandLink id="#{cc.attrs.id}" action="#{cc.attrs.modalWindowHolder.show}">
+                <c:if test="#{not empty cc.attrs.actionListener}"><f:attribute name="actionListener" value="#{cc.attrs.actionListener}" /></c:if>
+                <c:if test="#{not empty cc.attrs.immediate}"><f:attribute name="immediate" value="#{cc.attrs.immediate}" /></c:if>
+                <c:if test="#{not empty cc.attrs.rendered}"><f:attribute name="rendered" value="#{cc.attrs.rendered}" /></c:if>
+                <c:if test="#{not empty cc.attrs.value}"><f:attribute name="value" value="#{cc.attrs.value}" /></c:if>
+                <c:if test="#{not empty cc.attrs.accesskey}"><f:attribute name="accesskey" value="#{cc.attrs.accesskey}" /></c:if>
+                <c:if test="#{not empty cc.attrs.charset}"><f:attribute name="charset" value="#{cc.attrs.charset}" /></c:if>
+                <c:if test="#{not empty cc.attrs.coords}"><f:attribute name="coords" value="#{cc.attrs.coords}" /></c:if>
+                <c:if test="#{not empty cc.attrs.dir}"><f:attribute name="dir" value="#{cc.attrs.dir}" /></c:if>
+                <c:if test="#{not empty cc.attrs.disabled}"><f:attribute name="disabled" value="#{cc.attrs.disabled}" /></c:if>
+                <c:if test="#{not empty cc.attrs.hreflang}"><f:attribute name="hreflang" value="#{cc.attrs.hreflang}" /></c:if>
+                <c:if test="#{not empty cc.attrs.lang}"><f:attribute name="lang" value="#{cc.attrs.lang}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onblur}"><f:attribute name="onblur" value="#{cc.attrs.onblur}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onclick}"><f:attribute name="onclick" value="#{cc.attrs.onclick}" /></c:if>
+                <c:if test="#{not empty cc.attrs.ondblclick}"><f:attribute name="ondblclick" value="#{cc.attrs.ondblclick}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onfocus}"><f:attribute name="onfocus" value="#{cc.attrs.onfocus}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onkeydown}"><f:attribute name="onkeydown" value="#{cc.attrs.onkeydown}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onkeypress}"><f:attribute name="onkeypress" value="#{cc.attrs.onkeypress}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onkeyup}"><f:attribute name="onkeyup" value="#{cc.attrs.onkeyup}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onmousedown}"><f:attribute name="onmousedown" value="#{cc.attrs.onmousedown}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onmousemove}"><f:attribute name="onmousemove" value="#{cc.attrs.onmousemove}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onmouseout}"><f:attribute name="onmouseout" value="#{cc.attrs.onmouseout}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onmouseover}"><f:attribute name="onmouseover" value="#{cc.attrs.onmouseover}" /></c:if>
+                <c:if test="#{not empty cc.attrs.onmouseup}"><f:attribute name="onmouseup" value="#{cc.attrs.onmouseup}" /></c:if>
+                <c:if test="#{not empty cc.attrs.rel}"><f:attribute name="rel" value="#{cc.attrs.rel}" /></c:if>
+                <c:if test="#{not empty cc.attrs.rev}"><f:attribute name="rev" value="#{cc.attrs.rev}" /></c:if>
+                <c:if test="#{not empty cc.attrs.shape}"><f:attribute name="shape" value="#{cc.attrs.shape}" /></c:if>
+                <c:if test="#{not empty cc.attrs.style}"><f:attribute name="style" value="#{cc.attrs.style}" /></c:if>
+                <c:if test="#{not empty cc.attrs.styleClass}"><f:attribute name="styleClass" value="#{cc.attrs.styleClass}" /></c:if>
+                <c:if test="#{not empty cc.attrs.tabindex}"><f:attribute name="tabindex" value="#{cc.attrs.tabindex}" /></c:if>
+                <c:if test="#{not empty cc.attrs.target}"><f:attribute name="target" value="#{cc.attrs.target}" /></c:if>
+                <c:if test="#{not empty cc.attrs.title}"><f:attribute name="title" value="#{cc.attrs.title}" /></c:if>
+                <c:if test="#{not empty cc.attrs.type}"><f:attribute name="type" value="#{cc.attrs.type}" /></c:if>
+                <c:if test="#{not empty cc.attrs.binding}"><f:attribute name="binding" value="#{cc.attrs.binding}" /></c:if>
+                
+                <f:ajax render="#{cc.attrs.targetWindow}" />
+                <composite:insertChildren />
+            </h:commandLink>
+        </composite:implementation>
+    </h:body>
+</html>

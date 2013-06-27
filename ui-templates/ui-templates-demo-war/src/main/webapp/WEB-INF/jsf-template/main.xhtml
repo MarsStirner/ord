@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets" 
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <h:outputStylesheet library="css" name="cssLayout.css"/>
+
+        <title>UI Templates Demonstration</title>
+    </h:head>
+
+    <h:body>
+        <div id="top">
+            <ui:insert name="top">
+                <h1>UI Templates Demonstration</h1>
+
+                JSF based UI components framework demonstration.
+            </ui:insert>
+        </div>
+        <div>
+            <div id="left">
+                <ui:insert name="left">
+                    <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
+                    <c:set var="contextPath" value="#{request.contextPath}"/>
+                    <e5ui:menu>
+                        <e5ui:viewMenuItem label="Home" value="/index.xhtml"/>
+                        <e5ui:viewMenuItem label="#{'Components'}" value="/component/index.xhtml" current="/component/" collapsable="true">
+                            <e5ui:menuItem label="#{'Menu Component'}" value="#{contextPath}/component/menu.xhtml" selected="#{currentView eq '/component/menu.xhtml'}"/>
+                            <e5ui:menuItem value="http://google.com" target="_blank">
+                                <f:facet name="label">Link to Google (new window)</f:facet>
+                            </e5ui:menuItem>
+                            <e5ui:menuItem>
+                                <f:facet name="content">
+                                    <h:outputLink value="http://yandex.ru">Link to Yandex (current window)</h:outputLink>
+                                </f:facet>
+                            </e5ui:menuItem>
+                            <e5ui:menuItem selected="#{currentView eq '/component/document.xhtml'}">
+                                <f:facet name="content">
+                                    <h:outputLink value="#{contextPath}/component/document.xhtml">
+                                        Work with Document (Beta)
+                                        <f:param name="edit" value="#{true}"/>
+                                    </h:outputLink>
+                                </f:facet>
+                            </e5ui:menuItem>
+                            <e5ui:menuItem selected="#{currentView eq '/component/contract.xhtml'}">
+                                <f:facet name="content">
+                                    <h:outputLink value="#{contextPath}/component/contract.xhtml">
+                                        Work with Contract
+                                        <f:param name="docId" value="1"/>
+                                    </h:outputLink>
+                                </f:facet>
+                            </e5ui:menuItem>
+                            <e5ui:viewMenuItem label="Document Table" value="/component/table.xhtml"/>
+                            <e5ui:viewMenuItem label="Tab panel" value="/component/tabpanel.xhtml"/>
+                            <e5ui:viewMenuItem label="File upload" value="/component/fileupload.xhtml"/>
+                            <e5ui:viewMenuItem label="Navigator" value="/component/navigator.xhtml"/>
+                            <e5ui:viewMenuItem label="Document DynaTable" value="/component/dynaTable.xhtml"/>
+                            <e5ui:viewMenuItem label="Input time" value="/component/inputTime.xhtml"/>
+                            <e5ui:viewMenuItem label="Calendar plan" value="/component/calendar.xhtml"/>
+                            <e5ui:viewMenuItem label="Include page" value="/component/include.xhtml"/>
+                        </e5ui:viewMenuItem>
+                        <e5ui:viewMenuItem label="About this Demo" value="/about.xhtml" collapsable="true"/>
+                        <e5ui:menuItem>
+                            <f:facet name="content">
+                                <h:form rendered="#{authenticationBean.loggedIn ne 'true'}">
+                                    <h:commandLink action="#{authenticationBean.logIn}">
+                                        Log in
+                                    </h:commandLink>
+                                </h:form>
+                                <h:form rendered="#{authenticationBean.loggedIn eq 'true'}">
+                                    <h:commandLink action="#{authenticationBean.logOut}">
+                                        Log out
+                                    </h:commandLink>
+                                </h:form>
+                            </f:facet>
+                        </e5ui:menuItem>
+                    </e5ui:menu>
+                </ui:insert>
+            </div>
+            <div>
+                <div id="right">
+                    <ui:insert name="right">
+                        Banner
+                    </ui:insert>
+                    <e5ui-comp:ajaxStatus onError="alert('Ajax request failed!\nstatus: ' + event.status + '\nresponse code: ' + event.responseCode);">
+                        <f:facet name="success">
+                            <div style="background-color: greenyellow;">Success</div>
+                        </f:facet>
+                        <f:facet name="processing">
+                            <div style="background-color: blue;">Processing...</div>
+                        </f:facet>
+                        <f:facet name="error">
+                            <div style="background-color: red;">Error</div>
+                        </f:facet>
+                    </e5ui-comp:ajaxStatus>
+                    <e5ui-comp:ajaxStatusGlobal onError="alert('Ajax request failed!\nstatus: ' + event.status + '\nresponse code: ' + event.responseCode);" timeout="300">
+                        <f:facet name="waitPanel">
+                            <div style="background-color: blue; color: white; width: 200px; height: 70px;">Processing...</div>
+                        </f:facet>
+                    </e5ui-comp:ajaxStatusGlobal>
+                </div>
+                <div id="content" class="right_content">                    
+                    <ui:insert name="content">
+                        Content
+                    </ui:insert>
+                </div>
+            </div>
+        </div>
+        <div id="bottom">
+            <ui:insert name="bottom">
+                (C) Copyright 2011 <a href="http://www.efive.ru">Element 5</a><br/>
+            </ui:insert>
+        </div>
+    </h:body>
+
+    <!-- theme -->
+    <h:outputStylesheet library="theme/css" name="default.css"/>
+    <h:outputStylesheet library="theme/css" name="modalWindow.css"/>
+    <h:outputStylesheet library="theme/css" name="tabPanel.css"/>
+    <h:outputStylesheet library="theme/css" name="menu.css"/>
+    <h:outputStylesheet library="theme/css" name="marker.css"/>
+    <h:outputStylesheet library="theme/css" name="multiMarker.css"/>
+    <h:outputStylesheet library="theme/css" name="datatable.css"/>
+    <h:outputStylesheet library="theme/css" name="tablePager.css"/>
+</html>

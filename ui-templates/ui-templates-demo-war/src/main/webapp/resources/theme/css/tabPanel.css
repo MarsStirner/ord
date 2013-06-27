@@ -1,0 +1,47 @@
+/* tab panel's header div */
+.e5uiTabPanelHeader {
+    padding-top: 2px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-bottom: 2px;
+    margin-bottom: 4px;
+    border: none;
+}
+
+/* tab page button */
+.e5uiTabPanelHeaderPage {
+    border: 1px solid #d3d3d3;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    margin-left: 2px;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+/* tab page button for currently selected page */
+.e5uiTabPanelHeaderPage.selected {
+    border: 1px solid #d3d3d3;
+    background-color: #f5f5b5;
+    cursor: auto;
+}
+
+/* tab page button for currently disabled page */
+.e5uiTabPanelHeaderPage.disabled {
+    background-color: #dddddd;
+    cursor: auto;
+}
+
+/* container for tab pages */
+.e5uiTabPanelContent {
+    padding: 1px;
+    border: 1px solid #d3d3d3;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    height: 200px;
+}

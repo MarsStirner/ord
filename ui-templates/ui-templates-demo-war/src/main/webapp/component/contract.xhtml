@@ -1,0 +1,406 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:e5ui="http://efive.ru/uitemplates"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+    
+    <ui:composition template="/WEB-INF/jsf-template/main.xhtml">
+        <ui:define name="content">
+            <e5ui-comp:outputUtilScript/>
+
+            <h2>Work with contract document.</h2>
+
+            <h2>
+                <h:outputText rendered="#{contractHolder.createState}" value="Create a new Contract" />
+                <h:outputText rendered="#{contractHolder.editState}" value="Edit contract no ##{contractHolder.document.id}" />
+                <h:outputText rendered="#{contractHolder.viewState}" value="View contract no ##{contractHolder.document.id}" />
+                <h:outputText rendered="#{contractHolder.notFoundState}" value="404 - Document not Found" />
+                <h:outputText rendered="#{contractHolder.forbiddenState}" value="403 - Forbidden" />
+                <h:outputText rendered="#{not(contractHolder.createState or contractHolder.editState or contractHolder.viewState or contractHolder.notFoundState or contractHolder.forbiddenState)}" value="Access Denied" />
+            </h2>
+
+            <h:form id="contractForm">
+                <c:set var="contract" value="#{contractHolder.document}"/>
+
+                <e5ui-comp:userSessionUpdate interval="60"/>
+
+                <div style="margin-bottom: 12px;">
+                    <h:commandButton action="#{contractHolder.edit}"
+                                     value="Edit"
+                                     rendered="#{contractHolder.viewState}"/>
+                    <h:commandButton action="#{contractHolder.save}" 
+                                     value="Save"
+                                     rendered="#{contractHolder.editState or contractHolder.createState}">
+                        <e5ui:formPartTarget formPart="editFormPart"/>
+                    </h:commandButton>
+                    <h:commandButton action="#{contractHolder.cancel}"
+                                     value="Cancel"
+                                     rendered="#{contractHolder.editState}">
+                        <e5ui:formPartTarget />
+                    </h:commandButton>
+                    <h:commandButton action="#{contractHolder.delete}"
+                                     value="Delete"
+                                     rendered="#{contractHolder.editState or contractHolder.viewState}">
+                        <e5ui:formPartTarget />
+                    </h:commandButton>
+                </div>
+
+                <h:panelGroup rendered="#{contractHolder.viewState}">
+                    <div style="padding: 6px;">
+                        <span style="padding: 6px;">
+                            <b>Creation Date:</b>&nbsp;
+                            <h:outputText value="#{contractHolder.document.createDate}">
+                                <f:convertDateTime pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </span>
+                        <span style="padding: 6px; #{(not contractHolder.viewCuratorPerson)? 'border-style: solid; border-color: gray; border-width: 1px 1px 0 1px;': ''}">
+                            <b>Author:</b>&nbsp;
+                            <h:commandLink value="#{contract.author.shortName}"
+                                           action="#{contractHolder.changePersonToAuthor}">
+                                <f:ajax render="@form"/>
+                            </h:commandLink>
+                        </span>
+                        <span style="padding: 6px; #{(contractHolder.viewCuratorPerson)? 'border-style: solid; border-color: gray; border-width: 1px 1px 0 1px;': ''}">
+                            <b>Curator:</b>&nbsp;
+                            <h:commandLink value="#{contract.curator.shortName}"
+                                           action="#{contractHolder.changePersonToCurator}">
+                                <f:ajax render="@form"/>
+                            </h:commandLink>
+                        </span>
+                    </div>
+                    <div style="border: solid 1px gray; padding: 6px;">
+                        <h2>
+                            <h:outputText rendered="#{not contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.author.name}"/>
+                            <h:outputText rendered="#{contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.curator.name}"/>
+                        </h2>
+                        <p>
+                            <b>Title:</b>&nbsp;
+                            <h:outputText rendered="#{not contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.author.title}"/>
+                            <h:outputText rendered="#{contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.curator.title}"/>
+                            <br/>
+                            <b>Department:</b>&nbsp;
+                            <h:outputText rendered="#{not contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.author.department}"/>
+                            <h:outputText rendered="#{contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.curator.department}"/>
+                            <br/>
+                            <b>Phone:</b>&nbsp;
+                            <h:outputText rendered="#{not contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.author.phone}"/>
+                            <h:outputText rendered="#{contractHolder.viewCuratorPerson}"
+                                          value="#{contractHolder.document.curator.phone}"/>
+                            <br/>
+                        </p>
+                    </div>
+                    <div style="padding: 6px;">
+                        <b>Contractors:</b>&nbsp;
+                        <ui:repeat value="#{contractHolder.document.contractors}" var="contractor">
+                            <h:outputText title="#{contractor.address}" value="#{contractor.name}"/>&nbsp;&nbsp;
+                        </ui:repeat>
+                    </div>
+                    <div style="float:left; width: 32%; border-right: dashed 1px gray; padding: 6px;">
+                        <b>Registration Number:</b>&nbsp;<h:outputText value="#{contract.registrationNumber}"/><br/>
+                        <b>Contract Kind:</b>&nbsp;<h:outputText value="#{contract.contractKind}"/><br/>
+                        <b>Sign Date:</b>&nbsp;<h:outputText value="#{contract.signDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy"/>
+                        </h:outputText><br/>
+                        <b>Valid Thru:</b>&nbsp;<h:outputText value="#{contract.validThruDate}">
+                            <f:convertDateTime pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </div>
+                    <div style="float:left; width: 32%; border-right: dashed 1px gray; padding: 6px;">
+                        <b>Activity Kind:</b>&nbsp;<h:outputText value="#{contract.activityKind}"/><br/>
+                        <b>Business Plan Item:</b>&nbsp;<h:outputText value="#{contract.businessPlanItem}"/><br/>
+                        <b>BDDS Item:</b>&nbsp;<h:outputText value="#{contract.bddsItem}"/><br/>
+                        <b>Project:</b>&nbsp;<h:outputText value="#{contract.projectName}"/>
+                    </div>
+                    <div style="float:left; width: 32%; padding: 6px;">
+                        <b>Currency:</b>&nbsp;<h:outputText value="#{contract.currency}"/><br/>
+                        <b>Sum:</b>&nbsp;<h:outputText value="#{contract.sum}"/><br/>
+                        <b>Sum with VAT:</b>&nbsp;<h:outputText value="#{contract.sumWithVat}"/><br/>
+                        <b>Payment terms:</b>&nbsp;<h:outputText value="#{contract.paymentTerms}"/>
+                    </div>
+                    <div style="clear: both"/>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{contractHolder.createState or contractHolder.editState}">
+                    <e5ui:formPart id="editFormPart">
+                        <div style="float: left; width: 55%;">
+                            <h:panelGrid columns="3">
+                                <h:outputLabel for="createDate:dateEditor" value="Creation Date:"/>
+                                <e5ui-comp:inputDate id="createDate" value="#{contractHolder.document.createDate}" required="true" lang="ru"/>
+                                <e5ui:marker for="createDate:dateEditor"/>
+
+                                <h:outputLabel for="registrationNumber" value="Registration Number:"/>
+                                <h:panelGroup>
+                                    <h:inputText id="registrationNumber" value="#{contractHolder.document.registrationNumber}" required="true">
+                                        <f:validateRegex pattern="[A-Z1-9]+[A-Z0-9/]*[A-Z0-9]+"/>
+                                    </h:inputText>
+                                    <e5ui-comp:modalButton value="..." title="Ajax Modal" targetWindow=":contractForm:ajaxModal:ajaxModal" modalWindowHolder="#{contractHolder.registrationNumberModal}" />
+                                    <e5ui-comp:modalWindow id="ajaxModal"
+                                                           modalWindowHolder="#{contractHolder.registrationNumberModal}"
+                                                           render=":contractForm:registrationNumber"
+                                                           execute="ajaxModalRegistrationNumber">
+
+                                        <h2>This is AJAX dyna form!!!</h2>
+                                        <p>This is a simple text for AJAX dyna window</p>
+                                        <div style="padding-bottom: 32px;">
+                                            <h:outputLabel for="ajaxModalRegistrationNumber" value="Registration Number:" />
+                                            <h:inputText id="ajaxModalRegistrationNumber" value="#{contractHolder.registrationNumberModal.registrationNumber}" required="true" />
+                                            <e5ui:marker for="ajaxModalRegistrationNumber" />
+                                        </div>
+                                        <f:facet name="actions">
+                                            <input type="button" value="Usless button" />
+                                        </f:facet>
+                                    </e5ui-comp:modalWindow>
+                                </h:panelGroup>
+                                <e5ui:marker for="registrationNumber"/>
+
+                                <h:outputLabel for="contractKind" value="Contract Kind:"/>
+                                <h:inputText id="contractKind" value="#{contractHolder.document.contractKind}" required="true"/>
+                                <e5ui:marker for="contractKind"/>
+
+                                <h:outputLabel for="signDate:dateEditor" value="Sign Date:"/>
+                                <e5ui-comp:inputDate id="signDate" value="#{contractHolder.document.signDate}" required="true" lang="ru"/>
+                                <e5ui:marker for="signDate:dateEditor"/>
+
+                                <h:outputLabel for="validThru:dateEditor" value="Valid Thru:"/>
+                                <e5ui-comp:inputDate id="validThru" value="#{contractHolder.document.validThruDate}" disableEditor="true" required="true" lang="ru"/>
+                                <e5ui:marker for="validThru:dateEditor"/>
+
+                                <h:outputLabel for="activityKind" value="Activity Kind:"/>
+                                <h:inputText id="activityKind" value="#{contractHolder.document.activityKind}" required="true"/>
+                                <e5ui:marker for="activityKind"/>
+
+                                <h:outputLabel for="bpItem" value="Business Plan Item:"/>
+                                <h:inputText id="bpItem" value="#{contractHolder.document.businessPlanItem}" required="true"/>
+                                <e5ui:marker for="bpItem"/>
+
+                                <h:outputLabel for="bddsItem" value="BDDS Item:"/>
+                                <h:inputText id="bddsItem" value="#{contractHolder.document.bddsItem}" required="true"/>
+                                <e5ui:marker for="bddsItem"/>
+
+                                <h:outputLabel for="project" value="Project:"/>
+                                <h:inputText id="project" value="#{contractHolder.document.projectName}" required="true"/>
+                                <e5ui:marker for="project"/>
+
+                                <h:outputLabel for="currency" value="Currency:"/>
+                                <h:inputText id="currency" value="#{contractHolder.document.currency}" required="true"/>
+                                <e5ui:marker for="currency"/>
+
+                                <h:outputLabel for="sum" value="Sum:"/>
+                                <h:panelGroup>
+                                    <h:inputText id="documentSum" value="#{contractHolder.document.sum}" required="true"/>
+                                    <!--<e5ui-comp:modalButton 
+                                        value="..."
+                                        title="Ajax Sum Calculator"
+                                        targetWindow=":contractForm:ajaxSum:ajaxModal"
+                                        modalWindowHolder="# {contractHolder.sumSelectorModalHolder}" />-->
+                                    <!--<e5ui:formPart id="buttonFormPart">
+                                        <h:commandButton value="..."
+                                                         title="Ajax Sum Calculator"
+                                                         action="# {contractHolder.sumSelectorModalHolder.show()}">
+                                            <e5ui:formPartTarget formPart="buttonFormPart"/>
+                                        </h:commandButton>
+                                    </e5ui:formPart>-->
+                                    <h:button value="..."
+                                              title="Ajax Sum Calculator"
+                                              onclick="ajaxSumModalWindow.clickOpen(); return false;"/>
+
+                                    <e5ui-comp:modalWindow id="ajaxSum"
+                                                           modalWindowHolder="#{contractHolder.sumSelectorModalHolder}"
+                                                           render="documentSum"
+                                                           style="width: 600px;"
+                                                           showButtons="false"
+                                                           widgetVar="ajaxSumModalWindow">
+                                        <div>
+                                            <h:panelGroup layout="block" style="text-align: right; background-color: #c2dfef;">
+                                                <h:button onclick="e5ui_modalWindow.clickSave('ajaxSum'); return false;" value="!"/>
+                                                <h:button onclick="ajaxSumModalWindow.clickClose(); return false;" value="X"/>
+                                            </h:panelGroup>
+                                            <h2 style="text-align: center;">Select elements to summarize</h2>
+                                        </div>
+                                        <e5ui:dataTable
+                                            id="records"
+                                            var="row"
+                                            grouping="false"
+                                            border="1"
+                                            width="100%"
+                                            value="#{contractHolder.sumSelectorModalHolder.contractList.documents}">
+
+                                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"/>
+
+                                            <e5ui:column>
+                                                <f:facet name="header">
+                                                    Id
+                                                </f:facet>
+                                                <h:outputText value="#{row.id}" style="#{contractHolder.sumSelectorModalHolder.selected(row)? 'font-weight: bold; color: blue;': ''}"/>
+                                                <h:commandLink id="selectLink" style="display: none;"
+                                                               rendered="#{not contractHolder.sumSelectorModalHolder.selected(row)}"
+                                                               action="#{contractHolder.sumSelectorModalHolder.select(row)}"/>
+                                                <h:commandLink id="unselectLink" style="display: none;"
+                                                               rendered="#{contractHolder.sumSelectorModalHolder.selected(row)}"
+                                                               action="#{contractHolder.sumSelectorModalHolder.unselect(row)}"/>
+                                            </e5ui:column>
+                                            <e5ui:column>
+                                                <f:facet name="header">
+                                                    Author
+                                                </f:facet>
+                                                <h:outputText value="#{row.author.name}" style="#{contractHolder.sumSelectorModalHolder.selected(row)? 'font-weight: bold; color: blue;': ''}"/>
+                                            </e5ui:column>
+                                            <e5ui:column>
+                                                <f:facet name="header">
+                                                    Sum
+                                                </f:facet>
+                                                <h:outputText value="#{row.sum}" style="#{contractHolder.sumSelectorModalHolder.selected(row)? 'font-weight: bold; color: blue;': ''}"/>
+                                            </e5ui:column>
+
+                                        </e5ui:dataTable>
+                                        <div style="padding:4px 0;text-align:center;padding-bottom: 32px;">
+                                            <e5ui-comp:tablePager id="pager"
+                                                                  documentListHolder="#{contractHolder.sumSelectorModalHolder.contractList}"
+                                                                  style="display:inline;" />
+                                            <e5ui-comp:tablePageSizeSelector
+                                                id="pageSizeSelector"
+                                                documentListHolder="#{contractHolder.sumSelectorModalHolder.contractList}"
+                                                style="display:inline;float:right;"
+                                                pageSizes="10, 15, 20, 25, 30, 35, 40, 45, 50" />
+                                        </div>
+                                    </e5ui-comp:modalWindow>
+                                </h:panelGroup>
+                                <e5ui:marker for="sum"/>
+
+                                <h:outputLabel for="sumWithVat" value="Sum with VAT:"/>
+                                <h:inputText id="sumWithVat" value="#{contractHolder.document.sumWithVat}" required="true"/>
+                                <e5ui:marker for="sumWithVat"/>
+
+                                <h:outputLabel for="paymentTerms" value="Payment Terms:"/>
+                                <h:inputText id="paymentTerms" value="#{contractHolder.document.paymentTerms}" required="true"/>
+                                <e5ui:marker for="paymentTerms"/>
+                            </h:panelGrid>
+                        </div>
+                        <div style="float: left; width: 40%; padding: 6px; border-left: dashed 1px gray">
+                            <h:panelGrid columns="3">
+                                <h:outputText value="Author" style="font-weight: bold"/>
+                                <h:outputText/>
+                                <h:outputText/>
+
+                                <h:outputLabel for="authorFullName" value="Full Name:"/>
+                                <h:inputText id="authorFullName" value="#{contractHolder.document.author.name}" required="true"/>
+                                <e5ui:marker for="authorFullName"/>
+
+                                <h:outputLabel for="authorShortName" value="Short Name:"/>
+                                <h:inputText id="authorShortName" value="#{contractHolder.document.author.shortName}" required="true"/>
+                                <e5ui:marker for="authorShortName"/>
+
+                                <h:outputLabel for="authorTitle" value="Title:"/>
+                                <h:inputText id="authorTitle" value="#{contractHolder.document.author.title}" required="true"/>
+                                <e5ui:marker for="authorTitle"/>
+
+                                <h:outputLabel for="authorDepartment" value="Department:"/>
+                                <h:inputText id="authorDepartment" value="#{contractHolder.document.author.department}" required="true"/>
+                                <e5ui:marker for="authorDepartment"/>
+
+                                <h:outputLabel for="authorPhone" value="Phone:"/>
+                                <h:inputText id="authorPhone" value="#{contractHolder.document.author.phone}" required="true"/>
+                                <e5ui:marker for="authorPhone"/>
+                            </h:panelGrid>
+                        </div>
+                        <div style="float: left; width: 40%; padding: 6px; border-left: dashed 1px gray">
+                            <h:panelGrid columns="3">
+                                <h:outputText value="Curator" style="font-weight: bold"/>
+                                <h:outputText/>
+                                <h:outputText/>
+
+                                <h:outputLabel for="curatorFullName" value="Full Name:"/>
+                                <h:inputText id="curatorFullName" value="#{contractHolder.document.curator.name}" required="true"/>
+                                <e5ui:marker for="curatorFullName"/>
+
+                                <h:outputLabel for="curatorShortName" value="Short Name:"/>
+                                <h:inputText id="curatorShortName" value="#{contractHolder.document.curator.shortName}" required="true"/>
+                                <e5ui:marker for="curatorShortName"/>
+
+                                <h:outputLabel for="curatorTitle" value="Title:"/>
+                                <h:inputText id="curatorTitle" value="#{contractHolder.document.curator.title}" required="true"/>
+                                <e5ui:marker for="curatorTitle"/>
+
+                                <h:outputLabel for="curatorDepartment" value="Department:"/>
+                                <h:inputText id="curatorDepartment" value="#{contractHolder.document.curator.department}" required="true"/>
+                                <e5ui:marker for="curatorDepartment"/>
+
+                                <h:outputLabel for="curatorPhone" value="Phone:"/>
+                                <h:inputText id="curatorPhone" value="#{contractHolder.document.curator.phone}" required="true"/>
+                                <e5ui:marker for="curatorPhone"/>
+                            </h:panelGrid>
+                        </div>
+                    </e5ui:formPart>
+                    <table border="0" celspacing="2" cellpadding="0">
+                        <caption style="background-color: lightgray; font-weight: bold; font-size: 120%;">Contractors</caption>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>Phone</th>
+                                <th/>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ui:repeat value="#{contractHolder.document.contractors}" var="contractor" varStatus="status">
+                                <tr>
+                                    <td><input type="text" value="#{contractor.name}" name="" readonly="readonly"/></td>
+                                    <td><input type="text" value="#{contractor.address}" name="" readonly="readonly"/></td>
+                                    <td><input type="text" value="#{contractor.phone}" name="" readonly="readonly"/></td>
+                                    <td>
+                                        <h:commandButton value="Delete" action="#{contractHolder.deleteContror(status.index)}">
+                                            <e5ui:formPartTarget/>
+                                        </h:commandButton>
+                                    </td>
+                                </tr>
+                            </ui:repeat>
+                        </tbody>
+                        <tr>
+                            <th colspan="4">Add new Contractor</th>
+                        </tr>
+                        <e5ui:formPart id="newContractor">
+                            <tr>
+                                <td>
+                                    <h:inputText required="true" id="newContractorName" value="#{contractHolder.newContractorToAdd.name}" requiredMessage="#{messages.CONTRACTOR_NAME_REQUIRED}" />
+                                    <e5ui:marker for="newContractorName"/>
+                                </td>
+                                <td>
+                                    <h:inputText required="true" id="newContractorAddress" value="#{contractHolder.newContractorToAdd.address}" requiredMessage="#{messages.CONTRACTOR_ADDRESS_REQUIRED}" />
+                                    <e5ui:marker for="newContractorAddress"/>
+                                </td>
+                                <td>
+                                    <h:inputText required="true" id="newContractorPhone" value="#{contractHolder.newContractorToAdd.phone}" requiredMessage='Значение поля "Phone" обязательно.' />
+                                    <e5ui:marker for="newContractorPhone"/>
+                                </td>
+                                <td>
+                                    <h:commandButton value="Add" action="#{contractHolder.addNewContractor}">
+                                        <e5ui:formPartTarget formPart="newContractor"/>
+                                    </h:commandButton>
+                                </td>
+                            </tr>
+                        </e5ui:formPart>
+                    </table>
+                </h:panelGroup>
+            </h:form>
+
+            <e5ui-comp:splashScreen id="cfss" timeout="1000">
+                <f:facet name="timeoutPanel">
+                    <div style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+                        Please wait for form to be sent...
+                    </div>
+                </f:facet>
+            </e5ui-comp:splashScreen>
+            <script>e5ui_splashScreen.startShowOnSubmit('cfss', ['contractForm']);</script>
+        </ui:define>
+    </ui:composition>
+</html>
