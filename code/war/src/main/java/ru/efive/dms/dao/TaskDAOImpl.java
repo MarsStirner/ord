@@ -493,10 +493,6 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             List<Role> in_roles = user.getRoleList();
             if (in_roles != null) {
                 for (Role in_role : in_roles) {
-                    if (in_role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION)) {
-                        isAdminRole = true;
-                        break;
-                    }
                     if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
                         isAdminRole = true;
                         break;
