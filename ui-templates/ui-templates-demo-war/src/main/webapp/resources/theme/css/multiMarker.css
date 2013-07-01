@@ -1,9 +1,0 @@
-/* "close" button default style */
-.e5ui-multimarker-window-close {
-    font-weight: bold;
-    float: right;
-    margin: 5px;
-    padding: 2px;
-    border: 1px solid darkgray;
-    cursor: pointer;
-}

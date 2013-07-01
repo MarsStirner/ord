@@ -47,7 +47,7 @@ var e5ui_modalWindow = {
         if (wh > bh) {
             c.css("height", (ch - wh + bh) + "px");
             wh = w[0].offsetHeight + wha;
-        } else c.css("height", ch + "px");
+        }
         w.css("top", Math.floor((bh - wh) / 2) + "px");
         w.css("left", Math.floor((bw - w[0].offsetWidth - e5ui_util.pxToInt(w.css("margin-left")) - e5ui_util.pxToInt(w.css("margin-right"))) / 2) + "px");
     }

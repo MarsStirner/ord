@@ -56,6 +56,7 @@
         <module>workflow_core</module>
         <module>war</module>
         <module>ear</module>
+        <module>ui-templates-core</module>
     </modules>
 
     <properties>
