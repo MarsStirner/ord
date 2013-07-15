@@ -256,6 +256,31 @@
                     </reportPlugins>
                 </configuration>
             </plugin>
+            <plugin>
+            	<groupId>org.glassfish.maven.plugin</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+               		<glassfishDirectory>E:/glassfish3/</glassfishDirectory>
+               		<user>admin</user>
+             		<adminPassword>admin</adminPassword>
+            		<autoCreate>true</autoCreate>
+			        <debug>true</debug>
+			        <echo>true</echo>
+			        <terse>true</terse>
+          			<domain>
+          				<name>glassfish</name>
+          				<host>localhost</host>
+          				<adminPort>4848</adminPort>
+          			</domain>
+    				<components>
+    					<component>
+    						<name>ordApp</name>
+    						<artifact>ear/target/dms-ear-${project.version}.ear</artifact>
+    					</component>
+    				</components>
+                </configuration>
+            </plugin>
         </plugins>
 
         <finalName>${project.artifactId}-${project.version}</finalName>

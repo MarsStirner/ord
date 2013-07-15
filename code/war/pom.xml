@@ -65,7 +65,7 @@
             <groupId>ru.efive.ui-templates</groupId>
             <artifactId>ui-templates-core</artifactId>
             <version>${project.version}</version>
-            <scope>provided</scope>
+            <!-- <scope>provided</scope> -->
         </dependency>
 
         <dependency>
