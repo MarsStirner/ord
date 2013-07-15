@@ -22,7 +22,7 @@ public class LDAPUser {
     private String mobile;
     private String jobPosition;
     private String jobDepartment;
-    private Date postOfficeBox;
+    private Boolean fired;
     private String guid;
     private final String DOMAIN = "fccho-moscow.ru";
 
@@ -47,8 +47,6 @@ public class LDAPUser {
         if (lastModified != null) {
             this.lastModified = (new SimpleDateFormat("yyyyMMddHHmmss")).parse((String) lastModified.get());
         }
-        else
-            this.lastModified = this.postOfficeBox;
     }
 
     public String getLogin() {
@@ -104,6 +102,14 @@ public class LDAPUser {
         }
     }
 
+    public Boolean getFired() {
+        return fired;
+    }
+
+    public void setFired(Boolean fired) {
+        this.fired = fired;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -144,16 +150,6 @@ public class LDAPUser {
         }
     }
 
-    public Date getPostOfficeBox() {
-        return postOfficeBox;
-    }
-
-    private void setPostOfficeBox(Attribute postOfficeBox) throws NamingException, ParseException {
-        if (postOfficeBox != null) {
-            this.postOfficeBox = new SimpleDateFormat("dd.MM.yyyy").parse((String) postOfficeBox.get());
-        }
-    }
-
     public String getFullName() {
         String fullName =
                 (lastName != null && !lastName.isEmpty() ? (lastName.trim() + "_") : "") +
@@ -183,7 +179,7 @@ public class LDAPUser {
     }
 
 
-    public LDAPUser(Attributes userAttributes) throws NamingException, ParseException {
+    public LDAPUser(Attributes userAttributes, boolean fired) throws NamingException, ParseException {
         setGuid(userAttributes.get(LDAPUserAttribute.UNID_ATTR_VALUE.getName()));
         setId(userAttributes.get(LDAPUserAttribute.EMPLOYER_ID_ATTR_VALUE.getName()));
         setLogin(userAttributes.get(LDAPUserAttribute.LOGIN_ATTR_VALUE.getName()));
@@ -195,7 +191,7 @@ public class LDAPUser {
         setMobile(userAttributes.get(LDAPUserAttribute.MOBILE_PHONE_ATTR_VALUE.getName()));
         setJobPosition(userAttributes.get(LDAPUserAttribute.JOB_POSITION_ATTR_VALUE.getName()));
         setJobDepartment(userAttributes.get(LDAPUserAttribute.JOB_DEPARTMENT_ATTR_VALUE.getName()));
-        setPostOfficeBox(userAttributes.get(LDAPUserAttribute.POST_OFFICE_ATTR_VALUE.getName()));
         setLastModified(userAttributes.get(LDAPUserAttribute.LAST_MODIFIED_ATTR_VALUE.getName()));
+        setFired(fired);
     }
 }

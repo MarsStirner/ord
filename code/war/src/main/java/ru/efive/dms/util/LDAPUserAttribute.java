@@ -27,9 +27,7 @@ public enum LDAPUserAttribute {
     // Атрибут штатного подразделения
     JOB_DEPARTMENT_ATTR_VALUE("physicalDeliveryOfficeName"),
     // Атрибут табельного номера
-    EMPLOYER_ID_ATTR_VALUE("employeeID"),
-    // Атрибут даты увольнения
-    POST_OFFICE_ATTR_VALUE("postOfficeBox");
+    EMPLOYER_ID_ATTR_VALUE("employeeID");
 
     private final String name;
 

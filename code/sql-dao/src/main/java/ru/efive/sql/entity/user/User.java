@@ -389,11 +389,7 @@ public class User extends IdentifiedEntity {
     /**
      * группы
      */
-    //@ManyToMany(fetch = FetchType.EAGER, mappedBy="members", targetEntity=ru.efive.sql.entity.user.Group.class)
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "members")
-    /*@JoinTable(name = "groups_dms_system_persons",
-joinColumns = { @JoinColumn(name = "members_id") },
-inverseJoinColumns = { @JoinColumn(name = "groups_id") })*/
     private Set<Group> groups = new HashSet<Group>();
 
     /**
@@ -414,11 +410,7 @@ inverseJoinColumns = { @JoinColumn(name = "groups_id") })*/
     /**
      * роли
      */
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_system_person_roles",
-            joinColumns = {@JoinColumn(name = "person_id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "persons")
     private Set<Role> roles;
 
     @Temporal(value = TemporalType.TIMESTAMP)

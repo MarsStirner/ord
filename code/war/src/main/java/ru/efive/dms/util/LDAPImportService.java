@@ -31,6 +31,7 @@ public class LDAPImportService {
     private String passwordName;
     private String passwordValue;
     private String baseValue;
+    private String firedValue;
     private String filterValue;
     private UserDAOHibernate userDAO;
     private final int pageSize = 100;
@@ -81,30 +82,11 @@ public class LDAPImportService {
 
     private void importActiveDirectoryUsers() throws Exception {
         LdapContext context = null;
-        byte[] cookie = null;
         try {
             // Create ORD users cache
             Map<String, User> localUsersCache = getORDUsers();
-            context = getLdapContext();
-            do {
-                //Search LDAP group where all users
-                NamingEnumeration ldapUsers = getLdapUsers(context);
-
-                //Save changes from LDAP in DB
-                while (ldapUsers != null && ldapUsers.hasMore()) {
-                    SearchResult userADEntry = (SearchResult) ldapUsers.next();
-                    Attributes userAttributes = userADEntry.getAttributes();
-
-                    saveLdapUsersToORD(new LDAPUser(userAttributes), localUsersCache);
-
-                    // examine the response controls
-                    cookie = parseControls(context.getResponseControls());
-
-                    // pass the cookie back to the server for the next page
-                    context.setRequestControls(new Control[]{new PagedResultsControl(pageSize, cookie, Control.CRITICAL)});
-
-                }
-            } while ((cookie != null) && (cookie.length != 0));
+            saveNotFiredUsers(getLdapContext(), localUsersCache);
+            saveFiredUsers(getLdapContext(), localUsersCache);
         } finally {
             if (context != null) {
                 context.close();
@@ -112,8 +94,27 @@ public class LDAPImportService {
         }
     }
 
+    private void saveNotFiredUsers(LdapContext context, Map<String, User> localUsersCache) throws NamingException, IOException, ParseException {
+        byte[] cookie = null;
+        do {
+            //Search LDAP group where all users
+            NamingEnumeration ldapUsers = context.search(baseValue, filterValue, getSearchControls());
+            //Save not fired users
+            cookie = saveLdapUsers(ldapUsers, context, localUsersCache, cookie, false);
+        } while ((cookie != null) && (cookie.length != 0));
+    }
 
-    private void saveLdapUsersToORD(LDAPUser ldapUser, Map<String, User> localUsersCache) throws NamingException, ParseException {
+    private void saveFiredUsers(LdapContext context, Map<String, User> localUsersCache) throws NamingException, IOException, ParseException {
+        byte[] cookie = null;
+        do {
+            //Search LDAP group where all users
+            NamingEnumeration firedUsers = context.search(firedValue, filterValue, getSearchControls());
+            //Save fired users
+            cookie = saveLdapUsers(firedUsers, context, localUsersCache, cookie, true);
+        } while ((cookie != null) && (cookie.length != 0));
+    }
+
+    private void saveLdapUserToORD(LDAPUser ldapUser, Map<String, User> localUsersCache) throws NamingException, ParseException {
         User user;
         // User exist in db
         if (((localUsersCache.containsKey(ldapUser.getId())) && ((user = localUsersCache.get(ldapUser.getId())) != null))
@@ -173,16 +174,35 @@ public class LDAPImportService {
         return context;
     }
 
-    private NamingEnumeration getLdapUsers(LdapContext context) throws NamingException {
+    private SearchControls getSearchControls() {
         SearchControls controls = new SearchControls();
         controls.setReturningAttributes(new String[]{"distinguishedName",
                 LDAPUserAttribute.UNID_ATTR_VALUE.getName(), LDAPUserAttribute.LAST_MODIFIED_ATTR_VALUE.getName(), LDAPUserAttribute.LOGIN_ATTR_VALUE.getName(),
-                LDAPUserAttribute.LAST_NAME_ATTR_VALUE.getName(), LDAPUserAttribute.POST_OFFICE_ATTR_VALUE.getName(), LDAPUserAttribute.FIRST_NAME_ATTR_VALUE.getName(),
+                LDAPUserAttribute.LAST_NAME_ATTR_VALUE.getName(), LDAPUserAttribute.FIRST_NAME_ATTR_VALUE.getName(),
                 LDAPUserAttribute.MIDDLE_NAME_ATTR_VALUE.getName(), LDAPUserAttribute.MAIL_ATTR_VALUE.getName(), LDAPUserAttribute.PHONE_ATTR_VALUE.getName(),
                 LDAPUserAttribute.MOBILE_PHONE_ATTR_VALUE.getName(), LDAPUserAttribute.JOB_POSITION_ATTR_VALUE.getName(),
                 LDAPUserAttribute.JOB_DEPARTMENT_ATTR_VALUE.getName(), LDAPUserAttribute.EMPLOYER_ID_ATTR_VALUE.getName()});
         controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        return context.search(baseValue, filterValue, controls);
+        return controls;
+    }
+
+    private byte[] saveLdapUsers(NamingEnumeration ldapUsers, LdapContext context,
+                                 Map<String, User> localUsersCache, byte[] cookie, boolean  fired)
+            throws NamingException, IOException, ParseException {
+        //Save changes from LDAP in DB
+        while (ldapUsers != null && ldapUsers.hasMore()) {
+            SearchResult userADEntry = (SearchResult) ldapUsers.next();
+            Attributes userAttributes = userADEntry.getAttributes();
+
+            saveLdapUserToORD(new LDAPUser(userAttributes, fired), localUsersCache);
+
+            // examine the response controls
+            cookie = parseControls(context.getResponseControls());
+
+            // pass the cookie back to the server for the next page
+            context.setRequestControls(new Control[]{new PagedResultsControl(pageSize, cookie, Control.CRITICAL)});
+        }
+        return cookie;
     }
 
 
@@ -190,12 +210,9 @@ public class LDAPImportService {
         user.setUNID(ldapUser.getId());
         user.setGUID(ldapUser.getGuid());
         user.setLastModified(ldapUser.getLastModified());
-        if (ldapUser.getPostOfficeBox() != null) {
-            user.setFiredDate(ldapUser.getPostOfficeBox());
-            user.setFired(true);
-        }
         user.setEmail(ldapUser.getMail());
         user.setDeleted(false);
+        user.setFired(false);
         user.setLogin(ldapUser.getLogin());
         user.setFirstName(ldapUser.getFirstName());
         user.setLastName(ldapUser.getLastName());
@@ -219,5 +236,9 @@ public class LDAPImportService {
             }
         }
         return (cookie == null) ? new byte[0] : cookie;
+    }
+
+    public void setFiredValue(String firedValue) {
+        this.firedValue = firedValue;
     }
 }

@@ -32,12 +32,21 @@
 
         -->
 
+    <!--
+        overflowToDisk="true" which will cause "too many open files" errors.
+        So this config specifies overflowToDisk="false"-->
+    <!--
+        EhCahce with  'diskPersistent=true' flag  is used to persist  the cache values to disk and can be used after system restarts.
+        If you have many caches with 'diskPersistent=true' then you may get 'Too many Open files Exception'.
+        This is because EhCache is using nearly 30 open file pointers for each cache and the default no. of open files for user in linux is 1024.
+    -->
+
     <defaultCache
             maxElementsInMemory="200000"
             eternal="true"
             timeToIdleSeconds="1200"
             timeToLiveSeconds="1200"
-            overflowToDisk="true"
-            />
+            overflowToDisk="false"
+            diskPersistent="false"/>
 
 </ehcache>

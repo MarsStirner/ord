@@ -144,9 +144,12 @@ public class SendMailActivity implements IActivity {
      */
     private MimeMessage getTestMimeMessage(MimeMessage mimeMessage, String docNumber) throws MessagingException {
         mimeMessage.setFrom(new InternetAddress(mailSettings.getSendFrom()));
-        mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(mailSettings.getSendTo()));
-        mimeMessage.addRecipient(Message.RecipientType.CC, new InternetAddress(mailSettings.getSendTo()));
-        mimeMessage.addRecipient(Message.RecipientType.BCC, new InternetAddress(mailSettings.getSendTo()));
+        StringBuilder sb = new StringBuilder();
+        sb.append(mailSettings.getSendTo()).append(" ");
+        sb.append(mailSettings.getSendTo()).append(" ");
+        mimeMessage.addRecipients(Message.RecipientType.TO, InternetAddress.parse(sb.toString().trim(), false));
+        mimeMessage.addRecipients(Message.RecipientType.CC, InternetAddress.parse(sb.toString().trim(), false));
+        mimeMessage.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(sb.toString().trim(), false));
 
         String subject = message.getSubject();
         if (subject.indexOf("@") > -1) {
@@ -167,19 +170,19 @@ public class SendMailActivity implements IActivity {
 
         StringBuilder sb = new StringBuilder();
         for (String address : message.getSendTo()) {
-            sb.append(address).append(" ");
+            sb.append(address).append(",");
         }
         if (!sb.toString().trim().equals(""))
             mimeMessage.addRecipients(Message.RecipientType.TO, InternetAddress.parse(sb.toString().trim(), false));
         sb = new StringBuilder();
         for (String address : message.getCopyTo()) {
-            sb.append(address).append(" ");
+            sb.append(address).append(",");
         }
         if (!sb.toString().trim().equals(""))
             mimeMessage.addRecipients(Message.RecipientType.CC, InternetAddress.parse(sb.toString().trim(), false));
         sb = new StringBuilder();
         for (String address : message.getBlindCopyTo()) {
-            sb.append(address).append(" ");
+            sb.append(address).append(",");
         }
         if (!sb.toString().trim().equals(""))
             mimeMessage.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(sb.toString().trim(), false));
