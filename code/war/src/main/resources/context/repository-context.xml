@@ -60,6 +60,8 @@
         <property name="logAbandoned" value="true"/>
         <property name="removeAbandonedTimeout" value="600"/>
         <property name="initialSize" value="10"/>
+        <property name="testOnBorrow" value="true"/>
+        <property name="validationQuery" value="select 1"/>
     </bean>
 
 
