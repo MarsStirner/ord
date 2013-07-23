@@ -11,6 +11,8 @@ import javax.inject.Named;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import ru.efive.dms.util.ApplicationContextHelper;
+
 @Singleton
 @Startup
 @Named("indexManagement")
@@ -20,6 +22,7 @@ public class IndexManagementBean implements Serializable {
     @PostConstruct
     public void initializeIndex() {
         context = new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContextHelper.setContext(context);
     }
 
     @PreDestroy
