@@ -7,7 +7,7 @@
 
     <groupId>ru.efive.workflow</groupId>
     <artifactId>workflow-core</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
 
     <name>E5 WorkFlow Core Library</name>
@@ -16,7 +16,7 @@
     <parent>
         <groupId>ru.efive.dms</groupId>
         <artifactId>dms-app</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.1.0</version>
     </parent>
 
     <dependencies>
