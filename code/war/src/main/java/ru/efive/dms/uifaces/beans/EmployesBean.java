@@ -1,16 +1,21 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.dms.util.LDAPImportService;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.User;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("employes")
@@ -31,7 +36,7 @@ public class EmployesBean extends AbstractDocumentListHolderBean<User> {
     protected List<User> getEmployes(int fromIndex, int toIndex) {
         employes = getEmployes();
         toIndex = (employes.size() < fromIndex + toIndex) ? employes.size() : fromIndex + toIndex;
-        List<User> result = employes.subList(fromIndex, toIndex);
+        List<User> result = new ArrayList<User>(employes.subList(fromIndex, toIndex));
         return result;
     }
 

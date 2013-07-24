@@ -1,17 +1,22 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
+
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.dms.util.LDAPImportService;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("userList")
@@ -60,7 +65,7 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
             }
         }
         toIndex = (hashUsers.size() < fromIndex + toIndex) ? this.hashUsers.size() : fromIndex + toIndex;
-        List<User> result = hashUsers.subList(fromIndex, toIndex);
+        List<User> result = new ArrayList<User>(hashUsers.subList(fromIndex, toIndex));
         return result;
     }
 
