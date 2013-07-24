@@ -20,15 +20,6 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.user.UserAccessLevel;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
@@ -37,12 +28,24 @@ import ru.efive.dms.data.DocumentForm;
 import ru.efive.dms.data.HistoryEntry;
 import ru.efive.dms.data.InternalDocument;
 import ru.efive.dms.data.PaperCopyDocument;
-import ru.efive.dms.uifaces.beans.*;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.GroupsSelectModalBean;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserAccessLevelDAO;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.efive.sql.entity.enums.RoleType;
+import ru.efive.sql.entity.user.Group;
+import ru.efive.sql.entity.user.Role;
+import ru.efive.sql.entity.user.User;
+import ru.efive.sql.entity.user.UserAccessLevel;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -54,6 +57,11 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     @Override
     public String save() {
+        if(getDocument().isClosePeriodRegistrationFlag()){
+            InternalDocument doc = getDocument();
+            doc.setRegistrationNumber(null);
+            setDocument(doc);
+        }
         return super.save();
     }
 
