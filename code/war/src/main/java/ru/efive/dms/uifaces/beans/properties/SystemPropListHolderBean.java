@@ -41,6 +41,8 @@ public class SystemPropListHolderBean implements Serializable {
     private transient Conversation conversation;
 
     private Map<String, String> managedPropValues;
+    
+    private Map<String, String> fileValues;
 
     private static final State EDIT_STATE = new State(false);
 
@@ -106,7 +108,7 @@ public class SystemPropListHolderBean implements Serializable {
 
     public String save() {
         Properties result = new Properties();
-        result.putAll(properties);
+        result.putAll(getPropertiesToSave());
         updateProperties(result);
         return view();
     }
@@ -122,6 +124,13 @@ public class SystemPropListHolderBean implements Serializable {
     public boolean isActual(String name) {
         return managedPropValues.get(name) != null && managedPropValues.get(name).equals(properties.get(name));
     }
+    
+    private Map<String, String> getPropertiesToSave(){
+        for(String key: fileValues.keySet()){
+            fileValues.put(key, properties.get(key));
+        }
+        return fileValues;
+    }
 
     private void refreshProperties() {
         File jdbcPropFile = getJDBCPropFile();
@@ -132,7 +141,7 @@ public class SystemPropListHolderBean implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Map<String, String> fileValues = new HashMap<String, String>((Map) properties);
+        fileValues = new HashMap<String, String>((Map) properties);
         for (String key : managedPropValues.keySet()) {
             this.properties.put(key, fileValues.get(key));
         }

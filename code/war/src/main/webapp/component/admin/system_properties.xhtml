@@ -59,9 +59,9 @@
                                     <p>Значение</p>
                                 </f:facet>
                                 <h:outputText value="#{systemProps.properties[row]}" rendered="#{systemProps.viewState}"/> 
-                                <h:inputText value="#{systemProps.properties[row]}" rendered="#{systemProps.editState}"/>
+                                <h:inputText value="#{systemProps.properties[row]}" rendered="#{systemProps.editState}" class="wide"/>
                             </e5ui:column>
-                            <e5ui:column>
+                            <e5ui:column rendered="#{systemProps.viewState}">
                             	<h:graphicImage value="#{resource['images:document_letter_okay.png']}"
                             		rendered = "#{systemProps.isActual(row)}"/>
                             	<h:graphicImage value="#{resource['images:document_letter_warning.png']}"
