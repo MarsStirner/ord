@@ -14,20 +14,20 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
+import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.data.IncomingDocument;
 import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.Task;
 import ru.efive.dms.data.OutgoingDocument;
 import ru.efive.dms.data.RequestDocument;
+import ru.efive.dms.data.Task;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("tasks")
@@ -37,7 +37,6 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
     private static final long serialVersionUID = 4130764164049044408L;
 
     protected List<Task> getHashDocuments(int fromIndex, int toIndex) {
-        List<Task> result = new ArrayList<Task>();
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
@@ -59,7 +58,7 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
             }
         }
         toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
+        List<Task> result = new ArrayList<Task>(this.hashDocuments.subList(fromIndex, toIndex));
         return result;
     }
 

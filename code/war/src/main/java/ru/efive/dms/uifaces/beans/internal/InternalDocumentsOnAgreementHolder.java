@@ -1,5 +1,18 @@
 package ru.efive.dms.uifaces.beans.internal;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.data.InternalDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -8,11 +21,6 @@ import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.enums.DocumentStatus;
 import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.*;
 
 /**
  * @author Nastya Peshekhonova
@@ -89,7 +97,7 @@ public class InternalDocumentsOnAgreementHolder extends AbstractDocumentListHold
     protected List<InternalDocument> getHashDocuments(int fromIndex, int toIndex) {
         this.hashDocuments = getHashDocuments();
         toIndex = (hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        return hashDocuments.subList(fromIndex, toIndex);
+        return new ArrayList<InternalDocument>(hashDocuments.subList(fromIndex, toIndex));
     }
 
     protected List<InternalDocument> getHashDocuments() {

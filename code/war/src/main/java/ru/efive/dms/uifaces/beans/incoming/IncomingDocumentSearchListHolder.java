@@ -17,18 +17,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ru.efive.crm.data.Contragent;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.data.DeliveryType;
 import ru.efive.dms.data.DocumentForm;
 import ru.efive.dms.data.IncomingDocument;
 import ru.efive.dms.data.OfficeKeepingVolume;
-import ru.efive.dms.uifaces.beans.*;
+import ru.efive.dms.uifaces.beans.ContragentSelectModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("in_search_documents")
@@ -48,7 +49,6 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
     }
 
     protected List<IncomingDocument> getHashDocuments(int fromIndex, int toIndex) {
-        List<IncomingDocument> result = new ArrayList<IncomingDocument>();
         if (needRefresh) {
             sessionManagement.registrateBeanName(beanName);
             try {
@@ -72,7 +72,7 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
             }
         }
         toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
+        List<IncomingDocument> result = new ArrayList<IncomingDocument>(this.hashDocuments.subList(fromIndex, toIndex));
         return result;
     }
 

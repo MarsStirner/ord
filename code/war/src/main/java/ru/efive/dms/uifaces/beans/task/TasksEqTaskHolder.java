@@ -14,12 +14,12 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.data.Task;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("tasksList")
@@ -32,7 +32,6 @@ public class TasksEqTaskHolder extends AbstractDocumentListHolderBean<Task> {
     private static final long serialVersionUID = -6711725735345862233L;
 
     protected List<Task> getHashDocuments(int fromIndex, int toIndex) {
-        List<Task> result = new ArrayList<Task>();
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
@@ -54,7 +53,7 @@ public class TasksEqTaskHolder extends AbstractDocumentListHolderBean<Task> {
             }
         }
         toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
+        List<Task> result = new ArrayList<Task>(this.hashDocuments.subList(fromIndex, toIndex));
         return result;
     }
 

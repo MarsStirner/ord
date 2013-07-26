@@ -14,12 +14,12 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.data.InternalDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("internal_positions")
@@ -39,8 +39,7 @@ public class InternalPositionDocumentsHolder extends AbstractDocumentListHolderB
         this.needRefresh = needRefresh;
     }
 
-    protected List<InternalDocument> getHashDocuments(int fromIndex, int toIndex) {
-        List<InternalDocument> result = new ArrayList<InternalDocument>();
+    protected List<InternalDocument> getHashDocuments(int fromIndex, int toIndex) {        
         if (needRefresh) {
             sessionManagement.registrateBeanName(beanName);
             try {
@@ -63,7 +62,7 @@ public class InternalPositionDocumentsHolder extends AbstractDocumentListHolderB
             }
         }
         toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
+        List<InternalDocument> result = new ArrayList<InternalDocument>(this.hashDocuments.subList(fromIndex, toIndex));
         return result;
     }
 

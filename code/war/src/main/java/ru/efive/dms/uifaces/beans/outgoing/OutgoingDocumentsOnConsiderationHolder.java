@@ -13,13 +13,13 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.data.OutgoingDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("outDocumentsOnConsideration")
@@ -42,7 +42,6 @@ public class OutgoingDocumentsOnConsiderationHolder extends AbstractDocumentList
     }
 
     protected List<OutgoingDocument> getHashDocuments(int fromIndex, int toIndex) {
-        List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
         if (needRefresh) {
             sessionManagement.registrateBeanName(beanName);
             try {
@@ -65,7 +64,7 @@ public class OutgoingDocumentsOnConsiderationHolder extends AbstractDocumentList
             }
         }
         toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
+        List<OutgoingDocument> result = new ArrayList<OutgoingDocument>(this.hashDocuments.subList(fromIndex, toIndex));
         return result;
     }
 
