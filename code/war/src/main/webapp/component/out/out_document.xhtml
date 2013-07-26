@@ -1153,7 +1153,7 @@
 <e5ui:tabPage headerText="#{out_doc.accessTabHeader}"
               actionBehavior="client" selected="#{out_doc.accessTabSelected}">
 <h:panelGroup
-        rendered="#{out_doc.createState or out_doc.editState}">
+        rendered="#{out_doc.createState or out_doc.editState or out_doc.currentUserAccessEdit}">
 <div class="row">
 <table class="form_grid">
 <tr class="row">
@@ -1551,7 +1551,7 @@
 </div>
 </h:panelGroup>
 
-<h:panelGroup rendered="#{out_doc.viewState}">
+<h:panelGroup rendered="#{out_doc.viewState and not out_doc.currentUserAccessEdit}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">

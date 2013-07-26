@@ -1139,7 +1139,7 @@
               actionBehavior="client"
               selected="#{internal_doc.accessTabSelected}">
 <h:panelGroup
-        rendered="#{internal_doc.createState or internal_doc.editState}">
+        rendered="#{internal_doc.createState or internal_doc.editState or internal_doc.currentUserAccessEdit}">
 <div class="row">
 <table class="form_grid">
 <tr class="row">
@@ -1546,7 +1546,7 @@
 </div>
 </h:panelGroup>
 
-<h:panelGroup rendered="#{internal_doc.viewState}">
+<h:panelGroup rendered="#{internal_doc.viewState and not internal_doc.currentUserAccessEdit}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">

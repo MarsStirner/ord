@@ -19,13 +19,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import ru.efive.crm.data.Contragent;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.DeliveryTypeDAOImpl;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
@@ -39,12 +32,23 @@ import ru.efive.dms.data.PaperCopyDocument;
 import ru.efive.dms.data.Region;
 import ru.efive.dms.data.RequestDocument;
 import ru.efive.dms.data.SenderType;
-import ru.efive.dms.uifaces.beans.*;
+import ru.efive.dms.uifaces.beans.ContragentListHolderBean;
+import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.efive.sql.entity.enums.RoleType;
+import ru.efive.sql.entity.user.Group;
+import ru.efive.sql.entity.user.Role;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -397,6 +401,46 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 	}
 */
 
+    public boolean isCurrentUserAccessEdit() {
+        User inUser = sessionManagement.getLoggedUser();
+        inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(
+                inUser.getLogin(), inUser.getPassword());
+        RequestDocument reqDoc = getDocument();
+
+        List<Integer> recipUsers = new ArrayList<Integer>();
+        for (User user : reqDoc.getRecipientUsers()) {
+            recipUsers.add(user.getId());
+        }
+        for (User user : reqDoc.getPersonReaders()) {
+            recipUsers.add(user.getId());
+        }
+        if (recipUsers.contains(inUser.getId())) {
+            return true;
+        }
+
+        List<Integer> accesGroups = new ArrayList<Integer>();
+        for (Group group : reqDoc.getRecipientGroups()) {
+            accesGroups.add(group.getId());
+        }
+        for (Group group : inUser.getGroups()) {
+            if (accesGroups.contains(group.getId())) {
+                return true;
+            }
+        }
+
+        List<Integer> accessRoles = new ArrayList<Integer>();
+        for (Role role : reqDoc.getRoleReaders()) {
+            accessRoles.add(role.getId());
+        }
+        for (Role role : inUser.getRoles()) {
+            if (accessRoles.contains(role.getId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    
     protected boolean isCurrentUserDocEditor() {
         User in_user = sessionManagement.getLoggedUser();
         in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());

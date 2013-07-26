@@ -21,15 +21,6 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.user.UserAccessLevel;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
@@ -47,13 +38,27 @@ import ru.efive.dms.data.OutgoingDocument;
 import ru.efive.dms.data.PaperCopyDocument;
 import ru.efive.dms.data.RequestDocument;
 import ru.efive.dms.data.Task;
-import ru.efive.dms.uifaces.beans.*;
+import ru.efive.dms.uifaces.beans.ContragentListSelectModalBean;
+import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
+import ru.efive.dms.uifaces.beans.DocumentSelectModal;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentSelectModal;
 import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
+import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserAccessLevelDAO;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.efive.sql.entity.enums.RoleType;
+import ru.efive.sql.entity.user.Group;
+import ru.efive.sql.entity.user.Role;
+import ru.efive.sql.entity.user.User;
+import ru.efive.sql.entity.user.UserAccessLevel;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -499,6 +504,33 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             result = false;
         }
         return result;
+    }
+    
+    public boolean isCurrentUserAccessEdit() {
+        User inUser = sessionManagement.getLoggedUser();
+        inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(
+                inUser.getLogin(), inUser.getPassword());
+        OutgoingDocument outDoc = getDocument();
+
+        List<Integer> recipUsers = new ArrayList<Integer>();
+        for (User user : outDoc.getPersonReaders()) {
+            recipUsers.add(user.getId());
+        }
+        if (recipUsers.contains(inUser.getId())) {
+            return true;
+        }
+
+        List<Integer> accessRoles = new ArrayList<Integer>();
+        for (Role role : outDoc.getRoleReaders()) {
+            accessRoles.add(role.getId());
+        }
+        for (Role role : inUser.getRoles()) {
+            if (accessRoles.contains(role.getId())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     protected boolean isCurrentUserDocEditor() {

@@ -34,7 +34,7 @@
         <dependency>
             <groupId>ru.efive.dms</groupId>
             <artifactId>dms</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${project.version}</version>
             <type>war</type>
         </dependency>
 
