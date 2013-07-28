@@ -127,7 +127,9 @@ public class SystemPropListHolderBean implements Serializable {
     
     private Map<String, String> getPropertiesToSave(){
         for(String key: fileValues.keySet()){
-            fileValues.put(key, properties.get(key));
+            if(properties.get(key) != null){
+                fileValues.put(key, properties.get(key));
+            }
         }
         return fileValues;
     }
