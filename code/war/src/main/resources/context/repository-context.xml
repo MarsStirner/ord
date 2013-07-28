@@ -53,12 +53,12 @@
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
         <property name="defaultAutoCommit" value="true"/>
-        <property name="maxWait" value="-1"/>
+        <property name="maxWait" value="1"/>
         <property name="maxIdle" value="10"/>
         <property name="maxActive" value="100"/>
         <property name="removeAbandoned" value="true"/>
         <property name="logAbandoned" value="true"/>
-        <property name="removeAbandonedTimeout" value="600"/>
+        <property name="removeAbandonedTimeout" value="60"/>
         <property name="initialSize" value="10"/>
         <property name="testOnBorrow" value="true"/>
         <property name="validationQuery" value="select 1"/>
@@ -128,6 +128,7 @@
                 <prop key="format_sql">true</prop>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
+                <prop key="net.sf.ehcache.configurationResourceName">ehcache.xml</prop>
                 <prop key="hibernate.default_batch_fetch_size">10</prop>
                 <prop key="hibernate.max_fetch_depth">2</prop>
                 <prop key="hibernate.generate_statistics">false</prop>
