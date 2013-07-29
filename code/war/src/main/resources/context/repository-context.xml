@@ -8,9 +8,10 @@
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>classpath:jdbc/jdbc-test.properties</value>
-                <value>classpath:alfresco-test.properties</value>
+                <value>classpath:jdbc.properties</value>
+                <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
+                <value>classpath:mail.properties</value>
                 <value>classpath:ldap.properties</value>
             </list>
         </property>
