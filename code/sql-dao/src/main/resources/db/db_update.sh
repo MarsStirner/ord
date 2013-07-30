@@ -4,7 +4,7 @@ USER=testuser
 DOMAIN=mysql.niidg.ru
 DB=ordtest
 PASSWORD=th8memAme5T4
-CURRENT_VERSION=1
+CURRENT_VERSION=2
 
 mysql -u $USER -h $DOMAIN -p$PASSWORD -D $DB -e "CREATE TABLE IF NOT EXISTS update_version (version INT NOT NULL)";
 mysql -u $USER -h $DOMAIN -p$PASSWORD -D $DB -ss -n -q |&

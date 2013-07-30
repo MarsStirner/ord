@@ -1,5 +1,7 @@
 package ru.efive.sql.entity.user;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import ru.efive.sql.entity.IdentifiedEntity;
 import ru.efive.sql.entity.enums.RoleType;
@@ -35,6 +37,7 @@ public class Role extends IdentifiedEntity {
             joinColumns = {@JoinColumn(name = "role_id")},
             inverseJoinColumns = {@JoinColumn(name = "person_id")})
     @Type(type = "java.util.Set")
+    @Fetch(value = FetchMode.SELECT)
     private Set<User> persons = new HashSet<User>();
 
     /**
