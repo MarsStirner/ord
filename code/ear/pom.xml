@@ -8,7 +8,6 @@
 
     <groupId>ru.efive.dms</groupId>
     <artifactId>dms-ear</artifactId>
-    <version>0.1.0</version>
     <packaging>ear</packaging>
 
     <name>E5 Documents management system Enterprise Application</name>
@@ -17,7 +16,7 @@
     <parent>
         <groupId>ru.efive.dms</groupId>
         <artifactId>dms-app</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </parent>
 
     <dependencies>
