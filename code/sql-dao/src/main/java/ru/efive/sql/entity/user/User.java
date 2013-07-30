@@ -5,6 +5,8 @@ import ru.efive.sql.util.ApplicationHelper;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
@@ -411,6 +413,7 @@ public class User extends IdentifiedEntity {
      * роли
      */
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "persons")
+    @Fetch(value = FetchMode.SELECT)
     private Set<Role> roles;
 
     @Temporal(value = TemporalType.TIMESTAMP)
