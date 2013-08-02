@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRResultSetDataSource;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -101,6 +98,8 @@ public class ReportsManagmentBean {
 
         } catch (JRException e) {
             e.printStackTrace();
+        } finally{
+            conn.close();
         }
     }
 
@@ -139,9 +138,6 @@ public class ReportsManagmentBean {
         Map<String, String> requestProperties = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String in_reportName = requestProperties.get("reportName");
         String in_printerName = requestProperties.get("printerName");
-        ClassPathXmlApplicationContext context = indexManagement.getContext();//new ClassPathXmlApplicationContext("applicationContext.xml");
-        BasicDataSource dataSource = (BasicDataSource) context.getBean("dataSource");
-        Connection conn = dataSource.getConnection();
 
         //Properties printerProperties=new Properties();
         PrintService psZebra = null;
@@ -302,6 +298,8 @@ public class ReportsManagmentBean {
             //JasperExportManager.exportReportToPdfFile(print,"c:/reports/db_big_report.pdf");
         } catch (JRException e) {
             e.printStackTrace();
+        } finally{
+            conn.close();
         }
         if (true) {
             return;
@@ -374,6 +372,8 @@ public class ReportsManagmentBean {
 
         } catch (JRException e) {
             e.printStackTrace();
+        } finally{
+            conn.close();
         }
     }
 
