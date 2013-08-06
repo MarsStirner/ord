@@ -292,71 +292,73 @@
     </e5ui:menuItem>
 </e5ui:menuItem>
 
-<e5ui:menuItem collapsable="true">
-    <f:facet name="content">
-        <span>Обращения граждан</span>
-    </f:facet>
-    <e5ui:menuItem
-            selected="#{currentView eq '/component/personal/personal_request_documents.xhtml'}">
+<h:panelGroup rendered="#{isRequestManager}">
+    <e5ui:menuItem collapsable="true">
         <f:facet name="content">
-            <h:outputLink
-                    value="#{contextPath}/component/personal/personal_request_documents.xhtml">
-                <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                Мои проекты
-            </h:outputLink>
+            <span>Обращения граждан</span>
         </f:facet>
+        <e5ui:menuItem
+                selected="#{currentView eq '/component/personal/personal_request_documents.xhtml'}">
+            <f:facet name="content">
+                <h:outputLink
+                        value="#{contextPath}/component/personal/personal_request_documents.xhtml">
+                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                    Мои проекты
+                </h:outputLink>
+            </f:facet>
+        </e5ui:menuItem>
+        <e5ui:menuItem
+                selected="#{currentView eq '/component/request/request_documents_on_control.xhtml'}">
+            <f:facet name="content">
+                <h:outputLink
+                        value="#{contextPath}/component/request/request_documents_on_control.xhtml">
+                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                    На контроле
+                </h:outputLink>
+            </f:facet>
+        </e5ui:menuItem>
+        <e5ui:menuItem
+                selected="#{currentView eq '/component/request/request_documents.xhtml'}">
+            <f:facet name="content">
+                <h:outputLink
+                        value="#{contextPath}/component/request/request_documents.xhtml">
+                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                    По номеру
+                </h:outputLink>
+            </f:facet>
+        </e5ui:menuItem>
+        <e5ui:menuItem
+                selected="#{currentView eq '/component/request/request_documents_eq_claim.xhtml'}">
+            <f:facet name="content">
+                <h:outputLink
+                        value="#{contextPath}/component/request/request_documents_eq_claim.xhtml">
+                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                    Заявки на лечение
+                </h:outputLink>
+            </f:facet>
+        </e5ui:menuItem>
+        <e5ui:menuItem
+                selected="#{currentView eq '/component/request/request_documents_eq_appeal.xhtml'}">
+            <f:facet name="content">
+                <h:outputLink
+                        value="#{contextPath}/component/request/request_documents_eq_appeal.xhtml">
+                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                    Жалобы
+                </h:outputLink>
+            </f:facet>
+        </e5ui:menuItem>
+        <e5ui:menuItem
+                selected="#{currentView eq '/component/request/request_documents_eq_gratitude.xhtml'}">
+            <f:facet name="content">
+                <h:outputLink
+                        value="#{contextPath}/component/request/request_documents_eq_gratitude.xhtml">
+                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                    Благодарности
+                </h:outputLink>
+            </f:facet>
+        </e5ui:menuItem>
     </e5ui:menuItem>
-    <e5ui:menuItem
-            selected="#{currentView eq '/component/request/request_documents_on_control.xhtml'}">
-        <f:facet name="content">
-            <h:outputLink
-                    value="#{contextPath}/component/request/request_documents_on_control.xhtml">
-                <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                На контроле
-            </h:outputLink>
-        </f:facet>
-    </e5ui:menuItem>
-    <e5ui:menuItem
-            selected="#{currentView eq '/component/request/request_documents.xhtml'}">
-        <f:facet name="content">
-            <h:outputLink
-                    value="#{contextPath}/component/request/request_documents.xhtml">
-                <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                По номеру
-            </h:outputLink>
-        </f:facet>
-    </e5ui:menuItem>
-    <e5ui:menuItem
-            selected="#{currentView eq '/component/request/request_documents_eq_claim.xhtml'}">
-        <f:facet name="content">
-            <h:outputLink
-                    value="#{contextPath}/component/request/request_documents_eq_claim.xhtml">
-                <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                Заявки на лечение
-            </h:outputLink>
-        </f:facet>
-    </e5ui:menuItem>
-    <e5ui:menuItem
-            selected="#{currentView eq '/component/request/request_documents_eq_appeal.xhtml'}">
-        <f:facet name="content">
-            <h:outputLink
-                    value="#{contextPath}/component/request/request_documents_eq_appeal.xhtml">
-                <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                Жалобы
-            </h:outputLink>
-        </f:facet>
-    </e5ui:menuItem>
-    <e5ui:menuItem
-            selected="#{currentView eq '/component/request/request_documents_eq_gratitude.xhtml'}">
-        <f:facet name="content">
-            <h:outputLink
-                    value="#{contextPath}/component/request/request_documents_eq_gratitude.xhtml">
-                <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                Благодарности
-            </h:outputLink>
-        </f:facet>
-    </e5ui:menuItem>
-</e5ui:menuItem>
+</h:panelGroup>
 
 <e5ui:menuItem collapsable="true">
     <f:facet name="content">
