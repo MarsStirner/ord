@@ -149,9 +149,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
 		if(in_user!=null){
 			for(Role in_role:in_user.getRoleList()){				
-				if(in_role.getRoleType().name().equals(RoleType.ENTERPRISE_ADMINISTRATION.name())){
-					return true;
-				}else if(in_role.getRoleType().name().equals(RoleType.ADMINISTRATOR.name())){
+                if(in_role.getRoleType().name().equals(RoleType.ADMINISTRATOR.name())){
 					return true;
 				}
 			}

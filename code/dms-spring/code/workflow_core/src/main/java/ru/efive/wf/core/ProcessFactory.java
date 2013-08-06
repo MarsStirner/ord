@@ -1501,7 +1501,7 @@ public final class ProcessFactory {
 
 								boolean isAdmin = false;
 								for (int i = 0; i < user.getRoles().size(); i++) {
-									if (user.getRoles().iterator().next().getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION)) {
+									if (user.getRoles().iterator().next().getRoleType().equals(RoleType.ADMINISTRATOR)) {
 										isAdmin = true;
 									}
 								}

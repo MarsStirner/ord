@@ -925,7 +925,7 @@ public final class WorkflowHelper {
                     if (document != null) {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
-                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
+                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
                             List<Role> in_roles = new ArrayList<Role>();
                             in_roles.add(in_administrationRole);
 
