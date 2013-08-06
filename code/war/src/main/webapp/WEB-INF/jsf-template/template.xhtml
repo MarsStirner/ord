@@ -34,6 +34,8 @@
        value="#{sessionManagement.getLoggedUser('false').officeManager}"/>
 <c:set var="isRequestManager"
        value="#{sessionManagement.getLoggedUser('false').requestManager}"/>
+<c:set var="canViewRequestDocuments"
+       value="#{userInfo.canViewRequestDocuments}"/>
 <c:set var="isOuter"
        value="#{sessionManagement.getLoggedUser('false').outer}"/>
 <c:set var="isHr"
@@ -292,7 +294,7 @@
     </e5ui:menuItem>
 </e5ui:menuItem>
 
-<h:panelGroup rendered="#{isRequestManager}">
+<h:panelGroup rendered="#{isRequestManager or canViewRequestDocuments}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Обращения граждан</span>
