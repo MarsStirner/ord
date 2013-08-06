@@ -56,7 +56,9 @@ public class ResourceCacheControlFilter extends AbstractFilter {
      */
     public static final Date BUILD_TIME;
     static {
+        /*
         Properties properties = new Properties();
+
         try {
             properties.load(ResourceCacheControlFilter.class.getResourceAsStream("/META-INF/version.properties"));
         } catch (IOException ex) {
@@ -73,6 +75,12 @@ public class ResourceCacheControlFilter extends AbstractFilter {
             }
         }
         BUILD_TIME = bt != null ? bt : new Date();
+
+        */
+
+        BUILD_TIME = new Date();
+
+        //TODO: исправить хак
     }
     public static final String HTTP_DATE = "EEE, dd MMM yyyy HH:mm:ss zzz";
     private Pattern queryStringPattern;
