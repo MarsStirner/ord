@@ -408,19 +408,25 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         RequestDocument reqDoc = getDocument();
 
         List<Integer> recipUsers = new ArrayList<Integer>();
-        for (User user : reqDoc.getRecipientUsers()) {
-            recipUsers.add(user.getId());
+        if (reqDoc.getRecipientUsers() != null) {
+            for (User user : reqDoc.getRecipientUsers()) {
+                recipUsers.add(user.getId());
+            }
         }
-        for (User user : reqDoc.getPersonReaders()) {
-            recipUsers.add(user.getId());
+        if (reqDoc.getPersonReaders() != null) {
+            for (User user : reqDoc.getPersonReaders()) {
+                recipUsers.add(user.getId());
+            }
         }
         if (recipUsers.contains(inUser.getId())) {
             return true;
         }
 
         List<Integer> accesGroups = new ArrayList<Integer>();
-        for (Group group : reqDoc.getRecipientGroups()) {
-            accesGroups.add(group.getId());
+        if (reqDoc.getRecipientGroups() != null) {
+            for (Group group : reqDoc.getRecipientGroups()) {
+                accesGroups.add(group.getId());
+            }
         }
         for (Group group : inUser.getGroups()) {
             if (accesGroups.contains(group.getId())) {
@@ -429,8 +435,10 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         }
 
         List<Integer> accessRoles = new ArrayList<Integer>();
-        for (Role role : reqDoc.getRoleReaders()) {
-            accessRoles.add(role.getId());
+        if (reqDoc.getRoleReaders() != null) {
+            for (Role role : reqDoc.getRoleReaders()) {
+                accessRoles.add(role.getId());
+            }
         }
         for (Role role : inUser.getRoles()) {
             if (accessRoles.contains(role.getId())) {
