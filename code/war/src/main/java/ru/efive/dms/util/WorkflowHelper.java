@@ -675,10 +675,19 @@ public final class WorkflowHelper {
 
                             } else if (in_form.equals("Приказ")) {
                                 in_number = new StringBuffer();
+
+                                Map<String, Object> outDateOrder_filters = new HashMap<String, Object>();
+                                outDateOrder_filters.put("registrationNumber", "%/%");
+                                outDateOrder_filters.put("form", document.getForm());
+                                outDateOrder_filters.put("closePeriodRegistrationFlag", "false");
+                                int outDateOrderCount =  new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(outDateOrder_filters, true, false)).size();
+
                                 in_filters.put("registrationNumber", "%");
                                 in_filters.put("form", document.getForm());
                                 in_filters.put("closePeriodRegistrationFlag", "false");
-                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
+                                int summaryOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size();
+
+                                in_count = new StringBuffer("0000" + String.valueOf(summaryOrderCount - outDateOrderCount + 1));
                                 in_number.append(in_count.substring(in_count.length() - 4));
                             } else if (in_form.equals("Правила внутреннего распорядка")) {
                                 in_number = new StringBuffer();
@@ -925,7 +934,7 @@ public final class WorkflowHelper {
                     if (document != null) {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
-                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
+                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
                             List<Role> in_roles = new ArrayList<Role>();
                             in_roles.add(in_administrationRole);
 
