@@ -4,7 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -13,8 +19,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.commons.beanutils.PropertyUtils;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import ru.efive.sql.entity.enums.DocumentType;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.MailSettings;
@@ -66,11 +72,10 @@ public class SendMailActivity implements IActivity {
     @Override
     public boolean execute() {
         boolean result = false;
+        java.security.Security.setProperty("ssl.SocketFactory.provider", "ru.efive.wf.core.util.DummySSLSocketFactory");
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         try {
-            java.security.Security.setProperty("ssl.SocketFactory.provider", "ru.efive.wf.core.util.DummySSLSocketFactory");
-            ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
             mailSettings = (MailSettings) context.getBean("mailSettings");
-
             MimeMessage mimeMessage = getMimeMessage();
             Transport.send(mimeMessage);
 
@@ -94,6 +99,7 @@ public class SendMailActivity implements IActivity {
             resultMessage = e.getMessage();
             e.printStackTrace();
         } finally {
+            context.destroy();
             return result;
         }
     }

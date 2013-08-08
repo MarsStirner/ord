@@ -513,16 +513,20 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         OutgoingDocument outDoc = getDocument();
 
         List<Integer> recipUsers = new ArrayList<Integer>();
-        for (User user : outDoc.getPersonReaders()) {
-            recipUsers.add(user.getId());
+        if (outDoc.getPersonReaders() != null) {
+            for (User user : outDoc.getPersonReaders()) {
+                recipUsers.add(user.getId());
+            }
         }
         if (recipUsers.contains(inUser.getId())) {
             return true;
         }
 
         List<Integer> accessRoles = new ArrayList<Integer>();
-        for (Role role : outDoc.getRoleReaders()) {
-            accessRoles.add(role.getId());
+        if (outDoc.getRoleReaders() != null) {
+            for (Role role : outDoc.getRoleReaders()) {
+                accessRoles.add(role.getId());
+            }
         }
         for (Role role : inUser.getRoles()) {
             if (accessRoles.contains(role.getId())) {
