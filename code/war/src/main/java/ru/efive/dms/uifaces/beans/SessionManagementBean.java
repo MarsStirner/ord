@@ -17,18 +17,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import ru.efive.dao.InitializationException;
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.AlfrescoNode;
+import ru.efive.dms.dao.RequestDocumentDAOImpl;
+import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.DictionaryDAO;
 import ru.efive.sql.dao.GenericDAO;
 import ru.efive.sql.dao.user.UserDAO;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.User;
 import ru.efive.sql.entity.user.UserAccessLevel;
-import ru.efive.dms.util.ApplicationHelper;
 
 @Named("sessionManagement")
 @SessionScoped
@@ -60,6 +61,8 @@ public class SessionManagementBean implements Serializable {
                 UserDAO dao = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
                 loggedUser = dao.findByLoginAndPassword(userName, password);
                 if (loggedUser != null) {
+                    RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO);
+                    loggedUser.setReqDocumentsCount(docDao.countAllDocumentsByUser((String)null, loggedUser, false, false));
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
 
                     Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);

@@ -35,7 +35,7 @@
 <c:set var="isRequestManager"
        value="#{sessionManagement.getLoggedUser('false').requestManager}"/>
 <c:set var="canViewRequestDocuments"
-       value="#{userInfo.canViewRequestDocuments}"/>
+       value="#{sessionManagement.getLoggedUser('true').canViewRequestDocuments}"/>
 <c:set var="isOuter"
        value="#{sessionManagement.getLoggedUser('false').outer}"/>
 <c:set var="isHr"

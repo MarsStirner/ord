@@ -20,6 +20,10 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 
 import ru.efive.crm.data.Contragent;
+import ru.efive.dms.data.DeliveryType;
+import ru.efive.dms.data.DocumentForm;
+import ru.efive.dms.data.OfficeKeepingVolume;
+import ru.efive.dms.data.RequestDocument;
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.efive.sql.entity.enums.DocumentStatus;
 import ru.efive.sql.entity.enums.DocumentType;
@@ -27,10 +31,6 @@ import ru.efive.sql.entity.enums.RoleType;
 import ru.efive.sql.entity.user.Group;
 import ru.efive.sql.entity.user.Role;
 import ru.efive.sql.entity.user.User;
-import ru.efive.dms.data.DeliveryType;
-import ru.efive.dms.data.DocumentForm;
-import ru.efive.dms.data.OfficeKeepingVolume;
-import ru.efive.dms.data.RequestDocument;
 
 public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument> {
 
@@ -471,8 +471,6 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
     protected DetachedCriteria getAccessControlSearchCriteriaByUser(User user) {
         DetachedCriteria in_result = null;
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        //in_result=detachedCriteria;
-        //if(true){return in_result;}
         Disjunction disjunction = Restrictions.disjunction();
 
         int userId = user.getId();

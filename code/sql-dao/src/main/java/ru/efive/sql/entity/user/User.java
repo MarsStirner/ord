@@ -1,15 +1,5 @@
 package ru.efive.sql.entity.user;
 
-import ru.efive.sql.entity.IdentifiedEntity;
-import ru.efive.sql.util.ApplicationHelper;
-
-import javax.persistence.*;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +7,23 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import ru.efive.sql.entity.IdentifiedEntity;
+import ru.efive.sql.util.ApplicationHelper;
 
 /**
  * Пользователь системы
@@ -204,6 +211,11 @@ public class User extends IdentifiedEntity {
         }
         return false;
     }
+    
+    @Transient
+    public boolean isCanViewRequestDocuments(){
+        return reqDocumentsCount > 0;
+    }
 
     public Date getCreated() {
         return created;
@@ -336,6 +348,14 @@ public class User extends IdentifiedEntity {
     public void setFiredDate(Date firedDate) {
         this.firedDate = firedDate;
     }
+    
+    public void setReqDocumentsCount(long reqDocumentsCount) {
+        this.reqDocumentsCount = reqDocumentsCount;
+    }
+    
+    public long getReqDocumentsCount() {
+        return reqDocumentsCount;
+    }
 
     @Column(unique = true)
     private String unid;
@@ -449,6 +469,9 @@ public class User extends IdentifiedEntity {
      * true - пользователь удалён, false или null - не удалён
      */
     private Boolean deleted;
+    
+    @Transient
+    private long reqDocumentsCount;
 
     private static final long serialVersionUID = -7649892958713448678L;
 }
