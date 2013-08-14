@@ -1,13 +1,26 @@
 package ru.efive.sql.entity.user;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
+
 import ru.efive.sql.entity.IdentifiedEntity;
 import ru.efive.sql.entity.enums.RoleType;
-
-import javax.persistence.*;
-import java.util.*;
 
 /**
  * Роль пользователя системы
@@ -32,10 +45,7 @@ public class Role extends IdentifiedEntity {
     /**
      * пользователи
      */
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_system_person_roles",
-            joinColumns = {@JoinColumn(name = "role_id")},
-            inverseJoinColumns = {@JoinColumn(name = "person_id")})
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "roles")
     @Type(type = "java.util.Set")
     @Fetch(value = FetchMode.SELECT)
     private Set<User> persons = new HashSet<User>();

@@ -12,6 +12,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -412,6 +414,7 @@ public class User extends IdentifiedEntity {
      * группы
      */
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "members")
+    @Fetch(value = FetchMode.SELECT)
     private Set<Group> groups = new HashSet<Group>();
 
     /**
@@ -432,7 +435,10 @@ public class User extends IdentifiedEntity {
     /**
      * роли
      */
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "persons")
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinTable(name = "dms_system_person_roles",
+        joinColumns = {@JoinColumn(name = "person_id")},
+        inverseJoinColumns = {@JoinColumn(name = "role_id")})
     @Fetch(value = FetchMode.SELECT)
     private Set<Role> roles;
 
