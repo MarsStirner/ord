@@ -59,7 +59,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public String save() {
         if(getDocument().isClosePeriodRegistrationFlag()){
             InternalDocument doc = getDocument();
-            doc.setRegistrationNumber(null);
+            //doc.setRegistrationNumber(null);
             setDocument(doc);
         }
         return super.save();
