@@ -14,11 +14,6 @@ import java.util.Set;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.sql.dao.user.RoleDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
@@ -38,6 +33,11 @@ import ru.efive.dms.data.RequestDocument;
 import ru.efive.dms.data.Task;
 import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.sql.dao.user.RoleDAOHibernate;
+import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.efive.sql.entity.enums.RoleType;
+import ru.efive.sql.entity.user.Role;
+import ru.efive.sql.entity.user.User;
 import ru.efive.wf.core.AgreementIssue;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.NoStatusAction;
@@ -1032,7 +1032,7 @@ public final class WorkflowHelper {
                         //}
 
                         Role in_office;
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.OFFICE_REQUESTS);
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.REQUEST_MANAGER);
                         in_roles.add(in_office);
 
                         document.setRoleEditors(in_roles);
