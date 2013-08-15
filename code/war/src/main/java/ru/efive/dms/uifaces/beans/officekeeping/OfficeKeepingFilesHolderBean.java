@@ -1,17 +1,18 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
 import ru.efive.dms.data.OfficeKeepingFile;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Named("officeKeepingFiles")
 @SessionScoped
@@ -40,12 +41,22 @@ public class OfficeKeepingFilesHolderBean extends AbstractDocumentListHolderBean
 
     @Override
     protected List<OfficeKeepingFile> loadDocuments() {
-        List<OfficeKeepingFile> result = new ArrayList<OfficeKeepingFile>();
-        try {
-            result = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).findDocuments(false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<OfficeKeepingFile> result = getAvailableOfficeKeepingFiles();
+        Collections.sort(result, new Comparator<OfficeKeepingFile>() {
+            public int compare(OfficeKeepingFile o1, OfficeKeepingFile o2) {
+                int result = 0;
+                String colId = getSorting().getColumnId();
+
+                if(colId.equalsIgnoreCase("name")) {
+                    result = ApplicationHelper.getNotNull(o1.getFileIndex()).compareTo(ApplicationHelper.getNotNull(o2.getFileIndex()));
+                }
+
+                if(getSorting().isAsc()) {
+                    result *= -1;
+                }
+                return result;
+            }
+        });
         return result;
     }
 

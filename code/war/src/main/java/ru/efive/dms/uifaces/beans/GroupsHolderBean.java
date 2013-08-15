@@ -1,15 +1,16 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.List;
+import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.GroupDAOHibernate;
+import ru.efive.sql.entity.user.Group;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import ru.efive.sql.dao.user.GroupDAOHibernate;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Named("groups")
 @SessionScoped
@@ -32,6 +33,27 @@ public class GroupsHolderBean extends AbstractDocumentListHolderBean<Group> {
     protected List<Group> loadDocuments() {
         List<Group> in_results = sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).findAllDocuments(
                 filter, false);
+
+        Collections.sort(in_results, new Comparator<Group>() {
+            @Override
+            public int compare(Group o1, Group o2) {
+                int result = 0;
+                String colId = getSorting().getColumnId();
+
+                if(colId.equalsIgnoreCase("description")) {
+                    result = ApplicationHelper.getNotNull(o1.getDescription()).compareTo(ApplicationHelper.getNotNull(o2.getDescription()));
+                } else if(colId.equalsIgnoreCase("alias")) {
+                    result = ApplicationHelper.getNotNull(o1.getAlias()).compareTo(ApplicationHelper.getNotNull(o2.getAlias()));
+                }
+
+                if(getSorting().isAsc()) {
+                    result *= -1;
+                }
+
+                return result;
+            }
+        });
+
         return in_results;
     }
 

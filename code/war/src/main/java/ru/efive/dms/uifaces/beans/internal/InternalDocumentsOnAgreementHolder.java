@@ -1,18 +1,5 @@
 package ru.efive.dms.uifaces.beans.internal;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.data.InternalDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -21,6 +8,11 @@ import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.enums.DocumentStatus;
 import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 /**
  * @author Nastya Peshekhonova
@@ -76,6 +68,7 @@ public class InternalDocumentsOnAgreementHolder extends AbstractDocumentListHold
     protected List<InternalDocument> loadDocuments() {
         List<InternalDocument> result = new ArrayList<InternalDocument>();
         try {
+            this.needRefresh = true;
             result = this.getHashDocuments(getPagination().getOffset(), getPagination().getPageSize());
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,12 +105,35 @@ public class InternalDocumentsOnAgreementHolder extends AbstractDocumentListHold
                         ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<InternalDocument>() {
-                    public int compare(InternalDocument in1, InternalDocument in2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(in1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(in2.getCreationDate());
-                        return c2.compareTo(c1);
+                    public int compare(InternalDocument o1, InternalDocument o2) {
+                        int result = 0;
+                        String colId = getSorting().getColumnId();
+
+                        if(colId.equalsIgnoreCase("registrationNumber")) {
+                            try {
+                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
+                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                result = i1.compareTo(i2);
+                            } catch(NumberFormatException e) {
+                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                            }
+                        } else if(colId.equalsIgnoreCase("registrationDate")) {
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(ApplicationHelper.getNotNull(o1.getRegistrationDate()));
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(ApplicationHelper.getNotNull(o2.getRegistrationDate()));
+                            result = c2.compareTo(c1);
+                        } else if(colId.equalsIgnoreCase("form")) {
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getForm()).toString()));
+                        } else if(colId.equalsIgnoreCase("status_id")) {
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
+                        }
+
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+                        return result;
                     }
                 });
 

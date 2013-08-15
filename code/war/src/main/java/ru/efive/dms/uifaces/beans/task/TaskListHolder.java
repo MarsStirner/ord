@@ -1,34 +1,18 @@
 package ru.efive.dms.uifaces.beans.task;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.SessionScoped;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.data.Task;
+import ru.efive.dms.dao.*;
+import ru.efive.dms.data.*;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 @Named("tasks")
 @SessionScoped
@@ -37,28 +21,8 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
     private static final long serialVersionUID = 4130764164049044408L;
 
     protected List<Task> getHashDocuments(int fromIndex, int toIndex) {
-        if (needRefresh) {
-            try {
-                User user = sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                this.hashDocuments = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
-
-                Collections.sort(this.hashDocuments, new Comparator<Task>() {
-                    public int compare(Task o1, Task o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        List<Task> result = new ArrayList<Task>(this.hashDocuments.subList(fromIndex, toIndex));
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        List<Task> result = new ArrayList<Task>(this.getHashDocuments().subList(fromIndex, toIndex));
         return result;
     }
 
@@ -69,13 +33,32 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
                 User user = sessionManagement.getLoggedUser();
                 user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
                 result = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+
                 Collections.sort(result, new Comparator<Task>() {
                     public int compare(Task o1, Task o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
+                        int result = 0;
+                        String colId = getSorting().getColumnId();
+
+                        if(colId.equalsIgnoreCase("task_number")) {
+                            try {
+                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
+                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
+                                result = i1.compareTo(i2);
+                            } catch(NumberFormatException e) {
+                                result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
+                            }
+                        } else if(colId.equalsIgnoreCase("registration_date")) {
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(ApplicationHelper.getNotNull(o1.getControlDate()));
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(ApplicationHelper.getNotNull(o2.getControlDate()));
+                            result = c1.compareTo(c2);
+                        }
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+                        return  result;
                     }
                 });
 
@@ -98,7 +81,7 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("creationDate", false);
+        return new Sorting("task_number", false);
     }
 
     @Override
@@ -116,9 +99,8 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
     protected List<Task> loadDocuments() {
         List<Task> result = new ArrayList<Task>();
         try {
+            this.needRefresh = true;
             result = this.getHashDocuments(getPagination().getOffset(), getPagination().getPageSize());
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

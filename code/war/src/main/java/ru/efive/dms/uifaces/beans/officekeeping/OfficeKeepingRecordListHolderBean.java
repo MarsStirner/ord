@@ -1,17 +1,18 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ru.efive.dms.dao.OfficeKeepingRecordDAOImpl;
 import ru.efive.dms.data.OfficeKeepingRecord;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Named("officeKeepingRecordList")
 @SessionScoped
@@ -24,7 +25,7 @@ public class OfficeKeepingRecordListHolderBean extends AbstractDocumentListHolde
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("name", true);
+        return new Sorting("name", false);
     }
 
     @Override
@@ -40,12 +41,20 @@ public class OfficeKeepingRecordListHolderBean extends AbstractDocumentListHolde
 
     @Override
     protected List<OfficeKeepingRecord> loadDocuments() {
-        List<OfficeKeepingRecord> result = new ArrayList<OfficeKeepingRecord>();
-        try {
-            result = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).findDocuments(false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<OfficeKeepingRecord> result = getAvailableOfficeKeepingRecords();
+        Collections.sort(result, new Comparator<OfficeKeepingRecord>() {
+            public int compare(OfficeKeepingRecord o1, OfficeKeepingRecord o2) {
+                int result = 0;
+                String colId = getSorting().getColumnId();
+                if (colId.equalsIgnoreCase("name")) {
+                    result = ApplicationHelper.getNotNull(o1.getRecordIndex()).compareTo(ApplicationHelper.getNotNull(o2.getRecordIndex()));
+                }
+                if (getSorting().isAsc()) {
+                    result *= -1;
+                }
+                return result;
+            }
+        });
         return result;
     }
 

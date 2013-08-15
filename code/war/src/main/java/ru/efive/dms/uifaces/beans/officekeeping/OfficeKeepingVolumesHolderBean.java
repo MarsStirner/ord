@@ -1,20 +1,15 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
 import ru.efive.dms.data.OfficeKeepingVolume;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 @Named("officeKeepingVolumes")
 @SessionScoped
@@ -35,6 +30,23 @@ public class OfficeKeepingVolumesHolderBean extends AbstractDocumentListHolderBe
     @Override
     protected List<OfficeKeepingVolume> loadDocuments() {
         List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>(new HashSet<OfficeKeepingVolume>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
+
+        Collections.sort(result, new Comparator<OfficeKeepingVolume>() {
+            public int compare(OfficeKeepingVolume o1, OfficeKeepingVolume o2) {
+                int result = 0;
+                String colId = getSorting().getColumnId();
+
+                if (colId.equalsIgnoreCase("volumeIndex")) {
+                    result = ApplicationHelper.getNotNull(o1.getVolumeIndex()).compareTo(ApplicationHelper.getNotNull(o2.getVolumeIndex()));
+                }
+
+                if (getSorting().isAsc()) {
+                    result *= -1;
+                }
+                return result;
+            }
+        });
+
 /*
 		Collections.sort(result, new Comparator<Task>() {
 			@Override

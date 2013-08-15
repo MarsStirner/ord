@@ -1,23 +1,17 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.data.OutgoingDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 @Named("out_documents")
 @SessionScoped
@@ -39,31 +33,8 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
     }
 
     protected List<OutgoingDocument> getHashDocuments(int fromIndex, int toIndex) {
-        List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
-        if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
-            try {
-                User user = sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                this.hashDocuments = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user, false, false)));
-
-                Collections.sort(this.hashDocuments, new Comparator<OutgoingDocument>() {
-                    public int compare(OutgoingDocument o1, OutgoingDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
-        return result;
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        return this.getHashDocuments().subList(fromIndex, toIndex);
     }
 
     protected List<OutgoingDocument> getHashDocuments() {
@@ -74,13 +45,34 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
                 User user = sessionManagement.getLoggedUser();
                 user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
                 result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user, false, false)));
+
                 Collections.sort(result, new Comparator<OutgoingDocument>() {
                     public int compare(OutgoingDocument o1, OutgoingDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
+                        int result = 0;
+                        String colId = getSorting().getColumnId();
+
+                        if(colId.equalsIgnoreCase("registrationNumber")) {
+                            try {
+                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
+                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                result = i1.compareTo(i2);
+                            } catch(NumberFormatException e) {
+                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                            }
+                        } else if(colId.equalsIgnoreCase("signatureDate")) {
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(ApplicationHelper.getNotNull(o1.getSignatureDate()));
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(ApplicationHelper.getNotNull(o2.getSignatureDate()));
+                            result = c2.compareTo(c1);
+                        } else if(colId.equalsIgnoreCase("status_id")) {
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
+                        }
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+                        return result;
                     }
                 });
 
@@ -103,7 +95,7 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("registrationDate", false);
+        return new Sorting("registrationNumber", false);
     }
 
     /*@Override
@@ -162,9 +154,8 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
     protected List<OutgoingDocument> loadDocuments() {
         List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
         try {
+            this.needRefresh = true;
             result = this.getHashDocuments(getPagination().getOffset(), getPagination().getPageSize());
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

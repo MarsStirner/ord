@@ -1,22 +1,14 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ru.efive.dms.dao.NumeratorDAOImpl;
 import ru.efive.dms.data.Numerator;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 @Named("numerators")
 @SessionScoped
@@ -27,7 +19,7 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
     }
 
     public void setNeedRefresh(boolean needRefresh) {
-        if (needRefresh == true) {
+        if (needRefresh) {
             this.markNeedRefresh();
         }
         this.needRefresh = needRefresh;
@@ -37,28 +29,8 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
     private boolean needRefresh = true;
 
     protected List<Numerator> getHashDocuments(int fromIndex, int toIndex) {
-        List<Numerator> result = new ArrayList<Numerator>();
-        if (needRefresh) {
-            try {
-                this.hashDocuments = new ArrayList<Numerator>(new HashSet<Numerator>(sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).findAllDocuments(filters, filter, false, true)));
-
-                Collections.sort(this.hashDocuments, new Comparator<Numerator>() {
-                    public int compare(Numerator o1, Numerator o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
-        return result;
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        return this.getHashDocuments().subList(fromIndex, toIndex);
     }
 
     protected List<Numerator> getHashDocuments() {
@@ -66,13 +38,30 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
         if (needRefresh) {
             try {
                 result = new ArrayList<Numerator>(new HashSet<Numerator>(sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).findAllDocuments(filters, filter, false, true)));
+
                 Collections.sort(result, new Comparator<Numerator>() {
+                    @Override
                     public int compare(Numerator o1, Numerator o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
+                        int result = 0;
+                        String colId = getSorting().getColumnId();
+
+                        if(colId.equalsIgnoreCase("numeratorIndex")) {
+                            result = new Integer(o1.getNumeratorIndex()).compareTo(new Integer(o2.getNumeratorIndex()));
+                        } else if(colId.equalsIgnoreCase("numberFormat")) {
+                            result = ApplicationHelper.getNotNull(o1.getNumberFormat()).compareTo(ApplicationHelper.getNotNull(o1.getNumberFormat()));
+                        } else if(colId.equalsIgnoreCase("creationDate")) {
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(ApplicationHelper.getNotNull(o1.getCreationDate()));
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(ApplicationHelper.getNotNull(o2.getCreationDate()));
+                            result = c1.compareTo(c2);
+                        }
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+
+                        return result;
                     }
                 });
 
@@ -95,7 +84,7 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("creationDate,id", false);
+        return new Sorting("numeratorIndex", false);
     }
 
     @Override
@@ -113,9 +102,8 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
     protected List<Numerator> loadDocuments() {
         List<Numerator> result = new ArrayList<Numerator>();
         try {
+            this.needRefresh = true;
             result = this.getHashDocuments(getPagination().getOffset(), getPagination().getPageSize());
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

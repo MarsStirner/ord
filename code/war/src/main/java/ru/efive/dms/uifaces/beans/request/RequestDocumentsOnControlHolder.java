@@ -1,19 +1,5 @@
 package ru.efive.dms.uifaces.beans.request;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.data.RequestDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -23,6 +9,11 @@ import ru.efive.sql.entity.enums.DocumentStatus;
 import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
+
 @Named("controlRequestDocuments")
 @SessionScoped
 public class RequestDocumentsOnControlHolder extends AbstractDocumentListHolderBean<RequestDocument> {
@@ -31,28 +22,8 @@ public class RequestDocumentsOnControlHolder extends AbstractDocumentListHolderB
     private boolean needRefresh = true;
 
     protected List<RequestDocument> getHashDocuments(int fromIndex, int toIndex) {
-        if (needRefresh) {
-            try {
-                User user = sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                this.hashDocuments = new ArrayList<RequestDocument>(new HashSet<RequestDocument>(sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
-
-                Collections.sort(this.hashDocuments, new Comparator<RequestDocument>() {
-                    public int compare(RequestDocument o1, RequestDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        List<RequestDocument> result = new ArrayList<RequestDocument>(this.hashDocuments.subList(fromIndex, toIndex));
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        List<RequestDocument> result = new ArrayList<RequestDocument>(this.getHashDocuments().subList(fromIndex, toIndex));
         return result;
     }
 
@@ -63,13 +34,44 @@ public class RequestDocumentsOnControlHolder extends AbstractDocumentListHolderB
                 User user = sessionManagement.getLoggedUser();
                 user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
                 result = new ArrayList<RequestDocument>(new HashSet<RequestDocument>(sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+
                 Collections.sort(result, new Comparator<RequestDocument>() {
                     public int compare(RequestDocument o1, RequestDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
+                        int result = 0;
+                        String colId = getSorting().getColumnId();
+
+                        if(colId.equalsIgnoreCase("registrationNumber")) {
+                            try {
+                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
+                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                result = i1.compareTo(i2);
+                            } catch(NumberFormatException e) {
+                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                            }
+                        } else if(colId.equalsIgnoreCase("deliveryDate")) {
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(ApplicationHelper.getNotNull(o1.getDeliveryDate()));
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(ApplicationHelper.getNotNull(o2.getDeliveryDate()));
+                            result = c2.compareTo(c1);
+                        } else if(colId.equalsIgnoreCase("contragent")) {
+                            result = ApplicationHelper.getNotNull(o1.getSenderDescriptionShort()).compareTo(ApplicationHelper.getNotNull(o2.getSenderDescriptionShort()));
+                        } else if(colId.equalsIgnoreCase("form")) {
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getForm()).toString()));
+                        } else if(colId.equalsIgnoreCase("executionDate")) {
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(ApplicationHelper.getNotNull(o1.getExecutionDate()));
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(ApplicationHelper.getNotNull(o2.getExecutionDate()));
+                            result = c1.compareTo(c2);
+                        } else if(colId.equalsIgnoreCase("status_id")) {
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
+                        }
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+                        return result;
                     }
                 });
 
@@ -91,7 +93,7 @@ public class RequestDocumentsOnControlHolder extends AbstractDocumentListHolderB
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("creationDate,id", false);
+        return new Sorting("deliveryDate", false);
     }
 
     @Override
@@ -109,9 +111,8 @@ public class RequestDocumentsOnControlHolder extends AbstractDocumentListHolderB
     protected List<RequestDocument> loadDocuments() {
         List<RequestDocument> result = new ArrayList<RequestDocument>();
         try {
+            this.needRefresh = true;
             result = this.getHashDocuments(getPagination().getOffset(), getPagination().getPageSize());
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }

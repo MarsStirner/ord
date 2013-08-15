@@ -87,7 +87,7 @@
                             <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
                             <e5ui:column style="min-width:9em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{employes.sort('lastName,firstName,middleName')}">
+                                    <h:commandLink action="#{employes.sort('description')}">
                                         ФИО
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
@@ -150,6 +150,16 @@
                 </div>
             </div>
         </e5ui:formPart>
+
+        <e5ui-comp:ajaxStatusGlobal timeout="300">
+            <f:facet name="waitPanel">
+                <div
+                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+                    Пожалуйста, подождите...
+                </div>
+            </f:facet>
+        </e5ui-comp:ajaxStatusGlobal>
+
     </ui:define>
 
 </ui:composition>

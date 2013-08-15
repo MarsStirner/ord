@@ -1,31 +1,19 @@
 package ru.efive.dms.uifaces.beans.task;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import ru.efive.dms.dao.*;
+import ru.efive.dms.data.*;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.data.Task;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 @Named("tasks_executed")
 @SessionScoped
@@ -62,16 +50,6 @@ public class TasksExecuted extends AbstractDocumentListHolderBean<Task> {
             List<Task> list = new ArrayList<Task>();
             list = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllExecutedDocumentsByUser(filter, sessionManagement.getLoggedUser(),
                     false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc())));
-
-            Collections.sort(list, new Comparator<Task>() {
-                public int compare(Task o1, Task o2) {
-                    Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                    c1.setTime(o1.getCreationDate());
-                    Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                    c2.setTime(o2.getCreationDate());
-                    return c2.compareTo(c1);
-                }
-            });
 
 
             /*			SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");

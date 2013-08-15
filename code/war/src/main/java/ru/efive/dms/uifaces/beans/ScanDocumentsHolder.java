@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.ScanCopyDocumentDAOImpl;
 import ru.efive.dms.data.ScanCopyDocument;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.dms.util.ReadInboxService;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 import javax.enterprise.context.SessionScoped;
@@ -13,7 +13,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.mail.MessagingException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * @author Nastya Peshekhonova
@@ -68,6 +70,7 @@ public class ScanDocumentsHolder extends AbstractDocumentListHolderBean<ScanCopy
     protected List<ScanCopyDocument> loadDocuments() {
         List<ScanCopyDocument> result = new ArrayList<ScanCopyDocument>();
         try {
+            this.needRefresh = true;
             result = this.getHashDocuments();
         } catch (Exception e) {
             e.printStackTrace();
