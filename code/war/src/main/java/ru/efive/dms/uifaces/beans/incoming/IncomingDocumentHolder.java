@@ -512,36 +512,45 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     
     public boolean isCurrentUserAccessEdit(){
         User inUser = sessionManagement.getLoggedUser();
-        inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(inUser.getLogin(), inUser.getPassword());
+        inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(
+                inUser.getLogin(), inUser.getPassword());
         IncomingDocument inDoc = getDocument();
-        
+
         List<Integer> recipUsers = new ArrayList<Integer>();
-        for(User user:inDoc.getRecipientUsers()){
-            recipUsers.add(user.getId());
+        if (inDoc.getRecipientUsers() != null) {
+            for (User user : inDoc.getRecipientUsers()) {
+                recipUsers.add(user.getId());
+            }
         }
-        for(User user: inDoc.getPersonReaders()){
-            recipUsers.add(user.getId());
+        if (inDoc.getPersonReaders() != null) {
+            for (User user : inDoc.getPersonReaders()) {
+                recipUsers.add(user.getId());
+            }
         }
-        if(recipUsers.contains(inUser.getId())){
+        if (recipUsers.contains(inUser.getId())) {
             return true;
         }
-        
+
         List<Integer> accesGroups = new ArrayList<Integer>();
-        for(Group group:inDoc.getRecipientGroups()){
-            accesGroups.add(group.getId());
-        }        
-        for(Group group: inUser.getGroups()){
-            if(accesGroups.contains(group.getId())){
+        if (inDoc.getRecipientGroups() != null) {
+            for (Group group : inDoc.getRecipientGroups()) {
+                accesGroups.add(group.getId());
+            }
+        }
+        for (Group group : inUser.getGroups()) {
+            if (accesGroups.contains(group.getId())) {
                 return true;
             }
         }
-        
+
         List<Integer> accessRoles = new ArrayList<Integer>();
-        for(Role role: inDoc.getRoleReaders()){
-            accessRoles.add(role.getId());
-        }        
-        for( Role role: inUser.getRoles()){
-            if(accessRoles.contains(role.getId())){
+        if (inDoc.getRoleReaders() != null) {
+            for (Role role : inDoc.getRoleReaders()) {
+                accessRoles.add(role.getId());
+            }
+        }
+        for (Role role : inUser.getRoles()) {
+            if (accessRoles.contains(role.getId())) {
                 return true;
             }
         }
