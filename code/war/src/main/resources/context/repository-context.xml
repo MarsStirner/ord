@@ -17,7 +17,7 @@
         </property>
     </bean>
 
-    <bean id="ldapImportService" class="ru.efive.dms.util.LDAPImportService">
+<!--     <bean id="ldapImportService" class="ru.efive.dms.util.LDAPImportService">
         <property name="ldapAddressName" value="${ldap.address.name}"/>
         <property name="ldapAddressValue" value="${ldap.address.value}"/>
         <property name="loginName" value="${ldap.login.name}"/>
@@ -26,7 +26,7 @@
         <property name="passwordValue" value="${ldap.password.value}"/>
         <property name="filterValue" value="${ldap.filter.value}"/>
         <property name="baseValue" value="${ldap.base.value}"/>
-    </bean>
+    </bean> -->
 
     <bean id="alfrescoDao" class="ru.efive.dao.alfresco.AlfrescoDAO">
         <property name="serverUrl" value="${alfresco.server.url}"/>
