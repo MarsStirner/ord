@@ -35,7 +35,7 @@
                     </div>
                     <div class="defbutton">
                         <h:commandLink action="#{internal_doc.edit}"
-                                       rendered="#{internal_doc.viewState and internal_doc.currentUserDocEditor}">
+                                       rendered="#{internal_doc.viewState}">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>
@@ -236,7 +236,8 @@
 <e5ui:tabPanel id="content_table">
 <e5ui:tabPage headerText="#{internal_doc.requisitesTabHeader}"
               actionBehavior="#{internal_doc.viewState? 'client': 'submit'}"
-              selected="#{internal_doc.requisitesTabSelected}">
+              selected="#{internal_doc.requisitesTabSelected}"
+              rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
 <h:panelGroup rendered="#{internal_doc.viewState}">
     <div class="row">
         <table class="form_grid">
@@ -644,7 +645,8 @@
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{internal_doc.routeTabHeader}"
               actionBehavior="client"
-              selected="#{internal_doc.routeTabSelected}">
+              selected="#{internal_doc.routeTabSelected}"
+              rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <fieldset>
         <legend>Поручения</legend>
         <script type="text/javascript">
@@ -792,7 +794,7 @@
 </e5ui:tabPage>
 
 <e5ui:tabPage
-        rendered="#{internal_doc.agreementTreeEditAvailable or internal_doc.agreementTreeViewAvailable}"
+        rendered="#{(internal_doc.agreementTreeEditAvailable or internal_doc.agreementTreeViewAvailable) and (internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor))}"
         headerText="#{internal_doc.agreementTabHeader}"
         actionBehavior="client"
         selected="#{internal_doc.agreementTabSelected}">
@@ -1050,11 +1052,13 @@
 
 <e5ui:tabPage headerText="#{internal_doc.relationTabHeader}"
               actionBehavior="client"
-              selected="#{internal_doc.relationTabSelected}">
+              selected="#{internal_doc.relationTabSelected}"
+              rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{internal_doc.originalTabHeader}"
               actionBehavior="client"
-              selected="#{internal_doc.originalTabSelected}">
+              selected="#{internal_doc.originalTabSelected}"
+              rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <fieldset>
         <script type="text/javascript">
             document.ondblclick = function DoubleClick(evt) {
@@ -1139,7 +1143,7 @@
               actionBehavior="client"
               selected="#{internal_doc.accessTabSelected}">
 <h:panelGroup
-        rendered="#{internal_doc.createState or internal_doc.editState or internal_doc.currentUserAccessEdit}">
+        rendered="#{internal_doc.createState or internal_doc.editState}">
 <div class="row">
 <table class="form_grid">
 <tr class="row">
@@ -1546,7 +1550,7 @@
 </div>
 </h:panelGroup>
 
-<h:panelGroup rendered="#{internal_doc.viewState and not internal_doc.currentUserAccessEdit}">
+<h:panelGroup rendered="#{internal_doc.viewState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
@@ -1665,7 +1669,8 @@
 
 <e5ui:tabPage headerText="#{internal_doc.historyTabHeader}"
               actionBehavior="client"
-              selected="#{internal_doc.historyTabSelected}">
+              selected="#{internal_doc.historyTabSelected}"
+              rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <fieldset>
         <legend>
             <label><span class="title">История</span> </label>

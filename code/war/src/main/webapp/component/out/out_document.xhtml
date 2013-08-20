@@ -52,7 +52,7 @@
                     </div>
                     <div class="defbutton">
                         <h:commandLink action="#{out_doc.edit}"
-                                       rendered="#{out_doc.viewState and out_doc.currentUserDocEditor}">
+                                       rendered="#{out_doc.viewState}">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>
@@ -516,7 +516,8 @@
 <e5ui:tabPanel id="content_table">
 <e5ui:tabPage headerText="#{out_doc.requisitesTabHeader}"
               actionBehavior="#{out_doc.viewState? 'client': 'submit'}"
-              selected="#{out_doc.requisitesTabSelected}">
+              selected="#{out_doc.requisitesTabSelected}"
+              rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
 <h:panelGroup rendered="#{out_doc.viewState}">
     <div class="row">
         <table class="form_grid">
@@ -813,12 +814,14 @@
 </h:panelGroup>
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{out_doc.routeTabHeader}"
-              actionBehavior="client" selected="#{out_doc.routeTabSelected}">
+              actionBehavior="client"
+              selected="#{out_doc.routeTabSelected}"
+              rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
 </e5ui:tabPage>
-
 <e5ui:tabPage
-        rendered="#{out_doc.agreementTreeEditAvailable or out_doc.agreementTreeViewAvailable}"
-        headerText="#{out_doc.agreementTabHeader}" actionBehavior="client"
+        rendered="#{(out_doc.agreementTreeEditAvailable or out_doc.agreementTreeViewAvailable) and (out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor))}"
+        headerText="#{out_doc.agreementTabHeader}"
+        actionBehavior="client"
         selected="#{out_doc.agreementTabSelected}">
 <h:panelGroup id="agreement_tree_part">
 <h:panelGroup rendered="#{out_doc.agreementTreeViewAvailable}">
@@ -1066,10 +1069,14 @@
 </h:panelGroup>
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{out_doc.relationTabHeader}"
-              actionBehavior="client" selected="#{out_doc.relationTabSelected}">
+              actionBehavior="client"
+              selected="#{out_doc.relationTabSelected}"
+              rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{out_doc.originalTabHeader}"
-              actionBehavior="client" selected="#{out_doc.originalTabSelected}">
+              actionBehavior="client"
+              selected="#{out_doc.originalTabSelected}"
+              rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
     <fieldset>
         <script type="text/javascript">
             document.ondblclick = function DoubleClick(evt) {
@@ -1151,9 +1158,10 @@
 </e5ui:tabPage>
 
 <e5ui:tabPage headerText="#{out_doc.accessTabHeader}"
-              actionBehavior="client" selected="#{out_doc.accessTabSelected}">
+              actionBehavior="client"
+              selected="#{out_doc.accessTabSelected}">
 <h:panelGroup
-        rendered="#{out_doc.createState or out_doc.editState or out_doc.currentUserAccessEdit}">
+        rendered="#{out_doc.createState or out_doc.editState}">
 <div class="row">
 <table class="form_grid">
 <tr class="row">
@@ -1551,7 +1559,7 @@
 </div>
 </h:panelGroup>
 
-<h:panelGroup rendered="#{out_doc.viewState and not out_doc.currentUserAccessEdit}">
+<h:panelGroup rendered="#{out_doc.viewState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
@@ -1667,7 +1675,9 @@
 </e5ui:tabPage>
 
 <e5ui:tabPage headerText="#{out_doc.historyTabHeader}"
-              actionBehavior="client" selected="#{out_doc.historyTabSelected}">
+              actionBehavior="client"
+              selected="#{out_doc.historyTabSelected}"
+              rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
     <fieldset>
         <legend>
             <label><span class="title">История</span> </label>
