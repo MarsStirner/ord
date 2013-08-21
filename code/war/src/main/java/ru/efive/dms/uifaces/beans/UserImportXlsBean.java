@@ -25,9 +25,9 @@ import ru.efive.sql.dao.user.UserDAO;
 import ru.efive.sql.entity.user.User;
 
 @Singleton
-@DependsOn("indexManagement")
 @Startup
 @Named("userImport")
+@DependsOn("indexManagement")
 @ApplicationScoped
 public class UserImportXlsBean implements Serializable {
 
