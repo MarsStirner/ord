@@ -952,8 +952,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     private ContragentListSelectModalBean recipientContragentsSelectModal = new ContragentListSelectModalBean() {
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setRecipientContragents(getContragents());
+            super.doSave();
         }
 
         @Override
@@ -989,8 +989,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setExecutor(getUser());
+            super.doSave();
         }
 
         @Override
@@ -1010,8 +1010,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setSigner(getUser());
+            super.doSave();
         }
 
         @Override
@@ -1031,8 +1031,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setCauseIncomingDocument(getIncomingDocument());
+            super.doSave();
         }
 
         @Override
@@ -1076,8 +1076,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setPersonReaders(getUsers());
+            super.doSave();
         }
 
         @Override
@@ -1092,7 +1092,9 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getPersonReaders() != null) {
-                setUsers(getDocument().getPersonReaders());
+                ArrayList<User> tmpList = new ArrayList<User>();
+                tmpList.addAll(getDocument().getPersonReaders());
+                setUsers(tmpList);
             }
         }
     };
@@ -1117,7 +1119,9 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getPersonEditors() != null) {
-                setUsers(getDocument().getPersonEditors());
+                ArrayList<User> tmpList = new ArrayList<User>();
+                tmpList.addAll(getDocument().getPersonEditors());
+                setUsers(tmpList);
             }
         }
     };
@@ -1126,8 +1130,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setRoleReaders(getRoles());
+            super.doSave();
         }
 
         @Override
@@ -1142,7 +1146,9 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getRoleReaders() != null) {
-                setRoles(getDocument().getRoleReaders());
+                ArrayList<Role> tmpList = new ArrayList<Role>();
+                tmpList.addAll(getDocument().getRoleReaders());
+                setRoles(tmpList);
             }
         }
     };
@@ -1151,8 +1157,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setRoleEditors(getRoles());
+            super.doSave();
         }
 
         @Override
@@ -1167,7 +1173,9 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getRoleEditors() != null) {
-                setRoles(getDocument().getRoleEditors());
+                ArrayList<Role> tmpList = new ArrayList<Role>();
+                tmpList.addAll(getDocument().getRoleEditors());
+                setRoles(tmpList);
             }
         }
     };

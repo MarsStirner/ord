@@ -1101,8 +1101,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private UserSelectModalBean controllerSelectModal = new UserSelectModalBean() {
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setController(getUser());
+            super.doSave();
         }
 
         @Override
@@ -1118,8 +1118,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private UserSelectModalBean collectorSelectModal = new UserSelectModalBean() {
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setCollector(getUser());
+            super.doSave();
         }
 
         @Override
@@ -1135,8 +1135,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setExecutors(getUsers());
+            super.doSave();
         }
 
         @Override
@@ -1151,7 +1151,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getExecutors() != null) {
-                setUsers(getDocument().getExecutors());
+                ArrayList<User> tmpList = new ArrayList<User>();
+                tmpList.addAll(getDocument().getExecutors());
+                setUsers(tmpList);
             }
         }
     };
@@ -1160,8 +1162,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setRecipientUsers(getUsers());
+            super.doSave();
         }
 
         @Override
@@ -1176,7 +1178,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getRecipientUsers() != null) {
-                setUsers(getDocument().getRecipientUsers());
+                ArrayList<User> tmpList = new ArrayList<User>();
+                tmpList.addAll(getDocument().getRecipientUsers());
+                setUsers(tmpList);
             }
         }
     };
@@ -1185,9 +1189,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setRecipientGroups(new HashSet(getGroups()));
             getDocument().setRecipientUsers(getUsers());
+            super.doSave();
         }
 
         @Override
@@ -1201,10 +1205,14 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getRecipientGroups() != null) {
-                setGroups(getDocument().getRecipientGroupsList());
+                ArrayList<Group> tmpGroupList = new ArrayList<Group>();
+                tmpGroupList.addAll(getDocument().getRecipientGroupsList());
+                setGroups(tmpGroupList);
             }
             if (getDocument() != null && getDocument().getRecipientUsers() != null) {
-                setUsers(getDocument().getRecipientUsers());
+                ArrayList<User> tmpUserList = new ArrayList<User>();
+                tmpUserList.addAll(getDocument().getRecipientUsers());
+                setUsers(tmpUserList);
             }
         }
     };
@@ -1214,8 +1222,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setPersonReaders(getUsers());
+            super.doSave();
         }
 
         @Override
@@ -1230,7 +1238,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getPersonReaders() != null) {
-                setUsers(getDocument().getPersonReaders());
+                ArrayList<User> tmpList = new ArrayList<User>();
+                tmpList.addAll(getDocument().getPersonReaders());
+                setUsers(tmpList);
             }
         }
     };
@@ -1239,8 +1249,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setPersonEditors(getUsers());
+            super.doSave();
         }
 
         @Override
@@ -1255,7 +1265,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getPersonEditors() != null) {
-                setUsers(getDocument().getPersonEditors());
+                ArrayList<User> tmpList = new ArrayList<User>();
+                tmpList.addAll(getDocument().getPersonEditors());
+                setUsers(tmpList);
             }
         }
     };
@@ -1264,8 +1276,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setRoleReaders(getRoles());
+            super.doSave();
         }
 
         @Override
@@ -1280,7 +1292,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getRoleReaders() != null) {
-                setRoles(getDocument().getRoleReaders());
+                ArrayList<Role> tmpList = new ArrayList<Role>();
+                tmpList.addAll(getDocument().getRoleReaders());
+                setRoles(tmpList);
             }
         }
     };
@@ -1289,8 +1303,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setRoleEditors(getRoles());
+            super.doSave();
         }
 
         @Override
@@ -1305,7 +1319,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getRoleEditors() != null) {
-                setRoles(getDocument().getRoleEditors());
+                ArrayList<Role> tmpList = new ArrayList<Role>();
+                tmpList.addAll(getDocument().getRoleEditors());
+                setRoles(tmpList);
             }
         }
     };
@@ -1314,8 +1330,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            super.doSave();
             getDocument().setOfficeKeepingVolume(getOfficeKeepingVolume());
+            super.doSave();
         }
 
         @Override
