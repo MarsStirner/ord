@@ -24,8 +24,8 @@ public class TasksEqExerciseHolder extends AbstractDocumentListHolderBean<Task> 
     private static final long serialVersionUID = -684382977491986358L;
 
     protected List<Task> getHashDocuments(int fromIndex, int toIndex) {
-        toIndex = (this.getDocuments().size() < fromIndex + toIndex) ? this.getDocuments().size() : fromIndex + toIndex;
-        List<Task> result = new ArrayList<Task>(this.getDocuments().subList(fromIndex, toIndex));
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        List<Task> result = new ArrayList<Task>(this.getHashDocuments().subList(fromIndex, toIndex));
         return result;
     }
 

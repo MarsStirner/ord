@@ -1776,7 +1776,7 @@ public final class ProcessFactory {
                 StringBuffer body = new StringBuffer();
                 body.append("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n");
                 MailMessage message = new MailMessage(sendTo, null, subject, body.
-                        append("<a href=\"" + getHost() + "/component/task/task.xhtml?docId=").
+                        append("<a href=\"" + getHost() + "/component/out/out_document.xhtml?docId=").
                         append(id).append("\" >Ссылка на документ</a>").toString());
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
