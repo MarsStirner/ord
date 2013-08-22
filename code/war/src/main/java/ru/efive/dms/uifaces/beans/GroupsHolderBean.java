@@ -38,7 +38,7 @@ public class GroupsHolderBean extends AbstractDocumentListHolderBean<Group> {
             @Override
             public int compare(Group o1, Group o2) {
                 int result = 0;
-                String colId = getSorting().getColumnId();
+                String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
 
                 if(colId.equalsIgnoreCase("description")) {
                     result = ApplicationHelper.getNotNull(o1.getDescription()).compareTo(ApplicationHelper.getNotNull(o2.getDescription()));

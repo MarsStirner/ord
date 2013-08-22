@@ -33,7 +33,7 @@
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.edit}"
-                                   rendered="#{request_doc.viewState and request_doc.currentUserDocEditor}">
+                                   rendered="#{request_doc.viewState}">
                         <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                         Редактировать
                     </h:commandLink>
@@ -335,7 +335,8 @@
 <e5ui:tabPanel id="content_table">
 <e5ui:tabPage headerText="#{request_doc.requisitesTabHeader}"
               actionBehavior="#{request_doc.viewState? 'client': 'submit'}"
-              selected="#{request_doc.requisitesTabSelected}">
+              selected="#{request_doc.requisitesTabSelected}"
+              rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
 <h:panelGroup rendered="#{request_doc.viewState}">
     <div class="row">
         <table class="form_grid">
@@ -835,7 +836,9 @@
 </h:panelGroup>
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{request_doc.routeTabHeader}"
-              actionBehavior="client" selected="#{request_doc.routeTabSelected}">
+              actionBehavior="client"
+              selected="#{request_doc.routeTabSelected}"
+              rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
     <fieldset>
         <legend>Поручения</legend>
         <script type="text/javascript">
@@ -946,11 +949,13 @@
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{request_doc.relationTabHeader}"
               actionBehavior="client"
-              selected="#{request_doc.relationTabSelected}">
+              selected="#{request_doc.relationTabSelected}"
+              rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
 </e5ui:tabPage>
 <e5ui:tabPage headerText="#{request_doc.originalTabHeader}"
               actionBehavior="client"
-              selected="#{request_doc.originalTabSelected}">
+              selected="#{request_doc.originalTabSelected}"
+              rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
     <fieldset>
         <script type="text/javascript">
             document.ondblclick = function DoubleClick(evt) {
@@ -1035,7 +1040,7 @@
               actionBehavior="client"
               selected="#{request_doc.accessTabSelected}">
 <h:panelGroup
-        rendered="#{request_doc.createState or request_doc.editState or request_doc.currentUserAccessEdit}">
+        rendered="#{request_doc.createState or request_doc.editState}">
 <div class="row">
 <table class="form_grid">
 <tr class="row">
@@ -1426,7 +1431,7 @@
 </div>
 </h:panelGroup>
 
-<h:panelGroup rendered="#{request_doc.viewState and not request_doc.currentUserAccessEdit}">
+<h:panelGroup rendered="#{request_doc.viewState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
@@ -1537,7 +1542,8 @@
 
 <e5ui:tabPage headerText="#{request_doc.historyTabHeader}"
               actionBehavior="client"
-              selected="#{request_doc.historyTabSelected}">
+              selected="#{request_doc.historyTabSelected}"
+              rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
     <fieldset>
         <legend>
             <label><span class="title">История</span> </label>
