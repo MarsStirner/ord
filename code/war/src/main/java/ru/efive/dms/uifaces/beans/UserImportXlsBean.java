@@ -9,15 +9,13 @@ import java.io.Serializable;
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.springframework.context.annotation.DependsOn;
 
 import ru.efive.dms.util.ApplicationContextHelper;
 import ru.efive.dms.util.ApplicationHelper;
@@ -26,17 +24,10 @@ import ru.efive.sql.entity.user.User;
 
 @Singleton
 @Startup
-@Named("userImport")
 @DependsOn("indexManagement")
-@ApplicationScoped
 public class UserImportXlsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /*
-     * @Inject
-     * @Named("sessionManagement") private transient SessionManagementBean sessionManagement;
-     */
 
     private UserDAO userDao;
 

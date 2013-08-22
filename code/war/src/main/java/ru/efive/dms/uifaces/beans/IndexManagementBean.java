@@ -13,7 +13,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import ru.efive.dms.util.ApplicationContextHelper;
 
-@Singleton
+@Singleton(name ="indexManagement")
 @Startup
 @Named("indexManagement")
 @ApplicationScoped
