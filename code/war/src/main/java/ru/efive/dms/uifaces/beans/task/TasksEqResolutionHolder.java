@@ -42,7 +42,21 @@ public class TasksEqResolutionHolder extends AbstractDocumentListHolderBean<Task
                         int result = 0;
                         String colId = getSorting().getColumnId();
 
-                        if(colId.equalsIgnoreCase("task_number")) {
+                        if(colId.equalsIgnoreCase("registrationDate")) {
+                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(d1);
+                            c1.set(Calendar.HOUR_OF_DAY, 0);
+                            c1.set(Calendar.MINUTE, 0);
+                            c1.set(Calendar.SECOND, 0);
+                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(d2);
+                            c2.set(Calendar.HOUR_OF_DAY, 0);
+                            c2.set(Calendar.MINUTE, 0);
+                            c2.set(Calendar.SECOND, 0);
+                            result = c1.compareTo(c2);
+                        } if(colId.equalsIgnoreCase("task_number")) {
                             try {
                                 Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
@@ -84,7 +98,7 @@ public class TasksEqResolutionHolder extends AbstractDocumentListHolderBean<Task
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("task_number", false);
+        return new Sorting("registrationDate", true);
     }
 
     @Override

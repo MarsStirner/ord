@@ -81,7 +81,7 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("task_number", false);
+        return new Sorting("registrationDate, registrationNumber", false);
     }
 
     @Override

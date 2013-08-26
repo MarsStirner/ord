@@ -1,13 +1,6 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -41,29 +34,8 @@ public class IncomingTemplateDocumentsHolder extends AbstractDocumentListHolderB
     private boolean needRefresh = true;
 
     protected List<IncomingDocument> getHashDocuments(int fromIndex, int toIndex) {
-        List<IncomingDocument> result = new ArrayList<IncomingDocument>();
-        if (needRefresh) {
-            try {
-                this.hashDocuments = new ArrayList<IncomingDocument>(new HashSet<IncomingDocument>(sessionManagement.
-                        getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, true)));
-
-                Collections.sort(this.hashDocuments, new Comparator<IncomingDocument>() {
-                    public int compare(IncomingDocument o1, IncomingDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        result = this.hashDocuments.subList(fromIndex, toIndex);
-        return result;
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        return this.getHashDocuments().subList(fromIndex, toIndex);
     }
 
     protected List<IncomingDocument> getHashDocuments() {
@@ -72,13 +44,42 @@ public class IncomingTemplateDocumentsHolder extends AbstractDocumentListHolderB
             try {
                 result = new ArrayList<IncomingDocument>(new HashSet<IncomingDocument>(sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
                         ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, true)));
+
                 Collections.sort(result, new Comparator<IncomingDocument>() {
                     public int compare(IncomingDocument o1, IncomingDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
+                        int result = 0;
+                        String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
+
+                        if(colId.equalsIgnoreCase("registrationDate")) {
+                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(d1);
+                            c1.set(Calendar.HOUR_OF_DAY, 0);
+                            c1.set(Calendar.MINUTE, 0);
+                            c1.set(Calendar.SECOND, 0);
+                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(d2);
+                            c2.set(Calendar.HOUR_OF_DAY, 0);
+                            c2.set(Calendar.MINUTE, 0);
+                            c2.set(Calendar.SECOND, 0);
+                            if(c1.equals(c2)) {
+                                try {
+                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
+                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                    result = i1.compareTo(i2);
+                                } catch(NumberFormatException e) {
+                                    result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                }
+                            } else {
+                                result = c1.compareTo(c2);
+                            }
+                        }
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+                        return result;
                     }
                 });
 
@@ -101,7 +102,7 @@ public class IncomingTemplateDocumentsHolder extends AbstractDocumentListHolderB
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("creationDate,id", false);
+        return new Sorting("registrationDate", true);
     }
 
     @Override

@@ -52,15 +52,44 @@ public class IncomingDocumentsByExpiredDate extends AbstractDocumentListHolderBe
             user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
             List<IncomingDocument> list = new ArrayList<IncomingDocument>(new HashSet<IncomingDocument>(sessionManagement.
                     getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findControlledDocumentsByUser(filter, user, false)));
-            Collections.sort(list, new Comparator<IncomingDocument>() {
+
+            Collections.sort(result, new Comparator<IncomingDocument>() {
                 public int compare(IncomingDocument o1, IncomingDocument o2) {
-                    Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                    c1.setTime(o1.getExecutionDate() != null ? o1.getExecutionDate() : o1.getCreationDate());
-                    Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                    c2.setTime(o2.getExecutionDate() != null ? o2.getExecutionDate() : o2.getCreationDate());
-                    return c1.compareTo(c2);
+                    int result = 0;
+                    String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
+
+                    if(colId.equalsIgnoreCase("registrationDate")) {
+                        Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
+                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                        c1.setTime(d1);
+                        c1.set(Calendar.HOUR_OF_DAY, 0);
+                        c1.set(Calendar.MINUTE, 0);
+                        c1.set(Calendar.SECOND, 0);
+                        Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
+                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                        c2.setTime(d2);
+                        c2.set(Calendar.HOUR_OF_DAY, 0);
+                        c2.set(Calendar.MINUTE, 0);
+                        c2.set(Calendar.SECOND, 0);
+                        if(c1.equals(c2)) {
+                            try {
+                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
+                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                result = i1.compareTo(i2);
+                            } catch(NumberFormatException e) {
+                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                            }
+                        } else {
+                            result = c1.compareTo(c2);
+                        }
+                    }
+                    if(getSorting().isAsc()) {
+                        result *= -1;
+                    }
+                    return result;
                 }
             });
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat ydf = new SimpleDateFormat("yyyy");
             SimpleDateFormat mdf = new SimpleDateFormat("MM");
@@ -106,6 +135,11 @@ public class IncomingDocumentsByExpiredDate extends AbstractDocumentListHolderBe
             e.printStackTrace();
         }
         return result;
+    }
+
+    @Override
+    protected Sorting initSorting() {
+        return new Sorting("registrationDate", true);
     }
 
     @Override
