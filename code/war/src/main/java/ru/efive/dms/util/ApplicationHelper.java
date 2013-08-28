@@ -43,6 +43,7 @@ public final class ApplicationHelper {
     public static String OFFICE_KEEPING_VOLUME_DAO = "officeKeepingVolumeDao";
     public static String RECORD_BOOK_DAO = "recordBookDao";
     public static String ENGINE_DAO = "engineDao";
+    public static String VERSION_DAO = "versionDao";
 
     public static final Locale getLocale() {
         return locale;

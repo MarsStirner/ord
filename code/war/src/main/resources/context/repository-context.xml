@@ -108,6 +108,8 @@
                 <value>ru.efive.crm.data.ContragentNomenclature</value>
                 <value>ru.efive.dms.data.Numerator</value>
 
+                <value>ru.efive.dms.data.Version</value>
+
                 <value>ru.efive.dms.data.ReportTemplate</value>
 
                 <!-- /documents -->
@@ -418,6 +420,19 @@
 
     <bean id="senderTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
         <property name="target" ref="senderTypeDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="versionDao" class="ru.efive.dms.dao.VersionDAOImpl">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="versionDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="versionDao"/>
         <property name="interceptorNames">
             <list>
                 <value>transactionInterceptor</value>
