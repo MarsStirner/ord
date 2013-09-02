@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ÐžÑ‚Ñ‡ÐµÑ‚ Ð¡ÐµÑ€Ð³ÐµÐµÐ²Ð° Ð’Ñ…Ð¾Ð´ÑÑ‰Ð¸Ðµ" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<?xml version="1.0" encoding="koi8-r"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ïÔÞÅÔ óÅÒÇÅÅ×Á ÷ÈÏÄÑÝÉÅ" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="7"/>
 	<property name="ireport.y" value="0"/>
@@ -138,7 +138,7 @@ GROUP BY
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="16"/>
 				</textElement>
-				<text><![CDATA[ÐžÑ‚Ñ‡ÐµÑ‚Ð½Ð¾ÑÑ‚ÑŒ Ð¿Ð¾ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÑŒÐ½Ñ‹Ð¼ Ð²Ñ…Ð¾Ð´ÑÑ‰Ð¸Ð¼ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð°Ð¼]]></text>
+				<text><![CDATA[ïÔÞÅÔÎÏÓÔØ ÐÏ ËÏÎÔÒÏÌØÎÙÍ ×ÈÏÄÑÝÉÍ ÄÏËÕÍÅÎÔÁÍ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="31" y="59" width="50" height="20"/>
@@ -152,7 +152,7 @@ GROUP BY
 				<textElement>
 					<font fontName="Tahoma" size="12" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Ð¿Ð¾]]></text>
+				<text><![CDATA[ÐÏ]]></text>
 			</staticText>
 			<textField pattern="dd.MM.yyyy">
 				<reportElement x="81" y="59" width="130" height="20"/>
@@ -166,8 +166,7 @@ GROUP BY
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
 				</textElement>
-				<text><![CDATA[Ð¤Ð“Ð‘Ð£ Â«Ð¤ÐÐšÐ¦ Ð”Ð“ÐžÐ˜ Ð¸Ð¼. Ð”Ð¼Ð¸Ñ‚Ñ€Ð¸Ñ Ð Ð¾Ð³Ð°Ñ‡ÐµÐ²Ð°Â» ÐœÐ¸Ð½Ð·Ð´Ñ€Ð°Ð²Ð° Ð Ð¾ÑÑÐ¸Ð¸
-]]></text>
+				<text><![CDATA[æçâõ «æîëã äçïé ÉÍ. äÍÉÔÒÉÑ òÏÇÁÞÅ×Á» íÉÎÚÄÒÁ×Á òÏÓÓÉÉ]]></text>
 			</staticText>
 			<textField pattern="dd.MM.yyyy">
 				<reportElement x="263" y="59" width="142" height="20"/>
@@ -181,7 +180,7 @@ GROUP BY
 				<textElement>
 					<font fontName="Tahoma" size="12"/>
 				</textElement>
-				<text><![CDATA[Ð ÑƒÐºÐ¾Ð²Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒ:]]></text>
+				<text><![CDATA[òÕËÏ×ÏÄÉÔÅÌØ:]]></text>
 			</staticText>
 			<componentElement>
 				<reportElement key="table 1" x="563" y="59" width="239" height="20"/>
@@ -217,70 +216,70 @@ GROUP BY
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
-				<text><![CDATA[Ð¡Ñ€Ð¾Ðº Ð¸ÑÐ¿Ð¾Ð»ÐµÐ½Ð¸Ñ]]></text>
+				<text><![CDATA[óÒÏË ÉÓÐÏÌÅÎÉÑ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="348" y="0" width="66" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Ð”Ð°Ñ‚Ð°     Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð°]]></text>
+				<text><![CDATA[äÁÔÁ     ÄÏËÕÍÅÎÔÁ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="142" y="0" width="121" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[ÐÐ´Ñ€ÐµÑÐ°Ð½Ñ‚]]></text>
+				<text><![CDATA[áÄÒÅÓÁÎÔ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="414" y="0" width="149" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Ð¡Ð¾Ð´ÐµÑ€Ð¶Ð°Ð½Ð¸Ðµ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð°]]></text>
+				<text><![CDATA[óÏÄÅÒÖÁÎÉÅ ÄÏËÕÍÅÎÔÁ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="563" y="0" width="90" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Ð˜ÑÐ¿Ð¾Ð»Ð½Ð¸Ñ‚ÐµÐ»ÑŒ]]></text>
+				<text><![CDATA[éÓÐÏÌÎÉÔÅÌØ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="0" y="0" width="22" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" isBold="false"/>
 				</textElement>
-				<text><![CDATA[â„– Ð¿/Ð¿]]></text>
+				<text><![CDATA[¹ Ð/Ð]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="263" y="0" width="85" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[ÐÐ¾Ð¼ÐµÑ€ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð°]]></text>
+				<text><![CDATA[îÏÍÅÒ ÄÏËÕÍÅÎÔÁ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="79" y="0" width="63" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<text><![CDATA[Ð”Ð°Ñ‚Ð° Ð¿Ð¾ÑÑ‚ÑƒÐ¿Ð»ÐµÐ½Ð¸Ñ]]></text>
+				<text><![CDATA[äÁÔÁ ÐÏÓÔÕÐÌÅÎÉÑ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="719" y="0" width="83" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<text><![CDATA[ÐžÑ‚Ð¼ÐµÑ‚ÐºÐ° Ð¾Ð± Ð¸ÑÐ¿Ð¾Ð»Ð½ÐµÐ½Ð¸Ð¸ (â„– Ð¸ Ð´Ð°Ñ‚Ð° Ð¾Ñ‚Ð²ÐµÑ‚Ð°]]></text>
+				<text><![CDATA[ïÔÍÅÔËÁ ÏÂ ÉÓÐÏÌÎÅÎÉÉ (¹ É ÄÁÔÁ ÏÔ×ÅÔÁ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement style="table_TD" x="22" y="0" width="57" height="45"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Ð’Ñ…Ð¾Ð´ÑÑ‰Ð¸Ð¹ Ð½Ð¾Ð¼ÐµÑ€]]></text>
+				<text><![CDATA[÷ÈÏÄÑÝÉÊ ÎÏÍÅÒ]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
@@ -348,7 +347,7 @@ GROUP BY
 								</textElement>
 								<textFieldExpression><![CDATA[]]></textFieldExpression>
 							</textField>
-							<textField pattern="dd.MM.YYYY">
+							<textField pattern="dd.MM.yyyy">
 								<reportElement x="0" y="0" width="84" height="17"/>
 								<textElement textAlignment="Center">
 									<font fontName="Tahoma"/>
@@ -382,7 +381,7 @@ GROUP BY
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd.MM.YYYY">
+			<textField pattern="dd.MM.yyyy">
 				<reportElement style="table_TD" x="653" y="0" width="66" height="34"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
