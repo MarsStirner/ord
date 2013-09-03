@@ -43,11 +43,10 @@ public class EmployesBean extends AbstractDocumentListHolderBean<User> {
 
                 Collections.sort(this.employes, new Comparator<User>() {
                     public int compare(User u1, User u2) {
-                        if (getSorting() != null && getSorting().isAsc())
-                            return u1.getDescription().compareTo(u2.getDescription());
-                        return -u1.getDescription().compareTo(u2.getDescription());
+                        return u1.getDescriptionShort().compareTo(u2.getDescriptionShort());
                     }
                 });
+
                 needRefresh = false;
             } catch (Exception e) {
                 e.printStackTrace();
