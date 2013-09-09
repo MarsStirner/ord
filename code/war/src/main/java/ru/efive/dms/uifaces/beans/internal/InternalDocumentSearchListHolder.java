@@ -46,30 +46,8 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
     }
 
     protected List<InternalDocument> getHashDocuments(int fromIndex, int toIndex) {
-        if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
-            try {
-                User user = sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                this.hashDocuments = new ArrayList<InternalDocument>(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
-
-                Collections.sort(this.hashDocuments, new Comparator<InternalDocument>() {
-                    public int compare(InternalDocument o1, InternalDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        List<InternalDocument> result = new ArrayList<InternalDocument>(this.hashDocuments.subList(fromIndex, toIndex));
-        return result;
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        return new ArrayList<InternalDocument>(this.getHashDocuments().subList(fromIndex, toIndex));
     }
 
     protected List<InternalDocument> getHashDocuments() {
@@ -80,13 +58,42 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
                 User user = sessionManagement.getLoggedUser();
                 user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
                 result = new ArrayList<InternalDocument>(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+
                 Collections.sort(result, new Comparator<InternalDocument>() {
                     public int compare(InternalDocument o1, InternalDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
+                        int result = 0;
+                        String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
+
+                        if(colId.equalsIgnoreCase("registrationDate")) {
+                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(d1);
+                            c1.set(Calendar.HOUR_OF_DAY, 0);
+                            c1.set(Calendar.MINUTE, 0);
+                            c1.set(Calendar.SECOND, 0);
+                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(d2);
+                            c2.set(Calendar.HOUR_OF_DAY, 0);
+                            c2.set(Calendar.MINUTE, 0);
+                            c2.set(Calendar.SECOND, 0);
+                            if(c1.equals(c2)) {
+                                try {
+                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
+                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                    result = i1.compareTo(i2);
+                                } catch(NumberFormatException e) {
+                                    result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                }
+                            } else {
+                                result = c1.compareTo(c2);
+                            }
+                        }
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+                        return result;
                     }
                 });
 
@@ -107,7 +114,7 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("creationDate,id", false);
+        return new Sorting("registrationDate", true);
     }
 
     @Override

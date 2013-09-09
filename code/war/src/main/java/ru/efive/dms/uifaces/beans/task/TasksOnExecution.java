@@ -37,6 +37,11 @@ public class TasksOnExecution extends AbstractDocumentListHolderBean<Task> {
     }
 
     @Override
+    protected Sorting initSorting() {
+        return new Sorting("registrationDate, registrationNumber", false);
+    }
+
+    @Override
     protected List<Task> loadDocuments() {
         List<Task> result = new ArrayList<Task>();
         try {

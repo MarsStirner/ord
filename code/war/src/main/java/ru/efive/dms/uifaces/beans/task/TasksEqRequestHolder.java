@@ -1,13 +1,6 @@
 package ru.efive.dms.uifaces.beans.task;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -32,28 +25,8 @@ public class TasksEqRequestHolder extends AbstractDocumentListHolderBean<Task> {
     private static final long serialVersionUID = -7280238088178837516L;
 
     protected List<Task> getHashDocuments(int fromIndex, int toIndex) {
-        if (needRefresh) {
-            try {
-                User user = sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                this.hashDocuments = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
-
-                Collections.sort(this.hashDocuments, new Comparator<Task>() {
-                    public int compare(Task o1, Task o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        toIndex = (this.hashDocuments.size() < fromIndex + toIndex) ? this.hashDocuments.size() : fromIndex + toIndex;
-        List<Task> result = new ArrayList<Task>(this.hashDocuments.subList(fromIndex, toIndex));
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        List<Task> result = new ArrayList<Task>(this.getHashDocuments().subList(fromIndex, toIndex));
         return result;
     }
 
@@ -64,13 +37,32 @@ public class TasksEqRequestHolder extends AbstractDocumentListHolderBean<Task> {
                 User user = sessionManagement.getLoggedUser();
                 user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
                 result = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+
                 Collections.sort(result, new Comparator<Task>() {
                     public int compare(Task o1, Task o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getCreationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getCreationDate());
-                        return c2.compareTo(c1);
+                        int result = 0;
+                        String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
+
+                        if(colId.equalsIgnoreCase("registrationDate")) {
+                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(d1);
+                            c1.set(Calendar.HOUR_OF_DAY, 0);
+                            c1.set(Calendar.MINUTE, 0);
+                            c1.set(Calendar.SECOND, 0);
+                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(d2);
+                            c2.set(Calendar.HOUR_OF_DAY, 0);
+                            c2.set(Calendar.MINUTE, 0);
+                            c2.set(Calendar.SECOND, 0);
+                            result = c1.compareTo(c2);
+                        }
+
+                        if(getSorting().isAsc()) {
+                            result *= -1;
+                        }
+                        return result;
                     }
                 });
 
@@ -93,7 +85,7 @@ public class TasksEqRequestHolder extends AbstractDocumentListHolderBean<Task> {
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("creationDate", false);
+        return new Sorting("registrationDate", true);
     }
 
     @Override

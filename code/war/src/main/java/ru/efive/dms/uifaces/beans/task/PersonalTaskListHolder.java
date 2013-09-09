@@ -23,6 +23,11 @@ public class PersonalTaskListHolder extends AbstractDocumentListHolderBean<Task>
     }
 
     @Override
+    protected Sorting initSorting() {
+        return new Sorting("registrationDate, registrationNumber", false);
+    }
+
+    @Override
     protected int getTotalCount() {
         return new Long(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).countDraftDocumentsByAuthor(
                 sessionManagement.getLoggedUser(), false)).intValue();

@@ -24,8 +24,8 @@ public class TasksEqExerciseHolder extends AbstractDocumentListHolderBean<Task> 
     private static final long serialVersionUID = -684382977491986358L;
 
     protected List<Task> getHashDocuments(int fromIndex, int toIndex) {
-        toIndex = (this.getDocuments().size() < fromIndex + toIndex) ? this.getDocuments().size() : fromIndex + toIndex;
-        List<Task> result = new ArrayList<Task>(this.getDocuments().subList(fromIndex, toIndex));
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
+        List<Task> result = new ArrayList<Task>(this.getHashDocuments().subList(fromIndex, toIndex));
         return result;
     }
 
@@ -40,9 +40,23 @@ public class TasksEqExerciseHolder extends AbstractDocumentListHolderBean<Task> 
                 Collections.sort(result, new Comparator<Task>() {
                     public int compare(Task o1, Task o2) {
                         int result = 0;
-                        String colId = getSorting().getColumnId();
+                        String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
 
-                        if(colId.equalsIgnoreCase("task_number")) {
+                        if(colId.equalsIgnoreCase("registrationDate")) {
+                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
+                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c1.setTime(d1);
+                            c1.set(Calendar.HOUR_OF_DAY, 0);
+                            c1.set(Calendar.MINUTE, 0);
+                            c1.set(Calendar.SECOND, 0);
+                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
+                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
+                            c2.setTime(d2);
+                            c2.set(Calendar.HOUR_OF_DAY, 0);
+                            c2.set(Calendar.MINUTE, 0);
+                            c2.set(Calendar.SECOND, 0);
+                            result = c1.compareTo(c2);
+                        } else if(colId.equalsIgnoreCase("task_number")) {
                             try {
                                 Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
@@ -84,7 +98,7 @@ public class TasksEqExerciseHolder extends AbstractDocumentListHolderBean<Task> 
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("task_number", false);
+        return new Sorting("registrationDate", true);
     }
 
     @Override

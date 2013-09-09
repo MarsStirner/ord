@@ -175,4 +175,17 @@
 
     </dependencies>
 
+    <properties>
+        <maven.build.timestamp.format>dd.MM.yyyy</maven.build.timestamp.format>
+    </properties>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
 </project>

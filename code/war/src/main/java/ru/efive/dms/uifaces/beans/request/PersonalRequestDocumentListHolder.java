@@ -24,7 +24,7 @@ public class PersonalRequestDocumentListHolder extends AbstractDocumentListHolde
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("creationDate,id", false);
+        return new Sorting("registrationDate, registrationNumber", false);
     }
 
     @Override
