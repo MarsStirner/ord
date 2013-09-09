@@ -159,11 +159,11 @@
             <artifactId>batik-bridge</artifactId>
             <version>1.7</version>
         </dependency>
-        <dependency>
+<!--         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>3.7</version>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>ru.efive.fonts</groupId>
