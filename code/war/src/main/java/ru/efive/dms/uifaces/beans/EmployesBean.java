@@ -1,22 +1,16 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.dms.util.LDAPImportService;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.util.*;
 
 @Named("employes")
 @SessionScoped
@@ -40,6 +34,13 @@ public class EmployesBean extends AbstractDocumentListHolderBean<User> {
         return result;
     }
 
+    public List<User> getEmployesPaged() {
+        if(getPagination() == null) {
+            super.reset();
+        }
+        return this.getEmployes(getPagination().getOffset(), getPagination().getPageSize());
+    }
+
     public List<User> getEmployes() {
         if (needRefresh) {
             sessionManagement.registrateBeanName(beanName);
@@ -49,10 +50,7 @@ public class EmployesBean extends AbstractDocumentListHolderBean<User> {
 
                 Collections.sort(this.employes, new Comparator<User>() {
                     public int compare(User u1, User u2) {
-                        if (getSorting() != null && !getSorting().isAsc())
-                            return u1.getDescription().compareTo(u2.getDescription());
-                        return -u1.getDescription().compareTo(u2.getDescription());
-
+                        return u1.getDescriptionShort().compareTo(u2.getDescriptionShort());
                     }
                 });
 
