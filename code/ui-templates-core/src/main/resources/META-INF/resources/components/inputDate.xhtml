@@ -66,7 +66,8 @@
                              immediate="#{cc.attrs.immediate}"
                              readonly="#{cc.attrs.readonly}"
                              required="#{cc.attrs.required}"
-                             value="#{cc.attrs.value}">
+                             value="#{cc.attrs.value}"
+                             onkeypress="if(event.keyCode==13) {document.getElementById('#{cc.clientId}:calendarButton').click(); return event.keyCode!=13;}">
 
                     <c:if test="#{not empty cc.attrs.accesskey}"><f:attribute name="accesskey" value="#{cc.attrs.accesskey}"/></c:if>
                     <c:if test="#{not empty cc.attrs.alt}"><f:attribute name="alt" value="#{cc.attrs.alt}"/></c:if>
