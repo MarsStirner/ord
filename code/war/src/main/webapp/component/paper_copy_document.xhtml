@@ -25,10 +25,13 @@
     <div id="form_header">
         <div class="actionbar">
             <div class="menu">
-                <h:outputLink
-                        value="#{contextPath}/component/in/in_documents_by_number.xhtml">
-                    <h:graphicImage value="#{resource['images:home.png']}"/>
-                </h:outputLink>
+
+                <div class="defbutton">
+                    <h:outputLink
+                            value="#{contextPath}#{paper_copy_document.homeLink}">
+                        <h:graphicImage value="#{resource['images:home.png']}"/>
+                    </h:outputLink>
+                </div>
 
                 <div class="defbutton">
                     <h:commandLink action="#{paper_copy_document.edit}"

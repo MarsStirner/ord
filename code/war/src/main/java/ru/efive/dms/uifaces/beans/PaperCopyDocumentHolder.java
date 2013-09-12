@@ -539,6 +539,24 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
         return isHistoryTabSelected;
     }
 
+    public String getHomeLink() {
+        String key = getDocument().getParentDocumentId();
+        if (!key.isEmpty()) {
+            int pos = key.indexOf('_');
+            if (pos != -1) {
+                if (key.indexOf("incoming") != -1) {
+                    return "/component/in/in_documents.xhtml";
+                } else if (key.indexOf("outgoing") != -1) {
+                    return "/component/out/out_documents_by_number.xhtml";
+                } else if (key.indexOf("internal") != -1) {
+                    return "/component/internal/internal_documents_by_number.xhtml";
+                } else if (key.indexOf("request") != -1) {
+                    return "/component/request/request_documents.xhtml";
+                }
+            }
+        }
+        return null;
+    }
 
     private boolean isRequisitesTabSelected = true;
     private boolean isRouteTabSelected = false;
