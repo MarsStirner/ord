@@ -101,7 +101,6 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
     public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
         DetachedCriteria detachedCriteria = getAccessControlSearchCriteriaByUser(user);
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
@@ -114,7 +113,6 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (userId > 0) {
             System.out.println("subSrart");
             return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria, in_map), filter), -1, 0);
-
         } else {
             return Collections.emptyList();
         }

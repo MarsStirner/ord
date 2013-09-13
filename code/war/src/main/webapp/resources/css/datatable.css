@@ -1,12 +1,12 @@
-table.e5ui-dataTable {float:left; margin:0; width:100%; font-size:12px; overflow:auto; border:0 solid;}
-table.e5ui-dataTable table {width:100%; border:0 solid;}
+table.e5ui-dataTable {table-layout:fixed; float:left; margin:0; width:100%; font-size:12px; overflow:auto; border:0 solid;}
+table.e5ui-dataTable table {table-layout:fixed; width:100%; border:0 solid;}
 table.e5ui-dataTable table thead {}
-table.e5ui-dataTable table thead th {height:0px; padding:0 10px; white-space:nowrap; vertical-align:left; border:0 0 0 1px solid #ededed; background:#F9F9F9 url('#{resource['images:grid3-hrow.gif']}') 0 0 repeat-x;}
+table.e5ui-dataTable table thead th {min-width: 100px; height:0px; padding:0 10px; white-space:nowrap; vertical-align:left; border:0 0 0 1px solid #ededed; background:#F9F9F9 url('#{resource['images:grid3-hrow.gif']}') 0 0 repeat-x;}
 
 table.e5ui-dataTable table thead th a, table.e5ui-dataTable table thead th a.visited {color:#000000;text-decoration: none; font-weight:normal;}
-table.e5ui-dataTable table tbody tr td {padding:7px 11px; border:1px solid #ededed; border-left:none; border-right:none;}
-table.e5ui-dataTable table tbody td {padding:7px 11px; border:1px solid #ededed; border-left:none; border-right:none;}
-table.e5ui-dataTable table tbody tr:hover td {background:#efefef url('#{resource['images:row-over.gif']}') 0 0 repeat-x;}
+table.e5ui-dataTable table tbody tr td {word-wrap: break-word; padding:7px 11px; border:1px solid #ededed; border-left:none; border-right:none;}
+table.e5ui-dataTable table tbody td {word-wrap: break-word; padding:7px 11px; border:1px solid #ededed; border-left:none; border-right:none;}
+table.e5ui-dataTable table tbody tr:hover td {word-wrap: break-word;; background:#efefef url('#{resource['images:row-over.gif']}') 0 0 repeat-x;}
 table.e5ui-dataTable table tbody td.e5ui-row-marker {background-image: url('#{resource['images:marker_down.png']}'); background-position: right center; background-repeat:no-repeat;}
 table.e5ui-dataTable table tbody tr:hover td.e5ui-row-marker {background-image: url('#{resource['images:marker_down.png']}'); background-position: right center; background-repeat:no-repeat;}
 table.e5ui-dataTable table tbody tr.collapsed:hover td.e5ui-row-marker {background-image: url('#{resource['images:marker_right.png']}'); background-position: right center; background-repeat:no-repeat;}
@@ -21,10 +21,10 @@ table.e5ui-dataTable table tbody tr.sub_row td.first {padding-left:2px; backgrou
 table.e5ui-dataTable table tbody tr.sub_row td.first .articul {padding-left:30px; background-image:url('#{resource['images:horizontal_point.gif']}'); background-position:5px 50%; background-repeat:no-repeat;}
 table.e5ui-dataTable table tbody tr.sub_row.last td.first {background-image:url('#{resource['images:horizontal_point_last.gif']}'); background-position:5px -85px; background-repeat:no-repeat;}
 
-table.e5ui-dataTable th {height:24px; padding:0 10px; white-space:nowrap; vertical-align:left; border-left:1px solid #ededed; background:#F9F9F9 url('#{resource['images:grid3-hrow.gif']}') 0 0 repeat-x;}
+table.e5ui-dataTable th {min-width: 100px; height:24px; padding:0 10px; white-space:nowrap; vertical-align:left; border-left:1px solid #ededed; background:#F9F9F9 url('#{resource['images:grid3-hrow.gif']}') 0 0 repeat-x;}
 table.e5ui-dataTable th a, table.e5ui-dataTable table thead th a.visited {color:#000000;text-decoration: none; font-weight:normal;}
-table.e5ui-dataTable td {padding:7px 12px; border:1px solid #ededed; border-left:none; border-right:none;}
-table.e5ui-dataTable tr:hover td {background:#efefef url('#{resource['images:row-over.gif']}') 0 0 repeat-x;}
+table.e5ui-dataTable td {word-wrap: break-word; padding:7px 12px; border:1px solid #ededed; border-left:none; border-right:none;}
+table.e5ui-dataTable tr:hover td {word-wrap: break-word; background:#efefef url('#{resource['images:row-over.gif']}') 0 0 repeat-x;}
 
 table.e5ui-dataTable tr td.e5ui-row-marker {background-image: url('#{resource['images:marker_down.png']}'); background-position: right center; background-repeat:no-repeat;}
 table.e5ui-dataTable tr:hover td.e5ui-row-marker {background-image: url('#{resource['images:marker_down.png']}'); background-position: right center; background-repeat:no-repeat;}

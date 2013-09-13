@@ -34,6 +34,14 @@ public class PersonConverter implements Converter {
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return value != null ? ((User) value).getDescriptionShort() : "";
+        if(value != null) {
+            if(value instanceof  User) {
+                return ((User) value).getDescriptionShort();
+            } else {
+                return value.toString();
+            }
+        }
+        return "";
     }
+
 }

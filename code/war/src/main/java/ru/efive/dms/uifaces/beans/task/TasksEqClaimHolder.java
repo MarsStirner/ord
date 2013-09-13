@@ -56,7 +56,17 @@ public class TasksEqClaimHolder extends AbstractDocumentListHolderBean<Task> {
                             c2.set(Calendar.HOUR_OF_DAY, 0);
                             c2.set(Calendar.MINUTE, 0);
                             c2.set(Calendar.SECOND, 0);
-                            result = c1.compareTo(c2);
+                            if(c1.equals(c2)) {
+                                try {
+                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
+                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
+                                    result = i1.compareTo(i2);
+                                } catch(NumberFormatException e) {
+                                    result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
+                                }
+                            } else {
+                                result = c1.compareTo(c2);
+                            }
                         }
 
                         if(getSorting().isAsc()) {

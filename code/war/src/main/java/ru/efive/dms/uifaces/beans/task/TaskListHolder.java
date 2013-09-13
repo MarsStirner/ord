@@ -48,11 +48,29 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
                                 result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
                             }
                         } else if(colId.equalsIgnoreCase("registration_date")) {
+                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c1.setTime(ApplicationHelper.getNotNull(o1.getControlDate()));
+                            c1.setTime(d1);
+                            c1.set(Calendar.HOUR_OF_DAY, 0);
+                            c1.set(Calendar.MINUTE, 0);
+                            c1.set(Calendar.SECOND, 0);
+                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
                             Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c2.setTime(ApplicationHelper.getNotNull(o2.getControlDate()));
-                            result = c1.compareTo(c2);
+                            c2.setTime(d2);
+                            c2.set(Calendar.HOUR_OF_DAY, 0);
+                            c2.set(Calendar.MINUTE, 0);
+                            c2.set(Calendar.SECOND, 0);
+                            if(c1.equals(c2)) {
+                                try {
+                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
+                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
+                                    result = i1.compareTo(i2);
+                                } catch(NumberFormatException e) {
+                                    result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
+                                }
+                            } else {
+                                result = c1.compareTo(c2);
+                            }
                         }
 
                         if(getSorting().isAsc()) {
@@ -81,7 +99,7 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("registrationDate, registrationNumber", false);
+        return new Sorting("registration_date", true);
     }
 
     @Override
