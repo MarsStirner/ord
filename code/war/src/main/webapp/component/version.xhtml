@@ -27,7 +27,8 @@
 
         <h:outputText value="Организационно-распорядительный документооборот"/>
         <ui:fragment><br/></ui:fragment>
-        <h:outputText value="Версия #{versionHolderBean.version} от #{versionHolderBean.buildDate} г."/>
+        <h:outputText value="Версия #{versionHolderBean.version}"/><br/>
+        <h:outputText value="от #{versionHolderBean.buildDate} г."/>
 
         <e5ui-comp:ajaxStatusGlobal timeout="300">
             <f:facet name="waitPanel">

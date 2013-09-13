@@ -1,28 +1,27 @@
 package ru.efive.dms.uifaces.beans;
 
 
-import org.hibernate.SQLQuery;
-import org.hibernate.criterion.DetachedCriteria;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import ru.efive.dms.dao.VersionDAOImpl;
-import ru.efive.dms.data.Version;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.entity.AbstractEntity;
+import java.io.Serializable;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
-import java.sql.ResultSet;
-import java.util.List;
-import java.util.Properties;
 
 
 @Named("versionHolderBean")
 @SessionScoped
 public class VersionHolderBean implements Serializable {
 
+    /** Serial UID */
+    private static final long serialVersionUID = 1L;
+    
+    private static final String BUILD_PROP_FILE = "/build.properties";
+    private static final String VERSION = "application.version";
+    private static final String BUILDTIME = "application.build.date";
+    
+    
     private String version;
     private String buildDate;
 
@@ -33,15 +32,11 @@ public class VersionHolderBean implements Serializable {
     @PostConstruct
     public void updateVersionInfo() {
         sessionManagement.registrateBeanName("versionHolderBean");
-        VersionDAOImpl versionDao = sessionManagement.getDAO(VersionDAOImpl.class, ApplicationHelper.VERSION_DAO);
-        List<Version> versionList = versionDao.findDocuments();
-        if(versionList.size() > 0) {
-            setVersion(String.valueOf(versionList.get(versionList.size() - 1).getVersion()));
-        }
         Properties properties = new Properties();
         try {
-            properties.load(getClass().getResourceAsStream("/build.properties"));
-            setBuildDate(properties.getProperty("application.build.date"));
+            properties.load(getClass().getResourceAsStream(BUILD_PROP_FILE));
+            setVersion(properties.getProperty(VERSION));
+            setBuildDate(properties.getProperty(BUILDTIME));
         } catch (Exception e) {
             e.printStackTrace();
         }
