@@ -176,6 +176,7 @@
     </dependencies>
 
     <properties>
+    	<timestamp>${maven.build.timestamp}</timestamp>    
         <maven.build.timestamp.format>dd.MM.yyyy</maven.build.timestamp.format>
     </properties>
 
