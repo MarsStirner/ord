@@ -630,4 +630,21 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         }
         return criteria;
     }
+
+    /**
+     * Может ли пользователь получить доступ к документу благодаря ассоциациям
+     *
+     * @param user пользователь
+     * @param docKey идентификатор документа вида "incoming_000"
+     */
+
+    public boolean isAccessGrantedByAssociation(User user, String docKey) {
+        DetachedCriteria searchCriteria = getAccessControlSearchCriteriaByUser(user);
+        searchCriteria.add(Restrictions.eq("deleted", false));
+        searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DRAFT.getId())));
+        searchCriteria.add(Restrictions.or(Restrictions.eq("rootDocumentId", docKey), Restrictions.eq("parentId", docKey)));
+        searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        return (getCountOf(searchCriteria) > 0);
+    }
+
 }

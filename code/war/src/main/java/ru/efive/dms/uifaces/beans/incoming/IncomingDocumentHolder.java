@@ -259,13 +259,12 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                         }
 
                         if (!allReadersId.contains(currentUser.getId())) {
-                            //FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                            //FacesMessage.SEVERITY_ERROR,
-                            //"Уровень допуска к документу выше вашего уровня допуска.", ""));
-
-                            setState(STATE_FORBIDDEN);
-                            setStateComment("");
-                            return;
+                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO);
+                            if(!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
+                                setState(STATE_FORBIDDEN);
+                                setStateComment("Доступ запрещен");
+                                return;
+                            }
                         }
 
                     }

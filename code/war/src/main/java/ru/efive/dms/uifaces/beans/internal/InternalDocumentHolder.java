@@ -23,6 +23,7 @@ import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
+import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.data.Attachment;
 import ru.efive.dms.data.DocumentForm;
 import ru.efive.dms.data.HistoryEntry;
@@ -113,10 +114,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 }
 
                 if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
-                    /*FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                                 FacesMessage.SEVERITY_ERROR,
-                                 "Уровень допуска к документу выше вашего уровня допуска.", ""));*/
-
                     setState(STATE_FORBIDDEN);
                     setStateComment("Уровень допуска к документу выше вашего уровня допуска.");
                     return;
@@ -212,13 +209,12 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                         }
 
                         if (!allReadersId.contains(currentUser.getId())) {
-                            /*FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                                           FacesMessage.SEVERITY_ERROR,
-                                           "Уровень допуска к документу выше вашего уровня допуска.", ""));*/
-
-                            setState(STATE_FORBIDDEN);
-                            setStateComment("");
-                            return;
+                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO);
+                            if(!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "internal_" + document.getId())) {
+                                setState(STATE_FORBIDDEN);
+                                setStateComment("Доступ запрещен");
+                                return;
+                            }
                         }
 
                     }
