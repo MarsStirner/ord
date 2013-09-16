@@ -19,11 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import ru.efive.crm.data.Contragent;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.DeliveryTypeDAOImpl;
-import ru.efive.dms.dao.DocumentFormDAOImpl;
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.SenderTypeDAOImpl;
+import ru.efive.dms.dao.*;
 import ru.efive.dms.data.Attachment;
 import ru.efive.dms.data.DeliveryType;
 import ru.efive.dms.data.DocumentForm;
@@ -167,13 +163,12 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                         }
 
                         if (!allReadersId.contains(currentUser.getId())) {
-                            /*FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                                           FacesMessage.SEVERITY_ERROR,
-                                           "Уровень допуска к документу выше вашего уровня допуска.", ""));*/
-
-                            setState(STATE_FORBIDDEN);
-                            setStateComment("В доступе отказано.");
-                            return;
+                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO);
+                            if(!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "request_" + document.getId())) {
+                                setState(STATE_FORBIDDEN);
+                                setStateComment("Доступ запрещен");
+                                return;
+                            }
                         }
 
                     }

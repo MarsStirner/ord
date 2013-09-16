@@ -201,9 +201,12 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         }
 
         if (!(allReadersId.contains(currentUser.getId()) || isUserReaderByRole)) {
-            setState(STATE_FORBIDDEN);
-            setStateComment("В доступе отказано.");
-            return false;
+            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO);
+            if(!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "task_" + document.getId())) {
+                setState(STATE_FORBIDDEN);
+                setStateComment("Доступ запрещен");
+                return false;
+            }
         }
         return true;
     }
