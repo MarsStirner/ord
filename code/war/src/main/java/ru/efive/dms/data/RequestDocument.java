@@ -205,6 +205,12 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     private String receivedDocumentNumber;
 
     /**
+     * Номер ERP
+     */
+
+    private String erpNumber;
+
+    /**
      * Дата регистрации поступившего документа у корреспондента
      */
     @Temporal(value = TemporalType.TIMESTAMP)
@@ -305,6 +311,14 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         this.registrationNumber = registrationNumber;
     }
 
+    public String getErpNumber() {
+        return erpNumber;
+    }
+
+    public void setErpNumber(String erpNumber) {
+        this.erpNumber = erpNumber;
+    }
+
     public Date getRegistrationDate() {
         return registrationDate;
     }
@@ -402,61 +416,41 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         this.nomenclature = nomenclature;
     }
 
-    ;
-
     public Nomenclature getNomenclature() {
         return nomenclature;
     }
-
-    ;
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
 
-    ;
-
     public Date getCreationDate() {
         return creationDate;
     }
-
-    ;
 
     public void setForm(DocumentForm form) {
         this.form = form;
     }
 
-    ;
-
     public DocumentForm getForm() {
         return form;
     }
-
-    ;
 
     public void setDeliveryType(DeliveryType deliveryType) {
         this.deliveryType = deliveryType;
     }
 
-    ;
-
     public DeliveryType getDeliveryType() {
         return deliveryType;
     }
-
-    ;
 
     public void setReceivedDocumentNumber(String receivedDocumentNumber) {
         this.receivedDocumentNumber = receivedDocumentNumber;
     }
 
-    ;
-
     public String getReceivedDocumentNumber() {
         return receivedDocumentNumber;
     }
-
-    ;
 
     public void setReceivedDocumentDate(Date receivedDocumentDate) {
         this.receivedDocumentDate = receivedDocumentDate;
@@ -465,8 +459,6 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     public Date getReceivedDocumentDate() {
         return receivedDocumentDate;
     }
-
-    ;
 
     public void setCopiesCount(int copiesCount) {
         this.copiesCount = copiesCount;

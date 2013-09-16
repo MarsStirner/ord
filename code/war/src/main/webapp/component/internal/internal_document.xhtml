@@ -300,6 +300,16 @@
                     </div>
                 </td>
             </tr>
+            <tr class="row">
+                <td class="first">
+                    <label>
+                        <span class="title">Номер в ERP</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <h:outputText value="#{internal_doc.document.erpNumber}"/>
+                </td>
+            </tr>
         </table>
     </div>
 </h:panelGroup>
@@ -637,6 +647,16 @@
                 </ui:repeat> </label>
             </h:panelGroup>
         </div>
+    </td>
+</tr>
+<tr class="row">
+    <td class="first">
+        <label>
+            <span class="title">Номер в ERP</span>
+        </label>
+    </td>
+    <td class="second">
+        <h:inputText value="#{internal_doc.document.erpNumber}"/>
     </td>
 </tr>
 </table>
