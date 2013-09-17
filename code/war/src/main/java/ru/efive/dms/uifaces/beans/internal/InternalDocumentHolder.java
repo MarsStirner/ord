@@ -185,6 +185,9 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                         if (document.getSigner() != null) {
                             allReadersId.add(document.getSigner().getId());
                         }
+                        if(document.getResponsible() != null){
+                            allReadersId.add(document.getResponsible().getId());
+                        }
 
                         List<User> someReaders = new ArrayList<User>();
                         someReaders.addAll(document.getRecipientUsersList());
