@@ -242,6 +242,12 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     private int statusId;
 
     /**
+     * Номер ERP
+     */
+
+    private String erpNumber;
+
+    /**
      * Ссылка на документ основание
      */
     @Column(name = "reason_document_id")
@@ -330,6 +336,14 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
 
     public String getRegistrationNumber() {
         return registrationNumber;
+    }
+
+    public String getErpNumber() {
+        return erpNumber;
+    }
+
+    public void setErpNumber(String erpNumber) {
+        this.erpNumber = erpNumber;
     }
 
     public IncomingDocument getCauseIncomingDocument() {

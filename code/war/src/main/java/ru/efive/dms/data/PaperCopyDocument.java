@@ -143,7 +143,7 @@ public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData
 
     @Transient
     public DocumentType getDocumentType() {
-        return DocumentType.InternalDocument;
+        return DocumentType.PaperCopyDocument;
     }
 
     @Transient

@@ -123,6 +123,12 @@ public class Task extends IdentifiedEntity implements ProcessedData {
     private String rootDocumentId;
 
     /**
+     * Номер ERP
+     */
+
+    private String erpNumber;
+
+    /**
      * Вид задачи
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
@@ -192,6 +198,15 @@ public class Task extends IdentifiedEntity implements ProcessedData {
     public Date getRegistrationDate() {
         return registrationDate;
     }
+
+    public String getErpNumber() {
+        return erpNumber;
+    }
+
+    public void setErpNumber(String erpNumber) {
+        this.erpNumber = erpNumber;
+    }
+
 
     public void setControlDate(Date controlDate) {
         this.controlDate = controlDate;

@@ -568,6 +568,16 @@
                 </td>
             </tr>
             <tr class="row">
+                <td class="first">
+                    <label>
+                        <span class="title">Номер в ERP</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <h:outputText value="#{out_doc.document.erpNumber}"/>
+                </td>
+            </tr>
+            <tr class="row">
                 <td class="first"></td>
                 <td class="second"></td>
                 <td class="third"></td>
@@ -802,6 +812,16 @@
             </ui:repeat> </label>
         </div>
     </h:panelGroup></td>
+</tr>
+<tr class="row">
+    <td class="first">
+        <label>
+            <span class="title">Номер в ERP</span>
+        </label>
+    </td>
+    <td class="second">
+        <h:inputText value="#{out_doc.document.erpNumber}"/>
+    </td>
 </tr>
 <tr>
     <td class="first"></td>

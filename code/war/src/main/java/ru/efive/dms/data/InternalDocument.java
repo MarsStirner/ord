@@ -43,6 +43,12 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     private String registrationNumber;
 
     /**
+     * Номер ERP
+     */
+
+    private String erpNumber;
+
+    /**
      * Дата поступления
      */
     @Temporal(value = TemporalType.TIMESTAMP)
@@ -312,6 +318,13 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         this.registrationNumber = registrationNumber;
     }
 
+    public String getErpNumber() {
+        return erpNumber;
+    }
+
+    public void setErpNumber(String erpNumber) {
+        this.erpNumber = erpNumber;
+    }
 
     public List<User> getRecipientUsers() {
         return recipientUsers;

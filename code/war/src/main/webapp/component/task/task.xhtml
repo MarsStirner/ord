@@ -407,6 +407,16 @@
                             converter="PersonConverter" class="width"/></td>
                 </tr>
                 <tr class="row">
+                    <td class="first">
+                        <label>
+                            <span class="title">Номер в ERP</span>
+                        </label>
+                    </td>
+                    <td class="second">
+                        <h:outputText value="#{task.document.erpNumber}"/>
+                    </td>
+                </tr>
+                <tr class="row">
                     <td class="first"></td>
                     <td class="second"></td>
                     <td class="third"></td>
@@ -568,6 +578,16 @@
                     <td class="second" colspan="3"><h:outputText
                             id="controller" value="#{task.document.controller}"
                             converter="PersonConverter" class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">
+                        <label>
+                            <span class="title">Номер в ERP</span>
+                        </label>
+                    </td>
+                    <td class="second">
+                        <h:inputText value="#{task.document.erpNumber}"/>
+                    </td>
                 </tr>
                 <tr>
                     <td class="first"></td>
