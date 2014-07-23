@@ -137,9 +137,9 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     }
 
     protected boolean isCurrentUserDocEditor() {
-        User user = sessionManagement.getLoggedUser();
+        User in_user = sessionManagement.getLoggedUser();
         //User in_doc=getDocument();
-        User in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+       // User in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
 
         if (in_user != null) {
             for (Role in_role : in_user.getRoleList()) {

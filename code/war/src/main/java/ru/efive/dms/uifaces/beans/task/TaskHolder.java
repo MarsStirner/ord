@@ -109,7 +109,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 setState(STATE_NOT_FOUND);
             } else {
                 User currentUser = sessionManagement.getLoggedUser();
-                currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 List<Role> in_roles = new ArrayList<Role>();
                 if (userId > 0) {

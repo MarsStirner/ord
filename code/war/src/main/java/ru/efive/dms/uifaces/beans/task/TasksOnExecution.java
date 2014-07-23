@@ -28,7 +28,7 @@ public class TasksOnExecution extends AbstractDocumentListHolderBean<Task> {
     @Override
     protected int getTotalCount() {
         User user = sessionManagement.getLoggedUser();
-        user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+        //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
 
         int in_result;
         in_result = new Long(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).countAllDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, false)).intValue();
@@ -46,7 +46,7 @@ public class TasksOnExecution extends AbstractDocumentListHolderBean<Task> {
         List<Task> result = new ArrayList<Task>();
         try {
             User user = sessionManagement.getLoggedUser();
-            user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+            //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
 
             List<Task> list = new ArrayList<Task>();
             list = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllDocumentsOnExecutionByUser(filter, sessionManagement.getLoggedUser(),

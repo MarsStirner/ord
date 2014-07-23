@@ -98,8 +98,9 @@ public class InternalDocumentsOnAgreementHolder extends AbstractDocumentListHold
         if (needRefresh) {
             sessionManagement.registrateBeanName(beanName);
             try {
-                User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).
-                        findByLoginAndPassword(sessionManagement.getLoggedUser().getLogin(), sessionManagement.getLoggedUser().getPassword());
+                User user = sessionManagement.getLoggedUser();
+                //sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).
+                        //findByLoginAndPassword(sessionManagement.getLoggedUser().getLogin(), sessionManagement.getLoggedUser().getPassword());
 
                 result = new ArrayList<InternalDocument>(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class,
                         ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));

@@ -36,7 +36,7 @@ public class IncomingDocumentsByExpiredDate extends AbstractDocumentListHolderBe
         int result = 0;
         try {
             User user = sessionManagement.getLoggedUser();
-            user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+           // user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
             return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).countControlledDocumentsByUser(filter,
                     user, false)).intValue();
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class IncomingDocumentsByExpiredDate extends AbstractDocumentListHolderBe
         List<IncomingDocument> result = new ArrayList<IncomingDocument>();
         try {
             User user = sessionManagement.getLoggedUser();
-            user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+            //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
             List<IncomingDocument> list = new ArrayList<IncomingDocument>(new HashSet<IncomingDocument>(sessionManagement.
                     getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findControlledDocumentsByUser(filter, user, false)));
 

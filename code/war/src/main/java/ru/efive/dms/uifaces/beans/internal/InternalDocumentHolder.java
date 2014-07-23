@@ -122,7 +122,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 Set<Integer> allReadersId = new HashSet<Integer>();
 
                 User currentUser = sessionManagement.getLoggedUser();
-                currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 if (userId > 0) {
                     boolean isAdminRole = false;
@@ -422,8 +422,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     
     public boolean isCurrentUserAccessEdit() {
         User inUser = sessionManagement.getLoggedUser();
-        inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(
-                inUser.getLogin(), inUser.getPassword());
+        //inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(inUser.getLogin(), inUser.getPassword());
         InternalDocument inDoc = getDocument();
 
         List<Integer> recipUsers = new ArrayList<Integer>();
@@ -470,7 +469,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     protected boolean isCurrentUserDocEditor() {
         User in_user = sessionManagement.getLoggedUser();
-        in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
         InternalDocument in_doc = getDocument();
 
         if (in_user.isAdministrator()) {
@@ -515,8 +514,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     protected boolean isCurrentUserAdvDocReader() {
         User in_user = sessionManagement.getLoggedUser();
-        in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-        ;
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+
         InternalDocument internal_doc = getDocument();
 
         List<User> in_advReaders = new ArrayList<User>();

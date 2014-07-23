@@ -93,7 +93,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                 Set<Integer> allReadersId = new HashSet<Integer>();
 
                 User currentUser = sessionManagement.getLoggedUser();
-                currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 if (userId > 0) {
                     boolean isAdminRole = false;
@@ -398,8 +398,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
     public boolean isCurrentUserAccessEdit() {
         User inUser = sessionManagement.getLoggedUser();
-        inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(
-                inUser.getLogin(), inUser.getPassword());
+        //inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(inUser.getLogin(), inUser.getPassword());
         RequestDocument reqDoc = getDocument();
 
         List<Integer> recipUsers = new ArrayList<Integer>();
@@ -446,7 +445,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     
     protected boolean isCurrentUserDocEditor() {
         User in_user = sessionManagement.getLoggedUser();
-        in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
         if (in_user != null) {
             if (in_user.isAdministrator()) {
                 return true;
@@ -477,8 +476,8 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
     protected boolean isCurrentUserAdvDocReader() {
         User in_user = sessionManagement.getLoggedUser();
-        in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-        ;
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+
         RequestDocument request_doc = getDocument();
 
         List<User> in_advReaders = new ArrayList<User>();

@@ -153,7 +153,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
                 setState(STATE_NOT_FOUND);
             } else {
                 User currentUser = sessionManagement.getLoggedUser();
-                currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 List<Role> in_roles;
                 if (userId > 0) {
@@ -224,7 +224,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
 
     protected boolean isCurrentUserDocEditor() {
         User in_user = sessionManagement.getLoggedUser();
-        in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
         ScanCopyDocument scanCopyDocument = getDocument();
 
         if (in_user.isAdministrator() || in_user.equals(scanCopyDocument.getAuthor())) {

@@ -129,12 +129,13 @@ public class SessionManagementBean implements Serializable {
     }
 
     public User getLoggedUser(boolean isFromSessionCached) {
-        if (isFromSessionCached) {
-            return loggedUser;
-        } else {
-            User user = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
-            return user;
-        }
+          return loggedUser;
+//        if (isFromSessionCached) {
+//            return loggedUser;
+//        } else {
+//            User user = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
+//            return user;
+//        }
     }
 
     public String getBackUrl() {

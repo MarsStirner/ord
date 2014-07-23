@@ -137,7 +137,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     @Override
     protected void initDocument(Integer id) {
-
         try {
             setDocument(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).get(id));
             if (getDocument() == null) {
@@ -190,7 +189,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 Set<Integer> allReadersId = new HashSet<Integer>();
 
                 User currentUser = sessionManagement.getLoggedUser();
-                currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 if (userId > 0) {
 
@@ -511,8 +510,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     
     public boolean isCurrentUserAccessEdit(){
         User inUser = sessionManagement.getLoggedUser();
-        inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(
-                inUser.getLogin(), inUser.getPassword());
+        //inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(inUser.getLogin(), inUser.getPassword());
         IncomingDocument inDoc = getDocument();
 
         List<Integer> recipUsers = new ArrayList<Integer>();
@@ -559,7 +557,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     protected boolean isCurrentUserDocEditor() {
         User in_user = sessionManagement.getLoggedUser();
-        in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
         IncomingDocument in_doc = getDocument();
 
         if (in_user.isAdministrator()) {
@@ -600,8 +598,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     protected boolean isCurrentUserAdvDocReader() {
         User in_user = sessionManagement.getLoggedUser();
-        in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-        ;
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+
         IncomingDocument in_doc = getDocument();
 
         List<User> in_advReaders = new ArrayList<User>();
