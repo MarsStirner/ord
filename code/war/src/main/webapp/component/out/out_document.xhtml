@@ -1059,7 +1059,7 @@
                                             <f:facet name="header">
                                                 <p>Шаблон согласования</p>
                                             </f:facet>
-                                            <h:outputText value="#{row.action.name}"/>
+                                            <h:outputText value="#{row.name}"/>
                                             <h:commandLink id="selectLink" style="display: none;"
                                                            rendered="#{not humanTaskTreeControl.routeTemplateSelectModal.selected(row)}"
                                                            action="#{humanTaskTreeControl.routeTemplateSelectModal.select(row)}"/>
@@ -1068,7 +1068,7 @@
                                 </div>
                             </div>
                             <div style="clear: both;">
-                                <e5ui-comp:tablePager id="pager"
+                                <e5ui-comp:tablePager id="pager_2"
                                                       documentListHolder="#{humanTaskTreeControl.routeTemplateSelectModal.routeTemplateList}"/>
                             </div>
                         </div>

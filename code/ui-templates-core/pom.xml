@@ -16,7 +16,7 @@
     <parent>
         <groupId>ru.efive.dms</groupId>
         <artifactId>dms-app</artifactId>
-        <version>0.1.13</version>
+        <version>0.1.14</version>
     </parent>
 
     <dependencies>

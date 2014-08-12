@@ -243,6 +243,27 @@ public class User extends IdentifiedEntity {
                 (ApplicationHelper.nonEmptyString(middleName) ? middleName.substring(0, 1) + "." : ""));
     }
 
+    @Transient
+    public String getFullName(){
+           StringBuilder sb = new StringBuilder("");
+            if(lastName!=null){
+                sb.append(lastName);
+            }
+            if(firstName != null){
+                if(sb.length()!=0){
+                    sb.append(' ');
+                }
+                sb.append(firstName);
+            }
+            if(middleName != null){
+                if(sb.length()!=0){
+                    sb.append(' ');
+                }
+                sb.append(middleName);
+            }
+            return sb.toString();
+    }
+
     public Boolean isDeleted() {
         return deleted;
     }
