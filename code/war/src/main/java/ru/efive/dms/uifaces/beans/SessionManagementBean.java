@@ -15,6 +15,7 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -56,13 +57,22 @@ public class SessionManagementBean implements Serializable {
     }
 
     public synchronized void logIn() {
-        if (userName != null && !userName.equals("") && password != null && !password.equals("")) {
+        if (userName != null && !userName.isEmpty() && password != null && !password.isEmpty()) {
             try {
                 UserDAO dao = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
-                loggedUser = dao.findByLoginAndPassword(userName, password);
+                loggedUser = dao.findByLoginAndPassword(userName, ru.efive.sql.util.ApplicationHelper.getMD5(password));
                 if (loggedUser != null) {
+                    //Выставление признаков ролей
+                    isAdministrator = loggedUser.isAdministrator();
+                    isRecorder = loggedUser.isRecorder();
+                    isOfficeManager = loggedUser.isOfficeManager();
+                    isRequestManager = loggedUser.isRequestManager();
+                    isEmployer = loggedUser.isEmployer();
+                    isOuter = loggedUser.isOuter();
+                    isHr = loggedUser.isHr();
+
                     RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO);
-                    loggedUser.setReqDocumentsCount(docDao.countAllDocumentsByUser((String)null, loggedUser, false, false));
+                    reqDocumentsCount = docDao.countAllDocumentsByUser((String) null, loggedUser, false, false);
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
 
                     Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);
@@ -129,13 +139,12 @@ public class SessionManagementBean implements Serializable {
     }
 
     public User getLoggedUser(boolean isFromSessionCached) {
-          return loggedUser;
-//        if (isFromSessionCached) {
-//            return loggedUser;
-//        } else {
-//            User user = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
-//            return user;
-//        }
+        if (isFromSessionCached) {
+            return loggedUser;
+        } else {
+            User user = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
+            return user;
+        }
     }
 
     public String getBackUrl() {
@@ -180,25 +189,83 @@ public class SessionManagementBean implements Serializable {
         }
     }
 
-    public void deleteRegistratedBeanName(Object bean) {
-        try {
-            if (this.registratedBeanNames.contains(bean)) {
-                this.registratedBeanNames.remove(bean);
-            }
-            ;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public boolean isCanViewRequestDocuments() {
+        return reqDocumentsCount > 0;
     }
 
+
     private User loggedUser;
+    private long reqDocumentsCount = 0;
 
     private String userName;
     private String password;
 
-
     private String backUrl;
 
+    //Назначенные роли
+    private boolean isAdministrator = false;
+    private boolean isRecorder = false;
+    private boolean isOfficeManager = false;
+    private boolean isRequestManager = false;
+    private boolean isEmployer = false;
+    private boolean isOuter = false;
+    private boolean isHr = false;
+
+    public boolean isAdministrator() {
+        return isAdministrator;
+    }
+
+    public void setAdministrator(boolean isAdministrator) {
+        this.isAdministrator = isAdministrator;
+    }
+
+    public boolean isRecorder() {
+        return isRecorder;
+    }
+
+    public void setRecorder(boolean isRecorder) {
+        this.isRecorder = isRecorder;
+    }
+
+    public boolean isOfficeManager() {
+        return isOfficeManager;
+    }
+
+    public void setOfficeManager(boolean isOfficeManager) {
+        this.isOfficeManager = isOfficeManager;
+    }
+
+    public boolean isRequestManager() {
+        return isRequestManager;
+    }
+
+    public void setRequestManager(boolean isRequestManager) {
+        this.isRequestManager = isRequestManager;
+    }
+
+    public boolean isEmployer() {
+        return isEmployer;
+    }
+
+    public void setEmployer(boolean isEmployer) {
+        this.isEmployer = isEmployer;
+    }
+
+    public boolean isOuter() {
+        return isOuter;
+    }
+
+    public void setOuter(boolean isOuter) {
+        this.isOuter = isOuter;
+    }
+
+    public boolean isHr() {
+        return isHr;
+    }
+
+    public void setHr(boolean isHr) {
+        this.isHr = isHr;
+    }
 
     @Inject
     @Named("indexManagement")

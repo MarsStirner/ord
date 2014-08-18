@@ -10,9 +10,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ru.efive.sql.dao.user.GroupDAOHibernate;
+import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.Group;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 

@@ -93,7 +93,7 @@ public class Role extends IdentifiedEntity {
         Collections.sort(result, new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
-                return o1.getDescription().compareTo(o2.getDescription());
+                return o1.getFullName().compareTo(o2.getFullName());
             }
         });
         return result;

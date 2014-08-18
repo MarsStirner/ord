@@ -8,24 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import javax.persistence.*;
 
 import ru.efive.sql.entity.IdentifiedEntity;
-import ru.efive.sql.util.ApplicationHelper;
+import ru.efive.sql.util.StoredCodes;
 
 /**
  * Пользователь системы
@@ -34,13 +20,132 @@ import ru.efive.sql.util.ApplicationHelper;
 @Table(name = "dms_system_persons")
 public class User extends IdentifiedEntity {
 
-    public String getUNID() {
-        return unid;
-    }
+    /**********************************************************************
+     * DATABASE FIELD MAPPING START
+     */
 
-    public void setUNID(String unid) {
-        this.unid = unid;
-    }
+    /**
+     * дата создания учетной записи
+     */
+    @Column(name = "created")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date created;
+
+    /**
+     * Признак удаления
+     * true - пользователь удалён
+     */
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    /**
+     * фамилия
+     */
+    @Column(name = "lastName")
+    private String lastName;
+
+    /**
+     * имя
+     */
+    @Column(name = "firstName")
+    private String firstName;
+
+    /**
+     * отчество
+     */
+    @Column(name = "middleName")
+    private String middleName;
+
+    /**
+     * учетная запись
+     */
+    @Column(name = "login", unique = true)
+    private String login;
+
+    /**
+     * пароль (md5 Hash)
+     */
+    @Column(name = "password")
+    private String password;
+
+    /**
+     * Соостветствующий идентификатор из AD
+     */
+    @Column(name = "GUID", unique = true)
+    private String GUID;
+
+    /**
+     * Признак уволенного сотрудника
+     * TRUE - уволен
+     */
+    @Column(name = "fired")
+    private boolean fired;
+
+    /**
+     * Дата увольнения сотрудника
+     */
+    @Column(name = "firedDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date firedDate;
+
+    /**
+     * Максимальный уровень допуска
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "maxUserAccessLevel_id")
+    private UserAccessLevel maxUserAccessLevel;
+
+    /**
+     * Текущий уровень допуска
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "currentUserAccessLevel_id")
+    private UserAccessLevel currentUserAccessLevel;
+
+    /**
+     * Контактные данные пользователя (почта, телефон, итд)
+     */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
+    private Set<PersonContact> contacts = new HashSet<PersonContact>(4);
+
+    /**
+     * группы
+     */
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "members")
+    private Set<Group> groups = new HashSet<Group>();
+
+
+    /**
+     * роли
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinTable(name = "dms_system_person_roles",
+            joinColumns = {@JoinColumn(name = "person_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")})
+    private Set<Role> roles;
+
+    /**
+     * Время последней модификации
+     */
+    @Column(name = "lastModified")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date lastModified;
+
+
+    /**
+     * должность
+     */
+    private String jobPosition;
+
+    /**
+     * подразделение
+     */
+    private String jobDepartment;
+
+    /**
+     * *******************************************************************
+     * DATABASE FIELD MAPPING END
+     */
 
     public String getLogin() {
         return login;
@@ -56,22 +161,6 @@ public class User extends IdentifiedEntity {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getPhone() {
-        return phone;
     }
 
     public Set<Role> getRoles() {
@@ -119,14 +208,35 @@ public class User extends IdentifiedEntity {
         this.middleName = middleName;
     }
 
+
     /**
-     * полное имя
+     * Получение полного ФИО в виде строки
+     * @return  Строка с полным ФИО
+     * "Иванов Иван Иванович"
+     * если нету части ФИО - то выводится без нее
+     * "Иван Иванович"\"Иванов Иван"\"Иванов Иванович"\"Иван"\"Иванов"\""
      */
     @Transient
-    public String getDescription() {
-        return lastName + " " + (firstName != null && !firstName.equals("") ? firstName + " " : "") +
-                (middleName != null && !middleName.equals("") ? middleName : "");
+    public String getFullName() {
+        StringBuilder sb = new StringBuilder("");
+        if (lastName != null) {
+            sb.append(lastName);
+        }
+        if (firstName != null) {
+            if (sb.length() != 0) {
+                sb.append(' ');
+            }
+            sb.append(firstName);
+        }
+        if (middleName != null) {
+            if (sb.length() != 0) {
+                sb.append(' ');
+            }
+            sb.append(middleName);
+        }
+        return sb.toString();
     }
+
 
     /**
      * краткая форма полного имени
@@ -139,9 +249,8 @@ public class User extends IdentifiedEntity {
 
     @Transient
     public boolean isAdministrator() {
-        Set<Role> roles = getRoles();
         for (Role role : roles) {
-            if (role.getRoleType().name().equals("ADMINISTRATOR")) {
+            if (StoredCodes.RoleType.ADMINISTRATOR.equals(role.getRoleType().name())) {
                 return true;
             }
         }
@@ -150,9 +259,8 @@ public class User extends IdentifiedEntity {
 
     @Transient
     public boolean isRecorder() {
-        Set<Role> roles = getRoles();
         for (Role role : roles) {
-            if (role.getRoleType().name().equals("RECORDER")) {
+            if (StoredCodes.RoleType.RECORDER.equals(role.getRoleType().name())) {
                 return true;
             }
         }
@@ -161,9 +269,8 @@ public class User extends IdentifiedEntity {
 
     @Transient
     public boolean isOfficeManager() {
-        Set<Role> roles = getRoles();
         for (Role role : roles) {
-            if (role.getRoleType().name().equals("OFFICE_MANAGER")) {
+            if (StoredCodes.RoleType.OFFICE_MANAGER.equals(role.getRoleType().name())) {
                 return true;
             }
         }
@@ -172,9 +279,8 @@ public class User extends IdentifiedEntity {
 
     @Transient
     public boolean isRequestManager() {
-        Set<Role> roles = getRoles();
         for (Role role : roles) {
-            if (role.getRoleType().name().equals("REQUEST_MANAGER")) {
+            if (StoredCodes.RoleType.REQUEST_MANAGER.equals(role.getRoleType().name())) {
                 return true;
             }
         }
@@ -183,9 +289,8 @@ public class User extends IdentifiedEntity {
 
     @Transient
     public boolean isEmployer() {
-        Set<Role> roles = getRoles();
         for (Role role : roles) {
-            if (role.getRoleType().name().equals("EMPLOYER")) {
+            if (StoredCodes.RoleType.EMPLOYER.equals(role.getRoleType().name())) {
                 return true;
             }
         }
@@ -194,9 +299,8 @@ public class User extends IdentifiedEntity {
 
     @Transient
     public boolean isOuter() {
-        Set<Role> roles = getRoles();
         for (Role role : roles) {
-            if (role.getRoleType().name().equals("OUTER")) {
+            if (StoredCodes.RoleType.OUTER.equals(role.getRoleType().name())) {
                 return true;
             }
         }
@@ -205,18 +309,12 @@ public class User extends IdentifiedEntity {
 
     @Transient
     public boolean isHr() {
-        Set<Role> roles = getRoles();
         for (Role role : roles) {
-            if (role.getRoleType().name().equals("HR")) {
+            if (StoredCodes.RoleType.HR.equals(role.getRoleType().name())) {
                 return true;
             }
         }
         return false;
-    }
-    
-    @Transient
-    public boolean isCanViewRequestDocuments(){
-        return reqDocumentsCount > 0;
     }
 
     public Date getCreated() {
@@ -227,73 +325,13 @@ public class User extends IdentifiedEntity {
         this.created = created;
     }
 
-    public Date getLastLogin() {
-        return lastLogin;
-    }
 
-    public void setLastLogin(Date lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
-    @Transient
-    public String getLastnameFM() {
-
-        return ((ApplicationHelper.nonEmptyString(lastName) ? lastName + " " : "") +
-                (ApplicationHelper.nonEmptyString(firstName) ? firstName.substring(0, 1) + "." : "") +
-                (ApplicationHelper.nonEmptyString(middleName) ? middleName.substring(0, 1) + "." : ""));
-    }
-
-    @Transient
-    public String getFullName(){
-           StringBuilder sb = new StringBuilder("");
-            if(lastName!=null){
-                sb.append(lastName);
-            }
-            if(firstName != null){
-                if(sb.length()!=0){
-                    sb.append(' ');
-                }
-                sb.append(firstName);
-            }
-            if(middleName != null){
-                if(sb.length()!=0){
-                    sb.append(' ');
-                }
-                sb.append(middleName);
-            }
-            return sb.toString();
-    }
-
-    public Boolean isDeleted() {
+    public boolean isDeleted() {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public void setMobilePhone(String mobilePhone) {
-        this.mobilePhone = mobilePhone;
-    }
-
-    public String getMobilePhone() {
-        return mobilePhone;
-    }
-
-    public void setInternalNumber(String internalNumber) {
-        this.internalNumber = internalNumber;
-    }
-
-    public String getInternalNumber() {
-        return internalNumber;
-    }
-
-    public void setWorkPhone(String workPhone) {
-        this.workPhone = workPhone;
-    }
-
-    public String getWorkPhone() {
-        return workPhone;
     }
 
     public void setJobPosition(String jobPosition) {
@@ -337,15 +375,12 @@ public class User extends IdentifiedEntity {
         return currentUserAccessLevel;
     }
 
-    @Column(unique = true)
-    private String GUID;
-
     public String getGUID() {
         return GUID;
     }
 
-    public void setGUID(String gUID) {
-        GUID = gUID;
+    public void setGUID(String GUID) {
+        this.GUID = GUID;
     }
 
     public Date getLastModified() {
@@ -356,11 +391,11 @@ public class User extends IdentifiedEntity {
         this.lastModified = lastModified;
     }
 
-    public Boolean getFired() {
+    public boolean isFired() {
         return fired;
     }
 
-    public void setFired(Boolean fired) {
+    public void setFired(boolean fired) {
         this.fired = fired;
     }
 
@@ -371,134 +406,6 @@ public class User extends IdentifiedEntity {
     public void setFiredDate(Date firedDate) {
         this.firedDate = firedDate;
     }
-    
-    public void setReqDocumentsCount(long reqDocumentsCount) {
-        this.reqDocumentsCount = reqDocumentsCount;
-    }
-    
-    public long getReqDocumentsCount() {
-        return reqDocumentsCount;
-    }
-
-    @Column(unique = true)
-    private String unid;
-
-    /**
-     * учетная запись
-     */
-    @Column(unique = true)
-    private String login;
-
-    /**
-     * пароль
-     */
-    private String password;
-
-    /**
-     * email
-     */
-    private String email;
-
-    /**
-     * phone
-     */
-    private String phone;
-
-    /**
-     * work phone
-     */
-    private String workPhone;
-
-    /**
-     * internal number
-     */
-    private String internalNumber;
-
-    /**
-     * mobile phone
-     */
-    private String mobilePhone;
-
-    /**
-     * Максимальный уровень допуска
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    private UserAccessLevel maxUserAccessLevel;
-
-    /**
-     * Текущий уровень допуска
-     */
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private UserAccessLevel currentUserAccessLevel;
-
-    /**
-     * группы
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "members")
-    @Fetch(value = FetchMode.SELECT)
-    private Set<Group> groups = new HashSet<Group>();
-
-    /**
-     * фамилия
-     */
-    private String lastName;
-
-    /**
-     * имя
-     */
-    private String firstName;
-
-    /**
-     * отчество
-     */
-    private String middleName;
-
-    /**
-     * роли
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_system_person_roles",
-        joinColumns = {@JoinColumn(name = "person_id")},
-        inverseJoinColumns = {@JoinColumn(name = "role_id")})
-    @Fetch(value = FetchMode.SELECT)
-    private Set<Role> roles;
-
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date lastModified;
-
-    /**
-     * дата создания учетной записи
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date created;
-
-    /**
-     * дата последнего входа в систему
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date lastLogin;
-
-    /**
-     * должность
-     */
-    private String jobPosition;
-
-    /**
-     * подразделение
-     */
-    private String jobDepartment;
-
-    private Boolean fired;
-
-    private Date firedDate;
-
-    /**
-     * true - пользователь удалён, false или null - не удалён
-     */
-    private Boolean deleted;
-    
-    @Transient
-    private long reqDocumentsCount;
 
     private static final long serialVersionUID = -7649892958713448678L;
 }

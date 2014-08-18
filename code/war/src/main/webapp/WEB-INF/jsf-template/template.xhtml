@@ -27,19 +27,19 @@
 <h:form id="main_content_form">
 <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
 <c:set var="isAdministrator"
-       value="#{sessionManagement.getLoggedUser('false').administrator}"/>
+       value="#{sessionManagement.isAdministrator}"/>
 <c:set var="isRecorder"
-       value="#{sessionManagement.getLoggedUser('false').recorder}"/>
+       value="#{sessionManagement.isRecorder}"/>
 <c:set var="isOfficeManager"
-       value="#{sessionManagement.getLoggedUser('false').officeManager}"/>
+       value="#{sessionManagement.isOfficeManager}"/>
 <c:set var="isRequestManager"
-       value="#{sessionManagement.getLoggedUser('false').requestManager}"/>
+       value="#{sessionManagement.isRequestManager()}"/>
 <c:set var="canViewRequestDocuments"
-       value="#{sessionManagement.getLoggedUser('true').canViewRequestDocuments}"/>
+       value="#{sessionManagement.canViewRequestDocuments}"/>
 <c:set var="isOuter"
-       value="#{sessionManagement.getLoggedUser('false').outer}"/>
+       value="#{sessionManagement.isOuter}"/>
 <c:set var="isHr"
-       value="#{sessionManagement.getLoggedUser('false').hr}"/>
+       value="#{sessionManagement.isHr}"/>
 <c:set var="contextPath" value="#{request.contextPath}"/>
 <ui:insert name="left_menu">
 <div id="left_menu">
