@@ -10,23 +10,21 @@
             <list>
                 <value>file:/usr/local/ord/configuration/jdbc.properties</value>
                 <value>file:/usr/local/ord/configuration/mail.properties</value>
-                <value>file:/usr/local/ord/configuration/ldap.properties</value>                
+                <value>file:/usr/local/ord/configuration/ldap.properties</value>
                 <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
-            </list>
+        </list>
         </property>
     </bean>
 
-<!--     <bean id="ldapImportService" class="ru.efive.dms.util.LDAPImportService">
-        <property name="ldapAddressName" value="${ldap.address.name}"/>
+   <bean id="ldapImportService" class="ru.efive.dms.util.LDAPImportService">
         <property name="ldapAddressValue" value="${ldap.address.value}"/>
-        <property name="loginName" value="${ldap.login.name}"/>
-        <property name="loginValue" value="${ldap.address.value}"/>
-        <property name="passwordName" value="${ldap.password.name}"/>
+        <property name="loginValue" value="${ldap.login.value}"/>
         <property name="passwordValue" value="${ldap.password.value}"/>
         <property name="filterValue" value="${ldap.filter.value}"/>
         <property name="baseValue" value="${ldap.base.value}"/>
-    </bean> -->
+        <property name="skipBaseValue" value="${ldap.skipbase.value}"/>
+    </bean>
 
     <bean id="alfrescoDao" class="ru.efive.dao.alfresco.AlfrescoDAO">
         <property name="serverUrl" value="${alfresco.server.url}"/>
@@ -75,8 +73,10 @@
                 <!-- "Abstract" @MappedSuperclass entities -->
                 <value>ru.efive.sql.entity.AbstractEntity</value>
                 <value>ru.efive.sql.entity.IdentifiedEntity</value>
+                <value>ru.efive.sql.entity.DictionaryEntity</value>
                 <!-- /"Abstract" @MappedSuperclass entities -->
 
+                <!--User-->
                 <value>ru.efive.sql.entity.user.User</value>
                 <value>ru.efive.sql.entity.user.Role</value>
                 <value>ru.efive.sql.entity.user.Permission</value>
@@ -124,9 +124,6 @@
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.dialect">${hibernate.dialect}</prop>
-                <prop key="hibernate.show_sql">false</prop>
-                <prop key="format_sql">true</prop>
-                <prop key="hibernate.hbm2ddl.auto">update</prop>
                 <prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
                 <prop key="net.sf.ehcache.configurationResourceName">ehcache.xml</prop>
                 <prop key="hibernate.default_batch_fetch_size">10</prop>
