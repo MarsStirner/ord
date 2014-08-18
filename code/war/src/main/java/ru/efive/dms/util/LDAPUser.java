@@ -1,5 +1,6 @@
 package ru.efive.dms.util;
 
+import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
@@ -11,41 +12,76 @@ import java.util.Date;
  * @author Nastya Peshekhonova
  */
 public class LDAPUser {
-    private String id;
-    private Date lastModified;
-    private String login;
+
+    private static final SimpleDateFormat lastModifiedFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+
+    //Distinguished Name (DN)
+    private String DN;
+    //Фамилия
     private String lastName;
+    //Имя
     private String firstName;
-    private String secondName;
-    private String mail;
-    private String phone;
-    private String mobile;
-    private String jobPosition;
+    //Отчество
+    private String patrName;
+    //Подразделение
     private String jobDepartment;
-    private Boolean fired;
+    //Должность
+    private String jobPosition;
+    //Email
+    private String mail;
+    //Мобильный телефон
+    private String mobile;
+    //Рабочий телефон
+    //*Добавочный номер = рабочий телефон
+    private String phone;
+    // Уволен
+    private boolean fired;
+    //GUID
     private String guid;
-    private final String DOMAIN = "fccho-moscow.ru";
+    // Дата последнего изменения
+    private Date lastModified;
+    //Логин
+    private String login;
 
-    public String getId() {
-        return id;
-    }
-
-    private void setId(Attribute employeeID) throws NamingException {
-        this.id = "";
-        if (employeeID != null) {
-            this.id = (String) employeeID.get();
+    public LDAPUser(Attributes attributes, boolean fired) throws NamingException, ParseException {
+        final NamingEnumeration<? extends Attribute> allAtributes = attributes.getAll();
+        setFired(fired);
+        while (allAtributes != null && allAtributes.hasMore()) {
+            final Attribute current = allAtributes.next();
+            if (LDAPUserAttribute.LAST_NAME_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setLastName(current);
+            } else if (LDAPUserAttribute.FIRST_NAME_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setFirstName(current);
+            } else if (LDAPUserAttribute.JOB_DEPARTMENT_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setJobDepartment(current);
+            } else if (LDAPUserAttribute.JOB_POSITION_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setJobPosition(current);
+            } else if (LDAPUserAttribute.MAIL_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setUserMail(current);
+            } else if (LDAPUserAttribute.MOBILE_PHONE_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setMobile(current);
+            } else if (LDAPUserAttribute.PHONE_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setPhone(current);
+            } else if (LDAPUserAttribute.UNID_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setGuid(current);
+            } else if (LDAPUserAttribute.LAST_MODIFIED_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setLastModified(current);
+            } else if (LDAPUserAttribute.FIO_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
+                setFIO(current);
+            } else if(LDAPUserAttribute.DN_ATTR.getName().equalsIgnoreCase(current.getID())) {
+                setDN(current);
+            } else if(LDAPUserAttribute.LOGIN_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())){
+                setLogin(current);
+            }
         }
-
-        this.id = (!this.id.isEmpty()) ? (Long.valueOf(this.id).toString()) : this.getGuid();
     }
 
-    public Date getLastModified() throws NamingException, ParseException {
-        return lastModified;
-    }
-
-    private void setLastModified(Attribute lastModified) throws NamingException, ParseException {
-        if (lastModified != null) {
-            this.lastModified = (new SimpleDateFormat("yyyyMMddHHmmss")).parse((String) lastModified.get());
+    private void setLogin(Attribute login) throws NamingException {
+       if(login!=null){
+           this.login = (String) login.get();
+       }
+        if(mail == null || mail.isEmpty()){
+            this.mail = this.login +"@fccho-moscow.ru";
         }
     }
 
@@ -53,42 +89,73 @@ public class LDAPUser {
         return login;
     }
 
-    private void setLogin(Attribute login) throws NamingException {
-        if (login != null) {
-            this.login = (String) login.get();
-        }
+    private void setDN(Attribute dn) throws NamingException {
+        this.DN = (String)dn.get();
+    }
+    public String getDN(){
+        return DN;
     }
 
+    /**
+     * Фамилия
+     * @return
+     */
     public String getLastName() {
-        return lastName.trim();
+        return lastName;
     }
 
     private void setLastName(Attribute lastName) throws NamingException {
         if (lastName != null) {
-            this.lastName = (String) lastName.get();
+            this.lastName = ((String) lastName.get()).trim();
         }
     }
 
+    /**
+     * Имя
+     * @return
+     */
     public String getFirstName() {
-        return firstName.trim();
+        return firstName;
     }
 
     private void setFirstName(Attribute firstName) throws NamingException {
         if (firstName != null) {
-            this.firstName = (String) firstName.get();
+            this.firstName = ((String) firstName.get()).trim();
         }
     }
 
-    public String getSecondName() {
-        return secondName.trim();
+    /**
+     * Подразделение
+     * @return
+     */
+    public String getJobDepartment() {
+        return jobDepartment;
     }
 
-    private void setSecondName(Attribute secondName) throws NamingException {
-        if (secondName != null) {
-            this.secondName = (String) secondName.get();
+    private void setJobDepartment(Attribute jobDepartment) throws NamingException {
+        if (jobDepartment != null) {
+            this.jobDepartment = ((String) jobDepartment.get()).trim();
         }
     }
 
+    /**
+     * Должность
+     * @return
+     */
+    public String getJobPosition() {
+        return jobPosition;
+    }
+
+    private void setJobPosition(Attribute jobPosition) throws NamingException {
+        if (jobPosition != null) {
+            this.jobPosition = ((String) jobPosition.get()).trim();
+        }
+    }
+
+    /**
+     * Email
+     * @return
+     */
     public String getMail() {
         return mail;
     }
@@ -97,79 +164,56 @@ public class LDAPUser {
         if (mail != null) {
             this.mail = (String) mail.get();
         }
-        else {
-            this.mail = this.getGuid().replace(' ', '.') + '@' + DOMAIN;
-        }
     }
 
-    public Boolean getFired() {
-        return fired;
-    }
-
-    public void setFired(Boolean fired) {
-        this.fired = fired;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    private void setPhone(Attribute phone) throws NamingException {
-        if (phone != null) {
-            this.phone = (String) phone.get();
-        }
-    }
-
+    /**
+     * Мобильный телефон
+     * @return
+     */
     public String getMobile() {
         return mobile;
     }
 
     private void setMobile(Attribute mobile) throws NamingException {
         if (mobile != null) {
-            this.mobile = (String) mobile.get();
+            final String value = ((String) mobile.get()).trim();
+            if(!value.contains(".")){
+                this.mobile = value;
+            }  else {
+                //logger.debug("Mobile phone number contains \'.\':"+value);
+            }
         }
     }
 
-    public String getJobPosition() {
-        return jobPosition;
+    /**
+     * Номер телефона
+     * @return
+     */
+    public String getPhone() {
+        return phone;
     }
 
-    private void setJobPosition(Attribute jobPosition) throws NamingException {
-        if (jobPosition != null) {
-            this.jobPosition = (String) jobPosition.get();
+    private void setPhone(Attribute phone) throws NamingException {
+        if (phone != null) {
+            this.phone = ((String) phone.get()).trim();
         }
     }
 
-    public String getJobDepartment() {
-        return jobDepartment;
-    }
 
-    private void setJobDepartment(Attribute jobDepartment) throws NamingException {
-        if (jobDepartment != null) {
-            this.jobDepartment = (String) jobDepartment.get();
-        }
-    }
-
-    public String getFullName() {
-        String fullName =
-                (lastName != null && !lastName.isEmpty() ? (lastName.trim() + "_") : "") +
-                        (firstName != null && !firstName.isEmpty() ? (firstName.trim() + "_") : "") +
-                        (secondName != null && !secondName.isEmpty() ? (secondName.trim()) : "");
-        if (fullName != null) {
-            fullName = fullName.toLowerCase();
-        }
-        return fullName;
-    }
-
+    /**
+     * GUID
+     * @return
+     */
     public String getGuid() {
         return guid;
     }
 
     public void setGuid(Attribute objectGUID) throws NamingException {
+        //Не может быть null
         byte [] bytes = (byte[]) objectGUID.get();
         StringBuffer guid = new StringBuffer();
-        for (int i = 0; i < bytes.length; i++) {
-            StringBuffer dblByte = new StringBuffer(Integer.toHexString(bytes[i] & 0xff));
+        for (byte aByte : bytes) {
+            StringBuffer dblByte = new StringBuffer(Integer.toHexString(aByte & 0xff));
             if (dblByte.length() == 1) {
                 guid.append("0");
             }
@@ -178,20 +222,79 @@ public class LDAPUser {
         this.guid = guid.toString();
     }
 
+    /**
+     * Дата последнего изменения
+     * @return
+     */
+    public Date getLastModified() {
+        return lastModified;
+    }
 
-    public LDAPUser(Attributes userAttributes, boolean fired) throws NamingException, ParseException {
-        setGuid(userAttributes.get(LDAPUserAttribute.UNID_ATTR_VALUE.getName()));
-        setId(userAttributes.get(LDAPUserAttribute.EMPLOYER_ID_ATTR_VALUE.getName()));
-        setLogin(userAttributes.get(LDAPUserAttribute.LOGIN_ATTR_VALUE.getName()));
-        setLastName(userAttributes.get(LDAPUserAttribute.LAST_NAME_ATTR_VALUE.getName()));
-        setFirstName(userAttributes.get(LDAPUserAttribute.FIRST_NAME_ATTR_VALUE.getName()));
-        setSecondName(userAttributes.get(LDAPUserAttribute.MIDDLE_NAME_ATTR_VALUE.getName()));
-        setUserMail(userAttributes.get(LDAPUserAttribute.MAIL_ATTR_VALUE.getName()));
-        setPhone(userAttributes.get(LDAPUserAttribute.PHONE_ATTR_VALUE.getName()));
-        setMobile(userAttributes.get(LDAPUserAttribute.MOBILE_PHONE_ATTR_VALUE.getName()));
-        setJobPosition(userAttributes.get(LDAPUserAttribute.JOB_POSITION_ATTR_VALUE.getName()));
-        setJobDepartment(userAttributes.get(LDAPUserAttribute.JOB_DEPARTMENT_ATTR_VALUE.getName()));
-        setLastModified(userAttributes.get(LDAPUserAttribute.LAST_MODIFIED_ATTR_VALUE.getName()));
-        setFired(fired);
+    private void setLastModified(Attribute lastModified) throws NamingException, ParseException {
+        if (lastModified != null) {
+            this.lastModified = lastModifiedFormat.parse((String) lastModified.get());
+        }   else {
+            //logger.debug("LDAP: lastModificationDate not set");
+            this.lastModified = new Date();
+        }
+    }
+
+    /**
+     * Уволен
+     * @param fired
+     */
+    public void setFired(boolean fired) {
+        this.fired = fired;
+    }
+
+    public boolean isFired() {
+        return fired;
+    }
+
+    /**
+     * ФИО
+     * @param fio
+     */
+    private void setFIO(Attribute fio) throws NamingException {
+          if(fio != null){
+              final String value = ((String)fio.get()).trim();
+              final String[] fioParts = value.split(" ");
+              switch (fioParts.length){
+                  case 1:{
+                      if(lastName == null || lastName.isEmpty() ) {
+                          lastName = fioParts[0];
+                      }
+                      break;
+                  }
+                  case 2: {
+                      if(lastName == null || lastName.isEmpty() ) {
+                          lastName = fioParts[0];
+                      }
+                      if(firstName == null || firstName.isEmpty()){
+                          firstName = fioParts[1];
+                      }
+                      break;
+                  }
+                  case 3: {
+                      if(lastName == null || lastName.isEmpty() ) {
+                          lastName = fioParts[0];
+                      }
+                      if(firstName == null || firstName.isEmpty()){
+                          firstName = fioParts[1];
+                      }
+                      if(patrName == null || patrName.isEmpty()){
+                         patrName = fioParts[2];
+                      }
+                      break;
+                  }
+                  default:{
+                      break;
+                  }
+              }
+          }
+    }
+
+    public String getPatrName() {
+        return patrName;
     }
 }

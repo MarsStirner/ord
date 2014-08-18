@@ -72,13 +72,13 @@ public class SendMailActivity implements IActivity {
     @Override
     public boolean execute() {
         boolean result = false;
-        java.security.Security.setProperty("ssl.SocketFactory.provider", "ru.efive.wf.core.util.DummySSLSocketFactory");
+        //java.security.Security.setProperty("ssl.SocketFactory.provider", "ru.efive.wf.core.util.DummySSLSocketFactory");
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
         try {
             mailSettings = (MailSettings) context.getBean("mailSettings");
             MimeMessage mimeMessage = getMimeMessage();
+            System.out.println("####DEBUG MESSAGE:\""+mimeMessage.getSubject()+"\" TO: "+mimeMessage.getAllRecipients());
             Transport.send(mimeMessage);
-
             result = true;
         } catch (NamingException e) {
             resultMessage = e.getMessage();
@@ -100,8 +100,8 @@ public class SendMailActivity implements IActivity {
             e.printStackTrace();
         } finally {
             context.destroy();
-            return result;
         }
+        return result;
     }
 
     private MimeMessage getMimeMessage() throws MessagingException, NamingException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
@@ -132,6 +132,8 @@ public class SendMailActivity implements IActivity {
         if (mailSettings.isSmtpFlag()) {
             Properties properties = new Properties();
             properties.put("mail.smtp.host", mailSettings.getSmtpHost());
+            properties.put("mail.debug", "true");
+           // properties.put("mail.pop3.socketFactory.class", "ru.efive.wf.core.util.DummySSLSocketFactory");
             Session session = Session.getDefaultInstance(properties, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
@@ -140,7 +142,9 @@ public class SendMailActivity implements IActivity {
             });
             return session;
         }
-        return (Session) new InitialContext().lookup(mailSettings.getJndi());
+        final Session session = (Session) new InitialContext().lookup(mailSettings.getJndi());
+        System.out.println(session.getProperties().toString());
+        return session;
     }
 
     /**
@@ -158,8 +162,8 @@ public class SendMailActivity implements IActivity {
         mimeMessage.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(sb.toString().trim(), false));
 
         String subject = message.getSubject();
-        if (subject.indexOf("@") > -1) {
-            if (subject.indexOf("@DocumentNumber") > -1) {
+        if (subject.contains("@")) {
+            if (subject.contains("@DocumentNumber")) {
                 subject = subject.replace("@DocumentNumber", docNumber);
             }
             message.setSubject(subject);
@@ -194,8 +198,8 @@ public class SendMailActivity implements IActivity {
             mimeMessage.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(sb.toString().trim(), false));
 
         String subject = message.getSubject();
-        if (subject.indexOf("@") > -1) {
-            if (subject.indexOf("@DocumentNumber") > -1) {
+        if (subject.contains("@")) {
+            if (subject.contains("@DocumentNumber")) {
                 subject = subject.replace("@DocumentNumber", docNumber);
             }
             message.setSubject(subject);
@@ -216,7 +220,6 @@ public class SendMailActivity implements IActivity {
         } else {
             mimeBodyPart.setText(message.getBody());
         }
-
         Multipart mimeMultipart = new MimeMultipart();
         mimeMultipart.addBodyPart(mimeBodyPart);
         return mimeMultipart;
