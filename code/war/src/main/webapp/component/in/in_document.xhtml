@@ -1584,48 +1584,51 @@
               actionBehavior="client"
               selected="#{in_doc.historyTabSelected}"
               rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.currentUserDocEditor)}">
-    <div class="row">
-        <div class="wrap" style="width: 100%; margin: 0px">
-            <div class="inner">
-                <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                id="history_list" value="#{in_doc.document.historyList}"
-                                var="row" grouping="false">
-                    <e5ui:column style="min-width:7em">
-                        <f:facet name="header">
-                            <p>Дата</p>
-                        </f:facet>
-                        <h:outputText value="#{row.startDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/>
-                        </h:outputText>
-                    </e5ui:column>
-                    <e5ui:column style="min-width:8em">
-                        <f:facet name="header">
-                            <p>Статус</p>
-                        </f:facet>
-                        <h:outputText value="#{row.fromStatusName}"/>
-                    </e5ui:column>
-                    <e5ui:column style="min-width:8em">
-                        <f:facet name="header">
-                            <p>Действие</p>
-                        </f:facet>
-                        <h:outputText value="#{row.actionName}"/>
-                    </e5ui:column>
-                    <e5ui:column style="min-width:12em">
-                        <f:facet name="header">
-                            <p>Автор</p>
-                        </f:facet>
-                        <h:outputText value="#{row.owner.descriptionShort}"/>
-                    </e5ui:column>
-                    <e5ui:column style="min-width:10em">
-                        <f:facet name="header">
-                            <p>Комментарий</p>
-                        </f:facet>
-                        <h:outputText value="#{row.commentary}"/>
-                    </e5ui:column>
-                </e5ui:dataTable>
+    <h:panelGroup>
+        <div id="modal_container" style="margin-top: 0;">
+            <div class="wrap"
+                 style="width: 100%; margin: 0px;">
+                <div class="inner">
+                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+                                    id="history_list" value="#{in_doc.document.historyList}"
+                                    var="row" grouping="false">
+                        <e5ui:column style="min-width:4em">
+                            <f:facet name="header">
+                                <p>Дата</p>
+                            </f:facet>
+                            <h:outputText value="#{row.startDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/>
+                            </h:outputText>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:8em">
+                            <f:facet name="header">
+                                <p>Статус</p>
+                            </f:facet>
+                            <h:outputText value="#{row.fromStatusName}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:8em">
+                            <f:facet name="header">
+                                <p>Действие</p>
+                            </f:facet>
+                            <h:outputText value="#{row.actionName}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <p>Автор</p>
+                            </f:facet>
+                            <h:outputText value="#{row.owner.descriptionShort}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:10em">
+                            <f:facet name="header">
+                                <p>Комментарий</p>
+                            </f:facet>
+                            <h:outputText value="#{row.commentary}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
+                </div>
             </div>
         </div>
-    </div>
+    </h:panelGroup>
 </e5ui:tabPage>
 </e5ui:tabPanel>
 

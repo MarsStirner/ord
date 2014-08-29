@@ -66,7 +66,6 @@ public class User extends IdentifiedEntity {
     /**
      *   Табельный номер сотрудника
      */
-    //TODO разобраться с уникальностью
     @Column(name = "unid")
     private String UNID;
 

@@ -3,7 +3,6 @@ package ru.efive.dms.data;
 import java.util.*;
 import javax.persistence.*;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -228,8 +227,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Адресаты (группы)
      */
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "dms_incoming_documents_recipient_groups",
             joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
