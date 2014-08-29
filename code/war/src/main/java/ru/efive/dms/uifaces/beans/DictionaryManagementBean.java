@@ -258,7 +258,7 @@ public class DictionaryManagementBean implements Serializable {
             e.printStackTrace();
         }
 
-        return (result == null || result.size() == 0) ? null : result.get(0);
+        return (result == null || result.isEmpty()) ? null : result.get(0);
     }
 
 

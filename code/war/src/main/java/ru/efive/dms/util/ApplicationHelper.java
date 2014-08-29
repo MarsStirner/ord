@@ -21,6 +21,9 @@ public final class ApplicationHelper {
     public static String USER_DAO = "userDao";
     public static String GROUP_DAO = "groupDao";
     public static String ROLE_DAO = "roleDao";
+    public static final String RB_CONTACT_TYPE_DAO = "contactTypeDao";
+    public static final String POSITION_DAO = "positionDao";
+    public static final String DEPARTMENT_DAO = "departmentDao";
     public static String CONTRAGENT_DAO = "contragentDao";
     public static String GROUP_TYPE_DAO = "groupTypeDao";
     public static String SCAN_DAO = "scanDao";

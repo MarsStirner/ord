@@ -12,7 +12,6 @@ public class Person extends User implements ProcessUser {
         setEmail(user.getEmail());
         setFirstName(user.getFirstName());
         setId(user.getId());
-        setLastLogin(user.getLastLogin());
         setLastName(user.getLastName());
         setLogin(user.getLogin());
         setMiddleName(user.getMiddleName());

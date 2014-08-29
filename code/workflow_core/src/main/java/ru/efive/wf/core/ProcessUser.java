@@ -9,7 +9,7 @@ public interface ProcessUser extends Serializable {
 
     public int getId();
 
-    public String getDescription();
+    public String getFullName();
 
     public String getEmail();
 

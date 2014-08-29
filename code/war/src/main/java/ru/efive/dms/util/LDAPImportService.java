@@ -19,11 +19,10 @@ import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
+import ru.efive.sql.dao.user.*;
+import ru.efive.sql.entity.user.*;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.entity.user.UserAccessLevel;
+import ru.efive.sql.util.StoredCodes;
 
 public class LDAPImportService {
     //Именованный логгер (LDAP)
@@ -35,6 +34,22 @@ public class LDAPImportService {
     private static UserDAOHibernate userDAO;
     //Присваемый по-умолчанию уровень допуска
     private static UserAccessLevel USER_ACCESS_LEVEL_FOR_PUBLIC_USE;
+    //Перечень типов контактной информации
+    private static RbContactInfoType EMAIL_CONTACT_TYPE = null;
+    private static RbContactInfoType PHONE_CONTACT_TYPE = null;
+    private static RbContactInfoType MOBILE_CONTACT_TYPE = null;
+    //Перечень должностей
+    private List<Position> ALL_POSITIONS;
+    //Перечень подразделений
+    private List<Department> ALL_DEPARTMENTS;
+
+    private String ldapAddressValue;
+    private String loginValue;
+    private String passwordValue;
+    private String baseValue;
+    private String filterValue;
+    private final int PAGE_SIZE = 100;
+    private List<String> skipBaseList;
 
 
     static {
@@ -62,14 +77,6 @@ public class LDAPImportService {
         SEARCH_CONTROLS.setSearchScope(SearchControls.SUBTREE_SCOPE);
     }
 
-    private String ldapAddressValue;
-    private String loginValue;
-    private String passwordValue;
-    private String baseValue;
-    private String filterValue;
-    private final int PAGE_SIZE = 100;
-    private List<String> skipBaseList;
-
     public void setLdapAddressValue(String ldapAddressValue) {
         this.ldapAddressValue = ldapAddressValue;
     }
@@ -91,32 +98,99 @@ public class LDAPImportService {
     }
 
     public void setSkipBaseValue(String skipBaseValue) {
-        skipBaseList = Arrays.asList(skipBaseValue.toLowerCase().split(","));
-        for(String current : skipBaseList){
-            current = current.concat(",");
+        if (skipBaseList == null) {
+            skipBaseList = new ArrayList<String>();
+        }
+        for (String current : skipBaseValue.toLowerCase().split(",")) {
+            skipBaseList.add(current.concat(","));
         }
     }
 
     public void run() {
         LOGGER.info("START");
+        if (preLoadReferences()) {
+            try {
+                importActiveDirectoryUsers();
+            } catch (Exception e) {
+                LOGGER.error("LDAP Error:", e);
+            }
+        }
+        clearPreload();
+        LOGGER.info("END");
+    }
+
+    private void clearPreload() {
+        //Remove links and wait for GC to free memory
+        userDAO = null;
+        USER_ACCESS_LEVEL_FOR_PUBLIC_USE = null;
+        EMAIL_CONTACT_TYPE = null;
+        PHONE_CONTACT_TYPE = null;
+        MOBILE_CONTACT_TYPE = null;
+        ALL_POSITIONS = null;
+        ALL_DEPARTMENTS = null;
+    }
+
+    private boolean preLoadReferences() {
         final FacesContext facesContext = FacesContext.getCurrentInstance();
         final SessionManagementBean sessionManagement = facesContext.getApplication().evaluateExpressionGet(facesContext,
                 "#{sessionManagement}", SessionManagementBean.class);
-        userDAO = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
-        LOGGER.debug("userDao: " + userDAO.toString());
+        if (preloadUserDAO(sessionManagement) == null) {
+            LOGGER.error("Upload not started: cause not founded USER_DAO");
+            return false;
+        }
+        if (preLoadUserAccessLevel(sessionManagement) == null) {
+            LOGGER.error("Upload not started: cause not founded UserAccessLevel = 1");
+            return false;
+        }
+
+        final List<RbContactInfoType> contactTypes = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, ApplicationHelper.RB_CONTACT_TYPE_DAO).findDocuments();
+        for (RbContactInfoType contactType : contactTypes) {
+            if (StoredCodes.ContactInfoType.EMAIL.equals(contactType.getCode())) {
+                EMAIL_CONTACT_TYPE = contactType;
+            } else if (StoredCodes.ContactInfoType.PHONE.equals(contactType.getCode())) {
+                PHONE_CONTACT_TYPE = contactType;
+            } else if (StoredCodes.ContactInfoType.MOBILE_PHONE.equals(contactType.getCode())) {
+                MOBILE_CONTACT_TYPE = contactType;
+            }
+        }
+
+        if (EMAIL_CONTACT_TYPE == null) {
+            LOGGER.error("NOT FOUNDED EMAIL_CONTACT_TYPE, UPLOAD NOT Started");
+            return false;
+        }
+        if (PHONE_CONTACT_TYPE == null) {
+            LOGGER.error("NOT FOUNDED EMAIL_CONTACT_TYPE, UPLOAD NOT Started");
+            return false;
+        }
+        if (PHONE_CONTACT_TYPE == null) {
+            LOGGER.error("NOT FOUNDED EMAIL_CONTACT_TYPE, UPLOAD NOT Started");
+            return false;
+        }
+
+
+        ALL_POSITIONS = sessionManagement.getDictionaryDAO(PositionDAO.class, ApplicationHelper.POSITION_DAO).findDocuments();
+
+        ALL_DEPARTMENTS = sessionManagement.getDictionaryDAO(DepartmentDAO.class, ApplicationHelper.DEPARTMENT_DAO).findDocuments();
+
+
+        return true;
+    }
+
+    private UserAccessLevel preLoadUserAccessLevel(SessionManagementBean sessionManagement) {
         final List<UserAccessLevel> userAccessLevels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
         for (UserAccessLevel current : userAccessLevels) {
             if (current.getLevel() == 1) {
-                USER_ACCESS_LEVEL_FOR_PUBLIC_USE = current;
-                break;
+                return USER_ACCESS_LEVEL_FOR_PUBLIC_USE = current;
+
             }
         }
-        try {
-            importActiveDirectoryUsers();
-        } catch (Exception e) {
-            LOGGER.error("LDAP Error:", e);
-        }
-        LOGGER.info("END");
+        return null;
+    }
+
+    private UserDAOHibernate preloadUserDAO(SessionManagementBean sessionManagement) {
+        userDAO = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
+        LOGGER.debug("userDao: " + userDAO);
+        return userDAO;
     }
 
     /**
@@ -187,36 +261,35 @@ public class LDAPImportService {
                         //Выполняем поиск по ФИО
                         final String curLDAPLast = currentLdapUser.getLastName();
                         final String curLDAPFirst = currentLdapUser.getFirstName();
-                        final String curLDAPPatr= currentLdapUser.getPatrName();
+                        final String curLDAPPatr = currentLdapUser.getPatrName();
 
                         final List<User> overlappedByFioUserList = new ArrayList<User>(4);
                         for (User curLocalUser : allLocalUsers) {
                             //Совпадает ФИО
-                            if(
+                            if (
                                 //[Обе Фамилии null]
                                 // ИЛИ
                                 // [Обе не null И равны без пробелов]
-                                (
-                                        (curLDAPLast == null && curLocalUser.getLastName() == null)
-                                        ||
-                                        (curLDAPLast != null && curLocalUser.getLastName() != null && curLDAPLast.equalsIgnoreCase(curLocalUser.getLastName().trim()))
-                                )
-                                &&
-                                (
-                                        (curLDAPFirst == null && curLocalUser.getFirstName() == null)
-                                        ||
-                                        (curLDAPFirst != null && curLocalUser.getFirstName() != null && curLDAPFirst.equalsIgnoreCase(curLocalUser.getFirstName().trim()))
+                                    (
+                                            (curLDAPLast == null && curLocalUser.getLastName() == null)
+                                                    ||
+                                                    (curLDAPLast != null && curLocalUser.getLastName() != null && curLDAPLast.equalsIgnoreCase(curLocalUser.getLastName().trim()))
+                                    )
+                                            &&
+                                            (
+                                                    (curLDAPFirst == null && curLocalUser.getFirstName() == null)
+                                                            ||
+                                                            (curLDAPFirst != null && curLocalUser.getFirstName() != null && curLDAPFirst.equalsIgnoreCase(curLocalUser.getFirstName().trim()))
 
-                                )
-                                &&
-                                (
-                                        (curLDAPPatr == null && curLocalUser.getMiddleName() == null)
-                                        ||
-                                        (curLDAPPatr != null && curLocalUser.getMiddleName() != null && curLDAPPatr.equalsIgnoreCase(curLocalUser.getMiddleName().trim()))
+                                            )
+                                            &&
+                                            (
+                                                    (curLDAPPatr == null && curLocalUser.getMiddleName() == null)
+                                                            ||
+                                                            (curLDAPPatr != null && curLocalUser.getMiddleName() != null && curLDAPPatr.equalsIgnoreCase(curLocalUser.getMiddleName().trim()))
 
-                                )
-                            )
-                            {
+                                            )
+                                    ) {
                                 LOGGER.debug("Founded by FIO. localID=" + curLocalUser.getId());
                                 overlappedByFioUserList.add(curLocalUser);
                             }
@@ -309,22 +382,54 @@ public class LDAPImportService {
         user.setCurrentUserAccessLevel(USER_ACCESS_LEVEL_FOR_PUBLIC_USE);
         user.setGUID(ldapUser.getGuid());
         user.setLastModified(ldapUser.getLastModified());
-        user.setEmail(ldapUser.getMail());
         user.setFired(ldapUser.isFired());
         user.setFirstName(ldapUser.getFirstName());
         user.setLastName(ldapUser.getLastName());
         user.setMiddleName(ldapUser.getPatrName());
-        user.setWorkPhone(ldapUser.getPhone());
-        user.setMobilePhone(ldapUser.getMobile());
-        user.setJobPosition(ldapUser.getJobPosition());
-        user.setJobDepartment(ldapUser.getJobDepartment());
+        if (ldapUser.getJobPosition() != null && !ldapUser.getJobPosition().isEmpty()) {
+            final String requestedPositionName = ldapUser.getJobPosition().trim();
+            boolean founded = false;
+            for (Position position : ALL_POSITIONS) {
+                if (requestedPositionName.equalsIgnoreCase(position.getValue())) {
+                    user.setJobPosition(position);
+                    founded = true;
+                    break;
+                }
+            }
+            if (!founded) {
+                LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
+            }
+        }
+        if (ldapUser.getJobDepartment() != null && !ldapUser.getJobDepartment().isEmpty()) {
+            final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
+            boolean founded = false;
+            for (Department department : ALL_DEPARTMENTS) {
+                if (requestedDepartmentName.equalsIgnoreCase(department.getValue())) {
+                    user.setJobDepartment(department);
+                    founded = true;
+                    break;
+                }
+            }
+            if (!founded) {
+                LOGGER.error("NOT FOUND JobDepartment [" + requestedDepartmentName + "]");
+            }
+        }
         user.setLastModified(ldapUser.getLastModified());
+        if (ldapUser.getMail() != null && !ldapUser.getMail().isEmpty()) {
+            user.addToContacts(new PersonContact(user, EMAIL_CONTACT_TYPE, ldapUser.getMail()));
+        }
+        if (ldapUser.getPhone() != null && !ldapUser.getPhone().isEmpty()) {
+            user.addToContacts(new PersonContact(user, PHONE_CONTACT_TYPE, ldapUser.getPhone()));
+        }
+        if (ldapUser.getMobile() != null && !ldapUser.getMobile().isEmpty()) {
+            user.addToContacts(new PersonContact(user, MOBILE_CONTACT_TYPE, ldapUser.getMobile()));
+        }
         try {
             userDAO.save(user);
+            LOGGER.debug("Created");
         } catch (Exception e) {
             LOGGER.error("Cannot INSERT new ROW : " + e.getCause().getMessage());
         }
-        LOGGER.debug("Created");
     }
 
     /**
@@ -338,17 +443,65 @@ public class LDAPImportService {
         } else {
             localUser.setGUID(ldapUser.getGuid());
             localUser.setLastModified(ldapUser.getLastModified());
-            localUser.setEmail(ldapUser.getMail());
             localUser.setFired(ldapUser.isFired());
             localUser.setLogin(ldapUser.getLogin());
             localUser.setFirstName(ldapUser.getFirstName());
             localUser.setLastName(ldapUser.getLastName());
             localUser.setMiddleName(ldapUser.getPatrName());
-            localUser.setWorkPhone(ldapUser.getPhone());
-            localUser.setMobilePhone(ldapUser.getMobile());
-            localUser.setJobPosition(ldapUser.getJobPosition());
-            localUser.setJobDepartment(ldapUser.getJobDepartment());
+            if (ldapUser.getJobPosition() != null && !ldapUser.getJobPosition().isEmpty() && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())) {
+                final String requestedPositionName = ldapUser.getJobPosition().trim();
+                boolean founded = false;
+                for (Position position : ALL_POSITIONS) {
+                    if (requestedPositionName.equalsIgnoreCase(position.getValue())) {
+                        localUser.setJobPosition(position);
+                        founded = true;
+                        break;
+                    }
+                }
+                if (!founded) {
+                    LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
+                }
+            }
+            if (ldapUser.getJobDepartment() != null && !ldapUser.getJobDepartment().isEmpty() && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())) {
+                final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
+                boolean founded = false;
+                for (Department department : ALL_DEPARTMENTS) {
+                    if (requestedDepartmentName.equalsIgnoreCase(department.getValue())) {
+                        localUser.setJobDepartment(department);
+                        founded = true;
+                        break;
+                    }
+                }
+                if (!founded) {
+                    LOGGER.error("NOT FOUND JobDepartment [" + requestedDepartmentName + "]");
+                }
+            }
             localUser.setLastModified(ldapUser.getLastModified());
+            //Поиск и обновление контактных данных
+            boolean foundedEmail = ldapUser.getMail() == null || ldapUser.getMail().isEmpty();
+            boolean foundedPhone = ldapUser.getPhone() == null || ldapUser.getPhone().isEmpty();
+            boolean foundedMobile = ldapUser.getMobile() == null || ldapUser.getMobile().isEmpty();
+            for (PersonContact contact : localUser.getContacts()) {
+                if (!foundedEmail && EMAIL_CONTACT_TYPE.equals(contact.getType())) {
+                    contact.setValue(ldapUser.getMail());
+                    foundedEmail = true;
+                } else if (!foundedPhone && PHONE_CONTACT_TYPE.equals(contact.getType())) {
+                    contact.setValue(ldapUser.getPhone());
+                    foundedPhone = true;
+                } else if (!foundedMobile && MOBILE_CONTACT_TYPE.equals(contact.getType())) {
+                    contact.setValue(ldapUser.getMobile());
+                    foundedMobile = true;
+                }
+            }
+            if (!foundedEmail) {
+                localUser.addToContacts(new PersonContact(localUser, EMAIL_CONTACT_TYPE, ldapUser.getMail()));
+            }
+            if (!foundedPhone) {
+                localUser.addToContacts(new PersonContact(localUser, PHONE_CONTACT_TYPE, ldapUser.getPhone()));
+            }
+            if (!foundedMobile) {
+                localUser.addToContacts(new PersonContact(localUser, MOBILE_CONTACT_TYPE, ldapUser.getMobile()));
+            }
             userDAO.save(localUser);
             LOGGER.debug("Updated");
         }

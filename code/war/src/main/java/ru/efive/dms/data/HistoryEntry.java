@@ -21,7 +21,7 @@ import ru.efive.sql.entity.user.User;
  */
 @Entity
 @Table(name = "wf_history")
-public class HistoryEntry extends IdentifiedEntity {
+public class HistoryEntry extends IdentifiedEntity implements Comparable<HistoryEntry> {
     private static final long serialVersionUID = -67429605560038386L;
     /**
      * Дата создания
@@ -192,5 +192,14 @@ public class HistoryEntry extends IdentifiedEntity {
 
     public void setCommentary(String commentary) {
         this.commentary = commentary;
+    }
+
+    @Override
+    public int compareTo(HistoryEntry o) {
+        if(created == null){
+            return o.getCreated() == null ?  0 :  -1;
+        } else {
+            return o.getCreated() == null ? 1 : created.compareTo(o.getCreated());
+        }
     }
 }

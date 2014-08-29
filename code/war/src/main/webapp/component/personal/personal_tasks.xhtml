@@ -80,7 +80,7 @@
                                 <f:facet name="header">
                                     <p>Исполнитель</p>
                                 </f:facet>
-                                <h:outputText value="#{row.executor.description}"/>
+                                <h:outputText value="#{row.executor.getFullName()}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
@@ -103,7 +103,7 @@
                                 <f:facet name="header">
                                     <p>Автор</p>
                                 </f:facet>
-                                <h:outputText value="#{row.author.description}"/>
+                                <h:outputText value="#{row.author.getFullName()}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:12em">
                                 <f:facet name="header">

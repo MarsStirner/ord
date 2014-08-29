@@ -15,7 +15,7 @@
     </ui:define>
 
     <ui:define name="header_top">
-        <div id="viewtitle">Входящие документы по номеру</div>
+        <div id="viewtitle">Мои проекты входящих документов</div>
     </ui:define>
 
     <ui:define name="header_buttons">
@@ -71,12 +71,16 @@
                             <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
                             <e5ui:column style="min-width:5em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{personal_in_documents.sort('registrationNumber')}">
-                                        Номер
+                                    <h:commandLink action="#{personal_in_documents.sort('creationDate')}">
+                                        Дата создания
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
+                                <b>
+                                    <h:outputText value="#{row.creationDate}">
+                                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                    </h:outputText>
+                                </b>
                             </e5ui:column>
                             <e5ui:column style="min-width:12em">
                                 <f:facet name="header">
@@ -119,7 +123,7 @@
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{personal_in_documents.sort('status_id')}">
+                                    <h:commandLink action="#{personal_in_documents.sort('statusId')}">
                                         Статус
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>

@@ -177,7 +177,7 @@
                                     <h:commandLink
                                             action="#{routeTemplate.composeExecutorSelectModal(element)}">
                                         <h:outputText
-                                                value="#{element.executor eq null? '...': element.executor.description}"/>
+                                                value="#{element.executor eq null? '...': element.executor.getFullName()}"/>
                                     </h:commandLink>
                                     <br/>
                                 </ui:repeat>

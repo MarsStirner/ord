@@ -10,7 +10,7 @@ public class StoredCodes {
     /**
      * Типы контактных данных
      */
-    public class ContactType {
+    public class ContactInfoType {
         /**
          * Мобильный телефон
          */

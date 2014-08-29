@@ -116,21 +116,8 @@ public class EmployesBean extends AbstractDocumentListHolderBean<User> {
                     String colId = getSorting().getColumnId();
 
                     if(colId.equalsIgnoreCase("description")) {
-                        result = ApplicationHelper.getNotNull(o1.getDescription()).compareTo(ApplicationHelper.getNotNull(o2.getDescription()));
-                    } else if(colId.equalsIgnoreCase("jobDepartment")) {
-                        result = ApplicationHelper.getNotNull(o1.getJobDepartment()).compareTo(ApplicationHelper.getNotNull(o2.getJobDepartment()));
-                    } else  if(colId.equalsIgnoreCase("jobPosition")) {
-                        result = ApplicationHelper.getNotNull(o1.getJobPosition()).compareTo(ApplicationHelper.getNotNull(o2.getJobPosition()));
-                    } else if(colId.equalsIgnoreCase("email")) {
-                        result = ApplicationHelper.getNotNull(o1.getEmail()).compareTo(ApplicationHelper.getNotNull(o2.getEmail()));
-                    } else if(colId.equalsIgnoreCase("workPhone")) {
-                        String s1 = ApplicationHelper.getNotNull(o1.getInternalNumber()).isEmpty() ? o1.getWorkPhone(): ApplicationHelper.getNotNull(o1.getWorkPhone()).concat(" (внутр. ").concat(ApplicationHelper.getNotNull(o1.getInternalNumber())).concat(")");
-                        String s2 = ApplicationHelper.getNotNull(o2.getInternalNumber()).isEmpty() ? o2.getWorkPhone(): ApplicationHelper.getNotNull(o2.getWorkPhone()).concat(" (внутр. ").concat(ApplicationHelper.getNotNull(o2.getInternalNumber())).concat(")");
-                        result = ApplicationHelper.getNotNull(s1).compareTo(ApplicationHelper.getNotNull(s2));
-                    } else if(colId.equalsIgnoreCase("mobilePhone")) {
-                        result = ApplicationHelper.getNotNull(o1.getMobilePhone()).compareTo(ApplicationHelper.getNotNull(o2.getMobilePhone()));
+                        result = ApplicationHelper.getNotNull(o1.getFullName()).compareTo(ApplicationHelper.getNotNull(o2.getFullName()));
                     }
-
                     if(getSorting().isAsc()) {
                         result *= -1;
                     }

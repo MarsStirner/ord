@@ -18,8 +18,10 @@ import javax.inject.Named;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import ru.efive.crm.data.Contragent;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
@@ -52,9 +54,7 @@ import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
 import ru.efive.sql.entity.user.Group;
 import ru.efive.sql.entity.user.Role;
 import ru.efive.sql.entity.user.User;
@@ -68,8 +68,15 @@ import ru.efive.wf.core.ActionResult;
 @ConversationScoped
 public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument, Integer> implements Serializable {
     private static final long serialVersionUID = 4716264614655470705L;
+
+    //Именованный логгер (LDAP)
+    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger("INCOMING_DOCUMENT");
+
     private boolean isUsersDialogSelected = true;
     private boolean isGroupsDialogSelected = false;
+    //TODO ACL
+    private boolean readPermission = false;
+    private boolean editPermission = false;
 
     private transient String stateComment;
 
@@ -92,7 +99,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Override
     public String delete() {
         String in_result = super.delete();
-        if (in_result != null && in_result.equals("delete")) {
+        if (AbstractDocumentHolderBean.ACTION_RESULT_DELETE.equals(in_result)) {
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
             } catch (Exception e) {
@@ -100,29 +107,27 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                         FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", ""));
                 e.printStackTrace();
             }
-            return in_result;
-        } else {
-            return in_result;
         }
+        return in_result;
     }
 
     @Override
     protected boolean deleteDocument() {
-        boolean result = false;
         try {
-            result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            final boolean result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
                         "Невозможно удалить документ. Попробуйте повторить позже.", ""));
             }
+            return result;
         } catch (Exception e) {
             e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при удалении.", ""));
+            return false;
         }
-        return result;
     }
 
     @Override
@@ -138,149 +143,157 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).get(id));
-            if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
-            } else {
-                UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-                if (userAccessLevel == null) {
-                    userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                }
+            final IncomingDocument document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).get(id);
+            readPermission = false;
+            editPermission = false;
+            if (!checkState(document)) {
+                setDocument(document);
+                return;
+            }
+            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).getHibernateTemplate();
+            Session session = hibernateTemplate.getSessionFactory().openSession();
+            session.beginTransaction();
+            session.update(document);
+            session.getTransaction().commit();
 
-                UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
-                if (docAccessLevel == null) {
-                    docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                    getDocument().setUserAccessLevel(docAccessLevel);
-                }
-
-                if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
-                    /*FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                                 FacesMessage.SEVERITY_ERROR,
-                                 "Уровень допуска к документу выше вашего уровня допуска.", ""));*/
-                    setState(STATE_FORBIDDEN);
-                    setStateComment("Уровень допуска к документу выше вашего уровня допуска.");
-                    return;
-                }
-
-                IncomingDocument document = getDocument();
-
-                HibernateTemplate hibernateTemplate = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).getHibernateTemplate();
-                Session session = hibernateTemplate.getSessionFactory().openSession();
-                session.beginTransaction();
-                session.update(document);
-                session.getTransaction().commit();
-
-                hibernateTemplate.initialize(document.getAuthor());
-                hibernateTemplate.initialize(document.getNomenclature());
-                hibernateTemplate.initialize(document.getPersonReaders());
-                hibernateTemplate.initialize(document.getPersonEditors());
-                hibernateTemplate.initialize(document.getHistory());
-                hibernateTemplate.initialize(document.getRoleEditors());
-                hibernateTemplate.initialize(document.getRoleReaders());
-                hibernateTemplate.initialize(document.getOfficeKeepingVolume());
-                hibernateTemplate.initialize(document.getCollector());
-                hibernateTemplate.initialize(document.getDeliveryType());
-                hibernateTemplate.initialize(document.getExecutors());
-                hibernateTemplate.initialize(document.getRecipientGroups());
-                hibernateTemplate.initialize(document.getRecipientUsers());
-
-                session.close();
-
-                Set<Integer> allReadersId = new HashSet<Integer>();
-
-                User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
-                int userId = currentUser.getId();
-                if (userId > 0) {
-
-                    // check for administration arm
-                    boolean isAdminRole = false;
-                    List<Role> in_roles = currentUser.getRoleList();
-                    if (in_roles != null) {
-                        for (Role in_role : in_roles) {
-                            if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                                isAdminRole = true;
-                                break;
-                            }
-                        }
-                    }
-
-
-                    List<Role> documentRoles = new ArrayList<Role>();
-                    documentRoles.addAll(document.getRoleEditors());
-                    documentRoles.addAll(document.getRoleReaders());
-                    Set<Integer> documentRolesId = new HashSet<Integer>();
-                    for (Role role : documentRoles) {
-                        documentRolesId.add(role.getId());
-                    }
-
-                    Set<Integer> userRolesId = new HashSet<Integer>();
-                    for (Role role : currentUser.getRoles()) {
-                        userRolesId.add(role.getId());
-                    }
-
-                    boolean isUserReaderByRole = false;
-                    if (userRolesId.size() > 0 && documentRolesId.size() > 0) {
-                        userRolesId.retainAll(documentRolesId);
-                        isUserReaderByRole = (userRolesId.size() > 0);
-                    }
-
-
-                    if (!(isAdminRole || isUserReaderByRole)) {
-                        if (document.getAuthor() != null) {
-                            allReadersId.add(document.getAuthor().getId());
-                        }
-                        if (document.getController() != null) {
-                            allReadersId.add(document.getController().getId());
-                        }
-
-                        List<User> someReaders = new ArrayList<User>();
-                        someReaders.addAll(document.getRecipientUsers());
-                        someReaders.addAll(document.getPersonReaders());
-                        someReaders.addAll(document.getPersonEditors());
-                        someReaders.addAll(document.getExecutors());
-                        Set<Group> recipientGroups = currentUser.getGroups();
-                        if (recipientGroups.size() != 0) {
-                            Iterator itr = recipientGroups.iterator();
-                            while (itr.hasNext()) {
-                                Group group = (Group) itr.next();
-                                someReaders.addAll(group.getMembersList());
-                            }
-                        }
-
-
-                        if (someReaders.size() != 0) {
-                            Iterator itr = someReaders.iterator();
-                            while (itr.hasNext()) {
-                                User user = (User) itr.next();
-                                allReadersId.add(user.getId());
-                            }
-                        }
-
-                        if (!allReadersId.contains(currentUser.getId())) {
-                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO);
-                            if(!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
-                                setState(STATE_FORBIDDEN);
-                                setStateComment("Доступ запрещен");
-                                return;
-                            }
-                        }
-
-                    }
-                }
-
-                updateAttachments();
+            hibernateTemplate.initialize(document.getAuthor());
+            hibernateTemplate.initialize(document.getNomenclature());
+            hibernateTemplate.initialize(document.getPersonReaders());
+            hibernateTemplate.initialize(document.getPersonEditors());
+            hibernateTemplate.initialize(document.getHistory());
+            hibernateTemplate.initialize(document.getRoleEditors());
+            hibernateTemplate.initialize(document.getRoleReaders());
+            hibernateTemplate.initialize(document.getDeliveryType());
+            hibernateTemplate.initialize(document.getExecutors());
+            hibernateTemplate.initialize(document.getRecipientGroups());
+            hibernateTemplate.initialize(document.getRecipientUsers());
+            session.close();
+            updateAttachments();
+            setDocument(document);
+            //Проверка прав на открытие
+            if (!checkPermission(sessionManagement.getLoggedUser(), document)) {
+                setState(STATE_FORBIDDEN);
+                setStateComment("Доступ запрещен");
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при инициализации.", ""));
-            e.printStackTrace();
+            LOGGER.error(e);
         }
+    }
+
+    private boolean checkPermission(final User user, final IncomingDocument document) {
+        if (user.isAdministrator()) {
+            LOGGER.debug(document.getId() + ":Permission RW granted: AdminRole");
+            readPermission = true;
+            editPermission = true;
+            return true;
+        }
+        if (user.equals(document.getAuthor())) {
+            LOGGER.debug(document.getId() + ":Permission RW granted: Author");
+            readPermission = true;
+            editPermission = true;
+            return true;
+        }
+        for (Role currentRole : user.getRoles()) {
+            if (document.getRoleEditors().contains(currentRole)) {
+                LOGGER.debug(document.getId() + ":Permission  RW granted: RoleEditor | " + currentRole.getName());
+                readPermission = true;
+                editPermission = true;
+                return true;
+            }
+            if (!readPermission && document.getRoleReaders().contains(currentRole)) {
+                LOGGER.debug(document.getId() + ":Permission R granted: RoleReader | " + currentRole.getName());
+                readPermission = true;
+            }
+        }
+        for (User currentUser : document.getPersonEditors()) {
+            if (user.equals(currentUser)) {
+                LOGGER.debug(document.getId() + ":Permission RW granted: PersonEditor");
+                readPermission = true;
+                editPermission = true;
+                return true;
+            }
+        }
+        if (!readPermission && user.equals(document.getController())) {
+            LOGGER.debug(document.getId() + ":Permission RW granted: Controller");
+            readPermission = true;
+            editPermission = true;
+            return true;
+        }
+        for (User currentUser : document.getRecipientUsers()) {
+            if (user.equals(currentUser)) {
+                LOGGER.debug(document.getId() + ":Permission R granted: RecipientUser");
+                readPermission = true;
+                return true;
+            }
+        }
+        for (User currentUser : document.getPersonReaders()) {
+            if (user.equals(currentUser)) {
+                LOGGER.debug(document.getId() + ":Permission R granted: PersonReader");
+                readPermission = true;
+                return true;
+            }
+        }
+
+        for (User currentUser : document.getExecutors()) {
+            if (user.equals(currentUser)) {
+                LOGGER.debug(document.getId() + ":Permission R granted: Executor");
+                readPermission = true;
+                return true;
+            }
+        }
+        for (Group currentGroup : user.getGroups()) {
+            if (document.getRecipientGroups().contains(currentGroup)) {
+                LOGGER.debug(document.getId() + ":Permission R granted: RecipientGroup | " + currentGroup.getValue());
+                readPermission = true;
+                return true;
+            }
+        }
+        if (sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
+            LOGGER.debug(document.getId() + ":Permission R granted: TASK");
+            readPermission = true;
+            return true;
+        }
+        if(!readPermission && !editPermission) {
+            LOGGER.error(document.getId() + ":Permission denied: " + user.getId());
+            return false; //readPermission || editPermission;
+        } else {
+            return readPermission || editPermission;
+        }
+    }
+
+
+    /**
+     * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
+     *
+     * @param document документ для проверки
+     * @return true - допуск есть
+     */
+    private boolean checkState(final IncomingDocument document) {
+        if (document == null) {
+            setState(STATE_NOT_FOUND);
+            return false;
+        }
+        if (document.isDeleted()) {
+            setState(STATE_DELETED);
+            setStateComment("Документ удален");
+            return false;
+        }
+        final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
+        if (docAccessLevel.getLevel() > sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getLevel()) {
+            setState(STATE_FORBIDDEN);
+            setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
+            return false;
+        }
+        return true;
     }
 
     @Override
     protected void initNewDocument() {
+        readPermission = true;
+        editPermission = true;
         IncomingDocument doc = new IncomingDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
         Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
@@ -294,10 +307,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             //String parentNumeratorId=FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
             doc.setParentNumeratorId(parentNumeratorId);
             //Numerator parentNumerator=sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).findDocumentById(parentNumeratorId);
-        } else {
-            //doc.setTemplateFlag(false);
         }
-
         DocumentForm form = null;
         List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategoryAndValue("Входящие документы", "Письмо");
         if (list.size() > 0) {
@@ -386,7 +396,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         boolean result = false;
         //if (validateHolder()) {
         try {
-            IncomingDocument document = (IncomingDocument) getDocument();
+            IncomingDocument document = getDocument();
             document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -403,7 +413,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 paperCopy.setAuthor(sessionManagement.getLoggedUser());
 
                 String parentId = document.getUniqueId();
-                if (parentId != null || !parentId.isEmpty()) {
+                if (parentId != null && !parentId.isEmpty()) {
                     paperCopy.setParentDocumentId(parentId);
                 }
 
@@ -507,120 +517,20 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         return result;
     }
-    
-    public boolean isCurrentUserAccessEdit(){
-        User inUser = sessionManagement.getLoggedUser();
-        //inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(inUser.getLogin(), inUser.getPassword());
-        IncomingDocument inDoc = getDocument();
 
-        List<Integer> recipUsers = new ArrayList<Integer>();
-        if (inDoc.getRecipientUsers() != null) {
-            for (User user : inDoc.getRecipientUsers()) {
-                recipUsers.add(user.getId());
-            }
-        }
-        if (inDoc.getPersonReaders() != null) {
-            for (User user : inDoc.getPersonReaders()) {
-                recipUsers.add(user.getId());
-            }
-        }
-        if (recipUsers.contains(inUser.getId())) {
-            return true;
-        }
-
-        List<Integer> accesGroups = new ArrayList<Integer>();
-        if (inDoc.getRecipientGroups() != null) {
-            for (Group group : inDoc.getRecipientGroups()) {
-                accesGroups.add(group.getId());
-            }
-        }
-        for (Group group : inUser.getGroups()) {
-            if (accesGroups.contains(group.getId())) {
-                return true;
-            }
-        }
-
-        List<Integer> accessRoles = new ArrayList<Integer>();
-        if (inDoc.getRoleReaders() != null) {
-            for (Role role : inDoc.getRoleReaders()) {
-                accessRoles.add(role.getId());
-            }
-        }
-        for (Role role : inUser.getRoles()) {
-            if (accessRoles.contains(role.getId())) {
-                return true;
-            }
-        }
-        
-        return false;
+    public boolean isCurrentUserAccessEdit() {
+       return editPermission;
     }
 
-    protected boolean isCurrentUserDocEditor() {
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-        IncomingDocument in_doc = getDocument();
-
-        if (in_user.isAdministrator()) {
-            return true;
-        }
-
-        List<Integer> in_editorsId = new ArrayList<Integer>();
-        if (in_doc.getPersonEditors() != null) {
-            for (User user : in_doc.getPersonEditors()) {
-                in_editorsId.add(user.getId());
-            }
-        }
-        if (in_doc.getController() != null) {
-            in_editorsId.add(in_doc.getController().getId());
-        }
-        if (in_doc.getAuthor() != null) {
-            in_editorsId.add(in_doc.getAuthor().getId());
-        }
-        if (in_editorsId.contains(in_user.getId())) {
-            return true;
-        }
-
-        List<Integer> in_rolesId = new ArrayList<Integer>();
-        for (Role role : in_doc.getRoleEditors()) {
-            in_rolesId.add(role.getId());
-        }
-
-        if (in_rolesId.size() != 0) {
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_rolesId.contains(in_role.getId())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+    public boolean isCurrentUserDocEditor() {
+       return editPermission;
     }
 
     protected boolean isCurrentUserAdvDocReader() {
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-
-        IncomingDocument in_doc = getDocument();
-
-        List<User> in_advReaders = new ArrayList<User>();
-        if (in_doc.getPersonReaders() != null) in_advReaders.addAll(in_doc.getPersonReaders());
-        if (in_advReaders.contains(in_user)) {
-            return true;
-        }
-
-        List<Role> in_roles = in_doc.getRoleReaders();
-        if (in_roles != null) {
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_roles.contains(in_role)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return editPermission;
     }
-    // FILES
 
+    // FILES
 
     public List<Attachment> getAttachments() {
         return attachments;
@@ -738,35 +648,35 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 StringBuffer in_description = new StringBuffer("");
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
-                if (key.indexOf("incoming") != -1) {
+                if (key.contains("incoming")) {
                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
                             "Черновик входщяего документа от " + sdf.format(in_doc.getCreationDate()) :
                             "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + sdf.format(in_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("outgoing") != -1) {
+                } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
                             "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) :
                             "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + sdf.format(out_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("internal") != -1) {
+                } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
                             "Черновик внутреннего документа от " + sdf.format(internal_doc.getCreationDate()) :
                             "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("request") != -1) {
+                } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
                             "Черновик обращения граждан от " + sdf.format(request_doc.getCreationDate()) :
                             "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("task") != -1) {
+                } else if (key.contains("task")) {
                     Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
                             "Черновик поручения от " + sdf.format(task_doc.getCreationDate()) :
@@ -885,7 +795,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         }
 
         public boolean selected(DeliveryType value) {
-            return this.value != null ? this.value.getValue().equals(value.getValue()) : false;
+            return this.value != null && this.value.getValue().equals(value.getValue());
         }
 
         public void select(DeliveryType value) {
@@ -938,7 +848,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         }
 
         public boolean selected(Contragent contragent) {
-            return this.contragent == null ? false : this.contragent.getFullName().equals(contragent.getFullName());
+            return this.contragent != null && this.contragent.getFullName().equals(contragent.getFullName());
         }
 
         @Override
@@ -1087,14 +997,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         return roleEditorsPickList;
     }
 
-    public OfficeKeepingVolumeSelectModal getOfficeKeepingVolumeSelectModal() {
-        return officeKeepingVolumeSelectModal;
-    }
-
-    public UserSelectModalBean getCollectorSelectModal() {
-        return collectorSelectModal;
-    }
-
     private UserSelectModalBean controllerSelectModal = new UserSelectModalBean() {
         @Override
         protected void doSave() {
@@ -1112,21 +1014,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     };
 
-    private UserSelectModalBean collectorSelectModal = new UserSelectModalBean() {
-        @Override
-        protected void doSave() {
-            getDocument().setCollector(getUser());
-            super.doSave();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUser(null);
-        }
-    };
 
     private UserListSelectModalBean executorsSelectModal = new UserListSelectModalBean() {
 
@@ -1323,22 +1210,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         }
     };
 
-    private OfficeKeepingVolumeSelectModal officeKeepingVolumeSelectModal = new OfficeKeepingVolumeSelectModal() {
-
-        @Override
-        protected void doSave() {
-            getDocument().setOfficeKeepingVolume(getOfficeKeepingVolume());
-            super.doSave();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getOfficeKeepingVolumes().markNeedRefresh();
-        }
-    };
-
-    public ProcessorModalBean getProcessorModal() {
+   public ProcessorModalBean getProcessorModal() {
         return processorModal;
     }
 
@@ -1392,9 +1264,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doPostProcess(ActionResult actionResult) {
             IncomingDocument document = (IncomingDocument) actionResult.getProcessedData();
             HistoryEntry historyEntry = getHistoryEntry();
-            if (document.getDocumentStatus().getId() == 110 && document.getCollector() != null) {
-                historyEntry.setCommentary(document.getCollector().getDescriptionShort() + " : на руках до " + (new SimpleDateFormat("dd.MM.yyyy")).format(document.getReturnDate()));
-            }
             if (getSelectedAction().isHistoryAction()) {
                 Set<HistoryEntry> history = document.getHistory();
                 if (history == null) {

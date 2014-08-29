@@ -28,12 +28,12 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
     private List<Numerator> hashDocuments;
     private boolean needRefresh = true;
 
-    protected List<Numerator> getHashDocuments(int fromIndex, int toIndex) {
+    public List<Numerator> getHashDocuments(int fromIndex, int toIndex) {
         toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
         return this.getHashDocuments().subList(fromIndex, toIndex);
     }
 
-    protected List<Numerator> getHashDocuments() {
+    public List<Numerator> getHashDocuments() {
         List<Numerator> result = new ArrayList<Numerator>();
         if (needRefresh) {
             try {
@@ -46,7 +46,7 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
                         String colId = getSorting().getColumnId();
 
                         if(colId.equalsIgnoreCase("numeratorIndex")) {
-                            result = new Integer(o1.getNumeratorIndex()).compareTo(new Integer(o2.getNumeratorIndex()));
+                            result = new Integer(o1.getNumeratorIndex()).compareTo(o2.getNumeratorIndex());
                         } else if(colId.equalsIgnoreCase("numberFormat")) {
                             result = ApplicationHelper.getNotNull(o1.getNumberFormat()).compareTo(ApplicationHelper.getNotNull(o1.getNumberFormat()));
                         } else if(colId.equalsIgnoreCase("creationDate")) {

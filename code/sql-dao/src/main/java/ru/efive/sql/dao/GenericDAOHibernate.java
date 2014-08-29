@@ -258,8 +258,8 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
                         .createCriteria(parts[2], DetachedCriteria.LEFT_JOIN);
             }
         }
-        for (int i = 0; i < orders.length; i++) {
-            String[] parts = ApplicationHelper.splitStr(orders[i], "\\.");
+        for (String order : orders) {
+            String[] parts = ApplicationHelper.splitStr(order, "\\.");
             orderingCriteria.addOrder(asc ? Order.asc(parts[parts.length - 1]) : Order.desc(parts[parts.length - 1]));
         }
 

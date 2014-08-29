@@ -1,5 +1,6 @@
 package ru.efive.sql.entity.user;
 
+import ru.efive.sql.entity.DictionaryEntity;
 import ru.efive.sql.entity.IdentifiedEntity;
 
 import javax.persistence.Column;
@@ -13,15 +14,12 @@ import javax.persistence.Table;
  * Description: Справочник Типов контактной иформации (телефон мобильный \ телефон рабочий \ skype \ итд)<br>
  */
 @Entity
-@Table(name = "rbContactType")
-public class RbContactType extends IdentifiedEntity{
+@Table(name = "rbContactInfoType")
+public class RbContactInfoType extends DictionaryEntity{
 
     /**
-     * Наименование типа контактной информации
+     * Наименование типа контактной информации  @Override(VALUE)
      */
-    @Column(name = "name", nullable = false)
-    private String name;
-
     /**
      * Уникальный код справочника (для внутренних целей)
      */
@@ -36,30 +34,21 @@ public class RbContactType extends IdentifiedEntity{
 
     //**************************************************** End OF DB Fields
 
-    public RbContactType() {
+    public RbContactInfoType() {
     }
 
-    public RbContactType(String name, String code) {
-        this.name = name;
+    public RbContactInfoType(String name, String code) {
+        this.setValue(name);
         this.code = code;
     }
 
-    public RbContactType(String name, String code, String valueMask) {
-        this.name = name;
+    public RbContactInfoType(String name, String code, String valueMask) {
+        this.setValue(name);
         this.code = code;
         this.valueMask = valueMask;
     }
 
     //GET&SET
-
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getCode() {
         return code;

@@ -300,13 +300,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @LazyToOne(LazyToOneOption.PROXY)
     private HumanTaskTree agreementTree;
 
-    /**
-     * Том дела
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_incoming_documents_by_office_keeping_volume_id")
-    private OfficeKeepingVolume officeKeepingVolume;
-
     @Transient
     public String getUniqueId() {
         return getId() == 0 ? "" : "outgoing_" + getId();
@@ -640,14 +633,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @Override
     public HumanTaskTree getAgreementTree() {
         return agreementTree;
-    }
-
-    public void setOfficeKeepingVolume(OfficeKeepingVolume officeKeepingVolume) {
-        this.officeKeepingVolume = officeKeepingVolume;
-    }
-
-    public OfficeKeepingVolume getOfficeKeepingVolume() {
-        return officeKeepingVolume;
     }
 
     public void setAgreementUsers(Set<User> agreementUsers) {

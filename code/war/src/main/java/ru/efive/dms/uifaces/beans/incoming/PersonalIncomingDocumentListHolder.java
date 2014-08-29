@@ -24,36 +24,29 @@ public class PersonalIncomingDocumentListHolder extends AbstractDocumentListHold
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("registrationDate, registrationNumber", false);
+        return new Sorting("creationDate", false);
     }
 
     @Override
     protected int getTotalCount() {
-        int result = 0;
         try {
             return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
                     sessionManagement.getLoggedUser(), false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
+            return 0;
         }
-        return result;
     }
 
     @Override
     protected List<IncomingDocument> loadDocuments() {
-        List<IncomingDocument> result = new ArrayList<IncomingDocument>();
         try {
-            result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
+           return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
                     false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();
+            return new ArrayList<IncomingDocument>(0);
         }
-        return result;
-    }
-
-    @Override
-    public List<IncomingDocument> getDocuments() {
-        return super.getDocuments();
     }
 
     public String getFilter() {

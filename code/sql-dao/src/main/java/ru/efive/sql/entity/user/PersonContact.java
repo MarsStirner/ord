@@ -12,7 +12,7 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "dms_system_persons_contacts")
+@Table(name = "dms_system_user_contact")
 public class PersonContact extends IdentifiedEntity{
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -21,7 +21,7 @@ public class PersonContact extends IdentifiedEntity{
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "type", nullable = false)
-    private RbContactType type;
+    private RbContactInfoType type;
 
     @Column(name = "value", nullable = true)
     private String value;
@@ -29,7 +29,7 @@ public class PersonContact extends IdentifiedEntity{
     public PersonContact() {
     }
 
-    public PersonContact(User person, RbContactType type, String value) {
+    public PersonContact(User person, RbContactInfoType type, String value) {
         this.person = person;
         this.type = type;
         this.value = value;
@@ -43,11 +43,11 @@ public class PersonContact extends IdentifiedEntity{
         this.person = person;
     }
 
-    public RbContactType getType() {
+    public RbContactInfoType getType() {
         return type;
     }
 
-    public void setType(RbContactType type) {
+    public void setType(RbContactInfoType type) {
         this.type = type;
     }
 

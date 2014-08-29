@@ -58,6 +58,8 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
 
     public static final State STATE_NOT_FOUND = new State(true);
 
+    public static final State STATE_DELETED = new State(true);
+
     public static final State STATE_VIEW = new State(false);
     
     public static final State STATE_INTERNAL_ERROR = new State(true);

@@ -176,7 +176,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                     hibernateTemplate.initialize(document.getHistory());
                     hibernateTemplate.initialize(document.getRoleEditors());
                     hibernateTemplate.initialize(document.getRoleReaders());
-                    hibernateTemplate.initialize(document.getOfficeKeepingVolume());
+
 
                     session.close();
 
@@ -1182,10 +1182,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         return processorModal;
     }
 
-    public OfficeKeepingVolumeSelectModal getOfficeKeepingVolumeSelectModal() {
-        return officeKeepingVolumeSelectModal;
-    }
-
     public void setStateComment(String stateComment) {
         this.stateComment = stateComment;
     }
@@ -1225,22 +1221,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             }
         }
     };
-
-    private OfficeKeepingVolumeSelectModal officeKeepingVolumeSelectModal = new OfficeKeepingVolumeSelectModal() {
-
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setOfficeKeepingVolume(getOfficeKeepingVolume());
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getOfficeKeepingVolumes().markNeedRefresh();
-        }
-    };
-
 
     private boolean isRequisitesTabSelected = true;
     private boolean isRouteTabSelected = false;

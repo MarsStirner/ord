@@ -8,9 +8,9 @@
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>file:/usr/local/ord/configuration/jdbc.properties</value>
-                <value>file:/usr/local/ord/configuration/mail.properties</value>
-                <value>file:/usr/local/ord/configuration/ldap.properties</value>
+                <value>jdbc.properties</value>
+                <value>mail.properties</value>
+                <value>ldap.properties</value>
                 <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
         </list>
@@ -52,7 +52,8 @@
         <property name="username" value="${jdbc.username}"/>
         <property name="password" value="${jdbc.password}"/>
         <property name="defaultAutoCommit" value="true"/>
-        <property name="maxWait" value="1"/>
+        <!--The maximum number of milliseconds that the pool will wait (when there are no available connections) for a connection to be returned before throwing an exception-->
+        <property name="maxWait" value="150"/>
         <property name="maxIdle" value="10"/>
         <property name="maxActive" value="100"/>
         <property name="removeAbandoned" value="true"/>
@@ -83,10 +84,15 @@
                 <value>ru.efive.sql.entity.user.Group</value>
                 <value>ru.efive.sql.entity.enums.GroupType</value>
                 <value>ru.efive.sql.entity.user.UserAccessLevel</value>
+                <value>ru.efive.sql.entity.user.Department</value>
+                <value>ru.efive.sql.entity.user.Position</value>
+                <value>ru.efive.sql.entity.user.PersonContact</value>
+
+                <!-- Referrence Books -->
+                <value>ru.efive.sql.entity.user.RbContactInfoType</value>
 
                 <!-- documents -->
                 <value>ru.efive.sql.entity.document.Document</value>
-
                 <value>ru.efive.dms.data.IncomingDocument</value>
                 <value>ru.efive.dms.data.InternalDocument</value>
                 <value>ru.efive.dms.data.OutgoingDocument</value>
@@ -97,7 +103,6 @@
                 <value>ru.efive.dms.data.OfficeKeepingVolume</value>
                 <value>ru.efive.dms.data.Task</value>
                 <value>ru.efive.dms.data.RecordBookDocument</value>
-                <value>ru.efive.dms.data.Person</value>
                 <value>ru.efive.dms.data.Nomenclature</value>
                 <value>ru.efive.dms.data.DeliveryType</value>
                 <value>ru.efive.dms.data.SenderType</value>
@@ -108,7 +113,6 @@
                 <value>ru.efive.crm.data.ContragentNomenclature</value>
                 <value>ru.efive.dms.data.Numerator</value>
                 <value>ru.efive.dms.data.ReportTemplate</value>
-
                 <!-- /documents -->
 
                 <!-- workflow -->
@@ -118,7 +122,6 @@
                 <value>ru.efive.wf.core.data.HumanTaskTree</value>
                 <value>ru.efive.wf.core.data.HumanTask</value>
                 <!-- /workflow -->
-
             </list>
         </property>
         <property name="hibernateProperties">
@@ -321,7 +324,7 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean id="OfficeKeepingFileDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <bean id="officeKeepingFileDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
         <property name="target" ref="officeKeepingFileDao"/>
         <property name="interceptorNames">
             <list>
@@ -334,7 +337,7 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean id="OfficeKeepingVolumeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <bean id="officeKeepingVolumeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
         <property name="target" ref="officeKeepingVolumeDao"/>
         <property name="interceptorNames">
             <list>
@@ -369,6 +372,15 @@
         </property>
     </bean>
 
+
+    <bean id="departmentDao" class="ru.efive.sql.dao.user.DepartmentDAO">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="positionDao" class="ru.efive.sql.dao.user.PositionDAO">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
     <bean id="nomenclatureDao" class="ru.efive.dms.dao.NomenclatureDAOImpl">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
@@ -401,6 +413,20 @@
 
     <bean id="groupTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
         <property name="target" ref="groupTypeDao"/>
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="contactTypeDao" class="ru.efive.sql.dao.user.RbContactTypeDAO">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <bean id="cotactTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="target" ref="contactTypeDao"/>
         <property name="interceptorNames">
             <list>
                 <value>transactionInterceptor</value>

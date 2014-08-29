@@ -59,7 +59,7 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 MailMessage message = new MailMessage(sendTo, null, "Согласовано",
-                        new StringBuilder("Согласовано\n").append(task.getExecutor().getDescription()).append("\n\n").
+                        new StringBuilder("Согласовано\n").append(task.getExecutor().getFullName()).append("\n\n").
                                 append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
                                 append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
                 message.setBlindCopyTo(blindCopyTo);
@@ -119,7 +119,7 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, null, "Отказ в согласовании ",
-                        new StringBuilder("Отказано в согласовании\n").append(task.getExecutor().getDescription()).append("\n\n").
+                        new StringBuilder("Отказано в согласовании\n").append(task.getExecutor().getFullName()).append("\n\n").
                                 append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
                                 append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
                 message.setBlindCopyTo(blindCopyTo);
@@ -166,7 +166,7 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, copyTo, "Делегирован запрос на согласование ",
-                        new StringBuilder("Делегирован запрос на согласование\n").append(task.getExecutor().getDescription()).append("\n\n").
+                        new StringBuilder("Делегирован запрос на согласование\n").append(task.getExecutor().getFullName()).append("\n\n").
                                 append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
                                 append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
                 message.setBlindCopyTo(blindCopyTo);

@@ -286,13 +286,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @LazyToOne(LazyToOneOption.FALSE)
     private HumanTaskTree agreementTree;
 
-    /**
-     * Том дела
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_incoming_documents_by_office_keeping_volume_id")
-    private OfficeKeepingVolume officeKeepingVolume;
-
 
     public String getWFResultDescription() {
         return this.WFResultDescription;
@@ -585,14 +578,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
 
     public Set<User> getAgreementUsers() {
         return agreementUsers;
-    }
-
-    public void setOfficeKeepingVolume(OfficeKeepingVolume officeKeepingVolume) {
-        this.officeKeepingVolume = officeKeepingVolume;
-    }
-
-    public OfficeKeepingVolume getOfficeKeepingVolume() {
-        return officeKeepingVolume;
     }
 
     @Override

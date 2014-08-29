@@ -189,15 +189,15 @@ public final class WorkflowHelper {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
-                            //Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
+                            Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
                             List<Role> in_roles = new ArrayList<Role>();
-                            //in_roles.add(in_administrationRole);
+                            in_roles.add(in_administrationRole);
 
                             Role in_office;
                             if (in_nomenclature != null) {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                               in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
                                 in_number.append(in_nomenclature.getCategory() + "-");
-                            } else {
+                             } else     {
                                 in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                                 in_number.append("01-");
                             }
@@ -311,16 +311,6 @@ public final class WorkflowHelper {
         boolean result = false;
         String in_result = "";
         FacesContext context = FacesContext.getCurrentInstance();
-        OfficeKeepingVolume parentVolume = document.getOfficeKeepingVolume();
-        if (parentVolume != null) {
-            parentVolume.setUnitsCount(parentVolume.getUnitsCount() +
-                    document.getAppendixiesCount()
-                            * document.getSheetsCount()
-                            * document.getCopiesCount());
-            SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-            sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).save(parentVolume);
-            result = true;
-        }
         if (in_result.toString().equals("")) {
             try {
                 result = true;
@@ -384,7 +374,7 @@ public final class WorkflowHelper {
             in_result.append("Необходимо заполнить Краткое содержание;" + System.getProperty("line.separator"));
         }
 
-        if (in_result.toString().equals("")) {
+        if (in_result.length() == 0) {
             try {
 
                 SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
@@ -396,11 +386,11 @@ public final class WorkflowHelper {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getController().getUNID());
-                            //Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
+                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
                             List<Role> in_roles = new ArrayList<Role>();
-                            //if((in_administrationRole!=null)&&()&&(!in_roles.contains(in_administrationRole))){
-                            //in_roles.add(in_administrationRole);
-                            //}
+                            if ((in_administrationRole != null) && (!in_roles.contains(in_administrationRole))) {
+                                in_roles.add(in_administrationRole);
+                            }
 
                             Role in_office;
                             if (in_nomenclature != null) {
@@ -559,16 +549,16 @@ public final class WorkflowHelper {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
-                            //Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
+                            Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
                             List<Role> in_roles = new ArrayList<Role>();
-                            //if((in_administrationRole!=null)&&(!in_roles.contains(in_administrationRole))){
-                            //in_roles.add(in_administrationRole);
-                            //}
+                            if((in_administrationRole!=null)&&(!in_roles.contains(in_administrationRole))){
+                            in_roles.add(in_administrationRole);
+                            }
 
                             Role in_office;
-                            if (in_nomenclature != null) {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                                in_number.append(in_nomenclature.getCategory() + "-");
+                             if (in_nomenclature != null) {
+                                 in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                                 in_number.append(in_nomenclature.getCategory() + "-");
                             } else {
                                 in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                                 in_number.append("01-");
@@ -594,9 +584,10 @@ public final class WorkflowHelper {
                             if (in_form.equals("Распоряжение")) {
                                 //Р/индекс/номер по порядку
                                 in_number = new StringBuffer();
-                                if (in_nomenclature != null) {
-                                    in_number.append("Р/" + in_nomenclature.getCategory() + "/");
-                                } else {
+                                //  if (in_nomenclature != null) {
+                                //      in_number.append("Р/" + in_nomenclature.getCategory() + "/");
+                                //  } else {
+                                {
                                     in_number.append("Р/01/");
                                 }
 
@@ -610,8 +601,8 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                + 1
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        + 1
                                         )
                                 );
                                 in_number.append(in_count.substring(in_count.length() - 4) + "/Методические пособия/" + ydf.format(java.util.Calendar.getInstance().getTime()));
@@ -622,8 +613,8 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                + 1
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        + 1
                                         )
                                 );
                                 in_number.append(in_count.substring(in_count.length() - 4) + "/Инструкции/" + ydf.format(java.util.Calendar.getInstance().getTime()));
@@ -631,9 +622,10 @@ public final class WorkflowHelper {
 
                             } else if (in_form.equals("Служебная записка")) {
                                 in_number = new StringBuffer();
-                                if (in_nomenclature != null) {
-                                    in_number.append("СЗ/" + in_nomenclature.getCategory() + "/");
-                                } else {
+                                // if (in_nomenclature != null) {
+                                //    in_number.append("СЗ/" + in_nomenclature.getCategory() + "/");
+                                // } else {
+                                {
                                     in_number.append("СЗ/01/");
                                 }
                                 in_filters.put("registrationNumber", in_number);
@@ -653,9 +645,9 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                //+sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
-                                                + 1
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        //+sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
+                                                        + 1
                                         )
                                 );
                                 in_number.append(in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
@@ -666,9 +658,9 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                //+sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
-                                                + 1
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        //+sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
+                                                        + 1
                                         )
                                 );
                                 in_number.append("ГП/" + in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
@@ -680,7 +672,7 @@ public final class WorkflowHelper {
                                 outDateOrder_filters.put("registrationNumber", "%/%");
                                 outDateOrder_filters.put("form", document.getForm());
                                 outDateOrder_filters.put("closePeriodRegistrationFlag", "false");
-                                int outDateOrderCount =  new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(outDateOrder_filters, true, false)).size();
+                                int outDateOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(outDateOrder_filters, true, false)).size();
 
                                 in_filters.put("registrationNumber", "%");
                                 in_filters.put("form", document.getForm());
@@ -799,8 +791,9 @@ public final class WorkflowHelper {
                         List<Role> in_roles = new ArrayList<Role>();
                         Role in_office;
                         if (in_nomenclature != null) {
-                            in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                        } else {
+                             in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                        } else
+                        {
                             in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                         }
                         if ((in_office != null) && (!in_roles.contains(in_office))) {
@@ -1366,35 +1359,6 @@ public final class WorkflowHelper {
         return result;
     }
 
-    public static boolean checkIncomingDocumentPropertiesForUnfile(IncomingDocument doc) {
-        boolean result = false;
-        IncomingDocument document = doc;
-        FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
-
-        if (document.getCollector() == null) {
-            in_result.append("Необходимо указать кому будет выдан том дела;" + System.getProperty("line.separator"));
-        }
-        if (document.getReturnDate() == null) {
-            in_result.append("Необходимо указать дату возврата тома дела;" + System.getProperty("line.separator"));
-        }
-
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                document.setWFResultDescription("");
-            }
-        } else {
-            document.setWFResultDescription(in_result.toString());
-        }
-        return result;
-    }
-
     public static boolean checkOfficeKeepingVolumePropertiesForUnfile(OfficeKeepingVolume doc) {
         boolean result = false;
         OfficeKeepingVolume document = doc;
@@ -1460,23 +1424,4 @@ public final class WorkflowHelper {
         }
         return result;
     }
-
-    public static boolean setIncomingDocumentCollectorToEmpty(IncomingDocument doc) {
-        boolean result = false;
-        IncomingDocument document = doc;
-
-        document.setCollector(null);
-        document.setReturnDate(null);
-        try {
-            result = true;
-        } catch (Exception e) {
-            result = false;
-            e.printStackTrace();
-        }
-        if (result) {
-            document.setWFResultDescription("");
-        }
-        return result;
-    }
-
 }

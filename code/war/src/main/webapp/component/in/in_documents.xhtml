@@ -81,22 +81,21 @@
                             <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
                             <e5ui:column style="min-width:5em">
                                 <f:facet name="header">
-                                    <h:commandLink
-                                            action="#{in_documents.sort('registrationNumber')}">
+                                    <h:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}">
                                         Номер
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/> </b>
+                                <b><h:outputText value="#{row.registrationNumber}"/></b>
                             </e5ui:column>
                             <e5ui:column style="min-width:5em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{in_documents.sort('deliveryDate')}">
-                                        Дата
+                                    <h:commandLink action="#{in_documents.sort('registrationDate')}">
+                                        Дата регистрации
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <h:outputText value="#{row.deliveryDate}">
+                                <h:outputText value="#{row.registrationDate}">
                                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                                 </h:outputText>
                             </e5ui:column>

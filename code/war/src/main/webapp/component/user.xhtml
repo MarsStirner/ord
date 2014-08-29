@@ -61,7 +61,7 @@
     <h:panelGroup rendered="#{user.editState or user.viewState}">
         <div class="name">
             <div>
-                <h:outputText value="#{user.document.description}"/>
+                <h:outputText value="#{user.document.getFullName()}"/>
             </div>
         </div>
     </h:panelGroup>

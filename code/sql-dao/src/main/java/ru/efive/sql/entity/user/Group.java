@@ -30,23 +30,14 @@ public class Group extends DictionaryEntity {
         Collections.sort(result, new Comparator<User>() {
             @Override
             public int compare(User o1, User o2) {
-                return o1.getDescription().compareTo(o2.getDescription());
+                return o1.getFullName().compareTo(o2.getFullName());
             }
         });
         return result;
     }
 
     public List<User> getMembersListWithEmptyUser() {
-        List<User> result = new ArrayList<User>();
-        if (members != null) {
-            result.addAll(members);
-        }
-        Collections.sort(result, new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return o1.getDescription().compareTo(o2.getDescription());
-            }
-        });
+        List<User> result = getMembersList();
         User empty = new User();
         empty.setLastName("");
         empty.setFirstName("");

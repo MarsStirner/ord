@@ -60,7 +60,6 @@
                 <value>ru.efive.dms.data.OfficeKeepingVolume</value>
                 <value>ru.efive.dms.data.Task</value>
                 <value>ru.efive.dms.data.RecordBookDocument</value>
-                <value>ru.efive.dms.data.Person</value>
                 <value>ru.efive.dms.data.Nomenclature</value>
                 <value>ru.efive.dms.data.DeliveryType</value>
                 <value>ru.efive.dms.data.SenderType</value>

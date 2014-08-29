@@ -57,6 +57,20 @@ public class User extends IdentifiedEntity {
     private String middleName;
 
     /**
+     * Адрес почты
+     */
+    //TODO перенести в contacts
+    @Column(name="email")
+    private String email;
+
+    /**
+     *   Табельный номер сотрудника
+     */
+    //TODO разобраться с уникальностью
+    @Column(name = "unid")
+    private String UNID;
+
+    /**
      * учетная запись
      */
     @Column(name = "login", unique = true)
@@ -104,8 +118,9 @@ public class User extends IdentifiedEntity {
 
     /**
      * Контактные данные пользователя (почта, телефон, итд)
+     * При сохранении пользователя - добавлять или обновлять записи
      */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE} )
     private Set<PersonContact> contacts = new HashSet<PersonContact>(4);
 
     /**
@@ -135,12 +150,16 @@ public class User extends IdentifiedEntity {
     /**
      * должность
      */
-    private String jobPosition;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jobPosition_id", nullable = true)
+    private Position jobPosition;
 
     /**
      * подразделение
      */
-    private String jobDepartment;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "jobDepartment_id", nullable = true)
+    private Department jobDepartment;
 
     /**
      * *******************************************************************
@@ -325,7 +344,6 @@ public class User extends IdentifiedEntity {
         this.created = created;
     }
 
-
     public boolean isDeleted() {
         return deleted;
     }
@@ -334,20 +352,20 @@ public class User extends IdentifiedEntity {
         this.deleted = deleted;
     }
 
-    public void setJobPosition(String jobPosition) {
-        this.jobPosition = jobPosition;
-    }
-
-    public String getJobPosition() {
+    public Position getJobPosition() {
         return jobPosition;
     }
 
-    public void setJobDepartment(String jobDepartment) {
-        this.jobDepartment = jobDepartment;
+    public void setJobPosition(Position jobPosition) {
+        this.jobPosition = jobPosition;
     }
 
-    public String getJobDepartment() {
+    public Department getJobDepartment() {
         return jobDepartment;
+    }
+
+    public void setJobDepartment(Department jobDepartment) {
+        this.jobDepartment = jobDepartment;
     }
 
     public void setGroups(Set<Group> groups) {
@@ -356,7 +374,6 @@ public class User extends IdentifiedEntity {
 
     public Set<Group> getGroups() {
         return groups;
-
     }
 
     public void setMaxUserAccessLevel(UserAccessLevel maxUserAccessLevel) {
@@ -407,5 +424,40 @@ public class User extends IdentifiedEntity {
         this.firedDate = firedDate;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUNID() {
+        return UNID;
+    }
+
+    public void setUNID(String UNID) {
+        this.UNID = UNID;
+    }
+
+    //Collections *****************************
+
+    public Set<PersonContact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(Set<PersonContact> contacts) {
+        this.contacts = contacts;
+    }
+
+    public boolean addToContacts(final PersonContact contact){
+        if(contacts == null){
+            this.contacts = new HashSet<PersonContact>(1);
+        }
+        return this.contacts.add(contact);
+    }
+
     private static final long serialVersionUID = -7649892958713448678L;
+
+
 }

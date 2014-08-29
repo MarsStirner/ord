@@ -30,8 +30,7 @@
                 <h1>Организационно-распорядительный документооборот</h1>
             </div>
 
-            <h:form id="main_content" onkeypress="if (event.keyCode == 13) this.submit();"
-                    onsubmit="#{sessionManagement.logIn()}">
+            <h:form id="main_content" onkeypress="if (event.keyCode == 13) this.submit();">
                 <div class="main_content">
                     <h:panelGroup rendered="#{not(sessionManagement.loggedIn)}">
                         <h2>Вход в систему</h2>
@@ -52,7 +51,6 @@
                             location.href = "#{sessionManagement.backUrl}";
                         </h:outputScript>
                     </h:panelGroup>
-
                     <div>
                         <h:messages errorClass="e5ui-error" layout="table" globalOnly="true" showSummary="true"
                                     showDetail="false"/>

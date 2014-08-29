@@ -33,16 +33,10 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentListHolder
 
     @Override
     protected int getTotalCount() {
-        int result = 0;
-        try {
-            User user = sessionManagement.getLoggedUser();
-            //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
-                    user, false, false)).intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
+        User user = sessionManagement.getLoggedUser();
+        //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+        return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
+                user, false, false)).intValue();
     }
 
     protected List<IncomingDocument> loadDocuments() {
@@ -58,7 +52,7 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentListHolder
                     int result = 0;
                     String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
 
-                    if(colId.equalsIgnoreCase("registrationDate")) {
+                    if (colId.equalsIgnoreCase("registrationDate")) {
                         Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
                         Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                         c1.setTime(d1);
@@ -71,12 +65,12 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentListHolder
                         c2.set(Calendar.HOUR_OF_DAY, 0);
                         c2.set(Calendar.MINUTE, 0);
                         c2.set(Calendar.SECOND, 0);
-                        if(c1.equals(c2)) {
+                        if (c1.equals(c2)) {
                             try {
                                 Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 result = i1.compareTo(i2);
-                            } catch(NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                             }
                         } else {
@@ -84,7 +78,7 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentListHolder
                         }
                     }
 
-                    if(getSorting().isAsc()) {
+                    if (getSorting().isAsc()) {
                         result *= -1;
                     }
                     return result;
@@ -192,11 +186,6 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentListHolder
     @Override
     protected Sorting initSorting() {
         return new Sorting("registrationDate", true);
-    }
-
-    @Override
-    public List<IncomingDocument> getDocuments() {
-        return super.getDocuments();
     }
 
     public String getFilter() {

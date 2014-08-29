@@ -3,6 +3,8 @@ package ru.efive.sql.dao.user;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.FetchMode;
+import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.LogicalExpression;
 import org.hibernate.criterion.Order;
@@ -55,13 +57,15 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      * @return пользователь или null, если такового не существует
      */
     @Override
-    public User findByLoginAndPassword(String login, String password) {
+    public User findByLoginAndPassword(final String login, final String password) {
         if (ApplicationHelper.nonEmptyString(login) && ApplicationHelper.nonEmptyString(password)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
             detachedCriteria.add(Restrictions.eq("login", login));
             detachedCriteria.add(Restrictions.eq("password", password));
+            //EAGER LOADING OF GROUPS
+            detachedCriteria.setFetchMode("groups", FetchMode.JOIN);
 
             List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria, -1, 1);
             if ((users != null) && !users.isEmpty()) {

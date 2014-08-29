@@ -1,16 +1,9 @@
 package ru.efive.dms.data;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.persistence.*;
 
 import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.Index;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -33,6 +26,277 @@ import ru.efive.wf.core.ProcessedData;
 @Entity
 @Table(name = "dms_incoming_documents")
 public class IncomingDocument extends IdentifiedEntity implements ProcessedData {
+
+    /**
+     * Количество приложений
+     */
+    @Column(name = "appendixiesCount", nullable = false)
+    private int appendixiesCount = 0;
+
+    /**
+     * Количество экземпляров
+     */
+    @Column(name = "copiesCount", nullable = false)
+    private int copiesCount = 0;
+
+    /**
+     * Дата создания документа
+     */
+    @Column(name = "creationDate", nullable = false)
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date creationDate;
+
+    /**
+     * Автор документа
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
+    /**
+     * Руководитель
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "controller_id")
+    private User controller;
+
+
+    /**
+     * Удален ли документ
+     */
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted;
+
+    /**
+     * Дата поступления
+     */
+    @Column(name = "deliveryDate", nullable = true)
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date deliveryDate;
+
+    /**
+     * Срок исполнения
+     */
+    @Column(name = "executionDate", nullable = true)
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date executionDate;
+
+    /**
+     * Номер поступившего
+     */
+    @Column(name = "receivedDocumentNumber", nullable = true)
+    private String receivedDocumentNumber;
+
+    /**
+     * Дата регистрации поступившего документа у корреспондента
+     */
+    @Column(name = "receivedDocumentDate", nullable = true)
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date receivedDocumentDate;
+
+    /**
+     * Номер входящего
+     */
+    @Column(name = "registrationNumber", nullable = true)
+    private String registrationNumber;
+
+    /**
+     * Дата регистрации
+     */
+    @Column(name = "registrationDate", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date registrationDate;
+
+    /**
+     * Количество страниц
+     */
+    @Column(name = "sheetsCount", nullable = false)
+    private int sheetsCount;
+
+    /**
+     * Краткое описание
+     */
+    @Column(name = "shortDescription", columnDefinition = "text", nullable = true)
+    private String shortDescription;
+
+    /**
+     * Текущий статус документа в процессе
+     */
+    @Column(name = "status_id", nullable = false)
+    private int statusId;
+
+    /**
+     * Корреспондент
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "contragent_id", nullable = true)
+    private Contragent contragent;
+
+    /**
+     * Вид документа
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "form_id", nullable = false)
+    private DocumentForm form;
+
+    /**
+     * Номенклатура
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nomenclature_id")
+    private Nomenclature nomenclature;
+
+    /**
+     * Вид документа
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deliveryType_id", nullable = false)
+    private DeliveryType deliveryType;
+
+    /**
+     * Номер короба
+     */
+    @Column(name = "boxNumber")
+    private int boxNumber;
+
+    /**
+     * Номер фонда
+     */
+    @Column(name = "fundNumber")
+    private int fundNumber;
+
+    /**
+     * Номер стеллажа
+     */
+    @Column(name = "standNumber")
+    private int standNumber;
+
+    /**
+     * Номер полки
+     */
+    @Column(name = "shelfNumber")
+    private int shelfNumber;
+
+    /**
+     * Предполагаемая дата возврата
+     */
+    @Column(name = "returnDate")
+    private Date returnDate;
+
+    /**
+     * Ссылка на нумератор
+     */
+    @Column(name = "parentNumeratorId", nullable = true)
+    private String parentNumeratorId;
+
+    /**
+     * Уровень допуска
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userAccessLevel_id", nullable = false)
+    private UserAccessLevel userAccessLevel;
+
+    /**
+     * Номер ERP
+     */
+    @Column(name = "erpNumber")
+    private String erpNumber;
+
+    /**
+     * Связанные сущности ********************************************************************************************
+     */
+
+
+    /**
+     * История
+     */
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "dms_incoming_document_history",
+            joinColumns = {@JoinColumn(name = "document_id")},
+            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<HistoryEntry> history;
+
+    /**
+     * Адресаты
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @JoinTable(name = "dms_incoming_documents_recipients")
+    private List<User> recipientUsers;
+
+    /**
+     * Адресаты (группы)
+     */
+    @ManyToMany
+    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @JoinTable(name = "dms_incoming_documents_recipient_groups",
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
+    @LazyCollection(LazyCollectionOption.TRUE)
+    private Set<Group> recipientGroups;
+
+
+    /**
+     * Пользователи-читатели
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @JoinTable(name = "dms_incoming_documents_person_readers")
+    @IndexColumn(name = "ID1")
+    private List<User> personReaders;
+
+    /**
+     * Пользователи-редакторы
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @JoinTable(name = "dms_incoming_documents_person_editors")
+    @IndexColumn(name = "ID1")
+    private List<User> personEditors;
+
+
+    /**
+     * Роли-читатели
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @JoinTable(name = "dms_incoming_documents_role_readers")
+    @IndexColumn(name = "ID2")
+    private List<Role> roleReaders;
+
+    /**
+     * Роли-редакторы
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @JoinTable(name = "dms_incoming_documents_role_editors")
+    @IndexColumn(name = "ID2")
+    private List<Role> roleEditors;
+
+    /**
+     * Исполнители
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @LazyCollection(LazyCollectionOption.TRUE)
+    @JoinTable(name = "dms_incoming_documents_executors")
+    @IndexColumn(name = "ID3")
+    private List<User> executors;
+
+
+    /**
+     * END OF DATABASE FIELDS *****************************************************************************************
+     */
+
+    @Transient
+    private int grouping = 100;
+
+    @Transient
+    private String WFResultDescription;
+
+    @Transient
+    private String date;
+
 
     public User getAuthor() {
         return author;
@@ -296,9 +560,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     }
 
     @Transient
-    private String date;
-
-    @Transient
     public String getUniqueId() {
         return getId() == 0 ? "" : "incoming_" + getId();
     }
@@ -317,16 +578,20 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         if (history != null) {
             result.addAll(history);
         }
-        Collections.sort(result, new Comparator<HistoryEntry>() {
-            public int compare(HistoryEntry o1, HistoryEntry o2) {
-                Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c1.setTime(o1.getCreated());
-                Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c2.setTime(o2.getCreated());
-                return c1.compareTo(c2);
-            }
-        });
+        Collections.sort(result);
         return result;
+    }
+
+    /**
+     * Добавление в историю еще одной записи, если история пуста, то она создается
+     * @param historyEntry Запись в истории, которую надо добавить
+     * @return статус добавления (true - успех)
+     */
+    public boolean addToHistory(final HistoryEntry historyEntry) {
+        if (history == null) {
+            this.history = new HashSet<HistoryEntry>(1);
+        }
+        return this.history.add(historyEntry);
     }
 
     public void setRecipientGroups(Set<Group> recipientGroups) {
@@ -363,22 +628,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return personEditors;
     }
 
-    public void setOfficeKeepingVolume(OfficeKeepingVolume officeKeepingVolume) {
-        this.officeKeepingVolume = officeKeepingVolume;
-    }
-
-    public OfficeKeepingVolume getOfficeKeepingVolume() {
-        return officeKeepingVolume;
-    }
-
-    public void setCollector(User collector) {
-        this.collector = collector;
-    }
-
-    public User getCollector() {
-        return collector;
-    }
-
     public void setReturnDate(Date returnDate) {
         this.returnDate = returnDate;
     }
@@ -402,261 +651,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     public String getParentNumeratorId() {
         return parentNumeratorId;
     }
-
-    /**
-     * Номер входящего
-     */
-    @Index(name = "registrationNumberIndex")
-    private String registrationNumber;
-
-    /**
-     * Дата регистрации
-     */
-    private Date registrationDate;
-
-    /**
-     * Дата поступления
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date deliveryDate;
-
-    /**
-     * Автор документа
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_incoming_documents_authors")
-    private User author;
-
-    /**
-     * Срок исполнения
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date executionDate;
-
-    /**
-     * Контролер
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_incoming_documents_controllers")
-    private User controller;
-
-    /**
-     * Корреспондент
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "contragent_id")
-    private Contragent contragent;
-
-    /**
-     * Адресаты
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_recipients")
-    private List<User> recipientUsers;
-
-    /**
-     * Адресаты (группы)
-     */
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @JoinTable(name = "dms_incoming_documents_recipient_groups",
-            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
-    @LazyCollection(LazyCollectionOption.TRUE)
-    private Set<Group> recipientGroups;
-
-
-    /**
-     * Пользователи-читатели
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_person_readers")
-    @IndexColumn(name = "ID1")
-    private List<User> personReaders;
-
-    /**
-     * Пользователи-редакторы
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_person_editors")
-    @IndexColumn(name = "ID1")
-    private List<User> personEditors;
-
-
-    /**
-     * Роли-читатели
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_role_readers")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleReaders;
-
-    /**
-     * Роли-редакторы
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_role_editors")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleEditors;
-
-    /**
-     * Исполнители
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_executors")
-    @IndexColumn(name = "ID3")
-    private List<User> executors;
-
-    /**
-     * Краткое описание
-     */
-    @Column(columnDefinition = "text")
-    private String shortDescription;
-
-    /**
-     * Дата создания документа
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
-
-    /**
-     * Вид документа
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "form_id")
-    private DocumentForm form;
-
-    /**
-     * Вид документа
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinColumn(name = "deliveryType_id")
-    private DeliveryType deliveryType;
-
-    /**
-     * Ссылка на нумератор
-     */
-    private String parentNumeratorId;
-
-    /**
-     * Номер ERP
-     */
-
-    private String erpNumber;
-
-    /**
-     * Номер поступившего
-     */
-    private String receivedDocumentNumber;
-
-    /**
-     * Дата регистрации поступившего документа у корреспондента
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date receivedDocumentDate;
-
-    /**
-     * Количество экземпляров
-     */
-    private int copiesCount;
-
-    /**
-     * Количество страниц
-     */
-    private int sheetsCount;
-
-    /**
-     * Количество приложений
-     */
-    private int appendixiesCount;
-
-    /**
-     * Номер фонда
-     */
-    private int fundNumber;
-
-    /**
-     * Номер стеллажа
-     */
-    private int standNumber;
-
-    /**
-     * Номер полки
-     */
-    private int shelfNumber;
-
-    /**
-     * Номер короба
-     */
-    private int boxNumber;
-
-    /**
-     * Текущий статус документа в процессе
-     */
-    @Column(name = "status_id")
-    private int statusId;
-
-    @Transient
-    private int grouping = 100;
-
-    @Transient
-    private String WFResultDescription;
-
-    /**
-     * Номенклатура
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nomenclature_id")
-    private Nomenclature nomenclature;
-
-    /**
-     * Том дела
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_incoming_documents_by_office_keeping_volume_id")
-    private OfficeKeepingVolume officeKeepingVolume;
-
-    /**
-     * Кому передан на руки в текущий момент
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_incoming_document_collectors")
-    private User collector;
-
-
-    /**
-     * Предполагаемая дата возврата
-     */
-    private Date returnDate;
-
-    /**
-     * Уровень допуска
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    private UserAccessLevel userAccessLevel;
-
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
-
-    /**
-     * История
-     */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @JoinTable(name = "dms_incoming_document_history",
-            joinColumns = {@JoinColumn(name = "document_id")},
-            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.TRUE)
-    private Set<HistoryEntry> history;
-
 
     private static final long serialVersionUID = -5522881582616193416L;
 }

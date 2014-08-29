@@ -21,7 +21,7 @@ public class PersonConverter implements Converter {
             User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)).getByLogin(value);
             if (in_user != null) {
                 result = in_user;
-                System.out.println("login: " + in_user.getDescription());
+                System.out.println("login: " + in_user.getFullName());
             } else {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
 

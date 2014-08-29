@@ -150,7 +150,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                     hibernateTemplate.initialize(document.getSigner());
                     hibernateTemplate.initialize(document.getRoleEditors());
                     hibernateTemplate.initialize(document.getRoleReaders());
-                    hibernateTemplate.initialize(document.getOfficeKeepingVolume());
 
                     hibernateTemplate.initialize(document.getRecipientGroups());
                     hibernateTemplate.initialize(document.getRecipientUsers());

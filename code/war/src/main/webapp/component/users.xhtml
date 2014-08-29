@@ -80,12 +80,12 @@
                             <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
                             <e5ui:column style="min-width:9em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('description')}">
+                                    <h:commandLink action="#{userList.sort('lastName')}">
                                         ФИО
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <h:outputText value="#{row.description}"/>
+                                <h:outputText value="#{row.getFullName()}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">

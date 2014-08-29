@@ -62,6 +62,12 @@ public class SessionManagementBean implements Serializable {
                 UserDAO dao = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
                 loggedUser = dao.findByLoginAndPassword(userName, ru.efive.sql.util.ApplicationHelper.getMD5(password));
                 if (loggedUser != null) {
+                    //Проверка удаленности\уволенности сотрудника
+                    if(loggedUser.isDeleted() || loggedUser.isFired()){
+                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_DELETED : MSG_FIRED);
+                        loggedUser = null;
+                        return;
+                    }
                     //Выставление признаков ролей
                     isAdministrator = loggedUser.isAdministrator();
                     isRecorder = loggedUser.isRecorder();
@@ -82,13 +88,11 @@ public class SessionManagementBean implements Serializable {
                         System.out.println("back url: " + backUrl);
                     }
                 } else {
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR, "Введены неверные данные.", ""));
+                    FacesContext.getCurrentInstance().addMessage(null, MSG_NOT_FOUND);
                 }
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(AUTH_KEY);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Ошибка при входе в систему. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR);
                 loggedUser = null;
                 logger.error("Exception while processing login action", e);
             }
@@ -122,9 +126,13 @@ public class SessionManagementBean implements Serializable {
         loggedUser = null;
         userName = null;
         password = null;
+
         FacesContext facesContext = FacesContext.getCurrentInstance();
+        //WTF !!?!
         ExternalContext externalContext = facesContext.getExternalContext();
-        externalContext.getSessionMap().remove(AUTH_KEY);
+        //externalContext.getSessionMap().remove(AUTH_KEY);
+        //Вот как это делается
+        externalContext.invalidateSession();
         System.out.println("is logged: " + isLoggedIn());
         return "/index?faces-redirect=true";//
     }
@@ -210,6 +218,14 @@ public class SessionManagementBean implements Serializable {
     private boolean isEmployer = false;
     private boolean isOuter = false;
     private boolean isHr = false;
+
+    //Сообщения об ошибках авторизации
+    private final static FacesMessage MSG_FIRED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
+    private final static FacesMessage MSG_DELETED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");
+    private final static FacesMessage MSG_ERROR = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка при входе в систему. Попробуйте повторить позже.", "");
+    private final static FacesMessage MSG_NOT_FOUND = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Введены неверные данные.", "");
+
+
 
     public boolean isAdministrator() {
         return isAdministrator;

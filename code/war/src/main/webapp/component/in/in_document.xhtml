@@ -56,7 +56,7 @@
                     </div>
                     <div class="defbutton">
                         <h:commandLink action="#{in_doc.edit}"
-                                       rendered="#{in_doc.viewState}">
+                                       rendered="#{in_doc.viewState and in_doc.isCurrentUserDocEditor()}">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>
@@ -80,7 +80,7 @@
                         <e5ui:formPart id="actions_fp">
                             <h:commandLink
                                     onclick="actionsModal.clickOpen('actionsModal'); return false;"
-                                    rendered="#{not(in_doc.currentUserAdvDocReader)}">
+                                    rendered="#{in_doc.isCurrentUserDocEditor()}">
                                 <h:graphicImage value="#{resource['images:button-do.png']}"/>
                                 Действия
                             </h:commandLink>
@@ -191,7 +191,7 @@
                 <h:selectOneMenu id="form" value="#{in_doc.document.form}"
                                  converter="IncomingDocumentFormConverter" immediate="true">
                     <f:selectItems
-                            value="#{dictionaryManagement.getAllUserDocumentFormsByCategory(sessionManagement.getLoggedUser('false'),'Входящие документы')}"/>
+                            value="#{dictionaryManagement.getAllUserDocumentFormsByCategory(sessionManagement.getLoggedUser(),'Входящие документы')}"/>
                 </h:selectOneMenu>
             </div>
         </e5ui:formPart>
@@ -250,7 +250,7 @@
                     <span class="title">Автор</span>
                 </label></td>
                 <td class="fourth"><h:outputText id="author"
-                                                 value="#{in_doc.document.author.description}" lang="ru"/></td>
+                                                 value="#{in_doc.document.author.getFullName()}" lang="ru"/></td>
             </tr>
             <tr class="row">
                 <td class="first"><label
@@ -929,7 +929,7 @@
                                 <f:facet name="header">
                                     <p>Автор</p>
                                 </f:facet>
-                                <h:outputText value="#{row.author.description}"/>
+                                <h:outputText value="#{row.author.getFullName()}"/>
                             </e5ui:column>
                             <e5ui:column>
                                 <f:facet name="header">
