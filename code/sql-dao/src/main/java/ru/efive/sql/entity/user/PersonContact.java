@@ -16,11 +16,11 @@ import javax.persistence.*;
 public class PersonContact extends IdentifiedEntity{
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name="person", nullable = false)
+    @JoinColumn(name="person_id", nullable = false)
     private User person;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "type", nullable = false)
+    @JoinColumn(name = "type_id", nullable = false)
     private RbContactInfoType type;
 
     @Column(name = "value", nullable = true)

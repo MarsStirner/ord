@@ -5,10 +5,7 @@ import java.util.Set;
 
 import org.hibernate.FetchMode;
 import org.hibernate.Hibernate;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.LogicalExpression;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.efive.sql.entity.enums.PermissionType;
@@ -420,24 +417,10 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     }
 
 
-    public List<User> findUsers(String pattern, boolean showDeleted, boolean showFired) {
+    public List<User> findUsers(final String pattern, boolean showDeleted, boolean showFired) {
         DetachedCriteria in_searchCriteria = DetachedCriteria.forClass(getPersistentClass());
         in_searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        if (ApplicationHelper.nonEmptyString(pattern)) {
-            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
-                    Restrictions.ilike("middleName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("phone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("mobilePhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("workPhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("internalNumber", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment", pattern + "%"));
-            in_searchCriteria.add(orExp);
-        }
-
+        addPatternCriteria(in_searchCriteria, pattern);
         if (showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", true));
         }
@@ -449,6 +432,22 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         return getHibernateTemplate().findByCriteria(in_searchCriteria);
     }
 
+    private void addPatternCriteria(final DetachedCriteria searchCriteria, final String pattern) {
+        if (ApplicationHelper.nonEmptyString(pattern)) {
+            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
+                    Restrictions.ilike("middleName", pattern + "%"));
+            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
+            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
+            searchCriteria.createAlias("contacts", "contacts", CriteriaSpecification.LEFT_JOIN );
+            orExp = Restrictions.or(orExp, Restrictions.ilike("contacts.value", pattern + "%"));
+            searchCriteria.createAlias("jobPosition", "jobPosition",CriteriaSpecification.LEFT_JOIN);
+            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition.value", pattern + "%"));
+            searchCriteria.createAlias("jobDepartment", "jobDepartment",CriteriaSpecification.LEFT_JOIN);
+            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment.value", pattern + "%"));
+            searchCriteria.add(orExp);
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -456,28 +455,12 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     public List<User> findUsers(String pattern, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        if (ApplicationHelper.nonEmptyString(pattern)) {
-            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
-                    Restrictions.ilike("middleName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("phone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("mobilePhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("workPhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("internalNumber", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment", pattern + "%"));
-            detachedCriteria.add(orExp);
-        }
-
+        addPatternCriteria(detachedCriteria, pattern);
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
+        detachedCriteria.add(Restrictions.eq("fired", false));
 
-        if (true) {
-            detachedCriteria.add(Restrictions.or(Restrictions.isNull("fired"), Restrictions.eq("fired", false)));
-        }
 
         String[] ords = orderBy == null ? null : orderBy.split(",");
         if (ords != null) {
@@ -497,21 +480,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     public long countUsers(String pattern, boolean showDeleted) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        if (ApplicationHelper.nonEmptyString(pattern)) {
-            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
-                    Restrictions.ilike("middleName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("phone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("mobilePhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("workPhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("internalNumber", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment", pattern + "%"));
-            detachedCriteria.add(orExp);
-        }
-
+        addPatternCriteria(detachedCriteria, pattern);
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
@@ -526,21 +495,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         detachedCriteria.add(Restrictions.or(Restrictions.isNull("fired"), Restrictions.eq("fired", false)));
-
-        if (ApplicationHelper.nonEmptyString(pattern)) {
-            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
-                    Restrictions.ilike("middleName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("phone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("mobilePhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("workPhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("internalNumber", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment", pattern + "%"));
-            detachedCriteria.add(orExp);
-        }
-
+        addPatternCriteria(detachedCriteria, pattern);
         if (showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", true));
         }
@@ -556,21 +511,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         detachedCriteria.add(Restrictions.or(Restrictions.isNull("fired"), Restrictions.eq("fired", false)));
-
-        if (ApplicationHelper.nonEmptyString(pattern)) {
-            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
-                    Restrictions.ilike("middleName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("phone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("mobilePhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("workPhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("internalNumber", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment", pattern + "%"));
-            detachedCriteria.add(orExp);
-        }
-
+        addPatternCriteria(detachedCriteria, pattern);
         if (showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", true));
         }
@@ -593,21 +534,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         detachedCriteria.add(Restrictions.and(Restrictions.isNotNull("fired"), Restrictions.eq("fired", true)));
-
-        if (ApplicationHelper.nonEmptyString(pattern)) {
-            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
-                    Restrictions.ilike("middleName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("phone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("mobilePhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("workPhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("internalNumber", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment", pattern + "%"));
-            detachedCriteria.add(orExp);
-        }
-
+        addPatternCriteria(detachedCriteria, pattern);
         if (showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", true));
         }
@@ -622,21 +549,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         detachedCriteria.add(Restrictions.and(Restrictions.isNotNull("fired"), Restrictions.eq("fired", true)));
-
-        if (ApplicationHelper.nonEmptyString(pattern)) {
-            LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
-                    Restrictions.ilike("middleName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("phone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("mobilePhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("workPhone", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("internalNumber", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition", pattern + "%"));
-            orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment", pattern + "%"));
-            detachedCriteria.add(orExp);
-        }
-
+        addPatternCriteria(detachedCriteria, pattern);
         if (showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", true));
         }
