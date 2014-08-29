@@ -404,8 +404,7 @@
                         </ui:repeat>
                         <ui:repeat value="#{in_doc.document.recipientGroupsList}"
                                    var="element">
-                            <h:outputText value="#{element}" converter="GroupConverter"
-                                          class="width"/>
+                            [Группа] <h:outputText value="#{element}" converter="GroupConverter" class="width"/>
                             <br/>
                         </ui:repeat>
                     </div>
@@ -706,7 +705,7 @@
                 <label><ui:repeat
                         value="#{in_doc.document.recipientGroupsList}"
                         var="element">
-                    <h:outputText value="#{element}"
+                    [Группа] <h:outputText value="#{element}"
                                   converter="GroupConverter" class="width"/>
                     <br/>
                 </ui:repeat> </label>
