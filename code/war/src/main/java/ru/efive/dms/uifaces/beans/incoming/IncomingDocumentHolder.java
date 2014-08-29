@@ -69,7 +69,7 @@ import ru.efive.wf.core.ActionResult;
 public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument, Integer> implements Serializable {
     private static final long serialVersionUID = 4716264614655470705L;
 
-    //Именованный логгер (LDAP)
+    //Именованный логгер (INCOMING_DOCUMENT)
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger("INCOMING_DOCUMENT");
 
     private boolean isUsersDialogSelected = true;
@@ -256,7 +256,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             readPermission = true;
             return true;
         }
-        if(!readPermission && !editPermission) {
+        if (!readPermission && !editPermission) {
             LOGGER.error(document.getId() + ":Permission denied: " + user.getId());
             return false; //readPermission || editPermission;
         } else {
@@ -322,12 +322,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         if (form != null) {
             doc.setForm(form);
         }
-
-        UserAccessLevel accessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-        if (accessLevel == null) {
-            accessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
-        }
-        doc.setUserAccessLevel(accessLevel);
+        doc.setUserAccessLevel(sessionManagement.getLoggedUser().getCurrentUserAccessLevel());
 
         HistoryEntry historyEntry = new HistoryEntry();
         historyEntry.setCreated(created);
@@ -340,55 +335,33 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         historyEntry.setEndDate(created);
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
-        Set<HistoryEntry> history = new HashSet<HistoryEntry>();
-        history.add(historyEntry);
-        doc.setHistory(history);
+
+        doc.addToHistory(historyEntry);
 
         setDocument(doc);
     }
 
     @Override
     protected boolean saveDocument() {
-        boolean result = false;
         try {
-            IncomingDocument document = (IncomingDocument) getDocument();
+            IncomingDocument document = getDocument();
             document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
                         "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                return false;
             } else {
-                /*UserAccessLevel userAccessLevel=sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-                    if(userAccessLevel==null){
-                        userAccessLevel=sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                    }
-
-                    UserAccessLevel docAccessLevel=getDocument().getUserAccessLevel();
-                    if(docAccessLevel==null){
-                        docAccessLevel=sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                        getDocument().setUserAccessLevel(docAccessLevel);
-                    }*/
-                /*if(docAccessLevel.getLevel()<userAccessLevel.getLevel()){
-                        getDocument().setUserAccessLevel(userAccessLevel);
-                        result=true;
-                    }else if(docAccessLevel.getLevel()>userAccessLevel.getLevel()){
-                        result=false;
-                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                                FacesMessage.SEVERITY_ERROR,
-                                "Уровень допуска к документу выше вашего уровня допуска. Вы не имеете права сохранять изменения в данном документе.", ""));
-                    }else{*/
                 setDocument(document);
-                result = true;
-                //}
-
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при сохранении.", ""));
+            return false;
         }
-        return result;
     }
 
     @Override
@@ -479,15 +452,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     protected String doAfterSave() {
         incomingDocumentList.markNeedRefresh();
         UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-        if (userAccessLevel == null) {
-            userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
-        }
-
         UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
-        if (docAccessLevel == null) {
-            docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
-            getDocument().setUserAccessLevel(docAccessLevel);
-        }
         if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
             setState(STATE_FORBIDDEN);
         }
@@ -519,11 +484,11 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     public boolean isCurrentUserAccessEdit() {
-       return editPermission;
+        return editPermission;
     }
 
     public boolean isCurrentUserDocEditor() {
-       return editPermission;
+        return editPermission;
     }
 
     protected boolean isCurrentUserAdvDocReader() {
@@ -1090,7 +1055,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             super.doShow();
             if (getDocument() != null && getDocument().getRecipientGroups() != null) {
                 ArrayList<Group> tmpGroupList = new ArrayList<Group>();
-                tmpGroupList.addAll(getDocument().getRecipientGroupsList());
+                tmpGroupList.addAll(getDocument().getRecipientGroups());
                 setGroups(tmpGroupList);
             }
             if (getDocument() != null && getDocument().getRecipientUsers() != null) {
@@ -1210,7 +1175,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         }
     };
 
-   public ProcessorModalBean getProcessorModal() {
+    public ProcessorModalBean getProcessorModal() {
         return processorModal;
     }
 

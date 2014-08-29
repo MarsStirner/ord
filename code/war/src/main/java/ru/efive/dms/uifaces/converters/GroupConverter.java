@@ -14,28 +14,32 @@ import ru.efive.dms.util.ApplicationHelper;
 
 @FacesConverter("GroupConverter")
 public class GroupConverter implements Converter {
-    public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Object result = null;
-        try {
-            SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger("CONVERTER");
 
-            Group in_group = ((GroupDAOHibernate) sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO)).findGroupByAlias(value);
+    public Object getAsObject(FacesContext context, UIComponent component, String value) {
+        try {
+            //TODO не слишком ли жирно получать из контекста менеджера сессий?!
+            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+            final Group in_group = sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).findGroupByAlias(value);
             if (in_group != null) {
-                result = in_group;
-                System.out.println("alias: " + in_group.getDescription());
+               LOGGER.debug("alias: " + in_group.getDescription());
+               return in_group;
             } else {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
-
-                System.out.println("Не найден пользователь по логину");
+                LOGGER.error("GroupConverter: FAIL to Object. String=" + value);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return null;
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        System.out.println("group get as string" + value.toString());
-        return ((Group) value).getDescription();
+        if (value instanceof Group) {
+            return ((Group) value).getDescription();
+        } else {
+            LOGGER.error("GroupConverter: FAIL to String. Object=" + value.toString());
+            return value.toString();
+        }
     }
 }

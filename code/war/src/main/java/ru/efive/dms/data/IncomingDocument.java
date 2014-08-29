@@ -14,7 +14,6 @@ import ru.efive.sql.entity.user.Group;
 import ru.efive.sql.entity.user.Role;
 import ru.efive.sql.entity.user.User;
 import ru.efive.sql.entity.user.UserAccessLevel;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.wf.core.ProcessedData;
 
 /**
@@ -205,7 +204,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
      * Связанные сущности ********************************************************************************************
      */
 
-
     /**
      * История
      */
@@ -233,7 +231,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
             inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
     @LazyCollection(LazyCollectionOption.TRUE)
     private Set<Group> recipientGroups;
-
 
     /**
      * Пользователи-читатели
@@ -280,7 +277,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     @JoinTable(name = "dms_incoming_documents_executors")
     @IndexColumn(name = "ID3")
     private List<User> executors;
-
 
     /**
      * END OF DATABASE FIELDS *****************************************************************************************
@@ -600,13 +596,12 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return recipientGroups;
     }
 
-    @Transient
+    /**
+     * JSF-specific method cause we cannot iterate on Set (http://sfjsf.blogspot.ru/2006/03/usings-sets-with-uidata.html)
+     * @return    List<Group>
+     */
     public List<Group> getRecipientGroupsList() {
-        List<Group> in_result = new ArrayList<Group>();
-        if (recipientGroups != null) {
-            in_result.addAll(recipientGroups);
-        }
-        return in_result;
+       return new ArrayList<Group>(recipientGroups);
     }
 
 
