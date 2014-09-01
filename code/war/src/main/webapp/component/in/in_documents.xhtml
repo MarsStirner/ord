@@ -140,14 +140,14 @@
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{in_documents.sort('status_id')}">
+                                    <h:commandLink action="#{in_documents.sort('statusId')}">
                                         Статус
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
                                 <h:outputText value="#{row.getDocumentStatus().getName()}"/>
                             </e5ui:column>
-                            <e5ui:column style="min-width:12em">
+                            <e5ui:column style="min-width:25em">
                                 <f:facet name="header">
                                     <p>Краткое содержание</p>
                                 </f:facet>
