@@ -169,7 +169,7 @@
                 <h:selectOneMenu id="form" value="#{internal_doc.document.form}"
                                  converter="InternalDocumentFormConverter" immediate="true">
                     <f:selectItems
-                            value="#{dictionaryManagement.getAllUserDocumentFormsByCategory(sessionManagement.getLoggedUser('false'),'Внутренние документы')}"/>
+                            value="#{dictionaryManagement.getDocumentFormsByCategory('Внутренние документы')}"/>
                 </h:selectOneMenu>
             </div>
         </e5ui:formPart>

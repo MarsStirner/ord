@@ -114,7 +114,6 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
     public long countDocuments() {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
         return getCountOf(detachedCriteria);
     }
 
@@ -152,42 +151,23 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
         DetachedCriteria in_result = null;
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         Disjunction disjunction = Restrictions.disjunction();
-
         int userId = user.getId();
         if (userId > 0) {
-
-            boolean isAdminRole = false;
-            List<Role> in_roles = user.getRoleList();
-            if (in_roles != null) {
-                for (Role in_role : in_roles) {
-                    if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                        isAdminRole = true;
-                        break;
-                    }
-                }
-            }
-
             detachedCriteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
-
-            if (!isAdminRole) {
+            if (!user.isAdministrator()) {
                 List<Integer> rolesId = new ArrayList<Integer>();
                 List<Role> roles = user.getRoleList();
                 if (roles.size() != 0) {
-                    Iterator itr = roles.iterator();
-                    while (itr.hasNext()) {
-                        Role role = (Role) itr.next();
+                    for (Role role : roles) {
                         rolesId.add(role.getId());
                     }
                     disjunction.add(Restrictions.in("roleReaders.id", rolesId));
                 }
-
                 detachedCriteria.add(disjunction);
-
             }
             in_result = detachedCriteria;
         }
         return in_result;
-
     }
 
 

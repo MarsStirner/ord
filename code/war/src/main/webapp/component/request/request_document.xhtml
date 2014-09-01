@@ -155,8 +155,7 @@
                 Обращение
                 <h:selectOneMenu id="form" value="#{request_doc.document.form}"
                                  converter="RequestDocumentFormConverter" immediate="true">
-                    <f:selectItems
-                            value="#{dictionaryManagement.getAllUserDocumentFormsByCategory(sessionManagement.getLoggedUser('false'),'Обращения граждан')}"/>
+                    <f:selectItems value="#{getDocumentFormsByCategory('Обращения граждан')}"/>
                 </h:selectOneMenu>
             </div>
         </e5ui:formPart>

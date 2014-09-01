@@ -68,6 +68,12 @@ public class SessionManagementBean implements Serializable {
                         loggedUser = null;
                         return;
                     }
+                   //Проверка наличия у пользователя ролей
+                    if(loggedUser.getRoles().isEmpty()){
+                        FacesContext.getCurrentInstance().addMessage(null, MSG_NO_ROLE);
+                        loggedUser = null;
+                        return;
+                    }
                     //Выставление признаков ролей
                     isAdministrator = loggedUser.isAdministrator();
                     isRecorder = loggedUser.isRecorder();
@@ -224,6 +230,7 @@ public class SessionManagementBean implements Serializable {
     private final static FacesMessage MSG_DELETED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");
     private final static FacesMessage MSG_ERROR = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка при входе в систему. Попробуйте повторить позже.", "");
     private final static FacesMessage MSG_NOT_FOUND = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Введены неверные данные.", "");
+    private final static FacesMessage MSG_NO_ROLE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Обратитесь к администратору системы для получения доступа", "");
 
 
 

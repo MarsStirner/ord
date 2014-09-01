@@ -198,7 +198,7 @@
                 <h:selectOneMenu id="form" value="#{out_doc.document.form}"
                                  converter="OutgoingDocumentFormConverter" immediate="true">
                     <f:selectItems
-                            value="#{dictionaryManagement.getAllUserDocumentFormsByCategory(sessionManagement.getLoggedUser('false'),'Исходящие документы')}"/>
+                            value="#{dictionaryManagement.getDocumentFormsByCategory('Исходящие документы')}"/>
                 </h:selectOneMenu>
             </div>
         </e5ui:formPart>

@@ -36,13 +36,7 @@ import ru.efive.dms.util.ApplicationHelper;
 public class DictionaryManagementBean implements Serializable {
 
     public List<UserAccessLevel> getUserAccessLevels() {
-        List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
-        try {
-            result = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
+        return sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
     }
 
     public List<UserAccessLevel> getUserAccessLevelsLowerOrEqualMaxValue(int maxLevel) {
@@ -75,20 +69,6 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
-    public List<UserAccessLevel> getUserAccessLevelsWithEmptyValue() {
-        List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
-        try {
-            result = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        UserAccessLevel empty = new UserAccessLevel();
-        empty.setValue("");
-        result.add(0, empty);
-        return result;
-    }
-
-
     public List<Region> getRegions() {
         List<Region> result = new ArrayList<Region>();
         try {
@@ -115,19 +95,6 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
-    public List<SenderType> getSenderTypesWithEmptyValue() {
-        List<SenderType> result = new ArrayList<SenderType>();
-        try {
-            result = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, ApplicationHelper.SENDER_TYPE_DAO).findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        SenderType empty = new SenderType();
-        empty.setValue("");
-        result.add(0, empty);
-        return result;
-    }
-
     public List<DeliveryType> getDeliveryTypes() {
         List<DeliveryType> result = new ArrayList<DeliveryType>();
         try {
@@ -135,19 +102,6 @@ public class DictionaryManagementBean implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
-    }
-
-    public List<DeliveryType> getDeliveryTypesWithEmptyValue() {
-        List<DeliveryType> result = new ArrayList<DeliveryType>();
-        try {
-            result = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, ApplicationHelper.DELIVERY_TYPE_DAO).findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        DeliveryType empty = new DeliveryType();
-        empty.setValue("");
-        result.add(0, empty);
         return result;
     }
 
@@ -162,13 +116,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<DocumentForm> getDocumentForms() {
-        List<DocumentForm> result = new ArrayList<DocumentForm>();
-        try {
-            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
+       return sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findDocuments();
     }
 
     public List<DocumentForm> getDocumentFormsWithEmptyValue() {
@@ -185,13 +133,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<DocumentForm> getDocumentFormsByCategory(String category) {
-        List<DocumentForm> result = new ArrayList<DocumentForm>();
-        try {
-            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategory(category);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
+        return sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategory(category);
     }
 
     public List<DocumentForm> getDocumentFormsByCategoryWithEmptyValue(String category) {
@@ -207,18 +149,6 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
-    public List<DocumentForm> getAllUserDocumentFormsByCategory(User user, String category) {
-        List<DocumentForm> result = new ArrayList<DocumentForm>();
-        try {
-            Map<String, Object> filters = new HashMap<String, Object>();
-            filters.put("category", category);
-            result = new ArrayList<DocumentForm>(new HashSet<DocumentForm>(sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, user)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     public List<Nomenclature> getNomenclature() {
         List<Nomenclature> result = new ArrayList<Nomenclature>();
         try {
@@ -228,17 +158,6 @@ public class DictionaryManagementBean implements Serializable {
         }
         return result;
     }
-
-    /*public List<IncomingDocument> getRegistratedIncomingDocuments() {
-         List<IncomingDocument> result = new ArrayList<IncomingDocument>();
-         try {
-             result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, "incomingDAO").findRegistratedDocuments();
-         }
-         catch (Exception e) {
-             e.printStackTrace();
-         }
-         return result;
-     }*/
 
     public Nomenclature getNomenclatureByUserLogin(String login) {
         List<Nomenclature> result = new ArrayList<Nomenclature>();

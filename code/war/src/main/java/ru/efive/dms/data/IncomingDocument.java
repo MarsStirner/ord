@@ -603,7 +603,11 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
      * @return    List<Group>
      */
     public List<Group> getRecipientGroupsList() {
-       return new ArrayList<Group>(recipientGroups);
+        if(recipientGroups == null || recipientGroups.isEmpty()){
+            return new ArrayList<Group>(0);
+        } else {
+            return new ArrayList<Group>(recipientGroups);
+        }
     }
 
 

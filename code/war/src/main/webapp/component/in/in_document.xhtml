@@ -184,8 +184,7 @@
                 Входящий документ
                 <h:selectOneMenu id="form" value="#{in_doc.document.form}"
                                  converter="IncomingDocumentFormConverter" immediate="true">
-                    <f:selectItems
-                            value="#{dictionaryManagement.getAllUserDocumentFormsByCategory(sessionManagement.getLoggedUser(),'Входящие документы')}"/>
+                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
                 </h:selectOneMenu>
             </div>
         </e5ui:formPart>

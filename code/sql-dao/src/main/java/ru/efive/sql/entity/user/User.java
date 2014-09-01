@@ -60,11 +60,11 @@ public class User extends IdentifiedEntity {
      * Адрес почты
      */
     //TODO перенести в contacts
-    @Column(name="email")
+    @Column(name = "email")
     private String email;
 
     /**
-     *   Табельный номер сотрудника
+     * Табельный номер сотрудника
      */
     @Column(name = "unid")
     private String UNID;
@@ -119,7 +119,7 @@ public class User extends IdentifiedEntity {
      * Контактные данные пользователя (почта, телефон, итд)
      * При сохранении пользователя - добавлять или обновлять записи
      */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE} )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<PersonContact> contacts = new HashSet<PersonContact>(4);
 
     /**
@@ -229,7 +229,8 @@ public class User extends IdentifiedEntity {
 
     /**
      * Получение полного ФИО в виде строки
-     * @return  Строка с полным ФИО
+     *
+     * @return Строка с полным ФИО
      * "Иванов Иван Иванович"
      * если нету части ФИО - то выводится без нее
      * "Иван Иванович"\"Иванов Иван"\"Иванов Иванович"\"Иван"\"Иванов"\""
@@ -449,8 +450,8 @@ public class User extends IdentifiedEntity {
         this.contacts = contacts;
     }
 
-    public boolean addToContacts(final PersonContact contact){
-        if(contacts == null){
+    public boolean addToContacts(final PersonContact contact) {
+        if (contacts == null) {
             this.contacts = new HashSet<PersonContact>(1);
         }
         return this.contacts.add(contact);
@@ -458,5 +459,20 @@ public class User extends IdentifiedEntity {
 
     private static final long serialVersionUID = -7649892958713448678L;
 
+    /**
+     * Объекты равны, когда оба объекта - Пользователи и у них одинаковый идентификатор
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        } else if (obj == null) {
+            return false;
+        } else if (!(obj instanceof User)) {
+            return false;
+        }
+        final User other = (User) obj;
+        return getId() == other.getId();
+    }
 
 }
