@@ -791,20 +791,12 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     /* =================== */
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
     public boolean isRequisitesTabSelected() {
         return isRequisitesTabSelected;
     }
 
     public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
         this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRouteTabHeader() {
-        return "<span><span>Движение документа</span></span>";
     }
 
     public boolean isRouteTabSelected() {
@@ -815,20 +807,12 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         this.isRouteTabSelected = isRouteTabSelected;
     }
 
-    public String getRelationTabHeader() {
-        return "<span><span>Связи</span></span>";
-    }
-
     public boolean isRelationTabSelected() {
         return isRelationTabSelected;
     }
 
     public void setRelationTabSelected(boolean isRelationTabSelected) {
         this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public String getAccessTabHeader() {
-        return "<span><span>Доступ</span></span>";
     }
 
     public boolean isAccessTabSelected() {
@@ -839,20 +823,12 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         this.isAccessTabSelected = isAccessTabSelected;
     }
 
-    public String getOriginalTabHeader() {
-        return "<span><span>Оригинал</span></span>";
-    }
-
     public void setOriginalTabSelected(boolean isOriginalTabSelected) {
         this.isOriginalTabSelected = isOriginalTabSelected;
     }
 
     public boolean isOriginalTabSelected() {
         return isOriginalTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
     }
 
     public void setHistoryTabSelected(boolean isHistoryTabSelected) {
@@ -1190,7 +1166,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doProcessException(ActionResult actionResult) {
             IncomingDocument document = (IncomingDocument) actionResult.getProcessedData();
             String in_result = document.getWFResultDescription();
-
             if (StringUtils.isNotEmpty(in_result)) {
                 setActionResult(in_result);
             }

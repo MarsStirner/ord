@@ -341,7 +341,7 @@
     </div>
 </h:panelGroup>
 <e5ui:tabPanel id="content_table">
-<e5ui:tabPage headerText="#{in_doc.requisitesTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Реквизиты&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="#{in_doc.viewState? 'client': 'submit'}"
               selected="#{in_doc.requisitesTabSelected}"
               rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.currentUserDocEditor)}">
@@ -699,7 +699,7 @@
                         value="#{in_doc.document.recipientGroupsList}"
                         var="element">
                     [Группа] <h:outputText value="#{element}"
-                                  converter="GroupConverter" class="width"/>
+                                           converter="GroupConverter" class="width"/>
                     <br/>
                 </ui:repeat> </label>
             </h:panelGroup>
@@ -822,7 +822,7 @@
 </div>
 </h:panelGroup>
 </e5ui:tabPage>
-<e5ui:tabPage headerText="#{in_doc.routeTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Движение документа&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="client"
               selected="#{in_doc.routeTabSelected}"
               rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.currentUserDocEditor)}">
@@ -957,7 +957,7 @@
         </h:panelGroup>
     </fieldset>
 </e5ui:tabPage>
-<e5ui:tabPage headerText="#{in_doc.relationTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Связи&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="client"
               selected="#{in_doc.relationTabSelected}"
               rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.currentUserDocEditor)}">
@@ -975,7 +975,7 @@
         </ui:repeat></td>
     </tr>
 </e5ui:tabPage>
-<e5ui:tabPage headerText="#{in_doc.originalTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Оригинал&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="client"
               selected="#{in_doc.originalTabSelected}"
               rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.currentUserDocEditor)}">
@@ -1058,7 +1058,7 @@
         </h:panelGroup>
     </fieldset>
 </e5ui:tabPage>
-<e5ui:tabPage headerText="#{in_doc.accessTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Доступ&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="client"
               selected="#{in_doc.accessTabSelected}">
 <h:panelGroup rendered="#{in_doc.createState or in_doc.editState}">
@@ -1572,7 +1572,7 @@
 </h:panelGroup>
 </e5ui:tabPage>
 
-<e5ui:tabPage headerText="#{in_doc.historyTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;История&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="client"
               selected="#{in_doc.historyTabSelected}"
               rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.currentUserDocEditor)}">
