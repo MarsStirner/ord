@@ -71,6 +71,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     //Именованный логгер (INCOMING_DOCUMENT)
     private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger("INCOMING_DOCUMENT");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 
     private boolean isUsersDialogSelected = true;
     private boolean isGroupsDialogSelected = false;
@@ -456,7 +457,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
             setState(STATE_FORBIDDEN);
         }
-
         return super.doAfterSave();
     }
 
@@ -559,33 +559,27 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     public void deleteAttachment(Attachment attachment) {
-        IncomingDocument document = getDocument();
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-        HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(sessionManagement.getLoggedUser());
-        historyEntry.setDocType(document.getDocumentType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("Файл " + attachment.getFileName() + " был удален");
-        Set<HistoryEntry> history = document.getHistory();
-        history.add(historyEntry);
-        document.setHistory(history);
-
-        setDocument(document);
-
         if (attachment != null) {
+            IncomingDocument document = getDocument();
+            Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+            HistoryEntry historyEntry = new HistoryEntry();
+            historyEntry.setCreated(created);
+            historyEntry.setStartDate(created);
+            historyEntry.setOwner(sessionManagement.getLoggedUser());
+            historyEntry.setDocType(document.getDocumentType().getName());
+            historyEntry.setParentId(document.getId());
+            historyEntry.setActionId(0);
+            historyEntry.setFromStatusId(1);
+            historyEntry.setEndDate(created);
+            historyEntry.setProcessed(true);
+            historyEntry.setCommentary("Файл " + attachment.getFileName() + " был удален");
+            document.addToHistory(historyEntry);
+            setDocument(document);
             if (fileManagement.deleteFile(attachment)) {
                 updateAttachments();
             }
+            setDocument(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document));
         }
-
-        document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
-        //this.edit();
     }
 
     private List<Attachment> attachments = new ArrayList<Attachment>();
@@ -611,41 +605,41 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 String id = key.substring(pos + 1, key.length());
                 //String in_type=key.substring(0,pos);
                 StringBuffer in_description = new StringBuffer("");
-                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+
 
                 if (key.contains("incoming")) {
                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
-                            "Черновик входщяего документа от " + sdf.format(in_doc.getCreationDate()) :
-                            "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + sdf.format(in_doc.getRegistrationDate())
+                            "Черновик входщяего документа от " + DATE_FORMAT.format(in_doc.getCreationDate()) :
+                            "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(in_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
-                            "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) :
-                            "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + sdf.format(out_doc.getRegistrationDate())
+                            "Черновик исходящего документа от " + DATE_FORMAT.format(out_doc.getCreationDate()) :
+                            "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(out_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
-                            "Черновик внутреннего документа от " + sdf.format(internal_doc.getCreationDate()) :
-                            "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate())
+                            "Черновик внутреннего документа от " + DATE_FORMAT.format(internal_doc.getCreationDate()) :
+                            "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(internal_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
-                            "Черновик обращения граждан от " + sdf.format(request_doc.getCreationDate()) :
-                            "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate())
+                            "Черновик обращения граждан от " + DATE_FORMAT.format(request_doc.getCreationDate()) :
+                            "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(request_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("task")) {
                     Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
-                            "Черновик поручения от " + sdf.format(task_doc.getCreationDate()) :
-                            "Поручение № " + task_doc.getTaskNumber() + " от " + sdf.format(task_doc.getCreationDate())
+                            "Черновик поручения от " + DATE_FORMAT.format(task_doc.getCreationDate()) :
+                            "Поручение № " + task_doc.getTaskNumber() + " от " + DATE_FORMAT.format(task_doc.getCreationDate())
                     );
                 }
                 return in_description.toString();
@@ -746,50 +740,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     public void initializeVersionHistory(Attachment attachment) {
         versionHistoryModal.setAttachment(attachment);
         versionHistoryModal.show();
-    }
-
-    /* =================== */
-
-    public class DeliveryTypeSelectModal extends ModalWindowHolderBean {
-        public DeliveryType getValue() {
-            return value;
-        }
-
-        public void setValue(DeliveryType value) {
-            this.value = value;
-        }
-
-        public boolean selected(DeliveryType value) {
-            return this.value != null && this.value.getValue().equals(value.getValue());
-        }
-
-        public void select(DeliveryType value) {
-            this.value = value;
-        }
-
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setDeliveryType(getValue());
-        }
-
-        @Override
-        protected void doShow() {
-            super.doShow();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            value = null;
-        }
-
-        private DeliveryType value;
-        private static final long serialVersionUID = 3204083909477490577L;
-    }
-
-    public DeliveryTypeSelectModal getDeliveryTypeSelectModal() {
-        return deliveryTypeSelectModal;
     }
 
     /* =================== */
@@ -922,13 +872,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private boolean isHistoryTabSelected = false;
 
     private ContragentSelectModal contragentSelectModal = new ContragentSelectModal();
-    private DeliveryTypeSelectModal deliveryTypeSelectModal = new DeliveryTypeSelectModal();
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
-
-    /*public UserSelectModalBean getExecutorSelectModal() {
-         return executorSelectModal;
-     }*/
 
     public UserListSelectModalBean getExecutorsSelectModal() {
         return executorsSelectModal;
@@ -1038,7 +983,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         @Override
         protected void doSave() {
-            getDocument().setRecipientGroups(new HashSet(getGroups()));
+            getDocument().setRecipientGroups(new HashSet<Group>(getGroups()));
             getDocument().setRecipientUsers(getUsers());
             super.doSave();
         }
@@ -1193,7 +1138,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     public void setUsersDialogSelected(boolean isUsersDialogSelected) {
         if (isUsersDialogSelected) {
-            this.isUsersDialogSelected = isUsersDialogSelected;
+            this.isUsersDialogSelected = true;
             this.isGroupsDialogSelected = false;
         }
     }
@@ -1204,7 +1149,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     public void setGroupsDialogSelected(boolean isGroupsDialogSelected) {
         if (isGroupsDialogSelected) {
-            this.isGroupsDialogSelected = isGroupsDialogSelected;
+            this.isGroupsDialogSelected = true;
             this.isUsersDialogSelected = false;
         }
     }
