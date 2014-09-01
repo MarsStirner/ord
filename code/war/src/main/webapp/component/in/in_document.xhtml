@@ -13,10 +13,8 @@
 
 <ui:define name="running_head">
 
-    <e5ui-comp:userSessionUpdate
-            rendered="#{in_doc.editState or in_doc.createState}" interval="300"/>
-    <h:outputScript library="js" name="datepicker_init_ru.js"
-                    target="head"/>
+    <e5ui-comp:userSessionUpdate rendered="#{in_doc.editState or in_doc.createState}" interval="300"/>
+    <h:outputScript library="js" name="datepicker_init_ru.js" target="head"/>
     <e5ui-comp:outputUtilScript/>
     <h:outputScript>
         function goToDocumentByUniqueId(parentId) {
@@ -80,7 +78,7 @@
                         <e5ui:formPart id="actions_fp">
                             <h:commandLink
                                     onclick="actionsModal.clickOpen('actionsModal'); return false;"
-                                    rendered="#{in_doc.isCurrentUserDocEditor()}">
+                                    rendered="#{in_doc.isCurrentUserDocEditor() and in_doc.viewState}">
                                 <h:graphicImage value="#{resource['images:button-do.png']}"/>
                                 Действия
                             </h:commandLink>
@@ -117,13 +115,10 @@
                                         </div>
                                     </div>
                                 </h:panelGroup>
-                                <h:panelGroup
-                                        rendered="#{in_doc.processorModal.noActionsAvailable or in_doc.processorModal.failureState or in_doc.processorModal.processedState}">
-                                    <h:outputText style="padding-left:10px;"
-                                                  value="#{in_doc.processorModal.actionResult}"/>
+                                <h:panelGroup rendered="#{in_doc.processorModal.noActionsAvailable or in_doc.processorModal.failureState or in_doc.processorModal.processedState}">
+                                    <h:outputText style="padding-left:10px;" value="#{in_doc.processorModal.actionResult}"/>
                                 </h:panelGroup>
-                                <h:panelGroup
-                                        rendered="#{in_doc.processorModal.processingState}">
+                                <h:panelGroup rendered="#{in_doc.processorModal.processingState}">
                                     <e5ui:include
                                             data="#{in_doc.processorModal.processedActivity.document.form}"/>
                                 </h:panelGroup>
@@ -167,9 +162,8 @@
                     </div>
                     <div class="role">
                         <div class="top">
-								<span> <h:outputText
-                                        value="#{in_doc.document.getUserAccessLevel()}"
-                                        converter="UserAccessLevelConverter"/>
+								<span>
+                                    <h:outputText value="#{in_doc.document.getUserAccessLevel()}" converter="UserAccessLevelConverter"/>
 								</span>
                         </div>
                     </div>
@@ -180,7 +174,7 @@
     </h:panelGroup>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="content">
 <div id="header_content">
