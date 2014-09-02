@@ -152,36 +152,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     private DeliveryType deliveryType;
 
     /**
-     * Номер короба
-     */
-    @Column(name = "boxNumber")
-    private int boxNumber;
-
-    /**
-     * Номер фонда
-     */
-    @Column(name = "fundNumber")
-    private int fundNumber;
-
-    /**
-     * Номер стеллажа
-     */
-    @Column(name = "standNumber")
-    private int standNumber;
-
-    /**
-     * Номер полки
-     */
-    @Column(name = "shelfNumber")
-    private int shelfNumber;
-
-    /**
-     * Предполагаемая дата возврата
-     */
-    @Column(name = "returnDate")
-    private Date returnDate;
-
-    /**
      * Ссылка на нумератор
      */
     @Column(name = "parentNumeratorId", nullable = true)
@@ -470,38 +440,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return appendixiesCount;
     }
 
-    public void setFundNumber(int fundNumber) {
-        this.fundNumber = fundNumber;
-    }
-
-    public int getFundNumber() {
-        return fundNumber;
-    }
-
-    public void setStandNumber(int standNumber) {
-        this.standNumber = standNumber;
-    }
-
-    public int getStandNumber() {
-        return standNumber;
-    }
-
-    public void setShelfNumber(int shelfNumber) {
-        this.shelfNumber = shelfNumber;
-    }
-
-    public int getShelfNumber() {
-        return shelfNumber;
-    }
-
-    public void setBoxNumber(int boxNumber) {
-        this.boxNumber = boxNumber;
-    }
-
-    public int getBoxNumber() {
-        return boxNumber;
-    }
-
     @Transient
     public DocumentType getDocumentType() {
         return DocumentType.IncomingDocument;
@@ -625,14 +563,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
 
     public List<User> getPersonEditors() {
         return personEditors;
-    }
-
-    public void setReturnDate(Date returnDate) {
-        this.returnDate = returnDate;
-    }
-
-    public Date getReturnDate() {
-        return returnDate;
     }
 
     public void setUserAccessLevel(UserAccessLevel userAccessLevel) {

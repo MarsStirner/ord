@@ -1040,8 +1040,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getDocument().getPersonReaders() != null) {
-                ArrayList<User> tmpList = new ArrayList<User>();
-                tmpList.addAll(getDocument().getPersonReaders());
+                ArrayList<User> tmpList = new ArrayList<User>(getDocument().getPersonReaders());
                 setUsers(tmpList);
             }
         }
