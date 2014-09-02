@@ -69,6 +69,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
     //Сообщения
+    //TODO создать общий справочник и перенести сообщения туда
     private static final FacesMessage MSG_CANT_DELETE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", "");
     private static final FacesMessage MSG_CANT_SAVE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", "");
     private static final FacesMessage MSG_ERROR_ON_DELETE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при удалении.", "");
