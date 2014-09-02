@@ -23,33 +23,31 @@ public class DmsSessionTimeoutFilter implements Filter {
 
     }
 
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        if ((request instanceof HttpServletRequest) && (response instanceof HttpServletResponse)) {
-            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+    public void doFilter(ServletRequest req, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        final HttpServletRequest request = (HttpServletRequest) req;
+        if (response instanceof HttpServletResponse) {
             HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-            if (isSessionControlRequiredForThisResource(httpServletRequest)) {
-                if (isSessionInvalid(httpServletRequest)) {
+            if (isSessionControlRequiredForThisResource(request)) {
+                if (isSessionInvalid(request)) {
                     String requestUrl = "";
-                    if (request instanceof HttpServletRequest) {
-                        String uri = ((HttpServletRequest) request).getRequestURL().toString();
-                        String queryString = ((HttpServletRequest) request).getQueryString();
-                        int pos = StringUtils.indexOf(uri, "/component/");
-                        if (pos != -1 && StringUtils.containsNone(queryString, "cid=")) {
-                            uri = StringUtils.right(uri, StringUtils.length(uri) - pos);
-                            if (StringUtils.isNotEmpty(uri)) {
-                                requestUrl = uri;
-                            }
-                            if (StringUtils.isNotEmpty(queryString)) {
-                                requestUrl = requestUrl + "?" + queryString;
-                            }
-                            System.out.println("requestUrl> " + requestUrl);
+                    String uri = request.getRequestURL().toString();
+                    String queryString = request.getQueryString();
+                    int pos = StringUtils.indexOf(uri, "/component/");
+                    if (pos != -1 && StringUtils.containsNone(queryString, "cid=")) {
+                        uri = StringUtils.right(uri, StringUtils.length(uri) - pos);
+                        if (StringUtils.isNotEmpty(uri)) {
+                            requestUrl = uri;
                         }
+                        if (StringUtils.isNotEmpty(queryString)) {
+                            requestUrl = requestUrl + "?" + queryString;
+                        }
+                        LOGGER.info("TIMEOUT: requestUrl={}", requestUrl);
                     }
                     if (StringUtils.isNotEmpty(requestUrl)) {
-                        System.out.println("Setting requestUrl session parameter: " + requestUrl);
-                        ((HttpServletRequest) request).getSession().setAttribute(SessionManagementBean.BACK_URL, requestUrl);
+                        LOGGER.info("TIMEOUT: Setting requestUrl session parameter: {} ", requestUrl);
+                        request.getSession().setAttribute(SessionManagementBean.BACK_URL, requestUrl);
                     }
-                    httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/" + getTimeoutPage());
+                    httpServletResponse.sendRedirect(request.getContextPath() + "/" + getTimeoutPage());
                     return;
                 }
             }
@@ -60,13 +58,12 @@ public class DmsSessionTimeoutFilter implements Filter {
 
     private boolean isSessionControlRequiredForThisResource(HttpServletRequest httpServletRequest) {
         String requestPath = httpServletRequest.getRequestURI();
-        boolean controlRequired = !StringUtils.contains(requestPath, getTimeoutPage());
-        return controlRequired;
+        return !StringUtils.contains(requestPath, getTimeoutPage());
+
     }
 
     private boolean isSessionInvalid(HttpServletRequest httpServletRequest) {
-        boolean sessionInValid = (httpServletRequest.getRequestedSessionId() != null) && !httpServletRequest.isRequestedSessionIdValid();
-        return sessionInValid;
+        return (httpServletRequest.getRequestedSessionId() != null) && !httpServletRequest.isRequestedSessionIdValid();
     }
 
     public void destroy() {
@@ -84,5 +81,5 @@ public class DmsSessionTimeoutFilter implements Filter {
 
     private String timeoutPage = "index.xhtml";
 
-    private final static Logger logger = LoggerFactory.getLogger(DmsSessionTimeoutFilter.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger("FILTER");
 }

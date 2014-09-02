@@ -19,32 +19,29 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 
 
 public class AuthenticationFilter implements Filter {
-
-
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
-        if (((HttpServletRequest) req).getSession().getAttribute(SessionManagementBean.AUTH_KEY) == null) {
-            if ((req instanceof HttpServletRequest) && isSessionControlRequiredForThisResource((HttpServletRequest) req)) {
+        final HttpServletRequest request = (HttpServletRequest) req;
+        if (request.getSession().getAttribute(SessionManagementBean.AUTH_KEY) == null) {
+            if (isSessionControlRequiredForThisResource(request)) {
                 String requestUrl = "";
-                if (req instanceof HttpServletRequest) {
-                    String uri = ((HttpServletRequest) req).getRequestURL().toString();
-                    String queryString = ((HttpServletRequest) req).getQueryString();
-                    int pos = StringUtils.indexOf(uri, "/component/");
-                    if (pos != -1 && StringUtils.containsNone(queryString, "cid=")) {
-                        uri = StringUtils.right(uri, StringUtils.length(uri) - pos);
-                        if (StringUtils.isNotEmpty(uri)) {
-                            requestUrl = uri;
-                        }
-                        if (StringUtils.isNotEmpty(requestUrl)) {
-                            requestUrl = requestUrl + "?" + queryString;
-                        }
-                        System.out.println("requestUrl> " + requestUrl);
+                String uri = request.getRequestURL().toString();
+                String queryString = request.getQueryString();
+                int pos = StringUtils.indexOf(uri, "/component/");
+                if (pos != -1 && StringUtils.containsNone(queryString, "cid=")) {
+                    uri = StringUtils.right(uri, StringUtils.length(uri) - pos);
+                    if (StringUtils.isNotEmpty(uri)) {
+                        requestUrl = uri;
                     }
+                    if (StringUtils.isNotEmpty(requestUrl)) {
+                        requestUrl = requestUrl + "?" + queryString;
+                    }
+                    LOGGER.info("AUTH: requestUrl={}", requestUrl);
                 }
                 if (StringUtils.isNotEmpty(requestUrl)) {
-                    System.out.println("Setting requestUrl session parameter: " + requestUrl);
-                    ((HttpServletRequest) req).getSession().setAttribute(SessionManagementBean.BACK_URL, requestUrl);
+                    LOGGER.info("AUTH: Setting requestUrl session parameter: {} ", requestUrl);
+                    request.getSession().setAttribute(SessionManagementBean.BACK_URL, requestUrl);
                 }
-                ((HttpServletResponse) resp).sendRedirect(((HttpServletRequest) req).getContextPath() + "/" + getTimeoutPage());
+                ((HttpServletResponse) resp).sendRedirect(request.getContextPath() + "/" + getTimeoutPage());
             }
         } else {
             chain.doFilter(req, resp);
@@ -53,8 +50,7 @@ public class AuthenticationFilter implements Filter {
 
     private boolean isSessionControlRequiredForThisResource(HttpServletRequest httpServletRequest) {
         String requestPath = httpServletRequest.getRequestURI();
-        boolean controlRequired = !StringUtils.contains(requestPath, getTimeoutPage());
-        return controlRequired;
+        return !StringUtils.contains(requestPath, getTimeoutPage());
     }
 
     public void init(FilterConfig config) throws ServletException {
@@ -78,5 +74,5 @@ public class AuthenticationFilter implements Filter {
 
     private FilterConfig config;
 
-    private final static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger("FILTER");
 }

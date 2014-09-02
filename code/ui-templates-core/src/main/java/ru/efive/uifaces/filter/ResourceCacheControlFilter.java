@@ -1,14 +1,10 @@
 package ru.efive.uifaces.filter;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import javax.servlet.FilterChain;
@@ -56,29 +52,7 @@ public class ResourceCacheControlFilter extends AbstractFilter {
      */
     public static final Date BUILD_TIME;
     static {
-        /*
-        Properties properties = new Properties();
-
-        try {
-            properties.load(ResourceCacheControlFilter.class.getResourceAsStream("/META-INF/version.properties"));
-        } catch (IOException ex) {
-            Logger.getLogger(ResourceCacheControlFilter.class.getName()).log(Level.WARNING, null, ex);
-        }
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        String bts = properties.getProperty("build.time");
-        Date bt = null;
-        if (bts != null) {
-            try {
-                bt = df.parse(bts);
-            } catch (ParseException ex) {
-                Logger.getLogger(ResourceCacheControlFilter.class.getName()).log(Level.WARNING, null, ex);
-            }
-        }
-        BUILD_TIME = bt != null ? bt : new Date();
-
-        */
-
-        BUILD_TIME = new Date();
+       BUILD_TIME = new Date();
 
         //TODO: исправить хак
     }

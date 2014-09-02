@@ -123,7 +123,7 @@ public class HumanTaskTree extends Document {
     private List<HumanTaskTreeNode> humanTaskTree;
 
 
-    private static final Logger logger = LoggerFactory.getLogger(HumanTaskTree.class);
+    private static final Logger logger = LoggerFactory.getLogger("HUMAN_TASK");
 
     private static final long serialVersionUID = 29608759242909653L;
 }

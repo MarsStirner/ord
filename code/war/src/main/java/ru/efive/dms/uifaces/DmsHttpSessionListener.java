@@ -24,9 +24,9 @@ public class DmsHttpSessionListener implements HttpSessionListener {
             try {
                 ((HttpSession) context.getExternalContext().getSession(false)).invalidate();
             } catch (Exception e) {
-                logger.error("Invalidate session issue: " + e.getMessage());
+                LOGGER.error("Invalidate session issue: ", e);
             }
-            SessionManagementBean sessionManagement = (SessionManagementBean)
+            SessionManagementBean sessionManagement =
                     context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
             if (sessionManagement != null && sessionManagement.isLoggedIn()) {
                 sessionManagement.logOut();
@@ -37,5 +37,5 @@ public class DmsHttpSessionListener implements HttpSessionListener {
     }
 
 
-    private final static Logger logger = LoggerFactory.getLogger(DmsHttpSessionListener.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger("SESSION_LISTENER");
 }

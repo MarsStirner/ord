@@ -894,8 +894,9 @@
                     <div class="inner" style="height: 250px;">
                         <e5ui:dataTable id="select_table" border="0" cellpadding="0"
                                         cellspacing="0"
+                                        var="row"
                                         value="#{tasks.getDocumentsTreeByParent(in_doc.document.uniqueId)}"
-                                        var="row" grouping="true" levelCount="10" style="width:100%">
+                                        grouping="true" levelCount="1" style="width:100%">
                             <e5ui:row ondblclick="goToTask('#{row.id}');"
                                       level="#{row.grouping}" group="#{row.parent}"
                                       fullRow="false" collapsed="false">

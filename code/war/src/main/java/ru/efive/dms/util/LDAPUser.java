@@ -179,8 +179,6 @@ public class LDAPUser {
             final String value = ((String) mobile.get()).trim();
             if(!value.contains(".")){
                 this.mobile = value;
-            }  else {
-                //logger.debug("Mobile phone number contains \'.\':"+value);
             }
         }
     }
@@ -234,7 +232,6 @@ public class LDAPUser {
         if (lastModified != null) {
             this.lastModified = lastModifiedFormat.parse((String) lastModified.get());
         }   else {
-            //logger.debug("LDAP: lastModificationDate not set");
             this.lastModified = new Date();
         }
     }

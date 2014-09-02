@@ -3,12 +3,7 @@ package ru.efive.sql.entity.document;
 import ru.efive.sql.entity.IdentifiedEntity;
 import ru.efive.sql.entity.user.User;
 
-//import javax.faces.context.FacesContext;
 import javax.persistence.*;
-
-/*import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.log4j.Logger;*/
-
 import java.util.Date;
 
 /**
@@ -56,47 +51,6 @@ public class Document extends IdentifiedEntity {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
-
-    /*@PrePersist
-     protected void onCreate() {
-         created = new Date();
-         FacesContext context = FacesContext.getCurrentInstance();
-         if (context != null && context.getApplication() != null) {
-             Object sessionManagement = context.getELContext().getELResolver().getValue(context.getELContext(), null, "#{sessionManagement}");
-             if (sessionManagement != null) {
-                 try {
-                     Object loggedUser = PropertyUtils.getProperty(sessionManagement, "loggedUser");
-                     if (loggedUser != null) {
-                         setAuthor((User) loggedUser);
-                     }
-                 }
-                 catch (Exception e) {
-                     Logger.getRootLogger().error("Unable to find property", e);
-                 }
-             }
-         }
-     }
-
-     @PreUpdate
-     protected void onUpdate() {
-         modified = new Date();
-         FacesContext context = FacesContext.getCurrentInstance();
-         if (context != null && context.getApplication() != null) {
-             Object sessionManagement = context.getELContext().getELResolver().getValue(context.getELContext(), null, "#{sessionManagement}");
-             if (sessionManagement != null) {
-                 try {
-                     Object loggedUser = PropertyUtils.getProperty(sessionManagement, "loggedUser");
-                     if (loggedUser != null) {
-                         setEditor((User) loggedUser);
-                     }
-                 }
-                 catch (Exception e) {
-                     Logger.getRootLogger().error("Unable to find property", e);
-                 }
-             }
-         }
-     }*/
-
 
     /**
      * Дата создания
