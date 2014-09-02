@@ -12,7 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -122,7 +123,7 @@ public class HumanTaskTree extends Document {
     private List<HumanTaskTreeNode> humanTaskTree;
 
 
-    private static final Logger logger = Logger.getLogger(HumanTaskTree.class);
+    private static final Logger logger = LoggerFactory.getLogger(HumanTaskTree.class);
 
     private static final long serialVersionUID = 29608759242909653L;
 }

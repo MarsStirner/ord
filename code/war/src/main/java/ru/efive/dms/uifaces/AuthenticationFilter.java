@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 
@@ -77,5 +78,5 @@ public class AuthenticationFilter implements Filter {
 
     private FilterConfig config;
 
-    private final static Logger logger = Logger.getLogger(AuthenticationFilter.class);
+    private final static Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 }

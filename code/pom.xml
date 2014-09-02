@@ -57,6 +57,7 @@
         <module>war</module>
         <module>ear</module>
         <module>ui-templates-core</module>
+        <module>config</module>
     </modules>
 
     <properties>

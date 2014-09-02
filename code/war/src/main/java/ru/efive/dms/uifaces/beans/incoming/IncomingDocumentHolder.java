@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +31,6 @@ import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.data.Attachment;
-import ru.efive.dms.data.DeliveryType;
 import ru.efive.dms.data.DocumentForm;
 import ru.efive.dms.data.HistoryEntry;
 import ru.efive.dms.data.IncomingDocument;
@@ -47,13 +45,11 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
 import ru.efive.sql.entity.enums.DocumentStatus;
 import ru.efive.sql.entity.user.Group;
 import ru.efive.sql.entity.user.Role;
@@ -70,7 +66,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private static final long serialVersionUID = 4716264614655470705L;
 
     //Именованный логгер (INCOMING_DOCUMENT)
-    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger("INCOMING_DOCUMENT");
+    private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
 
     private boolean isUsersDialogSelected = true;
@@ -106,7 +102,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", ""));
-                e.printStackTrace();
+                LOGGER.error("INTERNAL ERROR ON DELETE:", e);
             }
         }
         return in_result;
@@ -123,7 +119,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             }
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при удалении.", ""));
@@ -142,12 +138,14 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     @Override
-    protected void initDocument(Integer id) {
+    protected void initDocument(final Integer id) {
+        final User currentUser = sessionManagement.getLoggedUser();
+        LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
             final IncomingDocument document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).get(id);
             readPermission = false;
             editPermission = false;
-            if (!checkState(document)) {
+            if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
@@ -172,67 +170,68 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             updateAttachments();
             setDocument(document);
             //Проверка прав на открытие
-            if (!checkPermission(sessionManagement.getLoggedUser(), document)) {
+            if (!checkPermission(currentUser, document)) {
                 setState(STATE_FORBIDDEN);
                 setStateComment("Доступ запрещен");
+                LOGGER.error("USER[{}] ACCESS TO DOCUMENT[{}] FORBIDDEN", currentUser.getId(), document.getId());
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при инициализации.", ""));
-            LOGGER.error(e);
+            LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
 
     private boolean checkPermission(final User user, final IncomingDocument document) {
         if (user.isAdministrator()) {
-            LOGGER.debug(document.getId() + ":Permission RW granted: AdminRole");
+            LOGGER.debug("{}:Permission RW granted: AdminRole", document.getId());
             readPermission = true;
             editPermission = true;
             return true;
         }
         if (user.equals(document.getAuthor())) {
-            LOGGER.debug(document.getId() + ":Permission RW granted: Author");
+            LOGGER.debug("{}:Permission RW granted: Author", document.getId());
             readPermission = true;
             editPermission = true;
             return true;
         }
         for (Role currentRole : user.getRoles()) {
             if (document.getRoleEditors().contains(currentRole)) {
-                LOGGER.debug(document.getId() + ":Permission  RW granted: RoleEditor | " + currentRole.getName());
+                LOGGER.debug("{}:Permission  RW granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
                 readPermission = true;
                 editPermission = true;
                 return true;
             }
             if (!readPermission && document.getRoleReaders().contains(currentRole)) {
-                LOGGER.debug(document.getId() + ":Permission R granted: RoleReader | " + currentRole.getName());
+                LOGGER.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
                 readPermission = true;
             }
         }
         for (User currentUser : document.getPersonEditors()) {
             if (user.equals(currentUser)) {
-                LOGGER.debug(document.getId() + ":Permission RW granted: PersonEditor");
+                LOGGER.debug("{}:Permission RW granted: PersonEditor", document.getId());
                 readPermission = true;
                 editPermission = true;
                 return true;
             }
         }
         if (!readPermission && user.equals(document.getController())) {
-            LOGGER.debug(document.getId() + ":Permission RW granted: Controller");
+            LOGGER.debug("{}:Permission RW granted: Controller", document.getId());
             readPermission = true;
             editPermission = true;
             return true;
         }
         for (User currentUser : document.getRecipientUsers()) {
             if (user.equals(currentUser)) {
-                LOGGER.debug(document.getId() + ":Permission R granted: RecipientUser");
+                LOGGER.debug("{}:Permission R granted: RecipientUser", document.getId());
                 readPermission = true;
                 return true;
             }
         }
         for (User currentUser : document.getPersonReaders()) {
             if (user.equals(currentUser)) {
-                LOGGER.debug(document.getId() + ":Permission R granted: PersonReader");
+                LOGGER.debug("{}:Permission R granted: PersonReader", document.getId());
                 readPermission = true;
                 return true;
             }
@@ -240,25 +239,25 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         for (User currentUser : document.getExecutors()) {
             if (user.equals(currentUser)) {
-                LOGGER.debug(document.getId() + ":Permission R granted: Executor");
+                LOGGER.debug("{}:Permission R granted: Executor", document.getId());
                 readPermission = true;
                 return true;
             }
         }
         for (Group currentGroup : user.getGroups()) {
             if (document.getRecipientGroups().contains(currentGroup)) {
-                LOGGER.debug(document.getId() + ":Permission R granted: RecipientGroup | " + currentGroup.getValue());
+                LOGGER.debug("{}:Permission R granted: RecipientGroup [{}] ", document.getId(), currentGroup.getValue());
                 readPermission = true;
                 return true;
             }
         }
         if (sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
-            LOGGER.debug(document.getId() + ":Permission R granted: TASK");
+            LOGGER.debug("{}:Permission R granted: TASK", document.getId());
             readPermission = true;
             return true;
         }
         if (!readPermission && !editPermission) {
-            LOGGER.error(document.getId() + ":Permission denied: " + user.getId());
+            LOGGER.error("{}:Permission denied to user[{}]", document.getId(), user.getId());
             return false; //readPermission || editPermission;
         } else {
             return readPermission || editPermission;
@@ -272,20 +271,24 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
      * @param document документ для проверки
      * @return true - допуск есть
      */
-    private boolean checkState(final IncomingDocument document) {
+    private boolean checkState(final IncomingDocument document, final User user) {
         if (document == null) {
             setState(STATE_NOT_FOUND);
+            LOGGER.warn("IncomingDocument NOT FOUND");
             return false;
         }
         if (document.isDeleted()) {
             setState(STATE_DELETED);
             setStateComment("Документ удален");
+            LOGGER.warn("IncomingDocument[{}] IS DELETED", document.getId());
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
-        if (docAccessLevel.getLevel() > sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getLevel()) {
+        if (docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
+            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]",
+                    new Object[]{document.getId(), docAccessLevel.getValue(), user.getCurrentUserAccessLevel().getValue()});
             return false;
         }
         return true;
@@ -357,7 +360,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveDocument ERROR:", e);;
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при сохранении.", ""));
@@ -411,7 +414,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
                 sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
 
-                System.out.println("uploading newly created files");
+                LOGGER.debug("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
                     Attachment tmpAttachment = attachments.get(i);
                     if (tmpAttachment != null) {
@@ -422,11 +425,11 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 result = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveNewDocument ERROR:", e);;
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при сохранении нового документа.", ""));
-        }//}
+        }
         return result;
     }
 
@@ -512,7 +515,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                     files.add(details.getByteArray());
                 } else {
                     attachment.setParentId(new String(("incoming_" + getDocumentId()).getBytes(), "utf-8"));
-                    System.out.println("result of the upload operation - " + fileManagement.createFile(attachment, details.getByteArray()));
+                    final boolean result = fileManagement.createFile(attachment, details.getByteArray());
+                    LOGGER.info("result of the upload operation - {}", result);
                     updateAttachments();
                 }
             }
@@ -520,7 +524,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при вложении файла.", ""));
-            e.printStackTrace();
+            LOGGER.error("uploadAttachments ERROR:", e);;
         }
     }
 
@@ -539,7 +543,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                         files.add(details.getByteArray());
                     }
                 } else {
-                    System.out.println("result of the upload operation - " + fileManagement.createVersion(attachment, details.getByteArray(), majorVersion, details.getAttachment().getFileName()));
+                    final boolean result = fileManagement.createVersion(attachment, details.getByteArray(), majorVersion, details.getAttachment().getFileName());
+                    LOGGER.info("result of the upload operation - {}", result);
                     updateAttachments();
                 }
             }
@@ -547,7 +552,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                     FacesMessage.SEVERITY_ERROR,
                     "Внутренняя ошибка при вложении файла.", ""));
-            e.printStackTrace();
+            LOGGER.error("versionAttachment ERROR:", e);;
         }
     }
 

@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 
@@ -83,5 +84,5 @@ public class DmsSessionTimeoutFilter implements Filter {
 
     private String timeoutPage = "index.xhtml";
 
-    private final static Logger logger = Logger.getLogger(DmsSessionTimeoutFilter.class);
+    private final static Logger logger = LoggerFactory.getLogger(DmsSessionTimeoutFilter.class);
 }

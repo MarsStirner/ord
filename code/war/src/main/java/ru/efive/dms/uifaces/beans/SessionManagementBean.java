@@ -15,9 +15,10 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.Transient;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import ru.efive.dao.InitializationException;
@@ -305,7 +306,7 @@ public class SessionManagementBean implements Serializable {
     public static final String AUTH_KEY = "app.user.name";
     public static final String BACK_URL = "app.back.url";
 
-    private final static Logger logger = Logger.getLogger(SessionManagementBean.class);
+    private final static Logger logger = LoggerFactory.getLogger(SessionManagementBean.class);
     private Set<String> registratedBeanNames = new HashSet<String>();
 
     private static final long serialVersionUID = -916300301346029630L;

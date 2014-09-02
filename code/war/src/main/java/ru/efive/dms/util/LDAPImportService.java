@@ -16,9 +16,8 @@ import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
 
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.sql.dao.user.*;
 import ru.efive.sql.entity.user.*;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -26,7 +25,7 @@ import ru.efive.sql.util.StoredCodes;
 
 public class LDAPImportService {
     //Именованный логгер (LDAP)
-    private static final Logger LOGGER = Logger.getLogger("LDAP");
+    private static final Logger LOGGER = LoggerFactory.getLogger("LDAP");
     private static final SearchControls SEARCH_CONTROLS = new SearchControls();
     //Пароль по-умолчанию для новых пользователей
     private static final String DEFAULT_PASSWORD = "12345";
@@ -53,7 +52,6 @@ public class LDAPImportService {
 
 
     static {
-        LOGGER.setLevel(Level.DEBUG);
         SEARCH_CONTROLS.setReturningAttributes(
                 new String[]{
                         //DN

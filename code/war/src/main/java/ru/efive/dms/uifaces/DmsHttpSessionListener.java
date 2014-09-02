@@ -1,14 +1,13 @@
 package ru.efive.dms.uifaces;
 
-import java.io.IOException;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 
@@ -38,5 +37,5 @@ public class DmsHttpSessionListener implements HttpSessionListener {
     }
 
 
-    private final static Logger logger = Logger.getLogger(DmsHttpSessionListener.class);
+    private final static Logger logger = LoggerFactory.getLogger(DmsHttpSessionListener.class);
 }

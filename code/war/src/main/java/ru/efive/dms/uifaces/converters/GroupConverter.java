@@ -6,6 +6,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.efive.sql.entity.user.Group;
@@ -14,7 +16,7 @@ import ru.efive.dms.util.ApplicationHelper;
 
 @FacesConverter("GroupConverter")
 public class GroupConverter implements Converter {
-    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger("CONVERTER");
+    private static final Logger LOGGER =LoggerFactory.getLogger("CONVERTER");
 
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         try {
