@@ -24,7 +24,7 @@ public class InternalOrderDocumentsHolder extends AbstractDocumentListHolderBean
     }
 
     public void setNeedRefresh(boolean needRefresh) {
-        if (needRefresh == true) {
+        if (needRefresh) {
             this.markNeedRefresh();
         }
         this.needRefresh = needRefresh;
@@ -39,7 +39,6 @@ public class InternalOrderDocumentsHolder extends AbstractDocumentListHolderBean
     protected List<InternalDocument> getHashDocuments() {
         List<InternalDocument> result = new ArrayList<InternalDocument>();
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
             try {
                 User user = sessionManagement.getLoggedUser();
                 //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());

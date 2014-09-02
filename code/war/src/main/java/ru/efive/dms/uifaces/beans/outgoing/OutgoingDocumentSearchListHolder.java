@@ -47,7 +47,6 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
     protected List<OutgoingDocument> getHashDocuments() {
         List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
             try {
                 User user = sessionManagement.getLoggedUser();
                // user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());

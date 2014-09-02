@@ -49,7 +49,6 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
 
     protected List<User> getHashUsers() {
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
             try {
                 hashUsers = new ArrayList<User>(new HashSet<User>(sessionManagement.getDAO(UserDAOHibernate.class,
                         ApplicationHelper.USER_DAO).findUsers(filter, false, false)));
@@ -60,11 +59,11 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
                         int result = 0;
                         String colId = getSorting().getColumnId();
 
-                        if(colId.equalsIgnoreCase("description")) {
+                        if (colId.equalsIgnoreCase("description")) {
                             result = ApplicationHelper.getNotNull(o1.getFullName()).compareTo(ApplicationHelper.getNotNull(o2.getFullName()));
                         }
 
-                        if(getSorting().isAsc()) {
+                        if (getSorting().isAsc()) {
                             result *= -1;
                         }
 

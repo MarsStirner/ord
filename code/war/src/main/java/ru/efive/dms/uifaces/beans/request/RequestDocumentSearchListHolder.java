@@ -45,7 +45,6 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
     protected List<RequestDocument> getHashDocuments() {
         List<RequestDocument> result = new ArrayList<RequestDocument>();
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
             try {
                 User user = sessionManagement.getLoggedUser();
                 //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
@@ -56,7 +55,7 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
                         int result = 0;
                         String colId = getSorting().getColumnId();
 
-                        if(colId.equalsIgnoreCase("registrationDate")) {
+                        if (colId.equalsIgnoreCase("registrationDate")) {
                             Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(d1);
@@ -69,46 +68,46 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
                             c2.set(Calendar.HOUR_OF_DAY, 0);
                             c2.set(Calendar.MINUTE, 0);
                             c2.set(Calendar.SECOND, 0);
-                            if(c1.equals(c2)) {
+                            if (c1.equals(c2)) {
                                 try {
                                     Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                     Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                     result = i1.compareTo(i2);
-                                } catch(NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 }
                             } else {
                                 result = c1.compareTo(c2);
                             }
-                        } else if(colId.equalsIgnoreCase("registrationNumber")) {
+                        } else if (colId.equalsIgnoreCase("registrationNumber")) {
                             try {
                                 Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 result = i1.compareTo(i2);
-                            } catch(NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                             }
-                        } else if(colId.equalsIgnoreCase("deliveryDate")) {
+                        } else if (colId.equalsIgnoreCase("deliveryDate")) {
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(ApplicationHelper.getNotNull(o1.getDeliveryDate()));
                             Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c2.setTime(ApplicationHelper.getNotNull(o2.getDeliveryDate()));
                             result = c2.compareTo(c1);
-                        } else if(colId.equalsIgnoreCase("contragent")) {
+                        } else if (colId.equalsIgnoreCase("contragent")) {
                             result = ApplicationHelper.getNotNull(o1.getSenderDescriptionShort()).compareTo(ApplicationHelper.getNotNull(o2.getSenderDescriptionShort()));
-                        } else if(colId.equalsIgnoreCase("form")) {
+                        } else if (colId.equalsIgnoreCase("form")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getForm()).toString()));
-                        } else if(colId.equalsIgnoreCase("executionDate")) {
+                        } else if (colId.equalsIgnoreCase("executionDate")) {
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(ApplicationHelper.getNotNull(o1.getExecutionDate()));
                             Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c2.setTime(ApplicationHelper.getNotNull(o2.getExecutionDate()));
                             result = c1.compareTo(c2);
-                        } else if(colId.equalsIgnoreCase("status_id")) {
+                        } else if (colId.equalsIgnoreCase("status_id")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
                         }
 
-                        if(getSorting().isAsc()) {
+                        if (getSorting().isAsc()) {
                             result *= -1;
                         }
                         return result;

@@ -39,8 +39,7 @@ public class InternalManualDocumentsHolder extends AbstractDocumentListHolderBea
     protected List<InternalDocument> getHashDocuments() {
         List<InternalDocument> result = new ArrayList<InternalDocument>();
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
-            try {
+           try {
                 User user = sessionManagement.getLoggedUser();
                 //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
                 result = new ArrayList<InternalDocument>(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));

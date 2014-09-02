@@ -1,74 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="60 seconds" debug="true">
     <jmxConfigurator/>
-    <contextName>tmis-core</contextName>
+    <contextName>ORD</contextName>
 
-    <!-- dump status message on the console as they arrive -->
-    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
-
-    <!-- Основные настройки для консоли, для эксепшен лога-->
+    <!-- Основные настройки для консоли-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
-            <onMatch>DENY</onMatch>
-            <onMismatch>NEUTRAL</onMismatch>
-        </filter>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>WARN</level>
-            <onMatch>DENY</onMatch>
-            <onMismatch>ACCEPT</onMismatch>
-        </filter>
         <encoder>
             <pattern>${log.format}</pattern>
         </encoder>
         <param name="target" value="System.out"/>
     </appender>
 
-    <!--Логер для входящих документов-->
-    <appender name="APPENDER_INCOMING_DOCUMENT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- для LDAP-->
+    <appender name="APPENDER_LDAP" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
-
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/incoming/incoming.%d{yyyy-MM-dd}.log.gz
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/LDAP/LDAP.%d{yyyy-MM-dd}.log.gz
             </fileNamePattern>
         </rollingPolicy>
     </appender>
 
-    <!--TEST TEST TEST TEST TEST TEST-->
-    <!--<appender name="LOGGING_SUBSYSTEM" class="ru.korus.tmis.util.logs.appender.RestfullLoggingSubsystemAppender">-->
-    <!--&lt;!&ndash;Layout отображения записи лога в строку (JSON)&ndash;&gt;-->
-    <!--<layout class="ru.korus.tmis.util.logs.layout.JSONLayout">-->
-    <!--<coreVersion>${version.tmis.core}</coreVersion>-->
-    <!--<tag>core</tag>-->
-    <!--<tag>TESTING</tag>-->
-    <!--</layout>-->
-    <!--<url>http://192.168.1.102</url>-->
-    <!--<charset>UTF8</charset>-->
-    <!--<contentType>application/json</contentType>-->
-    <!--<timeout>3000</timeout>-->
-    <!--<checkInterval>30</checkInterval>-->
-    <!--&lt;!&ndash;Фильтр на уровни равные или выше указанного&ndash;&gt;-->
-    <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
-    <!--<level>INFO</level>-->
-    <!--</filter>-->
-    <!--&lt;!&ndash;Фильтр на маркеры&ndash;&gt;-->
-    <!--<filter class="ru.korus.tmis.util.logs.filter.MarkerFilter">-->
-    <!--<marker>LOGGING_SUBSYSTEM_MARKER</marker>-->
-    <!--<onMatch>ACCEPT</onMatch>-->
-    <!--<onMismatch>DENY</onMismatch>-->
-    <!--</filter>-->
-    <!--</appender>-->
-    <!--TEST TEST TEST TEST TEST TEST-->
+    <!-- для SQL-->
+    <appender name="APPENDER_SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/SQL/SQL.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
 
-    <logger name="INCOMING_DOCUMENT" level="DEBUG" additivity="false">
-        <appender-ref ref="APPENDER_INCOMING_DOCUMENT"/>
+
+    <logger name="INCOMING_DOCUMENT" level="DEBUG"/>
+    <logger name="AUTH" level="DEBUG" />
+    <logger name="CONVERTER" level="DEBUG"/>
+    <logger name="FILTER" level="DEBUG" />
+    <logger name="SESSION_LISTENER" level="DEBUG" />
+    <logger name="LDAP" level="DEBUG">
+        <appender-ref ref="APPENDER_LDAP"/>
+    </logger>
+    <logger name="HUMAN_TASK" level="DEBUG"/>
+    <!--Hibernate SQL LOGGER-->
+    <logger name="SQL" level = "DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_SQL"/>
     </logger>
 
     <root level="${logs.level}">
         <appender-ref ref="STDOUT"/>
     </root>
-
 </configuration>

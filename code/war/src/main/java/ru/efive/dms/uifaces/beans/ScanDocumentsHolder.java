@@ -81,7 +81,6 @@ public class ScanDocumentsHolder extends AbstractDocumentListHolderBean<ScanCopy
     protected List<ScanCopyDocument> getHashDocuments() {
         List<ScanCopyDocument> result = new ArrayList<ScanCopyDocument>();
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
             try {
                 User user = sessionManagement.getLoggedUser();
                 //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());

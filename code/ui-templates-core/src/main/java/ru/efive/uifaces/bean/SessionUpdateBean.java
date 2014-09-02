@@ -34,7 +34,7 @@ public class SessionUpdateBean implements Serializable {
      * @return session update request count.
      */
     public int getUpdateCount() {
-        LOGGER.fine("Returning update count: " + updateCount + "...");
+        LOGGER.info("Returning update count: " + updateCount + "...");
         return ++updateCount;
     }
 }

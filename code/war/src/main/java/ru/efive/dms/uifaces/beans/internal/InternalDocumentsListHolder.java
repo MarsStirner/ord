@@ -39,7 +39,6 @@ public class InternalDocumentsListHolder extends AbstractDocumentListHolderBean<
     protected List<InternalDocument> getHashDocuments() {
         List<InternalDocument> result = new ArrayList<InternalDocument>();
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
             try {
                 User user = sessionManagement.getLoggedUser();
                 //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
@@ -50,7 +49,7 @@ public class InternalDocumentsListHolder extends AbstractDocumentListHolderBean<
                         int result = 0;
                         String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
 
-                        if(colId.equalsIgnoreCase("registrationDate")) {
+                        if (colId.equalsIgnoreCase("registrationDate")) {
                             Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(d1);
@@ -63,44 +62,44 @@ public class InternalDocumentsListHolder extends AbstractDocumentListHolderBean<
                             c2.set(Calendar.HOUR_OF_DAY, 0);
                             c2.set(Calendar.MINUTE, 0);
                             c2.set(Calendar.SECOND, 0);
-                            if(c1.equals(c2)) {
+                            if (c1.equals(c2)) {
                                 try {
                                     Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                     Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                     result = i1.compareTo(i2);
-                                } catch(NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 }
                             } else {
                                 result = c1.compareTo(c2);
                             }
-                        } else if(colId.equalsIgnoreCase("registrationNumber")) {
+                        } else if (colId.equalsIgnoreCase("registrationNumber")) {
                             try {
                                 Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 result = i1.compareTo(i2);
-                            } catch(NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                             }
-                        } else if(colId.equalsIgnoreCase("signatureDate")) {
+                        } else if (colId.equalsIgnoreCase("signatureDate")) {
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(ApplicationHelper.getNotNull(o1.getSignatureDate()));
                             Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c2.setTime(ApplicationHelper.getNotNull(o2.getSignatureDate()));
                             result = c2.compareTo(c1);
-                        } else if(colId.equalsIgnoreCase("responsible")) {
+                        } else if (colId.equalsIgnoreCase("responsible")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getResponsible()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getResponsible()).getDescriptionShort()));
-                        } else if(colId.equalsIgnoreCase("signer")) {
+                        } else if (colId.equalsIgnoreCase("signer")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getSigner()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getSigner()).getDescriptionShort()));
-                        } else if(colId.equalsIgnoreCase("initiator")) {
+                        } else if (colId.equalsIgnoreCase("initiator")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getInitiator()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getInitiator()).getDescriptionShort()));
-                        } else if(colId.equalsIgnoreCase("form")) {
+                        } else if (colId.equalsIgnoreCase("form")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getForm()).toString()));
-                        } else if(colId.equalsIgnoreCase("status_id")) {
+                        } else if (colId.equalsIgnoreCase("status_id")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
                         }
 
-                        if(getSorting().isAsc()) {
+                        if (getSorting().isAsc()) {
                             result *= -1;
                         }
                         return result;

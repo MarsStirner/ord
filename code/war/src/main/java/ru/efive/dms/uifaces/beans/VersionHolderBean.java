@@ -31,7 +31,6 @@ public class VersionHolderBean implements Serializable {
 
     @PostConstruct
     public void updateVersionInfo() {
-        sessionManagement.registrateBeanName("versionHolderBean");
         Properties properties = new Properties();
         try {
             properties.load(getClass().getResourceAsStream(BUILD_PROP_FILE));

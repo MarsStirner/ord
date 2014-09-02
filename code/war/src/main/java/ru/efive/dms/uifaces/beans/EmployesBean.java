@@ -43,8 +43,7 @@ public class EmployesBean extends AbstractDocumentListHolderBean<User> {
 
     public List<User> getEmployes() {
         if (needRefresh) {
-            sessionManagement.registrateBeanName(beanName);
-            try {
+           try {
                 employes = new ArrayList<User>(new HashSet<User>(sessionManagement.getDAO(UserDAOHibernate.class,
                         ApplicationHelper.USER_DAO).findUsers(filter, false, false)));
 

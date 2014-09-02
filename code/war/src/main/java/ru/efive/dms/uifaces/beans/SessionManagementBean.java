@@ -60,17 +60,21 @@ public class SessionManagementBean implements Serializable {
     public synchronized void logIn() {
         if (userName != null && !userName.isEmpty() && password != null && !password.isEmpty()) {
             try {
+                LOGGER.info("Try to login [{}][{}]", userName, password);
                 UserDAO dao = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
                 loggedUser = dao.findByLoginAndPassword(userName, ru.efive.sql.util.ApplicationHelper.getMD5(password));
                 if (loggedUser != null) {
+                    LOGGER.debug("By userName[{}] founded User[{}]", userName, loggedUser.getId());
                     //Проверка удаленности\уволенности сотрудника
-                    if(loggedUser.isDeleted() || loggedUser.isFired()){
+                    if (loggedUser.isDeleted() || loggedUser.isFired()) {
+                        LOGGER.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" : "FIRED");
                         FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_DELETED : MSG_FIRED);
                         loggedUser = null;
                         return;
                     }
-                   //Проверка наличия у пользователя ролей
-                    if(loggedUser.getRoles().isEmpty()){
+                    //Проверка наличия у пользователя ролей
+                    if (loggedUser.getRoles().isEmpty()) {
+                        LOGGER.warn("USER[{}] HAS NO ONE ROLE", loggedUser.getId());
                         FacesContext.getCurrentInstance().addMessage(null, MSG_NO_ROLE);
                         loggedUser = null;
                         return;
@@ -83,26 +87,54 @@ public class SessionManagementBean implements Serializable {
                     isEmployer = loggedUser.isEmployer();
                     isOuter = loggedUser.isOuter();
                     isHr = loggedUser.isHr();
-
+                    //В лог флажки ролей
+                    if (LOGGER.isDebugEnabled()) {
+                      printRoleFlags();
+                    }
                     RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO);
                     reqDocumentsCount = docDao.countAllDocumentsByUser((String) null, loggedUser, false, false);
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
 
                     Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);
-
                     if (requestUrl != null) {
                         backUrl = requestUrl.toString();
-                        System.out.println("back url: " + backUrl);
+                        LOGGER.info("back url={}", backUrl);
                     }
+                    LOGGER.info("SUCCESSFUL LOGIN:{}", loggedUser.getId());
                 } else {
+                    LOGGER.error("USER[{}] NOT FOUND", userName);
                     FacesContext.getCurrentInstance().addMessage(null, MSG_NOT_FOUND);
                 }
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(AUTH_KEY);
                 FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR);
                 loggedUser = null;
-                logger.error("Exception while processing login action", e);
+                LOGGER.error("Exception while processing login action:", e);
             }
+        }
+    }
+
+    private void printRoleFlags() {
+        if (isAdministrator) {
+            LOGGER.debug("ADMINISTRATOR");
+        }
+        if (isRecorder) {
+            LOGGER.debug("RECORDER");
+        }
+        if (isOfficeManager) {
+            LOGGER.debug("OFFICE_MANAGER");
+        }
+        if (isRequestManager) {
+            LOGGER.debug("REQUEST_MANAGER");
+        }
+        if (isEmployer) {
+            LOGGER.debug("EMPLOYER");
+        }
+        if (isOuter) {
+            LOGGER.debug("OUTER");
+        }
+        if (isHr) {
+            LOGGER.debug("HR");
         }
     }
 
@@ -123,7 +155,7 @@ public class SessionManagementBean implements Serializable {
             alfrescoDao.initClass(class_);
             if (!alfrescoDao.connect()) throw new InitializationException();
         } catch (InitializationException e) {
-            logger.error("Unable to instantiate connection to Alfresco remote service");
+            LOGGER.error("Unable to instantiate connection to Alfresco remote service");
             alfrescoDao = null;
         }
         return alfrescoDao;
@@ -140,7 +172,7 @@ public class SessionManagementBean implements Serializable {
         //externalContext.getSessionMap().remove(AUTH_KEY);
         //Вот как это делается
         externalContext.invalidateSession();
-        System.out.println("is logged: " + isLoggedIn());
+        LOGGER.info("LOGOUT");
         return "/index?faces-redirect=true";//
     }
 
@@ -157,8 +189,8 @@ public class SessionManagementBean implements Serializable {
         if (isFromSessionCached) {
             return loggedUser;
         } else {
-            User user = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
-            return user;
+            LOGGER.warn("GET USER WITHOUT Session");
+            return getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
         }
     }
 
@@ -167,41 +199,19 @@ public class SessionManagementBean implements Serializable {
         if (backUrl == null || backUrl.equals("")) {
             return url + "/component/in/in_documents.xhtml";
         } else {
-            logger.info("redirectUrl: " + backUrl);
+            LOGGER.info("redirectUrl:{}", backUrl);
             return url + backUrl;
         }
     }
 
-    public void setCurrentUserAccessLevel(UserAccessLevel userAccessLevel) {
-        //this.currentRole = currentRole;
+    public void setCurrentUserAccessLevel(final UserAccessLevel userAccessLevel) {
         try {
             loggedUser.setCurrentUserAccessLevel(userAccessLevel);
             loggedUser = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).save(loggedUser);
-            FacesContext context = FacesContext.getCurrentInstance();
-            ELContext elContext = context.getELContext();
-            Application application = context.getApplication();
-            ExpressionFactory expressionFactory = application.getExpressionFactory();
-            for (String beanName : registratedBeanNames) {
-                System.out.println("beanName->" + beanName);
-                ValueExpression valExpr = expressionFactory.createValueExpression(elContext, "#{" + beanName + ".needRefresh}", Boolean.class);
-                valExpr.setValue(elContext, true);
-            }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("CANNOT change UserAccessLevel:", e);
         }
         //return getNavigationRule() + "?faces-redirect=true";
-    }
-
-    public Set<String> getRegistratedBeanNames() {
-        return registratedBeanNames;
-    }
-
-    public void registrateBeanName(String bean) {
-        try {
-            this.registratedBeanNames.add(bean);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isCanViewRequestDocuments() {
@@ -232,7 +242,6 @@ public class SessionManagementBean implements Serializable {
     private final static FacesMessage MSG_ERROR = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка при входе в систему. Попробуйте повторить позже.", "");
     private final static FacesMessage MSG_NOT_FOUND = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Введены неверные данные.", "");
     private final static FacesMessage MSG_NO_ROLE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Обратитесь к администратору системы для получения доступа", "");
-
 
 
     public boolean isAdministrator() {
@@ -306,8 +315,7 @@ public class SessionManagementBean implements Serializable {
     public static final String AUTH_KEY = "app.user.name";
     public static final String BACK_URL = "app.back.url";
 
-    private final static Logger logger = LoggerFactory.getLogger(SessionManagementBean.class);
-    private Set<String> registratedBeanNames = new HashSet<String>();
+    private final static Logger LOGGER = LoggerFactory.getLogger("AUTH");
 
     private static final long serialVersionUID = -916300301346029630L;
 }
