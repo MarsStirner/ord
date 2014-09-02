@@ -78,7 +78,7 @@
                         <e5ui:formPart id="actions_fp">
                             <h:commandLink
                                     onclick="actionsModal.clickOpen('actionsModal'); return false;"
-                                    rendered="#{in_doc.isCurrentUserDocEditor() and in_doc.viewState}">
+                                    rendered="#{in_doc.isCurrentUserDocExecutor() and in_doc.viewState}">
                                 <h:graphicImage value="#{resource['images:button-do.png']}"/>
                                 Действия
                             </h:commandLink>

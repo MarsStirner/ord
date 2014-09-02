@@ -68,12 +68,26 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     //Именованный логгер (INCOMING_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+    //Сообщения
+    private static final FacesMessage MSG_CANT_DELETE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", "");
+    private static final FacesMessage MSG_CANT_SAVE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", "");
+    private static final FacesMessage MSG_ERROR_ON_DELETE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при удалении.", "");
+    private static final FacesMessage MSG_ERROR_ON_INITIALIZE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при инициализации.", "");
+    private static final FacesMessage MSG_ERROR_ON_SAVE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при сохранении.", "");
+    private static final FacesMessage MSG_ERROR_ON_SAVE_NEW = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при сохранении нового документа.", "");
+    private static final FacesMessage MSG_ERROR_ON_ATTACH = new FacesMessage(FacesMessage.SEVERITY_ERROR,"Внутренняя ошибка при вложении файла.", "");
+    private static final FacesMessage MSG_CONTROLLER_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Руководителя", "");
+    private static final FacesMessage MSG_CONTRAGENT_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Корреспондента", "");
+    private static final FacesMessage MSG_RECIPIENTS_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Адресатов", "");
+    private static final FacesMessage MSG_SHORT_DESCRIPTION_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", "");
+
 
     private boolean isUsersDialogSelected = true;
     private boolean isGroupsDialogSelected = false;
     //TODO ACL
     private boolean readPermission = false;
     private boolean editPermission = false;
+    private boolean executePermission = false;
 
     private transient String stateComment;
 
@@ -100,8 +114,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
                 LOGGER.error("INTERNAL ERROR ON DELETE:", e);
             }
         }
@@ -113,16 +126,12 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         try {
             final boolean result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
             return result;
         } catch (Exception e) {
             LOGGER.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при удалении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
             return false;
         }
     }
@@ -145,6 +154,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             final IncomingDocument document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).get(id);
             readPermission = false;
             editPermission = false;
+            executePermission = false;
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
@@ -176,91 +186,119 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 LOGGER.error("USER[{}] ACCESS TO DOCUMENT[{}] FORBIDDEN", currentUser.getId(), document.getId());
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при инициализации.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
 
+    /**
+     * 1) админ
+     * 2) автор
+     * 3) исполнители
+     * 4) список пользователей на редактирование
+     * 5) список пользователей на просмотр
+     * 6) список ролей на редактирование
+     * 7) список ролей на просмотр
+     * 8) руководитель
+     * 9) пользователи адресаты
+     * 10) группы адресаты
+     * 11) пользователи, учавствующие в согласованиях <SUMMARY>
+     * Просмотр: 1-2-3-4-5-6-7-8-9-10-11
+     * Редактирование документа: 1-2-4-6-8
+     * Действия: 1-2-3-8-9-10        *
+     *
+     * @param user
+     * @param document
+     * @return
+     */
     private boolean checkPermission(final User user, final IncomingDocument document) {
+        //1) админ
         if (user.isAdministrator()) {
-            LOGGER.debug("{}:Permission RW granted: AdminRole", document.getId());
+            LOGGER.debug("{}:Permission RWX granted: AdminRole", document.getId());
             readPermission = true;
             editPermission = true;
+            executePermission = true;
             return true;
         }
+        //2) автор
         if (user.equals(document.getAuthor())) {
-            LOGGER.debug("{}:Permission RW granted: Author", document.getId());
+            LOGGER.debug("{}:Permission RWX granted: Author", document.getId());
             readPermission = true;
             editPermission = true;
+            executePermission = true;
             return true;
         }
+        //3) исполнитель
+        for (User currentUser : document.getExecutors()) {
+            if (user.equals(currentUser)) {
+                LOGGER.debug("{}:Permission RX granted: Executor", document.getId());
+                readPermission = true;
+                executePermission = true;
+            }
+        }
+        //4) список пользователей на редактирование
+        for (User currentUser : document.getPersonEditors()) {
+            if (user.equals(currentUser)) {
+                LOGGER.debug("{}:Permission RW granted: PersonEditor", document.getId());
+                readPermission = true;
+                editPermission = true;
+            }
+        }
+        //5) список пользователей на просмотр
+        for (User currentUser : document.getPersonReaders()) {
+            if (user.equals(currentUser)) {
+                LOGGER.debug("{}:Permission R granted: PersonReader", document.getId());
+                readPermission = true;
+            }
+        }
+        //   6) список ролей на редактирование
+        //   7) список ролей на просмотр
         for (Role currentRole : user.getRoles()) {
             if (document.getRoleEditors().contains(currentRole)) {
                 LOGGER.debug("{}:Permission  RW granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
                 readPermission = true;
                 editPermission = true;
-                return true;
             }
             if (!readPermission && document.getRoleReaders().contains(currentRole)) {
                 LOGGER.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
                 readPermission = true;
             }
         }
-        for (User currentUser : document.getPersonEditors()) {
-            if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission RW granted: PersonEditor", document.getId());
-                readPermission = true;
-                editPermission = true;
-                return true;
-            }
-        }
-        if (!readPermission && user.equals(document.getController())) {
-            LOGGER.debug("{}:Permission RW granted: Controller", document.getId());
+        //8) руководитель
+        if (user.equals(document.getController())) {
+            LOGGER.debug("{}:Permission RWX granted: Controller", document.getId());
             readPermission = true;
             editPermission = true;
+            executePermission = true;
             return true;
         }
+        //9) пользователи адресаты
         for (User currentUser : document.getRecipientUsers()) {
             if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission R granted: RecipientUser", document.getId());
+                LOGGER.debug("{}:Permission RX granted: RecipientUser", document.getId());
                 readPermission = true;
-                return true;
+                executePermission = true;
             }
         }
-        for (User currentUser : document.getPersonReaders()) {
-            if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission R granted: PersonReader", document.getId());
-                readPermission = true;
-                return true;
-            }
-        }
-
-        for (User currentUser : document.getExecutors()) {
-            if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission R granted: Executor", document.getId());
-                readPermission = true;
-                return true;
-            }
-        }
+        //10) группы адресаты
         for (Group currentGroup : user.getGroups()) {
             if (document.getRecipientGroups().contains(currentGroup)) {
-                LOGGER.debug("{}:Permission R granted: RecipientGroup [{}] ", document.getId(), currentGroup.getValue());
+                LOGGER.debug("{}:Permission RX granted: RecipientGroup [{}] ", document.getId(), currentGroup.getValue());
                 readPermission = true;
-                return true;
+                executePermission = true;
             }
         }
+        //11) пользователи, учавствующие в согласованиях
         if (sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
             LOGGER.debug("{}:Permission R granted: TASK", document.getId());
             readPermission = true;
-            return true;
         }
-        if (!readPermission && !editPermission) {
+
+        if (!readPermission && !editPermission && !executePermission) {
             LOGGER.error("{}:Permission denied to user[{}]", document.getId(), user.getId());
             return false; //readPermission || editPermission;
         } else {
-            return readPermission || editPermission;
+            return readPermission || editPermission || executePermission;
         }
     }
 
@@ -298,6 +336,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     protected void initNewDocument() {
         readPermission = true;
         editPermission = true;
+        executePermission = true;
         IncomingDocument doc = new IncomingDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
         Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
@@ -351,19 +390,16 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             IncomingDocument document = getDocument();
             document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
                 return false;
             } else {
                 setDocument(document);
                 return true;
             }
         } catch (Exception e) {
-            LOGGER.error("saveDocument ERROR:", e);;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении.", ""));
+            LOGGER.error("saveDocument ERROR:", e);
+            ;
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -376,9 +412,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             IncomingDocument document = getDocument();
             document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
@@ -425,10 +459,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 result = true;
             }
         } catch (Exception e) {
-            LOGGER.error("saveNewDocument ERROR:", e);;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении нового документа.", ""));
+            LOGGER.error("saveNewDocument ERROR:", e);
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }
@@ -467,35 +499,31 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         boolean result = true;
         FacesContext context = FacesContext.getCurrentInstance();
         if (getDocument().getController() == null) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Руководителя", ""));
+            context.addMessage(null, MSG_CONTROLLER_NOT_SET);
             result = false;
         }
         if (getDocument().getContragent() == null) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Корреспондента", ""));
+            context.addMessage(null, MSG_CONTRAGENT_NOT_SET);
             result = false;
         }
-        if (getDocument().getRecipientUsers() == null || getDocument().getRecipientUsers().size() == 0) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Адресатов", ""));
+        if (getDocument().getRecipientUsers() == null || getDocument().getRecipientUsers().isEmpty()) {
+            context.addMessage(null, MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
         if (getDocument().getShortDescription() == null || getDocument().getShortDescription().equals("")) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", ""));
+            context.addMessage(null, MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
 
         return result;
     }
 
-    public boolean isCurrentUserAccessEdit() {
-        return editPermission;
-    }
-
     public boolean isCurrentUserDocEditor() {
         return editPermission;
     }
 
-    protected boolean isCurrentUserAdvDocReader() {
-        return editPermission;
+    public boolean isCurrentUserDocExecutor() {
+        return executePermission;
     }
 
     // FILES
@@ -521,10 +549,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
-            LOGGER.error("uploadAttachments ERROR:", e);;
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
+            LOGGER.error("uploadAttachments ERROR:", e);
+            ;
         }
     }
 
@@ -549,10 +576,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
-            LOGGER.error("versionAttachment ERROR:", e);;
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
+            LOGGER.error("versionAttachment ERROR:", e);
+            ;
         }
     }
 
