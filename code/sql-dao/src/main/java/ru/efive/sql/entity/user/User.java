@@ -446,6 +446,27 @@ public class User extends IdentifiedEntity {
         return contacts;
     }
 
+    public List<PersonContact> getContactsList(){
+        if(contacts != null && !contacts.isEmpty()) {
+            return new ArrayList<PersonContact>(contacts);
+        } else {
+            return new ArrayList<PersonContact>(0);
+        }
+    }
+
+    public String getContact(final String type){
+        final StringBuilder sb = new StringBuilder("");
+        for(PersonContact contact : contacts){
+            if(contact.getType().getCode().equalsIgnoreCase(type)){
+                if(sb.length() != 0){
+                    sb.append(", ");
+                }
+                sb.append(contact.getValue());
+            }
+        }
+        return sb.toString();
+    }
+
     public void setContacts(Set<PersonContact> contacts) {
         this.contacts = contacts;
     }

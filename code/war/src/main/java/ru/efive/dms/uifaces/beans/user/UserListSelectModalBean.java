@@ -6,15 +6,14 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 import ru.efive.sql.entity.user.User;
-import ru.efive.dms.uifaces.beans.EmployesBean;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 
 public class UserListSelectModalBean extends ModalWindowHolderBean {
 
-    public EmployesBean getUserList() {
+    public UserListHolderBean getUserList() {
         if (userList == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            userList = (EmployesBean) context.getApplication().evaluateExpressionGet(context, "#{employes}", EmployesBean.class);
+            userList = context.getApplication().evaluateExpressionGet(context, "#{userList}", UserListHolderBean.class);
         }
         return userList;
     }
@@ -59,10 +58,9 @@ public class UserListSelectModalBean extends ModalWindowHolderBean {
     }
 
 
-    private EmployesBean userList;
+    private UserListHolderBean userList;
 
     private List<User> users = new ArrayList<User>();
-    //private List<User> users;
 
     private static final long serialVersionUID = -9107594037615723746L;
 }

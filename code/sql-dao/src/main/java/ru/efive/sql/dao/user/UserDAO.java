@@ -124,7 +124,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param orderAsc    указывает направление сортировки. true = по возрастанию
      * @return список пользователей удовлетворяющих условию поиска
      */
-    public List<User> findUsers(String pattern, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc);
+    public List<User> findUsers(String pattern, boolean showDeleted, boolean showFired, int offset, int count, String orderBy, boolean orderAsc);
 
     /**
      * Находит количество пользователей по маске
@@ -133,6 +133,6 @@ public interface UserDAO extends GenericDAO<User> {
      * @param showDeleted включает в выборку удалённых пользователей
      * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
      */
-    public long countUsers(String pattern, boolean showDeleted);
+    public long countUsers(String pattern, boolean showDeleted, boolean showFired);
 
 }

@@ -1,5 +1,6 @@
 package ru.efive.sql.dao.user;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -438,30 +439,29 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
                     Restrictions.ilike("middleName", pattern + "%"));
             orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
             orExp = Restrictions.or(orExp, Restrictions.ilike("email", pattern + "%"));
-            searchCriteria.createAlias("contacts", "contacts", CriteriaSpecification.LEFT_JOIN );
+            searchCriteria.createAlias("contacts", "contacts", CriteriaSpecification.LEFT_JOIN);
             orExp = Restrictions.or(orExp, Restrictions.ilike("contacts.value", pattern + "%"));
-            searchCriteria.createAlias("jobPosition", "jobPosition",CriteriaSpecification.LEFT_JOIN);
+            searchCriteria.createAlias("jobPosition", "jobPosition", CriteriaSpecification.LEFT_JOIN);
             orExp = Restrictions.or(orExp, Restrictions.ilike("jobPosition.value", pattern + "%"));
-            searchCriteria.createAlias("jobDepartment", "jobDepartment",CriteriaSpecification.LEFT_JOIN);
+            searchCriteria.createAlias("jobDepartment", "jobDepartment", CriteriaSpecification.LEFT_JOIN);
             orExp = Restrictions.or(orExp, Restrictions.ilike("jobDepartment.value", pattern + "%"));
             searchCriteria.add(orExp);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
-    public List<User> findUsers(String pattern, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
+    public List<User> findUsers(final String pattern, final boolean showDeleted, final boolean showFired, final int offset, final int count, final String orderBy, final boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         addPatternCriteria(detachedCriteria, pattern);
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
-        detachedCriteria.add(Restrictions.eq("fired", false));
-
-
+        if (!showFired) {
+            detachedCriteria.add(Restrictions.eq("fired", false));
+        }
+        detachedCriteria.setProjection(Projections.id());
         String[] ords = orderBy == null ? null : orderBy.split(",");
         if (ords != null) {
             if (ords.length > 1) {
@@ -470,19 +470,38 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
                 addOrder(detachedCriteria, orderBy, orderAsc);
             }
         }
-        return getHibernateTemplate().findByCriteria(detachedCriteria, offset, count);
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(detachedCriteria, offset, count);
+        if (ids.isEmpty()) {
+            return new ArrayList<User>(0);
+        }
+        //Ищем только по этим ключам с упорядочиванием
+        DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
+        //EAGER LOADING
+        resultCriteria.setFetchMode("jobPosition", FetchMode.JOIN);
+        resultCriteria.setFetchMode("jobDepartment", FetchMode.JOIN);
+        resultCriteria.setFetchMode("contacts", FetchMode.JOIN);
+        if (ords != null) {
+            if (ords.length > 1) {
+                addOrder(resultCriteria, ords, orderAsc);
+            } else {
+                addOrder(resultCriteria, orderBy, orderAsc);
+            }
+        }
+        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        return getHibernateTemplate().findByCriteria(resultCriteria);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public long countUsers(String pattern, boolean showDeleted) {
+    public long countUsers(final String pattern, final boolean showDeleted, final boolean showFired) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         addPatternCriteria(detachedCriteria, pattern);
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
+        }
+        if (!showFired) {
+            detachedCriteria.add(Restrictions.eq("fired", false));
         }
 
         return getCountOf(detachedCriteria);
@@ -494,7 +513,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     public long countEmployes(String pattern, boolean showDeleted) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        detachedCriteria.add(Restrictions.or(Restrictions.isNull("fired"), Restrictions.eq("fired", false)));
+        detachedCriteria.add(Restrictions.eq("fired", false));
         addPatternCriteria(detachedCriteria, pattern);
         if (showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", true));
