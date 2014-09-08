@@ -10,7 +10,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ru.efive.sql.dao.user.UserDAO;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.enums.RoleType;
 import ru.efive.sql.entity.user.Role;

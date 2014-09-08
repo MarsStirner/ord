@@ -14,4 +14,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "dms_system_user_department")
 public class Department extends DictionaryEntity {
+    @Override
+    public String toString(){
+        return getValue();
+    }
 }

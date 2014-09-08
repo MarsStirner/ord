@@ -7,7 +7,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -51,7 +52,8 @@
                 <div class="defbutton">
                     <h:commandLink action="#{user.changeFired}"
                                    rendered="#{isAdministrator or isHr}">
-                        <h:graphicImage value="#{user.document.fired ? resource['images:button-accept.png'] : resource['images:button-reject.png']}"/>
+                        <h:graphicImage
+                                value="#{user.document.fired ? resource['images:button-accept.png'] : resource['images:button-reject.png']}"/>
                         <h:outputText value="#{user.document.fired ? 'Восстановить' : 'Уволить'}"/>
                     </h:commandLink>
                 </div>
@@ -86,189 +88,228 @@
 </div>
 
 <div class="main_content">
-    <e5ui:tabPanel id="content_table">
-        <e5ui:tabPage headerText="#{user.requisitesTabHeader}"
-                      actionBehavior="#{user.viewState ? 'client' : 'submit'}"
-                      selected="#{user.requisitesTabSelected}">
-            <h:panelGroup rendered="#{user.viewState}">
-                <div class="row">
-                    <table class="form_grid">
-                        <tr class="row">
-                            <td class="first">Фамилия:</td>
-                            <td><h:outputText value="#{user.document.lastName}"
-                                              class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Имя:</td>
-                            <td><h:outputText value="#{user.document.firstName}"
-                                              class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Отчество:</td>
-                            <td><h:outputText value="#{user.document.middleName}"
-                                              class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Подразделение:</td>
-                            <td><h:outputText value="#{user.document.jobDepartment.value}"
-                                              class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Должность:</td>
-                            <td><h:outputText value="#{user.document.jobPosition.value}"
-                                              class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Email:</td>
-                            <td><h:outputText value="#{user.document.email}"
-                                              class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Мобильный телефон:</td>
-                            <td colspan="3"><h:outputText
-                                    value="#{user.document.getContact('mobilePhone')}" class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Рабочий телефон:</td>
-                            <td><h:outputText value="#{user.document.getContact('workPhone')}"
-                                              class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Добавочный номер:</td>
-                            <td><h:outputText value="#{user.document.getContact('internalPhone')}"
-                                              class="wide"/></td>
-                        </tr>
-                    </table>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{user.createState or user.editState}">
-                <div class="row">
-                    <table class="form_grid">
-                        <tr class="row">
-                            <td class="first">Фамилия:</td>
-                            <td><h:inputText value="#{user.document.lastName}"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Имя:</td>
-                            <td><h:inputText value="#{user.document.firstName}"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Отчество:</td>
-                            <td><h:inputText value="#{user.document.middleName}"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Подразделение:</td>
-                            <td><h:inputText value="ERROR"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Должность:</td>
-                            <td><h:inputText value="ERROR"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Email:</td>
-                            <td><h:inputText value="#{user.document.email}"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Мобильный телефон:</td>
-                            <td><h:inputText value="ERROR"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Рабочий телефон:</td>
-                            <td><h:inputText value="ERROR"
-                                             class="wide"/></td>
-                        </tr>
-                        <tr>
-                            <td class="first">Добавочный номер:</td>
-                            <td><h:inputText value="ERROR"
-                                             class="wide"/></td>
-                        </tr>
-                    </table>
-                </div>
-            </h:panelGroup>
-        </e5ui:tabPage>
-        <e5ui:tabPage headerText="#{user.accessTabHeader}"
-                      actionBehavior="client" selected="#{user.accessTabSelected}"
-                      rendered="#{(isAdministrator or isHr)}">
-            <h:panelGroup rendered="#{user.createState or user.editState}">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first"><label> <span class="title">
+<e5ui:tabPanel id="content_table">
+<e5ui:tabPage headerText="#{user.requisitesTabHeader}"
+              actionBehavior="#{user.viewState ? 'client' : 'submit'}"
+              selected="#{user.requisitesTabSelected}">
+    <h:panelGroup rendered="#{user.viewState}">
+        <div class="row">
+            <table class="form_grid">
+                <tr class="row">
+                    <td class="first">Фамилия:</td>
+                    <td><h:outputText value="#{user.document.lastName}"
+                                      class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Имя:</td>
+                    <td><h:outputText value="#{user.document.firstName}"
+                                      class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Отчество:</td>
+                    <td><h:outputText value="#{user.document.middleName}"
+                                      class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Подразделение:</td>
+                    <td><h:outputText value="#{user.document.jobDepartment.value}"
+                                      class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Должность:</td>
+                    <td><h:outputText value="#{user.document.jobPosition.value}"
+                                      class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Email:</td>
+                    <td><h:outputText value="#{user.document.email}"
+                                      class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Мобильный телефон:</td>
+                    <td colspan="3"><h:outputText
+                            value="#{user.document.getContact('mobilePhone')}" class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Рабочий телефон:</td>
+                    <td><h:outputText value="#{user.document.getContact('workPhone')}"
+                                      class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Добавочный номер:</td>
+                    <td><h:outputText value="#{user.document.getContact('internalPhone')}"
+                                      class="wide"/></td>
+                </tr>
+            </table>
+        </div>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{user.createState or user.editState}">
+        <div class="row">
+            <table class="form_grid">
+                <tr class="row">
+                    <td class="first">Фамилия:</td>
+                    <td><h:inputText value="#{user.document.lastName}"
+                                     class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Имя:</td>
+                    <td><h:inputText value="#{user.document.firstName}"
+                                     class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Отчество:</td>
+                    <td><h:inputText value="#{user.document.middleName}"
+                                     class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">
+                        Подразделение
+                    </td>
+                    <td>
+                        <p:autoComplete
+                                id="jobDepartmentPicker"
+                                value="#{user.document.jobDepartment}"
+                                completeMethod="#{autoCompleteView.completeDepartment}"
+                                var="item"
+                                itemValue = "#{item}"
+                                itemLabel="#{item.value}"
+                                converter="departmentConverter"
+                                forceSelection="true"
+                                minQueryLength="2"
+                                queryDelay="500"
+                                size="100"
+                                emptyMessage="Нету элементов"
+                                placeHolder="Выберете подразделение"
+                                maxResults="10"
+                                converterMessage="Не существует такого отделения"
+                                />
+                        <p:watermark for="jobDepartmentPicker" value="Введите первые символы для поиска соответствий в справочнике" />
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="first">
+                        Должность
+                    </td>
+                    <td>
+                        <p:autoComplete
+                                id="jobPositionPicker"
+                                value="#{user.document.jobPosition}"
+                                completeMethod="#{autoCompleteView.completePosition}"
+                                var="item"
+                                itemValue = "#{item}"
+                                itemLabel="#{item.value}"
+                                converter="positionConverter"
+                                forceSelection="true"
+                                minQueryLength="2"
+                                queryDelay="500"
+                                size="100"
+                                emptyMessage="Нету элементов"
+                                maxResults="10"
+                                converterMessage="Не существует такой должности"
+                                />
+                        <p:watermark for="jobPositionPicker" value="Введите первые символы для поиска соответствий в справочнике" />
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Email:</td>
+                    <td><h:inputText value="#{user.document.email}"
+                                     class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Мобильный телефон:</td>
+                    <td><h:inputText value="ERROR"
+                                     class="wide"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first">Рабочий телефон:</td>
+                    <td><h:inputText value="ERROR"
+                                     class="wide"/></td>
+                </tr>
+                <tr>
+                    <td class="first">Добавочный номер:</td>
+                    <td><h:inputText value="ERROR"
+                                     class="wide"/></td>
+                </tr>
+            </table>
+        </div>
+    </h:panelGroup>
+</e5ui:tabPage>
+<e5ui:tabPage headerText="#{user.accessTabHeader}"
+              actionBehavior="client" selected="#{user.accessTabSelected}"
+              rendered="#{(isAdministrator or isHr)}">
+    <h:panelGroup rendered="#{user.createState or user.editState}">
+        <table class="form_grid">
+            <tr class="row">
+                <td class="first"><label> <span class="title">
 											Максимальный уровень допуска: </span>
-                        </label></td>
-                        <td class="second" colspan="3"><h:selectOneMenu
-                                id="accessLevel" value="#{user.document.maxUserAccessLevel}"
-                                converter="UserAccessLevelConverter">
-                            <f:selectItems
-                                    value="#{dictionaryManagement.userAccessLevels}"/>
-                        </h:selectOneMenu></td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first"><label> <span class="title">
+                </label></td>
+                <td class="second" colspan="3"><h:selectOneMenu
+                        id="accessLevel" value="#{user.document.maxUserAccessLevel}"
+                        converter="UserAccessLevelConverter">
+                    <f:selectItems
+                            value="#{dictionaryManagement.userAccessLevels}"/>
+                </h:selectOneMenu></td>
+            </tr>
+            <tr class="row">
+                <td class="first"><label> <span class="title">
 											Текущий уровень допуска: </span>
-                        </label></td>
-                        <td class="second" colspan="3"><h:outputText
-                                value="#{user.document.currentUserAccessLevel}"
-                                converter="UserAccessLevelConverter"/></td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first" colspan="2">
-                            <fieldset>
-                                <legend>
-                                    <label><span class="title">Роли</span> </label>
-                                </legend>
-                                <h:selectManyCheckbox collectionType="java.util.HashSet"
-                                                      layout="pageDirection" value="#{user.document.roles}"
-                                                      converter="RoleConverter">
-                                    <f:selectItems value="#{roleList.availableRoles}"/>
-                                </h:selectManyCheckbox>
-                            </fieldset>
-                        </td>
-                    </tr>
-                </table>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{user.viewState}">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first"><label> <span class="title">
+                </label></td>
+                <td class="second" colspan="3"><h:outputText
+                        value="#{user.document.currentUserAccessLevel}"
+                        converter="UserAccessLevelConverter"/></td>
+            </tr>
+            <tr class="row">
+                <td class="first" colspan="2">
+                    <fieldset>
+                        <legend>
+                            <label><span class="title">Роли</span> </label>
+                        </legend>
+                        <h:selectManyCheckbox collectionType="java.util.HashSet"
+                                              layout="pageDirection" value="#{user.document.roles}"
+                                              converter="RoleConverter">
+                            <f:selectItems value="#{roleList.availableRoles}"/>
+                        </h:selectManyCheckbox>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{user.viewState}">
+        <table class="form_grid">
+            <tr class="row">
+                <td class="first"><label> <span class="title">
 											Максимальный уровень допуска: </span>
-                        </label></td>
-                        <td class="second" colspan="3"><h:outputText
-                                value="#{user.document.maxUserAccessLevel}"
-                                converter="UserAccessLevelConverter"/></td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first"><label> <span class="title">
+                </label></td>
+                <td class="second" colspan="3"><h:outputText
+                        value="#{user.document.maxUserAccessLevel}"
+                        converter="UserAccessLevelConverter"/></td>
+            </tr>
+            <tr class="row">
+                <td class="first"><label> <span class="title">
 											Текущий уровень допуска: </span>
-                        </label></td>
-                        <td class="second" colspan="3"><h:outputText
-                                value="#{user.document.currentUserAccessLevel}"
-                                converter="UserAccessLevelConverter"/></td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first" colspan="4">
-                            <fieldset>
-                                <legend>
-                                    <label><span class="title">Роли</span> </label>
-                                </legend>
-                                <h:selectManyCheckbox collectionType="java.util.HashSet"
-                                                      layout="pageDirection" value="#{user.document.roles}"
-                                                      converter="RoleConverter" disabled="true">
-                                    <f:selectItems value="#{roleList.availableRoles}"/>
-                                </h:selectManyCheckbox>
-                            </fieldset>
-                        </td>
-                    </tr>
-                </table>
-            </h:panelGroup>
-        </e5ui:tabPage>
-    </e5ui:tabPanel>
+                </label></td>
+                <td class="second" colspan="3"><h:outputText
+                        value="#{user.document.currentUserAccessLevel}"
+                        converter="UserAccessLevelConverter"/></td>
+            </tr>
+            <tr class="row">
+                <td class="first" colspan="4">
+                    <fieldset>
+                        <legend>
+                            <label><span class="title">Роли</span> </label>
+                        </legend>
+                        <h:selectManyCheckbox collectionType="java.util.HashSet"
+                                              layout="pageDirection" value="#{user.document.roles}"
+                                              converter="RoleConverter" disabled="true">
+                            <f:selectItems value="#{roleList.availableRoles}"/>
+                        </h:selectManyCheckbox>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    </h:panelGroup>
+</e5ui:tabPage>
+</e5ui:tabPanel>
 </div>
 
 </ui:define>
