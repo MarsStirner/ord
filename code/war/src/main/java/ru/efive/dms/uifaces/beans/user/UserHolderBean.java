@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans.user;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
@@ -9,6 +10,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import ru.efive.sql.dao.user.UserDAO;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.enums.RoleType;
 import ru.efive.sql.entity.user.Role;
@@ -21,6 +23,21 @@ import ru.efive.uifaces.bean.FromStringConverter;
 @Named("user")
 @ConversationScoped
 public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> implements Serializable {
+
+    public boolean changeFired(){
+        final User user = getDocument();
+        final Date now = new Date();
+        if(user.isFired()){
+            //Восстанавливаем уволенного сотрудника
+           user.hire(now);
+        }  else {
+            //Увольняем сотрудника
+            user.fire(now);
+        }
+        final User alteredUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).save(user);
+        setDocument(alteredUser);
+        return alteredUser.isFired();
+    }
 
     @Override
     protected boolean deleteDocument() {
@@ -48,7 +65,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).get(id));
+        setDocument(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).getUser(id));
         if (getDocument() == null) {
             setState(STATE_NOT_FOUND);
         }

@@ -16,7 +16,7 @@
     <e5ui-comp:userSessionUpdate interval="300"/>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="header">
     <div id="form_header">
@@ -48,6 +48,13 @@
                         Сохранить
                     </h:commandLink>
                 </div>
+                <div class="defbutton">
+                    <h:commandLink action="#{user.changeFired}"
+                                   rendered="#{isAdministrator or isHr}">
+                        <h:graphicImage value="#{user.document.fired ? resource['images:button-accept.png'] : resource['images:button-reject.png']}"/>
+                        <h:outputText value="#{user.document.fired ? 'Восстановить' : 'Уволить'}"/>
+                    </h:commandLink>
+                </div>
             </div>
         </div>
     </div>
@@ -62,6 +69,7 @@
         <div class="name">
             <div>
                 <h:outputText value="#{user.document.getFullName()}"/>
+                <h:outputText value="[Уволен]" rendered="#{user.document.fired}"/>
             </div>
         </div>
     </h:panelGroup>
@@ -80,7 +88,7 @@
 <div class="main_content">
     <e5ui:tabPanel id="content_table">
         <e5ui:tabPage headerText="#{user.requisitesTabHeader}"
-                      actionBehavior="#{user.viewState? 'client': 'submit'}"
+                      actionBehavior="#{user.viewState ? 'client' : 'submit'}"
                       selected="#{user.requisitesTabSelected}">
             <h:panelGroup rendered="#{user.viewState}">
                 <div class="row">
@@ -102,12 +110,12 @@
                         </tr>
                         <tr class="row">
                             <td class="first">Подразделение:</td>
-                            <td><h:outputText value="#{user.document.jobDepartment}"
+                            <td><h:outputText value="#{user.document.jobDepartment.value}"
                                               class="wide"/></td>
                         </tr>
                         <tr class="row">
                             <td class="first">Должность:</td>
-                            <td><h:outputText value="#{user.document.jobPosition}"
+                            <td><h:outputText value="#{user.document.jobPosition.value}"
                                               class="wide"/></td>
                         </tr>
                         <tr class="row">
@@ -118,16 +126,16 @@
                         <tr class="row">
                             <td class="first">Мобильный телефон:</td>
                             <td colspan="3"><h:outputText
-                                    value="#{user.document.mobilePhone}" class="wide"/></td>
+                                    value="#{user.document.getContact('mobilePhone')}" class="wide"/></td>
                         </tr>
                         <tr class="row">
                             <td class="first">Рабочий телефон:</td>
-                            <td><h:outputText value="#{user.document.workPhone}"
+                            <td><h:outputText value="#{user.document.getContact('workPhone')}"
                                               class="wide"/></td>
                         </tr>
                         <tr class="row">
                             <td class="first">Добавочный номер:</td>
-                            <td><h:outputText value="#{user.document.internalNumber}"
+                            <td><h:outputText value="#{user.document.getContact('internalPhone')}"
                                               class="wide"/></td>
                         </tr>
                     </table>
@@ -153,12 +161,12 @@
                         </tr>
                         <tr class="row">
                             <td class="first">Подразделение:</td>
-                            <td><h:inputText value="#{user.document.jobDepartment}"
+                            <td><h:inputText value="ERROR"
                                              class="wide"/></td>
                         </tr>
                         <tr class="row">
                             <td class="first">Должность:</td>
-                            <td><h:inputText value="#{user.document.jobPosition}"
+                            <td><h:inputText value="ERROR"
                                              class="wide"/></td>
                         </tr>
                         <tr class="row">
@@ -168,17 +176,17 @@
                         </tr>
                         <tr class="row">
                             <td class="first">Мобильный телефон:</td>
-                            <td><h:inputText value="#{user.document.mobilePhone}"
+                            <td><h:inputText value="ERROR"
                                              class="wide"/></td>
                         </tr>
                         <tr class="row">
                             <td class="first">Рабочий телефон:</td>
-                            <td><h:inputText value="#{user.document.workPhone}"
+                            <td><h:inputText value="ERROR"
                                              class="wide"/></td>
                         </tr>
                         <tr>
                             <td class="first">Добавочный номер:</td>
-                            <td><h:inputText value="#{user.document.internalNumber}"
+                            <td><h:inputText value="ERROR"
                                              class="wide"/></td>
                         </tr>
                     </table>
@@ -223,12 +231,6 @@
                             </fieldset>
                         </td>
                     </tr>
-                    <tr class="row">
-                        <td class="first"></td>
-                        <td class="second"></td>
-                        <td class="third"></td>
-                        <td class="fourth"></td>
-                    </tr>
                 </table>
             </h:panelGroup>
             <h:panelGroup rendered="#{user.viewState}">
@@ -262,12 +264,6 @@
                                 </h:selectManyCheckbox>
                             </fieldset>
                         </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first"></td>
-                        <td class="second"></td>
-                        <td class="third"></td>
-                        <td class="fourth"></td>
                     </tr>
                 </table>
             </h:panelGroup>

@@ -137,29 +137,20 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
         return ACTION_RESULT_VIEW;
     }
 
-    protected String getActionParameterName() {
-        return REQUEST_PARAM_DOC_ACTION;
-    }
-
     protected String getDocIdParameterName() {
         return REQUEST_PARAM_DOC_ID;
     }
 
     protected State getInitialState() {
-        String action = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-                .get(getActionParameterName());
-        
-        State result;
-
+        final String action = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+                .get(REQUEST_PARAM_DOC_ACTION);
         if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
-            result = STATE_CREATE;
+           return STATE_CREATE;
         } else if (REQUEST_PVALUE_DOC_ACTION_EDIT.equals(action)) {
-            result = STATE_EDIT;
+            return STATE_EDIT;
         } else {
-            result = STATE_VIEW;
+            return STATE_VIEW;
         }
-
-        return result;
     }
 
     protected I getInitialDocumentId() {
@@ -282,7 +273,6 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
     @PostConstruct
     public void init() {
         state = getInitialState();
-
         if (STATE_CREATE.equals(state)) {
             initNewDocument();
         } else {
@@ -291,11 +281,9 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
                 initDocument(id);
             }
         }
-
         if (document == null) {
             state = STATE_NOT_FOUND;
         }
-
         if (conversation.isTransient()) {
             conversation.begin();
         }

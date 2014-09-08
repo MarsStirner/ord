@@ -585,4 +585,17 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     }
 
 
+    public User getUser(final Integer id) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
+        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        detachedCriteria.setFetchMode("jobPosition", FetchMode.JOIN);
+        detachedCriteria.setFetchMode("jobDepartment", FetchMode.JOIN);
+        detachedCriteria.setFetchMode("contacts", FetchMode.JOIN);
+        detachedCriteria.add(Restrictions.eq("id", id));
+        final List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria);
+        if(!users.isEmpty()){
+            return users.get(0);
+        }
+        return null;
+    }
 }

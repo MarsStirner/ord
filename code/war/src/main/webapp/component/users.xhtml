@@ -21,14 +21,14 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:outputLink value="#{contextPath}/component/user.xhtml" target="_blank" rendered="#{isAdministrator}">
+            <h:outputLink value="#{contextPath}/component/user.xhtml" target="_blank" rendered="#{isAdministrator or isHr}">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый пользователь
                 <f:param name="docAction" value="create"/>
             </h:outputLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{userList.importLDAPUsers()}" rendered="#{isAdministrator}">
+            <h:commandLink action="#{userList.importLDAPUsers()}" rendered="#{isAdministrator or isHr}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Импортировать пользователей из LDAP
                 <e5ui:formPartTarget formPart="main_table_part"/>

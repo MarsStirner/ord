@@ -496,4 +496,22 @@ public class User extends IdentifiedEntity {
         return getId() == other.getId();
     }
 
+    /**
+     * Принять сотрудника на работу начиная от даты !не меняет содержимое БД, только модель!
+     * @param date дата приема на работу
+     */
+    public void hire(final Date date) {
+        fired = false;
+        lastModified = date;
+    }
+
+    /**
+     * Уволить сотрудника с даты !не меняет содержимое БД, только модель!
+     * @param date дата увольнения
+     */
+    public void fire(final Date date) {
+       fired = true;
+       firedDate = date;
+       lastModified = date;
+    }
 }
