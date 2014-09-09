@@ -117,9 +117,9 @@ public class User extends IdentifiedEntity {
 
     /**
      * Контактные данные пользователя (почта, телефон, итд)
-     * При сохранении пользователя - добавлять или обновлять записи
+     * При сохранении пользователя - добавлять\удалять и обновлять записи
      */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<PersonContact> contacts = new HashSet<PersonContact>(4);
 
     /**
@@ -194,11 +194,7 @@ public class User extends IdentifiedEntity {
         if (roles != null) {
             result.addAll(roles);
         }
-        Collections.sort(result, new Comparator<Role>() {
-            public int compare(Role o1, Role o2) {
-                return o1.getId() - o2.getId();
-            }
-        });
+        Collections.sort(result);
         return result;
     }
 

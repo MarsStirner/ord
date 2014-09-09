@@ -13,6 +13,8 @@
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
 <ui:define name="running_head">
+    <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+    <h:outputScript library="js" name="forms.js" target="head"/>
     <!-- #{user.document.id}  -->
     <e5ui-comp:userSessionUpdate interval="300"/>
 </ui:define>
@@ -51,7 +53,7 @@
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{user.changeFired}"
-                                   rendered="#{isAdministrator or isHr}">
+                                   rendered="#{user.viewState and (isAdministrator or isHr)}">
                         <h:graphicImage
                                 value="#{user.document.fired ? resource['images:button-accept.png'] : resource['images:button-reject.png']}"/>
                         <h:outputText value="#{user.document.fired ? 'Восстановить' : 'Уволить'}"/>
@@ -89,7 +91,7 @@
 
 <div class="main_content">
 <e5ui:tabPanel id="content_table">
-<e5ui:tabPage headerText="#{user.requisitesTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Реквизиты&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="#{user.viewState ? 'client' : 'submit'}"
               selected="#{user.requisitesTabSelected}">
     <h:panelGroup rendered="#{user.viewState}">
@@ -162,6 +164,11 @@
                                      class="wide"/></td>
                 </tr>
                 <tr class="row">
+                    <td class="first">Логин:</td>
+                    <td><h:inputText value="#{user.document.login}"
+                                     class="wide"/></td>
+                </tr>
+                <tr class="row">
                     <td class="first">
                         Подразделение
                     </td>
@@ -171,7 +178,7 @@
                                 value="#{user.document.jobDepartment}"
                                 completeMethod="#{autoCompleteView.completeDepartment}"
                                 var="item"
-                                itemValue = "#{item}"
+                                itemValue="#{item}"
                                 itemLabel="#{item.value}"
                                 converter="departmentConverter"
                                 forceSelection="true"
@@ -183,7 +190,8 @@
                                 maxResults="10"
                                 converterMessage="Не существует такого отделения"
                                 />
-                        <p:watermark for="jobDepartmentPicker" value="Введите первые символы для поиска соответствий в справочнике" />
+                        <p:watermark for="jobDepartmentPicker"
+                                     value="Введите первые символы для поиска соответствий в справочнике"/>
                     </td>
                 </tr>
                 <tr class="row">
@@ -196,7 +204,7 @@
                                 value="#{user.document.jobPosition}"
                                 completeMethod="#{autoCompleteView.completePosition}"
                                 var="item"
-                                itemValue = "#{item}"
+                                itemValue="#{item}"
                                 itemLabel="#{item.value}"
                                 converter="positionConverter"
                                 forceSelection="true"
@@ -207,7 +215,8 @@
                                 maxResults="10"
                                 converterMessage="Не существует такой должности"
                                 />
-                        <p:watermark for="jobPositionPicker" value="Введите первые символы для поиска соответствий в справочнике" />
+                        <p:watermark for="jobPositionPicker"
+                                     value="Введите первые символы для поиска соответствий в справочнике"/>
                     </td>
                 </tr>
                 <tr class="row">
@@ -216,25 +225,53 @@
                                      class="wide"/></td>
                 </tr>
                 <tr class="row">
-                    <td class="first">Мобильный телефон:</td>
-                    <td><h:inputText value="ERROR"
-                                     class="wide"/></td>
+                    <td><h3>Контактные данные</h3></td>
                 </tr>
                 <tr class="row">
-                    <td class="first">Рабочий телефон:</td>
-                    <td><h:inputText value="ERROR"
-                                     class="wide"/></td>
-                </tr>
-                <tr>
-                    <td class="first">Добавочный номер:</td>
-                    <td><h:inputText value="ERROR"
-                                     class="wide"/></td>
+                    <td colspan="2">
+                        <div id="main_table" style="width:100%">
+                            <div class="wrap_main" id="table_wrap">
+                                <div class="inner" id="table_inner">
+                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
+                                                    value="#{user.document.contactsList}" var="row" grouping="false"
+                                                    width="100%">
+                                        <e5ui:column style="min-width:9em">
+                                            <f:facet name="header">
+                                                <h:commandLink>
+                                                    Тип
+                                                </h:commandLink>
+                                            </f:facet>
+                                            <h:outputText value="#{row.type}"/>
+                                        </e5ui:column>
+                                        <e5ui:column style="min-width:9em">
+                                            <f:facet name="header">
+                                                <h:commandLink>
+                                                    Номер
+                                                </h:commandLink>
+                                            </f:facet>
+                                            <h:inputText value="#{row.value}"/>
+                                        </e5ui:column>
+                                        <e5ui:column>
+                                            <f:facet name="header">
+                                                <h:commandLink>
+                                                    Удалить
+                                                </h:commandLink>
+                                            </f:facet>
+                                            <h:commandLink action="#{user.deleteContact(row)}">
+                                                <h:graphicImage value="#{resource['images:button-reject.png']}"/>
+                                            </h:commandLink>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
     </h:panelGroup>
 </e5ui:tabPage>
-<e5ui:tabPage headerText="#{user.accessTabHeader}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Права доступа|допуска&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="client" selected="#{user.accessTabSelected}"
               rendered="#{(isAdministrator or isHr)}">
     <h:panelGroup rendered="#{user.createState or user.editState}">

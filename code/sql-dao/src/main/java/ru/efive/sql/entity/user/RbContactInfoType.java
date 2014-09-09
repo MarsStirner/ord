@@ -48,6 +48,11 @@ public class RbContactInfoType extends DictionaryEntity{
         this.valueMask = valueMask;
     }
 
+    @Override
+    public String toString(){
+        return getValue();
+    }
+
     //GET&SET
 
     public String getCode() {

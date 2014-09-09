@@ -5,14 +5,13 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
+import ru.efive.sql.entity.user.PersonContact;
 import ru.efive.sql.entity.user.User;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
@@ -23,6 +22,10 @@ import ru.efive.uifaces.bean.FromStringConverter;
 @ConversationScoped
 public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> implements Serializable {
 
+    /**
+     * Обработчик нажатия на кнопку "Уволить\Восстановить", с сохранением изменений в БД
+     * @return  флаг удаления
+     */
     public boolean changeFired(){
         final User user = getDocument();
         final Date now = new Date();
@@ -38,6 +41,10 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         return alteredUser.isFired();
     }
 
+    public boolean deleteContact(final PersonContact contact){
+         return getDocument().getContacts().remove(contact);
+    }
+
     @Override
     protected boolean deleteDocument() {
         boolean result = false;
@@ -45,9 +52,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
             sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
         }
         return result;
     }
@@ -75,6 +80,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         User user = new User();
         user.setCreated(Calendar.getInstance(ApplicationHelper.getLocale()).getTime());
         user.setDeleted(false);
+        user.setFired(false);
         setDocument(user);
     }
 
@@ -83,29 +89,15 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         boolean result = false;
         try {
             User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).update(getDocument());
-            /*Set<Group> groups=user.getGroups();
-               if(groups!=null){
-                   for(Group group:groups){
-                       if(group!=null){
-                           System.out.println("group->"+group.getDescription());
-                       }
-                   }
-               }else{
-                   System.out.println("null groups");
-               }*/
             if (user == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 setDocument(user);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -117,58 +109,17 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         try {
             User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).save(getDocument());
             if (user == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 setDocument(user);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return result;
-    }
-
-    @Override
-    protected String doAfterCreate() {
-        userList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        userList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        userList.markNeedRefresh();
-        return super.doAfterSave();
-    }
-
-    protected boolean isCurrentUserDocEditor() {
-        User in_user = sessionManagement.getLoggedUser();
-        //User in_doc=getDocument();
-       // User in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-
-        if (in_user != null) {
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_role.getRoleType().name().equals(RoleType.ADMINISTRATOR.name())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
     }
 
     public boolean isRequisitesTabSelected() {
@@ -177,10 +128,6 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
     public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
         this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getAccessTabHeader() {
-        return "<span><span>Права доступа|допуска</span></span>";
     }
 
     public boolean isAccessTabSelected() {
@@ -197,9 +144,6 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     @Inject
     @Named("sessionManagement")
     SessionManagementBean sessionManagement = new SessionManagementBean();
-    @Inject
-    @Named("userList")
-    UserListHolderBean userList = new UserListHolderBean();
 
     private static final long serialVersionUID = 5947443099767481905L;
 }

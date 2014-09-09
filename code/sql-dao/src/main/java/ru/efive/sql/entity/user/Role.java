@@ -14,6 +14,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -27,7 +28,7 @@ import ru.efive.sql.entity.enums.RoleType;
  */
 @Entity
 @Table(name = "dms_system_roles")
-public class Role extends IdentifiedEntity {
+public class Role extends IdentifiedEntity implements Comparable<Role>{
 
     private static final long serialVersionUID = -4121985925621903659L;
 
@@ -119,5 +120,11 @@ public class Role extends IdentifiedEntity {
     @Override
     public int hashCode() {
         return getName().hashCode() + getRoleType().ordinal();
+    }
+
+
+    @Override
+    public int compareTo(@NotNull Role o) {
+        return o.getId() - getId();
     }
 }

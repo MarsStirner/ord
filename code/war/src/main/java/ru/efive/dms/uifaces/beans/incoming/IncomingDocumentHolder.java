@@ -49,6 +49,7 @@ import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.entity.enums.DocumentStatus;
 import ru.efive.sql.entity.user.Group;
@@ -69,18 +70,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
     //Сообщения
-    //TODO создать общий справочник и перенести сообщения туда
-    private static final FacesMessage MSG_CANT_DELETE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", "");
-    private static final FacesMessage MSG_CANT_SAVE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", "");
-    private static final FacesMessage MSG_ERROR_ON_DELETE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при удалении.", "");
-    private static final FacesMessage MSG_ERROR_ON_INITIALIZE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при инициализации.", "");
-    private static final FacesMessage MSG_ERROR_ON_SAVE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при сохранении.", "");
-    private static final FacesMessage MSG_ERROR_ON_SAVE_NEW = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при сохранении нового документа.", "");
-    private static final FacesMessage MSG_ERROR_ON_ATTACH = new FacesMessage(FacesMessage.SEVERITY_ERROR,"Внутренняя ошибка при вложении файла.", "");
-    private static final FacesMessage MSG_CONTROLLER_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Руководителя", "");
-    private static final FacesMessage MSG_CONTRAGENT_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Корреспондента", "");
-    private static final FacesMessage MSG_RECIPIENTS_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Адресатов", "");
-    private static final FacesMessage MSG_SHORT_DESCRIPTION_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", "");
+
 
 
     private boolean isUsersDialogSelected = true;
@@ -115,7 +105,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
                 LOGGER.error("INTERNAL ERROR ON DELETE:", e);
             }
         }
@@ -127,12 +117,12 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         try {
             final boolean result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
             }
             return result;
         } catch (Exception e) {
             LOGGER.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
             return false;
         }
     }
@@ -187,7 +177,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 LOGGER.error("USER[{}] ACCESS TO DOCUMENT[{}] FORBIDDEN", currentUser.getId(), document.getId());
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
@@ -391,7 +381,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             IncomingDocument document = getDocument();
             document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
                 return false;
             } else {
                 setDocument(document);
@@ -400,7 +390,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         } catch (Exception e) {
             LOGGER.error("saveDocument ERROR:", e);
             ;
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -413,7 +403,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             IncomingDocument document = getDocument();
             document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
@@ -461,7 +451,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             }
         } catch (Exception e) {
             LOGGER.error("saveNewDocument ERROR:", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }
@@ -500,19 +490,19 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         boolean result = true;
         FacesContext context = FacesContext.getCurrentInstance();
         if (getDocument().getController() == null) {
-            context.addMessage(null, MSG_CONTROLLER_NOT_SET);
+            context.addMessage(null, MessageHolder.MSG_CONTROLLER_NOT_SET);
             result = false;
         }
         if (getDocument().getContragent() == null) {
-            context.addMessage(null, MSG_CONTRAGENT_NOT_SET);
+            context.addMessage(null, MessageHolder.MSG_CONTRAGENT_NOT_SET);
             result = false;
         }
         if (getDocument().getRecipientUsers() == null || getDocument().getRecipientUsers().isEmpty()) {
-            context.addMessage(null, MSG_RECIPIENTS_NOT_SET);
+            context.addMessage(null, MessageHolder.MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
         if (getDocument().getShortDescription() == null || getDocument().getShortDescription().equals("")) {
-            context.addMessage(null, MSG_SHORT_DESCRIPTION_NOT_SET);
+            context.addMessage(null, MessageHolder.MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
 
@@ -550,9 +540,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
             LOGGER.error("uploadAttachments ERROR:", e);
-            ;
         }
     }
 
@@ -577,7 +566,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
             LOGGER.error("versionAttachment ERROR:", e);
             ;
         }
