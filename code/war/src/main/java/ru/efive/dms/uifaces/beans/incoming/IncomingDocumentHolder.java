@@ -198,9 +198,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
      * Редактирование документа: 1-2-4-6-8
      * Действия: 1-2-3-8-9-10        *
      *
-     * @param user
-     * @param document
-     * @return
+     * @param user  пользователь для которого проверяем права
+     * @param document  документи, на который проверяем права
+     * @return  флаг просмотра
      */
     private boolean checkPermission(final User user, final IncomingDocument document) {
         //1) админ
@@ -389,7 +389,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             }
         } catch (Exception e) {
             LOGGER.error("saveDocument ERROR:", e);
-            ;
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
         }
@@ -568,7 +567,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
             LOGGER.error("versionAttachment ERROR:", e);
-            ;
         }
     }
 
