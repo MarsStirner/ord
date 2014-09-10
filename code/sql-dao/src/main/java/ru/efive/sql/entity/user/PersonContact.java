@@ -13,10 +13,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "dms_system_user_contact")
-public class PersonContact extends IdentifiedEntity{
+public class PersonContact extends IdentifiedEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name="person_id", nullable = false)
+    @JoinColumn(name = "person_id", nullable = false)
     private User person;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)

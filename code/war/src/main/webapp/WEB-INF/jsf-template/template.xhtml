@@ -20,7 +20,7 @@
 
 <h:body id="main_body">
 
-<ui:insert name="running_head"></ui:insert>
+<ui:insert name="running_head"/>
 
 <div id="main_global">
 
@@ -661,8 +661,7 @@
     <div id="view_header">
         <div id="header">
             <div class="menu">
-                <ui:insert name="header_top"></ui:insert>
-
+                <ui:insert name="header_top"/>
                 <div class="username">
                     <div class="top">
                         <h:commandLink styleClass="top_link" onclick="return false;">
@@ -708,7 +707,7 @@
         </div>
         <div class="actionbar">
             <div class="menu">
-                <ui:insert name="header_buttons"></ui:insert>
+                <ui:insert name="header_buttons"/>
             </div>
         </div>
     </div>
@@ -729,7 +728,7 @@
             </div>
         </f:facet>
     </e5ui-comp:splashScreen>
-    <script>
+    <script type="javascript">
         e5ui_splashScreen.startShowOnSubmit('splash_screen',
                 [ 'main_content_form' ]);
     </script>

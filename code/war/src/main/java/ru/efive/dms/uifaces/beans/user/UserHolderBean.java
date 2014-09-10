@@ -1,17 +1,20 @@
 package ru.efive.dms.uifaces.beans.user;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.sql.dao.user.RbContactTypeDAO;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.PersonContact;
+import ru.efive.sql.entity.user.RbContactInfoType;
 import ru.efive.sql.entity.user.User;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
@@ -21,18 +24,20 @@ import ru.efive.uifaces.bean.FromStringConverter;
 @Named("user")
 @ConversationScoped
 public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> implements Serializable {
+    private static final Logger LOGGER = LoggerFactory.getLogger("USER");
 
     /**
      * Обработчик нажатия на кнопку "Уволить\Восстановить", с сохранением изменений в БД
-     * @return  флаг удаления
+     *
+     * @return флаг удаления
      */
-    public boolean changeFired(){
+    public boolean changeFired() {
         final User user = getDocument();
         final Date now = new Date();
-        if(user.isFired()){
+        if (user.isFired()) {
             //Восстанавливаем уволенного сотрудника
-           user.hire(now);
-        }  else {
+            user.hire(now);
+        } else {
             //Увольняем сотрудника
             user.fire(now);
         }
@@ -41,8 +46,30 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         return alteredUser.isFired();
     }
 
-    public boolean deleteContact(final PersonContact contact){
-         return getDocument().getContacts().remove(contact);
+    /**
+     * Удаление контакта из модели \ бина
+     * @param contact контакт, который надо удалить
+     * @return успешность удаления
+     */
+    public boolean deleteContact(final PersonContact contact) {
+        return getDocument().getContacts().remove(contact);
+
+    }
+
+    /**
+     * Добавление нового контакта в модель
+     *
+     * @return успешность добавления
+     */
+    public boolean addContact() {
+        PersonContact newContact = new PersonContact();
+        newContact.setPerson(getDocument());
+        final List<RbContactInfoType> typeList = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, ApplicationHelper.RB_CONTACT_TYPE_DAO).findDocuments();
+        if (!typeList.isEmpty()) {
+            newContact.setType(typeList.get(0));
+            return getDocument().getContacts().add(newContact);
+        }
+        return false;
     }
 
     @Override
@@ -88,6 +115,8 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     protected boolean saveDocument() {
         boolean result = false;
         try {
+            //Удаляем пустые контактные данные, введенные пользователем
+            removeEmptyContacts(getDocument().getContacts());
             User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).update(getDocument());
             if (user == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
@@ -101,6 +130,20 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
             e.printStackTrace();
         }
         return result;
+    }
+
+    /**
+     * Удаляем незаполненные контактные данные
+     * @param contacts
+     */
+    private void removeEmptyContacts(Collection<PersonContact> contacts) {
+        final Iterator<PersonContact> contactIterator = contacts.iterator();
+        while (contactIterator.hasNext()) {
+            final PersonContact item = contactIterator.next();
+            if (item.getValue().isEmpty()) {
+                contactIterator.remove();
+            }
+        }
     }
 
     @Override

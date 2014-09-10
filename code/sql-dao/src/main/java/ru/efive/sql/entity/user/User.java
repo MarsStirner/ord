@@ -120,7 +120,7 @@ public class User extends IdentifiedEntity {
      * При сохранении пользователя - добавлять\удалять и обновлять записи
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private Set<PersonContact> contacts = new HashSet<PersonContact>(4);
+    private List<PersonContact> contacts;
 
     /**
      * группы
@@ -438,17 +438,7 @@ public class User extends IdentifiedEntity {
 
     //Collections *****************************
 
-    public Set<PersonContact> getContacts() {
-        return contacts;
-    }
-
-    public List<PersonContact> getContactsList(){
-        if(contacts != null && !contacts.isEmpty()) {
-            return new ArrayList<PersonContact>(contacts);
-        } else {
-            return new ArrayList<PersonContact>(0);
-        }
-    }
+    public List<PersonContact> getContacts() {return contacts;}
 
     public String getContact(final String type){
         final StringBuilder sb = new StringBuilder("");
@@ -463,15 +453,22 @@ public class User extends IdentifiedEntity {
         return sb.toString();
     }
 
-    public void setContacts(Set<PersonContact> contacts) {
+    public void setContacts(List<PersonContact> contacts) {
         this.contacts = contacts;
     }
 
     public boolean addToContacts(final PersonContact contact) {
         if (contacts == null) {
-            this.contacts = new HashSet<PersonContact>(1);
+            contacts = new ArrayList<PersonContact>(1);
         }
-        return this.contacts.add(contact);
+        return contacts.add(contact);
+    }
+
+    public boolean addToContacts(final List<PersonContact> newContacts) {
+        if (contacts == null) {
+            contacts = new ArrayList<PersonContact>(newContacts.size());
+        }
+        return contacts.addAll(newContacts);
     }
 
     private static final long serialVersionUID = -7649892958713448678L;
@@ -510,4 +507,6 @@ public class User extends IdentifiedEntity {
        firedDate = date;
        lastModified = date;
     }
+
+
 }

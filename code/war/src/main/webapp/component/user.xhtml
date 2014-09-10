@@ -128,19 +128,37 @@
                                       class="wide"/></td>
                 </tr>
                 <tr class="row">
-                    <td class="first">Мобильный телефон:</td>
-                    <td colspan="3"><h:outputText
-                            value="#{user.document.getContact('mobilePhone')}" class="wide"/></td>
+                    <td><h3>Контактные данные</h3></td>
                 </tr>
                 <tr class="row">
-                    <td class="first">Рабочий телефон:</td>
-                    <td><h:outputText value="#{user.document.getContact('workPhone')}"
-                                      class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Добавочный номер:</td>
-                    <td><h:outputText value="#{user.document.getContact('internalPhone')}"
-                                      class="wide"/></td>
+                    <td colspan="2">
+                        <div id="main_table" style="width:100%">
+                            <div class="wrap_main" id="table_wrap">
+                                <div class="inner" id="table_inner">
+                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
+                                                    value="#{user.document.contacts}" var="row" grouping="false"
+                                                    width="100%">
+                                        <e5ui:column style="min-width:9em">
+                                            <f:facet name="header">
+                                                <h:commandLink>
+                                                    Тип
+                                                </h:commandLink>
+                                            </f:facet>
+                                            <h:outputText value="#{row.type}" />
+                                        </e5ui:column>
+                                        <e5ui:column style="min-width:9em">
+                                            <f:facet name="header">
+                                                <h:commandLink>
+                                                    Номер
+                                                </h:commandLink>
+                                            </f:facet>
+                                            <h:outputText value="#{row.value}"/>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
             </table>
         </div>
@@ -233,7 +251,7 @@
                             <div class="wrap_main" id="table_wrap">
                                 <div class="inner" id="table_inner">
                                     <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
-                                                    value="#{user.document.contactsList}" var="row" grouping="false"
+                                                    value="#{user.document.contacts}" var="row" grouping="false"
                                                     width="100%">
                                         <e5ui:column style="min-width:9em">
                                             <f:facet name="header">
@@ -241,7 +259,12 @@
                                                     Тип
                                                 </h:commandLink>
                                             </f:facet>
-                                            <h:outputText value="#{row.type}"/>
+                                            <h:selectOneMenu
+                                                    id="contactTypeSelectMenu" value="#{row.type}"
+                                                    converter="ContactTypeConverter" style="font-size:10pt;"
+                                                    immediate="true" >
+                                            <f:selectItems value="#{dictionaryManagement.contactTypes}"/>
+                                            </h:selectOneMenu>
                                         </e5ui:column>
                                         <e5ui:column style="min-width:9em">
                                             <f:facet name="header">
@@ -251,7 +274,7 @@
                                             </f:facet>
                                             <h:inputText value="#{row.value}"/>
                                         </e5ui:column>
-                                        <e5ui:column>
+                                        <e5ui:column style="width:10%">
                                             <f:facet name="header">
                                                 <h:commandLink>
                                                     Удалить
@@ -262,6 +285,7 @@
                                             </h:commandLink>
                                         </e5ui:column>
                                     </e5ui:dataTable>
+                                    <h:commandButton value="Добавить новый контакт" action="#{user.addContact()}"/>
                                 </div>
                             </div>
                         </div>

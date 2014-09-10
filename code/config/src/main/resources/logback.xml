@@ -37,14 +37,25 @@
 
 
     <logger name="INCOMING_DOCUMENT" level="DEBUG"/>
+
     <logger name="AUTH" level="DEBUG" />
+
     <logger name="CONVERTER" level="DEBUG"/>
+
     <logger name="FILTER" level="DEBUG" />
+
     <logger name="SESSION_LISTENER" level="DEBUG" />
+
+    <!--Логгер для действий с пользователями-->
+    <logger name="USER" level="DEBUG"/>
+
+    <!--Логгер для интеграции с ЛДАП-->
     <logger name="LDAP" level="DEBUG">
         <appender-ref ref="APPENDER_LDAP"/>
     </logger>
+
     <logger name="HUMAN_TASK" level="DEBUG"/>
+
     <!--Hibernate SQL LOGGER-->
     <logger name="SQL" level = "DEBUG" additivity="false">
         <appender-ref ref="APPENDER_SQL"/>

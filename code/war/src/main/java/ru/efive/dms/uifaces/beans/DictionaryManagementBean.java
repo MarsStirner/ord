@@ -15,8 +15,10 @@ import javax.inject.Named;
 
 import ru.efive.crm.data.ContragentNomenclature;
 import ru.efive.sql.dao.user.GroupTypeDAO;
+import ru.efive.sql.dao.user.RbContactTypeDAO;
 import ru.efive.sql.dao.user.UserAccessLevelDAO;
 import ru.efive.sql.entity.enums.GroupType;
+import ru.efive.sql.entity.user.RbContactInfoType;
 import ru.efive.sql.entity.user.User;
 import ru.efive.sql.entity.user.UserAccessLevel;
 import ru.efive.dms.dao.DeliveryTypeDAOImpl;
@@ -189,6 +191,10 @@ public class DictionaryManagementBean implements Serializable {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public List<RbContactInfoType> getContactTypes(){
+        return sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, ApplicationHelper.RB_CONTACT_TYPE_DAO).findDocuments();
     }
 
 
