@@ -69,8 +69,33 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     //Именованный логгер (INCOMING_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
-    //Сообщения
 
+    @Override
+    public boolean isCanDelete() {
+        if (!editPermission) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return editPermission;
+    }
+
+    @Override
+    public boolean isCanEdit() {
+        if (!editPermission) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return editPermission;
+    }
+
+    @Override
+    public boolean isCanView() {
+        if (!readPermission) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return readPermission;
+    }
 
 
     private boolean isUsersDialogSelected = true;
@@ -171,11 +196,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             updateAttachments();
             setDocument(document);
             //Проверка прав на открытие
-            if (!checkPermission(currentUser, document)) {
-                setState(STATE_FORBIDDEN);
-                setStateComment("Доступ запрещен");
-                LOGGER.error("USER[{}] ACCESS TO DOCUMENT[{}] FORBIDDEN", currentUser.getId(), document.getId());
-            }
+            checkPermission(currentUser, document);
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
@@ -198,9 +219,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
      * Редактирование документа: 1-2-4-6-8
      * Действия: 1-2-3-8-9-10        *
      *
-     * @param user  пользователь для которого проверяем права
-     * @param document  документи, на который проверяем права
-     * @return  флаг просмотра
+     * @param user     пользователь для которого проверяем права
+     * @param document документи, на который проверяем права
+     * @return флаг просмотра
      */
     private boolean checkPermission(final User user, final IncomingDocument document) {
         //1) админ
@@ -369,9 +390,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         historyEntry.setEndDate(created);
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
-
         doc.addToHistory(historyEntry);
-
         setDocument(doc);
     }
 

@@ -184,21 +184,17 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
     }
 
     public String delete() {
-        String result;
-
-        if (state.isErrorState() || !isCanDelete()) {
-            result = doAfterError();
+        if (state.isErrorState()) {
+           return doAfterError();
         } else if (isCanDelete() && deleteDocument()) {
             state = null;
             document = null;
-            result = doAfterDelete();
+            return doAfterDelete();
         } else {
             // If this instructions are executed then deleteDocument() is returned <code>false</code> and it should
             // add error messages to context themself.
-            result = null;
+           return null;
         }
-
-        return result;
     }
 
     public String edit() {
