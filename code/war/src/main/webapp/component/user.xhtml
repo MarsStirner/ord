@@ -73,7 +73,7 @@
         <div class="name">
             <div>
                 <h:outputText value="#{user.document.getFullName()}"/>
-                <h:outputText value="[Уволен]" rendered="#{user.document.fired}"/>
+                <h:outputText value=" [Уволен]" rendered="#{user.document.fired}"/>
             </div>
         </div>
     </h:panelGroup>
@@ -92,9 +92,9 @@
 <div class="main_content">
 <e5ui:tabPanel id="content_table">
 <e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Реквизиты&lt;/span&gt;&lt;/span&gt;"
-              actionBehavior="#{user.viewState ? 'client' : 'submit'}"
-              selected="#{user.requisitesTabSelected}">
-    <h:panelGroup rendered="#{user.viewState}">
+              actionBehavior="#{user.viewState ? 'client' : 'submit'}">
+<c:if test="#{user.viewState}">
+    <h:panelGroup>
         <div class="row">
             <table class="form_grid">
                 <tr class="row">
@@ -135,7 +135,7 @@
                         <div id="main_table" style="width:100%">
                             <div class="wrap_main" id="table_wrap">
                                 <div class="inner" id="table_inner">
-                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
+                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="view_contacts_tbl"
                                                     value="#{user.document.contacts}" var="row" grouping="false"
                                                     width="100%">
                                         <e5ui:column style="min-width:9em">
@@ -163,7 +163,9 @@
             </table>
         </div>
     </h:panelGroup>
-    <h:panelGroup rendered="#{user.createState or user.editState}">
+</c:if>
+<c:if test="#{user.createState or user.editState}">
+    <h:panelGroup>
         <div class="row">
             <table class="form_grid">
                 <tr class="row">
@@ -250,7 +252,7 @@
                         <div id="main_table" style="width:100%">
                             <div class="wrap_main" id="table_wrap">
                                 <div class="inner" id="table_inner">
-                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
+                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="edit_contacts_tbl"
                                                     value="#{user.document.contacts}" var="row" grouping="false"
                                                     width="100%">
                                         <e5ui:column style="min-width:9em">
@@ -294,10 +296,11 @@
             </table>
         </div>
     </h:panelGroup>
+</c:if>
 </e5ui:tabPage>
+<c:if test="#{isAdministrator or isHr}">
 <e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Права доступа|допуска&lt;/span&gt;&lt;/span&gt;"
-              actionBehavior="client" selected="#{user.accessTabSelected}"
-              rendered="#{(isAdministrator or isHr)}">
+              actionBehavior="client">
     <h:panelGroup rendered="#{user.createState or user.editState}">
         <table class="form_grid">
             <tr class="row">
@@ -370,6 +373,7 @@
         </table>
     </h:panelGroup>
 </e5ui:tabPage>
+</c:if>
 </e5ui:tabPanel>
 </div>
 

@@ -14,14 +14,17 @@ import javax.inject.Inject;
 public abstract class AbstractDocumentHolderBean<D extends Serializable, I extends Serializable>
         implements Serializable {
 
+
     public static class State implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
         private final boolean errorState;
 
-        public State(boolean errorState) {
-            this.errorState = errorState;
+        private String value;
+
+        public State(boolean errorState, String value) {
+            this.errorState = errorState;this.value=value;
         }
 
         public boolean isErrorState() {
@@ -50,19 +53,19 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
 
     public static final String ACTION_RESULT_VIEW = "view";
 
-    public static final State STATE_CREATE = new State(false);
+    public static final State STATE_CREATE = new State(false, "CREATE");
 
-    public static final State STATE_EDIT = new State(false);
+    public static final State STATE_EDIT = new State(false, "EDIT");
 
-    public static final State STATE_FORBIDDEN = new State(true);
+    public static final State STATE_FORBIDDEN = new State(true, "FORBIDDEN");
 
-    public static final State STATE_NOT_FOUND = new State(true);
+    public static final State STATE_NOT_FOUND = new State(true, "NOT_FOUND");
 
-    public static final State STATE_DELETED = new State(true);
+    public static final State STATE_DELETED = new State(true, "DELETED");
 
-    public static final State STATE_VIEW = new State(false);
+    public static final State STATE_VIEW = new State(false, "VIEW");
     
-    public static final State STATE_INTERNAL_ERROR = new State(true);
+    public static final State STATE_INTERNAL_ERROR = new State(true, "INTERNAL_ERROR");
 
     public static final String REQUEST_PARAM_DOC_ACTION = "docAction";
 
@@ -80,8 +83,6 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
 
     @Inject
     private transient Conversation conversation;
-
-    // ----------------------------------------------------------------------------------------------------------------
 
     // ----------------------------------------------------------------------------------------------------------------
 
@@ -115,7 +116,6 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
 
     protected String doAfterError() {
         String result;
-
         if (isNotFoundState()) {
             result = ACTION_RESULT_NOT_FOUND;
         } else if (isForbiddenState()) {
@@ -137,25 +137,9 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
         return ACTION_RESULT_VIEW;
     }
 
-    protected String getDocIdParameterName() {
-        return REQUEST_PARAM_DOC_ID;
-    }
-
-    protected State getInitialState() {
-        final String action = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-                .get(REQUEST_PARAM_DOC_ACTION);
-        if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
-           return STATE_CREATE;
-        } else if (REQUEST_PVALUE_DOC_ACTION_EDIT.equals(action)) {
-            return STATE_EDIT;
-        } else {
-            return STATE_VIEW;
-        }
-    }
-
     protected I getInitialDocumentId() {
         String docId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-                .get(getDocIdParameterName());
+                .get(REQUEST_PARAM_DOC_ID);
         return getIdConverter().getValueFromString(docId);
     }
 
@@ -222,8 +206,6 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
     }
 
     public String edit(I documentId) {
-        initDocument(documentId);
-
         if (state.isErrorState() || !isCanEdit()) {
             return doAfterError();
         } else {
@@ -272,20 +254,32 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
 
     @PostConstruct
     public void init() {
-        state = getInitialState();
-        if (STATE_CREATE.equals(state)) {
-            initNewDocument();
-        } else {
-            I id = getInitialDocumentId();
-            if (id != null) {
-                initDocument(id);
-            }
+        if (conversation.isTransient()) {
+            conversation.begin();
+        }
+        final String action = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(REQUEST_PARAM_DOC_ACTION);
+        //CREATE
+        if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
+           if(isCanCreate()){
+               state = STATE_CREATE;
+               initNewDocument();
+               return;
+           } else {
+               state = STATE_FORBIDDEN;
+               return;
+           }
+        }
+        //EDIT OR VIEW EXISTING DOCUMENT
+        I id = getInitialDocumentId();
+        if (id != null) {
+            initDocument(id);
         }
         if (document == null) {
             state = STATE_NOT_FOUND;
-        }
-        if (conversation.isTransient()) {
-            conversation.begin();
+        } else if (REQUEST_PVALUE_DOC_ACTION_EDIT.equals(action)) {
+            state = isCanEdit() ? STATE_EDIT : STATE_FORBIDDEN;
+        } else {
+            state = isCanView() ? STATE_VIEW : STATE_FORBIDDEN;
         }
     }
 

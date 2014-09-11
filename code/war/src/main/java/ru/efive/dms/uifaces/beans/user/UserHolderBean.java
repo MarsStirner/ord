@@ -26,6 +26,36 @@ import ru.efive.uifaces.bean.FromStringConverter;
 public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("USER");
 
+    @Override
+    public boolean isCanCreate() {
+        if(!super.isCanEdit()){
+            LOGGER.error("TRY TO CREATE ON ErrorState");
+            return false;
+        }
+        final User loggedUser = sessionManagement.getLoggedUser();
+        if(!loggedUser.isAdministrator() && !loggedUser.isHr()){
+            LOGGER.error("User[{}] try to create new User without permission. Restricted!", loggedUser.getId());
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
+    public boolean isCanEdit(){
+        if(!super.isCanEdit()){
+            LOGGER.error("TRY TO EDIT ON ErrorState");
+            return false;
+        }
+        final User loggedUser = sessionManagement.getLoggedUser();
+        if(!loggedUser.isAdministrator() && !loggedUser.isHr()){
+            LOGGER.error("User[{}] try to edit User[{}] info without permission. Restricted!", loggedUser.getId(), getDocumentId());
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * Обработчик нажатия на кнопку "Уволить\Восстановить", с сохранением изменений в БД
      *
@@ -97,9 +127,6 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     @Override
     protected void initDocument(Integer id) {
         setDocument(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).getUser(id));
-        if (getDocument() == null) {
-            setState(STATE_NOT_FOUND);
-        }
     }
 
     @Override
@@ -164,25 +191,6 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         }
         return result;
     }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public boolean isAccessTabSelected() {
-        return isAccessTabSelected;
-    }
-
-    public void setAccessTabSelected(boolean isAccessTabSelected) {
-        this.isAccessTabSelected = isAccessTabSelected;
-    }
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isAccessTabSelected = false;
 
     @Inject
     @Named("sessionManagement")

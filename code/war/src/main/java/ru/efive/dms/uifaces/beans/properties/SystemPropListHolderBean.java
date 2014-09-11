@@ -44,9 +44,9 @@ public class SystemPropListHolderBean implements Serializable {
     
     private Map<String, String> fileValues;
 
-    private static final State EDIT_STATE = new State(false);
+    private static final State EDIT_STATE = new State(false, "EDIT");
 
-    private static final State STATE_VIEW = new State(false);
+    private static final State STATE_VIEW = new State(false, "VIEW");
 
     public static final String ACTION_RESULT_EDIT = "edit";
 

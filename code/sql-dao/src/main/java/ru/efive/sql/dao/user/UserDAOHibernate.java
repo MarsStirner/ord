@@ -627,10 +627,17 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
              * but duplicates of the SQL resultset are preserved as duplicate references to these 5 instances
              */
             //ГОРИ ОНО ВСЕ ОГНЕМ!!!!!!!!!!!!!!!!!!!!!
-            result.setContacts(new ArrayList<PersonContact>(new HashSet<PersonContact>(result.getContacts())));
-
+            getUserContacts(result);
             return result;
         }
         return null;
+    }
+
+    private void getUserContacts(User user) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(PersonContact.class);
+        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        detachedCriteria.add(Restrictions.eq("person", user));
+        user.getContacts().clear();
+        user.getContacts().addAll(getHibernateTemplate().findByCriteria(detachedCriteria));
     }
 }
