@@ -8,20 +8,45 @@ import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
-import javax.enterprise.context.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.Conversation;
+import javax.enterprise.context.ConversationScoped;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
 @Named("userList")
-@SessionScoped
+@ConversationScoped
 public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
     private static final long serialVersionUID = 8282506863686518183L;
+    @Inject
+    private Conversation conversation;
+
+    @PostConstruct
+    public void init(){
+        if(conversation.isTransient()) {
+            conversation.begin();
+        }
+    }
 
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
     private String filter;
+    /**
+     * Флаг для определения: показывать только уволенных или наоборот
+     */
+    private boolean showFired = false;
+
+    public boolean getShowFired(){
+        return showFired;
+    }
+
+    public void changeShowFiredFlag(){
+        showFired = !showFired;
+        refresh();
+    }
 
     @Override
     protected Pagination initPagination() {
@@ -43,16 +68,28 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
 
     @Override
     protected int getTotalCount() {
-        return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).countUsers(filter, false, false)).intValue();
+        if(!showFired) {
+            return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).countUsers(filter, false, false)).intValue();
+        } else {
+            return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).countFiredUsers(filter, false)).intValue();
+        }
     }
 
     @Override
     protected List<User> loadDocuments() {
-        return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)
-                .findUsers(filter, false, false,
-                        getPagination().getOffset(), getPagination().getPageSize(),
-                        getSorting().getColumnId(), getSorting().isAsc()
-                );
+        if(!showFired) {
+            return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)
+                    .findUsers(filter, false, false,
+                            getPagination().getOffset(), getPagination().getPageSize(),
+                            getSorting().getColumnId(), getSorting().isAsc()
+                    );
+        } else {
+            return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)
+                    .findFiredUsers(filter, false,
+                            getPagination().getOffset(), getPagination().getPageSize(),
+                            getSorting().getColumnId(), getSorting().isAsc()
+                    );
+        }
     }
 
     public void importLDAPUsers() {

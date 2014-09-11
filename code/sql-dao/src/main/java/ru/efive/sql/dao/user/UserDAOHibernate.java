@@ -1,6 +1,7 @@
 package ru.efive.sql.dao.user;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import org.hibernate.criterion.*;
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.efive.sql.entity.enums.PermissionType;
 import ru.efive.sql.entity.user.Permission;
+import ru.efive.sql.entity.user.PersonContact;
 import ru.efive.sql.entity.user.Role;
 import ru.efive.sql.entity.user.User;
 import ru.efive.sql.util.ApplicationHelper;
@@ -567,12 +569,12 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     public List<User> findFiredUsers(String pattern, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        detachedCriteria.add(Restrictions.and(Restrictions.isNotNull("fired"), Restrictions.eq("fired", true)));
         addPatternCriteria(detachedCriteria, pattern);
-        if (showDeleted) {
-            detachedCriteria.add(Restrictions.eq("deleted", true));
+        if (!showDeleted) {
+            detachedCriteria.add(Restrictions.eq("deleted", false));
         }
-
+        detachedCriteria.add(Restrictions.eq("fired", true));
+        detachedCriteria.setProjection(Projections.id());
         String[] ords = orderBy == null ? null : orderBy.split(",");
         if (ords != null) {
             if (ords.length > 1) {
@@ -581,7 +583,26 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
                 addOrder(detachedCriteria, orderBy, orderAsc);
             }
         }
-        return getHibernateTemplate().findByCriteria(detachedCriteria, offset, count);
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(detachedCriteria, offset, count);
+        if (ids.isEmpty()) {
+            return new ArrayList<User>(0);
+        }
+        //Ищем только по этим ключам с упорядочиванием
+        DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
+        //EAGER LOADING
+        resultCriteria.setFetchMode("jobPosition", FetchMode.JOIN);
+        resultCriteria.setFetchMode("jobDepartment", FetchMode.JOIN);
+        resultCriteria.setFetchMode("contacts", FetchMode.JOIN);
+        if (ords != null) {
+            if (ords.length > 1) {
+                addOrder(resultCriteria, ords, orderAsc);
+            } else {
+                addOrder(resultCriteria, orderBy, orderAsc);
+            }
+        }
+        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        return getHibernateTemplate().findByCriteria(resultCriteria);
     }
 
 
@@ -594,7 +615,21 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         detachedCriteria.add(Restrictions.eq("id", id));
         final List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria);
         if(!users.isEmpty()){
-            return users.get(0);
+            final User result = users.iterator().next();
+            //TODO  http://stackoverflow.com/questions/18753245/one-to-many-relationship-gets-duplicate-objects-whithout-using-distinct-why
+            /**
+             * Want to know why the duplicates are there?
+             * Look at the SQL resultset, Hibernate does not hide these duplicates on the left side of the outer joined result
+             * but returns all the duplicates of the driving table. If you have 5 orders in the database,
+             * and each order has 3 line items, the resultset will be 15 rows.
+             * The Java result list of these queries will have 15 elements, all of type Order.
+             * Only 5 Order instances will be created by Hibernate,
+             * but duplicates of the SQL resultset are preserved as duplicate references to these 5 instances
+             */
+            //ГОРИ ОНО ВСЕ ОГНЕМ!!!!!!!!!!!!!!!!!!!!!
+            result.setContacts(new ArrayList<PersonContact>(new HashSet<PersonContact>(result.getContacts())));
+
+            return result;
         }
         return null;
     }
