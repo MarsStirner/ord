@@ -189,6 +189,14 @@
                                      class="wide"/></td>
                 </tr>
                 <tr class="row">
+                    <td class="first">Пароль:</td>
+                    <td>
+                        <h:inputText value="" binding="#{newPass}" class="wide">
+                            <f:ajax listener="#{user.changePassword(newPass.value)}" />
+                        </h:inputText>
+                    </td>
+                </tr>
+                <tr class="row">
                     <td class="first">
                         Подразделение
                     </td>

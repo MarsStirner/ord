@@ -57,6 +57,14 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     }
 
     /**
+     * Меняет пароль у открытого на редактирование пользователя (+ хэширует при setPassword)
+     * @param newPass новый пароль
+     */
+    public void changePassword(String newPass){
+        getDocument().setPassword(newPass);
+    }
+
+    /**
      * Обработчик нажатия на кнопку "Уволить\Восстановить", с сохранением изменений в БД
      *
      * @return флаг удаления

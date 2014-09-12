@@ -177,8 +177,12 @@ public class User extends IdentifiedEntity {
         return password;
     }
 
+    /**
+     * Выставляет пароль, преобразуя его в хеш
+     * @param password  пароль, хэш которого надо сохранить в модель
+     */
     public void setPassword(String password) {
-        this.password = password;
+        this.password = ru.efive.sql.util.ApplicationHelper.getMD5(password);
     }
 
     public Set<Role> getRoles() {
