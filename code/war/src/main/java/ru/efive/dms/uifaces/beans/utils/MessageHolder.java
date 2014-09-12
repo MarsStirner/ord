@@ -22,4 +22,11 @@ public class MessageHolder {
     public static final FacesMessage MSG_CONTRAGENT_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Корреспондента", "");
     public static final FacesMessage MSG_RECIPIENTS_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Адресатов", "");
     public static final FacesMessage MSG_SHORT_DESCRIPTION_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", "");
+
+    //Сообщения об ошибках авторизации
+    public final static FacesMessage MSG_AUTH_FIRED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
+    public final static FacesMessage MSG_AUTH_DELETED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");
+    public final static FacesMessage MSG_AUTH_ERROR = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка при входе в систему. Попробуйте повторить позже.", "");
+    public final static FacesMessage MSG_AUTH_NOT_FOUND = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Введены неверные данные.", "");
+    public final static FacesMessage MSG_AUTH_NO_ROLE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Обратитесь к администратору системы для получения доступа", "");
 }

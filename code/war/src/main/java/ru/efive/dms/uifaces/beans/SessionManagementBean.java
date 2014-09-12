@@ -1,16 +1,8 @@
 package ru.efive.dms.uifaces.beans;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.annotation.PreDestroy;
-import javax.el.ELContext;
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.Application;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -33,9 +25,39 @@ import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.entity.user.User;
 import ru.efive.sql.entity.user.UserAccessLevel;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+
 @Named("sessionManagement")
 @SessionScoped
 public class SessionManagementBean implements Serializable {
+
+    public static final String AUTH_KEY = "app.user.name";
+    public static final String BACK_URL = "app.back.url";
+
+    private final static Logger LOGGER = LoggerFactory.getLogger("AUTH");
+
+    private User loggedUser;
+    private long reqDocumentsCount = 0;
+
+    private String userName;
+    private String password;
+
+    private String backUrl;
+
+    //Назначенные роли
+    private boolean isAdministrator = false;
+    private boolean isRecorder = false;
+    private boolean isOfficeManager = false;
+    private boolean isRequestManager = false;
+    private boolean isEmployer = false;
+    private boolean isOuter = false;
+    private boolean isHr = false;
+
+    @Inject
+    @Named("indexManagement")
+    private transient IndexManagementBean indexManagement;
+
+    private static final long serialVersionUID = -916300301346029630L;
 
     public void setUserName(String userName) {
         this.userName = userName;
@@ -68,14 +90,14 @@ public class SessionManagementBean implements Serializable {
                     //Проверка удаленности\уволенности сотрудника
                     if (loggedUser.isDeleted() || loggedUser.isFired()) {
                         LOGGER.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" : "FIRED");
-                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_DELETED : MSG_FIRED);
+                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_AUTH_DELETED : MSG_AUTH_FIRED);
                         loggedUser = null;
                         return;
                     }
                     //Проверка наличия у пользователя ролей
                     if (loggedUser.getRoles().isEmpty()) {
                         LOGGER.warn("USER[{}] HAS NO ONE ROLE", loggedUser.getId());
-                        FacesContext.getCurrentInstance().addMessage(null, MSG_NO_ROLE);
+                        FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NO_ROLE);
                         loggedUser = null;
                         return;
                     }
@@ -103,11 +125,11 @@ public class SessionManagementBean implements Serializable {
                     LOGGER.info("SUCCESSFUL LOGIN:{}", loggedUser.getId());
                 } else {
                     LOGGER.error("USER[{}] NOT FOUND", userName);
-                    FacesContext.getCurrentInstance().addMessage(null, MSG_NOT_FOUND);
+                    FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NOT_FOUND);
                 }
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(AUTH_KEY);
-                FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR);
+                FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_ERROR);
                 loggedUser = null;
                 LOGGER.error("Exception while processing login action:", e);
             }
@@ -218,32 +240,6 @@ public class SessionManagementBean implements Serializable {
         return reqDocumentsCount > 0;
     }
 
-
-    private User loggedUser;
-    private long reqDocumentsCount = 0;
-
-    private String userName;
-    private String password;
-
-    private String backUrl;
-
-    //Назначенные роли
-    private boolean isAdministrator = false;
-    private boolean isRecorder = false;
-    private boolean isOfficeManager = false;
-    private boolean isRequestManager = false;
-    private boolean isEmployer = false;
-    private boolean isOuter = false;
-    private boolean isHr = false;
-
-    //Сообщения об ошибках авторизации
-    private final static FacesMessage MSG_FIRED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
-    private final static FacesMessage MSG_DELETED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");
-    private final static FacesMessage MSG_ERROR = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка при входе в систему. Попробуйте повторить позже.", "");
-    private final static FacesMessage MSG_NOT_FOUND = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Введены неверные данные.", "");
-    private final static FacesMessage MSG_NO_ROLE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Обратитесь к администратору системы для получения доступа", "");
-
-
     public boolean isAdministrator() {
         return isAdministrator;
     }
@@ -300,10 +296,6 @@ public class SessionManagementBean implements Serializable {
         this.isHr = isHr;
     }
 
-    @Inject
-    @Named("indexManagement")
-    private transient IndexManagementBean indexManagement;
-
     public IndexManagementBean getIndexManagement() {
         return indexManagement;
     }
@@ -312,10 +304,5 @@ public class SessionManagementBean implements Serializable {
         this.indexManagement = indexManagement;
     }
 
-    public static final String AUTH_KEY = "app.user.name";
-    public static final String BACK_URL = "app.back.url";
 
-    private final static Logger LOGGER = LoggerFactory.getLogger("AUTH");
-
-    private static final long serialVersionUID = -916300301346029630L;
 }

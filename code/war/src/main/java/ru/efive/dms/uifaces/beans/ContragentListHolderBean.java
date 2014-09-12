@@ -28,31 +28,25 @@ public class ContragentListHolderBean extends AbstractDocumentListHolderBean<Con
 
     @Override
     protected int getTotalCount() {
-        int result = 0;
         try {
-            result = new Long(sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).countDocument(filter, false)).intValue();
+           return new Long(sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).countDocument(filter, false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return 0;
     }
 
     @Override
     protected List<Contragent> loadDocuments() {
-        List<Contragent> result = new ArrayList<Contragent>();
         try {
-            result = sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).findDocuments(filter,
+          return sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).findDocuments(filter,
                     false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return new ArrayList<Contragent>();
     }
 
-    @Override
-    public List<Contragent> getDocuments() {
-        return super.getDocuments();
-    }
 
     public String getFilter() {
         return filter;

@@ -170,5 +170,13 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
         return in_result;
     }
 
+    @Override
+    protected DetachedCriteria getSearchCriteria(DetachedCriteria criteria, String filter) {
+        if (filter != null && !filter.isEmpty()) {
+            criteria.add(Restrictions.ilike("value", filter, MatchMode.ANYWHERE));
+        }
+        return criteria;
+    }
+
 
 }

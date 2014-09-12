@@ -8,13 +8,8 @@
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
-
 <h:head>
     <h:outputStylesheet library="css" name="style.css"/>
-    <!--[if lte ie 8]>
-         <link rel="stylesheet" type="text/css" href="/e5_dms/resources/css/ie.css" />
-     <![endif]-->
-
     <title>Документооборот ФНКЦ ДГОИ</title>
 </h:head>
 
@@ -26,21 +21,15 @@
 
 <h:form id="main_content_form">
 <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
-<c:set var="isAdministrator"
-       value="#{sessionManagement.isAdministrator()}"/>
-<c:set var="isRecorder"
-       value="#{sessionManagement.isRecorder()}"/>
-<c:set var="isOfficeManager"
-       value="#{sessionManagement.isOfficeManager()}"/>
-<c:set var="isRequestManager"
-       value="#{sessionManagement.isRequestManager()}"/>
-<c:set var="canViewRequestDocuments"
-       value="#{sessionManagement.isCanViewRequestDocuments()}"/>
-<c:set var="isOuter"
-       value="#{sessionManagement.isOuter()}"/>
-<c:set var="isHr"
-       value="#{sessionManagement.isHr()}"/>
+<c:set var="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
+<c:set var="isRecorder" value="#{sessionManagement.isRecorder()}"/>
+<c:set var="isOfficeManager" value="#{sessionManagement.isOfficeManager()}"/>
+<c:set var="isRequestManager" value="#{sessionManagement.isRequestManager()}"/>
+<c:set var="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
+<c:set var="isOuter" value="#{sessionManagement.isOuter()}"/>
+<c:set var="isHr" value="#{sessionManagement.isHr()}"/>
 <c:set var="contextPath" value="#{request.contextPath}"/>
+
 <ui:insert name="left_menu">
 <div id="left_menu">
 <div class="header">Документооборот ФНКЦ ДГОИ</div>
@@ -653,7 +642,7 @@
 </c:if>
 </e5ui:menu>
 </div>
-<div id="split"></div>
+<div id="split"/>
 </ui:insert>
 
 <ui:insert name="header">
@@ -661,7 +650,6 @@
         <div id="header">
             <div class="menu">
                 <ui:insert name="header_top"/>
-
                 <div class="username">
                     <div class="top">
                         <h:commandLink styleClass="top_link" onclick="return false;">
@@ -669,7 +657,6 @@
                                                 value="#{sessionManagement.loggedUser.getFullName()}"/>
 										</span>
                         </h:commandLink>
-
                         <div class="sub">
                             <div class="item" style="width: 100%">
                                 <h:commandLink action="#{sessionManagement.logOut}">
@@ -687,16 +674,13 @@
                                                 converter="UserAccessLevelConverter"/>
 										</span>
                         </h:commandLink>
-
                         <div class="sub">
                             <ui:repeat
                                     value="#{dictionaryManagement.getUserAccessLevelsLowerOrEqualMaxValue(sessionManagement.getLoggedUser().getMaxUserAccessLevel().level)}"
                                     var="element">
                                 <div class="item">
-                                    <h:commandLink
-                                            action="#{sessionManagement.setCurrentUserAccessLevel(element)}">
-                                        <h:outputText value="#{element}"
-                                                      converter="UserAccessLevelConverter"/>
+                                    <h:commandLink action="#{sessionManagement.setCurrentUserAccessLevel(element)}">
+                                        <h:outputText value="#{element}" converter="UserAccessLevelConverter"/>
                                     </h:commandLink>
                                 </div>
                             </ui:repeat>
