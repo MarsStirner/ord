@@ -45,8 +45,7 @@
 <div id="left_menu">
 <div class="header">Документооборот ФНКЦ ДГОИ</div>
 <e5ui:menu>
-<h:panelGroup
-        rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Электронные документы</span>
@@ -62,7 +61,7 @@
             </f:facet>
         </e5ui:menuItem>
     </e5ui:menuItem>
-</h:panelGroup>
+</c:if>
 <e5ui:menuItem collapsable="true">
     <f:facet name="content">
         <span>Входящие документы</span>
@@ -107,7 +106,6 @@
             </h:outputLink>
         </f:facet>
     </e5ui:menuItem>
-
 </e5ui:menuItem>
 <e5ui:menuItem collapsable="true">
     <f:facet name="content">
@@ -293,8 +291,7 @@
         </f:facet>
     </e5ui:menuItem>
 </e5ui:menuItem>
-
-<h:panelGroup rendered="#{isRequestManager or canViewRequestDocuments}">
+<c:if test="#{isRequestManager or canViewRequestDocuments}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Обращения граждан</span>
@@ -360,8 +357,7 @@
             </f:facet>
         </e5ui:menuItem>
     </e5ui:menuItem>
-</h:panelGroup>
-
+</c:if>
 <e5ui:menuItem collapsable="true">
     <f:facet name="content">
         <span>Поручения|Задачи</span>
@@ -467,7 +463,7 @@
         </f:facet>
     </e5ui:menuItem>
 </e5ui:menuItem>
-<h:panelGroup rendered="#{not isOuter}">
+<c:if test="#{not isOuter}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Пользователи</span>
@@ -491,8 +487,6 @@
             </f:facet>
         </e5ui:menuItem>
     </e5ui:menuItem>
-</h:panelGroup>
-<h:panelGroup rendered="#{not isOuter}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Записная книжка</span>
@@ -508,9 +502,8 @@
             </f:facet>
         </e5ui:menuItem>
     </e5ui:menuItem>
-</h:panelGroup>
-<h:panelGroup
-        rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
+</c:if>
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Контрагенты</span>
@@ -526,9 +519,8 @@
             </f:facet>
         </e5ui:menuItem>
     </e5ui:menuItem>
-</h:panelGroup>
-
-<h:panelGroup rendered="#{isAdministrator or isRecorder}">
+</c:if>
+<c:if test="#{isAdministrator or isRecorder}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Архивирование</span>
@@ -554,9 +546,8 @@
             </f:facet>
         </e5ui:menuItem>
     </e5ui:menuItem>
-</h:panelGroup>
-<h:panelGroup>
-    <!-- rendered="#{isAdministrator or isOfficeManager or isRequestManager}"> -->
+</c:if>
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
     <e5ui:menuItem collapsable="true">
         <f:facet name="content">
             <span>Шаблоны согласования</span>
@@ -572,65 +563,83 @@
             </f:facet>
         </e5ui:menuItem>
     </e5ui:menuItem>
-</h:panelGroup>
-<h:panelGroup
-        rendered="#{isAdministrator}">
-    <e5ui:menuItem collapsable="true">
-        <f:facet name="content">
-            <span>Администрирование</span>
-        </f:facet>
-        <e5ui:menuItem
-                selected="#{currentView eq '/component/users.xhtml'}">
+</c:if>
+<c:if test="#{isAdministrator}">
+    <h:panelGroup>
+        <e5ui:menuItem collapsable="true">
             <f:facet name="content">
-                <h:outputLink value="#{contextPath}/component/users.xhtml">
-                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                    Сотрудники
-                </h:outputLink>
+                <span>Администрирование</span>
             </f:facet>
+            <e5ui:menuItem
+                    selected="#{currentView eq '/component/users.xhtml'}">
+                <f:facet name="content">
+                    <h:outputLink value="#{contextPath}/component/users.xhtml">
+                        <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                        Сотрудники
+                    </h:outputLink>
+                </f:facet>
+            </e5ui:menuItem>
+            <e5ui:menuItem
+                    selected="#{currentView eq '/component/roles.xhtml'}">
+                <f:facet name="content">
+                    <h:outputLink value="#{contextPath}/component/roles.xhtml">
+                        <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                        Роли
+                    </h:outputLink>
+                </f:facet>
+            </e5ui:menuItem>
+            <e5ui:menuItem
+                    selected="#{currentView eq '/component/admin/departments.xhtml'}">
+                <f:facet name="content">
+                    <h:outputLink value="#{contextPath}/component/admin/departments.xhtml">
+                        <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                        Подразделения
+                    </h:outputLink>
+                </f:facet>
+            </e5ui:menuItem>
+            <e5ui:menuItem
+                    selected="#{currentView eq '/component/admin/positions.xhtml'}">
+                <f:facet name="content">
+                    <h:outputLink value="#{contextPath}/component/admin/positions.xhtml">
+                        <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                        Должности
+                    </h:outputLink>
+                </f:facet>
+            </e5ui:menuItem>
+            <e5ui:menuItem
+                    selected="#{currentView eq '/component/numerators.xhtml'}">
+                <f:facet name="content">
+                    <h:outputLink
+                            value="#{contextPath}/component/numerators.xhtml">
+                        <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                        Нумератор
+                    </h:outputLink>
+                </f:facet>
+            </e5ui:menuItem>
+            <e5ui:menuItem
+                    selected="#{currentView eq '/component/version.xhtml'}">
+                <f:facet name="content">
+                    <h:outputLink
+                            value="#{contextPath}/component/version.xhtml">
+                        <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                        О программе
+                    </h:outputLink>
+                </f:facet>
+            </e5ui:menuItem>
+            <e5ui:menuItem
+                    selected="#{currentView eq '/component/admin/system_properties.xhtml'}">
+                <f:facet name="content">
+                    <h:outputLink
+                            value="#{contextPath}/component/admin/system_properties.xhtml">
+                        <h:graphicImage value="#{resource['images:leaf.gif']}"/>
+                        Настройки базы данных
+                    </h:outputLink>
+                </f:facet>
+            </e5ui:menuItem>
         </e5ui:menuItem>
-        <e5ui:menuItem
-                selected="#{currentView eq '/component/groups.xhtml'}">
-            <f:facet name="content">
-                <h:outputLink value="#{contextPath}/component/roles.xhtml">
-                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                    Роли
-                </h:outputLink>
-            </f:facet>
-        </e5ui:menuItem>
-        <e5ui:menuItem
-                selected="#{currentView eq '/component/numerators.xhtml'}">
-            <f:facet name="content">
-                <h:outputLink
-                        value="#{contextPath}/component/numerators.xhtml">
-                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                    Нумератор
-                </h:outputLink>
-            </f:facet>
-        </e5ui:menuItem>
-        <e5ui:menuItem
-                selected="#{currentView eq '/component/version.xhtml'}">
-            <f:facet name="content">
-                <h:outputLink
-                        value="#{contextPath}/component/version.xhtml">
-                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                    О программе
-                </h:outputLink>
-            </f:facet>
-        </e5ui:menuItem>
-        <e5ui:menuItem
-                selected="#{currentView eq '/component/admin/system_properties.xhtml'}">
-            <f:facet name="content">
-                <h:outputLink
-                        value="#{contextPath}/component/admin/system_properties.xhtml">
-                    <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                    Настройки базы данных
-                </h:outputLink>
-            </f:facet>
-        </e5ui:menuItem>
-    </e5ui:menuItem>
-</h:panelGroup>
-<h:panelGroup
-        rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
+    </h:panelGroup>
+</c:if>
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
     <e5ui:menuItem
             selected="#{currentView eq '/component/report/report_templates.xhtml'}">
         <f:facet name="content">
@@ -641,7 +650,7 @@
             </h:outputLink>
         </f:facet>
     </e5ui:menuItem>
-</h:panelGroup>
+</c:if>
 </e5ui:menu>
 </div>
 <div id="split"></div>
@@ -652,6 +661,7 @@
         <div id="header">
             <div class="menu">
                 <ui:insert name="header_top"/>
+
                 <div class="username">
                     <div class="top">
                         <h:commandLink styleClass="top_link" onclick="return false;">
