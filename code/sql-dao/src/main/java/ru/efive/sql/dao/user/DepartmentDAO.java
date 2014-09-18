@@ -3,6 +3,7 @@ package ru.efive.sql.dao.user;
 import ru.efive.sql.dao.DictionaryDAOHibernate;
 import ru.efive.sql.entity.user.Department;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 
 /**
@@ -12,6 +13,7 @@ import javax.inject.Named;
  * Description: <br>
  */
 @Named("departmentDAO")
+@ApplicationScoped
 public class DepartmentDAO extends DictionaryDAOHibernate<Department> {
     @Override
     public Class<Department> getPersistentClass(){

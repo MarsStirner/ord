@@ -46,6 +46,13 @@
 
     <logger name="SESSION_LISTENER" level="DEBUG" />
 
+    <!--Логгер для работы с подразделениями-->
+    <logger name="DEPARTMENT" level = "ERROR"/>
+
+
+    <!--Логгер для работы с должностями-->
+    <logger name="POSITION" level = "ERROR"/>
+
     <!--Логгер для действий с пользователями-->
     <logger name="USER" level="DEBUG"/>
 
@@ -57,7 +64,7 @@
     <logger name="HUMAN_TASK" level="DEBUG"/>
 
     <!--Hibernate SQL LOGGER-->
-    <logger name="SQL" level = "DEBUG" additivity="false">
+    <logger name="org.hibernate" level = "DEBUG" additivity="false">
         <appender-ref ref="APPENDER_SQL"/>
     </logger>
 

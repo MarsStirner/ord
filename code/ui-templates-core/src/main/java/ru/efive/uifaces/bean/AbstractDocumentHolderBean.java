@@ -24,7 +24,8 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
         private String value;
 
         public State(boolean errorState, String value) {
-            this.errorState = errorState;this.value=value;
+            this.errorState = errorState;
+            this.value=value;
         }
 
         public boolean isErrorState() {
