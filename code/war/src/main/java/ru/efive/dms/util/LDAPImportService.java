@@ -157,18 +157,21 @@ public class LDAPImportService {
             return false;
         }
         if (PHONE_CONTACT_TYPE == null) {
-            LOGGER.error("NOT FOUNDED EMAIL_CONTACT_TYPE, UPLOAD NOT Started");
+            LOGGER.error("NOT FOUNDED PHONE_CONTACT_TYPE, UPLOAD NOT Started");
             return false;
         }
-        if (PHONE_CONTACT_TYPE == null) {
-            LOGGER.error("NOT FOUNDED EMAIL_CONTACT_TYPE, UPLOAD NOT Started");
+        if (MOBILE_CONTACT_TYPE == null) {
+            LOGGER.error("NOT FOUNDED MOBILE_CONTACT_TYPE, UPLOAD NOT Started");
             return false;
         }
-
-
         ALL_POSITIONS = sessionManagement.getDictionaryDAO(PositionDAO.class, ApplicationHelper.POSITION_DAO).findDocuments();
-
+        if(ALL_POSITIONS == null || ALL_POSITIONS.isEmpty()){
+            LOGGER.warn("NO JOB_POSITIONS founded");
+        }
         ALL_DEPARTMENTS = sessionManagement.getDictionaryDAO(DepartmentDAO.class, ApplicationHelper.DEPARTMENT_DAO).findDocuments();
+        if(ALL_DEPARTMENTS == null || ALL_DEPARTMENTS.isEmpty()){
+            LOGGER.warn("NO JOB_DEPARTMENTS founded");
+        }
 
 
         return true;
@@ -446,7 +449,12 @@ public class LDAPImportService {
             localUser.setFirstName(ldapUser.getFirstName());
             localUser.setLastName(ldapUser.getLastName());
             localUser.setMiddleName(ldapUser.getPatrName());
-            if (ldapUser.getJobPosition() != null && !ldapUser.getJobPosition().isEmpty() && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())) {
+            if (
+                    ldapUser.getJobPosition() != null
+                            && !ldapUser.getJobPosition().isEmpty()
+                            && localUser.getJobPosition() != null
+                            && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())
+            ) {
                 final String requestedPositionName = ldapUser.getJobPosition().trim();
                 boolean founded = false;
                 for (Position position : ALL_POSITIONS) {
@@ -460,7 +468,12 @@ public class LDAPImportService {
                     LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
                 }
             }
-            if (ldapUser.getJobDepartment() != null && !ldapUser.getJobDepartment().isEmpty() && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())) {
+            if (
+                    ldapUser.getJobDepartment() != null
+                            && !ldapUser.getJobDepartment().isEmpty()
+                            && localUser.getJobDepartment() != null
+                            && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())
+            ) {
                 final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
                 boolean founded = false;
                 for (Department department : ALL_DEPARTMENTS) {
@@ -518,7 +531,21 @@ public class LDAPImportService {
                 final StringBuilder sb = new StringBuilder();
                 while (allAtributes != null && allAtributes.hasMore()) {
                     final Attribute attribute = allAtributes.next();
-                    sb.append(attribute.getID()).append('=').append(attribute.get());
+                    sb.append(attribute.getID()).append('=');
+                    if(attribute.get() instanceof byte[]){
+                        byte [] bytes = (byte[]) attribute.get();
+                        StringBuffer guid = new StringBuffer();
+                        for (byte aByte : bytes) {
+                            StringBuffer dblByte = new StringBuffer(Integer.toHexString(aByte & 0xff));
+                            if (dblByte.length() == 1) {
+                                guid.append("0");
+                            }
+                            guid.append(dblByte);
+                        }
+                       sb.append(guid.toString());
+                    }   else {
+                        sb.append(attribute.get());
+                    }
                     if (allAtributes.hasMore()) {
                         sb.append('\n');
                     }

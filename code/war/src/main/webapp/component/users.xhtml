@@ -30,7 +30,7 @@
         </div>
         <div class="defbutton">
             <h:commandLink action="#{userList.importLDAPUsers()}" rendered="#{isAdministrator or isHr}">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                <h:graphicImage value="#{resource['images:users.png']}" width="16" height="16"/>
                 Импортировать пользователей из LDAP
                 <e5ui:formPartTarget formPart="main_table_part"/>
             </h:commandLink>
@@ -44,10 +44,13 @@
         </div>
         <div class="defbutton">
             <h:commandLink action="#{userList.changeShowFiredFlag}">
-            <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-            <h:outputText value="#{'Показать только '.concat(!userList.showFired ? 'уволенных' : 'работающих')}"/>
-        </h:commandLink>
-    </div>
+                <label>
+                    <h:selectBooleanCheckbox value="#{userList.getShowFired()}" readonly="true"/>
+                    Показать только уволенных
+                </label>
+                <e5ui:formPartTarget formPart="main_table_part"/>
+            </h:commandLink>
+        </div>
 </ui:define>
 
 <ui:define name="content">

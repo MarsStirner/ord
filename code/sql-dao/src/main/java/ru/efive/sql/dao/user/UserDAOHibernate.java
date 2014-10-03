@@ -31,6 +31,9 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     public List<User> findAllUsers() {
         DetachedCriteria in_searchCriteria = DetachedCriteria.forClass(getPersistentClass());
         in_searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        in_searchCriteria.setFetchMode("jobPosition", FetchMode.JOIN);
+        in_searchCriteria.setFetchMode("jobDepartment", FetchMode.JOIN);
+        in_searchCriteria.setFetchMode("contacts", FetchMode.JOIN);
         return getHibernateTemplate().findByCriteria(in_searchCriteria);
     }
 

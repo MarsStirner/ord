@@ -1,5 +1,6 @@
 package ru.efive.dms.uifaces.beans.user;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationHelper;
@@ -12,6 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 
+import org.slf4j.Logger;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
@@ -19,6 +22,9 @@ import java.util.*;
 @Named("userList")
 @ConversationScoped
 public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
+
+    private static final Logger logger = LoggerFactory.getLogger("USERLIST");
+
     private static final long serialVersionUID = 8282506863686518183L;
     @Inject
     private Conversation conversation;
@@ -96,5 +102,18 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
         ClassPathXmlApplicationContext context = sessionManagement.getIndexManagement().getContext();
         LDAPImportService service = (LDAPImportService) context.getBean("ldapImportService");
         service.run();
+    }
+
+    //TODO выпилить к черту из @ConversationScoped бина
+    public String getUserFullNameById(int id) {
+        try {
+            User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).get(id);
+            if (user != null) {
+                return user.getFullName();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }
