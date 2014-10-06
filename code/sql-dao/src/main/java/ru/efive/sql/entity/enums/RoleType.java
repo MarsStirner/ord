@@ -23,8 +23,6 @@ public enum RoleType {
 
     OUTER,
 
-    ENTERPRISE_ADMINISTRATION,
-
     OFFICE_01,
 
     OFFICE_02,
