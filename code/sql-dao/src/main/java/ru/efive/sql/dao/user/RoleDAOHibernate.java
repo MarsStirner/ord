@@ -70,14 +70,15 @@ public class RoleDAOHibernate extends GenericDAOHibernate<Role> {
     public Role findRoleByType(RoleType roleType) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        //if (StringUtils.isNotEmpty(roleTypeValue)) {
         if (roleType != null) {
             detachedCriteria.add(Restrictions.eq("roleType", roleType));
         }
-
         List<Role> in_roles = getHibernateTemplate().findByCriteria(detachedCriteria);
-        return (Role) in_roles.get(0);
+        if(in_roles == null || !in_roles.isEmpty()) {
+            return (Role) in_roles.get(0);
+        } else {
+            return null;
+        }
     }
 
 

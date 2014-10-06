@@ -175,10 +175,6 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
@@ -228,10 +224,6 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
@@ -281,10 +273,6 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
@@ -359,10 +347,6 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
@@ -554,11 +538,7 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
+                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
                         }
@@ -1585,10 +1565,6 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
@@ -1715,10 +1691,6 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
@@ -1823,11 +1795,9 @@ public final class ProcessFactory {
                     ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
 
-                    boolean isAdmin = false;
+                    boolean isAdmin =false;
                     for (int i = 0; i < user.getRoles().size(); i++) {
-                        if ((user.getRoles().iterator().next().getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            isAdmin = true;
-                        } else if ((user.getRoles().iterator().next().getRoleType().equals(RoleType.ADMINISTRATOR))) {
+                         if ((user.getRoles().iterator().next().getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             isAdmin = true;
                         }
                     }
@@ -1967,10 +1937,6 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ENTERPRISE_ADMINISTRATION))) {
-                            result = true;
-                            break;
-                        }
                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;

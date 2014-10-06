@@ -128,7 +128,7 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
             }
         });
         long res = (Long) result;
-        return result == null ? 0 : (Long) result;
+        return (Long) result;
     }
 
     /**

@@ -189,10 +189,7 @@ public final class WorkflowHelper {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
-                            Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
                             List<Role> in_roles = new ArrayList<Role>();
-                            in_roles.add(in_administrationRole);
-
                             Role in_office;
                             if (in_nomenclature != null) {
                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
@@ -215,7 +212,7 @@ public final class WorkflowHelper {
                             if (paperCopies.size() > 0) {
                                 for (PaperCopyDocument paperCopy : paperCopies) {
                                     String copyNumber = paperCopy.getRegistrationNumber();
-                                    if (copyNumber.indexOf("...") > -1) {
+                                    if (copyNumber.contains("...")) {
                                         copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
                                         paperCopy.setRegistrationNumber(copyNumber);
                                     } else if (copyNumber.isEmpty()) {
@@ -386,12 +383,7 @@ public final class WorkflowHelper {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getController().getUNID());
-                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
                             List<Role> in_roles = new ArrayList<Role>();
-                            if ((in_administrationRole != null) && (!in_roles.contains(in_administrationRole))) {
-                                in_roles.add(in_administrationRole);
-                            }
-
                             Role in_office;
                             if (in_nomenclature != null) {
                                 in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
@@ -549,12 +541,7 @@ public final class WorkflowHelper {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
-                            Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
                             List<Role> in_roles = new ArrayList<Role>();
-                            if((in_administrationRole!=null)&&(!in_roles.contains(in_administrationRole))){
-                            in_roles.add(in_administrationRole);
-                            }
-
                             Role in_office;
                              if (in_nomenclature != null) {
                                  in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));

@@ -33,17 +33,16 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentListHolder
 
     @Override
     protected int getTotalCount() {
-        User user = sessionManagement.getLoggedUser();
-        //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-        return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
-                user, false, false)).intValue();
+         return new Long(
+                 sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO)
+                         .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false)
+         ).intValue();
     }
 
     protected List<IncomingDocument> loadDocuments() {
         List<IncomingDocument> result = new ArrayList<IncomingDocument>();
         try {
             User user = sessionManagement.getLoggedUser();
-            //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
             List<IncomingDocument> list = new ArrayList<IncomingDocument>(new HashSet<IncomingDocument>(sessionManagement.
                     getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findControlledDocumentsByUser(filter, user, false)));
 

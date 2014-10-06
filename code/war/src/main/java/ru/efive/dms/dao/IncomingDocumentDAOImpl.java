@@ -1,4 +1,5 @@
 package ru.efive.dms.dao;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -6,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
@@ -290,22 +292,23 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
     @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(String filter, User user, boolean showDeleted) {
-        int userId = user.getId();
-        if (userId > 0) {
+    public List<IncomingDocument> findControlledDocumentsByUser(final String filter, final User user, boolean showDeleted) {
+        if (user != null && user.getId() > 0) {
             DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
             in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-            //DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-            //in_searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
             in_searchCriteria.add(Restrictions.isNotNull("executionDate"));
-            List<Integer> ids = new ArrayList<Integer>();
-            ids.add(DocumentStatus.ON_REGISTRATION.getId());
-            ids.add(DocumentStatus.CHECK_IN_2.getId());
-            ids.add(DocumentStatus.ON_EXECUTION_80.getId());
-            in_searchCriteria.add(Restrictions.in("statusId", ids));
-            String[] ords = "executionDate,id".split(",");
-            addOrder(in_searchCriteria, ords, true);
+            in_searchCriteria.add(Restrictions.in("statusId",
+                            ImmutableList.of(
+                                    DocumentStatus.ON_REGISTRATION.getId(),
+                                    DocumentStatus.CHECK_IN_2.getId(),
+                                    DocumentStatus.ON_EXECUTION_80.getId()
+                            )
+                    )
+            );
+            if(!showDeleted){
+                in_searchCriteria.add(Restrictions.eq("deleted", false));
+            }
+            addOrder(in_searchCriteria, new String[]{"executionDate", "id"}, true);
             return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter));
         } else {
             return new ArrayList<IncomingDocument>(0);
@@ -313,22 +316,22 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
     @SuppressWarnings("unchecked")
-    public long countControlledDocumentsByUser(String filter, User user, boolean showDeleted) {
-        int userId = user.getId();
-        if (userId > 0) {
+    public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted) {
+        if (user != null && user.getId() > 0) {
             DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
             in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-            detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-            detachedCriteria.add(Restrictions.isNotNull("executionDate"));
-            List<Integer> ids = new ArrayList<Integer>();
-            ids.add(DocumentStatus.ON_REGISTRATION.getId());
-            ids.add(DocumentStatus.CHECK_IN_2.getId());
-            ids.add(DocumentStatus.ON_EXECUTION_80.getId());
-            detachedCriteria.add(Restrictions.in("statusId", ids));
-            String[] ords = "executionDate,id".split(",");
-            addOrder(detachedCriteria, ords, true);
+            in_searchCriteria.add(Restrictions.isNotNull("executionDate"));
+            in_searchCriteria.add(Restrictions.in("statusId",
+                            ImmutableList.of(
+                                    DocumentStatus.ON_REGISTRATION.getId(),
+                                    DocumentStatus.CHECK_IN_2.getId(),
+                                    DocumentStatus.ON_EXECUTION_80.getId()
+                            )
+                    )
+            );
+            if(!showDeleted){
+                in_searchCriteria.add(Restrictions.eq("deleted", false));
+            }
             return getCountOf(getSearchCriteria(in_searchCriteria, filter));
         } else {
             return 0;
