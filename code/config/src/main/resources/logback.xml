@@ -29,10 +29,15 @@
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/SQL/SQL.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+        <file>${com.sun.aas.instanceRoot}/logs/SQL/SQL.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/SQL/SQL_%i.log.gz</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>3</maxIndex>
         </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>25MB</maxFileSize>
+        </triggeringPolicy>
     </appender>
 
 
@@ -64,7 +69,7 @@
     <logger name="HUMAN_TASK" level="DEBUG"/>
 
     <!--Hibernate SQL LOGGER-->
-    <logger name="org.hibernate" level = "DEBUG" additivity="false">
+    <logger name="org.hibernate.SQL" level = "DEBUG" additivity="false">
         <appender-ref ref="APPENDER_SQL"/>
     </logger>
 

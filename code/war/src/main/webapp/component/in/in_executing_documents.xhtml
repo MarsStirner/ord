@@ -6,7 +6,8 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -77,38 +78,32 @@
                 </div>
                 <div class="wrap_main" id="table_wrap">
                     <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                        value="#{in_documents_by_executing_date.getDocumentsOnExecution()}" var="row"
-                                        id="main_data_tbl" grouping="true" levelCount="4">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"
-                                      level="#{row.grouping gt 2 ? 3 : row.grouping}"
-                                      group="#{row.grouping lt 3}"
-                                      fullRow="#{row.grouping lt 3}"
-                                      collapsed="true">
+                        <p:treeTable value="#{in_documents_by_executing_date.rootElement}" var="row" id="main_data_tbl">
+                            <p:row ondblclick="goToDocument('#{row.id}');" collapsed="true">
                                 <f:facet name="fullRowDefault">
-                                    <b><h:outputText value="#{row.executionStringDate}">
-                                        <!-- <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/> -->
+                                    <b><h:outputText value="#{row.executionDate}">
+                                        <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/>
                                     </h:outputText></b>
                                 </f:facet>
-                            </e5ui:row>
-                            <e5ui:column style="min-width:7em">
+                            </p:row>
+                            <p:column style="min-width:7em">
                                 <f:facet name="header">
                                     <p>Срок исполнения</p>
                                 </f:facet>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:8em">
+                            </p:column>
+                            <p:column style="min-width:8em">
                                 <f:facet name="header">
                                     <p>Номер</p>
                                 </f:facet>
                                 <b><h:outputText value="#{row.registrationNumber}"/></b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
+                            </p:column>
+                            <p:column style="min-width:12em">
                                 <f:facet name="header">
                                     <p>Корреспондент</p>
                                 </f:facet>
                                 <b><h:outputText value="#{row.contragent}" converter="ContragentConverter"/></b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
+                            </p:column>
+                            <p:column style="min-width:10em">
                                 <f:facet name="header">
                                     <p>Исполнитель</p>
                                 </f:facet>
@@ -117,27 +112,27 @@
                                         <h:outputText value="#{element}" converter="PersonConverter"/>
                                     </div>
                                 </ui:repeat>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
+                            </p:column>
+                            <p:column style="min-width:7em">
                                 <f:facet name="header">
                                     <p>Вид документа</p>
                                 </f:facet>
                                 <b><h:outputText value="#{row.form}"/></b>
 
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
+                            </p:column>
+                            <p:column style="min-width:10em">
                                 <f:facet name="header">
                                     <p>Статус</p>
                                 </f:facet>
                                 <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
+                            </p:column>
+                            <p:column style="min-width:12em">
                                 <f:facet name="header">
                                     <p>Краткое содержание</p>
                                 </f:facet>
                                 <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
+                            </p:column>
+                        </p:treeTable>
                     </div>
                 </div>
                 <div id="table_paging">

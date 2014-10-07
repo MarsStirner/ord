@@ -292,7 +292,14 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
     @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(final String filter, final User user, boolean showDeleted) {
+    public List<IncomingDocument> findControlledDocumentsByUser(
+            final String filter,
+            final User user,
+            final boolean showDeleted,
+            final int offset,
+            final int count,
+            final String order,
+            final boolean asc) {
         if (user != null && user.getId() > 0) {
             DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
             in_searchCriteria = setCriteriaAliases(in_searchCriteria);
@@ -308,8 +315,19 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             if(!showDeleted){
                 in_searchCriteria.add(Restrictions.eq("deleted", false));
             }
-            addOrder(in_searchCriteria, new String[]{"executionDate", "id"}, true);
-            return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter));
+            addOrder(in_searchCriteria, order, asc);
+            in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+            //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+            List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
+            if (ids.isEmpty()) {
+                return new ArrayList<IncomingDocument>(0);
+            }
+            //Ищем только по этим ключам с упорядочиванием
+            DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
+            addOrder(resultCriteria, order, asc);
+            setCriteriaAliases(resultCriteria);
+            resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+            return getHibernateTemplate().findByCriteria(resultCriteria);
         } else {
             return new ArrayList<IncomingDocument>(0);
         }

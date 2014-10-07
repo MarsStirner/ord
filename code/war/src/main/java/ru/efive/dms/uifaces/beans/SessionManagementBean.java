@@ -1,6 +1,7 @@
 package ru.efive.dms.uifaces.beans;
 
 import java.io.Serializable;
+import java.util.Locale;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
@@ -52,6 +53,9 @@ public class SessionManagementBean implements Serializable {
     private boolean isEmployer = false;
     private boolean isOuter = false;
     private boolean isHr = false;
+
+    //Локаль выбранная пользователем?
+    private Locale userLocale = new Locale("ru");
 
     @Inject
     @Named("indexManagement")
@@ -304,5 +308,11 @@ public class SessionManagementBean implements Serializable {
         this.indexManagement = indexManagement;
     }
 
+    public Locale getUserLocale() {
+        return userLocale;
+    }
 
+    public void setUserLocale(Locale userLocale) {
+        this.userLocale = userLocale;
+    }
 }

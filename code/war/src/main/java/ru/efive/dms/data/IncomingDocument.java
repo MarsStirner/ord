@@ -255,14 +255,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
      */
 
     @Transient
-    private int grouping = 100;
-
-    @Transient
     private String WFResultDescription;
-
-    @Transient
-    private String date;
-
 
     public User getAuthor() {
         return author;
@@ -460,15 +453,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return "in_doc";
     }
 
-    public int getGrouping() {
-        return grouping;
-    }
-
-    public void setGrouping(int grouping) {
-        this.grouping = grouping;
-    }
-
-
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
@@ -483,14 +467,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
 
     public void setWFResultDescription(String WFResultDescription) {
         this.WFResultDescription = WFResultDescription;
-    }
-
-    public void setExecutionStringDate(String date) {
-        this.date = date;
-    }
-
-    public String getExecutionStringDate() {
-        return this.date;
     }
 
     @Transient

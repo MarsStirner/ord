@@ -41,9 +41,8 @@ public class IncomingDocumentListHolder extends AbstractDocumentListHolderBean<I
 
     @Override
     protected List<IncomingDocument> loadDocuments() {
-        final User loggedUser = sessionManagement.getLoggedUser();
         return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO)
-                .findAllDocumentsByUser(filter, loggedUser, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+                .findAllDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
 
     }
 
