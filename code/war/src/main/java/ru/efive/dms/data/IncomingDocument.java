@@ -147,7 +147,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Вид документа
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "deliveryType_id", nullable = false)
     private DeliveryType deliveryType;
 

@@ -9,17 +9,50 @@ import ru.efive.dms.data.IncomingDocument;
  * Description: <br>
  */
 public class IncomingDocumentNode {
-    private final IncomingDocument indoc;
 
-    public IncomingDocumentNode(){
-           indoc = null;
+    private IncomingDocument document;
+    private String header;
+    private DOC_TYPE type;
+
+    public enum DOC_TYPE{
+        YEAR,
+        MONTH,
+        DAY,
+        DOCUMENT
     }
 
-    public IncomingDocumentNode(IncomingDocument indoc){
-        this.indoc = indoc;
+    public IncomingDocumentNode(IncomingDocument doc, String header){
+        this.type = DOC_TYPE.DOCUMENT;
+        this.document = doc;
+        this.header = header;
     }
 
-    public IncomingDocument getDoc() {
-        return indoc;
+    public IncomingDocumentNode(DOC_TYPE type, String header){
+        this.header = header;
+        this.type = type;
+    }
+
+    public IncomingDocument getDocument() {
+        return document;
+    }
+
+    public void setDocument(IncomingDocument document) {
+        this.document = document;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public DOC_TYPE getType() {
+        return type;
+    }
+
+    public void setType(DOC_TYPE type) {
+        this.type = type;
     }
 }

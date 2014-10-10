@@ -291,6 +291,22 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         }
     }
 
+    //// Запросы с проверкой на руководителя документа /////////////////////////////////////////////////////////////////
+    @SuppressWarnings("unchecked")
+    public List<IncomingDocument> findControlledDocumentsByUser(
+            final String filter,
+            final User user,
+            final boolean showDeleted) {
+        if (user != null && user.getId() > 0) {
+            DetachedCriteria resultCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
+            resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+            return getHibernateTemplate().findByCriteria(resultCriteria);
+        } else {
+            return new ArrayList<IncomingDocument>(0);
+        }
+    }
+
+
     @SuppressWarnings("unchecked")
     public List<IncomingDocument> findControlledDocumentsByUser(
             final String filter,
@@ -301,24 +317,11 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             final String order,
             final boolean asc) {
         if (user != null && user.getId() > 0) {
-            DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-            in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-            in_searchCriteria.add(Restrictions.isNotNull("executionDate"));
-            in_searchCriteria.add(Restrictions.in("statusId",
-                            ImmutableList.of(
-                                    DocumentStatus.ON_REGISTRATION.getId(),
-                                    DocumentStatus.CHECK_IN_2.getId(),
-                                    DocumentStatus.ON_EXECUTION_80.getId()
-                            )
-                    )
-            );
-            if(!showDeleted){
-                in_searchCriteria.add(Restrictions.eq("deleted", false));
-            }
+            DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
             addOrder(in_searchCriteria, order, asc);
             in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
             //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-            List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
+            List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
             if (ids.isEmpty()) {
                 return new ArrayList<IncomingDocument>(0);
             }
@@ -334,27 +337,95 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
     @SuppressWarnings("unchecked")
+    public List<IncomingDocument> findControlledDocumentsByUser(
+            final String filter,
+            final User user,
+            final boolean showDeleted,
+            final Date beforeDate,
+            final int offset,
+            final int count,
+            final String order,
+            final boolean asc) {
+        if (user != null && user.getId() > 0) {
+            DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate);
+            addOrder(in_searchCriteria, order, asc);
+            in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+            //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+            List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
+            if (ids.isEmpty()) {
+                return new ArrayList<IncomingDocument>(0);
+            }
+            //Ищем только по этим ключам с упорядочиванием
+            DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
+            addOrder(resultCriteria, order, asc);
+            setCriteriaAliases(resultCriteria);
+            resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+            return getHibernateTemplate().findByCriteria(resultCriteria);
+        } else {
+            return new ArrayList<IncomingDocument>(0);
+        }
+    }
+
     public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted) {
         if (user != null && user.getId() > 0) {
-            DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-            in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-            in_searchCriteria.add(Restrictions.isNotNull("executionDate"));
-            in_searchCriteria.add(Restrictions.in("statusId",
-                            ImmutableList.of(
-                                    DocumentStatus.ON_REGISTRATION.getId(),
-                                    DocumentStatus.CHECK_IN_2.getId(),
-                                    DocumentStatus.ON_EXECUTION_80.getId()
-                            )
-                    )
-            );
-            if(!showDeleted){
-                in_searchCriteria.add(Restrictions.eq("deleted", false));
-            }
-            return getCountOf(getSearchCriteria(in_searchCriteria, filter));
+            return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter));
         } else {
             return 0;
         }
     }
+
+    public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted, final Date beforeDate) {
+        if (user != null && user.getId() > 0) {
+            return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate));
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не админ)
+     *
+     * @param user        пользователь, для которого генерируем критерии
+     * @param showDeleted включать ли удаленные документы в результат
+     * @param filter      поисковый шаблон
+     * @return набор критериев для поиска требуемых документов
+     */
+    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final String filter) {
+        final DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass());
+        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        setCriteriaAliases(resultCriteria);
+        if (!user.isAdministrator()) {
+            resultCriteria.add(Restrictions.eq("controller.id", user.getId()));
+        }
+        resultCriteria.add(Restrictions.isNotNull("executionDate"));
+        resultCriteria.add(Restrictions.in("statusId",
+                        ImmutableList.of(
+                                DocumentStatus.ON_REGISTRATION.getId(),
+                                DocumentStatus.CHECK_IN_2.getId(),
+                                DocumentStatus.ON_EXECUTION_80.getId()
+                        )
+                )
+        );
+        if (!showDeleted) {
+            resultCriteria.add(Restrictions.eq("deleted", false));
+        }
+        getSearchCriteria(resultCriteria, filter);
+        return resultCriteria;
+    }
+
+    /**
+     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не админ)
+     *
+     * @param user        пользователь, для которого генерируем критерии
+     * @param showDeleted включать ли удаленные документы в результат
+     * @param filter      поисковый шаблон
+     * @param beforeDate  Ограничение по дате, до которой должен быть срок исполнения
+     * @return набор критериев для поиска требуемых документов
+     */
+    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final String filter, final Date beforeDate) {
+        return getControlledDocumentsByUserCriteria(user, showDeleted, filter).add(Restrictions.lt("executionDate", beforeDate));
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     @SuppressWarnings("unchecked")
@@ -642,7 +713,6 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
     protected DetachedCriteria getAccessControlSearchCriteriaByUser(User user) {
-        DetachedCriteria in_result = null;
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         Disjunction disjunction = Restrictions.disjunction();
 
@@ -674,9 +744,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             }
             int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
             detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
-            in_result = detachedCriteria;
         }
-        return in_result;
+        return detachedCriteria;
     }
 
 }
