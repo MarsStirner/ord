@@ -364,9 +364,9 @@ public class LDAPImportService {
             //Если есть "ou=fired" значит пользователь уволен
             return new LDAPUser(entry.getAttributes(), entry.getName().toLowerCase().contains("ou=fired,"));
         } catch (ParseException e) {
-            LOGGER.error(currentNumber + " ParseException: " + e.getMessage());
+            LOGGER.error("{} ParseException: ", currentNumber, e);
         } catch (NamingException e) {
-            LOGGER.error(currentNumber + " NamingException: " + e.getMessage());
+            LOGGER.error("{} NamingException: ", currentNumber, e);
         }
         return null;
     }
@@ -429,7 +429,7 @@ public class LDAPImportService {
             userDAO.save(user);
             LOGGER.debug("Created");
         } catch (Exception e) {
-            LOGGER.error("Cannot INSERT new ROW : " + e.getCause().getMessage());
+            LOGGER.error("Cannot INSERT new ROW : ", e);
         }
     }
 
