@@ -85,16 +85,6 @@
             </h:outputLink>
         </f:facet>
     </e5ui:menuItem>
-    <e5ui:menuItem
-            selected="#{currentView eq '/component/in/in_expired_documents.xhtml'}">
-        <f:facet name="content">
-            <h:outputLink
-                    value="#{contextPath}/component/in/in_expired_documents.xhtml">
-                <h:graphicImage value="#{resource['images:leaf.gif']}"/>
-                Просроченные
-            </h:outputLink>
-        </f:facet>
-    </e5ui:menuItem>
 </e5ui:menuItem>
 <e5ui:menuItem collapsable="true">
     <f:facet name="content">
@@ -669,9 +659,8 @@
                 <div class="role">
                     <div class="top">
                         <h:commandLink styleClass="top_link" onclick="return false;">
-										<span> <h:outputText
-                                                value="#{sessionManagement.getLoggedUser().getCurrentUserAccessLevel()}"
-                                                converter="UserAccessLevelConverter"/>
+										<span>
+                                            <h:outputText value="#{sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getValue()}"/>
 										</span>
                         </h:commandLink>
                         <div class="sub">
@@ -680,7 +669,7 @@
                                     var="element">
                                 <div class="item">
                                     <h:commandLink action="#{sessionManagement.setCurrentUserAccessLevel(element)}">
-                                        <h:outputText value="#{element}" converter="UserAccessLevelConverter"/>
+                                        <h:outputText value="#{element.value}"/>
                                     </h:commandLink>
                                 </div>
                             </ui:repeat>
