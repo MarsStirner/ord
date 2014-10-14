@@ -1,16 +1,16 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.ArrayList;
-import java.util.List;
+import ru.efive.dms.dao.RecordBookDocumentDAOImpl;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.RecordBookDocument;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
-import ru.efive.dms.dao.RecordBookDocumentDAOImpl;
-import ru.efive.dms.data.RecordBookDocument;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.RECORD_BOOK_DAO;
 
 @Named("record_book_documents")
 @SessionScoped
@@ -30,7 +30,7 @@ public class RecordBookDocumentListHolder extends AbstractDocumentListHolderBean
     protected int getTotalCount() {
         int result = 0;
         try {
-            return new Long(sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, ApplicationHelper.RECORD_BOOK_DAO).countDocumentByAuthor(filter, sessionManagement.getLoggedUser().getId(), false)).intValue();
+            return new Long(sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).countDocumentByAuthor(filter, sessionManagement.getLoggedUser().getId(), false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -41,7 +41,7 @@ public class RecordBookDocumentListHolder extends AbstractDocumentListHolderBean
     protected List<RecordBookDocument> loadDocuments() {
         List<RecordBookDocument> result = new ArrayList<RecordBookDocument>();
         try {
-            result = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, ApplicationHelper.RECORD_BOOK_DAO).findDocumentsByAuthor(filter,
+            result = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).findDocumentsByAuthor(filter,
                     sessionManagement.getLoggedUser().getId(), false, getPagination().getOffset(), getPagination().getPageSize(),
                     getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {

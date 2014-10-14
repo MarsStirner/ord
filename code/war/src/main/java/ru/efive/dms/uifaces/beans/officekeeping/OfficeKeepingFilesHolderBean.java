@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
 import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
-import ru.efive.dms.data.OfficeKeepingFile;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.OfficeKeepingFile;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
 @Named("officeKeepingFiles")
 @SessionScoped
@@ -32,7 +34,7 @@ public class OfficeKeepingFilesHolderBean extends AbstractDocumentListHolderBean
     protected int getTotalCount() {
         int result = 0;
         try {
-            result = new Long(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).countDocument(false)).intValue();
+            result = new Long(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).countDocument(false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,11 +49,11 @@ public class OfficeKeepingFilesHolderBean extends AbstractDocumentListHolderBean
                 int result = 0;
                 String colId = getSorting().getColumnId();
 
-                if(colId.equalsIgnoreCase("name")) {
+                if (colId.equalsIgnoreCase("name")) {
                     result = ApplicationHelper.getNotNull(o1.getFileIndex()).compareTo(ApplicationHelper.getNotNull(o2.getFileIndex()));
                 }
 
-                if(getSorting().isAsc()) {
+                if (getSorting().isAsc()) {
                     result *= -1;
                 }
                 return result;
@@ -63,7 +65,7 @@ public class OfficeKeepingFilesHolderBean extends AbstractDocumentListHolderBean
     public List<OfficeKeepingFile> getAvailableOfficeKeepingFiles() {
         List<OfficeKeepingFile> result = new ArrayList<OfficeKeepingFile>();
         try {
-            result = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).findDocuments(false);
+            result = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocuments(false);
         } catch (Exception e) {
             e.printStackTrace();
         }

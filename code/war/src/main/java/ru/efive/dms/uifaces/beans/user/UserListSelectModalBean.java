@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.user.User;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 
 public class UserListSelectModalBean extends ModalWindowHolderBean {

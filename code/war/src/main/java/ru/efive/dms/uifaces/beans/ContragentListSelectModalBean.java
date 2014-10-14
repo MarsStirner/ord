@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.crm.data.Contragent;
+import ru.entity.model.crm.Contragent;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 
 public class ContragentListSelectModalBean extends ModalWindowHolderBean {

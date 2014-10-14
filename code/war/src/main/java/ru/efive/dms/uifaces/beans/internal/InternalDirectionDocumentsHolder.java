@@ -1,12 +1,13 @@
 package ru.efive.dms.uifaces.beans.internal;
 
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.data.InternalDocument;
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.entity.model.document.InternalDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
+
+import ru.entity.model.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -29,8 +30,8 @@ public class InternalDirectionDocumentsHolder extends AbstractDocumentListHolder
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
-                //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<InternalDocument>(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                result = new ArrayList<InternalDocument>(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<InternalDocument>() {
                     public int compare(InternalDocument o1, InternalDocument o2) {
@@ -116,13 +117,13 @@ public class InternalDirectionDocumentsHolder extends AbstractDocumentListHolder
 
     /*@Override
      protected int getTotalCount() {
-         return new Long(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
+         return new Long(sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
                  sessionManagement.getLoggedUser(), false, false)).intValue();
      }
 
      @Override
      protected List<InternalDocument> loadDocuments() {
-         return sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, sessionManagement.getLoggedUser(),
+         return sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, sessionManagement.getLoggedUser(),
                  false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
      }*/
 
@@ -162,9 +163,9 @@ public class InternalDirectionDocumentsHolder extends AbstractDocumentListHolder
             if (!filters.containsKey(key)) {
                 this.needRefresh = true;
                 markNeedRefresh();
-                this.filters.clear();
+                filters.clear();
                 String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("value");
-                this.filters.put(key, value);
+                filters.put(key, value);
             }
         }
         return super.getDocuments();

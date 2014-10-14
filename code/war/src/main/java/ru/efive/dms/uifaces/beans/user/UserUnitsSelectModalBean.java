@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.user.Group;
+import ru.entity.model.user.User;
 import ru.efive.dms.uifaces.beans.GroupsHolderBean;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 

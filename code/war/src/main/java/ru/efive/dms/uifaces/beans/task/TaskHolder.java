@@ -1,58 +1,46 @@
 package ru.efive.dms.uifaces.beans.task;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.efive.dao.alfresco.Attachment;
+import ru.efive.dao.alfresco.Revision;
+import ru.efive.dms.dao.*;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
+import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.efive.wf.core.ActionResult;
+import ru.entity.model.document.*;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.RoleType;
+import ru.entity.model.user.Group;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
-
-import ru.efive.dao.alfresco.Revision;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.dao.DocumentFormDAOImpl;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.Attachment;
-import ru.efive.dms.data.DocumentForm;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.PaperCopyDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.data.Task;
-import ru.efive.dms.uifaces.beans.FileManagementBean;
-import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
-import ru.efive.wf.core.ActionResult;
+import static ru.efive.dms.util.ApplicationDAONames.*;
 
 @Named("task")
 @ConversationScoped
 public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implements Serializable {
+
+    private static final Logger logger = LoggerFactory.getLogger("TASK");
 
     @Override
     public String delete() {
@@ -76,7 +64,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
 
         boolean result = false;
         try {
-            result = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).delete(getDocumentId());
+            result = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -104,12 +92,12 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).get(id));
+            setDocument(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).get(id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             } else {
                 User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 List<Role> in_roles = new ArrayList<Role>();
                 if (userId > 0) {
@@ -160,7 +148,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         }
 
         // Исполнитель должен иметь права доступа к документу, через сколько бы поручений оно не проходило
-        List<Task> relationTasks = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).
+        List<Task> relationTasks = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).
                 findAllRegistratedDocumentsByRootFormat(document.getRootDocumentId(), true);
         if (relationTasks != null) {
             for (Task relationTask : relationTasks) {
@@ -201,8 +189,8 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         }
 
         if (!(allReadersId.contains(currentUser.getId()) || isUserReaderByRole)) {
-            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO);
-            if(!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "task_" + document.getId())) {
+            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
+            if (!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "task_" + document.getId())) {
                 setState(STATE_FORBIDDEN);
                 setStateComment("Доступ запрещен");
                 return false;
@@ -233,9 +221,9 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
 
         String formId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("formId");
         if (formId == null || formId.equals("")) {
-            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategoryAndDescription("Поручения", "task");
+            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndDescription("Поручения", "task");
         } else {
-            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategoryAndDescription("Поручения", formId);
+            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndDescription("Поручения", formId);
         }
         if (forms.size() > 0) {
             form = forms.get(0);
@@ -244,7 +232,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 if ((exerciseTypeId != null) && (!exerciseTypeId.isEmpty())) {
                     List<DocumentForm> exerciseTypes = null;
                     DocumentForm exerciseType = null;
-                    exerciseTypes = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategoryAndValue("Задачи", exerciseTypeId);
+                    exerciseTypes = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Задачи", exerciseTypeId);
                     if (exerciseTypes.size() > 0) {
                         exerciseType = exerciseTypes.get(0);
                         if (exerciseType != null) {
@@ -254,7 +242,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 }
             }
         } else {
-            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategory("Поручения");
+            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Поручения");
             if (forms.size() > 0) {
                 form = forms.get(0);
             }
@@ -263,17 +251,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             doc.setForm(form);
         }
 
-        HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(sessionManagement.getLoggedUser());
-        historyEntry.setDocType(doc.getDocumentType().getName());
-        historyEntry.setParentId(doc.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
+        HistoryEntry historyEntry = getInitialHistoryEntry(doc, created);
         Set<HistoryEntry> history = new HashSet<HistoryEntry>();
         history.add(historyEntry);
         doc.setHistory(history);
@@ -287,39 +265,94 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            Task task = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).save(getDocument());
+            Task task = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).save(getDocument());
             if (task == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
         }
         return result;
     }
 
     @Override
     protected boolean saveNewDocument() {
-        boolean result = false;
+        boolean persistedAtLeastOnce = false;
+        for (User current : responsibleUsers) {
+            persistedAtLeastOnce = true;
+            logger.debug("USR: {}", current.getFullName());
+            try {
+                Task currentTask = (Task) getDocument().clone();
+                currentTask.setId(0);
+                currentTask.setExecutor(current);
+                HashSet<HistoryEntry> currentHistory = new HashSet<HistoryEntry>(1);
+                currentHistory.add(getInitialHistoryEntry(currentTask, currentTask.getCreationDate()));
+                currentTask.setHistory(currentHistory);
+                currentTask = createTask(currentTask);
+                if (currentTask == null) {
+                    return false;
+                }
+                logger.debug("-> ID {}", currentTask.getId());
+            } catch (CloneNotSupportedException e) {
+                logger.error("Clone Exception: ", e);
+            }
+        }
+        for (Group current : responsibleGroups) {
+            logger.debug("GRP: {}", current.getDescription());
+            for (User currentUserInGroup : current.getMembersList()) {
+                persistedAtLeastOnce = true;
+                logger.debug("GRP_USR: {}", currentUserInGroup.getFullName());
+                try {
+                    Task currentTask = (Task) getDocument().clone();
+                    currentTask.setId(0);
+                    currentTask.setExecutor(currentUserInGroup);
+                    HashSet<HistoryEntry> currentHistory = new HashSet<HistoryEntry>(1);
+                    currentHistory.add(getInitialHistoryEntry(currentTask, currentTask.getCreationDate()));
+                    currentTask.setHistory(currentHistory);
+                    currentTask = createTask(currentTask);
+                    if (currentTask == null) {
+                        return false;
+                    }
+                    logger.debug("-> ID {}", currentTask.getId());
+                } catch (CloneNotSupportedException e) {
+                    logger.error("Clone Exception: ", e);
+                }
+            }
+        }
+        if (!persistedAtLeastOnce) {
+            Task currentTask = createTask(getDocument());
+            if (currentTask == null) {
+                return false;
+            }
+            logger.debug("*-> ID {}", currentTask.getId());
+        }
+        return true;
+    }
+
+    private HistoryEntry getInitialHistoryEntry(final Task doc, final Date created) {
+        final HistoryEntry historyEntry = new HistoryEntry();
+        historyEntry.setCreated(created);
+        historyEntry.setStartDate(created);
+        historyEntry.setOwner(sessionManagement.getLoggedUser());
+        historyEntry.setDocType(doc.getDocumentType().getName());
+        historyEntry.setParentId(doc.getId());
+        historyEntry.setActionId(0);
+        historyEntry.setFromStatusId(1);
+        historyEntry.setEndDate(created);
+        historyEntry.setProcessed(true);
+        historyEntry.setCommentary("");
+        return historyEntry;
+    }
+
+
+    private Task createTask(Task task) {
         try {
-            //Task document=(Task)getDocument();
-            /*if (document != null) {
-                   if(document.getTaskNumber()==null || document.getTaskNumber().isEmpty()){
-                       StringBuffer in_number=new StringBuffer(""+(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).countDocument(true)+1));
-                       document.setTaskNumber(in_number.toString());
-                   }
-               }*/
-            Task task = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).save(getDocument());
-            if (task == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+            Task currentTask = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).save(task);
+            if (currentTask == null) {
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 System.out.println("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
@@ -329,16 +362,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                         fileManagement.createFile(tmpAttachment, files.get(i));
                     }
                 }
-                result = true;
-
+                return currentTask;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
         }
-        return result;
+        return null;
     }
 
     protected String getLinkDescriptionById(String key) {
@@ -351,35 +381,35 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
                 if (key.indexOf("incoming") != -1) {
-                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
                             "Черновик входщяего документа от " + sdf.format(in_doc.getCreationDate()) :
                             "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + sdf.format(in_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("outgoing") != -1) {
-                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
                             "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) :
                             "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + sdf.format(out_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("internal") != -1) {
-                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
                             "Черновик внутреннего документа от " + sdf.format(internal_doc.getCreationDate()) :
                             "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("request") != -1) {
-                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
                             "Черновик обращения граждан от " + sdf.format(request_doc.getCreationDate()) :
                             "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("task") != -1) {
-                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
+                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
                             "Черновик поручения от " + sdf.format(task_doc.getCreationDate()) :
                             "Поручение № " + task_doc.getTaskNumber() + " от " + sdf.format(task_doc.getCreationDate())
@@ -400,21 +430,21 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             if (pos != -1) {
                 String id = key.substring(pos + 1, key.length());
 
-                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(key);
+                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(key);
                 if (key.indexOf("incoming") != -1) {
-                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = in_doc.getController();
                 } else if (key.indexOf("outgoing") != -1) {
-                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = out_doc.getSigner();
                 } else if (key.indexOf("internal") != -1) {
-                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = internal_doc.getController();
                 } else if (key.indexOf("request") != -1) {
-                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = request_doc.getController();
                 } else if (key.indexOf("task") != -1) {
-                    Task parent_task = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
+                    Task parent_task = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                     initiator = parent_task.getExecutor();
                 }
 
@@ -538,7 +568,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             }
         }
 
-        document = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).save(document);
+        document = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).save(document);
     }
 
     private List<Attachment> attachments = new ArrayList<Attachment>();
@@ -761,6 +791,92 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             this.setUser(null);
         }
     };
+    ///////////////////////////////////////////////////////////////////////////////
+    private List<User> responsibleUsers;
+
+    public List<User> getResponsibleUsers() {
+        return responsibleUsers;
+    }
+
+    private void setResponsibleUsers(List<User> userList) {
+        responsibleUsers = userList;
+    }
+
+    private List<Group> responsibleGroups;
+
+    public List<Group> getResponsibleGroups() {
+        return responsibleGroups;
+    }
+
+    private void setResponsibleGroups(List<Group> responsibleGroups) {
+        this.responsibleGroups = responsibleGroups;
+    }
+
+    private boolean isUsersDialogSelected = true;
+    private boolean isGroupsDialogSelected = false;
+
+    public boolean isUsersDialogSelected() {
+        return isUsersDialogSelected;
+    }
+
+    public void setUsersDialogSelected(boolean isUsersDialogSelected) {
+        if (isUsersDialogSelected) {
+            this.isUsersDialogSelected = true;
+            this.isGroupsDialogSelected = false;
+        }
+    }
+
+    public boolean isGroupsDialogSelected() {
+        return isGroupsDialogSelected;
+    }
+
+    public void setGroupsDialogSelected(boolean isGroupsDialogSelected) {
+        if (isGroupsDialogSelected) {
+            this.isGroupsDialogSelected = true;
+            this.isUsersDialogSelected = false;
+        }
+    }
+
+    private UserUnitsSelectModalBean responsibleUnitsSelectModal = new UserUnitsSelectModalBean() {
+
+        @Override
+        protected void doSave() {
+            setResponsibleGroups(getGroups());
+            setResponsibleUsers(getUsers());
+            super.doSave();
+        }
+
+        @Override
+        protected void doHide() {
+            super.doHide();
+            setUsers(null);
+            setGroups(null);
+        }
+
+        @Override
+        protected void doShow() {
+            super.doShow();
+            if (getDocument() != null && getResponsibleGroups() != null) {
+                ArrayList<Group> tmpGroupList = new ArrayList<Group>();
+                tmpGroupList.addAll(getResponsibleGroups());
+                setGroups(tmpGroupList);
+            }
+            if (getDocument() != null && getResponsibleUsers() != null) {
+                ArrayList<User> tmpUserList = new ArrayList<User>();
+                tmpUserList.addAll(getResponsibleUsers());
+                setUsers(tmpUserList);
+            }
+        }
+    };
+
+    public UserUnitsSelectModalBean getResponsibleUnitsSelectModal() {
+        return responsibleUnitsSelectModal;
+    }
+
+    public void setResponsibleUnitsSelectModal(UserUnitsSelectModalBean responsibleUnitsSelectModal) {
+        this.responsibleUnitsSelectModal = responsibleUnitsSelectModal;
+    }
+    ///////////////////////////////////////////////////////////
 
     public ProcessorModalBean getProcessorModal() {
         return processorModal;
@@ -831,7 +947,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                     } else if (key.indexOf("request") != -1) {
                         return key;
                     } else if (key.indexOf("task") != -1) {
-                        Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
+                        Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                         if (task.getParentId() == null || task.getParentId().isEmpty()) {
                             return "task_" + task.getId();
                         } else {

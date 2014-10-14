@@ -1,18 +1,19 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import ru.efive.crm.data.Contragent;
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.entity.model.crm.Contragent;
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.data.DeliveryType;
-import ru.efive.dms.data.DocumentForm;
-import ru.efive.dms.data.OfficeKeepingVolume;
-import ru.efive.dms.data.OutgoingDocument;
+import ru.entity.model.document.DeliveryType;
+import ru.entity.model.document.DocumentForm;
+import ru.entity.model.document.OfficeKeepingVolume;
+import ru.entity.model.document.OutgoingDocument;
 import ru.efive.dms.uifaces.beans.ContragentListSelectModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
+
+import ru.entity.model.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
@@ -49,8 +50,8 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
-               // user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+               // user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<OutgoingDocument>() {
                     public int compare(OutgoingDocument o1, OutgoingDocument o2) {

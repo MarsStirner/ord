@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.axis.utils.StringUtils;
 
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.data.Attachment;
+import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 
 public class FileDownloadServlet extends HttpServlet {

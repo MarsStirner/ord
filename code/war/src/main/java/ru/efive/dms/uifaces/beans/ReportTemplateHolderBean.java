@@ -1,22 +1,22 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.Serializable;
-import java.util.Date;
+import ru.efive.dms.dao.ReportDAOImpl;
+import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.document.Region;
+import ru.entity.model.document.ReportTemplate;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.Date;
 
-import ru.efive.dms.dao.ReportDAOImpl;
-import ru.efive.dms.data.Region;
-import ru.efive.dms.data.ReportTemplate;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
 
 @Named("reportTemplate")
 @ConversationScoped
@@ -26,7 +26,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(ReportDAOImpl.class, ApplicationHelper.REPORT_DAO).delete(getDocument());
+            sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -48,7 +48,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
 
     @Override
     protected void initDocument(Integer id) {
-        ReportTemplate reportTemplate = sessionManagement.getDAO(ReportDAOImpl.class, ApplicationHelper.REPORT_DAO).get(id);
+        ReportTemplate reportTemplate = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).get(id);
         reportTemplate.setStartDate(new Date());
         reportTemplate.setEndDate(new Date());
         setDocument(reportTemplate);
@@ -84,7 +84,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            ReportTemplate template = sessionManagement.getDAO(ReportDAOImpl.class, ApplicationHelper.REPORT_DAO).save(getDocument());
+            ReportTemplate template = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).save(getDocument());
             if (template == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,

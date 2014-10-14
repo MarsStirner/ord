@@ -6,8 +6,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.dms.data.OfficeKeepingFile;
-import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.entity.model.document.OfficeKeepingFile;
+import ru.entity.model.enums.DocumentStatus;
 
 public class OfficeKeepingFileDAOImpl extends GenericDAOHibernate<OfficeKeepingFile> {
 

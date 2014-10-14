@@ -1,50 +1,39 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import ru.efive.dms.dao.*;
+import ru.efive.sql.dao.user.GroupTypeDAO;
+import ru.efive.sql.dao.user.RbContactTypeDAO;
+import ru.efive.sql.dao.user.UserAccessLevelDAO;
+import ru.entity.model.crm.ContragentNomenclature;
+import ru.entity.model.document.*;
+import ru.entity.model.enums.GroupType;
+import ru.entity.model.user.RbContactInfoType;
+import ru.entity.model.user.UserAccessLevel;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-import ru.efive.crm.data.ContragentNomenclature;
-import ru.efive.sql.dao.user.GroupTypeDAO;
-import ru.efive.sql.dao.user.RbContactTypeDAO;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.efive.sql.entity.enums.GroupType;
-import ru.efive.sql.entity.user.RbContactInfoType;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.user.UserAccessLevel;
-import ru.efive.dms.dao.DeliveryTypeDAOImpl;
-import ru.efive.dms.dao.DocumentFormDAOImpl;
-import ru.efive.dms.dao.NomenclatureDAOImpl;
-import ru.efive.dms.dao.RegionDAOImpl;
-import ru.efive.dms.dao.SenderTypeDAOImpl;
-import ru.efive.dms.data.DeliveryType;
-import ru.efive.dms.data.DocumentForm;
-import ru.efive.dms.data.Nomenclature;
-import ru.efive.dms.data.Region;
-import ru.efive.dms.data.SenderType;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.*;
+
 
 @Named("dictionaryManagement")
 @ConversationScoped
 public class DictionaryManagementBean implements Serializable {
 
     public List<UserAccessLevel> getUserAccessLevels() {
-        return sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
+        return sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findDocuments();
     }
 
     public List<UserAccessLevel> getUserAccessLevelsLowerOrEqualMaxValue(int maxLevel) {
         List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
         try {
-            List<UserAccessLevel> levels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
+            List<UserAccessLevel> levels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findDocuments();
             for (UserAccessLevel level : levels) {
                 if (level.getLevel() <= maxLevel) {
                     result.add(level);
@@ -59,7 +48,7 @@ public class DictionaryManagementBean implements Serializable {
     public List<UserAccessLevel> getUserAccessLevelsGreaterOrEqualMaxValue(int maxLevel) {
         List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
         try {
-            List<UserAccessLevel> levels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
+            List<UserAccessLevel> levels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findDocuments();
             for (UserAccessLevel level : levels) {
                 if (level.getLevel() >= maxLevel) {
                     result.add(level);
@@ -74,7 +63,7 @@ public class DictionaryManagementBean implements Serializable {
     public List<Region> getRegions() {
         List<Region> result = new ArrayList<Region>();
         try {
-            result = sessionManagement.getDictionaryDAO(RegionDAOImpl.class, ApplicationHelper.REGION_DAO).findDocuments(this.getFilter(), false);
+            result = sessionManagement.getDictionaryDAO(RegionDAOImpl.class, REGION_DAO).findDocuments(this.getFilter(), false);
 
             Collections.sort(result, new Comparator<Region>() {
                 public int compare(Region o1, Region o2) {
@@ -90,7 +79,7 @@ public class DictionaryManagementBean implements Serializable {
     public List<SenderType> getSenderTypes() {
         List<SenderType> result = new ArrayList<SenderType>();
         try {
-            result = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, ApplicationHelper.SENDER_TYPE_DAO).findDocuments();
+            result = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO).findDocuments();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -100,7 +89,7 @@ public class DictionaryManagementBean implements Serializable {
     public List<DeliveryType> getDeliveryTypes() {
         List<DeliveryType> result = new ArrayList<DeliveryType>();
         try {
-            result = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, ApplicationHelper.DELIVERY_TYPE_DAO).findDocuments();
+            result = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).findDocuments();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,7 +99,7 @@ public class DictionaryManagementBean implements Serializable {
     public List<GroupType> getGroupTypes() {
         List<GroupType> result = new ArrayList<GroupType>();
         try {
-            result = sessionManagement.getDictionaryDAO(GroupTypeDAO.class, ApplicationHelper.GROUP_TYPE_DAO).findDocuments();
+            result = sessionManagement.getDictionaryDAO(GroupTypeDAO.class, GROUP_TYPE_DAO).findDocuments();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,13 +107,13 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<DocumentForm> getDocumentForms() {
-       return sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findDocuments();
+        return sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findDocuments();
     }
 
     public List<DocumentForm> getDocumentFormsWithEmptyValue() {
         List<DocumentForm> result = new ArrayList<DocumentForm>();
         try {
-            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findDocuments();
+            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findDocuments();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,13 +124,13 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<DocumentForm> getDocumentFormsByCategory(String category) {
-        return sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategory(category);
+        return sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory(category);
     }
 
     public List<DocumentForm> getDocumentFormsByCategoryWithEmptyValue(String category) {
         List<DocumentForm> result = new ArrayList<DocumentForm>();
         try {
-            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategory(category);
+            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory(category);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -154,7 +143,7 @@ public class DictionaryManagementBean implements Serializable {
     public List<Nomenclature> getNomenclature() {
         List<Nomenclature> result = new ArrayList<Nomenclature>();
         try {
-            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, ApplicationHelper.NOMENCLATURE_DAO).findDocuments();
+            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findDocuments();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,7 +153,7 @@ public class DictionaryManagementBean implements Serializable {
     public Nomenclature getNomenclatureByUserLogin(String login) {
         List<Nomenclature> result = new ArrayList<Nomenclature>();
         try {
-            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, ApplicationHelper.NOMENCLATURE_DAO).findByDescription(login);
+            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findByDescription(login);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -174,7 +163,7 @@ public class DictionaryManagementBean implements Serializable {
     public Nomenclature getNomenclatureByUserUNID(String unid) {
         List<Nomenclature> result = new ArrayList<Nomenclature>();
         try {
-            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, ApplicationHelper.NOMENCLATURE_DAO).findByDescription(unid);
+            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findByDescription(unid);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -193,8 +182,8 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
-    public List<RbContactInfoType> getContactTypes(){
-        return sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, ApplicationHelper.RB_CONTACT_TYPE_DAO).findDocuments();
+    public List<RbContactInfoType> getContactTypes() {
+        return sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
     }
 
 

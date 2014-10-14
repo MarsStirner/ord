@@ -1,38 +1,26 @@
 package ru.efive.dms.util;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import ru.efive.dao.alfresco.Attachment;
+import ru.efive.dms.dao.ScanCopyDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.ScanCopyDocument;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import javax.faces.context.FacesContext;
-import javax.mail.Address;
-import javax.mail.BodyPart;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Part;
-import javax.mail.Session;
-import javax.mail.Store;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
+import java.io.*;
+import java.util.*;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.dao.ScanCopyDocumentDAOImpl;
-import ru.efive.dms.data.Attachment;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.ScanCopyDocument;
-import ru.efive.dms.uifaces.beans.FileManagementBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import static ru.efive.dms.util.ApplicationDAONames.SCAN_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
 
 public class ReadInboxService implements Serializable {
     private static final long serialVersionUID = 4355914198294641591L;
@@ -67,7 +55,7 @@ public class ReadInboxService implements Serializable {
 
             Address[] froms = message.getFrom();
             String email = froms == null ? null : ((InternetAddress) froms[0]).getAddress();
-            User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).getByEmailName(email);
+            User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getByEmailName(email);
 
             ScanCopyDocument doc = new ScanCopyDocument();
             doc.setDocumentStatus(DocumentStatus.NEW);
@@ -115,7 +103,7 @@ public class ReadInboxService implements Serializable {
                     //System.out.println(filename);
 
                     try {
-                        doc = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, ApplicationHelper.SCAN_DAO).save(doc);
+                        doc = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, SCAN_DAO).save(doc);
                         saveDocumentFile(doc, filename, is);
                     } catch (Exception ex) {
 

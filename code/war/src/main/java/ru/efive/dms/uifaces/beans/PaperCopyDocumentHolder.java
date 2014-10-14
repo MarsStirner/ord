@@ -1,45 +1,30 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.lang.StringUtils;
+import ru.efive.dao.alfresco.Attachment;
+import ru.efive.dao.alfresco.Revision;
+import ru.efive.dms.dao.*;
+import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
+import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.efive.wf.core.ActionResult;
+import ru.entity.model.document.*;
+import ru.entity.model.enums.DocumentStatus;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
-
-import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.data.Attachment;
-import ru.efive.dms.data.DeliveryType;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.PaperCopyDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
-import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
-import ru.efive.wf.core.ActionResult;
+import static ru.efive.dms.util.ApplicationDAONames.*;
 
 @Named("paper_copy_document")
 @ConversationScoped
@@ -65,7 +50,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            result = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            result = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -93,7 +78,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).get(id));
+            setDocument(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).get(id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             } else {
@@ -147,7 +132,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
         boolean result = false;
         try {
             PaperCopyDocument document = (PaperCopyDocument) getDocument();
-            document = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(document);
+            document = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -170,7 +155,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
         //if (validateHolder()) {
         try {
             PaperCopyDocument document = (PaperCopyDocument) getDocument();
-            document = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(document);
+            document = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -202,21 +187,21 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
             if (pos != -1) {
                 String id = key.substring(pos + 1, key.length());
 
-                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(key);
+                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(key);
                 if (key.indexOf("incoming") != -1) {
-                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(in_doc);
                     getDocument().setRegistrationNumber((in_doc.getRegistrationNumber() != null ? in_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
                 } else if (key.indexOf("outgoing") != -1) {
-                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(out_doc);
                     getDocument().setRegistrationNumber((out_doc.getRegistrationNumber() != null ? out_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
                 } else if (key.indexOf("internal") != -1) {
-                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(internal_doc);
                     getDocument().setRegistrationNumber((internal_doc.getRegistrationNumber() != null ? internal_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
                 } else if (key.indexOf("request") != -1) {
-                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(request_doc);
                     getDocument().setRegistrationNumber((request_doc.getRegistrationNumber() != null ? request_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
                 }

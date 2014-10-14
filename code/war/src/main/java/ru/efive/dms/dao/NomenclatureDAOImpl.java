@@ -6,8 +6,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.sql.util.ApplicationHelper;
-import ru.efive.dms.data.Nomenclature;
+import ru.util.ApplicationHelper;
+import ru.entity.model.document.Nomenclature;
 
 public class NomenclatureDAOImpl extends DictionaryDAOHibernate<Nomenclature> {
 

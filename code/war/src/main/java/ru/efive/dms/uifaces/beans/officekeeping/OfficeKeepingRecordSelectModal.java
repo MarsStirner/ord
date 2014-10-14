@@ -2,7 +2,7 @@ package ru.efive.dms.uifaces.beans.officekeeping;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.dms.data.OfficeKeepingRecord;
+import ru.entity.model.document.OfficeKeepingRecord;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 
 public class OfficeKeepingRecordSelectModal extends ModalWindowHolderBean {

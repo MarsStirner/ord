@@ -1,12 +1,13 @@
 package ru.efive.dms.uifaces.beans;
 
+import ru.efive.sql.dao.user.GroupDAOHibernate;
+import ru.entity.model.user.Group;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.GroupDAOHibernate;
-import ru.efive.sql.entity.user.Group;
+import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
 @Named("staffManagement")
 @RequestScoped
@@ -27,7 +28,7 @@ public class StaffManagement {
         Group in_result = null;
         try {
             if (this.filter.isEmpty()) {
-                in_result = sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).findGroupByAlias(name);
+                in_result = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).findGroupByAlias(name);
             }
         } catch (Exception e) {
             e.printStackTrace();

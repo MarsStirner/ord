@@ -1,53 +1,32 @@
 package ru.efive.dms.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.faces.context.FacesContext;
-
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.Nomenclature;
-import ru.efive.dms.data.OfficeKeepingFile;
-import ru.efive.dms.data.OfficeKeepingVolume;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.PaperCopyDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.data.Task;
+import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.sql.dao.user.RoleDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.wf.core.AgreementIssue;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.NoStatusAction;
 import ru.efive.wf.core.activity.SendMailActivity;
 import ru.efive.wf.core.data.EditableProperty;
-import ru.efive.wf.core.data.HumanTask;
-import ru.efive.wf.core.data.HumanTaskTree;
-import ru.efive.wf.core.data.HumanTaskTreeNode;
 import ru.efive.wf.core.data.MailMessage;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.entity.model.document.*;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.RoleType;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.entity.model.wf.HumanTask;
+import ru.entity.model.wf.HumanTaskTree;
+import ru.entity.model.wf.HumanTaskTreeNode;
+import ru.external.AgreementIssue;
+import ru.util.ApplicationHelper;
+
+import javax.faces.context.FacesContext;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.*;
 
 public final class WorkflowHelper {
 
@@ -192,10 +171,10 @@ public final class WorkflowHelper {
                             List<Role> in_roles = new ArrayList<Role>();
                             Role in_office;
                             if (in_nomenclature != null) {
-                               in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
                                 in_number.append(in_nomenclature.getCategory() + "-");
-                             } else     {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
+                            } else {
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                                 in_number.append("01-");
                             }
                             if ((in_office != null) && (!in_roles.contains(in_office))) {
@@ -203,12 +182,12 @@ public final class WorkflowHelper {
                             }
                             document.setRoleEditors(in_roles);
 
-                            StringBuffer in_count = new StringBuffer("0000" + String.valueOf(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1));
+                            StringBuffer in_count = new StringBuffer("0000" + String.valueOf(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1));
                             in_number.append(in_count.substring(in_count.length() - 4));
 
                             document.setRegistrationNumber(in_number.toString());
 
-                            List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                            List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
                             if (paperCopies.size() > 0) {
                                 for (PaperCopyDocument paperCopy : paperCopies) {
                                     String copyNumber = paperCopy.getRegistrationNumber();
@@ -222,7 +201,7 @@ public final class WorkflowHelper {
                                     if (paperCopy.getDocumentStatus().getId() < 2) {
                                         paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
                                     }
-                                    sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                                    sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
                                 }
                             }
 
@@ -278,7 +257,7 @@ public final class WorkflowHelper {
         StringBuffer in_result = new StringBuffer("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -329,11 +308,11 @@ public final class WorkflowHelper {
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
         boolean result = false;
         String in_result = "";
-        OfficeKeepingVolume parentVolume = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).findDocumentById(String.valueOf(document.getOfficeKeepingVolume().getId()));
+        OfficeKeepingVolume parentVolume = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocumentById(String.valueOf(document.getOfficeKeepingVolume().getId()));
         if (parentVolume != null) {
             int units = parentVolume.getUnitsCount() + document.getSheetsCount();
             parentVolume.setUnitsCount(units);
-            sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).save(parentVolume);
+            sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).save(parentVolume);
             result = true;
         }
         if (in_result.toString().equals("")) {
@@ -386,10 +365,10 @@ public final class WorkflowHelper {
                             List<Role> in_roles = new ArrayList<Role>();
                             Role in_office;
                             if (in_nomenclature != null) {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
                                 in_number.append(in_nomenclature.getCategory() + "-");
                             } else {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                                 in_number.append("01-");
                             }
                             if ((in_office != null) && (!in_roles.contains(in_office))) {
@@ -398,11 +377,11 @@ public final class WorkflowHelper {
                             document.setRoleEditors(in_roles);
 
                             StringBuffer in_count = new StringBuffer("0000" + String.valueOf(new HashSet<IncomingDocument>(sessionManagement.
-                                    getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1));
+                                    getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1));
                             in_number.append(in_count.substring(in_count.length() - 4));
                             document.setRegistrationNumber(in_number.toString());
 
-                            List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                            List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
                             if (paperCopies.size() > 0) {
                                 for (PaperCopyDocument paperCopy : paperCopies) {
                                     String copyNumber = paperCopy.getRegistrationNumber();
@@ -416,7 +395,7 @@ public final class WorkflowHelper {
                                     if (paperCopy.getDocumentStatus().getId() < 2) {
                                         paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
                                     }
-                                    sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                                    sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
                                 }
                             }
 
@@ -446,7 +425,7 @@ public final class WorkflowHelper {
         StringBuffer in_result = new StringBuffer("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -543,11 +522,11 @@ public final class WorkflowHelper {
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
                             List<Role> in_roles = new ArrayList<Role>();
                             Role in_office;
-                             if (in_nomenclature != null) {
-                                 in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                                 in_number.append(in_nomenclature.getCategory() + "-");
+                            if (in_nomenclature != null) {
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                                in_number.append(in_nomenclature.getCategory() + "-");
                             } else {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                                 in_number.append("01-");
                             }
                             if ((in_office != null) && (!in_roles.contains(in_office))) {
@@ -580,7 +559,7 @@ public final class WorkflowHelper {
 
                                 in_filters.put("registrationNumber", in_number);
                                 in_filters.put("form", document.getForm());
-                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
+                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
                                 in_number.append(in_count.substring(in_count.length() - 4));
 
                             } else if (in_form.equals("Методическое пособие")) {
@@ -588,7 +567,7 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
                                                         + 1
                                         )
                                 );
@@ -600,7 +579,7 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
                                                         + 1
                                         )
                                 );
@@ -617,13 +596,13 @@ public final class WorkflowHelper {
                                 }
                                 in_filters.put("registrationNumber", in_number);
                                 in_filters.put("form", document.getForm());
-                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
+                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
                                 in_number.append(in_count.substring(in_count.length() - 4));
 
                                 /*in_number=new StringBuffer();
                                         in_filters.put("registrationNumber", "%");
                                         in_filters.put("form", document.getForm());
-                                        in_count=new  StringBuffer("0000"+String.valueOf(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters,true,false).size()+1));
+                                        in_count=new  StringBuffer("0000"+String.valueOf(sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters,true,false).size()+1));
                                         in_number.append("СЗ/"+in_count.substring(in_count.length()-4)+"/"+ydf.format(java.util.Calendar.getInstance ().getTime()));*/
 
                             } else if (in_form.equals("Информационное письмо")) {
@@ -632,8 +611,8 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                        //+sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
                                                         + 1
                                         )
                                 );
@@ -645,8 +624,8 @@ public final class WorkflowHelper {
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" +
                                         String.valueOf(new HashSet<InternalDocument>(
-                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                        //+sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
+                                                        sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                                                        //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
                                                         + 1
                                         )
                                 );
@@ -659,12 +638,12 @@ public final class WorkflowHelper {
                                 outDateOrder_filters.put("registrationNumber", "%/%");
                                 outDateOrder_filters.put("form", document.getForm());
                                 outDateOrder_filters.put("closePeriodRegistrationFlag", "false");
-                                int outDateOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(outDateOrder_filters, true, false)).size();
+                                int outDateOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(outDateOrder_filters, true, false)).size();
 
                                 in_filters.put("registrationNumber", "%");
                                 in_filters.put("form", document.getForm());
                                 in_filters.put("closePeriodRegistrationFlag", "false");
-                                int summaryOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size();
+                                int summaryOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size();
 
                                 in_count = new StringBuffer("0000" + String.valueOf(summaryOrderCount - outDateOrderCount + 1));
                                 in_number.append(in_count.substring(in_count.length() - 4));
@@ -672,13 +651,13 @@ public final class WorkflowHelper {
                                 in_number = new StringBuffer();
                                 in_filters.put("registrationNumber", "%");
                                 in_filters.put("form", document.getForm());
-                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
+                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
                                 in_number.append("ПВР/" + in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
                             } else if (in_form.equals("Положение")) {
                                 in_number = new StringBuffer();
                                 in_filters.put("registrationNumber", "%");
                                 in_filters.put("form", document.getForm());
-                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
+                                in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
                                 in_number.append("Положение/" + in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
                             } else {
                                 result = false;
@@ -687,7 +666,7 @@ public final class WorkflowHelper {
                             }
                             document.setRegistrationNumber(in_number.toString());
 
-                            List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                            List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
                             if (paperCopies.size() > 0) {
                                 for (PaperCopyDocument paperCopy : paperCopies) {
                                     String copyNumber = paperCopy.getRegistrationNumber();
@@ -701,7 +680,7 @@ public final class WorkflowHelper {
                                     if (paperCopy.getDocumentStatus().getId() < 2) {
                                         paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
                                     }
-                                    sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                                    sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
                                 }
                             }
 
@@ -761,7 +740,7 @@ public final class WorkflowHelper {
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
         Map<String, Object> in_filters = new HashMap<String, Object>();
         in_filters.put("registrationNumber", document.getRegistrationNumber());
-        List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, false, true);
+        List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, false, true);
         if (copyDocuments.size() != 0) {
             in_result.append("Документ под таким номером уже существует;" + System.getProperty("line.separator"));
             document.setRegistrationNumber(null);
@@ -778,17 +757,16 @@ public final class WorkflowHelper {
                         List<Role> in_roles = new ArrayList<Role>();
                         Role in_office;
                         if (in_nomenclature != null) {
-                             in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                        } else
-                        {
-                            in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
+                            in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                        } else {
+                            in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                         }
                         if ((in_office != null) && (!in_roles.contains(in_office))) {
                             in_roles.add(in_office);
                         }
                         document.setRoleEditors(in_roles);
 
-                        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
                         if (paperCopies.size() > 0) {
                             for (PaperCopyDocument paperCopy : paperCopies) {
                                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -802,7 +780,7 @@ public final class WorkflowHelper {
                                 if (paperCopy.getDocumentStatus().getId() < 2) {
                                     paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
                                 }
-                                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
                             }
                         }
 
@@ -832,7 +810,7 @@ public final class WorkflowHelper {
         StringBuffer in_result = new StringBuffer("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -865,7 +843,7 @@ public final class WorkflowHelper {
         StringBuffer in_result = new StringBuffer("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -914,15 +892,15 @@ public final class WorkflowHelper {
                     if (document != null) {
                         if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                             Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
-                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
+                            Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
                             List<Role> in_roles = new ArrayList<Role>();
                             in_roles.add(in_administrationRole);
 
                             Role in_office;
                             if (in_nomenclature != null) {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
                             } else {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
+                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                             }
                             if ((in_office != null) && (!in_roles.contains(in_office))) {
                                 in_roles.add(in_office);
@@ -981,11 +959,11 @@ public final class WorkflowHelper {
                     //if (document != null) {
                     if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                         StringBuffer in_number = new StringBuffer();
-                        StringBuffer in_count = new StringBuffer("0000" + String.valueOf(new HashSet<RequestDocument>(sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findRegistratedDocuments()).size() + 1));
+                        StringBuffer in_count = new StringBuffer("0000" + String.valueOf(new HashSet<RequestDocument>(sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findRegistratedDocuments()).size() + 1));
                         in_number.append(in_count.substring(in_count.length() - 5));
                         document.setRegistrationNumber(in_number.toString());
 
-                        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
                         if (paperCopies.size() > 0) {
                             for (PaperCopyDocument paperCopy : paperCopies) {
                                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -999,7 +977,7 @@ public final class WorkflowHelper {
                                 if (paperCopy.getDocumentStatus().getId() < 2) {
                                     paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
                                 }
-                                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
                             }
                         }
 
@@ -1012,7 +990,7 @@ public final class WorkflowHelper {
                         //}
 
                         Role in_office;
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoleByType(RoleType.REQUEST_MANAGER);
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.REQUEST_MANAGER);
                         in_roles.add(in_office);
 
                         document.setRoleEditors(in_roles);
@@ -1080,19 +1058,19 @@ public final class WorkflowHelper {
 
                                     if (key.indexOf("incoming") != -1) {
                                         IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
-                                                ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                                INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                                         in_number.append(in_doc.getRegistrationNumber() + "/");
                                     } else if (key.indexOf("outgoing") != -1) {
-                                        OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                        OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                                         in_number.append(out_doc.getRegistrationNumber() + "/");
                                     } else if (key.indexOf("internal") != -1) {
-                                        InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                        InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                                         in_number.append(internal_doc.getRegistrationNumber() + "/");
                                     } else if (key.indexOf("request") != -1) {
-                                        RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                        RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                                         in_number.append(request_doc.getRegistrationNumber() + "/");
                                     } else if (key.indexOf("task") != -1) {
-                                        Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
+                                        Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                                         in_number.append("");
                                         in_filters.clear();
                                         in_filters.put("taskDocumentId", "");
@@ -1104,7 +1082,7 @@ public final class WorkflowHelper {
                                 in_filters.put("taskDocumentId", "");
                             }
 
-                            in_count.append(String.valueOf(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 1));
+                            in_count.append(String.valueOf(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 1));
                             in_number.append(in_count);
                             document.setTaskNumber(in_number.toString());
 
@@ -1228,7 +1206,7 @@ public final class WorkflowHelper {
             try {
                 //FacesContext context=FacesContext.getCurrentInstance();
                 SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                long checkCount = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).countDocumentsByNumber(document.getFileIndex());
+                long checkCount = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).countDocumentsByNumber(document.getFileIndex());
 
                 if (checkCount > 0) {
                     result = false;
@@ -1272,7 +1250,7 @@ public final class WorkflowHelper {
                     if (document != null) {
                         if (document.getVolumeIndex() == null || document.getVolumeIndex().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
-                            //StringBuffer in_count=new  StringBuffer("0000"+String.valueOf(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).findRegistratedDocuments().size()+1));
+                            //StringBuffer in_count=new  StringBuffer("0000"+String.valueOf(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class,OFFICE_KEEPING_FILE_DAO).findRegistratedDocuments().size()+1));
                             int in_count = 0;
                             OfficeKeepingFile parentFile = document.getParentFile();
                             Set<OfficeKeepingVolume> in_volumes = parentFile.getVolumes();

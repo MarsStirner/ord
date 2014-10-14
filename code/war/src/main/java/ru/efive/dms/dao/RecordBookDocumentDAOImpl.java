@@ -12,7 +12,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.dms.data.RecordBookDocument;
+import ru.entity.model.document.RecordBookDocument;
 
 public class RecordBookDocumentDAOImpl extends GenericDAOHibernate<RecordBookDocument> {
 

@@ -1,14 +1,16 @@
 package ru.efive.dms.uifaces.beans;
 
 import ru.efive.dms.dao.NumeratorDAOImpl;
-import ru.efive.dms.data.Numerator;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.Numerator;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.NUMERATOR_DAO;
 
 @Named("numerators")
 @SessionScoped
@@ -37,7 +39,7 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
         List<Numerator> result = new ArrayList<Numerator>();
         if (needRefresh) {
             try {
-                result = new ArrayList<Numerator>(new HashSet<Numerator>(sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).findAllDocuments(filters, filter, false, true)));
+                result = new ArrayList<Numerator>(new HashSet<Numerator>(sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).findAllDocuments(filters, filter, false, true)));
 
                 Collections.sort(result, new Comparator<Numerator>() {
                     @Override
@@ -45,11 +47,11 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
                         int result = 0;
                         String colId = getSorting().getColumnId();
 
-                        if(colId.equalsIgnoreCase("numeratorIndex")) {
+                        if (colId.equalsIgnoreCase("numeratorIndex")) {
                             result = new Integer(o1.getNumeratorIndex()).compareTo(o2.getNumeratorIndex());
-                        } else if(colId.equalsIgnoreCase("numberFormat")) {
+                        } else if (colId.equalsIgnoreCase("numberFormat")) {
                             result = ApplicationHelper.getNotNull(o1.getNumberFormat()).compareTo(ApplicationHelper.getNotNull(o1.getNumberFormat()));
-                        } else if(colId.equalsIgnoreCase("creationDate")) {
+                        } else if (colId.equalsIgnoreCase("creationDate")) {
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(ApplicationHelper.getNotNull(o1.getCreationDate()));
                             Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
@@ -57,7 +59,7 @@ public class NumeratorsHolder extends AbstractDocumentListHolderBean<Numerator> 
                             result = c1.compareTo(c2);
                         }
 
-                        if(getSorting().isAsc()) {
+                        if (getSorting().isAsc()) {
                             result *= -1;
                         }
 

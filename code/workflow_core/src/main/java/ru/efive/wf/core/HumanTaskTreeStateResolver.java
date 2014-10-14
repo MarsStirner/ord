@@ -5,11 +5,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.wf.core.data.HumanTask;
-import ru.efive.wf.core.data.HumanTaskTree;
-import ru.efive.wf.core.data.HumanTaskTreeNode;
+import ru.entity.model.user.User;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.wf.HumanTask;
+import ru.entity.model.wf.HumanTaskTree;
+import ru.entity.model.wf.HumanTaskTreeNode;
+import ru.external.ProcessedData;
 
 public class HumanTaskTreeStateResolver implements java.io.Serializable {
 

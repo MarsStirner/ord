@@ -5,10 +5,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.PropertyUtils;
-
 import ru.efive.wf.core.IActivity;
-import ru.efive.wf.core.ProcessedData;
+import ru.external.ProcessedData;
 
 public class InvokeMethodActivity implements IActivity {
 

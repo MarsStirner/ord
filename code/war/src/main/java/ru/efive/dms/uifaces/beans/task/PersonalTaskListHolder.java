@@ -8,10 +8,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.Task;
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.entity.model.document.Task;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
 
 @Named("personal_tasks")
 @SessionScoped
@@ -29,13 +31,13 @@ public class PersonalTaskListHolder extends AbstractDocumentListHolderBean<Task>
 
     @Override
     protected int getTotalCount() {
-        return new Long(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).countDraftDocumentsByAuthor(
+        return new Long(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDraftDocumentsByAuthor(
                 sessionManagement.getLoggedUser(), false)).intValue();
     }
 
     @Override
     protected List<Task> loadDocuments() {
-        return sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
+        return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
                 false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
     }
 
@@ -49,7 +51,7 @@ public class PersonalTaskListHolder extends AbstractDocumentListHolderBean<Task>
         List<Task> result = new ArrayList<Task>();
         try {
             if (parentId != null && !parentId.equals("")) {
-                result = sessionManagement.getDAO(TaskDAOImpl.class, ru.efive.dms.util.ApplicationHelper.TASK_DAO).findResolutionsByParent(
+                result = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findResolutionsByParent(
                         sessionManagement.getLoggedUser().getId(), parentId);
             }
         } catch (Exception e) {

@@ -1,24 +1,6 @@
 package ru.efive.dms.test;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.alfresco.webservice.repository.QueryResult;
-import org.alfresco.webservice.types.Query;
-import org.alfresco.webservice.types.ResultSet;
-import org.alfresco.webservice.types.ResultSetRow;
-import org.alfresco.webservice.types.Store;
-import org.alfresco.webservice.util.Constants;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-
-import ru.efive.dao.InitializationException;
-import ru.efive.dao.alfresco.AlfrescoDAO;
-import ru.efive.dms.data.Attachment;
 
 public class ContentVersioningTest {
 

@@ -9,7 +9,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.dms.data.Region;
+import ru.entity.model.document.Region;
 
 public class RegionDAOImpl extends DictionaryDAOHibernate<Region> {
 

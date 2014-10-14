@@ -1,15 +1,16 @@
 package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.user.PositionDAO;
-import ru.efive.sql.entity.user.Position;
+import ru.entity.model.user.Position;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -24,7 +25,7 @@ public class PositionConverter implements Converter {
     public Object getAsObject(FacesContext fc, UIComponent uiComponent, String value) {
         if (value != null && value.trim().length() > 0) {
             SessionManagementBean sessionManagement = fc.getApplication().evaluateExpressionGet(fc, "#{sessionManagement}", SessionManagementBean.class);
-            PositionDAO service = sessionManagement.getDAO(PositionDAO.class, ApplicationHelper.POSITION_DAO);
+            PositionDAO service = sessionManagement.getDAO(PositionDAO.class, POSITION_DAO);
             final List<Position> resultList = service.findByValue(value);
             if (resultList.isEmpty()) {
                 return null;

@@ -1,30 +1,28 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.Serializable;
-import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.efive.dao.InitializationException;
+import ru.efive.dao.alfresco.AlfrescoDAO;
+import ru.efive.dao.alfresco.AlfrescoNode;
+import ru.efive.dms.dao.RequestDocumentDAOImpl;
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.efive.sql.dao.DictionaryDAO;
+import ru.efive.sql.dao.GenericDAO;
+import ru.efive.sql.dao.user.UserDAO;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.entity.model.user.User;
+import ru.entity.model.user.UserAccessLevel;
+
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import ru.efive.dao.InitializationException;
-import ru.efive.dao.alfresco.AlfrescoDAO;
-import ru.efive.dao.alfresco.AlfrescoNode;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.DictionaryDAO;
-import ru.efive.sql.dao.GenericDAO;
-import ru.efive.sql.dao.user.UserDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.user.UserAccessLevel;
+import java.io.Serializable;
+import java.util.Locale;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 
@@ -87,8 +85,8 @@ public class SessionManagementBean implements Serializable {
         if (userName != null && !userName.isEmpty() && password != null && !password.isEmpty()) {
             try {
                 LOGGER.info("Try to login [{}][{}]", userName, password);
-                UserDAO dao = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
-                loggedUser = dao.findByLoginAndPassword(userName, ru.efive.sql.util.ApplicationHelper.getMD5(password));
+                UserDAO dao = getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO);
+                loggedUser = dao.findByLoginAndPassword(userName, ru.util.ApplicationHelper.getMD5(password));
                 if (loggedUser != null) {
                     LOGGER.debug("By userName[{}] founded User[{}]", userName, loggedUser.getId());
                     //Проверка удаленности\уволенности сотрудника
@@ -115,9 +113,9 @@ public class SessionManagementBean implements Serializable {
                     isHr = loggedUser.isHr();
                     //В лог флажки ролей
                     if (LOGGER.isDebugEnabled()) {
-                      printRoleFlags();
+                        printRoleFlags();
                     }
-                    RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO);
+                    RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO);
                     reqDocumentsCount = docDao.countAllDocumentsByUser((String) null, loggedUser, false, false);
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
 
@@ -216,7 +214,7 @@ public class SessionManagementBean implements Serializable {
             return loggedUser;
         } else {
             LOGGER.warn("GET USER WITHOUT Session");
-            return getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
+            return getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
         }
     }
 
@@ -233,7 +231,7 @@ public class SessionManagementBean implements Serializable {
     public void setCurrentUserAccessLevel(final UserAccessLevel userAccessLevel) {
         try {
             loggedUser.setCurrentUserAccessLevel(userAccessLevel);
-            loggedUser = getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).save(loggedUser);
+            loggedUser = getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).save(loggedUser);
         } catch (Exception e) {
             LOGGER.error("CANNOT change UserAccessLevel:", e);
         }

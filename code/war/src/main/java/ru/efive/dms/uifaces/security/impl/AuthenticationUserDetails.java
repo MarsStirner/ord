@@ -6,7 +6,7 @@ import java.util.HashSet;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.user.User;
 
 public class AuthenticationUserDetails implements UserDetails {
 

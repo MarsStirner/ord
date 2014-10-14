@@ -1,5 +1,7 @@
 package ru.efive.wf.core;
 
+import ru.external.ProcessedData;
+
 public class ActionResult {
 
     public ActionResult() {

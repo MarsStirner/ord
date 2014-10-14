@@ -1,6 +1,6 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import ru.efive.dms.data.IncomingDocument;
+import ru.entity.model.document.IncomingDocument;
 
 /**
  * Author: Upatov Egor <br>

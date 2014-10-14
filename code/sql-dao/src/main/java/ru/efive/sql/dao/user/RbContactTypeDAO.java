@@ -1,7 +1,7 @@
 package ru.efive.sql.dao.user;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.sql.entity.user.RbContactInfoType;
+import ru.entity.model.user.RbContactInfoType;
 
 /**
  * Author: Upatov Egor <br>

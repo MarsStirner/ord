@@ -1,17 +1,18 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.data.OutgoingDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.OutgoingDocument;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 
 @Named("out_documents")
 @SessionScoped
@@ -40,17 +41,17 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
     protected List<OutgoingDocument> getHashDocuments() {
         List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
         if (needRefresh) {
-           try {
+            try {
                 User user = sessionManagement.getLoggedUser();
-               // user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user, false, false)));
+                // user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<OutgoingDocument>() {
                     public int compare(OutgoingDocument o1, OutgoingDocument o2) {
                         int result = 0;
                         String colId = getSorting().getColumnId();
 
-                        if(colId.equalsIgnoreCase("registrationDate")) {
+                        if (colId.equalsIgnoreCase("registrationDate")) {
                             Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(d1);
@@ -63,36 +64,36 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
                             c2.set(Calendar.HOUR_OF_DAY, 0);
                             c2.set(Calendar.MINUTE, 0);
                             c2.set(Calendar.SECOND, 0);
-                            if(c1.equals(c2)) {
+                            if (c1.equals(c2)) {
                                 try {
                                     Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                     Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                     result = i1.compareTo(i2);
-                                } catch(NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 }
                             } else {
                                 result = c1.compareTo(c2);
                             }
-                        } else if(colId.equalsIgnoreCase("registrationNumber")) {
+                        } else if (colId.equalsIgnoreCase("registrationNumber")) {
                             try {
                                 Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 result = i1.compareTo(i2);
-                            } catch(NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                             }
-                        } else if(colId.equalsIgnoreCase("signatureDate")) {
+                        } else if (colId.equalsIgnoreCase("signatureDate")) {
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(ApplicationHelper.getNotNull(o1.getSignatureDate()));
                             Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c2.setTime(ApplicationHelper.getNotNull(o2.getSignatureDate()));
                             result = c2.compareTo(c1);
-                        } else if(colId.equalsIgnoreCase("status_id")) {
+                        } else if (colId.equalsIgnoreCase("status_id")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
                         }
 
-                        if(getSorting().isAsc()) {
+                        if (getSorting().isAsc()) {
                             result *= -1;
                         }
                         return result;
@@ -126,8 +127,8 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
             int result = 0;
             try {
                 User user=sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
-                return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
+                user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
+                return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class,OUTGOING_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
                         user, false, false)).intValue();
             }
             catch (Exception e) {
@@ -141,8 +142,8 @@ public class OutgoingDocumentListHolder extends AbstractDocumentListHolderBean<O
             List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
             try {
                 User user=sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
-                result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user,
+                user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
+                result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class,OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user,
                         false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
                 result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(result));
                 Collections.sort(result, new Comparator<OutgoingDocument>() {

@@ -1,6 +1,7 @@
 package ru.efive.wf.core;
 
-import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.entity.model.enums.DocumentStatus;
+import ru.external.ProcessedData;
 
 import java.util.ArrayList;
 import java.util.List;

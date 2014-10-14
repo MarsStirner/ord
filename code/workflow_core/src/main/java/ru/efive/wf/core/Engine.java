@@ -3,8 +3,11 @@ package ru.efive.wf.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.efive.wf.core.data.HumanTask;
+import ru.entity.model.wf.HumanTask;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.external.AgreementIssue;
+import ru.external.ProcessUser;
+import ru.external.ProcessedData;
 
 public final class Engine {
 

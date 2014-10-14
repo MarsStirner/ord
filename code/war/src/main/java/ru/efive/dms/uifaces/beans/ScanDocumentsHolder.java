@@ -1,12 +1,10 @@
 package ru.efive.dms.uifaces.beans;
 
 import ru.efive.dms.dao.ScanCopyDocumentDAOImpl;
-import ru.efive.dms.data.ScanCopyDocument;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.dms.util.ReadInboxService;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.ScanCopyDocument;
+import ru.entity.model.user.User;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -16,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.SCAN_DAO;
 
 /**
  * @author Nastya Peshekhonova
@@ -83,8 +83,8 @@ public class ScanDocumentsHolder extends AbstractDocumentListHolderBean<ScanCopy
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
-                //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<ScanCopyDocument>(new HashSet<ScanCopyDocument>(sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, ApplicationHelper.SCAN_DAO).
+                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                result = new ArrayList<ScanCopyDocument>(new HashSet<ScanCopyDocument>(sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, SCAN_DAO).
                         findDocumentsByAuthor(filter, user.getId(), false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(),
                                 getSorting().isAsc())));
                 this.hashDocuments = result;

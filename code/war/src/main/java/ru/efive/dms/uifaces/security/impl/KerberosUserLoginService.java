@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 //import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.user.User;
 import ru.efive.dms.uifaces.security.UserLoginService;
 
 public class KerberosUserLoginService implements UserLoginService {

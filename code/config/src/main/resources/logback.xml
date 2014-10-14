@@ -40,23 +40,38 @@
         </triggeringPolicy>
     </appender>
 
+    <!--Для заданий\поручений-->
+    <appender name="APPENDER_TASK" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/TASK/TASK.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
 
     <logger name="INCOMING_DOCUMENT" level="DEBUG"/>
 
-    <logger name="AUTH" level="DEBUG" />
+    <logger name="AUTH" level="DEBUG"/>
 
     <logger name="CONVERTER" level="DEBUG"/>
 
-    <logger name="FILTER" level="DEBUG" />
+    <logger name="FILTER" level="DEBUG"/>
 
-    <logger name="SESSION_LISTENER" level="DEBUG" />
+    <logger name="SESSION_LISTENER" level="DEBUG"/>
+
+    <logger name="TASK" level="DEBUG">
+        <appender-ref ref="APPENDER_TASK"/>
+    </logger>
 
     <!--Логгер для работы с подразделениями-->
-    <logger name="DEPARTMENT" level = "ERROR"/>
-
+    <logger name="DEPARTMENT" level="ERROR"/>
 
     <!--Логгер для работы с должностями-->
-    <logger name="POSITION" level = "ERROR"/>
+    <logger name="POSITION" level="ERROR"/>
 
     <!--Логгер для действий с пользователями-->
     <logger name="USER" level="DEBUG"/>
@@ -69,7 +84,7 @@
     <logger name="HUMAN_TASK" level="DEBUG"/>
 
     <!--Hibernate SQL LOGGER-->
-    <logger name="org.hibernate.SQL" level = "DEBUG" additivity="false">
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
         <appender-ref ref="APPENDER_SQL"/>
     </logger>
 

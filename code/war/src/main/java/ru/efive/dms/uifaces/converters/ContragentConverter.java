@@ -1,15 +1,16 @@
 package ru.efive.dms.uifaces.converters;
 
+import ru.efive.crm.dao.ContragentDAOHibernate;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.entity.model.crm.Contragent;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import ru.efive.crm.dao.ContragentDAOHibernate;
-import ru.efive.crm.data.Contragent;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
 
 @FacesConverter("ContragentConverter")
 public class ContragentConverter implements Converter {
@@ -18,7 +19,7 @@ public class ContragentConverter implements Converter {
         Object result = null;
         try {
             SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-            Contragent in_contragent = ((ContragentDAOHibernate) sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO)).getByFullName(value);
+            Contragent in_contragent = ((ContragentDAOHibernate) sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO)).getByFullName(value);
             if (in_contragent != null) {
                 result = in_contragent;
             } else {

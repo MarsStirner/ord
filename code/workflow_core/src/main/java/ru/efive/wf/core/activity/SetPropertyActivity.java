@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ru.efive.wf.core.IActivity;
-import ru.efive.wf.core.ProcessedData;
+import ru.external.ProcessedData;
 
 public class SetPropertyActivity implements IActivity {
 

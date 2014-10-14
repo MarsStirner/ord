@@ -13,10 +13,10 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.entity.document.Document;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.wf.core.data.impl.RouteTemplate;
+import ru.entity.model.mapped.Document;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.entity.model.wf.RouteTemplate;
 
 public class EngineDAOImpl extends GenericDAOHibernate<Document> {
 

@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import ru.efive.sql.entity.user.User;
-import ru.efive.wf.core.data.HumanTask;
+import ru.entity.model.user.User;
+import ru.entity.model.wf.HumanTask;
+import ru.external.ProcessUser;
 
 public class HumanTaskProcessAction extends UserAction implements Serializable {
 

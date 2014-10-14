@@ -1,18 +1,18 @@
 package ru.efive.dms.uifaces.beans.department;
 
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.user.DepartmentDAO;
-import ru.efive.sql.entity.user.Department;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.user.Department;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.DEPARTMENT_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -23,7 +23,7 @@ import java.util.List;
 @Singleton
 @Named("departmentList")
 @ApplicationScoped
-public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Department>{
+public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Department> {
 
     private String filter;
     private static DepartmentDAO dao;
@@ -33,7 +33,7 @@ public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Dep
 
     @PostConstruct
     public void init() {
-        dao = indexManagement.getContext().getBean(ApplicationHelper.DEPARTMENT_DAO, DepartmentDAO.class);
+        dao = indexManagement.getContext().getBean(DEPARTMENT_DAO, DepartmentDAO.class);
     }
 
 
@@ -63,6 +63,6 @@ public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Dep
 
     @Override
     protected List<Department> loadDocuments() {
-       return dao.findDocuments(filter, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+        return dao.findDocuments(filter, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
     }
 }

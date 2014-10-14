@@ -1,17 +1,17 @@
 package ru.efive.dms.uifaces.converters;
 
-import java.util.List;
+import ru.efive.dms.dao.OfficeKeepingRecordDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.entity.model.document.OfficeKeepingRecord;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import java.util.List;
 
-import ru.efive.dms.dao.OfficeKeepingRecordDAOImpl;
-import ru.efive.dms.data.OfficeKeepingRecord;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_RECORD_DAO;
 
 @FacesConverter("OfficeKeepingRecordConverter")
 public class OfficeKeepingRecordConverter implements Converter {
@@ -22,7 +22,7 @@ public class OfficeKeepingRecordConverter implements Converter {
             SessionManagementBean sessionManagement =
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            List<OfficeKeepingRecord> list = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).findDocuments(false);
+            List<OfficeKeepingRecord> list = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, OFFICE_KEEPING_RECORD_DAO).findDocuments(false);
             if (list.size() != 0) {
                 for (OfficeKeepingRecord in_record : list) {
                     if (in_record != null) {

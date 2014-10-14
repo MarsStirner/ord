@@ -9,7 +9,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 import ru.efive.crm.dao.NomenclatureDAOImpl;
-import ru.efive.crm.data.ContragentNomenclature;
+import ru.entity.model.crm.ContragentNomenclature;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 
 @FacesConverter("ContragentNomenclatureConverter")

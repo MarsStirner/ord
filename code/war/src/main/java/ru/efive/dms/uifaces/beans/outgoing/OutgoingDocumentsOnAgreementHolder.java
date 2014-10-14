@@ -1,18 +1,19 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.data.OutgoingDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.OutgoingDocument;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 
 @Named("outDocumentsOnAgreement")
 @SessionScoped
@@ -56,8 +57,8 @@ public class OutgoingDocumentsOnAgreementHolder extends AbstractDocumentListHold
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
-                //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<OutgoingDocument>() {
                     public int compare(OutgoingDocument o1, OutgoingDocument o2) {

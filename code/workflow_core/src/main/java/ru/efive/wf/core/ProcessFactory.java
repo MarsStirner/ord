@@ -6,18 +6,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import ru.efive.sql.entity.enums.DocumentAction;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.DocumentType;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.enums.DocumentAction;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.DocumentType;
+import ru.entity.model.enums.RoleType;
+import ru.entity.model.user.Group;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
 import ru.efive.wf.core.activity.InvokeMethodActivity;
 import ru.efive.wf.core.activity.ParametrizedPropertyLocalActivity;
 import ru.efive.wf.core.activity.SendMailActivity;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
-import ru.efive.wf.core.data.HumanTaskTree;
+import ru.entity.model.wf.HumanTaskTree;
 import ru.efive.wf.core.data.MailMessage;
 import ru.efive.wf.core.data.impl.InputDateForm;
 import ru.efive.wf.core.data.impl.InputReasonForm;
@@ -25,6 +25,8 @@ import ru.efive.wf.core.data.impl.InputRegistrationNumberForm;
 import ru.efive.wf.core.data.impl.SelectAccessLevelForm;
 import ru.efive.wf.core.data.impl.SelectUserForm;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.external.ProcessUser;
+import ru.external.ProcessedData;
 
 public final class ProcessFactory {
 

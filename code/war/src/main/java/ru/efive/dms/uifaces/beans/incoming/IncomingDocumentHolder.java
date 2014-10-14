@@ -1,65 +1,42 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import ru.efive.crm.data.Contragent;
+import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.DocumentFormDAOImpl;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.Attachment;
-import ru.efive.dms.data.DocumentForm;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.PaperCopyDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.data.Task;
-import ru.efive.dms.uifaces.beans.ContragentListHolderBean;
-import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
-import ru.efive.dms.uifaces.beans.FileManagementBean;
+import ru.efive.dms.dao.*;
+import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.user.UserAccessLevel;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
+import ru.entity.model.crm.Contragent;
+import ru.entity.model.document.*;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.Group;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.entity.model.user.UserAccessLevel;
+import ru.util.ApplicationHelper;
+
+import javax.enterprise.context.ConversationScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.*;
 
 @Named("in_doc")
 @ConversationScoped
@@ -140,7 +117,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Override
     protected boolean deleteDocument() {
         try {
-            final boolean result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            final boolean result = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
             }
@@ -167,7 +144,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         final User currentUser = sessionManagement.getLoggedUser();
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            final IncomingDocument document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).get(id);
+            final IncomingDocument document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).get(id);
             readPermission = false;
             editPermission = false;
             executePermission = false;
@@ -175,7 +152,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 setDocument(document);
                 return;
             }
-            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).getHibernateTemplate();
+            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).getHibernateTemplate();
             Session session = hibernateTemplate.getSessionFactory().openSession();
             session.beginTransaction();
             session.update(document);
@@ -301,7 +278,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             }
         }
         //11) пользователи, учавствующие в согласованиях
-        if (sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
+        if (sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
             LOGGER.debug("{}:Permission R granted: TASK", document.getId());
             readPermission = true;
         }
@@ -361,15 +338,15 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             //doc.setTemplateFlag(true);
             //String parentNumeratorId=FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
             doc.setParentNumeratorId(parentNumeratorId);
-            //Numerator parentNumerator=sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).findDocumentById(parentNumeratorId);
+            //Numerator parentNumerator=sessionManagement.getDAO(NumeratorDAOImpl.class,NUMERATOR_DAO).findDocumentById(parentNumeratorId);
         }
         DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategoryAndValue("Входящие документы", "Письмо");
+        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Входящие документы", "Письмо");
         if (list.size() > 0) {
             form = list.get(0);
 
         } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategory("Входящие документы");
+            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Входящие документы");
             if (list.size() > 0) {
                 form = list.get(0);
             }
@@ -398,7 +375,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     protected boolean saveDocument() {
         try {
             IncomingDocument document = getDocument();
-            document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
+            document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
                 return false;
@@ -419,7 +396,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         //if (validateHolder()) {
         try {
             IncomingDocument document = getDocument();
-            document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document);
+            document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
@@ -455,7 +432,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
                 paperCopy.setParentDocument(document);
 
-                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
 
                 LOGGER.debug("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
@@ -616,7 +593,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             if (fileManagement.deleteFile(attachment)) {
                 updateAttachments();
             }
-            setDocument(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).save(document));
+            setDocument(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).save(document));
         }
     }
 
@@ -627,7 +604,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         List<String> ids = new ArrayList<String>();
         String key = "incoming_" + getDocument().getId();
         if (!key.isEmpty()) {
-            List<OutgoingDocument> out_docs = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByReasonDocumentId(key);
+            List<OutgoingDocument> out_docs = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByReasonDocumentId(key);
             for (OutgoingDocument out_doc : out_docs) {
                 ids.add(out_doc.getUniqueId());
             }
@@ -646,35 +623,35 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
 
                 if (key.contains("incoming")) {
-                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
                             "Черновик входщяего документа от " + DATE_FORMAT.format(in_doc.getCreationDate()) :
                             "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(in_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("outgoing")) {
-                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
                             "Черновик исходящего документа от " + DATE_FORMAT.format(out_doc.getCreationDate()) :
                             "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(out_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("internal")) {
-                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
                             "Черновик внутреннего документа от " + DATE_FORMAT.format(internal_doc.getCreationDate()) :
                             "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(internal_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("request")) {
-                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
                             "Черновик обращения граждан от " + DATE_FORMAT.format(request_doc.getCreationDate()) :
                             "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(request_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("task")) {
-                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
+                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
                             "Черновик поручения от " + DATE_FORMAT.format(task_doc.getCreationDate()) :
                             "Поручение № " + task_doc.getTaskNumber() + " от " + DATE_FORMAT.format(task_doc.getCreationDate())

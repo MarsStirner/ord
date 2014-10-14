@@ -13,10 +13,10 @@ import org.alfresco.webservice.util.ContentUtils;
 
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.data.Attachment;
-import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.dao.alfresco.Attachment;
 import ru.efive.uifaces.filter.UploadHandler;
 import ru.efive.uifaces.filter.UploadInfo;
+import ru.util.ApplicationHelper;
 
 @Named("fileManagement")
 @SessionScoped

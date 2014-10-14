@@ -13,10 +13,10 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.data.ScanCopyDocument;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.entity.model.document.ScanCopyDocument;
 
 public class ScanCopyDocumentDAOImpl extends GenericDAOHibernate<ScanCopyDocument> {
 

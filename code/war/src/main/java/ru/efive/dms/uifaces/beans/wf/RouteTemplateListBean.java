@@ -1,18 +1,18 @@
 package ru.efive.dms.uifaces.beans.wf;
 
-import java.util.ArrayList;
-import java.util.List;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.wf.core.dao.EngineDAOImpl;
+import ru.entity.model.document.Nomenclature;
+import ru.entity.model.wf.RouteTemplate;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
-import ru.efive.dms.data.Nomenclature;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.wf.core.dao.EngineDAOImpl;
-import ru.efive.wf.core.data.impl.RouteTemplate;
+import static ru.efive.dms.util.ApplicationDAONames.ENGINE_DAO;
 
 @Named("routeTemplates")
 @SessionScoped
@@ -32,7 +32,7 @@ public class RouteTemplateListBean extends AbstractDocumentListHolderBean<RouteT
     protected int getTotalCount() {
         int result = 0;
         try {
-            result = new Long(sessionManagement.getDAO(EngineDAOImpl.class, ApplicationHelper.ENGINE_DAO).countRouteTemplates(sessionManagement.getLoggedUser(), false)).intValue();
+            result = new Long(sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).countRouteTemplates(sessionManagement.getLoggedUser(), false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,7 +43,7 @@ public class RouteTemplateListBean extends AbstractDocumentListHolderBean<RouteT
     protected List<RouteTemplate> loadDocuments() {
         List<RouteTemplate> result = new ArrayList<RouteTemplate>();
         try {
-            result = sessionManagement.getDAO(EngineDAOImpl.class, ApplicationHelper.ENGINE_DAO).findRouteTemplates(sessionManagement.getLoggedUser(), false,
+            result = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).findRouteTemplates(sessionManagement.getLoggedUser(), false,
                     getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,7 +54,7 @@ public class RouteTemplateListBean extends AbstractDocumentListHolderBean<RouteT
     public RouteTemplate getTemplateByNomenclature(Nomenclature nomenclature) {
         RouteTemplate result = null;
         try {
-            result = sessionManagement.getDAO(EngineDAOImpl.class, ApplicationHelper.ENGINE_DAO).findRouteTemplates(sessionManagement.getLoggedUser(), false,
+            result = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).findRouteTemplates(sessionManagement.getLoggedUser(), false,
                     -1, -1, "name", true).get(0);
         } catch (Exception e) {
             e.printStackTrace();

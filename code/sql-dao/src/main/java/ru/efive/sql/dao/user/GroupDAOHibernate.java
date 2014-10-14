@@ -9,8 +9,8 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.util.ApplicationHelper;
+import ru.entity.model.user.Group;
+import ru.util.ApplicationHelper;
 
 public class GroupDAOHibernate extends GenericDAOHibernate<Group> {
 

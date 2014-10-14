@@ -5,7 +5,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import ru.efive.dms.data.IncomingDocument;
+import ru.entity.model.document.IncomingDocument;
 
 @FacesConverter("IncomingDocumentConverter")
 public class IncomingDocumentConverter implements Converter {

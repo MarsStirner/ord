@@ -1,7 +1,7 @@
 package ru.efive.sql.dao.user;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.sql.entity.enums.GroupType;
+import ru.entity.model.enums.GroupType;
 
 public class GroupTypeDAO extends DictionaryDAOHibernate<GroupType> {
 

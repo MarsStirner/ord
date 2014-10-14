@@ -1,30 +1,26 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.wf.core.ActionResult;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.OfficeKeepingFile;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.RoleType;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.*;
 
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.OfficeKeepingFile;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.wf.core.ActionResult;
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
 @Named("officeKeepingFile")
 @ConversationScoped
@@ -34,7 +30,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).delete(getDocument());
+            sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -56,7 +52,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).get(id));
+        setDocument(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).get(id));
         if (getDocument() == null) {
             setState(STATE_NOT_FOUND);
         }
@@ -92,7 +88,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).update(getDocument());
+            OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).update(getDocument());
             if (record == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -115,7 +111,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).save(getDocument());
+            OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).save(getDocument());
             if (record == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,

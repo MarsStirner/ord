@@ -2,7 +2,7 @@ package ru.efive.dms.uifaces.beans.incoming;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.dms.data.IncomingDocument;
+import ru.entity.model.document.IncomingDocument;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 
 public class IncomingDocumentSelectModal extends ModalWindowHolderBean {

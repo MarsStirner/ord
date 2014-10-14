@@ -1,7 +1,7 @@
 package ru.efive.sql.dao.user;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.sql.entity.user.Position;
+import ru.entity.model.user.Position;
 /**
  * Author: Upatov Egor <br>
  * Date: 19.08.2014, 19:25 <br>

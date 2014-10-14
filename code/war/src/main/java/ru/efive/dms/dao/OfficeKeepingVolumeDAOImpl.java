@@ -11,9 +11,9 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.data.OfficeKeepingVolume;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.User;
+import ru.entity.model.document.OfficeKeepingVolume;
 
 public class OfficeKeepingVolumeDAOImpl extends GenericDAOHibernate<OfficeKeepingVolume> {
 

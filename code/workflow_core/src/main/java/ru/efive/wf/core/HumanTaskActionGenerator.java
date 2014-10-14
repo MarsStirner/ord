@@ -8,19 +8,21 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import ru.efive.sql.entity.enums.DocumentAction;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.enums.DocumentAction;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.User;
 import ru.efive.wf.core.activity.InvokeMethodActivity;
 import ru.efive.wf.core.activity.ParametrizedPropertyLocalActivity;
 import ru.efive.wf.core.activity.SendMailActivity;
 import ru.efive.wf.core.activity.SetPropertyActivity;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
-import ru.efive.wf.core.data.HumanTask;
+import ru.entity.model.wf.HumanTask;
 import ru.efive.wf.core.data.MailMessage;
 import ru.efive.wf.core.data.impl.InputReasonForm;
 import ru.efive.wf.core.data.impl.SelectUserForm;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.external.ProcessUser;
+import ru.external.ProcessedData;
 
 public class HumanTaskActionGenerator {
 

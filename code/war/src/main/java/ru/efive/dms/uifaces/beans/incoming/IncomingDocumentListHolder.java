@@ -1,16 +1,17 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.user.User;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 
 
 @Named("in_documents")
@@ -34,14 +35,14 @@ public class IncomingDocumentListHolder extends AbstractDocumentListHolderBean<I
     protected int getTotalCount() {
         final User loggedUser = sessionManagement.getLoggedUser();
         return new Long(
-                sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO)
+                sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                         .countAllDocumentsByUser(filter, loggedUser, false, false)
         ).intValue();
     }
 
     @Override
     protected List<IncomingDocument> loadDocuments() {
-        return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO)
+        return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                 .findAllDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
 
     }

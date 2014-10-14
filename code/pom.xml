@@ -58,6 +58,7 @@
         <module>ear</module>
         <module>ui-templates-core</module>
         <module>config</module>
+        <module>entities</module>
     </modules>
 
     <properties>

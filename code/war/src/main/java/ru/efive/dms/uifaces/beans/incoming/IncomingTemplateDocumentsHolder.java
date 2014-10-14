@@ -1,18 +1,20 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import java.util.*;
+import ru.efive.dms.dao.IncomingDocumentDAOImpl;
+import ru.efive.dms.dao.NumeratorDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.document.Numerator;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.*;
 
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.NumeratorDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.Numerator;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.NUMERATOR_DAO;
 
 
 @Named("in_template_documents")
@@ -43,14 +45,14 @@ public class IncomingTemplateDocumentsHolder extends AbstractDocumentListHolderB
         if (needRefresh) {
             try {
                 result = new ArrayList<IncomingDocument>(new HashSet<IncomingDocument>(sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
-                        ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, true)));
+                        INCOMING_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, true)));
 
                 Collections.sort(result, new Comparator<IncomingDocument>() {
                     public int compare(IncomingDocument o1, IncomingDocument o2) {
                         int result = 0;
                         String colId = ApplicationHelper.getNotNull(getSorting().getColumnId());
 
-                        if(colId.equalsIgnoreCase("registrationDate")) {
+                        if (colId.equalsIgnoreCase("registrationDate")) {
                             Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(d1);
@@ -63,12 +65,12 @@ public class IncomingTemplateDocumentsHolder extends AbstractDocumentListHolderB
                             c2.set(Calendar.HOUR_OF_DAY, 0);
                             c2.set(Calendar.MINUTE, 0);
                             c2.set(Calendar.SECOND, 0);
-                            if(c1.equals(c2)) {
+                            if (c1.equals(c2)) {
                                 try {
                                     Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
                                     Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                     result = i1.compareTo(i2);
-                                } catch(NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 }
                             } else {
@@ -76,7 +78,7 @@ public class IncomingTemplateDocumentsHolder extends AbstractDocumentListHolderB
                             }
                         }
 
-                        if(getSorting().isAsc()) {
+                        if (getSorting().isAsc()) {
                             result *= -1;
                         }
                         return result;
@@ -144,11 +146,11 @@ public class IncomingTemplateDocumentsHolder extends AbstractDocumentListHolderB
         System.out.println(">>" + key);
         List<IncomingDocument> result = new ArrayList<IncomingDocument>();
         if (!key.isEmpty()) {
-            Numerator numerator = sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).findDocumentById(key);
+            Numerator numerator = sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).findDocumentById(key);
             if (numerator != null) {
                 System.out.println("-->>" + numerator.getCreationDate());
                 if (numerator.getDocumentTypeKey().equals("incoming")) {
-                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentByNumeratorId(key);
+                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentByNumeratorId(key);
                     result.add(in_doc);
                 }
             } else {

@@ -1,19 +1,20 @@
 package ru.efive.dms.uifaces.beans.utils;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.user.DepartmentDAO;
 import ru.efive.sql.dao.user.PositionDAO;
-import ru.efive.sql.entity.user.Department;
-import ru.efive.sql.entity.user.Position;
+import ru.entity.model.user.Department;
+import ru.entity.model.user.Position;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.faces.bean.ManagedBean;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.DEPARTMENT_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -39,8 +40,8 @@ public class AutoCompleteView {
 
     @PostConstruct
     public void init() {
-        departmentDAO = sessionManagement.getDAO(DepartmentDAO.class, ApplicationHelper.DEPARTMENT_DAO);
-        positionDAO = sessionManagement.getDAO(PositionDAO.class, ApplicationHelper.POSITION_DAO);
+        departmentDAO = sessionManagement.getDAO(DepartmentDAO.class, DEPARTMENT_DAO);
+        positionDAO = sessionManagement.getDAO(PositionDAO.class, POSITION_DAO);
     }
 
     public List<Department> completeDepartment(final String query) {
@@ -52,7 +53,7 @@ public class AutoCompleteView {
         if (queryStringValid(query)) {
             final String queryLowerCase = query.toLowerCase();
             for (Department item : allDepartments) {
-                if(i >= MAX_SEARCH_RESULTS){
+                if (i >= MAX_SEARCH_RESULTS) {
                     break;
                 }
                 if (item.getValue().toLowerCase().startsWith(queryLowerCase)) {
@@ -86,7 +87,7 @@ public class AutoCompleteView {
         if (queryStringValid(query)) {
             final String queryLowerCase = query.toLowerCase();
             for (Position item : allPositions) {
-                if(i >= MAX_SEARCH_RESULTS){
+                if (i >= MAX_SEARCH_RESULTS) {
                     break;
                 }
                 if (item.getValue().toLowerCase().startsWith(queryLowerCase)) {

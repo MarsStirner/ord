@@ -1,21 +1,19 @@
 package ru.efive.sql.dao.user;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.hibernate.FetchMode;
-import org.hibernate.Hibernate;
 import org.hibernate.criterion.*;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.entity.enums.PermissionType;
-import ru.efive.sql.entity.user.Permission;
-import ru.efive.sql.entity.user.PersonContact;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.util.ApplicationHelper;
+import ru.entity.model.enums.PermissionType;
+import ru.entity.model.user.Permission;
+import ru.entity.model.user.PersonContact;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserDAO {
 

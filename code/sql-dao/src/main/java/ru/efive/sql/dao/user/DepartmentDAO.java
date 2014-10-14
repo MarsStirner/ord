@@ -1,7 +1,7 @@
 package ru.efive.sql.dao.user;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.sql.entity.user.Department;
+import ru.entity.model.user.Department;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;

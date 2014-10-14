@@ -1,34 +1,31 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
+import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.wf.core.ActionResult;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.OfficeKeepingFile;
+import ru.entity.model.document.OfficeKeepingVolume;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.RoleType;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.OfficeKeepingFile;
-import ru.efive.dms.data.OfficeKeepingVolume;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.wf.core.ActionResult;
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @Named("officeKeepingVolume")
 @ConversationScoped
@@ -64,7 +61,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).delete(getDocument());
+            sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -86,7 +83,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).get(id));
+        setDocument(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).get(id));
 
         if (getDocument() == null) {
             setState(STATE_NOT_FOUND);
@@ -100,7 +97,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
         String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
         if (parentId == null || parentId.equals("")) {
         } else {
-            file = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_FILE_DAO).findDocumentById(parentId);
+            file = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocumentById(parentId);
             if (file != null) {
                 document.setParentFile(file);
             }
@@ -141,7 +138,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).update((OfficeKeepingVolume) getDocument());
+            OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).update((OfficeKeepingVolume) getDocument());
             if (record == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -168,7 +165,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
             OfficeKeepingFile file = document.getParentFile();
             if (file != null) {
 
-                OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).save(document);
+                OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).save(document);
                 //OfficeKeepingVolume record=getDocument();
                 if (record == null) {
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(

@@ -6,7 +6,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.dms.data.OfficeKeepingRecord;
+import ru.entity.model.document.OfficeKeepingRecord;
 
 public class OfficeKeepingRecordDAOImpl extends GenericDAOHibernate<OfficeKeepingRecord> {
 

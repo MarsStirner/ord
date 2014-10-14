@@ -1,68 +1,41 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import ru.efive.dao.alfresco.Attachment;
+import ru.efive.dao.alfresco.Revision;
+import ru.efive.dms.dao.*;
+import ru.efive.dms.uifaces.beans.*;
+import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentSelectModal;
+import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
+import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
+import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.sql.dao.user.UserAccessLevelDAO;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.efive.wf.core.ActionResult;
+import ru.entity.model.document.*;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.RoleType;
+import ru.entity.model.user.Group;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.entity.model.user.UserAccessLevel;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-
-import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.DocumentFormDAOImpl;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.Attachment;
-import ru.efive.dms.data.DeliveryType;
-import ru.efive.dms.data.DocumentForm;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.PaperCopyDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.data.Task;
-import ru.efive.dms.uifaces.beans.ContragentListSelectModalBean;
-import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
-import ru.efive.dms.uifaces.beans.DocumentSelectModal;
-import ru.efive.dms.uifaces.beans.FileManagementBean;
-import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentSelectModal;
-import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
-import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
-import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.user.UserAccessLevel;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
-import ru.efive.wf.core.ActionResult;
+import static ru.efive.dms.util.ApplicationDAONames.*;
 
 @Named("out_doc")
 @ConversationScoped
@@ -89,7 +62,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -117,18 +90,18 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).get(id));
+            setDocument(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).get(id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             } else {
                 UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
                 if (userAccessLevel == null) {
-                    userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
+                    userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
                 }
 
                 UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
                 if (docAccessLevel == null) {
-                    docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
+                    docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
                     getDocument().setUserAccessLevel(docAccessLevel);
                 }
                 if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
@@ -143,7 +116,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 Set<Integer> allReadersId = new HashSet<Integer>();
 
                 User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 if (userId > 0) {
                     boolean isAdminRole = false;
@@ -159,7 +132,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
                     OutgoingDocument document = getDocument();
 
-                    HibernateTemplate hibernateTemplate = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).getHibernateTemplate();
+                    HibernateTemplate hibernateTemplate = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getHibernateTemplate();
                     Session session = hibernateTemplate.getSessionFactory().openSession();
                     session.beginTransaction();
                     session.update(document);
@@ -234,8 +207,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                         }
 
                         if (!allReadersId.contains(currentUser.getId())) {
-                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO);
-                            if(!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "outgoing_" + document.getId())) {
+                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
+                            if (!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "outgoing_" + document.getId())) {
                                 setState(STATE_FORBIDDEN);
                                 setStateComment("Доступ запрещен");
                                 return;
@@ -271,12 +244,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
 
         DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategoryAndValue("Исходящие документы", "Письмо");
+        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Исходящие документы", "Письмо");
         if (list.size() > 0) {
             form = list.get(0);
 
         } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategory("Исходящие документы");
+            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Исходящие документы");
             if (list.size() > 0) {
                 form = list.get(0);
             }
@@ -286,7 +259,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
         UserAccessLevel accessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
         if (accessLevel == null) {
-            accessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
+            accessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
         }
         document.setUserAccessLevel(accessLevel);
 
@@ -313,7 +286,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         boolean result = false;
         try {
             OutgoingDocument document = (OutgoingDocument) getDocument();
-            document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).save(document);
+            document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -335,7 +308,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         boolean result = false;
         try {
             OutgoingDocument document = (OutgoingDocument) getDocument();
-            document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).save(getDocument());
+            document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(getDocument());
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -373,7 +346,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
                 paperCopy.setParentDocument(document);
 
-                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
 
                 System.out.println("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
@@ -418,12 +391,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         outgoingDocumentList.markNeedRefresh();
         UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
         if (userAccessLevel == null) {
-            userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
+            userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
         }
 
         UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
         if (docAccessLevel == null) {
-            docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findByLevel(1);
+            docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
             getDocument().setUserAccessLevel(docAccessLevel);
         }
         if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
@@ -443,35 +416,35 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
                 if (key.indexOf("incoming") != -1) {
-                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
                             "Черновик входщяего документа от " + sdf.format(in_doc.getCreationDate()) :
                             "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + sdf.format(in_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("outgoing") != -1) {
-                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
                             "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) :
                             "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + sdf.format(out_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("internal") != -1) {
-                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
                             "Черновик внутреннего документа от " + sdf.format(internal_doc.getCreationDate()) :
                             "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("request") != -1) {
-                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
                             "Черновик обращения граждан от " + sdf.format(request_doc.getCreationDate()) :
                             "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate())
                     );
 
                 } else if (key.indexOf("task") != -1) {
-                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findDocumentById(id);
+                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
                             "Черновик поручения от " + sdf.format(task_doc.getCreationDate()) :
                             "Поручение № " + task_doc.getTaskNumber() + " от " + sdf.format(task_doc.getCreationDate())
@@ -504,10 +477,10 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
         return result;
     }
-    
+
     public boolean isCurrentUserAccessEdit() {
         User inUser = sessionManagement.getLoggedUser();
-        //inUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(  inUser.getLogin(), inUser.getPassword());
+        //inUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(  inUser.getLogin(), inUser.getPassword());
         OutgoingDocument outDoc = getDocument();
 
         List<Integer> recipUsers = new ArrayList<Integer>();
@@ -538,7 +511,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     protected boolean isCurrentUserDocEditor() {
 
         User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
         OutgoingDocument out_doc = getDocument();
 
         if (in_user.isAdministrator()) {
@@ -581,7 +554,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     protected boolean isCurrentUserAdvDocReader() {
         User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
 
         OutgoingDocument out_doc = getDocument();
 
@@ -691,7 +664,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             }
         }
 
-        document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).save(document);
+        document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
     }
 
     private List<Attachment> attachments = new ArrayList<Attachment>();

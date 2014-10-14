@@ -13,16 +13,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ru.efive.dms.dao.NumeratorDAOImpl;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.Numerator;
-import ru.efive.dms.data.PaperCopyDocument;
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.Numerator;
+import ru.entity.model.document.PaperCopyDocument;
 import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.entity.enums.DocumentAction;
-import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.entity.model.enums.DocumentAction;
+import ru.entity.model.enums.DocumentStatus;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.wf.core.ActionResult;
+import ru.util.ApplicationHelper;
+
+import static ru.efive.dms.util.ApplicationDAONames.NUMERATOR_DAO;
 
 @Named("numerator")
 @ConversationScoped
@@ -65,7 +68,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            result = sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).delete(getDocumentId());
+            result = sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -94,7 +97,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
     protected void initDocument(Integer id) {
 
         try {
-            setDocument(sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).get(id));
+            setDocument(sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).get(id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             } else {
@@ -141,7 +144,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
         boolean result = false;
         try {
             Numerator document = (Numerator) getDocument();
-            document = sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).save(document);
+            document = sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -165,7 +168,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
         //if (validateHolder()) {
         try {
             Numerator document = (Numerator) getDocument();
-            document = sessionManagement.getDAO(NumeratorDAOImpl.class, ApplicationHelper.NUMERATOR_DAO).save(document);
+            document = sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -181,7 +184,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
                 paperCopy.setAuthor(sessionManagement.getLoggedUser());
 
                 String parentId = document.getUniqueId();
-                if (parentId != null || !parentId.isEmpty()) {
+                if (parentId != null && !parentId.isEmpty()) {
                     paperCopy.setParentDocumentId(parentId);
                 }
 

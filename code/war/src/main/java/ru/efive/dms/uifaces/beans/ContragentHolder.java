@@ -1,30 +1,30 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ru.efive.crm.dao.ContragentDAOHibernate;
+import ru.efive.dms.dao.IncomingDocumentDAOImpl;
+import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
+import ru.efive.dms.dao.RequestDocumentDAOImpl;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.crm.Contragent;
+import ru.entity.model.crm.ContragentNomenclature;
+import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.document.OutgoingDocument;
+import ru.entity.model.document.RequestDocument;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import ru.efive.crm.dao.ContragentDAOHibernate;
-import ru.efive.crm.data.Contragent;
-import ru.efive.crm.data.ContragentNomenclature;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.data.RequestDocument;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.*;
 
 @Named("contragent")
 @ConversationScoped
@@ -55,15 +55,15 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
             boolean hasDocuments = false;
             Map<String, Object> in_map = new HashMap<String, Object>();
             in_map.put("contragent", contragent);
-            List<IncomingDocument> incomingDocuments = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
+            List<IncomingDocument> incomingDocuments = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
             if (incomingDocuments.size() == 0) {
-                List<RequestDocument> requestDocuments = sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
+                List<RequestDocument> requestDocuments = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
                 if (requestDocuments.size() == 0) {
                     in_map.clear();
                     List<Contragent> recipients = new ArrayList<Contragent>();
                     recipients.add(contragent);
                     in_map.put("recipientContragents", recipients);
-                    List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
+                    List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
                     if (outgoingDocuments.size() != 0) {
                         hasDocuments = true;
                     }
@@ -75,7 +75,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
             }
             if (!hasDocuments) {
                 contragent.setDeleted(true);
-                contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).save(contragent);
+                contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(contragent);
 
                 if (contragent == null) {
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -105,7 +105,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).get(id));
+            setDocument(sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).get(id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             }
@@ -129,7 +129,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).save(getDocument());
+            Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(getDocument());
             if (contragent == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -148,7 +148,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).save(getDocument());
+            Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(getDocument());
             if (contragent == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,

@@ -1,18 +1,19 @@
 package ru.efive.dms.uifaces.converters;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.entity.model.user.User;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
 
 @FacesConverter("PersonListConverter")
 public class PersonListConverter implements Converter {
@@ -23,7 +24,7 @@ public class PersonListConverter implements Converter {
             List<User> in_users = new ArrayList<User>();
             List<String> values = Arrays.asList(value.split("<br \\>"));
             for (String e : values) {
-                User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)).getByLogin(e);
+                User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO)).getByLogin(e);
                 if (in_user != null) in_users.add(in_user);
             }
             result = in_users;

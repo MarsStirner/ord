@@ -8,16 +8,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.entity.model.user.User;
+import ru.entity.model.enums.DocumentStatus;
 import ru.efive.wf.core.HumanTaskProcessAction;
 import ru.efive.wf.core.HumanTaskTreeStateResolver;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.activity.SendMailActivity;
 import ru.efive.wf.core.data.EditableProperty;
-import ru.efive.wf.core.data.HumanTask;
-import ru.efive.wf.core.data.HumanTaskTree;
-import ru.efive.wf.core.data.HumanTaskTreeNode;
+import ru.entity.model.wf.HumanTask;
+import ru.entity.model.wf.HumanTaskTree;
+import ru.entity.model.wf.HumanTaskTreeNode;
 import ru.efive.wf.core.data.MailMessage;
 
 public final class EngineHelper {

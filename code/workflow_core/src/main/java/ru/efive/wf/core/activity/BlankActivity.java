@@ -1,7 +1,7 @@
 package ru.efive.wf.core.activity;
 
 import ru.efive.wf.core.IActivity;
-import ru.efive.wf.core.ProcessedData;
+import ru.external.ProcessedData;
 
 public class BlankActivity implements IActivity {
 

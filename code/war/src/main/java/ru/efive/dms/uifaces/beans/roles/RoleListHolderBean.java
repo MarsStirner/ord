@@ -5,10 +5,12 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.sql.dao.user.RoleDAOHibernate;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.dms.util.ApplicationHelper;
+import ru.entity.model.user.Role;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+
+import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
 
 @Named("roleList")
 @SessionScoped
@@ -41,7 +43,7 @@ public class RoleListHolderBean extends AbstractDocumentListHolderBean<Role> {
     protected int getTotalCount() {
         int result = 0;
         try {
-            result = new Long(sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).countRoles()).intValue();
+            result = new Long(sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).countRoles()).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,7 +54,7 @@ public class RoleListHolderBean extends AbstractDocumentListHolderBean<Role> {
     protected List<Role> loadDocuments() {
         List<Role> result = new ArrayList<Role>();
         try {
-            result = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoles(getPagination().getOffset(),
+            result = sessionManagement.getDAO(RoleDAOHibernate.class,ROLE_DAO).findRoles(getPagination().getOffset(),
                     getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +65,7 @@ public class RoleListHolderBean extends AbstractDocumentListHolderBean<Role> {
     public List<Role> getAvailableRoles() {
         List<Role> result = new ArrayList<Role>();
         try {
-            result = sessionManagement.getDAO(RoleDAOHibernate.class, ApplicationHelper.ROLE_DAO).findRoles(-1, -1, "name", true);
+            result = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoles(-1, -1, "name", true);
         } catch (Exception e) {
             e.printStackTrace();
         }

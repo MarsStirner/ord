@@ -1,17 +1,17 @@
 package ru.efive.dms.uifaces.converters;
 
-import java.util.List;
+import ru.efive.dms.dao.DeliveryTypeDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.entity.model.document.DeliveryType;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import java.util.List;
 
-import ru.efive.dms.dao.DeliveryTypeDAOImpl;
-import ru.efive.dms.data.DeliveryType;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.DELIVERY_TYPE_DAO;
 
 @FacesConverter("DeliveryTypeConverter")
 public class DeliveryTypeConverter implements Converter {
@@ -22,7 +22,7 @@ public class DeliveryTypeConverter implements Converter {
             SessionManagementBean sessionManagement =
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            List<DeliveryType> list = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, ApplicationHelper.DELIVERY_TYPE_DAO).findByValue(value);
+            List<DeliveryType> list = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).findByValue(value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

@@ -1,17 +1,19 @@
 package ru.efive.dms.uifaces.beans.department;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.user.DepartmentDAO;
-import ru.efive.sql.entity.user.Department;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
+import ru.entity.model.user.Department;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
+
+import static ru.efive.dms.util.ApplicationDAONames.DEPARTMENT_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -22,18 +24,20 @@ import java.io.Serializable;
 
 @Named("department")
 @ConversationScoped
-public class DepartmentHolderBean  extends AbstractDocumentHolderBean<Department, Integer> implements Serializable {
+public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department, Integer> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("DEPARTMENT");
 
     /**
      * Меняет значение флажка Deleted и сохраняет это в БД
-     * @return  успешность сохранения изменений в БД
+     *
+     * @return успешность сохранения изменений в БД
      */
-    public boolean changeDeleted(){
+    public boolean changeDeleted() {
         Department item = getDocument();
         item.setDeleted(!item.isDeleted());
         return saveDocument();
     }
+
     public boolean isCanCreate() {
         return sessionManagementBean.isAdministrator();
     }
@@ -67,15 +71,15 @@ public class DepartmentHolderBean  extends AbstractDocumentHolderBean<Department
 
     @Override
     protected void initDocument(Integer documentId) {
-         setDocument(sessionManagementBean.getDAO(DepartmentDAO.class, ApplicationHelper.DEPARTMENT_DAO).get(documentId));
+        setDocument(sessionManagementBean.getDAO(DepartmentDAO.class, DEPARTMENT_DAO).get(documentId));
     }
 
     @Override
     protected boolean saveNewDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(DepartmentDAO.class, ApplicationHelper.DEPARTMENT_DAO).save(getDocument()));
+            setDocument(sessionManagementBean.getDAO(DepartmentDAO.class, DEPARTMENT_DAO).save(getDocument()));
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("CANT SAVE NEW:", e);
             return false;
         }
@@ -84,9 +88,9 @@ public class DepartmentHolderBean  extends AbstractDocumentHolderBean<Department
     @Override
     protected boolean saveDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(DepartmentDAO.class, ApplicationHelper.DEPARTMENT_DAO).update(getDocument()));
+            setDocument(sessionManagementBean.getDAO(DepartmentDAO.class, DEPARTMENT_DAO).update(getDocument()));
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error("CANT SAVE:", e);
             return false;
         }

@@ -1,18 +1,18 @@
 package ru.efive.dms.uifaces.beans.position;
 
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.sql.dao.user.PositionDAO;
-import ru.efive.sql.entity.user.Position;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.user.Position;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -23,7 +23,7 @@ import java.util.List;
 @Singleton
 @Named("positionList")
 @ApplicationScoped
-public class PositionListHolderBean extends AbstractDocumentListHolderBean<Position>{
+public class PositionListHolderBean extends AbstractDocumentListHolderBean<Position> {
 
     private String filter;
     private static PositionDAO dao;
@@ -33,7 +33,7 @@ public class PositionListHolderBean extends AbstractDocumentListHolderBean<Posit
 
     @PostConstruct
     public void init() {
-        dao = indexManagement.getContext().getBean(ApplicationHelper.POSITION_DAO, PositionDAO.class);
+        dao = indexManagement.getContext().getBean(POSITION_DAO, PositionDAO.class);
     }
 
 

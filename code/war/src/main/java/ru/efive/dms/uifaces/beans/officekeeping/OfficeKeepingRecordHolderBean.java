@@ -1,22 +1,22 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import ru.efive.dms.dao.OfficeKeepingRecordDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.entity.model.document.OfficeKeepingRecord;
+import ru.entity.model.enums.RoleType;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.dms.dao.OfficeKeepingRecordDAOImpl;
-import ru.efive.dms.data.OfficeKeepingRecord;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_RECORD_DAO;
 
 @Named("officeKeepingRecord")
 @ConversationScoped
@@ -26,7 +26,7 @@ public class OfficeKeepingRecordHolderBean extends AbstractDocumentHolderBean<Of
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).delete(getDocument());
+            sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, OFFICE_KEEPING_RECORD_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -48,7 +48,7 @@ public class OfficeKeepingRecordHolderBean extends AbstractDocumentHolderBean<Of
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).get(id));
+        setDocument(sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, OFFICE_KEEPING_RECORD_DAO).get(id));
         if (getDocument() == null) {
             setState(STATE_NOT_FOUND);
         }
@@ -63,7 +63,7 @@ public class OfficeKeepingRecordHolderBean extends AbstractDocumentHolderBean<Of
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            OfficeKeepingRecord record = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).update(getDocument());
+            OfficeKeepingRecord record = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, OFFICE_KEEPING_RECORD_DAO).update(getDocument());
             if (record == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -86,7 +86,7 @@ public class OfficeKeepingRecordHolderBean extends AbstractDocumentHolderBean<Of
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            OfficeKeepingRecord record = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).save(getDocument());
+            OfficeKeepingRecord record = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, OFFICE_KEEPING_RECORD_DAO).save(getDocument());
             if (record == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,

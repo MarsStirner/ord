@@ -1,10 +1,6 @@
 package ru.efive.dms.test;
 
 import org.junit.Test;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import ru.efive.wf.core.dao.EngineDAOImpl;
-import ru.efive.wf.core.data.HumanTaskTree;
 
 public class DAOTest {
 

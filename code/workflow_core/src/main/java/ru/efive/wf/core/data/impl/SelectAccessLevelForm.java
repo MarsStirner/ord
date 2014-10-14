@@ -3,7 +3,7 @@ package ru.efive.wf.core.data.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.efive.sql.entity.user.UserAccessLevel;
+import ru.entity.model.user.UserAccessLevel;
 import ru.efive.wf.core.ActionResult;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.efive.wf.core.data.EditableProperty;

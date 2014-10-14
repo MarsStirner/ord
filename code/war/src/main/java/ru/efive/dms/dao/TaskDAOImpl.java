@@ -18,14 +18,14 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.type.StringType;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.RoleType;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
 
-import ru.efive.dms.data.DocumentForm;
-//import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.Task;
+import ru.entity.model.document.DocumentForm;
+//import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.document.Task;
 
 public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 

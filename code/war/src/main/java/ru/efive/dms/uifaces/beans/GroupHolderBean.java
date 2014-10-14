@@ -1,22 +1,20 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.Serializable;
-import java.util.HashSet;
+import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
+import ru.efive.sql.dao.user.GroupDAOHibernate;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.entity.model.user.Group;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.HashSet;
 
-import ru.efive.sql.dao.user.GroupDAOHibernate;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.entity.user.User;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
 @Named("group")
 @ConversationScoped
@@ -26,7 +24,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).delete(getDocument());
+            sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).delete(getDocument());
             FacesContext.getCurrentInstance().getExternalContext().redirect("deleted_group.xhtml");
             result = true;
         } catch (Exception e) {
@@ -49,7 +47,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).get(id));
+        setDocument(sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).get(id));
         if (getDocument() == null) {
             setState(STATE_NOT_FOUND);
         }
@@ -65,7 +63,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            Group group = sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).update(getDocument());
+            Group group = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).update(getDocument());
 
             if (group == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -89,7 +87,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            Group group = sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).save(getDocument());
+            Group group = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).save(getDocument());
             if (group == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -129,7 +127,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
     protected boolean isCurrentUserDocEditor() {
         //Group group=sessionManagement.getLoggedUser();
         //User in_doc=getDocument();
-        //Group in_group=sessionManagement.getDAO(GroupDAOHibernate.class, ApplicationHelper.GROUP_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
+        //Group in_group=sessionManagement.getDAO(GroupDAOHibernate.class,GROUP_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
 
         //if(in_group!=null){
         //for(Role in_role:in_group.getRoleList()){

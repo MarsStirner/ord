@@ -1,18 +1,19 @@
 package ru.efive.dms.uifaces.beans.task;
 
 import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.data.Task;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.Task;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
 
 @Named("resolutions")
 @SessionScoped
@@ -34,23 +35,23 @@ public class TasksEqResolutionHolder extends AbstractDocumentListHolderBean<Task
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
-                //user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, ApplicationHelper.TASK_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                result = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<Task>() {
                     public int compare(Task o1, Task o2) {
                         int result = 0;
                         String colId = getSorting().getColumnId();
 
-                        if(colId.equalsIgnoreCase("task_number")) {
+                        if (colId.equalsIgnoreCase("task_number")) {
                             try {
                                 Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
                                 result = i1.compareTo(i2);
-                            } catch(NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
                             }
-                        } else if(colId.equalsIgnoreCase("registration_date")) {
+                        } else if (colId.equalsIgnoreCase("registration_date")) {
                             Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(d1);
@@ -63,12 +64,12 @@ public class TasksEqResolutionHolder extends AbstractDocumentListHolderBean<Task
                             c2.set(Calendar.HOUR_OF_DAY, 0);
                             c2.set(Calendar.MINUTE, 0);
                             c2.set(Calendar.SECOND, 0);
-                            if(c1.equals(c2)) {
+                            if (c1.equals(c2)) {
                                 try {
                                     Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
                                     Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
                                     result = i1.compareTo(i2);
-                                } catch(NumberFormatException e) {
+                                } catch (NumberFormatException e) {
                                     result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
                                 }
                             } else {
@@ -76,10 +77,10 @@ public class TasksEqResolutionHolder extends AbstractDocumentListHolderBean<Task
                             }
                         }
 
-                        if(getSorting().isAsc()) {
+                        if (getSorting().isAsc()) {
                             result *= -1;
                         }
-                        return  result;
+                        return result;
                     }
                 });
 

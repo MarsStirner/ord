@@ -14,11 +14,11 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
-import ru.efive.sql.entity.DictionaryEntity;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
-import ru.efive.sql.util.ApplicationHelper;
+
+import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 
 /**

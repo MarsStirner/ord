@@ -44,7 +44,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import ru.efive.dms.data.ReportTemplate;
+import ru.entity.model.document.ReportTemplate;
 
 @Named("reports")
 @RequestScoped

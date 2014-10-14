@@ -2,7 +2,7 @@ package ru.efive.wf.core.activity;
 
 import ru.efive.wf.core.IAction;
 import ru.efive.wf.core.IActivity;
-import ru.efive.wf.core.ProcessedData;
+import ru.external.ProcessedData;
 import ru.efive.wf.core.util.EngineHelper;
 
 public abstract class ParametrizedFieldActivity implements IActivity {

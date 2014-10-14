@@ -11,8 +11,8 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.util.Assert;
 
-import ru.efive.sql.entity.AbstractEntity;
-import ru.efive.sql.util.ApplicationHelper;
+import ru.entity.model.mapped.AbstractEntity;
+import ru.util.ApplicationHelper;
 
 import java.io.Serializable;
 import java.util.Collection;

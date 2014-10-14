@@ -1,20 +1,17 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.OutgoingDocument;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.data.OutgoingDocument;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 
 @Named("personal_out_documents")
 @SessionScoped
@@ -34,7 +31,7 @@ public class PersonalOutgoingDocumentListHolder extends AbstractDocumentListHold
     protected int getTotalCount() {
         int result = 0;
         try {
-            return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
+            return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
                     sessionManagement.getLoggedUser(), false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,7 +43,7 @@ public class PersonalOutgoingDocumentListHolder extends AbstractDocumentListHold
     protected List<OutgoingDocument> loadDocuments() {
         List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
         try {
-            result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, ApplicationHelper.OUTGOING_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
+            result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
                     false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();

@@ -9,15 +9,15 @@ import javax.inject.Named;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
+import ru.util.ApplicationHelper;
 import ru.efive.dms.util.WorkflowHelper;
-import ru.efive.sql.entity.enums.DocumentStatus;
+import ru.entity.model.enums.DocumentStatus;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
-import ru.efive.wf.core.AgreementIssue;
-import ru.efive.wf.core.data.HumanTask;
-import ru.efive.wf.core.data.HumanTaskTree;
-import ru.efive.wf.core.data.HumanTaskTreeNode;
-import ru.efive.wf.core.data.impl.RouteTemplate;
+import ru.external.AgreementIssue;
+import ru.entity.model.wf.HumanTask;
+import ru.entity.model.wf.HumanTaskTree;
+import ru.entity.model.wf.HumanTaskTreeNode;
+import ru.entity.model.wf.RouteTemplate;
 
 @Named("humanTaskTreeControl")
 @SessionScoped

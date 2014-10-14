@@ -1,22 +1,21 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-
-import javax.faces.bean.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.primefaces.model.DefaultTreeNode;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
+import ru.entity.model.document.IncomingDocument;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 
 @Named("in_documents_by_executing_date")
 @SessionScoped
@@ -45,10 +44,10 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     @Override
     protected List<IncomingDocument> loadDocuments() {
         if (showExpiredFlag) {
-           return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO)
-                   .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate, 0, 0, "executionDate", false);
+            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                    .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate, 0, 0, "executionDate", false);
         } else {
-            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO)
+            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                     .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, 0, 0, "executionDate", false);
         }
     }

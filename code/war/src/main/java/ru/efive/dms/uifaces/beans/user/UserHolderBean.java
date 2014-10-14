@@ -1,25 +1,27 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import java.io.Serializable;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.sql.dao.user.RbContactTypeDAO;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.entity.model.user.PersonContact;
+import ru.entity.model.user.RbContactInfoType;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.RbContactTypeDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.PersonContact;
-import ru.efive.sql.entity.user.RbContactInfoType;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import static ru.efive.dms.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
 
 @Named("user")
 @ConversationScoped
@@ -28,12 +30,12 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
     @Override
     public boolean isCanCreate() {
-        if(!super.isCanEdit()){
+        if (!super.isCanEdit()) {
             LOGGER.error("TRY TO CREATE ON ErrorState");
             return false;
         }
         final User loggedUser = sessionManagement.getLoggedUser();
-        if(!loggedUser.isAdministrator() && !loggedUser.isHr()){
+        if (!loggedUser.isAdministrator() && !loggedUser.isHr()) {
             LOGGER.error("User[{}] try to create new User without permission. Restricted!", loggedUser.getId());
             return false;
         } else {
@@ -42,13 +44,13 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     }
 
     @Override
-    public boolean isCanEdit(){
-        if(!super.isCanEdit()){
+    public boolean isCanEdit() {
+        if (!super.isCanEdit()) {
             LOGGER.error("TRY TO EDIT ON ErrorState");
             return false;
         }
         final User loggedUser = sessionManagement.getLoggedUser();
-        if(!loggedUser.isAdministrator() && !loggedUser.isHr()){
+        if (!loggedUser.isAdministrator() && !loggedUser.isHr()) {
             LOGGER.error("User[{}] try to edit User[{}] info without permission. Restricted!", loggedUser.getId(), getDocumentId());
             return false;
         } else {
@@ -58,9 +60,10 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
     /**
      * Меняет пароль у открытого на редактирование пользователя (+ хэширует при setPassword)
+     *
      * @param newPass новый пароль
      */
-    public void changePassword(String newPass){
+    public void changePassword(String newPass) {
         getDocument().setPassword(newPass);
     }
 
@@ -79,13 +82,14 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
             //Увольняем сотрудника
             user.fire(now);
         }
-        final User alteredUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).save(user);
+        final User alteredUser = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(user);
         setDocument(alteredUser);
         return alteredUser.isFired();
     }
 
     /**
      * Удаление контакта из модели \ бина
+     *
      * @param contact контакт, который надо удалить
      * @return успешность удаления
      */
@@ -102,7 +106,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     public boolean addContact() {
         PersonContact newContact = new PersonContact();
         newContact.setPerson(getDocument());
-        final List<RbContactInfoType> typeList = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, ApplicationHelper.RB_CONTACT_TYPE_DAO).findDocuments();
+        final List<RbContactInfoType> typeList = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
         if (!typeList.isEmpty()) {
             newContact.setType(typeList.get(0));
             return getDocument().getContacts().add(newContact);
@@ -114,7 +118,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).delete(getDocument());
+            sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
@@ -134,7 +138,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).getUser(id));
+        setDocument(sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getUser(id));
     }
 
     @Override
@@ -152,7 +156,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         try {
             //Удаляем пустые контактные данные, введенные пользователем
             removeEmptyContacts(getDocument().getContacts());
-            User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).update(getDocument());
+            User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).update(getDocument());
             if (user == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
@@ -169,6 +173,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
     /**
      * Удаляем незаполненные контактные данные
+     *
      * @param contacts
      */
     private void removeEmptyContacts(Collection<PersonContact> contacts) {
@@ -185,7 +190,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).save(getDocument());
+            User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(getDocument());
             if (user == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {

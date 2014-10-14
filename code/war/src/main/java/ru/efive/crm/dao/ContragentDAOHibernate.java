@@ -9,8 +9,8 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.util.ApplicationHelper;
-import ru.efive.crm.data.Contragent;
+import ru.util.ApplicationHelper;
+import ru.entity.model.crm.Contragent;
 
 public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
 

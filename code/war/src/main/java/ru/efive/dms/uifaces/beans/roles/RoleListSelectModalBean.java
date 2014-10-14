@@ -5,7 +5,7 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.sql.entity.user.Role;
+import ru.entity.model.user.Role;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 
 public class RoleListSelectModalBean extends ModalWindowHolderBean {

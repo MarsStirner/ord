@@ -1,7 +1,13 @@
 package ru.efive.dms.util;
 
-import java.text.ParseException;
-import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.sql.dao.user.*;
+import ru.entity.model.user.*;
+import ru.util.ApplicationHelper;
+import ru.util.StoredCodes;
+
 import javax.faces.context.FacesContext;
 import javax.naming.CommunicationException;
 import javax.naming.Context;
@@ -10,18 +16,14 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import javax.naming.ldap.Control;
-import javax.naming.ldap.InitialLdapContext;
-import javax.naming.ldap.LdapContext;
-import javax.naming.ldap.PagedResultsControl;
-import javax.naming.ldap.PagedResultsResponseControl;
+import javax.naming.ldap.*;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.efive.sql.dao.user.*;
-import ru.efive.sql.entity.user.*;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.util.StoredCodes;
+import static ru.efive.dms.util.ApplicationDAONames.*;
 
 public class LDAPImportService {
     //Именованный логгер (LDAP)
@@ -141,7 +143,7 @@ public class LDAPImportService {
             return false;
         }
 
-        final List<RbContactInfoType> contactTypes = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, ApplicationHelper.RB_CONTACT_TYPE_DAO).findDocuments();
+        final List<RbContactInfoType> contactTypes = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
         for (RbContactInfoType contactType : contactTypes) {
             if (StoredCodes.ContactInfoType.EMAIL.equals(contactType.getCode())) {
                 EMAIL_CONTACT_TYPE = contactType;
@@ -164,12 +166,12 @@ public class LDAPImportService {
             LOGGER.error("NOT FOUNDED MOBILE_CONTACT_TYPE, UPLOAD NOT Started");
             return false;
         }
-        ALL_POSITIONS = sessionManagement.getDictionaryDAO(PositionDAO.class, ApplicationHelper.POSITION_DAO).findDocuments();
-        if(ALL_POSITIONS == null || ALL_POSITIONS.isEmpty()){
+        ALL_POSITIONS = sessionManagement.getDictionaryDAO(PositionDAO.class, POSITION_DAO).findDocuments();
+        if (ALL_POSITIONS == null || ALL_POSITIONS.isEmpty()) {
             LOGGER.warn("NO JOB_POSITIONS founded");
         }
-        ALL_DEPARTMENTS = sessionManagement.getDictionaryDAO(DepartmentDAO.class, ApplicationHelper.DEPARTMENT_DAO).findDocuments();
-        if(ALL_DEPARTMENTS == null || ALL_DEPARTMENTS.isEmpty()){
+        ALL_DEPARTMENTS = sessionManagement.getDictionaryDAO(DepartmentDAO.class, DEPARTMENT_DAO).findDocuments();
+        if (ALL_DEPARTMENTS == null || ALL_DEPARTMENTS.isEmpty()) {
             LOGGER.warn("NO JOB_DEPARTMENTS founded");
         }
 
@@ -178,7 +180,7 @@ public class LDAPImportService {
     }
 
     private UserAccessLevel preLoadUserAccessLevel(SessionManagementBean sessionManagement) {
-        final List<UserAccessLevel> userAccessLevels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, ApplicationHelper.USER_ACCESS_LEVEL_DAO).findDocuments();
+        final List<UserAccessLevel> userAccessLevels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findDocuments();
         for (UserAccessLevel current : userAccessLevels) {
             if (current.getLevel() == 1) {
                 return USER_ACCESS_LEVEL_FOR_PUBLIC_USE = current;
@@ -189,7 +191,7 @@ public class LDAPImportService {
     }
 
     private UserDAOHibernate preloadUserDAO(SessionManagementBean sessionManagement) {
-        userDAO = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO);
+        userDAO = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO);
         LOGGER.debug("userDao: " + userDAO);
         return userDAO;
     }
@@ -454,7 +456,7 @@ public class LDAPImportService {
                             && !ldapUser.getJobPosition().isEmpty()
                             && localUser.getJobPosition() != null
                             && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())
-            ) {
+                    ) {
                 final String requestedPositionName = ldapUser.getJobPosition().trim();
                 boolean founded = false;
                 for (Position position : ALL_POSITIONS) {
@@ -473,7 +475,7 @@ public class LDAPImportService {
                             && !ldapUser.getJobDepartment().isEmpty()
                             && localUser.getJobDepartment() != null
                             && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())
-            ) {
+                    ) {
                 final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
                 boolean founded = false;
                 for (Department department : ALL_DEPARTMENTS) {
@@ -532,8 +534,8 @@ public class LDAPImportService {
                 while (allAtributes != null && allAtributes.hasMore()) {
                     final Attribute attribute = allAtributes.next();
                     sb.append(attribute.getID()).append('=');
-                    if(attribute.get() instanceof byte[]){
-                        byte [] bytes = (byte[]) attribute.get();
+                    if (attribute.get() instanceof byte[]) {
+                        byte[] bytes = (byte[]) attribute.get();
                         StringBuffer guid = new StringBuffer();
                         for (byte aByte : bytes) {
                             StringBuffer dblByte = new StringBuffer(Integer.toHexString(aByte & 0xff));
@@ -542,8 +544,8 @@ public class LDAPImportService {
                             }
                             guid.append(dblByte);
                         }
-                       sb.append(guid.toString());
-                    }   else {
+                        sb.append(guid.toString());
+                    } else {
                         sb.append(attribute.get());
                     }
                     if (allAtributes.hasMore()) {

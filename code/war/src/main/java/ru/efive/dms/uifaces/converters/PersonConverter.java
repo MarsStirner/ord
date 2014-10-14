@@ -1,15 +1,16 @@
 package ru.efive.dms.uifaces.converters;
 
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.entity.model.user.User;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
 
 @FacesConverter("PersonConverter")
 public class PersonConverter implements Converter {
@@ -18,7 +19,7 @@ public class PersonConverter implements Converter {
         try {
             SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
 
-            User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)).getByLogin(value);
+            User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO)).getByLogin(value);
             if (in_user != null) {
                 result = in_user;
                 System.out.println("login: " + in_user.getFullName());
@@ -34,8 +35,8 @@ public class PersonConverter implements Converter {
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if(value != null) {
-            if(value instanceof  User) {
+        if (value != null) {
+            if (value instanceof User) {
                 return ((User) value).getDescriptionShort();
             } else {
                 return value.toString();

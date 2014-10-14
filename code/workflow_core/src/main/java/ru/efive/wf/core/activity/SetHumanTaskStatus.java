@@ -1,7 +1,7 @@
 package ru.efive.wf.core.activity;
 
-import ru.efive.wf.core.ProcessedData;
-import ru.efive.wf.core.data.HumanTask;
+import ru.external.ProcessedData;
+import ru.entity.model.wf.HumanTask;
 
 public class SetHumanTaskStatus extends BlankActivity {
 

@@ -8,8 +8,8 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
+import ru.entity.model.enums.RoleType;
+import ru.entity.model.user.Role;
 
 public class RoleDAOHibernate extends GenericDAOHibernate<Role> {
 

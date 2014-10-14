@@ -1,26 +1,26 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
+import ru.efive.dao.alfresco.Attachment;
+import ru.efive.dao.alfresco.Revision;
+import ru.efive.dms.dao.RecordBookDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.document.RecordBookDocument;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 
-import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.RecordBookDocumentDAOImpl;
-import ru.efive.dms.data.Attachment;
-import ru.efive.dms.data.RecordBookDocument;
-import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.RECORD_BOOK_DAO;
 
 @Named("record_book_doc")
 @ConversationScoped
@@ -30,7 +30,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            result = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, ApplicationHelper.RECORD_BOOK_DAO).delete(getDocumentId());
+            result = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -58,7 +58,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, ApplicationHelper.RECORD_BOOK_DAO).get(id));
+            setDocument(sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).get(id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             } else {
@@ -87,7 +87,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
         boolean result = false;
         try {
             RecordBookDocument document = (RecordBookDocument) getDocument();
-            document = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, ApplicationHelper.RECORD_BOOK_DAO).save(document);
+            document = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -110,7 +110,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
         if (validateHolder()) {
             try {
                 RecordBookDocument document = (RecordBookDocument) getDocument();
-                document = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, ApplicationHelper.RECORD_BOOK_DAO).save(document);
+                document = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).save(document);
                 if (document == null) {
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,

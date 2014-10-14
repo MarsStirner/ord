@@ -2,7 +2,7 @@ package ru.efive.dms.uifaces.beans.user;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.user.User;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 
 public class UserSelectModalBean extends ModalWindowHolderBean {

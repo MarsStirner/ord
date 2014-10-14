@@ -6,7 +6,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.sql.entity.user.UserAccessLevel;
+import ru.entity.model.user.UserAccessLevel;
 
 public class UserAccessLevelDAO extends DictionaryDAOHibernate<UserAccessLevel> {
 

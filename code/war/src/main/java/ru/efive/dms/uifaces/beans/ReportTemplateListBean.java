@@ -1,17 +1,17 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.ArrayList;
-import java.util.List;
+import ru.efive.dms.dao.ReportDAOImpl;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.document.ReportTemplate;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
-import ru.efive.dms.dao.ReportDAOImpl;
-import ru.efive.dms.data.ReportTemplate;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
 
 @Named("reportTemplateList")
 @SessionScoped
@@ -31,7 +31,7 @@ public class ReportTemplateListBean extends AbstractDocumentListHolderBean<Repor
     protected int getTotalCount() {
         int result = 0;
         try {
-            result = new Long(sessionManagement.getDAO(ReportDAOImpl.class, ApplicationHelper.REPORT_DAO).countDocument(false)).intValue();
+            result = new Long(sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).countDocument(false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -42,7 +42,7 @@ public class ReportTemplateListBean extends AbstractDocumentListHolderBean<Repor
     protected List<ReportTemplate> loadDocuments() {
         List<ReportTemplate> result = new ArrayList<ReportTemplate>();
         try {
-            result = sessionManagement.getDAO(ReportDAOImpl.class, ApplicationHelper.REPORT_DAO).findDocuments(false,
+            result = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).findDocuments(false,
                     getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();

@@ -6,14 +6,16 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
 
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.Person;
-import ru.efive.dms.util.ApplicationHelper;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.Person;
+
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.*;
 import ru.efive.wf.core.activity.enums.ProcessState;
 import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.external.ProcessedData;
+import ru.util.ApplicationHelper;
 
 public class ProcessorModalBean extends ModalWindowHolderBean {
     private static final long serialVersionUID = 8956219164518339475L;

@@ -1,19 +1,19 @@
 package ru.efive.dms.uifaces.converters;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.entity.model.document.OfficeKeepingVolume;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
-import ru.efive.dms.data.OfficeKeepingVolume;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @FacesConverter("OfficeKeepingVolumeConverter")
 public class OfficeKeepingVolumeConverter implements Converter {
@@ -25,7 +25,7 @@ public class OfficeKeepingVolumeConverter implements Converter {
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
             Map<String, Object> in_filters = new HashMap<String, Object>();
-            List<OfficeKeepingVolume> list = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).findDocuments(in_filters, "", false);
+            List<OfficeKeepingVolume> list = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocuments(in_filters, "", false);
             if (list.size() != 0) {
                 for (OfficeKeepingVolume in_record : list) {
                     if (in_record != null) {

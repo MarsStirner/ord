@@ -1,6 +1,6 @@
 package ru.efive.dms.uifaces.security;
 
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.user.User;
 import ru.efive.dms.uifaces.security.impl.AuthenticationUserDetails;
 
 public interface UserLoginService {

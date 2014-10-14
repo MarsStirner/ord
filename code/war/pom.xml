@@ -26,6 +26,13 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.hitsl.dms</groupId>
+            <artifactId>entities</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.glassfish.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
             <version>3.1.1</version>

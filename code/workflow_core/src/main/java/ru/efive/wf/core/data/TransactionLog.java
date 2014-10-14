@@ -3,7 +3,7 @@ package ru.efive.wf.core.data;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import ru.efive.sql.entity.document.Document;
+import ru.entity.model.mapped.Document;
 
 /**
  * Базовый документ-лог транзакции

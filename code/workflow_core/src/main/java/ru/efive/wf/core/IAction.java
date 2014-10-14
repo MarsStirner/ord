@@ -2,7 +2,7 @@ package ru.efive.wf.core;
 
 import java.util.List;
 
-import ru.efive.sql.entity.enums.DocumentAction;
+import ru.entity.model.enums.DocumentAction;
 import ru.efive.wf.core.data.EditableProperty;
 
 public interface IAction {

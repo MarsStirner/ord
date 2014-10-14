@@ -1,7 +1,7 @@
 package ru.efive.dms.dao;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.dms.data.SenderType;
+import ru.entity.model.document.SenderType;
 
 public class SenderTypeDAOImpl extends DictionaryDAOHibernate<SenderType> {
 

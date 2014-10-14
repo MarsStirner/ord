@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
 import ru.efive.dms.dao.OfficeKeepingRecordDAOImpl;
-import ru.efive.dms.data.OfficeKeepingRecord;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.OfficeKeepingRecord;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_RECORD_DAO;
 
 @Named("officeKeepingRecordList")
 @SessionScoped
@@ -32,7 +34,7 @@ public class OfficeKeepingRecordListHolderBean extends AbstractDocumentListHolde
     protected int getTotalCount() {
         int result = 0;
         try {
-            result = new Long(sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).countDocument(false)).intValue();
+            result = new Long(sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, OFFICE_KEEPING_RECORD_DAO).countDocument(false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,7 +63,7 @@ public class OfficeKeepingRecordListHolderBean extends AbstractDocumentListHolde
     public List<OfficeKeepingRecord> getAvailableOfficeKeepingRecords() {
         List<OfficeKeepingRecord> result = new ArrayList<OfficeKeepingRecord>();
         try {
-            result = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_RECORD_DAO).findDocuments(false);
+            result = sessionManagement.getDAO(OfficeKeepingRecordDAOImpl.class, OFFICE_KEEPING_RECORD_DAO).findDocuments(false);
         } catch (Exception e) {
             e.printStackTrace();
         }

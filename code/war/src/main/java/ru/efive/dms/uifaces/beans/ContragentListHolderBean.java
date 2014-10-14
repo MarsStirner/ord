@@ -8,8 +8,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import ru.efive.crm.dao.ContragentDAOHibernate;
-import ru.efive.crm.data.Contragent;
-import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.entity.model.crm.Contragent;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 @Named("contragentList")
@@ -29,7 +29,7 @@ public class ContragentListHolderBean extends AbstractDocumentListHolderBean<Con
     @Override
     protected int getTotalCount() {
         try {
-           return new Long(sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).countDocument(filter, false)).intValue();
+           return new Long(sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationDAONames.CONTRAGENT_DAO).countDocument(filter, false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,7 +39,7 @@ public class ContragentListHolderBean extends AbstractDocumentListHolderBean<Con
     @Override
     protected List<Contragent> loadDocuments() {
         try {
-          return sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationHelper.CONTRAGENT_DAO).findDocuments(filter,
+          return sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationDAONames.CONTRAGENT_DAO).findDocuments(filter,
                     false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();

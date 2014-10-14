@@ -1,17 +1,17 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import java.util.ArrayList;
-import java.util.List;
+import ru.efive.dms.dao.IncomingDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.IncomingDocument;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 
 @Named("personal_in_documents")
 @SessionScoped
@@ -30,7 +30,7 @@ public class PersonalIncomingDocumentListHolder extends AbstractDocumentListHold
     @Override
     protected int getTotalCount() {
         try {
-            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
+            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
                     sessionManagement.getLoggedUser(), false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ public class PersonalIncomingDocumentListHolder extends AbstractDocumentListHold
     @Override
     protected List<IncomingDocument> loadDocuments() {
         try {
-           return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, ApplicationHelper.INCOMING_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
+            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
                     false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
             e.printStackTrace();

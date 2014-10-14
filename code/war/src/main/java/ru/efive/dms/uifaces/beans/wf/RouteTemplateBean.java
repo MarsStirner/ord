@@ -12,15 +12,19 @@ import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.entity.enums.DocumentStatus;
+
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.entity.model.enums.DocumentStatus;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.wf.core.dao.EngineDAOImpl;
-import ru.efive.wf.core.data.HumanTask;
-import ru.efive.wf.core.data.HumanTaskTree;
-import ru.efive.wf.core.data.HumanTaskTreeNode;
-import ru.efive.wf.core.data.impl.RouteTemplate;
+import ru.entity.model.wf.HumanTask;
+import ru.entity.model.wf.HumanTaskTree;
+import ru.entity.model.wf.HumanTaskTreeNode;
+import ru.entity.model.wf.RouteTemplate;
+import ru.util.ApplicationHelper;
+
+import static ru.efive.dms.util.ApplicationDAONames.ENGINE_DAO;
 
 @Named("routeTemplate")
 @ConversationScoped
@@ -30,7 +34,7 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            result = sessionManagement.getDAO(EngineDAOImpl.class, ApplicationHelper.ENGINE_DAO).delete(getDocumentId());
+            result = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ. Попробуйте повторить позже.", ""));
@@ -56,7 +60,7 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(EngineDAOImpl.class, ApplicationHelper.ENGINE_DAO).get(RouteTemplate.class, id));
+            setDocument(sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).get(RouteTemplate.class, id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             }
@@ -81,7 +85,7 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ApplicationHelper.ENGINE_DAO).save(RouteTemplate.class, getDocument());
+            RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).save(RouteTemplate.class, getDocument());
             if (template == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
@@ -100,7 +104,7 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ApplicationHelper.ENGINE_DAO).save(RouteTemplate.class, getDocument());
+            RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).save(RouteTemplate.class, getDocument());
             if (template == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", ""));

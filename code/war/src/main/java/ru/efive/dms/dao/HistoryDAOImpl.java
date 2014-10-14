@@ -7,7 +7,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.efive.dms.data.HistoryEntry;
+import ru.entity.model.document.HistoryEntry;
 
 public class HistoryDAOImpl extends GenericDAOHibernate<HistoryEntry> {
 

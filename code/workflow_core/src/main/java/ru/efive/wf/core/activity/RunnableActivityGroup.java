@@ -6,7 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import ru.efive.wf.core.IActivity;
-import ru.efive.wf.core.ProcessedData;
+import ru.external.ProcessedData;
 
 public final class RunnableActivityGroup implements IActivity {
 

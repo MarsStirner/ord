@@ -1,5 +1,8 @@
 package ru.efive.wf.core;
 
+import ru.external.ProcessUser;
+import ru.external.ProcessedData;
+
 import java.util.ArrayList;
 import java.util.List;
 

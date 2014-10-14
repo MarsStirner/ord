@@ -1,7 +1,7 @@
 package ru.efive.crm.dao;
 
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.efive.crm.data.ContragentNomenclature;
+import ru.entity.model.crm.ContragentNomenclature;
 
 public class NomenclatureDAOImpl extends DictionaryDAOHibernate<ContragentNomenclature> {
 

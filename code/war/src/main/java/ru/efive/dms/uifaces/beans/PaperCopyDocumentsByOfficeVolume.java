@@ -1,19 +1,15 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.PaperCopyDocument;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.*;
 
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.data.PaperCopyDocument;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.PAPER_COPY_DOCUMENT_FORM_DAO;
 
 @Named("paperCopyDocumentsByOfficeVolume")
 @ConversationScoped
@@ -27,13 +23,13 @@ public class PaperCopyDocumentsByOfficeVolume extends AbstractDocumentListHolder
     @Override
     protected int getTotalCount() {
         int in_result;
-        in_result = new Long(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).countAllDocuments(filters, filter, false, false)).intValue();
+        in_result = new Long(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).countAllDocuments(filters, filter, false, false)).intValue();
         return in_result;
     }
 
     @Override
     protected List<PaperCopyDocument> loadDocuments() {
-        List<PaperCopyDocument> result = new ArrayList<PaperCopyDocument>(new HashSet<PaperCopyDocument>(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, ApplicationHelper.PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc())));
+        List<PaperCopyDocument> result = new ArrayList<PaperCopyDocument>(new HashSet<PaperCopyDocument>(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc())));
         return result;
     }
 

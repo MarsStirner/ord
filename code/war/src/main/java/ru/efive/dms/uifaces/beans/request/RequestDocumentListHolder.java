@@ -1,12 +1,13 @@
 package ru.efive.dms.uifaces.beans.request;
 
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.data.RequestDocument;
+import ru.efive.dms.util.ApplicationDAONames;
+import ru.entity.model.document.RequestDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
+
+import ru.entity.model.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
@@ -31,8 +32,8 @@ public class RequestDocumentListHolder extends AbstractDocumentListHolderBean<Re
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
-               // user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<RequestDocument>(new HashSet<RequestDocument>(sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationHelper.REQUEST_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user, false, false)));
+               // user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                result = new ArrayList<RequestDocument>(new HashSet<RequestDocument>(sessionManagement.getDAO(RequestDocumentDAOImpl.class, ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<RequestDocument>() {
                     public int compare(RequestDocument o1, RequestDocument o2) {

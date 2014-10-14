@@ -21,10 +21,10 @@ import javax.naming.NamingException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import ru.efive.sql.entity.enums.DocumentType;
+import ru.entity.model.enums.DocumentType;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.MailSettings;
-import ru.efive.wf.core.ProcessedData;
+import ru.external.ProcessedData;
 import ru.efive.wf.core.data.MailMessage;
 
 public class SendMailActivity implements IActivity {

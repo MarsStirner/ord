@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Set;
 
 import ru.efive.sql.dao.GenericDAO;
-import ru.efive.sql.entity.enums.PermissionType;
-import ru.efive.sql.entity.user.Group;
-import ru.efive.sql.entity.user.Permission;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.enums.PermissionType;
+import ru.entity.model.user.Group;
+import ru.entity.model.user.Permission;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
 
 public interface GroupDAO extends GenericDAO<Group> {
 

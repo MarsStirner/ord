@@ -1,16 +1,16 @@
 package ru.efive.dms.uifaces.beans.internal;
 
-import java.util.List;
+import ru.efive.dms.dao.InternalDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.InternalDocument;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
 
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.data.InternalDocument;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
 
 @Named("personal_internal_documents")
 @SessionScoped
@@ -28,13 +28,13 @@ public class PersonalInternalDocumentsListHolder extends AbstractDocumentListHol
 
     @Override
     protected int getTotalCount() {
-        return new Long(sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
+        return new Long(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
                 sessionManagement.getLoggedUser(), false)).intValue();
     }
 
     @Override
     protected List<InternalDocument> loadDocuments() {
-        return sessionManagement.getDAO(InternalDocumentDAOImpl.class, ApplicationHelper.INTERNAL_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
+        return sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
                 false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
     }
 

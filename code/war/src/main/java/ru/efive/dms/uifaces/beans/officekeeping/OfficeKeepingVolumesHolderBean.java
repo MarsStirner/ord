@@ -1,15 +1,17 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
 import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
-import ru.efive.dms.data.OfficeKeepingVolume;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.entity.model.document.OfficeKeepingVolume;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @Named("officeKeepingVolumes")
 @SessionScoped
@@ -23,13 +25,13 @@ public class OfficeKeepingVolumesHolderBean extends AbstractDocumentListHolderBe
     @Override
     protected int getTotalCount() {
         int in_result;
-        in_result = new Long(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).countAllDocuments(filters, filter, false, false)).intValue();
+        in_result = new Long(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).countAllDocuments(filters, filter, false, false)).intValue();
         return in_result;
     }
 
     @Override
     protected List<OfficeKeepingVolume> loadDocuments() {
-        List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>(new HashSet<OfficeKeepingVolume>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
+        List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>(new HashSet<OfficeKeepingVolume>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
 
         Collections.sort(result, new Comparator<OfficeKeepingVolume>() {
             public int compare(OfficeKeepingVolume o1, OfficeKeepingVolume o2) {
@@ -48,7 +50,7 @@ public class OfficeKeepingVolumesHolderBean extends AbstractDocumentListHolderBe
         });
 
 /*
-		Collections.sort(result, new Comparator<Task>() {
+        Collections.sort(result, new Comparator<Task>() {
 			@Override
 			public int compare(Task o1, Task o2) {
 				Calendar c1 = Calendar.getInstance();
@@ -72,7 +74,7 @@ public class OfficeKeepingVolumesHolderBean extends AbstractDocumentListHolderBe
         List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>();
         try {
             if (parentId != null && !parentId.equals("")) {
-                result = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, ApplicationHelper.OFFICE_KEEPING_VOLUME_DAO).findAllVolumesByParentId(parentId);
+                result = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllVolumesByParentId(parentId);
             }
         } catch (Exception e) {
             e.printStackTrace();

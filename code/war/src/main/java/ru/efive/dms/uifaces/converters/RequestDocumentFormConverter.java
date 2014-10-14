@@ -1,17 +1,17 @@
 package ru.efive.dms.uifaces.converters;
 
-import java.util.List;
+import ru.efive.dms.dao.DocumentFormDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.entity.model.document.DocumentForm;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import java.util.List;
 
-import ru.efive.dms.dao.DocumentFormDAOImpl;
-import ru.efive.dms.data.DocumentForm;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.DOCUMENT_FORM_DAO;
 
 @FacesConverter("RequestDocumentFormConverter")
 public class RequestDocumentFormConverter implements Converter {
@@ -22,7 +22,7 @@ public class RequestDocumentFormConverter implements Converter {
             SessionManagementBean sessionManagement =
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, ApplicationHelper.DOCUMENT_FORM_DAO).findByCategoryAndValue("Обращения граждан", value);
+            List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Обращения граждан", value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

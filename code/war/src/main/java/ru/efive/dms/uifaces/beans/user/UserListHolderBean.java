@@ -3,10 +3,10 @@ package ru.efive.dms.uifaces.beans.user;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.LDAPImportService;
 import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.user.User;
+import ru.entity.model.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
 import javax.annotation.PostConstruct;
@@ -75,22 +75,22 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
     @Override
     protected int getTotalCount() {
         if(!showFired) {
-            return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).countUsers(filter, false, false)).intValue();
+            return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).countUsers(filter, false, false)).intValue();
         } else {
-            return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).countFiredUsers(filter, false)).intValue();
+            return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).countFiredUsers(filter, false)).intValue();
         }
     }
 
     @Override
     protected List<User> loadDocuments() {
         if(!showFired) {
-            return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)
+            return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO)
                     .findUsers(filter, false, false,
                             getPagination().getOffset(), getPagination().getPageSize(),
                             getSorting().getColumnId(), getSorting().isAsc()
                     );
         } else {
-            return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO)
+            return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO)
                     .findFiredUsers(filter, false,
                             getPagination().getOffset(), getPagination().getPageSize(),
                             getSorting().getColumnId(), getSorting().isAsc()
@@ -107,7 +107,7 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
     //TODO выпилить к черту из @ConversationScoped бина
     public String getUserFullNameById(int id) {
         try {
-            User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).get(id);
+            User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).get(id);
             if (user != null) {
                 return user.getFullName();
             }

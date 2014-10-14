@@ -1,16 +1,15 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.efive.sql.entity.enums.DocumentStatus;
-import ru.efive.sql.entity.enums.RoleType;
-import ru.efive.sql.entity.user.Role;
-import ru.efive.sql.entity.user.User;
 import ru.efive.dms.dao.ScanCopyDocumentDAOImpl;
-import ru.efive.dms.data.HistoryEntry;
-import ru.efive.dms.data.ScanCopyDocument;
-import ru.efive.dms.util.ApplicationHelper;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.ScanCopyDocument;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.RoleType;
+import ru.entity.model.user.Role;
+import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
@@ -19,6 +18,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
+
+import static ru.efive.dms.util.ApplicationDAONames.SCAN_DAO;
 
 /**
  * @author Nastya Peshekhonova
@@ -99,7 +100,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            result = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, ApplicationHelper.SCAN_DAO).delete(getDocumentId());
+            result = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, SCAN_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
@@ -148,12 +149,12 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, ApplicationHelper.SCAN_DAO).get(id));
+            setDocument(sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, SCAN_DAO).get(id));
             if (getDocument() == null) {
                 setState(STATE_NOT_FOUND);
             } else {
                 User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
+                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
                 int userId = currentUser.getId();
                 List<Role> in_roles;
                 if (userId > 0) {
@@ -190,7 +191,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
     @Override
     protected boolean saveDocument() {
         try {
-            ScanCopyDocument scanCopyDocument = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, ApplicationHelper.SCAN_DAO).save(getDocument());
+            ScanCopyDocument scanCopyDocument = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, SCAN_DAO).save(getDocument());
             if (scanCopyDocument == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
@@ -224,7 +225,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
 
     protected boolean isCurrentUserDocEditor() {
         User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationHelper.USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
+        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
         ScanCopyDocument scanCopyDocument = getDocument();
 
         if (in_user.isAdministrator() || in_user.equals(scanCopyDocument.getAuthor())) {

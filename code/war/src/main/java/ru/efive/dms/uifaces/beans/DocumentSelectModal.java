@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
-import ru.efive.dms.data.IncomingDocument;
-import ru.efive.dms.data.RequestDocument;
+import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.document.RequestDocument;
 import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentListHolder;
 import ru.efive.dms.uifaces.beans.request.RequestDocumentListHolder;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;

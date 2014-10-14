@@ -1,17 +1,17 @@
 package ru.efive.dms.uifaces.converters;
 
-import java.util.List;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.sql.dao.user.GroupTypeDAO;
+import ru.entity.model.enums.GroupType;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import java.util.List;
 
-import ru.efive.sql.dao.user.GroupTypeDAO;
-import ru.efive.sql.entity.enums.GroupType;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationHelper;
+import static ru.efive.dms.util.ApplicationDAONames.GROUP_TYPE_DAO;
 
 @FacesConverter("GroupTypeConverter")
 public class GroupTypeConverter implements Converter {
@@ -22,7 +22,7 @@ public class GroupTypeConverter implements Converter {
             SessionManagementBean sessionManagement =
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            List<GroupType> list = sessionManagement.getDictionaryDAO(GroupTypeDAO.class, ApplicationHelper.GROUP_TYPE_DAO).findByValue(value);
+            List<GroupType> list = sessionManagement.getDictionaryDAO(GroupTypeDAO.class, GROUP_TYPE_DAO).findByValue(value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {
