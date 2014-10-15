@@ -1,7 +1,6 @@
 package ru.efive.dms.util;
 
 public final class ApplicationDAONames {
-
     public static final String USER_DAO = "userDao";
     public static final String GROUP_DAO = "groupDao";
     public static final String ROLE_DAO = "roleDao";
@@ -30,5 +29,4 @@ public final class ApplicationDAONames {
     public static final String OFFICE_KEEPING_VOLUME_DAO = "officeKeepingVolumeDao";
     public static final String RECORD_BOOK_DAO = "recordBookDao";
     public static final String ENGINE_DAO = "engineDao";
-
 }

@@ -364,7 +364,7 @@ public class LDAPImportService {
 
         try {
             //Если есть "ou=fired" значит пользователь уволен
-            return new LDAPUser(entry.getAttributes(), entry.getName().toLowerCase().contains("ou=fired,"));
+            return new LDAPUser(entry.getAttributes(), entry.getName().toLowerCase().contains("ou=fired"));
         } catch (ParseException e) {
             LOGGER.error("{} ParseException: ", currentNumber, e);
         } catch (NamingException e) {
