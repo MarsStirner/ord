@@ -9,6 +9,7 @@ import javax.inject.Named;
 
 import ru.efive.crm.dao.ContragentDAOHibernate;
 import ru.efive.dms.util.ApplicationDAONames;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.crm.Contragent;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 

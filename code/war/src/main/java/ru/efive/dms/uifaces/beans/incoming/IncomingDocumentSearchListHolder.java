@@ -7,6 +7,7 @@ import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.DocumentForm;

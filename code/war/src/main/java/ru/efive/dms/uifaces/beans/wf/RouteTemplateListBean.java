@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans.wf;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.efive.wf.core.dao.EngineDAOImpl;
 import ru.entity.model.document.Nomenclature;
 import ru.entity.model.wf.RouteTemplate;

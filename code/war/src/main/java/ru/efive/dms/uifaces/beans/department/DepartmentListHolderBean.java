@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.department;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.sql.dao.user.DepartmentDAO;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.Department;
 
 import javax.annotation.PostConstruct;

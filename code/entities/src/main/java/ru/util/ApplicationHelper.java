@@ -74,14 +74,14 @@ public final class ApplicationHelper {
     }
 
     public static String getNotNull(String param) {
-        if(param == null) {
+        if (param == null) {
             param = "";
         }
         return param;
     }
 
     public static Date getNotNull(Date param) {
-        if(param == null) {
+        if (param == null) {
             Calendar calendar = Calendar.getInstance(ru.util.ApplicationHelper.getLocale());
             calendar.set(0, 0, 0);
             param = calendar.getTime();
@@ -90,28 +90,28 @@ public final class ApplicationHelper {
     }
 
     public static DocumentStatus getNotNull(DocumentStatus param) {
-        if(param == null) {
+        if (param == null) {
             param = DocumentStatus.NEW;
         }
         return param;
     }
 
     public static DocumentForm getNotNull(DocumentForm param) {
-        if(param == null) {
+        if (param == null) {
             param = new DocumentForm();
         }
         return param;
     }
 
     public static User getNotNull(User param) {
-        if(param == null) {
+        if (param == null) {
             param = new User();
         }
         return param;
     }
 
     public static Contragent getNotNull(Contragent param) {
-        if(param == null) {
+        if (param == null) {
             param = new Contragent();
         }
         return param;

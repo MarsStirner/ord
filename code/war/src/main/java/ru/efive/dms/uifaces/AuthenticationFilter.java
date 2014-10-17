@@ -28,7 +28,7 @@ public class AuthenticationFilter implements Filter {
                 String queryString = request.getQueryString();
                 int pos = StringUtils.indexOf(uri, "/component/");
                 if (pos != -1 && StringUtils.containsNone(queryString, "cid=")) {
-                    uri = StringUtils.right(uri, StringUtils.length(uri) - pos);
+                    uri = StringUtils.right(uri, uri.length() - pos);
                     if (StringUtils.isNotEmpty(uri)) {
                         requestUrl = uri;
                     }

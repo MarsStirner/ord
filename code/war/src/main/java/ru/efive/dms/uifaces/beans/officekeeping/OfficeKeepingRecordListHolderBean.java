@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.officekeeping;
 import ru.efive.dms.dao.OfficeKeepingRecordDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.OfficeKeepingRecord;
 import ru.util.ApplicationHelper;
 

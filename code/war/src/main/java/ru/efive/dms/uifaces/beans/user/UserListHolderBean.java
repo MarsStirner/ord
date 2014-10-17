@@ -6,6 +6,7 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.LDAPImportService;
 import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.User;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 

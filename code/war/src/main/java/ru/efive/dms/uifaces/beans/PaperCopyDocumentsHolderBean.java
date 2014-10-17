@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans;
 
 import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.PaperCopyDocument;
 
 import javax.enterprise.context.SessionScoped;

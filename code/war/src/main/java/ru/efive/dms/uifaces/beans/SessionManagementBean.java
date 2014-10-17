@@ -52,9 +52,6 @@ public class SessionManagementBean implements Serializable {
     private boolean isOuter = false;
     private boolean isHr = false;
 
-    //Локаль выбранная пользователем?
-    private Locale userLocale = new Locale("ru");
-
     @Inject
     @Named("indexManagement")
     private transient IndexManagementBean indexManagement;
@@ -235,7 +232,6 @@ public class SessionManagementBean implements Serializable {
         } catch (Exception e) {
             LOGGER.error("CANNOT change UserAccessLevel:", e);
         }
-        //return getNavigationRule() + "?faces-redirect=true";
     }
 
     public boolean isCanViewRequestDocuments() {
@@ -304,13 +300,5 @@ public class SessionManagementBean implements Serializable {
 
     public void setIndexManagement(IndexManagementBean indexManagement) {
         this.indexManagement = indexManagement;
-    }
-
-    public Locale getUserLocale() {
-        return userLocale;
-    }
-
-    public void setUserLocale(Locale userLocale) {
-        this.userLocale = userLocale;
     }
 }

@@ -9,6 +9,7 @@ import javax.inject.Named;
 
 import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.util.ApplicationDAONames;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.Task;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;

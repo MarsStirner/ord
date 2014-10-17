@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.position;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.sql.dao.user.PositionDAO;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.Position;
 
 import javax.annotation.PostConstruct;

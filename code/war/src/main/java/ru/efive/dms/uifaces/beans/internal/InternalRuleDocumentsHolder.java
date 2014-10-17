@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.internal;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.InternalDocument;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;

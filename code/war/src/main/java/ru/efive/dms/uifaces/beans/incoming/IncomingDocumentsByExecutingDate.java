@@ -1,17 +1,19 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
+import org.joda.time.LocalDate;
 import org.primefaces.model.DefaultTreeNode;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.IncomingDocument;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -25,7 +27,7 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     private final static SimpleDateFormat year_month_day = new SimpleDateFormat("yyyy,MM,dd");
     private String filter;
     private boolean showExpiredFlag = false;
-    private Date currentDate;
+    private LocalDate currentDate;
 
     /**
      * Сменить значение флажка "Показать просроченные"
@@ -35,27 +37,41 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     public boolean changeExpiredFlag() {
         showExpiredFlag = !showExpiredFlag;
         if (showExpiredFlag) {
-            currentDate = new Date();
+            currentDate = new LocalDate();
         }
         refresh();
         return showExpiredFlag;
     }
 
     @Override
-    protected List<IncomingDocument> loadDocuments() {
+    protected List<IncomingDocument> loadDocuments(final Pagination pagination) {
         if (showExpiredFlag) {
             return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate, 0, 0, "executionDate", false);
+                    .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
         } else {
             return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, 0, 0, "executionDate", false);
+                    .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+        }
+    }
+
+    protected int getTotalCount() {
+        if (showExpiredFlag) {
+            return new Long(
+                    sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                            .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate())
+            ).intValue();
+        } else {
+            return new Long(
+                    sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                            .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false)
+            ).intValue();
         }
     }
 
     @Override
     protected DefaultTreeNode constructTreeFromDocumentList(final List<IncomingDocument> documents) {
         if (dateFormatSymbols == null) {
-            dateFormatSymbols = new DateFormatSymbols(sessionManagement.getUserLocale());
+            dateFormatSymbols = new DateFormatSymbols(ApplicationHelper.getLocale());
         }
         final DefaultTreeNode rootElement = new DefaultTreeNode("ROOT", null);
         Iterator<IncomingDocument> iterator = documents.iterator();
@@ -91,6 +107,11 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
             new DefaultTreeNode("document", new IncomingDocumentNode(current, date[2]), lastMonthNode);
         }
         return rootElement;
+    }
+
+    @Override
+    protected Pagination initPagination() {
+        return new Pagination(0, getTotalCount(), 100);
     }
 
 

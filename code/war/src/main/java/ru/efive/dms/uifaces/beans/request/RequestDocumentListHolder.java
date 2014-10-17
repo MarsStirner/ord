@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans.request;
 
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.util.ApplicationDAONames;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.RequestDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 

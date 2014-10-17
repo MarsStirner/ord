@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans.internal;
 
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.util.ApplicationDAONames;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.InternalDocument;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 

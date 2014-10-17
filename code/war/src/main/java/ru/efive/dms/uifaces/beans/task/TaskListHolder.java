@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.task;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.*;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;

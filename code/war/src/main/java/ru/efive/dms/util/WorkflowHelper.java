@@ -358,51 +358,49 @@ public final class WorkflowHelper {
                 if (document == null) {
                     result = false;
                 } else {
-                    if (document != null) {
-                        if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
-                            StringBuffer in_number = new StringBuffer();
-                            Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getController().getUNID());
-                            List<Role> in_roles = new ArrayList<Role>();
-                            Role in_office;
-                            if (in_nomenclature != null) {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                                in_number.append(in_nomenclature.getCategory() + "-");
-                            } else {
-                                in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
-                                in_number.append("01-");
-                            }
-                            if ((in_office != null) && (!in_roles.contains(in_office))) {
-                                in_roles.add(in_office);
-                            }
-                            document.setRoleEditors(in_roles);
-
-                            StringBuffer in_count = new StringBuffer("0000" + String.valueOf(new HashSet<IncomingDocument>(sessionManagement.
-                                    getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1));
-                            in_number.append(in_count.substring(in_count.length() - 4));
-                            document.setRegistrationNumber(in_number.toString());
-
-                            List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
-                            if (paperCopies.size() > 0) {
-                                for (PaperCopyDocument paperCopy : paperCopies) {
-                                    String copyNumber = paperCopy.getRegistrationNumber();
-                                    if (copyNumber.indexOf("...") > -1) {
-                                        copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
-                                        paperCopy.setRegistrationNumber(copyNumber);
-                                    } else if (copyNumber.isEmpty()) {
-                                        copyNumber = document.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
-                                        paperCopy.setRegistrationNumber(copyNumber);
-                                    }
-                                    if (paperCopy.getDocumentStatus().getId() < 2) {
-                                        paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
-                                    }
-                                    sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
-                                }
-                            }
-
-                            Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                            document.setRegistrationDate(calendar.getTime());
-                            result = true;
+                    if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
+                        StringBuffer in_number = new StringBuffer();
+                        Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getController().getUNID());
+                        List<Role> in_roles = new ArrayList<Role>();
+                        Role in_office;
+                        if (in_nomenclature != null) {
+                            in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                            in_number.append(in_nomenclature.getCategory() + "-");
+                        } else {
+                            in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
+                            in_number.append("01-");
                         }
+                        if ((in_office != null) && (!in_roles.contains(in_office))) {
+                            in_roles.add(in_office);
+                        }
+                        document.setRoleEditors(in_roles);
+
+                        StringBuffer in_count = new StringBuffer("0000" + String.valueOf(new HashSet<IncomingDocument>(sessionManagement.
+                                getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1));
+                        in_number.append(in_count.substring(in_count.length() - 4));
+                        document.setRegistrationNumber(in_number.toString());
+
+                        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                        if (paperCopies.size() > 0) {
+                            for (PaperCopyDocument paperCopy : paperCopies) {
+                                String copyNumber = paperCopy.getRegistrationNumber();
+                                if (copyNumber.indexOf("...") > -1) {
+                                    copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
+                                    paperCopy.setRegistrationNumber(copyNumber);
+                                } else if (copyNumber.isEmpty()) {
+                                    copyNumber = document.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
+                                    paperCopy.setRegistrationNumber(copyNumber);
+                                }
+                                if (paperCopy.getDocumentStatus().getId() < 2) {
+                                    paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
+                                }
+                                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
+                            }
+                        }
+
+                        Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
+                        document.setRegistrationDate(calendar.getTime());
+                        result = true;
                     }
                 }
             } catch (Exception e) {

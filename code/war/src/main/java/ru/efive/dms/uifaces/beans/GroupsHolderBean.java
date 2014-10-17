@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans;
 
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.sql.dao.user.GroupDAOHibernate;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.Group;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.util.ApplicationHelper;

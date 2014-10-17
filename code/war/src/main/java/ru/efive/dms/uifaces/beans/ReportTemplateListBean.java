@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans;
 import ru.efive.dms.dao.ReportDAOImpl;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.ReportTemplate;
 
 import javax.enterprise.context.SessionScoped;

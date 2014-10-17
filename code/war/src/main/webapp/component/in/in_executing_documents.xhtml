@@ -5,7 +5,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -18,7 +19,8 @@
             <h:outputText id="viewTitleText" value="Входящие документы
                 #{in_documents_by_executing_date.showExpiredFlag ? 'с просроченной датой исполнения' : 'по сроку исполнения'}"
                     />
-            <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" trackMouse="true" showDelay="1000" hideDelay="500">
+            <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" trackMouse="true" showDelay="1000"
+                       hideDelay="500">
                 Просмотр входящих документов, у которых:
                 <br/>1) пользователь является руководителем.
                 <br/>2) Уровень доступа документа ниже или равен ТЕКУЩЕМУ уровню допуска пользователя
@@ -88,14 +90,17 @@
                 color: blue;
                 background: #F9FBFF;
             }
+
             .month {
                 color: red;
                 text-transform: uppercase;
                 background: #FFFAFA;
             }
+
             .document {
                 background: #F5F5F5;
             }
+
             .ui-treetable tbody td {
                 white-space: normal !important;
             }
@@ -104,38 +109,52 @@
             <div id="searchbar" class="main_searchbar">
                 <h:inputText id="filter_string" value="#{in_documents_by_executing_date.filter}"
                              style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                <h:commandButton action="#{in_documents_by_executing_date.refresh(true)}" styleClass="searchbutton" accesskey="13"/>
+                <h:commandButton action="#{in_documents_by_executing_date.refresh(true)}" styleClass="searchbutton"
+                                 accesskey="13"/>
             </div>
-            <p:treeTable id="main_data_tbl" value="#{in_documents_by_executing_date.root}" var="node"
-                         style="width:100%;"  widgetVar="treeTableVar">
-                <p:column headerText="Срок исполнения" width="10%">
-                    <h:outputText value="#{node.header}"/>
-                </p:column>
-                <p:column headerText="Номер" style="white-space: nowrap !important;">
-                    <h:outputText value="#{node.document.registrationNumber}"/>
-                </p:column>
-                <p:column headerText="Корреспондент">
-                    <h:outputText value="#{node.document.contragent.shortName}" style="font-weight: bold"/>
-                </p:column>
-                <p:column headerText="Исполнитель">
-                    <ui:repeat value="#{node.document.executors}" var="executor">
-                        <h:outputText value="#{executor}" converter="PersonConverter"/><br/>
-                    </ui:repeat>
-                </p:column>
-                <p:column headerText="Вид документа">
-                    <h:outputText value="#{node.document.form}"/>
-                </p:column>
-                <p:column headerText="Статус">
-                    <h:outputText value="#{node.document.getDocumentStatus().getName()}"/>
-                </p:column>
-                <p:column headerText="Краткое содержание">
-                    <h:outputText value="#{node.document.shortDescription}"/>
-                </p:column>
-                <p:column style="display:none;">
-                    <input type="hidden" value="#{node.document.id}"/>
-                </p:column>
-                <p:ajax event="expand" oncomplete="addRowHandlers()"/>
-            </p:treeTable>
+            <div class="wrap_main" id="table_wrap">
+                <div class="inner" id="table_inner">
+                    <p:treeTable id="main_data_tbl" value="#{in_documents_by_executing_date.root}" var="node"
+                                 style="width:100%; overflow-x:hidden;" widgetVar="treeTableVar">
+                        <p:column headerText="Срок исполнения">
+                            <h:outputText value="#{node.header}"/>
+                        </p:column>
+                        <p:column headerText="Номер">
+                            <h:outputText value="#{node.document.registrationNumber}"/>
+                        </p:column>
+                        <p:column headerText="Корреспондент">
+                            <h:outputText value="#{node.document.contragent.shortName}" style="font-weight: bold"/>
+                        </p:column>
+                        <p:column headerText="Исполнитель">
+                            <ui:repeat value="#{node.document.executors}" var="executor">
+                                <h:outputText value="#{executor}" converter="PersonConverter"/><br/>
+                            </ui:repeat>
+                        </p:column>
+                        <p:column headerText="Вид документа">
+                            <h:outputText value="#{node.document.form}"/>
+                        </p:column>
+                        <p:column headerText="Статус">
+                            <h:outputText value="#{node.document.getDocumentStatus().getName()}"/>
+                        </p:column>
+                        <p:column headerText="Краткое содержание">
+                            <h:outputText value="#{node.document.shortDescription}"/>
+                        </p:column>
+                        <p:column style="display:none;">
+                            <input type="hidden" value="#{node.document.id}"/>
+                        </p:column>
+                        <p:ajax event="expand" oncomplete="addRowHandlers()"/>
+                    </p:treeTable>
+                </div>
+            </div>
+            <div id="table_paging">
+                <h:panelGroup id="main_data_paging">
+                    <e5ui-comp:tablePager documentListHolder="#{in_documents_by_executing_date}"
+                                          style="display:inline;"/>
+                    <e5ui-comp:tablePageSizeSelector
+                            documentListHolder="#{in_documents_by_executing_date}"
+                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                </h:panelGroup>
+            </div>
             <script type="text/javascript">
                 function addRowHandlers() {
                     console.log("refresh treetable row onclick handlers");
@@ -148,7 +167,7 @@
                                 goToDocument(row.lastChild.lastChild.value);
                             };
                         };
-                        currentRow.onclick = createClickHandler(currentRow);
+                        currentRow.ondblclick = createClickHandler(currentRow);
                     }
                 }
                 window.onload = addRowHandlers();
