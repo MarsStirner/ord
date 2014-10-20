@@ -109,7 +109,7 @@
             <div id="searchbar" class="main_searchbar">
                 <h:inputText id="filter_string" value="#{in_documents_by_executing_date.filter}"
                              style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                <h:commandButton action="#{in_documents_by_executing_date.refresh(true)}" styleClass="searchbutton"
+                <h:commandButton action="#{in_documents_by_executing_date.changePageOffset(0)}" styleClass="searchbutton"
                                  accesskey="13"/>
             </div>
             <div class="wrap_main" id="table_wrap">

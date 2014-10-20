@@ -8,8 +8,6 @@ import javax.mail.internet.*;
 import java.util.Properties;
 import javax.activation.FileDataSource;
 import javax.activation.DataHandler;
-//import javax.security.sasl;
-import com.sun.security.sasl.Provider;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.wf.core.MailSettings;
 
