@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
 
@@ -51,6 +52,7 @@ public class LDAPImportService {
     private String filterValue;
     private final int PAGE_SIZE = 100;
     private List<String> skipBaseList;
+    private final static Pattern firedPattern = Pattern.compile("ou\\s?=\\s?fired\\W?", Pattern.CASE_INSENSITIVE);
 
 
     static {
@@ -364,7 +366,7 @@ public class LDAPImportService {
 
         try {
             //Если есть "ou=fired" значит пользователь уволен
-            return new LDAPUser(entry.getAttributes(), entry.getName().toLowerCase().contains("ou=fired"));
+            return new LDAPUser(entry.getAttributes(), firedPattern.matcher(entry.getName()).matches());
         } catch (ParseException e) {
             LOGGER.error("{} ParseException: ", currentNumber, e);
         } catch (NamingException e) {
@@ -536,7 +538,7 @@ public class LDAPImportService {
                     sb.append(attribute.getID()).append('=');
                     if (attribute.get() instanceof byte[]) {
                         byte[] bytes = (byte[]) attribute.get();
-                        StringBuffer guid = new StringBuffer();
+                        StringBuilder guid = new StringBuilder();
                         for (byte aByte : bytes) {
                             StringBuffer dblByte = new StringBuffer(Integer.toHexString(aByte & 0xff));
                             if (dblByte.length() == 1) {
