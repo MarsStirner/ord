@@ -25,39 +25,30 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     private static final long serialVersionUID = -1414080814402194966L;
 
     /**
-     * Номер поручения
+     * На контроле
      */
-    private String taskNumber;
-
-    /**
-     * Дата создания
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
-
-    /**
-     * Дата регистрации
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date registrationDate;
+    @Column(name = "control", nullable = false)
+    private boolean control;
 
     /**
      * Контрольная дата исполнения
      */
+    @Column(name = "controlDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date controlDate;
 
     /**
-     * Дата создания документа
+     * Дата создания
      */
+    @Column(name = "creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
-    private Date executionDate;
+    private Date creationDate;
 
     /**
      * Автор поручения
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_tasks_authors")
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
 
@@ -65,38 +56,48 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
      * Инициатор
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_tasks_initiators")
+    @JoinColumn(name = "initiator_id")
     private User initiator;
 
     /**
      * Контролер
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_tasks_controllers")
+    @JoinColumn(name = "controller_id")
     private User controller;
 
     /**
-     * Исполнитель поручения
+     * Удален ли документ
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_tasks_executors")
-    private User executor;
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    /**
+     * Дата создания документа
+     */
+    @Column(name = "executionDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date executionDate;
+
+    /**
+     * id родительского поручения
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "parentId", nullable = true)
+    private Task parent;
+
+    /**
+     * Дата регистрации
+     */
+    @Column(name = "registrationDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date registrationDate;
 
     /**
      * Краткое описание
      */
-    @Column(columnDefinition = "text")
+    @Column(name = "shortDescription", columnDefinition = "text")
     private String shortDescription;
-
-    /**
-     * Зарегистрировано
-     */
-    private boolean registered;
-
-    /**
-     * На контроле
-     */
-    private boolean control;
 
     /**
      * Текущий статус документа в процессе
@@ -105,20 +106,26 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     private int statusId;
 
     /**
-     * id родительского документа
+     * Номер поручения
      */
-    private String parentId;
+    @Column(name = "taskNumber")
+    private String taskNumber;
+
+    /**
+     * Исполнитель поручения
+     */
+    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinTable(name = "dms_tasks_executors",
+            joinColumns = {@JoinColumn(name = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "executor_id")}
+    )
+    private Set<User> executors;
 
     /**
      * id корневого документа
      */
+    @Column(name = "rootDocumentId")
     private String rootDocumentId;
-
-    /**
-     * Номер ERP
-     */
-
-    private String erpNumber;
 
     /**
      * Вид задачи
@@ -135,32 +142,18 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     private DocumentForm form;
 
     /**
-     * Значение для группировки
+     * Номер ERP
      */
-    @Transient
-    private int grouping = 100;
-
-    /**
-     * Есть ли документы - потомки
-     */
-    @Transient
-    private boolean parent = false;
-
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
-
+    @Column(name = "erpNumber")
+    private String erpNumber;
 
     /**
      * История
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "dms_task_history",
             joinColumns = {@JoinColumn(name = "task_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<HistoryEntry> history;
 
     @Transient
@@ -224,12 +217,16 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         this.author = author;
     }
 
-    public User getExecutor() {
-        return executor;
+    public List<User> getExecutors() {
+        if(executors != null) {
+            return new ArrayList<User>(executors);
+        } else {
+            return new ArrayList<User>(0);
+        }
     }
 
-    public void setExecutor(User executor) {
-        this.executor = executor;
+    public void setExecutors(Set<User> executors) {
+        this.executors = executors;
     }
 
     public String getShortDescription() {
@@ -240,13 +237,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         this.shortDescription = shortDescription;
     }
 
-    public boolean isRegistered() {
-        return registered;
-    }
-
-    public void setRegistered(boolean registered) {
-        this.registered = registered;
-    }
 
     public boolean isControl() {
         return control;
@@ -254,14 +244,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
 
     public void setControl(boolean control) {
         this.control = control;
-    }
-
-    public int getGrouping() {
-        return grouping;
-    }
-
-    public void setGrouping(int grouping) {
-        this.grouping = grouping;
     }
 
     @Transient
@@ -284,12 +266,12 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         return "task";
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setParent(Task parent) {
+        this.parent = parent;
     }
 
-    public String getParentId() {
-        return parentId;
+    public Task getParentId() {
+        return parent;
     }
 
 
@@ -298,13 +280,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         return getId() == 0 ? "" : "task_" + getId();
     }
 
-    public void setParent(boolean parent) {
-        this.parent = parent;
-    }
-
-    public boolean isParent() {
-        return parent;
-    }
 
 
     public void setDeleted(boolean deleted) {
@@ -323,32 +298,13 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         return history;
     }
 
-    public void setControlStringDate(String date) {
-        this.date = date;
-    }
-
-    public String getControlStringDate() {
-        return this.date;
-    }
-
-    @Transient
-    private String date;
-
     @Transient
     public List<HistoryEntry> getHistoryList() {
         List<HistoryEntry> result = new ArrayList<HistoryEntry>();
         if (history != null) {
             result.addAll(history);
         }
-        Collections.sort(result, new Comparator<HistoryEntry>() {
-            public int compare(HistoryEntry o1, HistoryEntry o2) {
-                Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c1.setTime(o1.getCreated());
-                Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c2.setTime(o2.getCreated());
-                return c1.compareTo(c2);
-            }
-        });
+        Collections.sort(result);
         return result;
     }
 
@@ -415,18 +371,35 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         clone.setDocumentStatus(getDocumentStatus());
         clone.setErpNumber(erpNumber);
         clone.setExecutionDate(executionDate);
-        clone.setExecutor(executor);
+        clone.setExecutors(executors);
         clone.setExerciseType(exerciseType);
         clone.setForm(form);
         clone.setHistory(history);
         clone.setInitiator(initiator);
         clone.setParent(parent);
-        clone.setParentId(parentId);
-        clone.setRegistered(registered);
         clone.setRegistrationDate(registrationDate);
         clone.setRootDocumentId(rootDocumentId);
         clone.setShortDescription(shortDescription);
         clone.setTaskNumber(taskNumber);
         return clone;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Task[");
+        sb.append(getId()).append("]:{");
+        sb.append("controlDate=").append(ApplicationHelper.formatDate(controlDate));
+        sb.append(", creationDate=").append(ApplicationHelper.formatDate(creationDate));
+        sb.append(", author=").append(author.getFullName());
+        sb.append(", initiator=").append(initiator != null ? initiator.getFullName() : "null");
+        sb.append(", controller=").append(controller != null ? controller.getFullName() : "null");
+        sb.append(", parent=").append(parent != null ? parent.getId() : "null");
+        sb.append(", registrationDate=").append(ApplicationHelper.formatDate(registrationDate));
+        sb.append(", shortDescription='").append(shortDescription).append('\'');
+        sb.append(", statusId=").append(statusId);
+        sb.append(", taskNumber='").append(taskNumber).append('\'');
+        sb.append(", rootDocumentId='").append(rootDocumentId).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

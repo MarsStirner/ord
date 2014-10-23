@@ -1,6 +1,4 @@
 package ru.util;
-
-
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.enums.DocumentStatus;
@@ -9,49 +7,34 @@ import ru.entity.model.user.User;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public final class ApplicationHelper {
-
-
-    private static final Locale locale = new Locale("ru", "RU");
-
-    public static Locale getLocale() {
-        return locale;
-    }
-
-
     public static String STORE_NAME = "E5 DMS";
     public static String NAMESPACE = "http://www.efive.ru/model/dictionary/1.0";
     public static String NAMESPACE_PREFIX = "e5-dms";
     public static String TYPE_FILE = "File";
 
-    public static boolean nonEmptyString(String str) {
-        return !isEmptyString(str);
+    private static final Locale locale = new Locale("ru", "RU");
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy", locale);
+
+    public static Locale getLocale() {
+        return locale;
     }
 
-    public static boolean isEmptyString(String str) {
-        return ((str == null) || (str.trim().length() == 0));
+    public static SimpleDateFormat getDateFormat() {
+        return DATE_FORMAT;
     }
 
-    public static String[] splitStr(String str, String delimeter) {
-        String[] res = str.split(delimeter);
-        for (int i = 0; i < res.length; i++) {
-            res[i] = res[i].trim();
+    public static String formatDate(Date date) {
+        if(date == null) {
+            return "NULL";
         }
-        return res;
+        return DATE_FORMAT.format(date);
     }
-
-    public static String[] splitStr(String str) {
-        if (nonEmptyString(str)) {
-            return splitStr(str, ",");
-        } else {
-            return new String[0];
-        }
-    }
-
 
     public static String getMD5(String input) {
         try {
@@ -69,9 +52,6 @@ public final class ApplicationHelper {
         }
     }
 
-    public static String getFullTimeFormat() {
-        return "dd.MM.yyyy HH:mm:ss z";
-    }
 
     public static String getNotNull(String param) {
         if (param == null) {
@@ -116,4 +96,6 @@ public final class ApplicationHelper {
         }
         return param;
     }
+
+
 }

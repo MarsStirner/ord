@@ -13,7 +13,6 @@ import java.util.List;
  * Company: Korus Consulting IT <br>
  * Description: Абстрактный бин, в котором есть дерево (Tree) <br>
  */
-//TODO Ранжирование по страницам
 //TODO Сортировки настраиваемые
 //TODO Группировка + сортировка переопределяемая
 public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> implements Serializable {

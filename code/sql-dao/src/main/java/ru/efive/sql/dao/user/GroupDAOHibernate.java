@@ -54,7 +54,7 @@ public class GroupDAOHibernate extends GenericDAOHibernate<Group> {
     @SuppressWarnings("unchecked")
     public Group findGroupByAlias(String alias) {
         Group group = null;
-        if (ApplicationHelper.nonEmptyString(alias)) {
+        if (StringUtils.isNotEmpty(alias)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Group.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
@@ -70,7 +70,7 @@ public class GroupDAOHibernate extends GenericDAOHibernate<Group> {
 
     /*@SuppressWarnings("unchecked")
      public Group findByNameUsingUsersFilter(String name, String filter) {
-         if (ApplicationHelper.nonEmptyString(name)) {
+         if (StringUtils.isNotEmpty(name)) {
              DetachedCriteria detachedCriteria=DetachedCriteria.forClass(Group.class);
              detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 

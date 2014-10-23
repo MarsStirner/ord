@@ -137,12 +137,10 @@ public class TasksExecuted extends AbstractDocumentListHolderBean<Task> {
         List<Task> result = new ArrayList<Task>();
         List<Task> list = dao.findResolutionsByParent(parentId);
         for (Task entry : list) {
-            entry.setGrouping(level);
-            List<Task> descendants = loadChildTree(dao, entry.getUniqueId(), level + 1);
+                        List<Task> descendants = loadChildTree(dao, entry.getUniqueId(), level + 1);
             result.add(entry);
             if (descendants.size() > 0) {
-                entry.setParent(true);
-                result.addAll(descendants);
+                               result.addAll(descendants);
             }
         }
         return result;
@@ -150,26 +148,24 @@ public class TasksExecuted extends AbstractDocumentListHolderBean<Task> {
 
     public String getTopDocumentControllerByTaskDocument(Task task) {
         if (task != null) {
-            String key = task.getParentId();
+            String key = task.getRootDocumentId();
             if (key != null && !key.isEmpty()) {
                 int pos = key.indexOf('_');
                 if (pos != -1) {
                     String id = key.substring(pos + 1, key.length());
-                    StringBuffer in_description = new StringBuffer("");
-
-                    if (key.indexOf("incoming") != -1) {
+                    if (key.contains("incoming")) {
                         IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                         return in_doc.getController().getDescriptionShort();
-                    } else if (key.indexOf("outgoing") != -1) {
+                    } else if (key.contains("outgoing")) {
                         OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                         return out_doc.getSigner().getDescriptionShort();
-                    } else if (key.indexOf("internal") != -1) {
+                    } else if (key.contains("internal")) {
                         InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                         return internal_doc.getSigner().getDescriptionShort();
-                    } else if (key.indexOf("request") != -1) {
+                    } else if (key.contains("request")) {
                         RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                         return request_doc.getController().getDescriptionShort();
-                    } else if (key.indexOf("task") != -1) {
+                    } else if (key.contains("task")) {
                         Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                         return getTopDocumentControllerByTaskDocument(task_doc);
                     } else {

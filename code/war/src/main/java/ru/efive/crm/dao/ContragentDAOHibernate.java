@@ -20,7 +20,7 @@ public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
     }
 
     public Contragent getByFullName(String fullname) {
-        if (ApplicationHelper.nonEmptyString(fullname)) {
+        if (StringUtils.isNotEmpty(fullname)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Contragent.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 

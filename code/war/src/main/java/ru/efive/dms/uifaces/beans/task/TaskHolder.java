@@ -1,6 +1,7 @@
 package ru.efive.dms.uifaces.beans.task;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
@@ -19,17 +20,15 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Group;
-import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -42,41 +41,87 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
 
     private static final Logger logger = LoggerFactory.getLogger("TASK");
 
+    private boolean readPermission = false;
+    private boolean editPermission = false;
+    private boolean executePermission = false;
+
+    public boolean isReadPermission() {
+        return readPermission;
+    }
+
+    public boolean isEditPermission() {
+        return editPermission;
+    }
+
+    public boolean isExecutePermission() {
+        return executePermission;
+    }
+
+    @Override
+    public boolean isCanDelete() {
+        if (!editPermission) {
+            setStateComment("Доступ запрещен");
+            logger.error("USER[{}] DELETE ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return editPermission;
+    }
+
+    @Override
+    public boolean isCanEdit() {
+        if (!editPermission) {
+            setStateComment("Доступ запрещен");
+            logger.error("USER[{}] EDIT ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return editPermission;
+    }
+
+    @Override
+    public boolean isCanView() {
+        if (!readPermission) {
+            setStateComment("Доступ запрещен");
+            logger.error("USER[{}] VIEW ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return readPermission;
+    }
+
+    public boolean isCanExecute() {
+        if (!executePermission) {
+            setStateComment("Доступ запрещен");
+            logger.error("USER[{}] EXECUTE ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return executePermission;
+    }
+
     @Override
     public String delete() {
-        String in_result = super.delete();
-        if (in_result != null && in_result.equals("delete")) {
+        String in_result = super.delete();  // also call deleteDocument()
+        if (in_result != null && in_result.equals(ACTION_RESULT_DELETE)) {
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
-            } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", ""));
-                e.printStackTrace();
+            } catch (IOException e) {
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
+                logger.error("Error on redirect: ", e);
             }
-            return in_result;
-        } else {
-            return in_result;
         }
+        return in_result;
     }
 
     @Override
     protected boolean deleteDocument() {
-
-        boolean result = false;
+        final Task document = getDocument();
+        document.setDeleted(true);
         try {
-            result = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).delete(getDocumentId());
-            if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+            final Task afterChange = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).update(document);
+            if (!afterChange.isDeleted()) {
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+                return false;
             }
+            return true;
         } catch (Exception e) {
-            e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
+            logger.error("Error on delete: ", e);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -91,110 +136,105 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
 
     @Override
     protected void initDocument(Integer id) {
+        final User currentUser = sessionManagement.getLoggedUser();
+        logger.info("Open TASK[{}] by user[{}]", id, currentUser.getId());
         try {
-            setDocument(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).get(id));
-            if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
-            } else {
-                User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
-                int userId = currentUser.getId();
-                List<Role> in_roles = new ArrayList<Role>();
-                if (userId > 0) {
-                    boolean isAdminRole = false;
-                    in_roles = currentUser.getRoleList();
-                    if (in_roles != null) {
-                        for (Role in_role : in_roles) {
-                            if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                                isAdminRole = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    Task document = getDocument();
-                    if (!isAdminRole && !isUserHasAccess(document, in_roles, currentUser)) {
-                        return;
-                    }
-                }
-
+            final Task document = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getTask(id);
+            readPermission = false;
+            editPermission = false;
+            executePermission = false;
+            if (!checkState(document, currentUser)) {
+                setDocument(document);
+                return;
             }
+            checkPermission(currentUser, document);
+            setDocument(document);
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
+            logger.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
 
     /**
-     * Check user authorities to document
+     * 1) админ
+     * 2) автор
+     * 3) инициатор
+     * 4) контролер
+     * 5) исполнитель
+     * Просмотр: 1-2-3-4-5
+     * Редактирование документа: 1-2-3
+     * Действия: 1-2-3-4-5       *
+     *
+     * @param user     пользователь для которого проверяем права
+     * @param document документи, на который проверяем права
+     * @return флаг просмотра
      */
-    private boolean isUserHasAccess(Task document, List<Role> in_roles, User currentUser) {
-        Set<Integer> allReadersId = new HashSet<Integer>();
-        List<Role> in_docUsersRoles = new ArrayList<Role>();
-        if (document.getAuthor() != null) {
-            allReadersId.add(document.getAuthor().getId());
-            if (document.getAuthor().getRoleList().size() > 0) {
-                in_docUsersRoles.addAll(document.getAuthor().getRoleList());
+    private boolean checkPermission(final User user, final Task document) {
+        //1) админ
+        if (user.isAdministrator()) {
+            logger.debug("{}:Permission RWX granted: AdminRole", document.getId());
+            readPermission = true;
+            editPermission = true;
+            executePermission = true;
+            return true;
+        }
+        //2) автор
+        if (user.equals(document.getAuthor())) {
+            logger.debug("{}:Permission RWX granted: Author", document.getId());
+            readPermission = true;
+            editPermission = true;
+            executePermission = true;
+            return true;
+        }
+        //3) инициатор
+        if (user.equals(document.getInitiator())) {
+            logger.debug("{}:Permission RWX granted: Initiator", document.getId());
+            readPermission = true;
+            editPermission = true;
+            executePermission = true;
+            return true;
+        }
+        //4) Контролер
+        if (user.equals(document.getController())) {
+            logger.debug("{}:Permission RX granted: Controller", document.getId());
+            readPermission = true;
+            executePermission = true;
+        }
+        //5) исполнитель
+        for (User currentUser : document.getExecutors()) {
+            if (user.equals(currentUser)) {
+                logger.debug("{}:Permission RX granted: Executor", document.getId());
+                readPermission = true;
+                executePermission = true;
             }
         }
 
-        if (document.getInitiator() != null) {
-            allReadersId.add(document.getInitiator().getId());
-            if (document.getInitiator().getRoleList().size() > 0) {
-                in_docUsersRoles.addAll(document.getInitiator().getRoleList());
-            }
+        if (!readPermission && !editPermission && !executePermission) {
+            logger.error("{}:Permission denied to user[{}]", document.getId(), user.getId());
+            return false; //readPermission || editPermission;
+        } else {
+            return readPermission || editPermission || executePermission;
         }
+    }
 
-        // Исполнитель должен иметь права доступа к документу, через сколько бы поручений оно не проходило
-        List<Task> relationTasks = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).
-                findAllRegistratedDocumentsByRootFormat(document.getRootDocumentId(), true);
-        if (relationTasks != null) {
-            for (Task relationTask : relationTasks) {
-                User parentExecutor = (relationTask.getExecutor() != null) ? relationTask.getExecutor() : null;
-                if (parentExecutor != null) {
-                    allReadersId.add(parentExecutor.getId());
-                }
-            }
-        }
 
-        if (document.getExecutor() != null) {
-            allReadersId.add(document.getExecutor().getId());
-            if (document.getExecutor().getRoleList().size() > 0) {
-                in_docUsersRoles.addAll(document.getExecutor().getRoleList());
-            }
+    /**
+     * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
+     *
+     * @param document документ для проверки
+     * @return true - допуск есть
+     */
+    private boolean checkState(final Task document, final User user) {
+        if (document == null) {
+            setState(STATE_NOT_FOUND);
+            logger.warn("Task NOT FOUND");
+            return false;
         }
-        if (document.getController() != null) {
-            allReadersId.add(document.getController().getId());
-            if (document.getController().getRoleList().size() > 0) {
-                in_docUsersRoles.addAll(document.getController().getRoleList());
-            }
-        }
-
-        Set<Integer> in_docUsersRolesId = new HashSet<Integer>();
-        for (Role role : in_docUsersRoles) {
-            in_docUsersRolesId.add(role.getId());
-        }
-
-        Set<Integer> userRolesId = new HashSet<Integer>();
-        for (Role role : in_roles) {
-            userRolesId.add(role.getId());
-        }
-
-        boolean isUserReaderByRole = false;
-        if (userRolesId.size() > 0 && in_docUsersRolesId.size() > 0) {
-            userRolesId.retainAll(in_docUsersRolesId);
-            isUserReaderByRole = (userRolesId.size() > 0);
-        }
-
-        if (!(allReadersId.contains(currentUser.getId()) || isUserReaderByRole)) {
-            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
-            if (!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "task_" + document.getId())) {
-                setState(STATE_FORBIDDEN);
-                setStateComment("Доступ запрещен");
-                return false;
-            }
+        if (document.isDeleted()) {
+            setState(STATE_DELETED);
+            setStateComment("Поручение удалено");
+            logger.warn("TASK[{}] IS DELETED", document.getId());
+            return false;
         }
         return true;
     }
@@ -202,38 +242,40 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     @Override
     protected void initNewDocument() {
         Task doc = new Task();
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-        doc.setCreationDate(created);
+        readPermission = true;
+        editPermission = true;
+        executePermission = true;
+        final LocalDateTime created = new LocalDateTime();
+        doc.setCreationDate(created.toDate());
         doc.setAuthor(sessionManagement.getLoggedUser());
-        doc.setRegistered(false);
         doc.setDocumentStatus(DocumentStatus.NEW);
-        String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
-        if (parentId == null || parentId.equals("")) {
-        } else {
-            doc.setParentId(parentId);
-            String rootDocumentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rootDocumentId");
+        final String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
+        if (StringUtils.isNotEmpty(parentId)) {
+            final Task parentTask = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(parentId);
+            if (parentTask != null) {
+                doc.setParent(parentTask);
+            } else {
+                logger.warn("Not found parentTask by \"{}\"", parentId);
+            }
+        }
+        final String rootDocumentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("rootDocumentId");
+        if (StringUtils.isNotEmpty(rootDocumentId)) {
             doc.setRootDocumentId(rootDocumentId);
-        }
-
-
-        List<DocumentForm> forms = null;
-        DocumentForm form = null;
-
-        String formId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("formId");
-        if (formId == null || formId.equals("")) {
-            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndDescription("Поручения", "task");
         } else {
-            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndDescription("Поручения", formId);
+            logger.warn("RootDocumentId is not set");
         }
-        if (forms.size() > 0) {
+        DocumentForm form = null;
+        final String formId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("formId");
+        List<DocumentForm> forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                .findByCategoryAndDescription("Поручения", StringUtils.isEmpty(formId) ? "task" : formId);
+        if (!forms.isEmpty()) {
             form = forms.get(0);
             if (form.getDescription().equals("exercise")) {
-                String exerciseTypeId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("exerciseTypeId");
-                if ((exerciseTypeId != null) && (!exerciseTypeId.isEmpty())) {
-                    List<DocumentForm> exerciseTypes = null;
-                    DocumentForm exerciseType = null;
-                    exerciseTypes = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Задачи", exerciseTypeId);
-                    if (exerciseTypes.size() > 0) {
+                final String exerciseTypeId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("exerciseTypeId");
+                if (StringUtils.isNotEmpty(exerciseTypeId)) {
+                    List<DocumentForm> exerciseTypes = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Задачи", exerciseTypeId);
+                    DocumentForm exerciseType;
+                    if (!exerciseTypes.isEmpty()) {
                         exerciseType = exerciseTypes.get(0);
                         if (exerciseType != null) {
                             doc.setExerciseType(exerciseType);
@@ -250,12 +292,10 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         if (form != null) {
             doc.setForm(form);
         }
-
-        HistoryEntry historyEntry = getInitialHistoryEntry(doc, created);
+        HistoryEntry historyEntry = getInitialHistoryEntry(doc, created.toDate());
         Set<HistoryEntry> history = new HashSet<HistoryEntry>();
         history.add(historyEntry);
         doc.setHistory(history);
-
         setDocument(doc);
         initDefaultInitiator();
     }
@@ -280,57 +320,30 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
 
     @Override
     protected boolean saveNewDocument() {
-        boolean persistedAtLeastOnce = false;
-        for (User current : responsibleUsers) {
-            persistedAtLeastOnce = true;
-            logger.debug("USR: {}", current.getFullName());
-            try {
-                Task currentTask = (Task) getDocument().clone();
-                currentTask.setId(0);
-                currentTask.setExecutor(current);
-                HashSet<HistoryEntry> currentHistory = new HashSet<HistoryEntry>(1);
-                currentHistory.add(getInitialHistoryEntry(currentTask, currentTask.getCreationDate()));
-                currentTask.setHistory(currentHistory);
-                currentTask = createTask(currentTask);
-                if (currentTask == null) {
-                    return false;
-                }
-                logger.debug("-> ID {}", currentTask.getId());
-            } catch (CloneNotSupportedException e) {
-                logger.error("Clone Exception: ", e);
-            }
-        }
-        for (Group current : responsibleGroups) {
-            logger.debug("GRP: {}", current.getDescription());
-            for (User currentUserInGroup : current.getMembersList()) {
-                persistedAtLeastOnce = true;
-                logger.debug("GRP_USR: {}", currentUserInGroup.getFullName());
-                try {
-                    Task currentTask = (Task) getDocument().clone();
-                    currentTask.setId(0);
-                    currentTask.setExecutor(currentUserInGroup);
-                    HashSet<HistoryEntry> currentHistory = new HashSet<HistoryEntry>(1);
-                    currentHistory.add(getInitialHistoryEntry(currentTask, currentTask.getCreationDate()));
-                    currentTask.setHistory(currentHistory);
-                    currentTask = createTask(currentTask);
-                    if (currentTask == null) {
-                        return false;
-                    }
-                    logger.debug("-> ID {}", currentTask.getId());
-                } catch (CloneNotSupportedException e) {
-                    logger.error("Clone Exception: ", e);
-                }
-            }
-        }
-        if (!persistedAtLeastOnce) {
-            Task currentTask = createTask(getDocument());
-            if (currentTask == null) {
+        try {
+            final Task task = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).save(getDocument());
+            if (task == null) {
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
                 return false;
+            } else {
+                logger.debug("uploading newly created files");
+                for (int i = 0; i < files.size(); i++) {
+                    Attachment tmpAttachment = attachments.get(i);
+                    if (tmpAttachment != null) {
+                        tmpAttachment.setParentId(new String(("task_" + getDocumentId()).getBytes(), "utf-8"));
+                        fileManagement.createFile(tmpAttachment, files.get(i));
+                    }
+                }
+                setDocument(task);
+                return true;
             }
-            logger.debug("*-> ID {}", currentTask.getId());
+        } catch (Exception e) {
+            logger.error("Error on save new: ", e);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
         }
-        return true;
+        return false;
     }
+
 
     private HistoryEntry getInitialHistoryEntry(final Task doc, final Date created) {
         final HistoryEntry historyEntry = new HistoryEntry();
@@ -380,35 +393,35 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 StringBuffer in_description = new StringBuffer("");
                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
-                if (key.indexOf("incoming") != -1) {
+                if (key.contains("incoming")) {
                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
                             "Черновик входщяего документа от " + sdf.format(in_doc.getCreationDate()) :
                             "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + sdf.format(in_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("outgoing") != -1) {
+                } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
                             "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) :
                             "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + sdf.format(out_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("internal") != -1) {
+                } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
                             "Черновик внутреннего документа от " + sdf.format(internal_doc.getCreationDate()) :
                             "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("request") != -1) {
+                } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
                             "Черновик обращения граждан от " + sdf.format(request_doc.getCreationDate()) :
                             "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("task") != -1) {
+                } else if (key.contains("task")) {
                     Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
                             "Черновик поручения от " + sdf.format(task_doc.getCreationDate()) :
@@ -424,59 +437,40 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     protected void initDefaultInitiator() {
         Task task = getDocument();
         User initiator = null;
-        String key = task.getParentId();
+        String key = task.getRootDocumentId();
         if (key != null && !key.isEmpty()) {
             int pos = key.indexOf('_');
             if (pos != -1) {
                 String id = key.substring(pos + 1, key.length());
-
-                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(key);
-                if (key.indexOf("incoming") != -1) {
+                if (key.contains("incoming")) {
                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = in_doc.getController();
-                } else if (key.indexOf("outgoing") != -1) {
+                } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = out_doc.getSigner();
-                } else if (key.indexOf("internal") != -1) {
+                } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = internal_doc.getController();
-                } else if (key.indexOf("request") != -1) {
+                } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = request_doc.getController();
-                } else if (key.indexOf("task") != -1) {
+                } else if (key.contains("task")) {
                     Task parent_task = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
-                    initiator = parent_task.getExecutor();
+                    final List<User> users = parent_task.getExecutors();
+                    if (users != null && users.size() == 1) {
+                        initiator = users.iterator().next();
+                    } else {
+                        logger.error("TASK[{}] can not set initiator cause: {}", task.getId(), users == null ? "executors is null" : "too much executors. size =" + users.size());
+                    }
                 }
 
                 if (initiator != null) {
                     task.setInitiator(initiator);
+                } else {
+                    logger.warn("TASK[{}] Initiator not founded", task.getId());
                 }
             }
         }
-    }
-
-    @Override
-    protected String doAfterCreate() {
-        taskList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterEdit() {
-        taskList.markNeedRefresh();
-        return super.doAfterEdit();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        taskList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        taskList.markNeedRefresh();
-        return super.doAfterSave();
     }
 
     // FILES
@@ -489,22 +483,19 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         try {
             if (details.getAttachment() != null) {
                 Attachment attachment = details.getAttachment();
-                //attachment.setFileName(new String(attachment.getFileName().getBytes(), "utf-8"));
                 attachment.setFileName(attachment.getFileName());
                 if (getDocumentId() == null || getDocumentId() == 0) {
                     attachments.add(attachment);
                     files.add(details.getByteArray());
                 } else {
                     attachment.setParentId(new String(("task_" + getDocumentId()).getBytes(), "utf-8"));
-                    System.out.println("result of the upload operation - " + fileManagement.createFile(attachment, details.getByteArray()));
+                    logger.info("result of the upload operation - " + fileManagement.createFile(attachment, details.getByteArray()));
                     updateAttachments();
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
+            logger.error("Error on attach:", e);
         }
     }
 
@@ -523,15 +514,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                         files.add(details.getByteArray());
                     }
                 } else {
-                    System.out.println("result of the upload operation - " + fileManagement.createVersion(attachment, details.getByteArray(), majorVersion, details.getAttachment().getFileName()));
+                    logger.info("result of the upload operation - " + fileManagement.createVersion(attachment, details.getByteArray(), majorVersion, details.getAttachment().getFileName()));
                     updateAttachments();
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
+            logger.error("Error on attach:", e);
         }
     }
 
@@ -561,14 +550,10 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         document.setHistory(history);
 
         setDocument(document);
-
-        if (attachment != null) {
-            if (fileManagement.deleteFile(attachment)) {
-                updateAttachments();
-            }
+        if (fileManagement.deleteFile(attachment)) {
+            updateAttachments();
         }
-
-        document = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).save(document);
+        setDocument(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).save(document));
     }
 
     private List<Attachment> attachments = new ArrayList<Attachment>();
@@ -672,20 +657,12 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     // END OF MODAL HOLDERS
 
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
     public boolean isRequisitesTabSelected() {
         return isRequisitesTabSelected;
     }
 
     public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
         this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRouteTabHeader() {
-        return "<span><span>Движение документа</span></span>";
     }
 
     public boolean isRouteTabSelected() {
@@ -696,20 +673,12 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         this.isRouteTabSelected = isRouteTabSelected;
     }
 
-    public String getRelationTabHeader() {
-        return "<span><span>Связи</span></span>";
-    }
-
     public boolean isRelationTabSelected() {
         return isRelationTabSelected;
     }
 
     public void setRelationTabSelected(boolean isRelationTabSelected) {
         this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
     }
 
     public void setHistoryTabSelected(boolean isHistoryTabSelected) {
@@ -720,10 +689,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return isHistoryTabSelected;
     }
 
-    public UserSelectModalBean getResponsibleSelectModal() {
-        return responsibleSelectModal;
-    }
-
     public UserSelectModalBean getInitiatorSelectModal() {
         return initiatorSelectModal;
     }
@@ -732,21 +697,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return controllerSelectModal;
     }
 
-    private UserSelectModalBean responsibleSelectModal = new UserSelectModalBean() {
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setExecutor(getUser());
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUser(null);
-        }
-    };
 
     private UserSelectModalBean initiatorSelectModal = new UserSelectModalBean() {
         @Override
@@ -792,15 +742,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         }
     };
     ///////////////////////////////////////////////////////////////////////////////
-    private List<User> responsibleUsers;
-
-    public List<User> getResponsibleUsers() {
-        return responsibleUsers;
-    }
-
-    private void setResponsibleUsers(List<User> userList) {
-        responsibleUsers = userList;
-    }
 
     private List<Group> responsibleGroups;
 
@@ -842,7 +783,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         @Override
         protected void doSave() {
             setResponsibleGroups(getGroups());
-            setResponsibleUsers(getUsers());
+            getDocument().setExecutors(new HashSet<User>(getUsers()));
             super.doSave();
         }
 
@@ -857,14 +798,10 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         protected void doShow() {
             super.doShow();
             if (getDocument() != null && getResponsibleGroups() != null) {
-                ArrayList<Group> tmpGroupList = new ArrayList<Group>();
-                tmpGroupList.addAll(getResponsibleGroups());
-                setGroups(tmpGroupList);
+                setGroups(new ArrayList<Group>(getResponsibleGroups()));
             }
-            if (getDocument() != null && getResponsibleUsers() != null) {
-                ArrayList<User> tmpUserList = new ArrayList<User>();
-                tmpUserList.addAll(getResponsibleUsers());
-                setUsers(tmpUserList);
+            if (getDocument() != null && getDocument().getExecutors() != null) {
+                setUsers(new ArrayList<User>(getDocument().getExecutors()));
             }
         }
     };
@@ -929,43 +866,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         }
     };
 
-    public String getRootDocumentIdByTaskDocument(Task task) {
-        if (task != null) {
-            String key = task.getParentId();
-            if (key != null && !key.isEmpty()) {
-                int pos = key.indexOf('_');
-                if (pos != -1) {
-                    String id = key.substring(pos + 1, key.length());
-                    StringBuffer in_description = new StringBuffer("");
-
-                    if (key.indexOf("incoming") != -1) {
-                        return key;
-                    } else if (key.indexOf("outgoing") != -1) {
-                        return key;
-                    } else if (key.indexOf("internal") != -1) {
-                        return key;
-                    } else if (key.indexOf("request") != -1) {
-                        return key;
-                    } else if (key.indexOf("task") != -1) {
-                        Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
-                        if (task.getParentId() == null || task.getParentId().isEmpty()) {
-                            return "task_" + task.getId();
-                        } else {
-                            return getRootDocumentIdByTaskDocument(task_doc);
-                        }
-                    } else {
-                        return key;
-                    }
-                }
-            } else {
-                return key;
-            }
-            return key;
-        } else {
-            return "";
-        }
-    }
-
     public void setStateComment(String stateComment) {
         this.stateComment = stateComment;
     }
@@ -987,9 +887,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    @Inject
-    @Named("tasks")
-    private transient TaskListHolder taskList;
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;

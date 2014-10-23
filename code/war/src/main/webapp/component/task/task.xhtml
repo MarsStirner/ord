@@ -15,8 +15,7 @@
     <e5ui-comp:userSessionUpdate interval="300"/>
     <h:outputScript library="js" name="datepicker.js" target="head"/>
     <h:outputScript library="js" name="datepicker-cp.js" target="head"/>
-    <h:outputScript library="js" name="datepicker_init_ru.js"
-                    target="head"/>
+    <h:outputScript library="js" name="datepicker_init_ru.js" target="head"/>
     <h:outputScript library="js" name="forms.js" target="head"/>
     <e5ui-comp:outputUtilScript/>
 </ui:define>
@@ -31,14 +30,14 @@
                     </h:outputLink>
                 </div>
                 <div class="defbutton">
-                    <h:commandLink action="#{task.edit}" rendered="#{task.viewState}">
+                    <h:commandLink action="#{task.edit}" rendered="#{task.viewState and task.editPermission}">
                         <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                         Редактировать
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{task.save}"
-                                   rendered="#{task.editState or task.createState}">
+                                   rendered="#{(task.editState or task.createState) and task.editPermission}">
                         <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
                         Сохранить
                         <e5ui:formPartTarget formPart="editFormPart"/>
@@ -46,7 +45,7 @@
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{task.delete()}"
-                                   rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1)}">
+                                   rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1) and task.editPermission}">
                         <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
                         Удалить
                         <f:param name="docAction" value="delete"/>
@@ -54,8 +53,8 @@
                 </div>
                 <div class="defbutton">
                     <e5ui:formPart id="actions_fp">
-                        <h:commandLink
-                                onclick="actionsModal.clickOpen('actionsModal'); return false;">
+                        <h:commandLink onclick="actionsModal.clickOpen('actionsModal'); return false;"
+                                       rendered="#{task.executePermission}">
                             <h:graphicImage value="#{resource['images:button-do.png']}"/>
                             Действия
                         </h:commandLink>
@@ -121,15 +120,14 @@
 
                 <div class="top">
                     <h:commandLink styleClass="top_link" onclick="return false;">
-							<span> <h:graphicImage
-                                    value="#{resource['images:button-print.png']}"/> Печать
+							<span>
+                                <h:graphicImage value="#{resource['images:button-print.png']}"/> Печать
 							</span>
                     </h:commandLink>
 
                     <div class="sub">
                         <div class="item">
-                            <h:commandLink
-                                    action='#{reports.previewSqlReportByRequestParams()}'>
+                            <h:commandLink action='#{reports.previewSqlReportByRequestParams()}'>
                                 <h:graphicImage value="#{resource['images:blank.png']}"/>
                                 <f:param name="reportName" value="task_note.jrxml"/>
                                 <f:param name="docId" value="#{task.document.id}"/>
@@ -143,31 +141,26 @@
     </div>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="content">
 <div id="header_content">
     <h:panelGroup rendered="#{task.createState}">
         <div class="name">
-            <h:outputText value="Новое "
-                          rendered="#{task.document.form.description eq 'task'}"/>
-            <h:outputText value="Новая "
-                          rendered="#{task.document.form.description eq 'resolution' or task.document.form.description eq 'exercise'}"/>
+            <h:outputText value="#{task.document.form.description eq 'task' ? 'Новое ' :  'Новая '}"/>
             <h:outputText value="#{task.document.form.value.toLowerCase()}"/>
             <h:selectOneMenu id="exerciseType"
                              value="#{task.document.exerciseType}"
                              rendered="#{task.document.form.description.equals('exercise')}"
                              converter="DocumentFormConverter" immediate="true">
-                <f:selectItems
-                        value="#{dictionaryManagement.getDocumentFormsByCategory('Задачи')}"/>
+                <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Задачи')}"/>
             </h:selectOneMenu>
         </div>
         <div class="title">
             <h:outputText value="#{task.document.getDocumentStatus().getName()}"/>
         </div>
     </h:panelGroup>
-    <h:panelGroup
-            rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1)}">
+    <h:panelGroup rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1)}">
         <div class="name">
             <h:outputText value="#{task.document.form.value}"
                           rendered="#{task.document.form.description ne 'exercise'}"/>
@@ -175,17 +168,14 @@
                              value="#{task.document.exerciseType}"
                              rendered="#{task.document.form.description.equals('exercise')}"
                              converter="DocumentFormConverter">
-                <f:selectItems
-                        value="#{dictionaryManagement.getDocumentFormsByCategory('Задачи')}"/>
+                <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Задачи')}"/>
             </h:selectOneMenu>
         </div>
-
         <div class="title">
             <h:outputText value="#{task.document.getDocumentStatus().getName()}"/>
         </div>
     </h:panelGroup>
-    <h:panelGroup
-            rendered="#{task.editState and task.document.getDocumentStatus().getId() ne 1}">
+    <h:panelGroup rendered="#{task.viewState or (task.editState and task.document.getDocumentStatus().getId() ne 1)}">
         <div class="name">
             <h:outputText value="#{task.document.form.value}"/>
             <h:outputText value="#{task.document.exerciseType.value}"
@@ -194,25 +184,7 @@
             <h:outputText value="#{task.document.taskNumber}"/>
             от
             <h:outputText
-                    value="#{task.document.registered? task.document.registrationDate: task.document.creationDate}">
-                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-            </h:outputText>
-        </div>
-        <div class="title">
-            <h:outputText value="#{task.document.getDocumentStatus().getName()}"/>
-        </div>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{task.viewState}">
-        <div class="name">
-            <h:outputText value="#{task.document.form.value}"
-                          rendered="#{task.document.form.description ne 'exercise'}"/>
-            <h:outputText value="#{task.document.exerciseType.value}"
-                          rendered="#{task.document.form.description.equals('exercise')}"/>
-            : №
-            <h:outputText value="#{task.document.taskNumber}"/>
-            от
-            <h:outputText
-                    value="#{task.document.registered? task.document.registrationDate: task.document.creationDate}">
+                    value="#{task.document.registrationDate ne null ? task.document.registrationDate : task.document.creationDate}">
                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
             </h:outputText>
         </div>
@@ -238,171 +210,195 @@
 <div class="main_content">
 <e5ui:formPart id="editFormPart"
                rendered="#{(not task.forbiddenState)and (task.viewState or task.createState or task.editState)}">
-<h:panelGroup
-        rendered="#{(task.editState and (task.document.getDocumentStatus().getId() eq 1))or task.createState}">
+<h:panelGroup rendered="#{(task.editState and (task.document.getDocumentStatus().getId() eq 1))or task.createState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
-                <td class="first"><label
-                        for="main_content_form:controlDate:dateEditor"> <span
-                        class="title">Срок исполнения:</span>
-                </label></td>
-                <td class="second"><e5ui-comp:inputDate
-                        value="#{task.document.controlDate}" id="controlDate"
-                        lang="ru" required="false" immediate="true"/></td>
-                <td class="third"><label> <span class="title">
-											<h:outputLink
-                                                    title="#{(task.document.form.description eq 'resolution')?'Руководитель:':'Инициатор:'}"
-                                                    onclick="initiatorSelectModalVar.clickOpen('initiatorSelectModal'); return false;">
-                                                <h:outputText
-                                                        value="#{(task.document.form.description eq 'resolution')?'Руководитель:':'Инициатор:'}"/>
-                                            </h:outputLink>
-									</span>
-                </label> <e5ui-comp:modalWindow id="initiatorSelectModal"
-                                                modalWindowHolder="#{task.initiatorSelectModal}"
-                                                render=":main_content_form:initiator" execute="select_table"
-                                                showButtons="false" style="width: 500px;"
-                                                widgetVar="initiatorSelectModalVar">
-                    <div id="title">
-                        Выбор
-                        <h:outputText
-                                value="#{(task.document.form.description eq 'resolution')?'руководителя':'инициатора'}"/>
-                    </div>
-                    <div id="modal_container" style="margin-top: 0;">
-                        <h:panelGroup
-                                rendered="#{not(task.document.form.description eq 'resolution')}">
-                            <div class="searchbar">
-                                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                                <h:inputText id="filter_string"
-                                             value="#{task.initiatorSelectModal.userList.filter}"
-                                             style="display:block; float:left; margin-right:10px;"
-                                             title="Поиск"/>
-                                <h:commandButton value=" "
-                                                 action="#{task.initiatorSelectModal.userList.changePageOffset(0)}"
-                                                 styleClass="searchbutton">
-                                    <f:ajax
-                                            execute=":main_content_form:initiatorSelectModal:filter_string"
-                                            render=":main_content_form:initiatorSelectModal:ajaxModal :main_content_form:initiatorSelectModal:modal_paging"/>
-                                </h:commandButton>
-                            </div>
-                        </h:panelGroup>
-
-                        <div class="wrap" style="height: 300px;">
-                            <div class="inner" style="height: 300px;">
-                                <e5ui:dataTable id="select_table" border="0"
-                                                cellpadding="0" cellspacing="0"
-                                                value="#{(task.document.form.description eq 'resolution')?staffManagement.findGroupByAlias('TopManagers').membersList:task.initiatorSelectModal.userList.documents}"
-                                                var="row" grouping="false" width="100%">
-                                    <e5ui:row
-                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                            styleClass="#{task.initiatorSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>
-                                                <h:outputText
-                                                        value="#{(task.document.form.description eq 'resolution')?'Руководитель:':'Инициатор:'}"/>
-                                            </p>
-                                        </f:facet>
-                                        <h:outputText value="#{row}" converter="PersonConverter"/>
-                                        <h:commandLink id="selectLink" style="display: none;"
-                                                       rendered="#{not task.initiatorSelectModal.selected(row)}"
-                                                       action="#{task.initiatorSelectModal.select(row)}"/>
-                                    </e5ui:column>
-                                </e5ui:dataTable>
-                            </div>
+                <td class="first">
+                    <label for="main_content_form:controlDate:dateEditor">
+                        <span class="title">Срок исполнения:</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <e5ui-comp:inputDate value="#{task.document.controlDate}" id="controlDate" lang="ru"
+                                         required="false" immediate="true"/>
+                </td>
+                <td class="third">
+                    <label>
+                        <span class="title">
+                            <h:outputLink
+                                    onclick="initiatorSelectModalVar.clickOpen('initiatorSelectModal'); return false;">
+                                <h:outputText
+                                        value="#{task.document.form.description eq 'resolution' ?'Руководитель:':'Инициатор:'}"/>
+                            </h:outputLink>
+                        </span>
+                    </label>
+                    <e5ui-comp:modalWindow id="initiatorSelectModal"
+                                           modalWindowHolder="#{task.initiatorSelectModal}"
+                                           render=":main_content_form:initiator" execute="select_table"
+                                           showButtons="false" style="width: 500px;"
+                                           widgetVar="initiatorSelectModalVar">
+                        <div id="title">
+                            <h:outputText
+                                    value="Выбор #{task.document.form.description eq 'resolution' ?'руководителя':'инициатора'}"/>
                         </div>
-                        <div style="clear: both;">
-                            <h:panelGroup id="modal_paging">
-                                <e5ui-comp:tablePager id="pager"
-                                                      documentListHolder="#{task.initiatorSelectModal.userList}"/>
+                        <div id="modal_container" style="margin-top: 0;">
+                            <h:panelGroup rendered="#{not(task.document.form.description eq 'resolution')}">
+                                <div class="searchbar">
+                                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                                    <h:inputText id="filter_string"
+                                                 value="#{task.initiatorSelectModal.userList.filter}"
+                                                 style="display:block; float:left; margin-right:10px;"
+                                                 title="Поиск"/>
+                                    <h:commandButton value=" "
+                                                     action="#{task.initiatorSelectModal.userList.changePageOffset(0)}"
+                                                     styleClass="searchbutton">
+                                        <f:ajax execute=":main_content_form:initiatorSelectModal:filter_string"
+                                                render=":main_content_form:initiatorSelectModal:ajaxModal :main_content_form:initiatorSelectModal:modal_paging"/>
+                                    </h:commandButton>
+                                </div>
                             </h:panelGroup>
+
+                            <div class="wrap" style="height: 300px;">
+                                <div class="inner" style="height: 300px;">
+                                    <e5ui:dataTable id="select_table" border="0" cellpadding="0" cellspacing="0"
+                                                    value="#{
+                                                        (task.document.form.description eq 'resolution')
+                                                        ?
+                                                        staffManagement.findGroupByAlias('TopManagers').membersList
+                                                        :
+                                                        task.initiatorSelectModal.userList.documents
+                                                    }"
+                                                    var="row" grouping="false" width="100%">
+                                        <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                  styleClass="#{task.initiatorSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                                        <e5ui:column>
+                                            <f:facet name="header">
+                                                <p>
+                                                    <h:outputText
+                                                            value="#{(task.document.form.description eq 'resolution')?'Руководитель:':'Инициатор:'}"/>
+                                                </p>
+                                            </f:facet>
+                                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                                            <h:commandLink id="selectLink" style="display: none;"
+                                                           rendered="#{not task.initiatorSelectModal.selected(row)}"
+                                                           action="#{task.initiatorSelectModal.select(row)}"/>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                            <div style="clear: both;">
+                                <h:panelGroup id="modal_paging">
+                                    <e5ui-comp:tablePager id="pager"
+                                                          documentListHolder="#{task.initiatorSelectModal.userList}"/>
+                                </h:panelGroup>
+                            </div>
                         </div>
-                    </div>
-                    <div class="e5ui-modal-bottombuttons">
-                        <h:button
-                                onclick="initiatorSelectModalVar.clickSave(); return false;"
-                                value="Выбрать"/>
-                        <h:button
-                                onclick="initiatorSelectModalVar.clickClose(); return false;"
-                                value="Отмена"/>
-                    </div>
-                </e5ui-comp:modalWindow></td>
-                <td class="fourth"><h:outputText id="initiator"
-                                                 value="#{task.document.initiator}" converter="PersonConverter"
-                                                 class="wide"/></td>
+                        <div class="e5ui-modal-bottombuttons">
+                            <h:button onclick="initiatorSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="initiatorSelectModalVar.clickClose(); return false;" value="Отмена"/>
+                        </div>
+                    </e5ui-comp:modalWindow>
+                </td>
+                <td class="fourth">
+                    <h:outputText id="initiator" value="#{task.document.initiator.getFullName()}" class="wide"/>
+                </td>
             </tr>
             <tr class="row">
-                <td class="first"></td>
-                <td class="second"></td>
-                <td class="third"><label> <span class="title">Автор</span>
-                </label></td>
-                <td class="fourth"><h:outputText
-                        value="#{task.document.author}" converter="PersonConverter"
-                        lang="ru"/></td>
+                <td class="first"/>
+                <td class="second"/>
+                <td class="third">
+                    <label>
+                        <span class="title">Автор</span>
+                    </label>
+                </td>
+                <td class="fourth">
+                    <h:outputText value="#{task.document.author.getFullName()}"/>
+                </td>
             </tr>
         </table>
     </div>
 </h:panelGroup>
-<h:panelGroup
-        rendered="#{(task.editState and (task.document.getDocumentStatus().getId() ne 1)) or task.viewState}">
+<h:panelGroup rendered="#{(task.editState and (task.document.getDocumentStatus().getId() ne 1)) or task.viewState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
-                <td class="third"><label> <span class="title">Срок
-											исполнения:</span>
-                </label></td>
-                <td class="fourth"><h:outputText
-                        value="#{task.document.controlDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                </h:outputText></td>
-                <td class="first"><label> <span class="title"><h:outputText
-                        value="#{(task.document.form.description eq 'resolution')?'Руководитель:':'Инициатор:'}"/>
-									</span>
-                </label></td>
-                <td class="second"><h:outputText
-                        value="#{task.document.initiator}" converter="PersonConverter"
-                        class="width"/></td>
+                <td class="third">
+                    <label>
+                        <span class="title">Срок исполнения:</span>
+                    </label>
+                </td>
+                <td class="fourth">
+                    <h:outputText value="#{task.document.controlDate}">
+                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </td>
+                <td class="first">
+                    <label>
+                        <span class="title">
+                            <h:outputText
+                                    value="#{(task.document.form.description eq 'resolution')?'Руководитель:':'Инициатор:'}"/>
+						</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <h:outputText value="#{task.document.initiator.getFullName()}" class="width"/>
+                </td>
             </tr>
             <tr class="row">
-                <td class="first"></td>
-                <td class="second"></td>
-                <td class="third"><label><span class="title">Автор</span>
-                </label></td>
-                <td class="fourth"><h:outputText
-                        value="#{task.document.author}" converter="PersonConverter"
-                        lang="ru"/></td>
+                <td class="first"/>
+                <td class="second"/>
+                <td class="third">
+                    <label>
+                        <span class="title">Автор</span>
+                    </label>
+                </td>
+                <td class="fourth">
+                    <h:outputText value="#{task.document.author.getFullName()}"/>
+                </td>
             </tr>
         </table>
     </div>
 </h:panelGroup>
 <e5ui:tabPanel id="content_table">
-<e5ui:tabPage headerText="#{task.requisitesTabHeader}"
-              actionBehavior="#{task.viewState? 'client': 'submit'}"
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Реквизиты&lt;/span&gt;&lt;/span&gt;"
+              actionBehavior="#{task.viewState ? 'client': 'submit'}"
               selected="#{task.requisitesTabSelected}">
 <h:panelGroup rendered="#{task.viewState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
-                <td class="first"><label> <span class="title">Исполнитель:</span>
-                </label></td>
-                <td class="second" colspan="3"><h:outputText
-                        value="#{task.document.executor}"
-                        converter="PersonConverter" class="width"/></td>
+                <td class="first">
+                    <label>
+                        <span class="title">Исполнители:</span>
+                    </label>
+                </td>
+                <td class="second" colspan="3">
+                    <ui:repeat value="#{task.document.executors}" var="executor">
+                        <h:outputText value="#{executor.getFullName()}" class="width"/>
+                        <br/>
+                    </ui:repeat>
+                </td>
             </tr>
             <tr class="row">
-                <td class="first"><label> <span class="title">Текст:</span>
-                </label></td>
-                <td class="second" colspan="3"><h:inputTextarea rows="6"
-                                                                readonly="true"
-                                                                value="#{task.document.shortDescription}"
-                                                                class="width"/></td>
+                <td class="first">
+                    <label>
+                        <span class="title">Текст:</span>
+                    </label>
+                </td>
+                <td class="second" colspan="3">
+                    <h:inputTextarea rows="6" readonly="true" value="#{task.document.shortDescription}" class="width"/>
+                </td>
             </tr>
             <tr class="row">
-                <td class="first"><label> <span class="title">Контролер:</span>
-                </label></td>
-                <td class="second" colspan="3"><h:outputText
-                        value="#{task.document.controller}"
-                        converter="PersonConverter" class="width"/></td>
+                <td class="first">
+                    <label>
+                        <span class="title">Контролер:</span>
+                    </label>
+                </td>
+                <td class="second" colspan="3">
+                    <h:outputText value="#{task.document.controller.getFullName()}" class="width"/>
+                </td>
             </tr>
             <tr class="row">
                 <td class="first">
@@ -415,10 +411,10 @@
                 </td>
             </tr>
             <tr class="row">
-                <td class="first"></td>
-                <td class="second"></td>
-                <td class="third"></td>
-                <td class="fourth"></td>
+                <td class="first"/>
+                <td class="second"/>
+                <td class="third"/>
+                <td class="fourth"/>
             </tr>
         </table>
     </div>
@@ -427,246 +423,225 @@
 <div class="row">
 <table class="form_grid">
 <tr class="row">
-    <td class="first"><label> <span class="title">
-													<h:outputLink title="Исполнитель:"
-                                                                  onclick="userListSelectModalVar.clickOpen('responsibleUnitsSelectModal'); return false;">
-                                                        Исполнители
-                                                    </h:outputLink>
-											</span>
-    </label> <e5ui-comp:modalWindow id="responsibleUnitsSelectModal"
-                                    modalWindowHolder="#{task.responsibleUnitsSelectModal}"
-                                    render=":main_content_form:recipients"
-                                    execute="users_select_table" showButtons="false"
-                                    style="width: 500px;" widgetVar="userListSelectModalVar">
-        <div id="title">Выбор исполнителей</div>
-        <div id="modal_container" style="margin-top: 0;">
-            <h:panelGroup rendered="#{task.isUsersDialogSelected()}">
-                <div class="searchbar">
-                    <h:inputText id="users_filter_string"
-                                 value="#{task.responsibleUnitsSelectModal.userList.filter}"
-                                 style="display:block; float:left; margin-right:10px;"
-                                 title="Поиск"/>
-                    <h:commandButton value=" "
-                                     action="#{task.responsibleUnitsSelectModal.userList.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax
-                                execute=":main_content_form:responsibleUnitsSelectModal:users_filter_string"
-                                render=":main_content_form:responsibleUnitsSelectModal:ajaxModal :main_content_form:responsibleUnitsSelectModal:users_modal_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap" style="height: 300px;">
-                    <div class="inner" style="height: 300px;">
-                        <e5ui:dataTable id="select_table_users" border="0"
-                                        cellpadding="0" cellspacing="0"
-                                        value="#{task.responsibleUnitsSelectModal.userList.documents}"
-                                        var="row" grouping="false" width="100%"
-                                        style="width:80%;">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{task.responsibleUnitsSelectModal.selectedUser(row)? 'grid_row_selected': ''}"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Адресаты</p>
-                                </f:facet>
-                                <h:outputText value="#{row}"
-                                              converter="PersonConverter"/>
-                                <h:commandLink id="selectLink" style="display: none;"
-                                               rendered="#{not task.responsibleUnitsSelectModal.selectedUser(row)}"
-                                               action="#{task.responsibleUnitsSelectModal.selectUser(row)}"/>
-                                <h:commandLink id="unselectLink"
-                                               style="display: none;"
-                                               rendered="#{task.responsibleUnitsSelectModal.selectedUser(row)}"
-                                               action="#{task.responsibleUnitsSelectModal.unselectUser(row)}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
+    <td class="first">
+        <label>
+            <span class="title">
+                <h:outputLink onclick="userListSelectModalVar.clickOpen('responsibleUnitsSelectModal'); return false;">
+                    Исполнители
+                </h:outputLink>
+            </span>
+        </label>
+        <e5ui-comp:modalWindow id="responsibleUnitsSelectModal"
+                               modalWindowHolder="#{task.responsibleUnitsSelectModal}"
+                               render=":main_content_form:recipients"
+                               execute="users_select_table" showButtons="false"
+                               style="width: 500px;" widgetVar="userListSelectModalVar">
+            <div id="title">Выбор исполнителей</div>
+            <div id="modal_container" style="margin-top: 0;">
+                <h:panelGroup rendered="#{task.isUsersDialogSelected()}">
+                    <div class="searchbar">
+                        <h:inputText id="users_filter_string"
+                                     value="#{task.responsibleUnitsSelectModal.userList.filter}"
+                                     style="display:block; float:left; margin-right:10px;"
+                                     title="Поиск"/>
+                        <h:commandButton value=" "
+                                         action="#{task.responsibleUnitsSelectModal.userList.changePageOffset(0)}"
+                                         styleClass="searchbutton">
+                            <f:ajax execute=":main_content_form:responsibleUnitsSelectModal:users_filter_string"
+                                    render=":main_content_form:responsibleUnitsSelectModal:ajaxModal :main_content_form:responsibleUnitsSelectModal:users_modal_paging"/>
+                        </h:commandButton>
                     </div>
-                </div>
-                <div style="clear: both;">
-                    <h:panelGroup id="users_modal_paging">
-                        <e5ui-comp:tablePager id="usersPager"
-                                              documentListHolder="#{task.responsibleUnitsSelectModal.userList}"/>
-                    </h:panelGroup>
-                </div>
-
-            </h:panelGroup>
-
-            <h:panelGroup rendered="#{task.isGroupsDialogSelected()}">
-                <div class="searchbar">
-                    <h:inputText id="groups_filter_string"
-                                 value="#{task.responsibleUnitsSelectModal.groupsView.filter}"
-                                 style="display:block; float:left; margin-right:10px;"
-                                 title="Поиск"/>
-                    <h:commandButton value=" "
-                                     action="#{task.responsibleUnitsSelectModal.groupsView.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax
-                                execute=":main_content_form:responsibleUnitsSelectModal:groups_filter_string"
-                                render=":main_content_form:responsibleUnitsSelectModal:ajaxModal :main_content_form:responsibleUnitsSelectModal:groups_modal_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap" style="height: 300px;">
-                    <div class="inner" style="height: 300px;">
-                        <e5ui:dataTable id="select_table_groups" border="0"
-                                        cellpadding="0" cellspacing="0"
-                                        value="#{task.responsibleUnitsSelectModal.groupsView.documents}"
-                                        var="row" grouping="false" width="100%"
-                                        style="width:80%;">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{task.responsibleUnitsSelectModal.selectedGroup(row)? 'grid_row_selected': ''}"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Адресаты</p>
-                                </f:facet>
-                                <h:outputText value="#{row}"
-                                              converter="GroupConverter"/>
-                                <h:commandLink id="selectLink" style="display: none;"
-                                               rendered="#{not task.responsibleUnitsSelectModal.selectedGroup(row)}"
-                                               action="#{task.responsibleUnitsSelectModal.selectGroup(row)}"/>
-                                <h:commandLink id="unselectLink"
-                                               style="display: none;"
-                                               rendered="#{task.responsibleUnitsSelectModal.selectedGroup(row)}"
-                                               action="#{task.responsibleUnitsSelectModal.unselectGroup(row)}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-
+                    <div class="wrap" style="height: 300px;">
+                        <div class="inner" style="height: 300px;">
+                            <e5ui:dataTable id="select_table_users" border="0"
+                                            cellpadding="0" cellspacing="0"
+                                            value="#{task.responsibleUnitsSelectModal.userList.documents}"
+                                            var="row" grouping="false" width="100%"
+                                            style="width:80%;">
+                                <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                          styleClass="#{task.responsibleUnitsSelectModal.selectedUser(row)? 'grid_row_selected': ''}"/>
+                                <e5ui:column>
+                                    <f:facet name="header">
+                                        <p>Исполнители</p>
+                                    </f:facet>
+                                    <h:outputText value="#{row}" converter="PersonConverter"/>
+                                    <h:commandLink id="selectLink" style="display: none;"
+                                                   rendered="#{not task.responsibleUnitsSelectModal.selectedUser(row)}"
+                                                   action="#{task.responsibleUnitsSelectModal.selectUser(row)}"/>
+                                    <h:commandLink id="unselectLink"
+                                                   style="display: none;"
+                                                   rendered="#{task.responsibleUnitsSelectModal.selectedUser(row)}"
+                                                   action="#{task.responsibleUnitsSelectModal.unselectUser(row)}"/>
+                                </e5ui:column>
+                            </e5ui:dataTable>
+                        </div>
                     </div>
-                </div>
-                <div style="clear: both;">
-                    <h:panelGroup id="groups_modal_paging">
-                        <e5ui-comp:tablePager id="groupsPager"
-                                              documentListHolder="#{task.responsibleUnitsSelectModal.groupsView}"/>
-                    </h:panelGroup>
-                </div>
-            </h:panelGroup>
-        </div>
+                    <div style="clear: both;">
+                        <h:panelGroup id="users_modal_paging">
+                            <e5ui-comp:tablePager id="usersPager"
+                                                  documentListHolder="#{task.responsibleUnitsSelectModal.userList}"/>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{task.isGroupsDialogSelected()}">
+                    <div class="searchbar">
+                        <h:inputText id="groups_filter_string"
+                                     value="#{task.responsibleUnitsSelectModal.groupsView.filter}"
+                                     style="display:block; float:left; margin-right:10px;"
+                                     title="Поиск"/>
+                        <h:commandButton value=" "
+                                         action="#{task.responsibleUnitsSelectModal.groupsView.changePageOffset(0)}"
+                                         styleClass="searchbutton">
+                            <f:ajax execute=":main_content_form:responsibleUnitsSelectModal:groups_filter_string"
+                                    render=":main_content_form:responsibleUnitsSelectModal:ajaxModal :main_content_form:responsibleUnitsSelectModal:groups_modal_paging"/>
+                        </h:commandButton>
+                    </div>
+                    <div class="wrap" style="height: 300px;">
+                        <div class="inner" style="height: 300px;">
+                            <e5ui:dataTable id="select_table_groups" border="0"
+                                            cellpadding="0" cellspacing="0"
+                                            value="#{task.responsibleUnitsSelectModal.groupsView.documents}"
+                                            var="row" grouping="false" width="100%"
+                                            style="width:80%;">
+                                <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                          styleClass="#{task.responsibleUnitsSelectModal.selectedGroup(row)? 'grid_row_selected': ''}"/>
+                                <e5ui:column>
+                                    <f:facet name="header">
+                                        <p>Исполнители</p>
+                                    </f:facet>
+                                    <h:outputText value="#{row}"
+                                                  converter="GroupConverter"/>
+                                    <h:commandLink id="selectLink" style="display: none;"
+                                                   rendered="#{not task.responsibleUnitsSelectModal.selectedGroup(row)}"
+                                                   action="#{task.responsibleUnitsSelectModal.selectGroup(row)}"/>
+                                    <h:commandLink id="unselectLink" style="display: none;"
+                                                   rendered="#{task.responsibleUnitsSelectModal.selectedGroup(row)}"
+                                                   action="#{task.responsibleUnitsSelectModal.unselectGroup(row)}"/>
+                                </e5ui:column>
+                            </e5ui:dataTable>
 
-        <div class="e5ui-modal-bottombuttons">
-            <div class="defbutton">
-                <h:commandButton value="Группы пользователей"
-                                 rendered="#{task.isUsersDialogSelected()}"
-                                 action="#{task.setGroupsDialogSelected(true)}">
-                    <f:ajax
-                            render=":main_content_form:responsibleUnitsSelectModal:ajaxModal"
-                            execute=":main_content_form:responsibleUnitsSelectModal:ajaxModal"/>
-                </h:commandButton>
-                <h:commandButton value="Пользователи"
-                                 rendered="#{task.isGroupsDialogSelected()}"
-                                 action="#{task.setUsersDialogSelected(true)}">
-                    <f:ajax
-                            render=":main_content_form:responsibleUnitsSelectModal:ajaxModal"
-                            execute=":main_content_form:responsibleUnitsSelectModal:ajaxModal"/>
-                </h:commandButton>
+                        </div>
+                    </div>
+                    <div style="clear: both;">
+                        <h:panelGroup id="groups_modal_paging">
+                            <e5ui-comp:tablePager id="groupsPager"
+                                                  documentListHolder="#{task.responsibleUnitsSelectModal.groupsView}"/>
+                        </h:panelGroup>
+                    </div>
+                </h:panelGroup>
             </div>
-            <h:button
-                    onclick="userListSelectModalVar.clickSave(); return false;"
-                    value="Выбрать"/>
-            <h:button
-                    onclick="userListSelectModalVar.clickClose(); return false;"
-                    value="Отмена"/>
-        </div>
-    </e5ui-comp:modalWindow></td>
+            <div class="e5ui-modal-bottombuttons">
+                <div class="defbutton">
+                    <h:commandButton value="Группы пользователей" rendered="#{task.isUsersDialogSelected()}"
+                                     action="#{task.setGroupsDialogSelected(true)}">
+                        <f:ajax render=":main_content_form:responsibleUnitsSelectModal:ajaxModal"
+                                execute=":main_content_form:responsibleUnitsSelectModal:ajaxModal"/>
+                    </h:commandButton>
+                    <h:commandButton value="Пользователи" rendered="#{task.isGroupsDialogSelected()}"
+                                     action="#{task.setUsersDialogSelected(true)}">
+                        <f:ajax render=":main_content_form:responsibleUnitsSelectModal:ajaxModal"
+                                execute=":main_content_form:responsibleUnitsSelectModal:ajaxModal"/>
+                    </h:commandButton>
+                </div>
+                <h:button onclick="userListSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                <h:button onclick="userListSelectModalVar.clickClose(); return false;" value="Отмена"/>
+            </div>
+        </e5ui-comp:modalWindow>
+    </td>
     <td class="second" colspan="3">
-        <div
-                style="overflow-y: scroll; height: 120px">
+        <div style="overflow-y: scroll; height: 120px">
             <h:panelGroup id="recipients">
-                <label><ui:repeat
-                        value="#{task.responsibleUsers}" var="element">
-                    <h:outputText value="#{element}"
-                                  converter="PersonConverter" class="width"/>
-                    <br/>
-                </ui:repeat> </label>
-                <label><ui:repeat
-                        value="#{task.responsibleGroups}"
-                        var="element">
-                    [Группа] <h:outputText value="#{element}"
-                                           converter="GroupConverter" class="width"/>
-                    <br/>
-                </ui:repeat> </label>
+                <label>
+                    <ui:repeat value="#{task.document.executors}" var="element">
+                        <h:outputText value="#{element.getFullName()}" class="width"/>
+                        <br/>
+                    </ui:repeat>
+                </label>
+                <label>
+                    <ui:repeat value="#{task.responsibleGroups}" var="element">
+                        [Группа] <h:outputText value="#{element}" converter="GroupConverter" class="width"/>
+                        <br/>
+                    </ui:repeat>
+                </label>
             </h:panelGroup>
         </div>
     </td>
 </tr>
 <tr class="row">
-    <td class="first"><label
-            for="main_content_form:shortDescription"> <span
-            class="title">Текст:</span>
-    </label></td>
-    <td class="second" colspan="3"><h:inputTextarea rows="6"
-                                                    id="shortDescription"
-                                                    value="#{task.document.shortDescription}"
-                                                    class="wide"
-                                                    immediate="true"/></td>
+    <td class="first">
+        <label for="main_content_form:shortDescription">
+            <span class="title">Текст:</span>
+        </label>
+    </td>
+    <td class="second" colspan="3">
+        <h:inputTextarea rows="6" id="shortDescription" value="#{task.document.shortDescription}" class="wide"
+                         immediate="true"/>
+    </td>
 </tr>
 <tr class="row">
-    <td class="first"><label> <span class="title">
-													<h:outputLink title="Контролер:"
-                                                                  onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
-                                                        Контролер
-                                                    </h:outputLink>
-											</span>
-    </label> <e5ui-comp:modalWindow id="controllerSelectModal"
-                                    modalWindowHolder="#{task.controllerSelectModal}"
-                                    render=":main_content_form:controller"
-                                    execute="select_table" showButtons="false"
-                                    style="width: 500px;" widgetVar="controllerSelectModalVar">
-        <div id="title">Выбор исполнителя</div>
-        <div id="modal_container" style="margin-top: 0;">
-            <div class="searchbar">
-                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                <h:inputText id="filter_string"
-                             value="#{task.controllerSelectModal.userList.filter}"
-                             style="display:block; float:left; margin-right:10px;"
-                             title="Поиск"/>
-                <h:commandButton value=" "
-                                 action="#{task.controllerSelectModal.userList.changePageOffset(0)}"
-                                 styleClass="searchbutton">
-                    <f:ajax
-                            execute=":main_content_form:controllerSelectModal:filter_string"
-                            render=":main_content_form:controllerSelectModal:select_table :main_content_form:controllerSelectModal:modal_paging"/>
-                </h:commandButton>
-            </div>
-            <div class="wrap" style="height: 300px;">
-                <div class="inner" style="height: 300px;">
-                    <e5ui:dataTable id="select_table" border="0"
-                                    cellpadding="0" cellspacing="0"
-                                    value="#{task.controllerSelectModal.userList.documents}"
-                                    var="row" grouping="false" width="100%">
-                        <e5ui:row
-                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                styleClass="#{task.controllerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                        <e5ui:column>
-                            <f:facet name="header">
-                                <p>Контролер</p>
-                            </f:facet>
-                            <h:outputText value="#{row}"
-                                          converter="PersonConverter"/>
-                            <h:commandLink id="selectLink" style="display: none;"
-                                           rendered="#{not task.controllerSelectModal.selected(row)}"
-                                           action="#{task.controllerSelectModal.select(row)}"/>
-                        </e5ui:column>
-                    </e5ui:dataTable>
+    <td class="first">
+        <label>
+            <span class="title">
+                <h:outputLink title="Контролер:"
+                              onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
+                    Контролер
+                </h:outputLink>
+            </span>
+        </label>
+        <e5ui-comp:modalWindow id="controllerSelectModal"
+                               modalWindowHolder="#{task.controllerSelectModal}"
+                               render=":main_content_form:controller"
+                               execute="select_table" showButtons="false"
+                               style="width: 500px;" widgetVar="controllerSelectModalVar">
+            <div id="title">Выбор исполнителя</div>
+            <div id="modal_container" style="margin-top: 0;">
+                <div class="searchbar">
+                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                    <h:inputText id="filter_string"
+                                 value="#{task.controllerSelectModal.userList.filter}"
+                                 style="display:block; float:left; margin-right:10px;"
+                                 title="Поиск"/>
+                    <h:commandButton value=" " action="#{task.controllerSelectModal.userList.changePageOffset(0)}"
+                                     styleClass="searchbutton">
+                        <f:ajax execute=":main_content_form:controllerSelectModal:filter_string"
+                                render=":main_content_form:controllerSelectModal:select_table :main_content_form:controllerSelectModal:modal_paging"/>
+                    </h:commandButton>
+                </div>
+                <div class="wrap" style="height: 300px;">
+                    <div class="inner" style="height: 300px;">
+                        <e5ui:dataTable id="select_table" border="0" cellpadding="0" cellspacing="0"
+                                        value="#{task.controllerSelectModal.userList.documents}"
+                                        var="row" grouping="false" width="100%">
+                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                      styleClass="#{task.controllerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                            <e5ui:column>
+                                <f:facet name="header">
+                                    <p>Контролер</p>
+                                </f:facet>
+                                <h:outputText value="#{row}" converter="PersonConverter"/>
+                                <h:commandLink id="selectLink" style="display: none;"
+                                               rendered="#{not task.controllerSelectModal.selected(row)}"
+                                               action="#{task.controllerSelectModal.select(row)}"/>
+                            </e5ui:column>
+                        </e5ui:dataTable>
+                    </div>
+                </div>
+                <div style="clear: both;">
+                    <h:panelGroup id="modal_paging">
+                        <e5ui-comp:tablePager id="pager"
+                                              documentListHolder="#{task.controllerSelectModal.userList}"/>
+                    </h:panelGroup>
                 </div>
             </div>
-            <div style="clear: both;">
-                <h:panelGroup id="modal_paging">
-                    <e5ui-comp:tablePager id="pager"
-                                          documentListHolder="#{task.controllerSelectModal.userList}"/>
-                </h:panelGroup>
+            <div class="e5ui-modal-bottombuttons">
+                <h:button onclick="controllerSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                <h:button onclick="controllerSelectModalVar.clickClose(); return false;" value="Отмена"/>
             </div>
-        </div>
-        <div class="e5ui-modal-bottombuttons">
-            <h:button
-                    onclick="controllerSelectModalVar.clickSave(); return false;"
-                    value="Выбрать"/>
-            <h:button
-                    onclick="controllerSelectModalVar.clickClose(); return false;"
-                    value="Отмена"/>
-        </div>
-    </e5ui-comp:modalWindow></td>
-    <td class="second" colspan="3"><h:outputText
-            id="controller" value="#{task.document.controller}"
-            converter="PersonConverter" class="wide"/></td>
+        </e5ui-comp:modalWindow>
+    </td>
+    <td class="second" colspan="3">
+        <h:outputText id="controller" value="#{task.document.controller.getFullName()}" class="wide"/>
+    </td>
 </tr>
 <tr class="row">
     <td class="first">
@@ -679,17 +654,17 @@
     </td>
 </tr>
 <tr>
-    <td class="first"></td>
-    <td class="second"></td>
-    <td class="third"></td>
-    <td class="fourth"></td>
+    <td class="first"/>
+    <td class="second"/>
+    <td class="third"/>
+    <td class="fourth"/>
 </tr>
 </table>
 </div>
 </h:panelGroup>
 </e5ui:tabPage>
-<e5ui:tabPage headerText="#{task.routeTabHeader}"
-              actionBehavior="client" selected="#{task.routeTabSelected}">
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Движение документа&lt;/span&gt;&lt;/span&gt;" actionBehavior="client"
+              selected="#{task.routeTabSelected}">
     <fieldset>
         <legend>Поручения</legend>
         <script type="text/javascript">
@@ -712,10 +687,8 @@
             <div class="menu">
                 <h:panelGroup rendered="#{task.document.getDocumentStatus().getId()==2}">
                     <div class="defbutton">
-                        <h:outputLink value="#{contextPath}/component/task/task.xhtml"
-                                      target="_blank">
-                            <h:graphicImage
-                                    value="#{resource['images:newf_buttn_icon.png']}"/>
+                        <h:outputLink value="#{contextPath}/component/task/task.xhtml" target="_blank">
+                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                             Новое поручение
                             <f:param name="docAction" value="create"/>
                             <f:param name="formId" value="task"/>
@@ -729,8 +702,7 @@
                 <div class="defbutton">
                     <h:commandLink action="false;">
                         <f:ajax render=":main_content_form:descendant_table"/>
-                        <h:graphicImage
-                                value="#{resource['images:button-refresh.png']}"/>
+                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
                 </div>
@@ -761,8 +733,9 @@
                                 <f:facet name="header">
                                     <p>Исполнитель</p>
                                 </f:facet>
-                                <h:outputText value="#{row.executor}"
-                                              converter="PersonConverter"/>
+                                <ui:repeat value="#{row.executors}" var="executor">
+                                    <h:outputText value="#{executor}" converter="PersonConverter"/>
+                                </ui:repeat>
                             </e5ui:column>
                             <e5ui:column>
                                 <f:facet name="header">
@@ -776,7 +749,7 @@
                                 <f:facet name="header">
                                     <p>Автор</p>
                                 </f:facet>
-                                <h:outputText value="#{row.author.description}"/>
+                                <h:outputText value="#{row.author.getFullName()}"/>
                             </e5ui:column>
                             <e5ui:column>
                                 <f:facet name="header">
@@ -797,8 +770,8 @@
         </h:panelGroup>
     </fieldset>
 </e5ui:tabPage>
-<e5ui:tabPage headerText="#{task.relationTabHeader}"
-              actionBehavior="client" selected="#{task.relationTabSelected}">
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Связи&lt;/span&gt;&lt;/span&gt;" actionBehavior="client"
+              selected="#{task.relationTabSelected}">
     <h:outputScript>
         function goToDocumentByParentId(parentId) {
         if (parentId != "") {
@@ -821,38 +794,39 @@
         }
         }
     </h:outputScript>
-    <h:panelGroup
-            rendered="#{(task.document.parentId!=null)and(task.document.parentId.length()>0)}">
+    <h:panelGroup rendered="#{(task.document.rootDocumentId!=null) and ( not task.document.rootDocumentId.isEmpty())}">
         <div class="row">
             <table class="form_grid">
                 <tr class="row">
-                    <td class="first"><label> <span class="title">Документ
-													основание:</span>
-                    </label></td>
-                    <td class="second" colspan="3"><h:outputLink
-                            style="margin-left:5px;" value="#"
-                            onclick="goToDocumentByParentId('#{task.document.parentId}');">
-                        <h:graphicImage value="#{resource['images:link.png']}"/>
-                        <h:outputText
-                                value="#{task.getLinkDescriptionById(task.document.parentId)}"/>
-                    </h:outputLink></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Документ основание:</span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:outputLink style="margin-left:5px;" value="#"
+                                      onclick="goToDocumentByParentId('#{task.document.rootDocumentId}');">
+                            <h:graphicImage value="#{resource['images:link.png']}"/>
+                            <h:outputText value="#{task.getLinkDescriptionById(task.document.rootDocumentId)}"/>
+                        </h:outputLink></td>
                 </tr>
                 <tr class="row">
-                    <td class="first"></td>
-                    <td class="second"></td>
-                    <td class="third"></td>
-                    <td class="'fourth"></td>
+                    <td class="first"/>
+                    <td class="second"/>
+                    <td class="third"/>
+                    <td class="'fourth"/>
                 </tr>
             </table>
         </div>
     </h:panelGroup>
 </e5ui:tabPage>
-
-<e5ui:tabPage headerText="#{task.historyTabHeader}"
-              actionBehavior="client" selected="#{task.historyTabSelected}">
+<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;История&lt;/span&gt;&lt;/span&gt;" actionBehavior="client"
+              selected="#{task.historyTabSelected}">
     <fieldset>
         <legend>
-            <label><span class="title">История</span> </label>
+            <label>
+                <span class="title">История</span>
+            </label>
         </legend>
         <div class="wrap" style="width: 100%; margin: 0px">
             <div class="inner">
@@ -1067,8 +1041,7 @@
     <e5ui-comp:splashScreen id="splash_screen_2"
                             widgetVar="splash_screen_2" timeout="0">
         <f:facet name="timeoutPanel">
-            <div
-                    style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
+            <div style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
                 Пожалуйста, подождите...
             </div>
         </f:facet>

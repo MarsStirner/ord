@@ -7,7 +7,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -41,173 +41,173 @@
 </ui:define>
 
 <ui:define name="header">
-        <h:panelGroup rendered = "#{in_doc.viewState or in_doc.createState or in_doc.editState}">
-            <div id="form_header">
-                <div class="actionbar">
-                    <div class="menu">
-                        <div class="defbutton">
-                            <h:outputLink
-                                    value="#{contextPath}/component/in/in_documents.xhtml">
-                                <h:graphicImage value="#{resource['images:home.png']}"/>
-                            </h:outputLink>
-                        </div>
-                        <div class="defbutton">
-                            <h:commandLink action="#{in_doc.edit}"
-                                           rendered="#{in_doc.viewState and in_doc.isCurrentUserDocEditor()}">
-                                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                                Редактировать
+    <h:panelGroup rendered="#{in_doc.viewState or in_doc.createState or in_doc.editState}">
+        <div id="form_header">
+            <div class="actionbar">
+                <div class="menu">
+                    <div class="defbutton">
+                        <h:outputLink
+                                value="#{contextPath}/component/in/in_documents.xhtml">
+                            <h:graphicImage value="#{resource['images:home.png']}"/>
+                        </h:outputLink>
+                    </div>
+                    <div class="defbutton">
+                        <h:commandLink action="#{in_doc.edit}"
+                                       rendered="#{in_doc.viewState and in_doc.isCurrentUserDocEditor()}">
+                            <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
+                            Редактировать
+                        </h:commandLink>
+                    </div>
+                    <div class="defbutton">
+                        <h:commandLink action="#{in_doc.save}" rendered="#{in_doc.editState or in_doc.createState}">
+                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                            Сохранить
+                        </h:commandLink>
+                    </div>
+                    <div class="defbutton">
+                        <h:commandLink action="#{in_doc.delete()}"
+                                       rendered="#{in_doc.editState and (in_doc.document.getDocumentStatus().getId() eq 1)}">
+                            <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
+                            Удалить
+                            <f:param name="docAction" value="delete"/>
+                        </h:commandLink>
+                    </div>
+                    <div class="defbutton">
+                        <e5ui:formPart id="actions_fp">
+                            <h:commandLink
+                                    onclick="actionsModal.clickOpen('actionsModal'); return false;"
+                                    rendered="#{in_doc.isCurrentUserDocEditor() and in_doc.viewState}">
+                                <h:graphicImage value="#{resource['images:button-do.png']}"/>
+                                Действия
                             </h:commandLink>
-                        </div>
-                        <div class="defbutton">
-                            <h:commandLink action="#{in_doc.save}" rendered="#{in_doc.editState or in_doc.createState}">
-                                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                                Сохранить
-                            </h:commandLink>
-                        </div>
-                        <div class="defbutton">
-                            <h:commandLink action="#{in_doc.delete()}"
-                                           rendered="#{in_doc.editState and (in_doc.document.getDocumentStatus().getId() eq 1)}">
-                                <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                                Удалить
-                                <f:param name="docAction" value="delete"/>
-                            </h:commandLink>
-                        </div>
-                        <div class="defbutton">
-                            <e5ui:formPart id="actions_fp">
-                                <h:commandLink
-                                        onclick="actionsModal.clickOpen('actionsModal'); return false;"
-                                        rendered="#{in_doc.isCurrentUserDocEditor() and in_doc.viewState}">
-                                    <h:graphicImage value="#{resource['images:button-do.png']}"/>
-                                    Действия
-                                </h:commandLink>
-                                <e5ui-comp:modalWindow id="actionsModal"
-                                                       modalWindowHolder="#{in_doc.processorModal}"
-                                                       render=":main_content_form" execute=":main_content_form"
-                                                       showButtons="false" widgetVar="actionsModal">
-                                    <h:panelGroup rendered="#{not(in_doc.processorModal.processingState)}">
-                                        <div id="title">Действия</div>
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{in_doc.processorModal.actionsAvailable}">
-                                        <div class="wrap"
-                                             style="height: 120px; background-color: #fff; clear: both;">
-                                            <div class="inner" style="height: 120px;">
-                                                <e5ui:dataTable id="action_select_table" border="0"
-                                                                cellpadding="0" cellspacing="0"
-                                                                value="#{in_doc.processorModal.availableActions}"
-                                                                var="row"
-                                                                grouping="false" width="100%">
-                                                    <e5ui:row
-                                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                            styleClass="#{in_doc.processorModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                    <e5ui:column>
-                                                        <f:facet name="header">
-                                                            <p>Доступные действия</p>
-                                                        </f:facet>
-                                                        <h:outputText value="#{row.action.name}"/>
-                                                        <h:commandLink id="selectLink" style="display: none;"
-                                                                       rendered="#{not in_doc.processorModal.selected(row)}"
-                                                                       action="#{in_doc.processorModal.select(row)}"/>
-                                                    </e5ui:column>
-                                                </e5ui:dataTable>
-                                            </div>
+                            <e5ui-comp:modalWindow id="actionsModal"
+                                                   modalWindowHolder="#{in_doc.processorModal}"
+                                                   render=":main_content_form" execute=":main_content_form"
+                                                   showButtons="false" widgetVar="actionsModal">
+                                <h:panelGroup rendered="#{not(in_doc.processorModal.processingState)}">
+                                    <div id="title">Действия</div>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{in_doc.processorModal.actionsAvailable}">
+                                    <div class="wrap"
+                                         style="height: 120px; background-color: #fff; clear: both;">
+                                        <div class="inner" style="height: 120px;">
+                                            <e5ui:dataTable id="action_select_table" border="0"
+                                                            cellpadding="0" cellspacing="0"
+                                                            value="#{in_doc.processorModal.availableActions}"
+                                                            var="row"
+                                                            grouping="false" width="100%">
+                                                <e5ui:row
+                                                        onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                        styleClass="#{in_doc.processorModal.selected(row)? 'grid_row_selected': ''}"/>
+                                                <e5ui:column>
+                                                    <f:facet name="header">
+                                                        <p>Доступные действия</p>
+                                                    </f:facet>
+                                                    <h:outputText value="#{row.action.name}"/>
+                                                    <h:commandLink id="selectLink" style="display: none;"
+                                                                   rendered="#{not in_doc.processorModal.selected(row)}"
+                                                                   action="#{in_doc.processorModal.select(row)}"/>
+                                                </e5ui:column>
+                                            </e5ui:dataTable>
                                         </div>
-                                    </h:panelGroup>
-                                    <h:panelGroup
-                                            rendered="#{in_doc.processorModal.noActionsAvailable or in_doc.processorModal.failureState or in_doc.processorModal.processedState}">
-                                        <h:outputText style="padding-left:10px;"
-                                                      value="#{in_doc.processorModal.actionResult}"/>
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{in_doc.processorModal.processingState}">
-                                        <e5ui:include
-                                                data="#{in_doc.processorModal.processedActivity.document.form}"/>
-                                    </h:panelGroup>
-
-                                    <div class="e5ui-modal-bottombuttons">
-                                        <h:commandButton action="#{in_doc.processorModal.process()}"
-                                                         rendered="#{in_doc.processorModal.actionsAvailable or in_doc.processorModal.processingState}"
-                                                         value="Выполнить">
-                                        </h:commandButton>
-                                        <h:button
-                                                rendered="#{in_doc.processorModal.actionsAvailable or in_doc.processorModal.processingState}"
-                                                onclick="actionsModal.clickClose(); return false;"
-                                                value="Отмена"/>
-                                        <h:button
-                                                rendered="#{in_doc.processorModal.noActionsAvailable or in_doc.processorModal.failureState or in_doc.processorModal.processedState}"
-                                                onclick="actionsModal.clickClose(); return false;"
-                                                value="Закрыть"/>
                                     </div>
-                                </e5ui-comp:modalWindow>
-                            </e5ui:formPart>
-                        </div>
-                        <div class="top">
-                            <h:commandLink styleClass="top_link" onclick="return false;">
+                                </h:panelGroup>
+                                <h:panelGroup
+                                        rendered="#{in_doc.processorModal.noActionsAvailable or in_doc.processorModal.failureState or in_doc.processorModal.processedState}">
+                                    <h:outputText style="padding-left:10px;"
+                                                  value="#{in_doc.processorModal.actionResult}"/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="#{in_doc.processorModal.processingState}">
+                                    <e5ui:include
+                                            data="#{in_doc.processorModal.processedActivity.document.form}"/>
+                                </h:panelGroup>
+
+                                <div class="e5ui-modal-bottombuttons">
+                                    <h:commandButton action="#{in_doc.processorModal.process()}"
+                                                     rendered="#{in_doc.processorModal.actionsAvailable or in_doc.processorModal.processingState}"
+                                                     value="Выполнить">
+                                    </h:commandButton>
+                                    <h:button
+                                            rendered="#{in_doc.processorModal.actionsAvailable or in_doc.processorModal.processingState}"
+                                            onclick="actionsModal.clickClose(); return false;"
+                                            value="Отмена"/>
+                                    <h:button
+                                            rendered="#{in_doc.processorModal.noActionsAvailable or in_doc.processorModal.failureState or in_doc.processorModal.processedState}"
+                                            onclick="actionsModal.clickClose(); return false;"
+                                            value="Закрыть"/>
+                                </div>
+                            </e5ui-comp:modalWindow>
+                        </e5ui:formPart>
+                    </div>
+                    <div class="top">
+                        <h:commandLink styleClass="top_link" onclick="return false;">
 								<span> <h:graphicImage
                                         value="#{resource['images:button-print.png']}"/> Печать
 								</span>
-                            </h:commandLink>
+                        </h:commandLink>
 
-                            <div class="sub">
-                                <div class="item">
-                                    <h:commandLink action='#{reports.previewSqlReportByRequestParams()}'>
-                                        <h:graphicImage value="#{resource['images:blank.png']}"/>
-                                        <f:param name="reportName" value="incoming_note.jrxml"/>
-                                        <f:param name="docId" value="#{in_doc.document.id}"/>
-                                        Справка о ходе выполнения документа
-                                    </h:commandLink>
-                                </div>
+                        <div class="sub">
+                            <div class="item">
+                                <h:commandLink action='#{reports.previewSqlReportByRequestParams()}'>
+                                    <h:graphicImage value="#{resource['images:blank.png']}"/>
+                                    <f:param name="reportName" value="incoming_note.jrxml"/>
+                                    <f:param name="docId" value="#{in_doc.document.id}"/>
+                                    Справка о ходе выполнения документа
+                                </h:commandLink>
                             </div>
                         </div>
-                        <div class="role">
-                            <div class="top">
+                    </div>
+                    <div class="role">
+                        <div class="top">
 								<span>
                                     <h:outputText value="#{in_doc.document.getUserAccessLevel()}"
                                                   converter="UserAccessLevelConverter"/>
 								</span>
-                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
-        </h:panelGroup>
+
+        </div>
+    </h:panelGroup>
 </ui:define>
 
 <ui:define name="left_menu"/>
 
 <ui:define name="content">
 <div id="header_content">
-            <h:panelGroup rendered="#{in_doc.createState}">
-                <e5ui:formPart id="editHeaderPart">
-                    <div class="name">
-                        Входящий документ
-                        <h:selectOneMenu id="form" value="#{in_doc.document.form}"
-                                         converter="IncomingDocumentFormConverter" immediate="true">
-                            <f:selectItems
-                                    value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
-                        </h:selectOneMenu>
-                    </div>
-                </e5ui:formPart>
+    <h:panelGroup rendered="#{in_doc.createState}">
+        <e5ui:formPart id="editHeaderPart">
+            <div class="name">
+                Входящий документ
+                <h:selectOneMenu id="form" value="#{in_doc.document.form}"
+                                 converter="IncomingDocumentFormConverter" immediate="true">
+                    <f:selectItems
+                            value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
+                </h:selectOneMenu>
+            </div>
+        </e5ui:formPart>
 
-                <div class="title">
-                    <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{in_doc.editState or in_doc.viewState}">
-                <div class="name">
-                    Входящий документ
-                    <h:outputText value="#{in_doc.document.form.value}"/>
-                    №
-                    <h:outputText value="#{in_doc.document.registrationNumber}"/>
-                    от
-                    <h:outputText value="#{in_doc.document.deliveryDate}">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                    </h:outputText>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
-        <c:choose>
+        <div class="title">
+            <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
+        </div>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{in_doc.editState or in_doc.viewState}">
+        <div class="name">
+            Входящий документ
+            <h:outputText value="#{in_doc.document.form.value}"/>
+            №
+            <h:outputText value="#{in_doc.document.registrationNumber}"/>
+            от
+            <h:outputText value="#{in_doc.document.deliveryDate}">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </h:outputText>
+        </div>
+        <div class="title">
+            <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
+        </div>
+    </h:panelGroup>
+    <c:choose>
         <c:when test="#{in_doc.notFoundState}">
             <h:panelGroup>
                 <div class="name">404 - Документ не найден</div>
@@ -303,61 +303,61 @@
                                 value="Отмена"/>
                     </div>
                 </e5ui-comp:modalWindow></td>
-                <td class="fourth"><h:outputText id="controller"
-                                                 value="#{in_doc.document.controller}"
-                                                 converter="PersonConverter" class="wide"/></td>
+                <td class="fourth">
+                    <h:outputText id="controller" value="#{in_doc.document.controller}" converter="PersonConverter"
+                                  class="wide"/>
+                </td>
             </tr>
         </table>
     </div>
 </h:panelGroup>
-    <h:panelGroup rendered="#{in_doc.viewState or (in_doc.editState and (in_doc.document.getDocumentStatus().getId() ge 2))}">
-        <div class="row">
-            <table class="form_grid">
-                <tr class="row">
-                    <td class="first">
-                        <label>
-                            <span class="title">Дата
-                                                поступления</span>
-                        </label>
-                    </td>
-                    <td class="second">
-                        <h:outputText value="#{in_doc.document.deliveryDate}" lang="ru">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </td>
-                    <td class="third">
-                        <label>
-                            <span class="title">Автор:</span>
-                        </label>
-                    </td>
-                    <td class="fourth">
-                        <h:outputText value="#{in_doc.document.author}" converter="PersonConverter" lang="ru"/>
-                    </td>
-                </tr>
-                <tr class="row">
-                    <td class="first">
-                        <label>
-                            <span class="title">Срок
-                                                исполнения</span>
-                        </label>
-                    </td>
-                    <td class="second">
-                        <h:outputText value="#{in_doc.document.executionDate}" lang="ru">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </td>
-                    <td class="third">
-                        <label>
-                            <span class="title">Руководитель</span>
-                        </label>
-                    </td>
-                    <td class="fourth">
-                        <h:outputText value="#{in_doc.document.controller}" converter="PersonConverter" class="wide"/>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </h:panelGroup>
+<h:panelGroup
+        rendered="#{in_doc.viewState or (in_doc.editState and (in_doc.document.getDocumentStatus().getId() ge 2))}">
+    <div class="row">
+        <table class="form_grid">
+            <tr class="row">
+                <td class="first">
+                    <label>
+                        <span class="title">Дата поступления</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <h:outputText value="#{in_doc.document.deliveryDate}" lang="ru">
+                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </td>
+                <td class="third">
+                    <label>
+                        <span class="title">Автор:</span>
+                    </label>
+                </td>
+                <td class="fourth">
+                    <h:outputText value="#{in_doc.document.author}" converter="PersonConverter" lang="ru"/>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="first">
+                    <label>
+                        <span class="title">Срок исполнения</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <h:outputText value="#{in_doc.document.executionDate}" lang="ru">
+                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </td>
+                <td class="third">
+                    <label>
+                        <span class="title">Руководитель</span>
+                    </label>
+                </td>
+                <td class="fourth">
+                    <h:outputText value="#{in_doc.document.controller}" converter="PersonConverter" class="wide"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</h:panelGroup>
 <e5ui:tabPanel id="content_table">
 <e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Реквизиты&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="#{in_doc.viewState? 'client': 'submit'}"
@@ -368,54 +368,64 @@
         <div class="row">
             <table class="form_grid">
                 <tr class="row">
-                    <td class="first"><label> <span class="title">Тип
-                                                        доставки</span>
-                    </label></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Тип доставки</span>
+                        </label>
+                    </td>
                     <td class="second"><h:outputText
                             value="#{in_doc.document.deliveryType.value}"/></td>
                     <td class="third"/>
                     <td class="fourth"/>
                 </tr>
                 <tr class="row">
-                    <td class="first"><label> <span class="title">Номер
-                                                        поступившего</span>
-                    </label></td>
-                    <td class="second" colspan="3"><h:outputText
-                            value="#{in_doc.document.receivedDocumentNumber}"/></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Номер поступившего</span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:outputText value="#{in_doc.document.receivedDocumentNumber}"/>
+                    </td>
                 </tr>
                 <tr class="row">
-                    <td class="first"><label> <span class="title">Дата
-                                                        поступившего</span>
-                    </label></td>
-                    <td class="second" colspan="3"><h:outputText
-                            value="#{in_doc.document.receivedDocumentDate}" lang="ru">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                    </h:outputText></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Дата поступившего</span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:outputText value="#{in_doc.document.receivedDocumentDate}" lang="ru">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </td>
                 </tr>
                 <tr class="row">
-                    <td class="first"><label> <span class="title">Корреспондент</span>
-                    </label></td>
-                    <td class="second"><h:outputText
-                            value="#{in_doc.document.contragent}"
-                            converter="ContragentConverter"/></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Корреспондент</span>
+                        </label>
+                    </td>
+                    <td class="second">
+                        <h:outputText value="#{in_doc.document.contragent}" converter="ContragentConverter"/>
+                    </td>
                     <td class="third"/>
                     <td class="fourth"/>
                 </tr>
                 <tr class="row">
-                    <td class="first"><label> <span class="title">
-                                                        Адресаты</span>
-                    </label></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Адресаты</span>
+                        </label>
+                    </td>
                     <td class="second" colspan="3">
                         <div class="width"
                              style="overflow-y: scroll; height: 120px">
-                            <ui:repeat value="#{in_doc.document.recipientUsers}"
-                                       var="element">
-                                <h:outputText value="#{element}"
-                                              converter="PersonConverter" class="width"/>
+                            <ui:repeat value="#{in_doc.document.recipientUsers}" var="element">
+                                <h:outputText value="#{element}" converter="PersonConverter" class="width"/>
                                 <br/>
                             </ui:repeat>
-                            <ui:repeat value="#{in_doc.document.recipientGroupsList}"
-                                       var="element">
+                            <ui:repeat value="#{in_doc.document.recipientGroupsList}" var="element">
                                 [Группа] <h:outputText value="#{element}" converter="GroupConverter" class="width"/>
                                 <br/>
                             </ui:repeat>
@@ -423,29 +433,30 @@
                     </td>
                 </tr>
                 <tr class="row">
-                    <td class="first"><label> <span class="title">
-                                                        Исполнители:</span>
-                    </label></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Исполнители:</span>
+                        </label>
+                    </td>
                     <td class="second" colspan="3">
-                        <div class="width"
-                             style="overflow-y: scroll; height: 60px">
-                            <ui:repeat value="#{in_doc.document.executors}"
-                                       var="element">
-                                <h:outputText value="#{element}"
-                                              converter="PersonConverter" class="width"/>
+                        <div class="width" style="overflow-y: scroll; height: 60px">
+                            <ui:repeat value="#{in_doc.document.executors}" var="element">
+                                <h:outputText value="#{element}" converter="PersonConverter" class="width"/>
                                 <br/>
                             </ui:repeat>
                         </div>
                     </td>
                 </tr>
                 <tr class="row">
-                    <td class="first"><label> <span class="title">Краткое
-                                                        содержание:</span>
-                    </label></td>
-                    <td class="second" colspan="3"><h:inputTextarea rows="6"
-                                                                    value="#{in_doc.document.shortDescription}"
-                                                                    readonly="true"
-                                                                    style="border: 0"/></td>
+                    <td class="first">
+                        <label>
+                            <span class="title">Краткое содержание:</span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:inputTextarea rows="6" value="#{in_doc.document.shortDescription}" readonly="true"
+                                         style="border: 0"/>
+                    </td>
                 </tr>
                 <tr class="row">
                     <td class="first">
@@ -465,105 +476,105 @@
 <div class="row">
 <table class="form_grid">
 <tr class="row">
-    <td class="first"><label
-            for="main_content_form:deliveryType"> <span
-            class="title">Тип доставки: </span>
-    </label></td>
-    <td class="second" colspan="3"><h:selectOneMenu
-            id="deliveryType" value="#{in_doc.document.deliveryType}"
-            converter="DeliveryTypeConverter" style="font-size:10pt;"
-            immediate="true">
-        <f:selectItems value="#{dictionaryManagement.deliveryTypes}"/>
-    </h:selectOneMenu></td>
+    <td class="first">
+        <label for="main_content_form:deliveryType">
+            <span class="title">Тип доставки:</span>
+        </label>
+    </td>
+    <td class="second" colspan="3">
+        <h:selectOneMenu id="deliveryType" value="#{in_doc.document.deliveryType}" converter="DeliveryTypeConverter"
+                         style="font-size:10pt;"
+                         immediate="true">
+            <f:selectItems value="#{dictionaryManagement.deliveryTypes}"/>
+        </h:selectOneMenu>
+    </td>
 </tr>
 <tr class="row">
-    <td class="first"><label
-            for="main_content_form:receivedDocNumber"> <span
-            class="title">Номер поступившего</span>
-    </label></td>
-    <td class="second" colspan="3"><h:inputText
-            id="receivedDocNumber"
-            value="#{in_doc.document.receivedDocumentNumber}"
-            immediate="true"/></td>
+    <td class="first">
+        <label for="main_content_form:receivedDocNumber">
+            <span class="title">Номер поступившего</span>
+        </label>
+    </td>
+    <td class="second" colspan="3">
+        <h:inputText id="receivedDocNumber" value="#{in_doc.document.receivedDocumentNumber}" immediate="true"/>
+    </td>
 </tr>
 <tr class="row">
-    <td class="first"><label
-            for="main_content_form:receivedDocDate"> <span
-            class="title">Дата поступившего</span>
-    </label></td>
-    <td class="second" colspan="3"><e5ui-comp:inputDate
-            id="receivedDocDate"
-            value="#{in_doc.document.receivedDocumentDate}" lang="ru"
-            immediate="true"/></td>
+    <td class="first">
+        <label for="main_content_form:receivedDocDate">
+            <span class="title">Дата поступившего</span>
+        </label>
+    </td>
+    <td class="second" colspan="3">
+        <e5ui-comp:inputDate id="receivedDocDate" value="#{in_doc.document.receivedDocumentDate}" lang="ru"
+                             immediate="true"/>
+    </td>
 </tr>
 <tr class="row">
-    <td class="first"><label> <span class="title">
-                                                        <h:outputLink title="Корреспондент:"
-                                                                      onclick="contragentSelectModalVar.clickOpen('contragentSelectModal'); return false;">
-                                                            Корреспондент
-                                                        </h:outputLink>
-                                                </span>
-    </label> <e5ui-comp:modalWindow id="contragentSelectModal"
-                                    modalWindowHolder="#{in_doc.contragentSelectModal}"
-                                    render=":main_content_form:contragent"
-                                    execute="select_table" showButtons="false"
-                                    style="width: 500px;" widgetVar="contragentSelectModalVar">
-        <div id="title">Выбор корреспондента</div>
-        <div id="modal_container" style="margin-top: 0;">
-            <div class="searchbar">
-                <h:inputText id="filter_string"
-                             value="#{in_doc.contragentSelectModal.contragentList.filter}"
-                             style="display:block; float:left; margin-right:10px;"
-                             title="Поиск"/>
-                <h:commandButton value=" "
-                                 action="#{in_doc.contragentSelectModal.contragentList.changePageOffset(0)}"
-                                 styleClass="searchbutton">
-                    <f:ajax
-                            execute=":main_content_form:contragentSelectModal:filter_string"
-                            render=":main_content_form:contragentSelectModal:ajaxModal :main_content_form:contragentSelectModal:modal_paging"/>
-                </h:commandButton>
-            </div>
-            <div class="wrap" style="height: 300px;">
-                <div class="inner" style="height: 300px;">
-                    <e5ui:dataTable id="select_table" border="0"
-                                    cellpadding="0" cellspacing="0"
-                                    value="#{in_doc.contragentSelectModal.contragentList.documents}"
-                                    var="row" grouping="false" width="100%">
-                        <e5ui:row
-                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                styleClass="#{in_doc.contragentSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                        <e5ui:column>
-                            <f:facet name="header">
-                                <p>Контрагент</p>
-                            </f:facet>
-                            <h:outputText value="#{row}"
-                                          converter="ContragentConverter"/>
-                            <h:commandLink id="selectLink" style="display: none;"
-                                           rendered="#{not in_doc.contragentSelectModal.selected(row)}"
-                                           action="#{in_doc.contragentSelectModal.select(row)}"/>
-                        </e5ui:column>
-                    </e5ui:dataTable>
+    <td class="first">
+        <label>
+            <span class="title">
+                <h:outputLink title="Корреспондент:"
+                              onclick="contragentSelectModalVar.clickOpen('contragentSelectModal'); return false;">
+                    Корреспондент
+                </h:outputLink>
+            </span>
+        </label>
+        <e5ui-comp:modalWindow id="contragentSelectModal"
+                               modalWindowHolder="#{in_doc.contragentSelectModal}"
+                               render=":main_content_form:contragent"
+                               execute="select_table" showButtons="false"
+                               style="width: 500px;" widgetVar="contragentSelectModalVar">
+            <div id="title">Выбор корреспондента</div>
+            <div id="modal_container" style="margin-top: 0;">
+                <div class="searchbar">
+                    <h:inputText id="filter_string" value="#{in_doc.contragentSelectModal.contragentList.filter}"
+                                 style="display:block; float:left; margin-right:10px;"
+                                 title="Поиск"/>
+                    <h:commandButton value=" "
+                                     action="#{in_doc.contragentSelectModal.contragentList.changePageOffset(0)}"
+                                     styleClass="searchbutton">
+                        <f:ajax execute=":main_content_form:contragentSelectModal:filter_string"
+                                render=":main_content_form:contragentSelectModal:ajaxModal :main_content_form:contragentSelectModal:modal_paging"/>
+                    </h:commandButton>
+                </div>
+                <div class="wrap" style="height: 300px;">
+                    <div class="inner" style="height: 300px;">
+                        <e5ui:dataTable id="select_table" border="0"
+                                        cellpadding="0" cellspacing="0"
+                                        value="#{in_doc.contragentSelectModal.contragentList.documents}"
+                                        var="row" grouping="false" width="100%">
+                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                      styleClass="#{in_doc.contragentSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                            <e5ui:column>
+                                <f:facet name="header">
+                                    <p>Контрагент</p>
+                                </f:facet>
+                                <h:outputText value="#{row}" converter="ContragentConverter"/>
+                                <h:commandLink id="selectLink" style="display: none;"
+                                               rendered="#{not in_doc.contragentSelectModal.selected(row)}"
+                                               action="#{in_doc.contragentSelectModal.select(row)}"/>
+                            </e5ui:column>
+                        </e5ui:dataTable>
+                    </div>
+                </div>
+                <div style="clear: both;">
+                    <h:panelGroup id="modal_paging">
+                        <e5ui-comp:tablePager id="pager"
+                                              documentListHolder="#{in_doc.contragentSelectModal.contragentList}"/>
+                    </h:panelGroup>
                 </div>
             </div>
-            <div style="clear: both;">
-                <h:panelGroup id="modal_paging">
-                    <e5ui-comp:tablePager id="pager"
-                                          documentListHolder="#{in_doc.contragentSelectModal.contragentList}"/>
-                </h:panelGroup>
+            <div class="e5ui-modal-bottombuttons">
+                <h:button onclick="contragentSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                <h:button onclick="contragentSelectModalVar.clickClose(); return false;" value="Отмена"/>
             </div>
-        </div>
-        <div class="e5ui-modal-bottombuttons">
-            <h:button
-                    onclick="contragentSelectModalVar.clickSave(); return false;"
-                    value="Выбрать"/>
-            <h:button
-                    onclick="contragentSelectModalVar.clickClose(); return false;"
-                    value="Отмена"/>
-        </div>
-    </e5ui-comp:modalWindow></td>
-    <td class="second" colspan="3"><h:outputText
-            id="contragent" value="#{in_doc.document.contragent}"
-            converter="ContragentConverter" class="wide"/></td>
+        </e5ui-comp:modalWindow>
+    </td>
+    <td class="second" colspan="3">
+        <h:outputText id="contragent" value="#{in_doc.document.contragent}" converter="ContragentConverter"
+                      class="wide"/>
+    </td>
 </tr>
 <tr class="row">
     <td class="first">
@@ -602,15 +613,13 @@
                                         value="#{in_doc.recipientUnitsSelectModal.userList.documents}"
                                         var="row" grouping="false" width="100%"
                                         style="width:80%;">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{in_doc.recipientUnitsSelectModal.selectedUser(row)? 'grid_row_selected': ''}"/>
+                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                      styleClass="#{in_doc.recipientUnitsSelectModal.selectedUser(row)? 'grid_row_selected': ''}"/>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <p>Адресаты</p>
                                 </f:facet>
-                                <h:outputText value="#{row}"
-                                              converter="PersonConverter"/>
+                                <h:outputText value="#{row}" converter="PersonConverter"/>
                                 <h:commandLink id="selectLink" style="display: none;"
                                                rendered="#{not in_doc.recipientUnitsSelectModal.selectedUser(row)}"
                                                action="#{in_doc.recipientUnitsSelectModal.selectUser(row)}"/>
@@ -640,8 +649,7 @@
                     <h:commandButton value=" "
                                      action="#{in_doc.recipientUnitsSelectModal.groupsView.changePageOffset(0)}"
                                      styleClass="searchbutton">
-                        <f:ajax
-                                execute=":main_content_form:recipientUnitsSelectModal:groups_filter_string"
+                        <f:ajax execute=":main_content_form:recipientUnitsSelectModal:groups_filter_string"
                                 render=":main_content_form:recipientUnitsSelectModal:ajaxModal :main_content_form:recipientUnitsSelectModal:groups_modal_paging"/>
                     </h:commandButton>
                 </div>
@@ -652,15 +660,13 @@
                                         value="#{in_doc.recipientUnitsSelectModal.groupsView.documents}"
                                         var="row" grouping="false" width="100%"
                                         style="width:80%;">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{in_doc.recipientUnitsSelectModal.selectedGroup(row)? 'grid_row_selected': ''}"/>
+                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                      styleClass="#{in_doc.recipientUnitsSelectModal.selectedGroup(row)? 'grid_row_selected': ''}"/>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <p>Адресаты</p>
                                 </f:facet>
-                                <h:outputText value="#{row}"
-                                              converter="GroupConverter"/>
+                                <h:outputText value="#{row}" converter="GroupConverter"/>
                                 <h:commandLink id="selectLink" style="display: none;"
                                                rendered="#{not in_doc.recipientUnitsSelectModal.selectedGroup(row)}"
                                                action="#{in_doc.recipientUnitsSelectModal.selectGroup(row)}"/>
@@ -687,140 +693,129 @@
                 <h:commandButton value="Группы пользователей"
                                  rendered="#{in_doc.isUsersDialogSelected()}"
                                  action="#{in_doc.setGroupsDialogSelected(true)}">
-                    <f:ajax
-                            render=":main_content_form:recipientUnitsSelectModal:ajaxModal"
+                    <f:ajax render=":main_content_form:recipientUnitsSelectModal:ajaxModal"
                             execute=":main_content_form:recipientUnitsSelectModal:ajaxModal"/>
                 </h:commandButton>
                 <h:commandButton value="Пользователи"
                                  rendered="#{in_doc.isGroupsDialogSelected()}"
                                  action="#{in_doc.setUsersDialogSelected(true)}">
-                    <f:ajax
-                            render=":main_content_form:recipientUnitsSelectModal:ajaxModal"
+                    <f:ajax render=":main_content_form:recipientUnitsSelectModal:ajaxModal"
                             execute=":main_content_form:recipientUnitsSelectModal:ajaxModal"/>
                 </h:commandButton>
             </div>
-            <h:button
-                    onclick="userListSelectModalVar.clickSave(); return false;"
-                    value="Выбрать"/>
-            <h:button
-                    onclick="userListSelectModalVar.clickClose(); return false;"
-                    value="Отмена"/>
+            <h:button onclick="userListSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+            <h:button onclick="userListSelectModalVar.clickClose(); return false;" value="Отмена"/>
         </div>
-    </e5ui-comp:modalWindow></td>
+    </e5ui-comp:modalWindow>
+    </td>
     <td class="second" colspan="3">
-        <div
-                style="overflow-y: scroll; height: 120px">
+        <div style="overflow-y: scroll; height: 120px">
             <h:panelGroup id="recipients">
-                <label><ui:repeat
-                        value="#{in_doc.document.recipientUsers}" var="element">
-                    <h:outputText value="#{element}"
-                                  converter="PersonConverter" class="width"/>
-                    <br/>
-                </ui:repeat> </label>
-                <label><ui:repeat
-                        value="#{in_doc.document.recipientGroupsList}"
-                        var="element">
-                    [Группа] <h:outputText value="#{element}"
-                                           converter="GroupConverter" class="width"/>
-                    <br/>
-                </ui:repeat> </label>
+                <label>
+                    <ui:repeat value="#{in_doc.document.recipientUsers}" var="element">
+                        <h:outputText value="#{element}" converter="PersonConverter" class="width"/>
+                        <br/>
+                    </ui:repeat>
+                </label>
+                <label>
+                    <ui:repeat value="#{in_doc.document.recipientGroupsList}" var="element">
+                        [Группа] <h:outputText value="#{element}" converter="GroupConverter" class="width"/>
+                        <br/>
+                    </ui:repeat>
+                </label>
             </h:panelGroup>
         </div>
     </td>
 </tr>
 
 <tr class="row">
-    <td class="third"><label> <span class="title">
-                                                        <h:outputLink title="Ответственный исполнитель"
-                                                                      onclick="executorsSelectModalVar.clickOpen('executorsSelectModal'); return false;">
-                                                            Исполнители
-                                                        </h:outputLink>
-                                                </span>
-    </label> <e5ui-comp:modalWindow id="executorsSelectModal"
-                                    modalWindowHolder="#{in_doc.executorsSelectModal}"
-                                    render=":main_content_form:executors" execute="select_table"
-                                    showButtons="false" style="width: 500px;"
-                                    widgetVar="executorsSelectModalVar">
-        <div id="title">Выбор исполнителей</div>
-        <div id="modal_container" style="margin-top: 0;">
-            <div class="searchbar">
-                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                <h:inputText id="filter_string"
-                             value="#{in_doc.executorsSelectModal.userList.filter}"
-                             style="display:block; float:left; margin-right:10px;"
-                             title="Поиск"/>
-                <h:commandButton value=" "
-                                 action="#{in_doc.executorsSelectModal.userList.changePageOffset(0)}"
-                                 styleClass="searchbutton">
-                    <f:ajax
-                            execute=":main_content_form:executorsSelectModal:filter_string"
-                            render=":main_content_form:executorsSelectModal:ajaxModal :main_content_form:executorsSelectModal:executors_modal_paging"/>
-                </h:commandButton>
-            </div>
-            <div class="wrap" style="height: 300px;">
-                <div class="inner" style="height: 300px;">
-                    <e5ui:dataTable id="select_table" border="0"
-                                    cellpadding="0" cellspacing="0"
-                                    value="#{in_doc.executorsSelectModal.userList.documents}"
-                                    var="row" grouping="false" width="100%">
-                        <e5ui:row
-                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                styleClass="#{in_doc.executorsSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                        <e5ui:column>
-                            <f:facet name="header">
-                                <p>Исполнители</p>
-                            </f:facet>
-                            <h:outputText value="#{row}"
-                                          converter="PersonConverter"/>
-                            <h:commandLink id="selectLink" style="display: none;"
-                                           rendered="#{not in_doc.executorsSelectModal.selected(row)}"
-                                           action="#{in_doc.executorsSelectModal.select(row)}"/>
-                            <h:commandLink id="unselectLink" style="display: none;"
-                                           rendered="#{in_doc.executorsSelectModal.selected(row)}"
-                                           action="#{in_doc.executorsSelectModal.unselect(row)}"/>
-                        </e5ui:column>
-                    </e5ui:dataTable>
+    <td class="third">
+        <label>
+            <span class="title">
+                <h:outputLink title="Ответственный исполнитель"
+                              onclick="executorsSelectModalVar.clickOpen('executorsSelectModal'); return false;">
+                    Исполнители
+                </h:outputLink>
+            </span>
+        </label>
+        <e5ui-comp:modalWindow id="executorsSelectModal"
+                               modalWindowHolder="#{in_doc.executorsSelectModal}"
+                               render=":main_content_form:executors" execute="select_table"
+                               showButtons="false" style="width: 500px;"
+                               widgetVar="executorsSelectModalVar">
+            <div id="title">Выбор исполнителей</div>
+            <div id="modal_container" style="margin-top: 0;">
+                <div class="searchbar">
+                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                    <h:inputText id="filter_string"
+                                 value="#{in_doc.executorsSelectModal.userList.filter}"
+                                 style="display:block; float:left; margin-right:10px;"
+                                 title="Поиск"/>
+                    <h:commandButton value=" " action="#{in_doc.executorsSelectModal.userList.changePageOffset(0)}"
+                                     styleClass="searchbutton">
+                        <f:ajax execute=":main_content_form:executorsSelectModal:filter_string"
+                                render=":main_content_form:executorsSelectModal:ajaxModal :main_content_form:executorsSelectModal:executors_modal_paging"/>
+                    </h:commandButton>
+                </div>
+                <div class="wrap" style="height: 300px;">
+                    <div class="inner" style="height: 300px;">
+                        <e5ui:dataTable id="select_table" border="0"
+                                        cellpadding="0" cellspacing="0"
+                                        value="#{in_doc.executorsSelectModal.userList.documents}"
+                                        var="row" grouping="false" width="100%">
+                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                      styleClass="#{in_doc.executorsSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                            <e5ui:column>
+                                <f:facet name="header">
+                                    <p>Исполнители</p>
+                                </f:facet>
+                                <h:outputText value="#{row}" converter="PersonConverter"/>
+                                <h:commandLink id="selectLink" style="display: none;"
+                                               rendered="#{not in_doc.executorsSelectModal.selected(row)}"
+                                               action="#{in_doc.executorsSelectModal.select(row)}"/>
+                                <h:commandLink id="unselectLink" style="display: none;"
+                                               rendered="#{in_doc.executorsSelectModal.selected(row)}"
+                                               action="#{in_doc.executorsSelectModal.unselect(row)}"/>
+                            </e5ui:column>
+                        </e5ui:dataTable>
+                    </div>
+                </div>
+                <div style="clear: both;">
+                    <h:panelGroup id="executors_modal_paging">
+                        <e5ui-comp:tablePager id="executors_pager"
+                                              documentListHolder="#{in_doc.executorsSelectModal.userList}"/>
+                    </h:panelGroup>
                 </div>
             </div>
-            <div style="clear: both;">
-                <h:panelGroup id="executors_modal_paging">
-                    <e5ui-comp:tablePager id="executors_pager"
-                                          documentListHolder="#{in_doc.executorsSelectModal.userList}"/>
-                </h:panelGroup>
+            <div class="e5ui-modal-bottombuttons">
+                <h:button onclick="executorsSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                <h:button onclick="executorsSelectModalVar.clickClose(); return false;" value="Отмена"/>
             </div>
-        </div>
-        <div class="e5ui-modal-bottombuttons">
-            <h:button
-                    onclick="executorsSelectModalVar.clickSave(); return false;"
-                    value="Выбрать"/>
-            <h:button
-                    onclick="executorsSelectModalVar.clickClose(); return false;"
-                    value="Отмена"/>
-        </div>
-    </e5ui-comp:modalWindow></td>
+        </e5ui-comp:modalWindow>
+    </td>
     <td class="second" colspan="3">
-        <div
-                style="overflow-y: scroll; height: 60px">
+        <div style="overflow-y: scroll; height: 60px">
             <h:panelGroup id="executors">
-                <label><ui:repeat
-                        value="#{in_doc.document.executors}" var="element">
-                    <h:outputText value="#{element}"
-                                  converter="PersonConverter" class="width"/>
-                    <br/>
-                </ui:repeat> </label>
+                <label>
+                    <ui:repeat value="#{in_doc.document.executors}" var="element">
+                        <h:outputText value="#{element}" converter="PersonConverter" class="width"/>
+                        <br/>
+                    </ui:repeat>
+                </label>
             </h:panelGroup>
         </div>
     </td>
 </tr>
 <tr class="row">
-    <td class="first"><label
-            for="main_content_form:shortDescription"> <span
-            class="title">Краткое содержание</span>
-    </label></td>
-    <td class="second" colspan="3"><h:inputTextarea
-            id="shortDescription" rows="6"
-            value="#{in_doc.document.shortDescription}" class="wide"
-            immediate="true"/> <e5ui:marker for="shortDescription"/>
+    <td class="first">
+        <label for="main_content_form:shortDescription">
+            <span class="title">Краткое содержание</span>
+        </label>
+    </td>
+    <td class="second" colspan="3">
+        <h:inputTextarea id="shortDescription" rows="6" value="#{in_doc.document.shortDescription}" class="wide"
+                         immediate="true"/>
+        <e5ui:marker for="shortDescription"/>
     </td>
 </tr>
 <tr class="row">
@@ -870,10 +865,8 @@
             <div class="menu">
                 <h:panelGroup rendered="#{(in_doc.document.getDocumentStatus().getId() eq 2)}">
                     <div class="defbutton">
-                        <h:outputLink value="#{contextPath}/component/task/task.xhtml"
-                                      target="_blank">
-                            <h:graphicImage
-                                    value="#{resource['images:newf_buttn_icon.png']}"/>
+                        <h:outputLink value="#{contextPath}/component/task/task.xhtml" target="_blank">
+                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                             Новая резолюция
                             <f:param name="docAction" value="create"/>
                             <f:param name="parentId" value="#{in_doc.document.uniqueId}"/>
@@ -888,7 +881,6 @@
                             <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                             Новое поручение
                             <f:param name="docAction" value="create"/>
-                            <f:param name="parentId" value="#{in_doc.document.uniqueId}"/>
                             <f:param name="rootDocumentId" value="#{in_doc.document.uniqueId}"/>
                             <f:param name="formId" value="task"/>
                         </h:outputLink>
@@ -896,8 +888,8 @@
                 </h:panelGroup>
 
                 <div class="defbutton">
-                    <h:commandLink action="#{tasks.refresh()}">
-                        <f:ajax render=":main_content_form:select_table"/>
+                    <h:commandLink action="#{in_doc.taskTreeHolder.refresh()}">
+                        <f:ajax render=":main_content_form:task_table"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
@@ -908,66 +900,43 @@
             <div id="modal_container" style="margin-top: 0;">
                 <div class="wrap" style="height: 250px; width: 100%; margin: 0;">
                     <div class="inner" style="height: 250px;">
-                        <e5ui:dataTable id="select_table" border="0" cellpadding="0"
-                                        cellspacing="0"
-                                        var="row_task"
-                                        value="#{tasks.getDocumentsTreeByParent(in_doc.document.uniqueId)}"
-                                        grouping="true" levelCount="1" style="width:100%">
-                            <e5ui:row ondblclick="goToTask('#{row_task.id}');"
-                                      level="#{row_task.grouping}" group="#{row_task.parent}"
-                                      fullRow="false" collapsed="false">
-                                <f:facet name="fullRowDefault">
-                                    <strong><h:outputText value="#{row_task.taskNumber}"/></strong>
-                                </f:facet>
-                            </e5ui:row>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Дата создания</p>
-                                </f:facet>
+                        <p:treeTable id="task_table"
+                                     value="#{in_doc.taskTreeHolder.root}"
+                                     var="row_task"
+                                     style="width:100%; overflow-x:hidden;"
+                                     widgetVar="task_tableVar">
+                            <p:column headerText="Дата создания">
                                 <h:outputText value="#{row_task.creationDate}">
                                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                                 </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Номер</p>
-                                </f:facet>
+                            </p:column>
+                            <p:column headerText="Номер">
                                 <h:outputText value="#{row_task.taskNumber}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Автор</p>
-                                </f:facet>
+                            </p:column>
+                            <p:column headerText="Автор">
                                 <h:outputText value="#{row_task.author.getFullName()}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Исполнитель</p>
-                                </f:facet>
-                                <h:outputText value="#{row_task.executor}"
-                                              converter="PersonConverter"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Срок исполнения</p>
-                                </f:facet>
+                            </p:column>
+                            <p:column headerText="Исполнитель">
+                                <ui:repeat value="#{row_task.executors}" var="executor">
+                                    <h:outputText value="#{executor}" converter="PersonConverter"/> <br/>
+                                </ui:repeat>
+                            </p:column>
+                            <p:column headerText="Срок исполнения">
                                 <h:outputText value="#{row_task.controlDate}">
                                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                                 </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Содержание</p>
-                                </f:facet>
+                            </p:column>
+                            <p:column headerText="Содержание">
                                 <h:outputText value="#{row_task.shortDescription}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Статус</p>
-                                </f:facet>
+                            </p:column>
+                            <p:column headerText="Статус">
                                 <h:outputText value="#{row_task.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
+                            </p:column>
+                            <p:column style="display:none;">
+                                <input type="hidden" value="#{row_task.id}"/>
+                            </p:column>
+                            <p:ajax event="expand" oncomplete="addRowHandlers()"/>
+                        </p:treeTable>
                     </div>
                 </div>
             </div>
@@ -984,10 +953,11 @@
             <ui:repeat value="#{in_doc.getRelatedDocumentsUniqueId()}" var="element">
                 <h:outputLink style="margin-left:5px;" value="#" onclick="goToDocumentByUniqueId('#{element}');">
                     <h:graphicImage value="#{resource['images:link.png']}"/>
-                    <h:outputText  value="#{in_doc.getLinkDescriptionByUniqueId(element)}"/>
+                    <h:outputText value="#{in_doc.getLinkDescriptionByUniqueId(element)}"/>
                 </h:outputLink>
                 <br/>
-            </ui:repeat></td>
+            </ui:repeat>
+        </td>
     </tr>
 </e5ui:tabPage>
 <e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Оригинал&lt;/span&gt;&lt;/span&gt;"
@@ -1016,15 +986,11 @@
                 <h:panelGroup rendered="#{in_doc.document.getDocumentStatus().getId() gt 0}">
                     <div class="defbutton">
                         <!--@elvariable id="contextPath" type="java.lang.String"-->
-                        <h:outputLink
-                                value="#{contextPath}/component/paper_copy_document.xhtml"
-                                target="_blank">
-                            <h:graphicImage
-                                    value="#{resource['images:newf_buttn_icon.png']}"/>
+                        <h:outputLink value="#{contextPath}/component/paper_copy_document.xhtml" target="_blank">
+                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                             Новый оригинал
                             <f:param name="docAction" value="create"/>
-                            <f:param name="parentDocumentId"
-                                     value="#{in_doc.document.uniqueId}"/>
+                            <f:param name="parentDocumentId" value="#{in_doc.document.uniqueId}"/>
                         </h:outputLink>
                     </div>
                 </h:panelGroup>
@@ -1032,8 +998,7 @@
                 <div class="defbutton">
                     <h:commandLink action="paperCopyDocuments.refresh()">
                         <f:ajax render=":main_content_form:select_table_2"/>
-                        <h:graphicImage
-                                value="#{resource['images:button-refresh.png']}"/>
+                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
                 </div>
@@ -1041,8 +1006,7 @@
         </div>
         <h:panelGroup>
             <div id="modal_container" style="margin-top: 0;">
-                <div class="wrap"
-                     style="height: 250px; width: 100%; margin: 0;">
+                <div class="wrap" style="height: 250px; width: 100%; margin: 0;">
                     <div class="inner" style="height: 250px;">
                         <e5ui:dataTable id="select_table_2" border="0"
                                         cellpadding="0" cellspacing="0"
@@ -1083,13 +1047,14 @@
 <tr class="row">
     <td class="first">
         <label>
-            <span class="title">
-                                                        Уровень допуска: </span>
+            <span class="title">Уровень допуска: </span>
         </label>
     </td>
     <td class="second" colspan="3">
-        <h:selectOneMenu  id="accessLevel" value="#{in_doc.document.userAccessLevel}" converter="UserAccessLevelConverter">
-            <f:selectItems value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.getLoggedUser().getCurrentUserAccessLevel().level)}"/>
+        <h:selectOneMenu id="accessLevel" value="#{in_doc.document.userAccessLevel}"
+                         converter="UserAccessLevelConverter">
+            <f:selectItems
+                    value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.getLoggedUser().getCurrentUserAccessLevel().level)}"/>
         </h:selectOneMenu>
     </td>
 </tr>
@@ -1102,83 +1067,77 @@
                 <td class="first">
                     <label>
                         <span class="title">
-                            <h:outputLink title="Читатели:" onclick="personReadersPickListWidget.clickOpen('personReadersPickList'); return false;">
-                                                                            Читатели:
+                            <h:outputLink title="Читатели:"
+                                          onclick="personReadersPickListWidget.clickOpen('personReadersPickList'); return false;">
+                                Читатели:
                             </h:outputLink>
                         </span>
                     </label>
                     <e5ui-comp:modalWindow id="personReadersPickList"
-                                                modalWindowHolder="#{in_doc.personReadersPickList}"
-                                                render=":main_content_form:personReaders"
-                                                execute="select_table" showButtons="false"
-                                                style="width: 500px;"
-                                                widgetVar="personReadersPickListWidget">
-                    <div id="title">Выбор читателей</div>
-                    <div id="modal_container" style="margin-top: 0;">
-                        <div class="searchbar">
-                            <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                            <h:inputText id="filter_string"
-                                         value="#{in_doc.personReadersPickList.userList.filter}"
-                                         style="display:block; float:left; margin-right:10px;"
-                                         title="Поиск"/>
-                            <h:commandButton value=" "
-                                             action="#{in_doc.personReadersPickList.userList.changePageOffset(0)}"
-                                             styleClass="searchbutton">
-                                <f:ajax
-                                        execute=":main_content_form:personReadersPickList:filter_string"
-                                        render=":main_content_form:personReadersPickList:select_table :main_content_form:personReadersPickList:modal_paging"/>
-                            </h:commandButton>
-                        </div>
-                        <div class="wrap" style="height: 300px;">
-                            <div class="inner" style="height: 300px;">
-                                <e5ui:dataTable id="select_table" border="0"
-                                                cellpadding="0" cellspacing="0"
-                                                value="#{in_doc.personReadersPickList.userList.documents}" var="row"
-                                                grouping="false" width="100%">
-                                    <e5ui:row
-                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                            styleClass="#{in_doc.personReadersPickList.selected(row)? 'grid_row_selected': ''}"/>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Читатели</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row}" converter="PersonConverter"/>
-                                        <h:commandLink id="selectLink"
-                                                       style="display: none;"
-                                                       rendered="#{not in_doc.personReadersPickList.selected(row)}"
-                                                       action="#{in_doc.personReadersPickList.select(row)}"/>
-                                        <h:commandLink id="unselectLink"
-                                                       style="display: none;"
-                                                       rendered="#{in_doc.personReadersPickList.selected(row)}"
-                                                       action="#{in_doc.personReadersPickList.unselect(row)}"/>
-                                    </e5ui:column>
-                                </e5ui:dataTable>
+                                           modalWindowHolder="#{in_doc.personReadersPickList}"
+                                           render=":main_content_form:personReaders"
+                                           execute="select_table" showButtons="false"
+                                           style="width: 500px;"
+                                           widgetVar="personReadersPickListWidget">
+                        <div id="title">Выбор читателей</div>
+                        <div id="modal_container" style="margin-top: 0;">
+                            <div class="searchbar">
+                                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                                <h:inputText id="filter_string"
+                                             value="#{in_doc.personReadersPickList.userList.filter}"
+                                             style="display:block; float:left; margin-right:10px;"
+                                             title="Поиск"/>
+                                <h:commandButton value=" "
+                                                 action="#{in_doc.personReadersPickList.userList.changePageOffset(0)}"
+                                                 styleClass="searchbutton">
+                                    <f:ajax execute=":main_content_form:personReadersPickList:filter_string"
+                                            render=":main_content_form:personReadersPickList:select_table :main_content_form:personReadersPickList:modal_paging"/>
+                                </h:commandButton>
+                            </div>
+                            <div class="wrap" style="height: 300px;">
+                                <div class="inner" style="height: 300px;">
+                                    <e5ui:dataTable id="select_table" border="0"
+                                                    cellpadding="0" cellspacing="0"
+                                                    value="#{in_doc.personReadersPickList.userList.documents}" var="row"
+                                                    grouping="false" width="100%">
+                                        <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                  styleClass="#{in_doc.personReadersPickList.selected(row)? 'grid_row_selected': ''}"/>
+                                        <e5ui:column>
+                                            <f:facet name="header">
+                                                <p>Читатели</p>
+                                            </f:facet>
+                                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                                            <h:commandLink id="selectLink"
+                                                           style="display: none;"
+                                                           rendered="#{not in_doc.personReadersPickList.selected(row)}"
+                                                           action="#{in_doc.personReadersPickList.select(row)}"/>
+                                            <h:commandLink id="unselectLink"
+                                                           style="display: none;"
+                                                           rendered="#{in_doc.personReadersPickList.selected(row)}"
+                                                           action="#{in_doc.personReadersPickList.unselect(row)}"/>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                            <div style="clear: both;">
+                                <h:panelGroup id="modal_paging">
+                                    <e5ui-comp:tablePager id="pager"
+                                                          documentListHolder="#{in_doc.personReadersPickList.userList}"/>
+                                </h:panelGroup>
                             </div>
                         </div>
-                        <div style="clear: both;">
-                            <h:panelGroup id="modal_paging">
-                                <e5ui-comp:tablePager id="pager"
-                                                      documentListHolder="#{in_doc.personReadersPickList.userList}"/>
-                            </h:panelGroup>
+                        <div class="e5ui-modal-bottombuttons">
+                            <h:button onclick="personReadersPickListWidget.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="personReadersPickListWidget.clickClose(); return false;" value="Отмена"/>
                         </div>
-                    </div>
-                    <div class="e5ui-modal-bottombuttons">
-                        <h:button
-                                onclick="personReadersPickListWidget.clickSave(); return false;"
-                                value="Выбрать"/>
-                        <h:button
-                                onclick="personReadersPickListWidget.clickClose(); return false;"
-                                value="Отмена"/>
-                    </div>
-                </e5ui-comp:modalWindow></td>
+                    </e5ui-comp:modalWindow>
+                </td>
                 <td class="second" colspan="3">
                     <div style="overflow-y: scroll; height: 90px">
                         <h:panelGroup id="personReaders">
                             <label>
-                                <ui:repeat
-                                    value="#{in_doc.document.personReaders}"
-                                    var="element">
-                                    <h:outputText value="#{element}"  converter="PersonConverter" class="width"/>
+                                <ui:repeat value="#{in_doc.document.personReaders}" var="element">
+                                    <h:outputText value="#{element}" converter="PersonConverter" class="width"/>
                                     <br/>
                                 </ui:repeat>
                             </label>
@@ -1190,82 +1149,76 @@
                 <td class="first">
                     <label>
                         <span class="title">
-                            <h:outputLink title="Редакторы:" onclick="personEditorsPickListWidget.clickOpen('personEditorsPickList'); return false;">
-                                                                            Редакторы:
+                            <h:outputLink title="Редакторы:"
+                                          onclick="personEditorsPickListWidget.clickOpen('personEditorsPickList'); return false;">
+                                Редакторы:
                             </h:outputLink>
                         </span>
                     </label>
                     <e5ui-comp:modalWindow id="personEditorsPickList"
-                                                modalWindowHolder="#{in_doc.personEditorsPickList}"
-                                                render=":main_content_form:personEditors"
-                                                execute="select_table" showButtons="false"
-                                                style="width: 500px;"
-                                                widgetVar="personEditorsPickListWidget">
-                    <div id="title">Выбор редакторов</div>
-                    <div id="modal_container" style="margin-top: 0;">
-                        <div class="searchbar">
-                            <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                            <h:inputText id="filter_string"
-                                         value="#{in_doc.personEditorsPickList.userList.filter}"
-                                         style="display:block; float:left; margin-right:10px;"
-                                         title="Поиск"/>
-                            <h:commandButton value=" "
-                                             action="#{in_doc.personEditorsPickList.userList.changePageOffset(0)}"
-                                             styleClass="searchbutton">
-                                <f:ajax
-                                        execute=":main_content_form:personEditorsPickList:filter_string"
-                                        render=":main_content_form:personEditorsPickList:select_table :main_content_form:personEditorsPickList:modal_paging"/>
-                            </h:commandButton>
-                        </div>
-                        <div class="wrap" style="height: 300px;">
-                            <div class="inner" style="height: 300px;">
-                                <e5ui:dataTable id="select_table" border="0"
-                                                cellpadding="0" cellspacing="0"
-                                                value="#{in_doc.personEditorsPickList.userList.documents}" var="row"
-                                                grouping="false" width="100%">
-                                    <e5ui:row
-                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                            styleClass="#{in_doc.personEditorsPickList.selected(row)? 'grid_row_selected': ''}"/>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Редакторы</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row}" converter="PersonConverter"/>
-                                        <h:commandLink id="selectLink"
-                                                       style="display: none;"
-                                                       rendered="#{not in_doc.personEditorsPickList.selected(row)}"
-                                                       action="#{in_doc.personEditorsPickList.select(row)}"/>
-                                        <h:commandLink id="unselectLink"
-                                                       style="display: none;"
-                                                       rendered="#{in_doc.personEditorsPickList.selected(row)}"
-                                                       action="#{in_doc.personEditorsPickList.unselect(row)}"/>
-                                    </e5ui:column>
-                                </e5ui:dataTable>
+                                           modalWindowHolder="#{in_doc.personEditorsPickList}"
+                                           render=":main_content_form:personEditors"
+                                           execute="select_table" showButtons="false"
+                                           style="width: 500px;"
+                                           widgetVar="personEditorsPickListWidget">
+                        <div id="title">Выбор редакторов</div>
+                        <div id="modal_container" style="margin-top: 0;">
+                            <div class="searchbar">
+                                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                                <h:inputText id="filter_string"
+                                             value="#{in_doc.personEditorsPickList.userList.filter}"
+                                             style="display:block; float:left; margin-right:10px;"
+                                             title="Поиск"/>
+                                <h:commandButton value=" "
+                                                 action="#{in_doc.personEditorsPickList.userList.changePageOffset(0)}"
+                                                 styleClass="searchbutton">
+                                    <f:ajax execute=":main_content_form:personEditorsPickList:filter_string"
+                                            render=":main_content_form:personEditorsPickList:select_table :main_content_form:personEditorsPickList:modal_paging"/>
+                                </h:commandButton>
+                            </div>
+                            <div class="wrap" style="height: 300px;">
+                                <div class="inner" style="height: 300px;">
+                                    <e5ui:dataTable id="select_table" border="0"
+                                                    cellpadding="0" cellspacing="0"
+                                                    value="#{in_doc.personEditorsPickList.userList.documents}" var="row"
+                                                    grouping="false" width="100%">
+                                        <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                  styleClass="#{in_doc.personEditorsPickList.selected(row)? 'grid_row_selected': ''}"/>
+                                        <e5ui:column>
+                                            <f:facet name="header">
+                                                <p>Редакторы</p>
+                                            </f:facet>
+                                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                                            <h:commandLink id="selectLink"
+                                                           style="display: none;"
+                                                           rendered="#{not in_doc.personEditorsPickList.selected(row)}"
+                                                           action="#{in_doc.personEditorsPickList.select(row)}"/>
+                                            <h:commandLink id="unselectLink"
+                                                           style="display: none;"
+                                                           rendered="#{in_doc.personEditorsPickList.selected(row)}"
+                                                           action="#{in_doc.personEditorsPickList.unselect(row)}"/>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                            <div style="clear: both;">
+                                <h:panelGroup id="modal_paging">
+                                    <e5ui-comp:tablePager id="pager"
+                                                          documentListHolder="#{in_doc.personEditorsPickList.userList}"/>
+                                </h:panelGroup>
                             </div>
                         </div>
-                        <div style="clear: both;">
-                            <h:panelGroup id="modal_paging">
-                                <e5ui-comp:tablePager id="pager"
-                                                      documentListHolder="#{in_doc.personEditorsPickList.userList}"/>
-                            </h:panelGroup>
+                        <div class="e5ui-modal-bottombuttons">
+                            <h:button onclick="personEditorsPickListWidget.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="personEditorsPickListWidget.clickClose(); return false;" value="Отмена"/>
                         </div>
-                    </div>
-                    <div class="e5ui-modal-bottombuttons">
-                        <h:button
-                                onclick="personEditorsPickListWidget.clickSave(); return false;"
-                                value="Выбрать"/>
-                        <h:button
-                                onclick="personEditorsPickListWidget.clickClose(); return false;"
-                                value="Отмена"/>
-                    </div>
-                </e5ui-comp:modalWindow></td>
+                    </e5ui-comp:modalWindow>
+                </td>
                 <td class="second" colspan="3">
                     <div style="overflow-y: scroll; height: 90px">
                         <h:panelGroup id="personEditors">
                             <label>
-                                <ui:repeat
-                                    value="#{in_doc.document.personEditors}"
-                                    var="element">
+                                <ui:repeat value="#{in_doc.document.personEditors}" var="element">
                                     <h:outputText value="#{element}" converter="PersonConverter" class="width"/>
                                     <br/>
                                 </ui:repeat>
@@ -1288,173 +1241,167 @@
         <legend>Роли</legend>
         <table class="form_grid">
             <tr class="row">
-                <td class="first"><label> <span class="title">
-                                                                        <h:outputLink title="Читатели:"
-                                                                                      onclick="roleReadersPickListWidget.clickOpen('roleReadersPickList'); return false;">
-                                                                            На чтение:
-                                                                        </h:outputLink>
-                                                                </span>
-                </label> <e5ui-comp:modalWindow id="roleReadersPickList"
-                                                modalWindowHolder="#{in_doc.roleReadersPickList}"
-                                                render=":main_content_form:roleReaders"
-                                                execute="select_table" showButtons="false"
-                                                style="width: 500px;"
-                                                widgetVar="roleReadersPickListWidget">
-                    <div id="title">Выбор ролей читателей</div>
-                    <div id="modal_container" style="margin-top: 0;">
-                        <div class="searchbar">
-                            <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                            <h:inputText id="filter_string"
-                                         value="#{in_doc.roleReadersPickList.roleList.filter}"
-                                         style="display:block; float:left; margin-right:10px;"
-                                         title="Поиск"/>
-                            <h:commandButton value=" "
-                                             action="#{in_doc.roleReadersPickList.roleList.changePageOffset(0)}"
-                                             styleClass="searchbutton">
-                                <f:ajax
-                                        execute=":main_content_form:roleReadersPickList:filter_string"
-                                        render=":main_content_form:roleReadersPickList:select_table :main_content_form:roleReadersPickList:modal_paging"/>
-                            </h:commandButton>
-                        </div>
-                        <div class="wrap" style="height: 300px;">
-                            <div class="inner" style="height: 300px;">
-                                <e5ui:dataTable id="select_table" border="0"
-                                                cellpadding="0" cellspacing="0"
-                                                value="#{roleList.documents}" var="row"
-                                                grouping="false" width="100%">
-                                    <e5ui:row
-                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                            styleClass="#{in_doc.roleReadersPickList.selected(row)? 'grid_row_selected': ''}"/>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Роли-читатели</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row}"
-                                                      converter="RoleConverter"/>
-                                        <h:commandLink id="selectLink"
-                                                       style="display: none;"
-                                                       rendered="#{not in_doc.roleReadersPickList.selected(row)}"
-                                                       action="#{in_doc.roleReadersPickList.select(row)}"/>
-                                        <h:commandLink id="unselectLink"
-                                                       style="display: none;"
-                                                       rendered="#{in_doc.roleReadersPickList.selected(row)}"
-                                                       action="#{in_doc.roleReadersPickList.unselect(row)}"/>
-                                    </e5ui:column>
-                                </e5ui:dataTable>
+                <td class="first">
+                    <label>
+                        <span class="title">
+                            <h:outputLink title="Читатели:"
+                                          onclick="roleReadersPickListWidget.clickOpen('roleReadersPickList'); return false;">
+                                На чтение:
+                            </h:outputLink>
+                        </span>
+                    </label>
+                    <e5ui-comp:modalWindow id="roleReadersPickList"
+                                           modalWindowHolder="#{in_doc.roleReadersPickList}"
+                                           render=":main_content_form:roleReaders"
+                                           execute="select_table" showButtons="false"
+                                           style="width: 500px;"
+                                           widgetVar="roleReadersPickListWidget">
+                        <div id="title">Выбор ролей читателей</div>
+                        <div id="modal_container" style="margin-top: 0;">
+                            <div class="searchbar">
+                                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                                <h:inputText id="filter_string"
+                                             value="#{in_doc.roleReadersPickList.roleList.filter}"
+                                             style="display:block; float:left; margin-right:10px;"
+                                             title="Поиск"/>
+                                <h:commandButton value=" "
+                                                 action="#{in_doc.roleReadersPickList.roleList.changePageOffset(0)}"
+                                                 styleClass="searchbutton">
+                                    <f:ajax execute=":main_content_form:roleReadersPickList:filter_string"
+                                            render=":main_content_form:roleReadersPickList:select_table :main_content_form:roleReadersPickList:modal_paging"/>
+                                </h:commandButton>
+                            </div>
+                            <div class="wrap" style="height: 300px;">
+                                <div class="inner" style="height: 300px;">
+                                    <e5ui:dataTable id="select_table" border="0"
+                                                    cellpadding="0" cellspacing="0"
+                                                    value="#{roleList.documents}" var="row"
+                                                    grouping="false" width="100%">
+                                        <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                  styleClass="#{in_doc.roleReadersPickList.selected(row)? 'grid_row_selected': ''}"/>
+                                        <e5ui:column>
+                                            <f:facet name="header">
+                                                <p>Роли-читатели</p>
+                                            </f:facet>
+                                            <h:outputText value="#{row}"
+                                                          converter="RoleConverter"/>
+                                            <h:commandLink id="selectLink"
+                                                           style="display: none;"
+                                                           rendered="#{not in_doc.roleReadersPickList.selected(row)}"
+                                                           action="#{in_doc.roleReadersPickList.select(row)}"/>
+                                            <h:commandLink id="unselectLink"
+                                                           style="display: none;"
+                                                           rendered="#{in_doc.roleReadersPickList.selected(row)}"
+                                                           action="#{in_doc.roleReadersPickList.unselect(row)}"/>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                            <div style="clear: both;">
+                                <h:panelGroup id="modal_paging">
+                                    <e5ui-comp:tablePager id="pager"
+                                                          documentListHolder="#{in_doc.roleReadersPickList.roleList}"/>
+                                </h:panelGroup>
                             </div>
                         </div>
-                        <div style="clear: both;">
-                            <h:panelGroup id="modal_paging">
-                                <e5ui-comp:tablePager id="pager"
-                                                      documentListHolder="#{in_doc.roleReadersPickList.roleList}"/>
-                            </h:panelGroup>
+                        <div class="e5ui-modal-bottombuttons">
+                            <h:button onclick="roleReadersPickListWidget.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="roleReadersPickListWidget.clickClose(); return false;" value="Отмена"/>
                         </div>
-                    </div>
-                    <div class="e5ui-modal-bottombuttons">
-                        <h:button
-                                onclick="roleReadersPickListWidget.clickSave(); return false;"
-                                value="Выбрать"/>
-                        <h:button
-                                onclick="roleReadersPickListWidget.clickClose(); return false;"
-                                value="Отмена"/>
-                    </div>
-                </e5ui-comp:modalWindow></td>
+                    </e5ui-comp:modalWindow>
+                </td>
                 <td class="second" colspan="3">
-                    <div
-                            style="overflow-y: scroll; height: 90px">
+                    <div style="overflow-y: scroll; height: 90px">
                         <h:panelGroup id="roleReaders">
-                            <label><ui:repeat
-                                    value="#{in_doc.document.roleReaders}" var="element">
-                                <h:outputText value="#{element}"
-                                              converter="RoleConverter" class="width"/>
-                                <br/>
-                            </ui:repeat> </label>
+                            <label>
+                                <ui:repeat value="#{in_doc.document.roleReaders}" var="element">
+                                    <h:outputText value="#{element}" converter="RoleConverter" class="width"/>
+                                    <br/>
+                                </ui:repeat>
+                            </label>
                         </h:panelGroup>
                     </div>
                 </td>
             </tr>
             <tr class="row">
-                <td class="first"><label> <span class="title">
-                                                                        <h:outputLink title="Редакторы:"
-                                                                                      onclick="roleEditorsPickListWidget.clickOpen('roleEditorsPickList'); return false;">
-                                                                            На редактирование:
-                                                                        </h:outputLink>
-                                                                </span>
-                </label> <e5ui-comp:modalWindow id="roleEditorsPickList"
-                                                modalWindowHolder="#{in_doc.roleEditorsPickList}"
-                                                render=":main_content_form:roleEditors"
-                                                execute="select_table" showButtons="false"
-                                                style="width: 500px;"
-                                                widgetVar="roleEditorsPickListWidget">
-                    <div id="title">Выбор ролей редакторов</div>
-                    <div id="modal_container" style="margin-top: 0;">
-                        <div class="searchbar">
-                            <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                            <h:inputText id="filter_string"
-                                         value="#{in_doc.roleEditorsPickList.roleList.filter}"
-                                         style="display:block; float:left; margin-right:10px;"
-                                         title="Поиск"/>
-                            <h:commandButton value=" "
-                                             action="#{in_doc.roleEditorsPickList.roleList.changePageOffset(0)}"
-                                             styleClass="searchbutton">
-                                <f:ajax
-                                        execute=":main_content_form:roleEditorsPickList:filter_string"
-                                        render=":main_content_form:roleEditorsPickList:select_table :main_content_form:roleEditorsPickList:modal_paging"/>
-                            </h:commandButton>
-                        </div>
-                        <div class="wrap" style="height: 300px;">
-                            <div class="inner" style="height: 300px;">
-                                <e5ui:dataTable id="select_table" border="0"
-                                                cellpadding="0" cellspacing="0"
-                                                value="#{roleList.documents}" var="row"
-                                                grouping="false" width="100%">
-                                    <e5ui:row
-                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                            styleClass="#{in_doc.roleEditorsPickList.selected(row)? 'grid_row_selected': ''}"/>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Роли-редакторы</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row}"
-                                                      converter="RoleConverter"/>
-                                        <h:commandLink id="selectLink"
-                                                       style="display: none;"
-                                                       rendered="#{not in_doc.roleEditorsPickList.selected(row)}"
-                                                       action="#{in_doc.roleEditorsPickList.select(row)}"/>
-                                        <h:commandLink id="unselectLink"
-                                                       style="display: none;"
-                                                       rendered="#{in_doc.roleEditorsPickList.selected(row)}"
-                                                       action="#{in_doc.roleEditorsPickList.unselect(row)}"/>
-                                    </e5ui:column>
-                                </e5ui:dataTable>
+                <td class="first">
+                    <label>
+                        <span class="title">
+                            <h:outputLink title="Редакторы:"
+                                          onclick="roleEditorsPickListWidget.clickOpen('roleEditorsPickList'); return false;">
+                                На редактирование:
+                            </h:outputLink>
+                        </span>
+                    </label>
+                    <e5ui-comp:modalWindow id="roleEditorsPickList"
+                                           modalWindowHolder="#{in_doc.roleEditorsPickList}"
+                                           render=":main_content_form:roleEditors"
+                                           execute="select_table" showButtons="false"
+                                           style="width: 500px;"
+                                           widgetVar="roleEditorsPickListWidget">
+                        <div id="title">Выбор ролей редакторов</div>
+                        <div id="modal_container" style="margin-top: 0;">
+                            <div class="searchbar">
+                                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                                <h:inputText id="filter_string"
+                                             value="#{in_doc.roleEditorsPickList.roleList.filter}"
+                                             style="display:block; float:left; margin-right:10px;"
+                                             title="Поиск"/>
+                                <h:commandButton value=" "
+                                                 action="#{in_doc.roleEditorsPickList.roleList.changePageOffset(0)}"
+                                                 styleClass="searchbutton">
+                                    <f:ajax execute=":main_content_form:roleEditorsPickList:filter_string"
+                                            render=":main_content_form:roleEditorsPickList:select_table :main_content_form:roleEditorsPickList:modal_paging"/>
+                                </h:commandButton>
+                            </div>
+                            <div class="wrap" style="height: 300px;">
+                                <div class="inner" style="height: 300px;">
+                                    <e5ui:dataTable id="select_table" border="0"
+                                                    cellpadding="0" cellspacing="0"
+                                                    value="#{roleList.documents}" var="row"
+                                                    grouping="false" width="100%">
+                                        <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                  styleClass="#{in_doc.roleEditorsPickList.selected(row)? 'grid_row_selected': ''}"/>
+                                        <e5ui:column>
+                                            <f:facet name="header">
+                                                <p>Роли-редакторы</p>
+                                            </f:facet>
+                                            <h:outputText value="#{row}"
+                                                          converter="RoleConverter"/>
+                                            <h:commandLink id="selectLink"
+                                                           style="display: none;"
+                                                           rendered="#{not in_doc.roleEditorsPickList.selected(row)}"
+                                                           action="#{in_doc.roleEditorsPickList.select(row)}"/>
+                                            <h:commandLink id="unselectLink"
+                                                           style="display: none;"
+                                                           rendered="#{in_doc.roleEditorsPickList.selected(row)}"
+                                                           action="#{in_doc.roleEditorsPickList.unselect(row)}"/>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                            <div style="clear: both;">
+                                <h:panelGroup id="modal_paging">
+                                    <e5ui-comp:tablePager id="pager"
+                                                          documentListHolder="#{in_doc.roleEditorsPickList.roleList}"/>
+                                </h:panelGroup>
                             </div>
                         </div>
-                        <div style="clear: both;">
-                            <h:panelGroup id="modal_paging">
-                                <e5ui-comp:tablePager id="pager"
-                                                      documentListHolder="#{in_doc.roleEditorsPickList.roleList}"/>
-                            </h:panelGroup>
+                        <div class="e5ui-modal-bottombuttons">
+                            <h:button onclick="roleEditorsPickListWidget.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="roleEditorsPickListWidget.clickClose(); return false;" value="Отмена"/>
                         </div>
-                    </div>
-                    <div class="e5ui-modal-bottombuttons">
-                        <h:button
-                                onclick="roleEditorsPickListWidget.clickSave(); return false;"
-                                value="Выбрать"/>
-                        <h:button
-                                onclick="roleEditorsPickListWidget.clickClose(); return false;"
-                                value="Отмена"/>
-                    </div>
-                </e5ui-comp:modalWindow></td>
+                    </e5ui-comp:modalWindow>
+                </td>
                 <td class="second" colspan="3">
-                    <div
-                            style="overflow-y: scroll; height: 90px">
+                    <div style="overflow-y: scroll; height: 90px">
                         <h:panelGroup id="roleEditors">
-                            <label><ui:repeat
-                                    value="#{in_doc.document.roleEditors}" var="element">
-                                <h:outputText value="#{element}"
-                                              converter="RoleConverter" class="width"/>
-                                <br/>
-                            </ui:repeat> </label>
+                            <label>
+                                <ui:repeat value="#{in_doc.document.roleEditors}" var="element">
+                                    <h:outputText value="#{element}" converter="RoleConverter" class="width"/>
+                                    <br/>
+                                </ui:repeat>
+                            </label>
                         </h:panelGroup>
                     </div>
                 </td>
@@ -1473,12 +1420,14 @@
     <div class="row">
         <table class="form_grid">
             <tr class="row">
-                <td class="first"><label> <span class="title">
-                                                        Уровень допуска: </span>
-                </label></td>
-                <td class="second" colspan="3"><h:outputText
-                        value="#{in_doc.document.userAccessLevel}"
-                        converter="UserAccessLevelConverter"/></td>
+                <td class="first">
+                    <label>
+                        <span class="title"> Уровень допуска: </span>
+                    </label>
+                </td>
+                <td class="second" colspan="3">
+                    <h:outputText value="#{in_doc.document.userAccessLevel}" converter="UserAccessLevelConverter"/>
+                </td>
             </tr>
             <tr class="row">
                 <td class="first" colspan="2">
@@ -1486,34 +1435,38 @@
                         <legend>Пользователи</legend>
                         <table class="form_grid">
                             <tr class="row">
-                                <td class="first"><label> <span class="title">
-                                                                        Читатели: </span>
-                                </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">Читатели: </span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{in_doc.document.personReaders}" var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="PersonConverter" class="width"/>
-                                            <br/>
-                                        </ui:repeat> </label>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{in_doc.document.personReaders}" var="element">
+                                                <h:outputText value="#{element}" converter="PersonConverter"
+                                                              class="width"/>
+                                                <br/>
+                                            </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
                             <tr class="row">
-                                <td class="first"><label> <span class="title">
-                                                                        Редакторы: </span>
-                                </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">Редакторы: </span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{in_doc.document.personEditors}" var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="PersonConverter" class="width"/>
-                                            <br/>
-                                        </ui:repeat> </label>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{in_doc.document.personEditors}" var="element">
+                                                <h:outputText value="#{element}" converter="PersonConverter"
+                                                              class="width"/>
+                                                <br/>
+                                            </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
@@ -1526,33 +1479,38 @@
                         <legend>Роли</legend>
                         <table class="form_grid">
                             <tr class="row">
-                                <td class="first"><label> <span class="title">
-                                                                        На чтение: </span>
-                                </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">На чтение: </span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{in_doc.document.roleReaders}" var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="RoleConverter" class="width"/>
-                                            <br/>
-                                        </ui:repeat> </label>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{in_doc.document.roleReaders}" var="element">
+                                                <h:outputText value="#{element}" converter="RoleConverter"
+                                                              class="width"/>
+                                                <br/>
+                                            </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
                             <tr class="row">
-                                <td class="first"><label><span class="title">На
-                                                                        редактирование:</span> </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">На редактирование:</span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{in_doc.document.roleEditors}" var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="RoleConverter" class="width"/>
-                                            <br/>
-                                        </ui:repeat> </label>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{in_doc.document.roleEditors}" var="element">
+                                                <h:outputText value="#{element}" converter="RoleConverter"
+                                                              class="width"/>
+                                                <br/>
+                                            </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
@@ -1576,7 +1534,6 @@
     </div>
 </h:panelGroup>
 </e5ui:tabPage>
-
 <e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;История&lt;/span&gt;&lt;/span&gt;"
               actionBehavior="client"
               selected="#{in_doc.historyTabSelected}"
@@ -1842,9 +1799,7 @@
                       hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
                       hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
                       displayMode="window">
-        <h:button
-                onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
-                value="ОК"/>
+        <h:button onclick="e5ui_multiMarker.remove('main_form_marker'); return false;" value="ОК"/>
     </e5ui:multiMarker>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>

@@ -1,5 +1,6 @@
 package ru.efive.sql.dao;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -10,7 +11,6 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.util.Assert;
-
 import ru.entity.model.mapped.AbstractEntity;
 import ru.util.ApplicationHelper;
 
@@ -200,14 +200,14 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
      * @param asc              направление сортировки
      */
     protected void addOrder(DetachedCriteria detachedCriteria, String orderBy, Boolean asc) {
-        if (ApplicationHelper.nonEmptyString(orderBy)) {
+        if (StringUtils.isNotEmpty(orderBy)) {
             if (asc == null) {
                 asc = true;
             }
 
             DetachedCriteria orderingCriteria = detachedCriteria;
             if (orderBy.indexOf('.') > 0) {
-                String[] parts = ApplicationHelper.splitStr(orderBy, "\\.");
+                String[] parts = orderBy.split(".");
                 int length = parts.length;
                 if (length == 2) {
                     orderingCriteria = detachedCriteria.createCriteria(parts[0], DetachedCriteria.LEFT_JOIN);
@@ -233,18 +233,14 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
      * @param orders           массив строк с названиями полей
      * @param asc              направление сортировки
      */
-    protected void addOrder(DetachedCriteria detachedCriteria, String[] orders, Boolean asc) {
-        if (orders == null || orders.length < 1)
+    protected void addOrder(DetachedCriteria detachedCriteria, String[] orders, boolean asc) {
+        if (orders == null || orders.length < 1) {
             return;
-
-        if (asc == null) {
-            asc = true;
         }
-
         DetachedCriteria orderingCriteria = detachedCriteria;
 
-        if (orders[0].indexOf('.') > 0) {
-            String[] parts = ApplicationHelper.splitStr(orders[0], "\\.");
+        if (orders[0].contains(".")) {
+            String[] parts = orders[0].split("\\.");
             int length = parts.length;
             if (length == 2) {
                 orderingCriteria = detachedCriteria.createCriteria(parts[0], DetachedCriteria.LEFT_JOIN);
@@ -259,7 +255,7 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
             }
         }
         for (String order : orders) {
-            String[] parts = ApplicationHelper.splitStr(order, "\\.");
+            String[] parts = order.split("\\.");
             orderingCriteria.addOrder(asc ? Order.asc(parts[parts.length - 1]) : Order.desc(parts[parts.length - 1]));
         }
 
@@ -276,13 +272,13 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
      * @param asc      направление сортировки
      */
     protected void addOrder(Criteria criteria, String orderBy, Boolean asc) {
-        if (ApplicationHelper.nonEmptyString(orderBy)) {
+        if (StringUtils.isNotEmpty(orderBy)) {
             if (asc == null) {
                 asc = true;
             }
             Criteria orderingCriteria = criteria;
-            if (orderBy.indexOf('.') > 0) {
-                String[] parts = ApplicationHelper.splitStr(orderBy, "\\.");
+            if (orderBy.contains(".")) {
+                String[] parts = orderBy.split("\\.");
                 int length = parts.length;
                 if (length == 2) {
                     orderingCriteria = criteria.createCriteria(parts[0], Criteria.LEFT_JOIN);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.*;
 
@@ -59,7 +60,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      */
     @Override
     public User findByLoginAndPassword(final String login, final String password) {
-        if (ApplicationHelper.nonEmptyString(login) && ApplicationHelper.nonEmptyString(password)) {
+        if (StringUtils.isNotEmpty(login) && StringUtils.isNotEmpty(password)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
@@ -93,7 +94,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      */
     @Override
     public User getByLogin(String login) {
-        if (ApplicationHelper.nonEmptyString(login)) {
+        if (StringUtils.isNotEmpty(login)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
@@ -117,7 +118,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
 
     @Override
     public User getByLogin(String login, Integer excludeUserId) {
-        if (ApplicationHelper.nonEmptyString(login)) {
+        if (StringUtils.isNotEmpty(login)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
@@ -148,7 +149,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      * @return пользователь или null, если такового не существует
      */
     public User getByEmail(String email) {
-        if (ApplicationHelper.nonEmptyString(email)) {
+        if (StringUtils.isNotEmpty(email)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
@@ -166,7 +167,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     }
 
     public User getByEmailName(String emailName) {
-        if (ApplicationHelper.nonEmptyString(emailName)) {
+        if (StringUtils.isNotEmpty(emailName)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
@@ -184,7 +185,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     }
 
     public User getByEmail(String email, Integer excludeUserId) {
-        if (ApplicationHelper.nonEmptyString(email)) {
+        if (StringUtils.isNotEmpty(email)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
@@ -206,7 +207,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Role.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(name)) {
+        if (StringUtils.isNotEmpty(name)) {
             detachedCriteria.add(Restrictions.eq("name", name));
         }
 
@@ -231,7 +232,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     public List<Role> findRoles(String name, Set<Permission> permissions, int offset, int count, String orderBy, boolean asc) {
         DetachedCriteria detachedCriteria = createCriteriaForRoles(name, permissions);
 
-        if (ApplicationHelper.nonEmptyString(orderBy)) {
+        if (StringUtils.isNotEmpty(orderBy)) {
             detachedCriteria.addOrder(asc ? Order.asc(orderBy) : Order.desc(orderBy));
         }
 
@@ -254,23 +255,23 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(login)) {
+        if (StringUtils.isNotEmpty(login)) {
             detachedCriteria.add(Restrictions.ilike("login", login + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(lastname)) {
+        if (StringUtils.isNotEmpty(lastname)) {
             detachedCriteria.add(Restrictions.ilike("lastname", lastname + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(firstname)) {
+        if (StringUtils.isNotEmpty(firstname)) {
             detachedCriteria.add(Restrictions.ilike("firstname", firstname + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(middlename)) {
+        if (StringUtils.isNotEmpty(middlename)) {
             detachedCriteria.add(Restrictions.ilike("middlename", middlename + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(email)) {
+        if (StringUtils.isNotEmpty(email)) {
             detachedCriteria.add(Restrictions.ilike("email", email + "%"));
         }
 
@@ -288,27 +289,27 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(login)) {
+        if (StringUtils.isNotEmpty(login)) {
             detachedCriteria.add(Restrictions.ilike("login", login + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(lastname)) {
+        if (StringUtils.isNotEmpty(lastname)) {
             detachedCriteria.add(Restrictions.ilike("lastname", lastname + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(firstname)) {
+        if (StringUtils.isNotEmpty(firstname)) {
             detachedCriteria.add(Restrictions.ilike("firstname", firstname + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(middlename)) {
+        if (StringUtils.isNotEmpty(middlename)) {
             detachedCriteria.add(Restrictions.ilike("middlename", middlename + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(email)) {
+        if (StringUtils.isNotEmpty(email)) {
             detachedCriteria.add(Restrictions.ilike("email", email + "%"));
         }
 
-        if (ApplicationHelper.nonEmptyString(jobDepartment)) {
+        if (StringUtils.isNotEmpty(jobDepartment)) {
             String[] parts = jobDepartment.split(" ");
             for (String part : parts) {
                 detachedCriteria.add(Restrictions.ilike("jobDepartment", "%" + part + "%"));
@@ -316,7 +317,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
 
         }
 
-        if (ApplicationHelper.nonEmptyString(jobPosition)) {
+        if (StringUtils.isNotEmpty(jobPosition)) {
             detachedCriteria.add(Restrictions.ilike("jobPosition", jobPosition + "%"));
         }
 
@@ -365,8 +366,8 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     public List<Permission> getPermission(String name, PermissionType permissionType) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Permission.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        if ((ApplicationHelper.nonEmptyString(name)) || (permissionType != null)) {
-            if (ApplicationHelper.nonEmptyString(name)) {
+        if ((StringUtils.isNotEmpty(name)) || (permissionType != null)) {
+            if (StringUtils.isNotEmpty(name)) {
                 detachedCriteria.add(Restrictions.eq("name", name));
             }
             if ((permissionType != null)) {
@@ -437,7 +438,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     }
 
     private void addPatternCriteria(final DetachedCriteria searchCriteria, final String pattern) {
-        if (ApplicationHelper.nonEmptyString(pattern)) {
+        if (StringUtils.isNotEmpty(pattern)) {
             LogicalExpression orExp = Restrictions.or(Restrictions.ilike("lastName", pattern + "%"),
                     Restrictions.ilike("middleName", pattern + "%"));
             orExp = Restrictions.or(orExp, Restrictions.ilike("firstName", pattern + "%"));
@@ -608,7 +609,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
 
 
     public User getUser(final Integer id) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         detachedCriteria.setFetchMode("jobPosition", FetchMode.JOIN);
         detachedCriteria.setFetchMode("jobDepartment", FetchMode.JOIN);

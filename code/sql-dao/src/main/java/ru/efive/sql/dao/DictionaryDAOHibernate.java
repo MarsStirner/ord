@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.CriteriaSpecification;
 import org.hibernate.criterion.DetachedCriteria;
@@ -37,7 +38,7 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(value)) {
+        if (StringUtils.isNotEmpty(value)) {
             detachedCriteria.add(Restrictions.ilike("value", value));
         }
 
@@ -48,7 +49,7 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(category)) {
+        if (StringUtils.isNotEmpty(category)) {
             detachedCriteria.add(Restrictions.ilike("category", category));
         }
 
@@ -59,7 +60,7 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(category)) {
+        if (StringUtils.isNotEmpty(category)) {
             detachedCriteria.add(Restrictions.ilike("category", category));
             detachedCriteria.add(Restrictions.ilike("value", value));
         }
@@ -72,7 +73,7 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(category)) {
+        if (StringUtils.isNotEmpty(category)) {
             detachedCriteria.add(Restrictions.ilike("category", category));
             detachedCriteria.add(Restrictions.ilike("description", description));
         }

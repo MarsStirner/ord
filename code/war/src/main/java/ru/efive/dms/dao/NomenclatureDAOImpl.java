@@ -1,13 +1,12 @@
 package ru.efive.dms.dao;
 
-import java.util.List;
-
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
-
 import ru.efive.sql.dao.DictionaryDAOHibernate;
-import ru.util.ApplicationHelper;
 import ru.entity.model.document.Nomenclature;
+
+import java.util.List;
 
 public class NomenclatureDAOImpl extends DictionaryDAOHibernate<Nomenclature> {
 
@@ -20,7 +19,7 @@ public class NomenclatureDAOImpl extends DictionaryDAOHibernate<Nomenclature> {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (ApplicationHelper.nonEmptyString(description)) {
+        if (StringUtils.isNotEmpty(description)) {
             detachedCriteria.add(Restrictions.eq("description", description));
         }
 

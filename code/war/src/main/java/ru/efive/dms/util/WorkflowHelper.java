@@ -1,5 +1,6 @@
 package ru.efive.dms.util;
 
+import org.apache.commons.lang.StringUtils;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -33,7 +34,7 @@ public final class WorkflowHelper {
     public static boolean changeTaskExecutionDateAction(NoStatusAction changeDateAction, Task task) {
         boolean result = false;
         try {
-            Date currentDate = Calendar.getInstance(new Locale("ru", "RU")).getTime();
+            Date currentDate = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
 
             Date choosenDate = null;
             for (EditableProperty property : changeDateAction.getProperties()) {
@@ -53,10 +54,9 @@ public final class WorkflowHelper {
                             sendMailActivity.setMessage(message);
                         }
                     }*/
-                String delegateReasin = "Делегирован " + task.getExecutor().getDescriptionShort() + " " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
-                task.setWFResultDescription(delegateReasin);
+                final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
+                task.setWFResultDescription(String.format(delegateReason,task.getExecutors().get(0).getFullName()));
                 task.setExecutionDate(choosenDate);
-
                 result = true;
             } else {
                 System.out.println("No date fo change execution date");
@@ -71,7 +71,7 @@ public final class WorkflowHelper {
     public static boolean doTaskDelegateAction(NoStatusAction delegateAction, Task task) {
         boolean result = false;
         try {
-            Date currentDate = Calendar.getInstance(new Locale("ru", "RU")).getTime();
+            Date currentDate = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             //List<HumanTask> currentTaskList = delegateAction.getResolver().getCurrentTaskList();
             User selectedUser = null;
             for (EditableProperty property : delegateAction.getProperties()) {
@@ -91,9 +91,11 @@ public final class WorkflowHelper {
                         sendMailActivity.setMessage(message);
                     }
                 }
-                String delegateReasin = "Делегирован " + task.getExecutor().getDescriptionShort() + " " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
-                task.setWFResultDescription(delegateReasin);
-                task.setExecutor(selectedUser);
+                final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
+                task.setWFResultDescription(String.format(delegateReason,task.getExecutors().get(0).getFullName()));
+                final HashSet<User> users = new HashSet<User>(1);
+                users.add(selectedUser);
+                task.setExecutors(users);
 
                 result = true;
             } else {
@@ -142,19 +144,19 @@ public final class WorkflowHelper {
         boolean result = false;
         OutgoingDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
         if (document.getSigner() == null) {
-            in_result.append("Необходимо выбрать Руководителя;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (document.getExecutor() == null) {
-            in_result.append("Необходимо выбрать Ответственного исполнителя;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Ответственного исполнителя;").append(System.getProperty("line.separator"));
         }
         if (document.getRecipientContragents() == null || document.getRecipientContragents().size() == 0) {
-            in_result.append("Необходимо выбрать Адресата;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Адресата;").append(System.getProperty("line.separator"));
         }
         if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
-            in_result.append("Необходимо заполнить Краткое содержание;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо заполнить Краткое содержание;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
@@ -335,19 +337,19 @@ public final class WorkflowHelper {
         boolean result = false;
         IncomingDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
         if (document.getController() == null) {
-            in_result.append("Необходимо выбрать Руководителя;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (document.getContragent() == null) {
-            in_result.append("Необходимо выбрать Корреспондента;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Корреспондента;").append(System.getProperty("line.separator"));
         }
         if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) &&
                 (document.getRecipientGroups() == null || document.getRecipientGroups().size() == 0)) {
-            in_result.append("Необходимо выбрать Адресатов;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
-            in_result.append("Необходимо заполнить Краткое содержание;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо заполнить Краткое содержание;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.length() == 0) {
@@ -365,7 +367,7 @@ public final class WorkflowHelper {
                         Role in_office;
                         if (in_nomenclature != null) {
                             in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                            in_number.append(in_nomenclature.getCategory() + "-");
+                            in_number.append(in_nomenclature.getCategory()).append("-");
                         } else {
                             in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                             in_number.append("01-");
@@ -384,7 +386,7 @@ public final class WorkflowHelper {
                         if (paperCopies.size() > 0) {
                             for (PaperCopyDocument paperCopy : paperCopies) {
                                 String copyNumber = paperCopy.getRegistrationNumber();
-                                if (copyNumber.indexOf("...") > -1) {
+                                if (copyNumber.contains("...")) {
                                     copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
                                     paperCopy.setRegistrationNumber(copyNumber);
                                 } else if (copyNumber.isEmpty()) {
@@ -420,7 +422,7 @@ public final class WorkflowHelper {
         boolean result = false;
         IncomingDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
         List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
@@ -428,7 +430,7 @@ public final class WorkflowHelper {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
                 if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № " + copyNumber + " необходимо перевести в один из архивных статусов;");
+                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber).append(" необходимо перевести в один из архивных статусов;");
                 }
             }
         }
@@ -453,20 +455,20 @@ public final class WorkflowHelper {
         boolean result = false;
         PaperCopyDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
         if (document.getOfficeKeepingVolume() == null) {
-            in_result.append("Необходимо указать нужный том дела;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо указать нужный том дела;").append(System.getProperty("line.separator"));
         } else {
             OfficeKeepingVolume parentVolume = document.getOfficeKeepingVolume();
             int limitUnitsCount = parentVolume.getLimitUnitsCount();
             int currentUnitsCount = parentVolume.getUnitsCount();
             if (limitUnitsCount < (currentUnitsCount + document.getAppendixiesCount() * document.getSheetsCount() * document.getCopiesCount())) {
-                in_result.append("Количество листов в выбраном томе дела превышает предельно допустимое." + System.getProperty("line.separator"));
+                in_result.append("Количество листов в выбраном томе дела превышает предельно допустимое.").append(System.getProperty("line.separator"));
             }
         }
 
         if (document.getSheetsCount() == 0) {
-            in_result.append("Необходимо указать количество листов;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо указать количество листов;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
@@ -489,20 +491,20 @@ public final class WorkflowHelper {
         boolean result = false;
         InternalDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
         if (document.getSigner() == null) {
-            in_result.append("Необходимо выбрать Руководителя;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (document.getResponsible() == null) {
-            in_result.append("Необходимо выбрать Контроль исполнения;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Контроль исполнения;").append(System.getProperty("line.separator"));
         }
         if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) &&
                 (document.getRecipientGroups() == null || document.getRecipientGroups().size() == 0)) {
-            in_result.append("Необходимо выбрать Адресатов;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
-            in_result.append("Необходимо заполнить Краткое содержание;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо заполнить Краткое содержание;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
@@ -522,7 +524,7 @@ public final class WorkflowHelper {
                             Role in_office;
                             if (in_nomenclature != null) {
                                 in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                                in_number.append(in_nomenclature.getCategory() + "-");
+                                in_number.append(in_nomenclature.getCategory()).append("-");
                             } else {
                                 in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                                 in_number.append("01-");
@@ -569,7 +571,7 @@ public final class WorkflowHelper {
                                                         + 1
                                         )
                                 );
-                                in_number.append(in_count.substring(in_count.length() - 4) + "/Методические пособия/" + ydf.format(java.util.Calendar.getInstance().getTime()));
+                                in_number.append(in_count.substring(in_count.length() - 4)).append("/Методические пособия/").append(ydf.format(Calendar.getInstance().getTime()));
 
 
                             } else if (in_form.equals("Инструкция")) {
@@ -581,7 +583,7 @@ public final class WorkflowHelper {
                                                         + 1
                                         )
                                 );
-                                in_number.append(in_count.substring(in_count.length() - 4) + "/Инструкции/" + ydf.format(java.util.Calendar.getInstance().getTime()));
+                                in_number.append(in_count.substring(in_count.length() - 4)).append("/Инструкции/").append(ydf.format(Calendar.getInstance().getTime()));
 
 
                             } else if (in_form.equals("Служебная записка")) {
@@ -614,7 +616,7 @@ public final class WorkflowHelper {
                                                         + 1
                                         )
                                 );
-                                in_number.append(in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
+                                in_number.append(in_count.substring(in_count.length() - 4)).append("/").append(ydf.format(Calendar.getInstance().getTime()));
 
                             } else if (in_form.equals("Гарантийное письмо")) {
                                 in_number = new StringBuffer();
@@ -627,7 +629,7 @@ public final class WorkflowHelper {
                                                         + 1
                                         )
                                 );
-                                in_number.append("ГП/" + in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
+                                in_number.append("ГП/").append(in_count.substring(in_count.length() - 4)).append("/").append(ydf.format(Calendar.getInstance().getTime()));
 
                             } else if (in_form.equals("Приказ")) {
                                 in_number = new StringBuffer();
@@ -650,13 +652,13 @@ public final class WorkflowHelper {
                                 in_filters.put("registrationNumber", "%");
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
-                                in_number.append("ПВР/" + in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
+                                in_number.append("ПВР/").append(in_count.substring(in_count.length() - 4)).append("/").append(ydf.format(Calendar.getInstance().getTime()));
                             } else if (in_form.equals("Положение")) {
                                 in_number = new StringBuffer();
                                 in_filters.put("registrationNumber", "%");
                                 in_filters.put("form", document.getForm());
                                 in_count = new StringBuffer("0000" + String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1));
-                                in_number.append("Положение/" + in_count.substring(in_count.length() - 4) + "/" + ydf.format(java.util.Calendar.getInstance().getTime()));
+                                in_number.append("Положение/").append(in_count.substring(in_count.length() - 4)).append("/").append(ydf.format(Calendar.getInstance().getTime()));
                             } else {
                                 result = false;
                                 document.setWFResultDescription("Данный вид документа не может быть зарегистрирован!");
@@ -668,7 +670,7 @@ public final class WorkflowHelper {
                             if (paperCopies.size() > 0) {
                                 for (PaperCopyDocument paperCopy : paperCopies) {
                                     String copyNumber = paperCopy.getRegistrationNumber();
-                                    if (copyNumber.indexOf("...") > -1) {
+                                    if (copyNumber.contains("...")) {
                                         copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
                                         paperCopy.setRegistrationNumber(copyNumber);
                                     } else if (copyNumber.isEmpty()) {
@@ -704,54 +706,53 @@ public final class WorkflowHelper {
 
     public static boolean setInternalRegistrationNumberOnOutDate(InternalDocument doc) {
         boolean result = false;
-        InternalDocument document = doc;
-        document.setClosePeriodRegistrationFlag(true);
+        doc.setClosePeriodRegistrationFlag(true);
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
-        if (document.getSigner() == null) {
-            in_result.append("Необходимо выбрать Руководителя;" + System.getProperty("line.separator"));
+        if (doc.getSigner() == null) {
+            in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
-        if (document.getResponsible() == null) {
-            in_result.append("Необходимо выбрать Ответственного;" + System.getProperty("line.separator"));
+        if (doc.getResponsible() == null) {
+            in_result.append("Необходимо выбрать Ответственного;").append(System.getProperty("line.separator"));
         }
-        if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) &&
-                (document.getRecipientGroups() == null || document.getRecipientGroups().size() == 0)) {
-            in_result.append("Необходимо выбрать Адресатов;" + System.getProperty("line.separator"));
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) &&
+                (doc.getRecipientGroups() == null || doc.getRecipientGroups().size() == 0)) {
+            in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
-        if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
-            in_result.append("Необходимо заполнить Краткое содержание;" + System.getProperty("line.separator"));
+        if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
+            in_result.append("Необходимо заполнить Краткое содержание;").append(System.getProperty("line.separator"));
         }
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         try {
-            if (!sdf.parse(sdf.format(document.getRegistrationDate())).before(sdf.parse(sdf.format(new Date())))) {
-                in_result.append("Дата регистрации должна быть указана до текущей даты;" + System.getProperty("line.separator"));
-                document.setRegistrationNumber(null);
+            if (!sdf.parse(sdf.format(doc.getRegistrationDate())).before(sdf.parse(sdf.format(new Date())))) {
+                in_result.append("Дата регистрации должна быть указана до текущей даты;").append(System.getProperty("line.separator"));
+                doc.setRegistrationNumber(null);
             }
         } catch (ParseException e1) {
             e1.printStackTrace();
-            in_result.append(e1.toString() + ";" + System.getProperty("line.separator"));
+            in_result.append(e1.toString()).append(";").append(System.getProperty("line.separator"));
         }
 
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
         Map<String, Object> in_filters = new HashMap<String, Object>();
-        in_filters.put("registrationNumber", document.getRegistrationNumber());
+        in_filters.put("registrationNumber", doc.getRegistrationNumber());
         List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, false, true);
         if (copyDocuments.size() != 0) {
-            in_result.append("Документ под таким номером уже существует;" + System.getProperty("line.separator"));
-            document.setRegistrationNumber(null);
+            in_result.append("Документ под таким номером уже существует;").append(System.getProperty("line.separator"));
+            doc.setRegistrationNumber(null);
         }
 
         if (in_result.toString().equals("")) {
             try {
                 DictionaryManagementBean dictionaryManager = (DictionaryManagementBean) context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
-                if (document == null) {
+                if (doc == null) {
                     result = false;
                 } else {
-                    if (document != null) {
-                        Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
+                    if (doc != null) {
+                        Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getSigner().getUNID());
                         List<Role> in_roles = new ArrayList<Role>();
                         Role in_office;
                         if (in_nomenclature != null) {
@@ -762,17 +763,17 @@ public final class WorkflowHelper {
                         if ((in_office != null) && (!in_roles.contains(in_office))) {
                             in_roles.add(in_office);
                         }
-                        document.setRoleEditors(in_roles);
+                        doc.setRoleEditors(in_roles);
 
-                        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
                         if (paperCopies.size() > 0) {
                             for (PaperCopyDocument paperCopy : paperCopies) {
                                 String copyNumber = paperCopy.getRegistrationNumber();
-                                if (copyNumber.indexOf("...") > -1) {
-                                    copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
+                                if (copyNumber.contains("...")) {
+                                    copyNumber = copyNumber.replaceFirst("...", doc.getRegistrationNumber());
                                     paperCopy.setRegistrationNumber(copyNumber);
                                 } else if (copyNumber.isEmpty()) {
-                                    copyNumber = document.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
+                                    copyNumber = doc.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
                                     paperCopy.setRegistrationNumber(copyNumber);
                                 }
                                 if (paperCopy.getDocumentStatus().getId() < 2) {
@@ -789,31 +790,30 @@ public final class WorkflowHelper {
                 }
             } catch (Exception e) {
                 result = false;
-                document.setWFResultDescription(e.toString());
+                doc.setWFResultDescription(e.toString());
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
 
     public static boolean checkInternalPropertiesForArchiving(InternalDocument doc) {
         boolean result = false;
-        InternalDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
                 if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № " + copyNumber + " необходимо перевести в один из архивных статусов;");
+                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber).append(" необходимо перевести в один из архивных статусов;");
                 }
             }
         }
@@ -826,27 +826,26 @@ public final class WorkflowHelper {
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
 
     public static boolean checkRequestPropertiesForArchiving(RequestDocument doc) {
         boolean result = false;
-        RequestDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
                 if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № " + copyNumber + " необходимо перевести в один из архивных статусов;");
+                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber).append(" необходимо перевести в один из архивных статусов;");
                 }
             }
         }
@@ -859,24 +858,23 @@ public final class WorkflowHelper {
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
 
     public static boolean checkInternalDocumentPropertiesForReview(InternalDocument doc) {
         boolean result = false;
-        InternalDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
-        if (document.getSigner() == null) {
-            in_result.append("Необходимо указать руководителя;" + System.getProperty("line.separator"));
+        StringBuilder in_result = new StringBuilder("");
+        if (doc.getSigner() == null) {
+            in_result.append("Необходимо указать руководителя;").append(System.getProperty("line.separator"));
         }
-        if (document.getResponsible() == null) {
-            in_result.append("Необходимо указать ответственного;" + System.getProperty("line.separator"));
+        if (doc.getResponsible() == null) {
+            in_result.append("Необходимо указать ответственного;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
@@ -884,12 +882,12 @@ public final class WorkflowHelper {
 
                 SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
                 DictionaryManagementBean dictionaryManager = (DictionaryManagementBean) context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
-                if (document == null) {
+                if (doc == null) {
                     result = false;
                 } else {
-                    if (document != null) {
-                        if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
-                            Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(document.getSigner().getUNID());
+                    if (doc != null) {
+                        if (doc.getRegistrationNumber() == null || doc.getRegistrationNumber().isEmpty()) {
+                            Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getSigner().getUNID());
                             Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
                             List<Role> in_roles = new ArrayList<Role>();
                             in_roles.add(in_administrationRole);
@@ -903,7 +901,7 @@ public final class WorkflowHelper {
                             if ((in_office != null) && (!in_roles.contains(in_office))) {
                                 in_roles.add(in_office);
                             }
-                            document.setRoleEditors(in_roles);
+                            doc.setRoleEditors(in_roles);
                             System.out.println("->true");
                             result = true;
                         }
@@ -911,14 +909,14 @@ public final class WorkflowHelper {
                 }
             } catch (Exception e) {
                 result = false;
-                document.setWFResultDescription(e.toString());
+                doc.setWFResultDescription(e.toString());
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
@@ -927,7 +925,7 @@ public final class WorkflowHelper {
         boolean result = false;
         //RequestDocument document=doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
         if ((document.getSenderType() == null)) {
             in_result.append("Необходимо указать Тип отправителя документа; \n");
@@ -941,7 +939,7 @@ public final class WorkflowHelper {
         }
         if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) &&
                 (document.getRecipientGroups() == null || document.getRecipientGroups().size() == 0)) {
-            in_result.append("Необходимо выбрать Адресатов;" + System.getProperty("line.separator"));
+            in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
             in_result.append("Необходимо заполнить Краткое содержание; \n");
@@ -965,7 +963,7 @@ public final class WorkflowHelper {
                         if (paperCopies.size() > 0) {
                             for (PaperCopyDocument paperCopy : paperCopies) {
                                 String copyNumber = paperCopy.getRegistrationNumber();
-                                if (copyNumber.indexOf("...") > -1) {
+                                if (copyNumber.contains("...")) {
                                     copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
                                     paperCopy.setRegistrationNumber(copyNumber);
                                 } else if (copyNumber.isEmpty()) {
@@ -1016,58 +1014,56 @@ public final class WorkflowHelper {
     public static boolean setTaskRegistrationNumber(Task doc) {
         System.out.println("start task registration");
         boolean result = false;
-        Task document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
-        if (document.getExecutor() == null) {
-            in_result.append("Необходимо выбрать Исполнителя;" + System.getProperty("line.separator"));
+        if (doc.getExecutors() == null || doc.getExecutors().isEmpty()) {
+            in_result.append("Необходимо выбрать Исполнителя;").append(System.getProperty("line.separator"));
         } else {
-            if (document.getExecutor().getEmail().isEmpty()) {
-                in_result.append("У исполнителя по поручению отсутствует адрес электронной почты;" + System.getProperty("line.separator"));
+            for (User user : doc.getExecutors()) {
+                if (StringUtils.isEmpty(user.getEmail())) {
+                    in_result.append("У исполнителя по поручению отсутствует адрес электронной почты;").append(System.getProperty("line.separator"));
+                }
             }
         }
-        if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
-            in_result.append("Необходимо заполнить Текст поручения;" + System.getProperty("line.separator"));
+        if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
+            in_result.append("Необходимо заполнить Текст поручения;").append(System.getProperty("line.separator"));
         }
 
-        if (in_result.toString().equals("")) {
-
+        if (in_result.toString().isEmpty()) {
             try {
-                SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                DictionaryManagementBean dictionaryManager = (DictionaryManagementBean) context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
-
-                if (document == null) {
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+                if (doc == null) {
                     result = false;
                 } else {
-                    if (document != null) {
-                        if (document.getTaskNumber() == null || document.getTaskNumber().isEmpty()) {
+                    if (doc != null) {
+                        if (doc.getTaskNumber() == null || doc.getTaskNumber().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             StringBuffer in_count = new StringBuffer();
                             Map<String, Object> in_filters = new HashMap<String, Object>();
 
-                            String key = document.getRootDocumentId();
+                            String key = doc.getRootDocumentId();
                             if (key != null && !key.isEmpty()) {
                                 in_filters.put("rootDocumentId", key);
                                 int pos = key.indexOf('_');
                                 if (pos != -1) {
                                     String id = key.substring(pos + 1, key.length());
-                                    StringBuffer in_description = new StringBuffer("");
+                                    StringBuilder in_description = new StringBuilder("");
 
-                                    if (key.indexOf("incoming") != -1) {
+                                    if (key.contains("incoming")) {
                                         IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
                                                 INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(in_doc.getRegistrationNumber() + "/");
-                                    } else if (key.indexOf("outgoing") != -1) {
+                                        in_number.append(in_doc.getRegistrationNumber()).append("/");
+                                    } else if (key.contains("outgoing")) {
                                         OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(out_doc.getRegistrationNumber() + "/");
-                                    } else if (key.indexOf("internal") != -1) {
+                                        in_number.append(out_doc.getRegistrationNumber()).append("/");
+                                    } else if (key.contains("internal")) {
                                         InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(internal_doc.getRegistrationNumber() + "/");
-                                    } else if (key.indexOf("request") != -1) {
+                                        in_number.append(internal_doc.getRegistrationNumber()).append("/");
+                                    } else if (key.contains("request")) {
                                         RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(request_doc.getRegistrationNumber() + "/");
-                                    } else if (key.indexOf("task") != -1) {
+                                        in_number.append(request_doc.getRegistrationNumber()).append("/");
+                                    } else if (key.contains("task")) {
                                         Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                                         in_number.append("");
                                         in_filters.clear();
@@ -1082,10 +1078,10 @@ public final class WorkflowHelper {
 
                             in_count.append(String.valueOf(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 1));
                             in_number.append(in_count);
-                            document.setTaskNumber(in_number.toString());
+                            doc.setTaskNumber(in_number.toString());
 
                             Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                            document.setRegistrationDate(calendar.getTime());
+                            doc.setRegistrationDate(calendar.getTime());
 
                             result = true;
                         } else {
@@ -1099,18 +1095,17 @@ public final class WorkflowHelper {
             }
 
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
 
     public static boolean formAgreementTree(AgreementIssue doc, HumanTaskTree template) {
-        boolean result = false;
         try {
-            SessionManagementBean sessionManagement = (SessionManagementBean) FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
+            SessionManagementBean sessionManagement = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
                     FacesContext.getCurrentInstance(), "#{sessionManagement}", SessionManagementBean.class);
             Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             User author = sessionManagement.getLoggedUser();
@@ -1150,13 +1145,13 @@ public final class WorkflowHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return false;
     }
 
     private static List<HumanTaskTreeNode> getChildNodeListFromTemplate(HumanTaskTreeNode rootNodeTemplate) throws Exception {
         List<HumanTaskTreeNode> result = new ArrayList<HumanTaskTreeNode>();
         try {
-            SessionManagementBean sessionManagement = (SessionManagementBean) FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
+            SessionManagementBean sessionManagement = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
                     FacesContext.getCurrentInstance(), "#{sessionManagement}", SessionManagementBean.class);
             Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             User author = sessionManagement.getLoggedUser();
@@ -1192,19 +1187,18 @@ public final class WorkflowHelper {
 
     public static boolean setOfficeKeepingFileRegistrationNumber(OfficeKeepingFile doc) {
         boolean result = false;
-        OfficeKeepingFile document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
-        if (document.getFileIndex() == null || document.getFileIndex().equals("")) {
-            in_result.append("Необходимо заполнить поле Индекс" + System.getProperty("line.separator"));
+        if (doc.getFileIndex() == null || doc.getFileIndex().equals("")) {
+            in_result.append("Необходимо заполнить поле Индекс").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
             try {
                 //FacesContext context=FacesContext.getCurrentInstance();
                 SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                long checkCount = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).countDocumentsByNumber(document.getFileIndex());
+                long checkCount = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).countDocumentsByNumber(doc.getFileIndex());
 
                 if (checkCount > 0) {
                     result = false;
@@ -1218,39 +1212,38 @@ public final class WorkflowHelper {
             }
 
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             } else {
-                document.setWFResultDescription(in_result.toString());
+                doc.setWFResultDescription(in_result.toString());
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
 
     public static boolean setOfficeKeepingVolumeRegistrationNumber(OfficeKeepingVolume doc) {
         boolean result = false;
-        OfficeKeepingVolume document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
-        if (document.getParentFile() == null) {
-            in_result.append("Необходимо указать корректную номенклатуру дела;" + System.getProperty("line.separator"));
+        if (doc.getParentFile() == null) {
+            in_result.append("Необходимо указать корректную номенклатуру дела;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
             try {
                 //FacesContext context=FacesContext.getCurrentInstance();
                 SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                if (document == null) {
+                if (doc == null) {
                     result = false;
                 } else {
-                    if (document != null) {
-                        if (document.getVolumeIndex() == null || document.getVolumeIndex().isEmpty()) {
+                    if (doc != null) {
+                        if (doc.getVolumeIndex() == null || doc.getVolumeIndex().isEmpty()) {
                             StringBuffer in_number = new StringBuffer();
                             //StringBuffer in_count=new  StringBuffer("0000"+String.valueOf(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class,OFFICE_KEEPING_FILE_DAO).findRegistratedDocuments().size()+1));
                             int in_count = 0;
-                            OfficeKeepingFile parentFile = document.getParentFile();
+                            OfficeKeepingFile parentFile = doc.getParentFile();
                             Set<OfficeKeepingVolume> in_volumes = parentFile.getVolumes();
                             if (in_volumes != null) {
                                 for (OfficeKeepingVolume in_volume : in_volumes) {
@@ -1260,8 +1253,8 @@ public final class WorkflowHelper {
                                 }
                             }
                             in_count++;
-                            in_number.append(parentFile.getFileIndex() + "/" + in_count);
-                            document.setVolumeIndex(in_number.toString());
+                            in_number.append(parentFile.getFileIndex()).append("/").append(in_count);
+                            doc.setVolumeIndex(in_number.toString());
                             //Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
                             //document.setRegistrationDate(calendar.getTime());
                             //Role in_administrationRole=sessionManagement.getDAO(RoleDAOHibernate.class, "roleDao").findRoleByType(RoleType.ENTERPRISE_ADMINISTRATION);
@@ -1285,25 +1278,24 @@ public final class WorkflowHelper {
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
 
     public static boolean checkPaperCopyPropertiesForUnfile(PaperCopyDocument doc) {
         boolean result = false;
-        PaperCopyDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuffer in_result = new StringBuffer("");
 
-        if (document.getCollector() == null) {
-            in_result.append("Необходимо указать кому будет выдан том дела;" + System.getProperty("line.separator"));
+        if (doc.getCollector() == null) {
+            in_result.append("Необходимо указать кому будет выдан том дела;").append(System.getProperty("line.separator"));
         }
-        if (document.getReturnDate() == null) {
-            in_result.append("Необходимо указать дату возврата тома дела;" + System.getProperty("line.separator"));
+        if (doc.getReturnDate() == null) {
+            in_result.append("Необходимо указать дату возврата тома дела;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
@@ -1314,25 +1306,24 @@ public final class WorkflowHelper {
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
 
     public static boolean checkOfficeKeepingVolumePropertiesForUnfile(OfficeKeepingVolume doc) {
         boolean result = false;
-        OfficeKeepingVolume document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
+        StringBuilder in_result = new StringBuilder("");
 
-        if (document.getCollector() == null) {
-            in_result.append("Необходимо указать кому будет выдан том дела;" + System.getProperty("line.separator"));
+        if (doc.getCollector() == null) {
+            in_result.append("Необходимо указать кому будет выдан том дела;").append(System.getProperty("line.separator"));
         }
-        if (document.getReturnDate() == null) {
-            in_result.append("Необходимо указать дату возврата тома дела;" + System.getProperty("line.separator"));
+        if (doc.getReturnDate() == null) {
+            in_result.append("Необходимо указать дату возврата тома дела;").append(System.getProperty("line.separator"));
         }
 
         if (in_result.toString().equals("")) {
@@ -1343,10 +1334,10 @@ public final class WorkflowHelper {
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
@@ -1354,10 +1345,9 @@ public final class WorkflowHelper {
 
     public static boolean setOfficeKeepingVolumeCollectorToEmpty(OfficeKeepingVolume doc) {
         boolean result = false;
-        OfficeKeepingVolume document = doc;
 
-        document.setCollector(null);
-        document.setReturnDate(null);
+        doc.setCollector(null);
+        doc.setReturnDate(null);
         try {
             result = true;
         } catch (Exception e) {
@@ -1365,17 +1355,16 @@ public final class WorkflowHelper {
             e.printStackTrace();
         }
         if (result) {
-            document.setWFResultDescription("");
+            doc.setWFResultDescription("");
         }
         return result;
     }
 
     public static boolean setPaperCopyCollectorToEmpty(PaperCopyDocument doc) {
         boolean result = false;
-        PaperCopyDocument document = doc;
 
-        document.setCollector(null);
-        document.setReturnDate(null);
+        doc.setCollector(null);
+        doc.setReturnDate(null);
         try {
             result = true;
         } catch (Exception e) {
@@ -1383,7 +1372,7 @@ public final class WorkflowHelper {
             e.printStackTrace();
         }
         if (result) {
-            document.setWFResultDescription("");
+            doc.setWFResultDescription("");
         }
         return result;
     }

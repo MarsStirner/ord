@@ -1,31 +1,21 @@
 package ru.efive.dms.dao;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.FetchMode;
+import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
-
 import ru.efive.sql.dao.GenericDAOHibernate;
+import ru.entity.model.document.DocumentForm;
+import ru.entity.model.document.Task;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 
-import ru.entity.model.document.DocumentForm;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 //import ru.entity.model.document.IncomingDocument;
-import ru.entity.model.document.Task;
 
 public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
@@ -372,7 +362,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     /**
      * Кол-во документов по автору
      *
-     * @param userId      - идентификатор пользователя
+     * @param user пользователь
      * @param showDeleted true - show deleted, false - hide deleted
      * @return кол-во результатов
      */
@@ -436,8 +426,6 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
     /**
      * Кол-во всех зарегистрированных документов по
-     *
-     * @param userId      - идентификатор пользователя
      * @param showDeleted true - show deleted, false - hide deleted
      * @return кол-во результатов
      */
@@ -634,7 +622,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     /**
      * Может ли пользователь получить доступ к документу благодаря ассоциациям
      *
-     * @param user пользователь
+     * @param user   пользователь
      * @param docKey идентификатор документа вида "incoming_000"
      */
 
@@ -645,6 +633,36 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         searchCriteria.add(Restrictions.or(Restrictions.eq("rootDocumentId", docKey), Restrictions.eq("parentId", docKey)));
         searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         return (getCountOf(searchCriteria) > 0);
+    }
+
+
+    public Task getTask(Integer id) {
+        final DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
+        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        detachedCriteria.add(Restrictions.idEq(id));
+        detachedCriteria.setFetchMode("history", FetchMode.JOIN);
+        final List<Task> resultList = getHibernateTemplate().findByCriteria(detachedCriteria);
+        if (!resultList.isEmpty()) {
+            return resultList.iterator().next();
+        }
+        return null;
+    }
+
+    /**
+     * Получить список поручений, у которого в качесвте исходного документа идет ссылка на требуемый документ
+     * @param rootId  уникальный идентификатор исходного документа (например "incoming_0001")
+     * @param showDeleted  включать ли в список поручения с флагом deleted = true
+     * @return список поручения у которых исходный документ равен заданному
+     */
+
+    public List<Task> getTaskListByRootDocumentId(final String rootId, final boolean showDeleted){
+        final DetachedCriteria criteria = DetachedCriteria.forClass(getPersistentClass());
+        criteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        if(!showDeleted){
+            criteria.add(Restrictions.eq("deleted", false));
+        }
+        criteria.add(Restrictions.eq("rootDocumentId", rootId));
+        return getHibernateTemplate().findByCriteria(criteria);
     }
 
 }

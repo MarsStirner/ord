@@ -11,6 +11,7 @@ import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
+import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
@@ -88,17 +89,14 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
     @Inject
-    @Named("in_documents")
-    private transient IncomingDocumentListHolder incomingDocumentList;
-    @Inject
-    @Named("dictionaryManagement")
-    private transient DictionaryManagementBean dictionaryManagement;
-    @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;
     @Inject
     @Named("contragentList")
     private transient ContragentListHolderBean contragentList;
+    @Inject
+    @Named("documentTaskTree")
+    private transient DocumentTaskTreeHolder taskTreeHolder;
 
     @Override
     public String delete() {
@@ -174,6 +172,11 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             setDocument(document);
             //Проверка прав на открытие
             checkPermission(currentUser, document);
+
+            //Установка идшника для поиска поручений
+            taskTreeHolder.setRootDocumentId(document.getUniqueId());
+            //Поиск поручений
+            taskTreeHolder.refresh(true);
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
@@ -453,29 +456,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
 
     @Override
-    protected String doAfterCreate() {
-        incomingDocumentList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterEdit() {
-        incomingDocumentList.markNeedRefresh();
-        return super.doAfterEdit();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        incomingDocumentList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
     protected String doAfterSave() {
-        incomingDocumentList.markNeedRefresh();
-        UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-        UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
-        if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
+        if (getDocument().getUserAccessLevel().getLevel() > sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
         }
         return super.doAfterSave();
@@ -661,6 +643,16 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             }
         }
         return "";
+    }
+
+    /////////////////// Injected beans
+
+    public DocumentTaskTreeHolder getTaskTreeHolder() {
+        return taskTreeHolder;
+    }
+
+    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
+        this.taskTreeHolder = taskTreeHolder;
     }
 
 
