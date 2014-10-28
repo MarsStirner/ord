@@ -11,6 +11,7 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
@@ -149,6 +150,8 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             }
             checkPermission(currentUser, document);
             setDocument(document);
+            taskTreeHolder.setRootDocumentId(document.getUniqueId());
+            taskTreeHolder.changeOffset(0);
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             logger.error("INTERNAL ERROR ON INITIALIZATION:", e);
@@ -384,7 +387,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return null;
     }
 
-    protected String getLinkDescriptionById(String key) {
+    public String getLinkDescriptionById(String key) {
         if (!key.isEmpty()) {
             int pos = key.indexOf('_');
             if (pos != -1) {
@@ -657,38 +660,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     // END OF MODAL HOLDERS
 
 
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public boolean isRouteTabSelected() {
-        return isRouteTabSelected;
-    }
-
-    public void setRouteTabSelected(boolean isRouteTabSelected) {
-        this.isRouteTabSelected = isRouteTabSelected;
-    }
-
-    public boolean isRelationTabSelected() {
-        return isRelationTabSelected;
-    }
-
-    public void setRelationTabSelected(boolean isRelationTabSelected) {
-        this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
     public UserSelectModalBean getInitiatorSelectModal() {
         return initiatorSelectModal;
     }
@@ -743,46 +714,9 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     };
     ///////////////////////////////////////////////////////////////////////////////
 
-    private List<Group> responsibleGroups;
-
-    public List<Group> getResponsibleGroups() {
-        return responsibleGroups;
-    }
-
-    private void setResponsibleGroups(List<Group> responsibleGroups) {
-        this.responsibleGroups = responsibleGroups;
-    }
-
-    private boolean isUsersDialogSelected = true;
-    private boolean isGroupsDialogSelected = false;
-
-    public boolean isUsersDialogSelected() {
-        return isUsersDialogSelected;
-    }
-
-    public void setUsersDialogSelected(boolean isUsersDialogSelected) {
-        if (isUsersDialogSelected) {
-            this.isUsersDialogSelected = true;
-            this.isGroupsDialogSelected = false;
-        }
-    }
-
-    public boolean isGroupsDialogSelected() {
-        return isGroupsDialogSelected;
-    }
-
-    public void setGroupsDialogSelected(boolean isGroupsDialogSelected) {
-        if (isGroupsDialogSelected) {
-            this.isGroupsDialogSelected = true;
-            this.isUsersDialogSelected = false;
-        }
-    }
-
-    private UserUnitsSelectModalBean responsibleUnitsSelectModal = new UserUnitsSelectModalBean() {
-
+    private UserListSelectModalBean executorsSelectModal = new UserListSelectModalBean() {
         @Override
         protected void doSave() {
-            setResponsibleGroups(getGroups());
             getDocument().setExecutors(new HashSet<User>(getUsers()));
             super.doSave();
         }
@@ -791,27 +725,23 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         protected void doHide() {
             super.doHide();
             setUsers(null);
-            setGroups(null);
         }
 
         @Override
         protected void doShow() {
             super.doShow();
-            if (getDocument() != null && getResponsibleGroups() != null) {
-                setGroups(new ArrayList<Group>(getResponsibleGroups()));
-            }
             if (getDocument() != null && getDocument().getExecutors() != null) {
                 setUsers(new ArrayList<User>(getDocument().getExecutors()));
             }
         }
     };
 
-    public UserUnitsSelectModalBean getResponsibleUnitsSelectModal() {
-        return responsibleUnitsSelectModal;
+    public UserListSelectModalBean getExecutorsSelectModal() {
+        return executorsSelectModal;
     }
 
-    public void setResponsibleUnitsSelectModal(UserUnitsSelectModalBean responsibleUnitsSelectModal) {
-        this.responsibleUnitsSelectModal = responsibleUnitsSelectModal;
+    public void setExecutorsSelectModal(UserListSelectModalBean executorsSelectModal) {
+        this.executorsSelectModal = executorsSelectModal;
     }
     ///////////////////////////////////////////////////////////
 
@@ -874,15 +804,17 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return stateComment;
     }
 
-    private boolean isRequisitesTabSelected = true;
-    private boolean isRouteTabSelected = false;
-    private boolean isRelationTabSelected = false;
-    private boolean isHistoryTabSelected = false;
-
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
 
     private transient String stateComment;
+
+    public DocumentTaskTreeHolder getTaskTreeHolder() {
+        return taskTreeHolder;
+    }
+    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
+        this.taskTreeHolder = taskTreeHolder;
+    }
 
     @Inject
     @Named("sessionManagement")
@@ -890,6 +822,9 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;
+    @Inject
+    @Named("documentTaskTree")
+    private transient DocumentTaskTreeHolder taskTreeHolder;
 
     private static final long serialVersionUID = 4716264614655470705L;
 }

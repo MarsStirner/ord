@@ -6,7 +6,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -215,7 +216,7 @@
         <table class="form_grid">
             <tr class="row">
                 <td class="first">
-                    <label for="main_content_form:controlDate:dateEditor">
+                    <label for="controlDate:dateEditor">
                         <span class="title">Срок исполнения:</span>
                     </label>
                 </td>
@@ -235,7 +236,7 @@
                     </label>
                     <e5ui-comp:modalWindow id="initiatorSelectModal"
                                            modalWindowHolder="#{task.initiatorSelectModal}"
-                                           render=":main_content_form:initiator" execute="select_table"
+                                           render="initiator" execute="select_table"
                                            showButtons="false" style="width: 500px;"
                                            widgetVar="initiatorSelectModalVar">
                         <div id="title">
@@ -253,8 +254,8 @@
                                     <h:commandButton value=" "
                                                      action="#{task.initiatorSelectModal.userList.changePageOffset(0)}"
                                                      styleClass="searchbutton">
-                                        <f:ajax execute=":main_content_form:initiatorSelectModal:filter_string"
-                                                render=":main_content_form:initiatorSelectModal:ajaxModal :main_content_form:initiatorSelectModal:modal_paging"/>
+                                        <f:ajax execute="initiatorSelectModal:filter_string"
+                                                render="initiatorSelectModal:ajaxModal initiatorSelectModal:modal_paging"/>
                                     </h:commandButton>
                                 </div>
                             </h:panelGroup>
@@ -360,10 +361,9 @@
         </table>
     </div>
 </h:panelGroup>
-<e5ui:tabPanel id="content_table">
-<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Реквизиты&lt;/span&gt;&lt;/span&gt;"
-              actionBehavior="#{task.viewState ? 'client': 'submit'}"
-              selected="#{task.requisitesTabSelected}">
+<p:tabView widgetVar="taskTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
+           effectDuration="fast">
+<p:tab title="Реквизиты">
 <h:panelGroup rendered="#{task.viewState}">
     <div class="row">
         <table class="form_grid">
@@ -426,140 +426,72 @@
     <td class="first">
         <label>
             <span class="title">
-                <h:outputLink onclick="userListSelectModalVar.clickOpen('responsibleUnitsSelectModal'); return false;">
+                <h:outputLink onclick="executorsSelectModalVar.clickOpen('executorsSelectModalVar'); return false;">
                     Исполнители
                 </h:outputLink>
             </span>
         </label>
-        <e5ui-comp:modalWindow id="responsibleUnitsSelectModal"
-                               modalWindowHolder="#{task.responsibleUnitsSelectModal}"
-                               render=":main_content_form:recipients"
-                               execute="users_select_table" showButtons="false"
-                               style="width: 500px;" widgetVar="userListSelectModalVar">
+        <e5ui-comp:modalWindow id="executorsSelectModal"
+                               modalWindowHolder="#{task.executorsSelectModal}"
+                               render="executors" execute="select_table"
+                               showButtons="false" style="width: 500px;"
+                               widgetVar="executorsSelectModalVar">
             <div id="title">Выбор исполнителей</div>
             <div id="modal_container" style="margin-top: 0;">
-                <h:panelGroup rendered="#{task.isUsersDialogSelected()}">
-                    <div class="searchbar">
-                        <h:inputText id="users_filter_string"
-                                     value="#{task.responsibleUnitsSelectModal.userList.filter}"
-                                     style="display:block; float:left; margin-right:10px;"
-                                     title="Поиск"/>
-                        <h:commandButton value=" "
-                                         action="#{task.responsibleUnitsSelectModal.userList.changePageOffset(0)}"
-                                         styleClass="searchbutton">
-                            <f:ajax execute=":main_content_form:responsibleUnitsSelectModal:users_filter_string"
-                                    render=":main_content_form:responsibleUnitsSelectModal:ajaxModal :main_content_form:responsibleUnitsSelectModal:users_modal_paging"/>
-                        </h:commandButton>
-                    </div>
-                    <div class="wrap" style="height: 300px;">
-                        <div class="inner" style="height: 300px;">
-                            <e5ui:dataTable id="select_table_users" border="0"
-                                            cellpadding="0" cellspacing="0"
-                                            value="#{task.responsibleUnitsSelectModal.userList.documents}"
-                                            var="row" grouping="false" width="100%"
-                                            style="width:80%;">
-                                <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                          styleClass="#{task.responsibleUnitsSelectModal.selectedUser(row)? 'grid_row_selected': ''}"/>
-                                <e5ui:column>
-                                    <f:facet name="header">
-                                        <p>Исполнители</p>
-                                    </f:facet>
-                                    <h:outputText value="#{row}" converter="PersonConverter"/>
-                                    <h:commandLink id="selectLink" style="display: none;"
-                                                   rendered="#{not task.responsibleUnitsSelectModal.selectedUser(row)}"
-                                                   action="#{task.responsibleUnitsSelectModal.selectUser(row)}"/>
-                                    <h:commandLink id="unselectLink"
-                                                   style="display: none;"
-                                                   rendered="#{task.responsibleUnitsSelectModal.selectedUser(row)}"
-                                                   action="#{task.responsibleUnitsSelectModal.unselectUser(row)}"/>
-                                </e5ui:column>
-                            </e5ui:dataTable>
-                        </div>
-                    </div>
-                    <div style="clear: both;">
-                        <h:panelGroup id="users_modal_paging">
-                            <e5ui-comp:tablePager id="usersPager"
-                                                  documentListHolder="#{task.responsibleUnitsSelectModal.userList}"/>
-                        </h:panelGroup>
-                    </div>
-                </h:panelGroup>
-                <h:panelGroup rendered="#{task.isGroupsDialogSelected()}">
-                    <div class="searchbar">
-                        <h:inputText id="groups_filter_string"
-                                     value="#{task.responsibleUnitsSelectModal.groupsView.filter}"
-                                     style="display:block; float:left; margin-right:10px;"
-                                     title="Поиск"/>
-                        <h:commandButton value=" "
-                                         action="#{task.responsibleUnitsSelectModal.groupsView.changePageOffset(0)}"
-                                         styleClass="searchbutton">
-                            <f:ajax execute=":main_content_form:responsibleUnitsSelectModal:groups_filter_string"
-                                    render=":main_content_form:responsibleUnitsSelectModal:ajaxModal :main_content_form:responsibleUnitsSelectModal:groups_modal_paging"/>
-                        </h:commandButton>
-                    </div>
-                    <div class="wrap" style="height: 300px;">
-                        <div class="inner" style="height: 300px;">
-                            <e5ui:dataTable id="select_table_groups" border="0"
-                                            cellpadding="0" cellspacing="0"
-                                            value="#{task.responsibleUnitsSelectModal.groupsView.documents}"
-                                            var="row" grouping="false" width="100%"
-                                            style="width:80%;">
-                                <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                          styleClass="#{task.responsibleUnitsSelectModal.selectedGroup(row)? 'grid_row_selected': ''}"/>
-                                <e5ui:column>
-                                    <f:facet name="header">
-                                        <p>Исполнители</p>
-                                    </f:facet>
-                                    <h:outputText value="#{row}"
-                                                  converter="GroupConverter"/>
-                                    <h:commandLink id="selectLink" style="display: none;"
-                                                   rendered="#{not task.responsibleUnitsSelectModal.selectedGroup(row)}"
-                                                   action="#{task.responsibleUnitsSelectModal.selectGroup(row)}"/>
-                                    <h:commandLink id="unselectLink" style="display: none;"
-                                                   rendered="#{task.responsibleUnitsSelectModal.selectedGroup(row)}"
-                                                   action="#{task.responsibleUnitsSelectModal.unselectGroup(row)}"/>
-                                </e5ui:column>
-                            </e5ui:dataTable>
-
-                        </div>
-                    </div>
-                    <div style="clear: both;">
-                        <h:panelGroup id="groups_modal_paging">
-                            <e5ui-comp:tablePager id="groupsPager"
-                                                  documentListHolder="#{task.responsibleUnitsSelectModal.groupsView}"/>
-                        </h:panelGroup>
-                    </div>
-                </h:panelGroup>
-            </div>
-            <div class="e5ui-modal-bottombuttons">
-                <div class="defbutton">
-                    <h:commandButton value="Группы пользователей" rendered="#{task.isUsersDialogSelected()}"
-                                     action="#{task.setGroupsDialogSelected(true)}">
-                        <f:ajax render=":main_content_form:responsibleUnitsSelectModal:ajaxModal"
-                                execute=":main_content_form:responsibleUnitsSelectModal:ajaxModal"/>
-                    </h:commandButton>
-                    <h:commandButton value="Пользователи" rendered="#{task.isGroupsDialogSelected()}"
-                                     action="#{task.setUsersDialogSelected(true)}">
-                        <f:ajax render=":main_content_form:responsibleUnitsSelectModal:ajaxModal"
-                                execute=":main_content_form:responsibleUnitsSelectModal:ajaxModal"/>
+                <div class="searchbar">
+                    <span style="float: left; margin-top: 3px">Поиск: </span>
+                    <h:inputText id="filter_string"
+                                 value="#{task.executorsSelectModal.userList.filter}"
+                                 style="display:block; float:left; margin-right:10px;"
+                                 title="Поиск"/>
+                    <h:commandButton value=" " action="#{task.executorsSelectModal.userList.changePageOffset(0)}"
+                                     styleClass="searchbutton">
+                        <f:ajax execute="executorsSelectModal:filter_string"
+                                render="executorsSelectModal:ajaxModal executorsSelectModal:executors_modal_paging"/>
                     </h:commandButton>
                 </div>
-                <h:button onclick="userListSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                <h:button onclick="userListSelectModalVar.clickClose(); return false;" value="Отмена"/>
+                <div class="wrap" style="height: 300px;">
+                    <div class="inner" style="height: 300px;">
+                        <e5ui:dataTable id="select_table" border="0"
+                                        cellpadding="0" cellspacing="0"
+                                        value="#{task.executorsSelectModal.userList.documents}"
+                                        var="row" grouping="false" width="100%">
+                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                      styleClass="#{task.executorsSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                            <e5ui:column>
+                                <f:facet name="header">
+                                    <p>Исполнители</p>
+                                </f:facet>
+                                <h:outputText value="#{row}" converter="PersonConverter"/>
+                                <h:commandLink id="selectLink" style="display: none;"
+                                               rendered="#{not task.executorsSelectModal.selected(row)}"
+                                               action="#{task.executorsSelectModal.select(row)}"/>
+                                <h:commandLink id="unselectLink" style="display: none;"
+                                               rendered="#{task.executorsSelectModal.selected(row)}"
+                                               action="#{task.executorsSelectModal.unselect(row)}"/>
+                            </e5ui:column>
+                        </e5ui:dataTable>
+                    </div>
+                </div>
+                <div style="clear: both;">
+                    <h:panelGroup id="executors_modal_paging">
+                        <e5ui-comp:tablePager id="executors_pager"
+                                              documentListHolder="#{task.executorsSelectModal.userList}"/>
+                    </h:panelGroup>
+                </div>
+            </div>
+            <div class="e5ui-modal-bottombuttons">
+                <h:button onclick="executorsSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                <h:button onclick="executorsSelectModalVar.clickClose(); return false;" value="Отмена"/>
             </div>
         </e5ui-comp:modalWindow>
     </td>
     <td class="second" colspan="3">
         <div style="overflow-y: scroll; height: 120px">
-            <h:panelGroup id="recipients">
+            <h:panelGroup id="executors">
                 <label>
                     <ui:repeat value="#{task.document.executors}" var="element">
                         <h:outputText value="#{element.getFullName()}" class="width"/>
-                        <br/>
-                    </ui:repeat>
-                </label>
-                <label>
-                    <ui:repeat value="#{task.responsibleGroups}" var="element">
-                        [Группа] <h:outputText value="#{element}" converter="GroupConverter" class="width"/>
                         <br/>
                     </ui:repeat>
                 </label>
@@ -569,7 +501,7 @@
 </tr>
 <tr class="row">
     <td class="first">
-        <label for="main_content_form:shortDescription">
+        <label for="shortDescription">
             <span class="title">Текст:</span>
         </label>
     </td>
@@ -590,7 +522,7 @@
         </label>
         <e5ui-comp:modalWindow id="controllerSelectModal"
                                modalWindowHolder="#{task.controllerSelectModal}"
-                               render=":main_content_form:controller"
+                               render="controller"
                                execute="select_table" showButtons="false"
                                style="width: 500px;" widgetVar="controllerSelectModalVar">
             <div id="title">Выбор исполнителя</div>
@@ -603,8 +535,8 @@
                                  title="Поиск"/>
                     <h:commandButton value=" " action="#{task.controllerSelectModal.userList.changePageOffset(0)}"
                                      styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:controllerSelectModal:filter_string"
-                                render=":main_content_form:controllerSelectModal:select_table :main_content_form:controllerSelectModal:modal_paging"/>
+                        <f:ajax execute="controllerSelectModal:filter_string"
+                                render="controllerSelectModal:select_table controllerSelectModal:modal_paging"/>
                     </h:commandButton>
                 </div>
                 <div class="wrap" style="height: 300px;">
@@ -662,9 +594,8 @@
 </table>
 </div>
 </h:panelGroup>
-</e5ui:tabPage>
-<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Движение документа&lt;/span&gt;&lt;/span&gt;" actionBehavior="client"
-              selected="#{task.routeTabSelected}">
+</p:tab>
+<p:tab title="Движение документа">
     <fieldset>
         <legend>Поручения</legend>
         <script type="text/javascript">
@@ -676,7 +607,7 @@
             }
         </script>
         <h:outputScript>
-            function goToDocument(id) {
+            function goToTask(id) {
             if (id != "") {
             window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
             }
@@ -685,93 +616,115 @@
 
         <div class="actionbar">
             <div class="menu">
-                <h:panelGroup rendered="#{task.document.getDocumentStatus().getId()==2}">
-                    <div class="defbutton">
-                        <h:outputLink value="#{contextPath}/component/task/task.xhtml" target="_blank">
-                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                            Новое поручение
-                            <f:param name="docAction" value="create"/>
-                            <f:param name="formId" value="task"/>
-                            <f:param name="parentId" value="#{task.document.uniqueId}"/>
-                            <f:param name="rootDocumentId"
-                                     value="#{(task.document.rootDocumentId==null || task.document.rootDocumentId.isEmpty())? task.document.uniqueId : task.document.rootDocumentId}"/>
-                        </h:outputLink>
-                    </div>
-                </h:panelGroup>
-
                 <div class="defbutton">
-                    <h:commandLink action="false;">
-                        <f:ajax render=":main_content_form:descendant_table"/>
+                    <h:outputLink value="#{contextPath}/component/task/task.xhtml" target="_blank"
+                                  rendered="#{task.document.getDocumentStatus().getId()==2}">
+                        <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
+                        Новое поручение
+                        <f:param name="docAction" value="create"/>
+                        <f:param name="formId" value="task"/>
+                        <f:param name="parentId" value="#{task.document.id}"/>
+                        <f:param name="rootDocumentId" value="#{task.document.rootDocumentId}"/>
+                    </h:outputLink>
+                </div>
+                <div class="defbutton">
+                    <h:commandLink action="#{task.taskTreeHolder.refresh()}">
+                        <f:ajax render="task_table"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
+                    </h:commandLink>
+                </div>
+                <div class="defbutton">
+                    <h:commandLink action="#{task.taskTreeHolder.collapseAll()}">
+                        <h:graphicImage value="#{resource['images:minus.png']}"/>
+                        <f:ajax render="task_table"/>
+                        Свернуть все
+                    </h:commandLink>
+                </div>
+                <div class="defbutton">
+                    <h:commandLink action="#{task.taskTreeHolder.expandAll()}">
+                        <h:graphicImage value="#{resource['images:plus.png']}"/>
+                        <f:ajax render="task_table"/>
+                        Развернуть все
                     </h:commandLink>
                 </div>
             </div>
         </div>
         <h:panelGroup>
-            <div id="modal_container" style="margin-top: 0;">
-                <div class="wrap" style="height: 250px;">
-                    <div class="inner" style="height: 250px;">
-                        <e5ui:dataTable id="descendant_table" border="0"
-                                        cellpadding="0" cellspacing="0"
-                                        value="#{tasks.getDocumentsTreeByParent(task.document.uniqueId)}"
-                                        var="row" grouping="true" levelCount="10" style="width:100%">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"
-                                      level="#{row.grouping}" group="#{row.parent}"
-                                      fullRow="false" collapsed="false">
-                                <f:facet name="fullRowDefault">
-                                    <b><h:outputText value="#{row.taskNumber}"/> </b>
-                                </f:facet>
-                            </e5ui:row>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Номер</p>
-                                </f:facet>
-                                <h:outputText value="#{row.taskNumber}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Исполнитель</p>
-                                </f:facet>
-                                <ui:repeat value="#{row.executors}" var="executor">
-                                    <h:outputText value="#{executor}" converter="PersonConverter"/>
-                                </ui:repeat>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Срок исполнения</p>
-                                </f:facet>
-                                <h:outputText value="#{row.controlDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Автор</p>
-                                </f:facet>
-                                <h:outputText value="#{row.author.getFullName()}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Содержание</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Статус</p>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
+            <style type="text/css">
+                /* Иконка раворачивания элемента */
+                .ui-icon-triangle-1-e{
+                    background-image: url('#{resource["images:plus.png"]}') !important;
+                    background-position: 0 0;
+                }
+                /* Иконка сворачивания элемента */
+                .ui-icon-triangle-1-s{
+                    background-image: url('#{resource["images:minus.png"]}') !important;
+                    background-position: 0 0;
+                }
+            </style>
+            <div style="height: 250px; width: 100%; margin: 0;">
+                <p:treeTable id="task_table"
+                             value="#{task.taskTreeHolder.root}"
+                             var="row_task"
+                             style="width:100%; overflow-x:hidden;"
+                             selectionMode="single"
+                             emptyMessage="Записей нет"
+                             widgetVar="taskTableVar">
+                    <p:column headerText="Дата создания">
+                        <h:outputText value="#{row_task.creationDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Номер">
+                        <h:outputText value="#{row_task.taskNumber}"/>
+                    </p:column>
+                    <p:column headerText="Автор">
+                        <h:outputText value="#{row_task.author.getFullName()}"/>
+                    </p:column>
+                    <p:column headerText="Исполнитель">
+                        <ui:repeat value="#{row_task.executors}" var="executor">
+                            <h:outputText value="#{executor}" converter="PersonConverter"/> <br/>
+                        </ui:repeat>
+                    </p:column>
+                    <p:column headerText="Срок исполнения">
+                        <h:outputText value="#{row_task.controlDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Содержание">
+                        <h:outputText value="#{row_task.shortDescription}"/>
+                    </p:column>
+                    <p:column headerText="Статус">
+                        <h:outputText value="#{row_task.getDocumentStatus().getName()}"/>
+                    </p:column>
+                    <p:column style="display:none;">
+                        <input type="hidden" value="#{row_task.id}"/>
+                    </p:column>
+                    <p:ajax event="select" onstart="addRowHandlers()"/>
+                </p:treeTable>
+                <script type="text/javascript">
+                    function addRowHandlers() {
+                        console.log("refresh treetable row onclick handlers");
+                        var table_tree = document.getElementById(PrimeFaces.widgets.taskTableVar.id);
+                        var rows = table_tree.getElementsByClassName("task");
+                        for (var i = 0; i &lt; rows.length; i++) {
+                            var currentRow = rows[i];
+                            var createClickHandler = function (row) {
+                                return function () {
+                                    goToTask(row.lastChild.lastChild.value);
+                                };
+                            };
+                            document.getElementById(currentRow.id).className = document.getElementById(currentRow.id).className.replace('ui-state-highlight', '');
+                            currentRow.ondblclick = createClickHandler(currentRow);
+                        }
+                    }
+                </script>
             </div>
         </h:panelGroup>
     </fieldset>
-</e5ui:tabPage>
-<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Связи&lt;/span&gt;&lt;/span&gt;" actionBehavior="client"
-              selected="#{task.relationTabSelected}">
+</p:tab>
+<p:tab title="Связи">
     <h:outputScript>
         function goToDocumentByParentId(parentId) {
         if (parentId != "") {
@@ -794,83 +747,72 @@
         }
         }
     </h:outputScript>
-    <h:panelGroup rendered="#{(task.document.rootDocumentId!=null) and ( not task.document.rootDocumentId.isEmpty())}">
-        <div class="row">
-            <table class="form_grid">
+
+    <div class="row">
+        <table class="form_grid">
+            <h:panelGroup
+                    rendered="#{(task.document.rootDocumentId!=null) and ( not task.document.rootDocumentId.isEmpty())}">
                 <tr class="row">
-                    <td class="first">
+                    <td>
                         <label>
                             <span class="title">Документ основание:</span>
                         </label>
                     </td>
-                    <td class="second" colspan="3">
-                        <h:outputLink style="margin-left:5px;" value="#"
+                    <td colspan="3">
+                        <h:outputLink style="margin-left:5px;"
                                       onclick="goToDocumentByParentId('#{task.document.rootDocumentId}');">
                             <h:graphicImage value="#{resource['images:link.png']}"/>
                             <h:outputText value="#{task.getLinkDescriptionById(task.document.rootDocumentId)}"/>
-                        </h:outputLink></td>
+                        </h:outputLink>
+                    </td>
                 </tr>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{task.document.parent != null}">
                 <tr class="row">
-                    <td class="first"/>
-                    <td class="second"/>
-                    <td class="third"/>
-                    <td class="'fourth"/>
+                    <td class="first">
+                        <label>
+                            <span class="title">Родительское поручение:</span>
+                        </label>
+                    </td>
+                    <td class="second">
+                        <h:outputLink style="margin-left:5px;"
+                                      onclick="goToDocumentByParentId('#{task.document.parent.uniqueId}');">
+                            <h:graphicImage value="#{resource['images:link.png']}"/>
+                            <h:outputText value="#{task.getLinkDescriptionById(task.document.parent.uniqueId)}"/>
+                        </h:outputLink>
+                    </td>
                 </tr>
-            </table>
-        </div>
-    </h:panelGroup>
-</e5ui:tabPage>
-<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;История&lt;/span&gt;&lt;/span&gt;" actionBehavior="client"
-              selected="#{task.historyTabSelected}">
-    <fieldset>
-        <legend>
-            <label>
-                <span class="title">История</span>
-            </label>
-        </legend>
-        <div class="wrap" style="width: 100%; margin: 0px">
-            <div class="inner">
-                <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                id="history_list" value="#{task.document.historyList}"
-                                var="row" grouping="false">
-                    <e5ui:column>
-                        <f:facet name="header">
-                            <p>Дата</p>
-                        </f:facet>
-                        <h:outputText value="#{row.startDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/>
-                        </h:outputText>
-                    </e5ui:column>
-                    <e5ui:column>
-                        <f:facet name="header">
-                            <p>Статус</p>
-                        </f:facet>
-                        <h:outputText value="#{row.fromStatusName}"/>
-                    </e5ui:column>
-                    <e5ui:column>
-                        <f:facet name="header">
-                            <p>Действие</p>
-                        </f:facet>
-                        <h:outputText value="#{row.actionName}"/>
-                    </e5ui:column>
-                    <e5ui:column>
-                        <f:facet name="header">
-                            <p>Автор</p>
-                        </f:facet>
-                        <h:outputText value="#{row.owner.descriptionShort}"/>
-                    </e5ui:column>
-                    <e5ui:column>
-                        <f:facet name="header">
-                            <p>Комментарий</p>
-                        </f:facet>
-                        <h:outputText value="#{row.commentary}"/>
-                    </e5ui:column>
-                </e5ui:dataTable>
-            </div>
-        </div>
-    </fieldset>
-</e5ui:tabPage>
-</e5ui:tabPanel>
+            </h:panelGroup>
+
+        </table>
+    </div>
+
+</p:tab>
+<p:tab title="История">
+    <div style="width: 100%; margin: 0;">
+        <p:dataTable id="history_list" value="#{task.document.historyList}"
+                     var="historyEntry" grouping="false">
+            <p:column headerText="Дата">
+                <h:outputText value="#{historyEntry.startDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Статус">
+                <h:outputText value="#{historyEntry.fromStatusName}"/>
+            </p:column>
+            <p:column headerText="Действие">
+                <h:outputText value="#{historyEntry.actionName}"/>
+            </p:column>
+            <p:column headerText="Автор">
+                <h:outputText value="#{historyEntry.owner.descriptionShort}"/>
+            </p:column>
+            <p:column headerText="Комментарий">
+                <h:outputText value="#{historyEntry.commentary}"/>
+            </p:column>
+        </p:dataTable>
+    </div>
+</p:tab>
+</p:tabView>
 </e5ui:formPart>
 </div>
 </ui:define>

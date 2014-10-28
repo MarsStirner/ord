@@ -119,7 +119,7 @@ public class Role extends IdentifiedEntity implements Comparable<Role>{
 
     @Override
     public int hashCode() {
-        return getName().hashCode() + getRoleType().ordinal();
+        return getId();
     }
 
 

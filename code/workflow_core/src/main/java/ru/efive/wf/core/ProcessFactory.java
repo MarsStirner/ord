@@ -1,11 +1,14 @@
 package ru.efive.wf.core;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
+import ru.efive.wf.core.activity.InvokeMethodActivity;
+import ru.efive.wf.core.activity.ParametrizedPropertyLocalActivity;
+import ru.efive.wf.core.activity.SendMailActivity;
+import ru.efive.wf.core.activity.enums.EditablePropertyScope;
+import ru.efive.wf.core.data.MailMessage;
+import ru.efive.wf.core.data.impl.*;
+import ru.efive.wf.core.util.EngineHelper;
 import ru.entity.model.enums.DocumentAction;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -13,20 +16,14 @@ import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.efive.wf.core.activity.InvokeMethodActivity;
-import ru.efive.wf.core.activity.ParametrizedPropertyLocalActivity;
-import ru.efive.wf.core.activity.SendMailActivity;
-import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.entity.model.wf.HumanTaskTree;
-import ru.efive.wf.core.data.MailMessage;
-import ru.efive.wf.core.data.impl.InputDateForm;
-import ru.efive.wf.core.data.impl.InputReasonForm;
-import ru.efive.wf.core.data.impl.InputRegistrationNumberForm;
-import ru.efive.wf.core.data.impl.SelectAccessLevelForm;
-import ru.efive.wf.core.data.impl.SelectUserForm;
-import ru.efive.wf.core.util.EngineHelper;
 import ru.external.ProcessUser;
 import ru.external.ProcessedData;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 public final class ProcessFactory {
 
@@ -540,7 +537,7 @@ public final class ProcessFactory {
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                         if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
+                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             result = true;
                             break;
                         }
@@ -1210,8 +1207,8 @@ public final class ProcessFactory {
         prop = PropertyUtils.getProperty(t, "author");
         User author = (prop == null ? null : (User) prop);
 
-        prop = PropertyUtils.getProperty(t, "executor");
-        User executor = (prop == null ? null : (User) prop);
+        prop = PropertyUtils.getProperty(t, "executors");
+        List<User> executors = prop == null ? null : (List<User>) prop;
 
         prop = PropertyUtils.getProperty(t, "form");
         Object form = (prop == null ? null : (Object) prop);
@@ -1249,10 +1246,12 @@ public final class ProcessFactory {
         toStatusAction.setPreActionActivities(activites);
 
         activites = new ArrayList<IActivity>();
-        if (executor != null) {
+        if (executors != null) {
             List<String> sendTo = new ArrayList<String>();
-            if ((executor.getEmail() != null) && (!executor.getEmail().isEmpty())) {
-                sendTo.add(executor.getEmail());
+            for (User executor : executors) {
+                if (StringUtils.isNotEmpty(executor.getEmail())) {
+                    sendTo.add(executor.getEmail());
+                }
             }
             if (sendTo.size() > 0) {
                 SendMailActivity mailActivity = new SendMailActivity();
@@ -1273,26 +1272,27 @@ public final class ProcessFactory {
 
                     if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
                         subject = "Поступило новое" + exerciseTypeValue + " @DocumentNumber";
-                        body = body.append("К вам поступила новое " + exerciseTypeValue + " на исполнение \n\n");
+                        body = body.append("К вам поступила новое ").append(exerciseTypeValue).append(" на исполнение \n\n");
                     } else {
                         subject = "Поступила новая " + exerciseTypeValue + " @DocumentNumber";
-                        body = body.append("К вам поступила новая" + exerciseTypeValue + " на исполнение \n\n");
+                        body = body.append("К вам поступила новая").append(exerciseTypeValue).append(" на исполнение \n\n");
                     }
                 } else {
                     body = body.append("К вам поступило новое поручение на исполнение \n\n");
                 }
 
-                MailMessage message = new MailMessage(sendTo, null, subject, body.
-                        append("<a href=\"" + getHost() + "/component/task/task.xhtml?docId=").
+                MailMessage message = new MailMessage(sendTo, null, subject, body.append("<a href=\"").append(getHost()).append("/component/task/task.xhtml?docId=").
                         append(id).append("\" >Ссылка на документ</a>").toString());
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
                 activites.add(mailActivity);
             }
         }
-        if (activites.size() > 0) {
-            toStatus.setPreStatusActivities(activites);
-        }
+        InvokeMethodActivity postActivity = new InvokeMethodActivity();
+        postActivity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "cloneTasks", list);
+        activites.add(postActivity);
+        toStatus.setPreStatusActivities(activites);
+
 
         fromStatusActions.add(toStatusAction);
         status.setAvailableActions(fromStatusActions);
@@ -1325,7 +1325,7 @@ public final class ProcessFactory {
                 StringBuffer body = new StringBuffer();
                 if (formDescription.equals("resolution")) {
                     subject = "Ваша резолюция " + docNumber + " " + statusName;
-                    body = body.append("Резолюция перешла в статус \"" + statusName + "\"\n\n");
+                    body = body.append("Резолюция перешла в статус \"").append(statusName).append("\"\n\n");
                 } else if (formDescription.equals("exercise")) {
                     prop = PropertyUtils.getProperty(t, "exerciseType");
                     Object exerciseType = (prop == null ? null : (Object) prop);
@@ -1338,17 +1338,16 @@ public final class ProcessFactory {
 
                     if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
                         subject = "Ваше " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                        body = body.append("Ваше " + exerciseTypeValue + " перешло в статус " + statusName + " \n\n");
+                        body = body.append("Ваше ").append(exerciseTypeValue).append(" перешло в статус ").append(statusName).append(" \n\n");
                     } else {
                         subject = "Ваша " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                        body = body.append("Ваша " + exerciseTypeValue + " перешла в статус " + statusName + " \n\n");
+                        body = body.append("Ваша ").append(exerciseTypeValue).append(" перешла в статус ").append(statusName).append(" \n\n");
                     }
                 } else {
-                    body = body.append("Поручение перешло в статус " + status + "\n\n");
+                    body = body.append("Поручение перешло в статус ").append(status).append("\n\n");
                 }
 
-                MailMessage message = new MailMessage(sendTo, null, subject, body.
-                        append("<a href=\"" + getHost() + "/component/task/task.xhtml?docId=").
+                MailMessage message = new MailMessage(sendTo, null, subject, body.append("<a href=\"").append(getHost()).append("/component/task/task.xhtml?docId=").
                         append(id).append("\" >Ссылка на документ</a>").toString());
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
@@ -1403,7 +1402,7 @@ public final class ProcessFactory {
                     StringBuffer body = new StringBuffer();
                     if (formDescription.equals("resolution")) {
                         subject = "Ваша резолюция " + docNumber + " " + statusName;
-                        body = body.append("Резолюция перешла в статус \"" + statusName + "\"\n\n");
+                        body = body.append("Резолюция перешла в статус \"").append(statusName).append("\"\n\n");
                     } else if (formDescription.equals("exercise")) {
                         prop = PropertyUtils.getProperty(t, "exerciseType");
                         Object exerciseType = (prop == null ? null : (Object) prop);
@@ -1416,17 +1415,16 @@ public final class ProcessFactory {
 
                         if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
                             subject = "Ваше " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                            body = body.append("Ваше " + exerciseTypeValue + " перешло в статус " + statusName + " \n\n");
+                            body = body.append("Ваше ").append(exerciseTypeValue).append(" перешло в статус ").append(statusName).append(" \n\n");
                         } else {
                             subject = "Ваша " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                            body = body.append("Ваша " + exerciseTypeValue + " перешла в статус " + statusName + " \n\n");
+                            body = body.append("Ваша ").append(exerciseTypeValue).append(" перешла в статус ").append(statusName).append(" \n\n");
                         }
                     } else {
-                        body = body.append("Поручение перешло в статус " + status + "\n\n");
+                        body = body.append("Поручение перешло в статус ").append(status).append("\n\n");
                     }
 
-                    MailMessage message = new MailMessage(sendTo, null, subject, body.
-                            append("<a href=\"" + getHost() + "/component/task/task.xhtml?docId=").
+                    MailMessage message = new MailMessage(sendTo, null, subject, body.append("<a href=\"").append(getHost()).append("/component/task/task.xhtml?docId=").
                             append(id).append("\" >Ссылка на документ</a>").toString());
                     message.setContentType("text/html");
                     mailActivity.setMessage(message);
@@ -1471,11 +1469,14 @@ public final class ProcessFactory {
             activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "doTaskDelegateAction", list);
             activites.add(activity);
 
-            if (executor != null) {
+            if (executors != null) {
                 List<String> sendTo = new ArrayList<String>();
-                if ((executor.getEmail() != null) && (!executor.getEmail().isEmpty())) {
-                    sendTo.add(executor.getEmail());
+                for (User executor : executors) {
+                    if (StringUtils.isNotEmpty(executor.getEmail())) {
+                        sendTo.add(executor.getEmail());
+                    }
                 }
+
                 if (sendTo.size() > 0) {
                     SendMailActivity mailActivity = new SendMailActivity();
                     String subject = "Поступило новое поручение @DocumentNumber";
@@ -1495,17 +1496,16 @@ public final class ProcessFactory {
 
                         if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
                             subject = "Поступило новое" + exerciseTypeValue + " @DocumentNumber";
-                            body = body.append("К вам поступила новое " + exerciseTypeValue + " на исполнение \n\n");
+                            body = body.append("К вам поступила новое ").append(exerciseTypeValue).append(" на исполнение \n\n");
                         } else {
                             subject = "Поступила новая " + exerciseTypeValue + " @DocumentNumber";
-                            body = body.append("К вам поступила новая" + exerciseTypeValue + " на исполнение \n\n");
+                            body = body.append("К вам поступила новая").append(exerciseTypeValue).append(" на исполнение \n\n");
                         }
                     } else {
                         body = body.append("К вам поступило новое поручение на исполнение \n\n");
                     }
 
-                    MailMessage message = new MailMessage(sendTo, null, subject, body.
-                            append("<a href=\"" + getHost() + "/component/task/task.xhtml?docId=").
+                    MailMessage message = new MailMessage(sendTo, null, subject, body.append("<a href=\"").append(getHost()).append("/component/task/task.xhtml?docId=").
                             append(id).append("\" >Ссылка на документ</a>").toString());
                     message.setContentType("text/html");
                     mailActivity.setMessage(message);
@@ -1797,9 +1797,9 @@ public final class ProcessFactory {
                     ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
 
-                    boolean isAdmin =false;
+                    boolean isAdmin = false;
                     for (int i = 0; i < user.getRoles().size(); i++) {
-                         if ((user.getRoles().iterator().next().getRoleType().equals(RoleType.ADMINISTRATOR))) {
+                        if ((user.getRoles().iterator().next().getRoleType().equals(RoleType.ADMINISTRATOR))) {
                             isAdmin = true;
                         }
                     }

@@ -92,15 +92,12 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
     public List<Task> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
         }
-
         if (!showDrafts) {
             in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DRAFT.getId())));
         }
-
         int userId = user.getId();
         if (userId > 0) {
             return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), filter));
@@ -176,16 +173,14 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
      * @return - список резолюций
      */
     @SuppressWarnings("unchecked")
-    public List<Task> findResolutionsByParent(String parentId) {
+    public List<Task> findResolutionsByParent(int parentId) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        if (parentId != null && !parentId.equals("")) {
-            detachedCriteria.add(Restrictions.eq("parentId", parentId));
+        if (parentId != 0) {
+            detachedCriteria.add(Restrictions.eq("parent.id", parentId));
         }
-
         addOrder(detachedCriteria, "id", true);
-
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
@@ -210,7 +205,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         }
 
         if (executorId > 0) {
-            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executor.id", executorId)));
+            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executors.id", executorId)));
         }
 
         String[] ords = orderBy == null ? null : orderBy.split(",");
@@ -240,7 +235,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         }
 
         if (executorId > 0) {
-            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executor.id", executorId)));
+            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executors.id", executorId)));
         }
 
         return getCountOf(detachedCriteria);
@@ -268,7 +263,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         }
 
         if (executorId > 0) {
-            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executor.id", executorId)));
+            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executors.id", executorId)));
         }
 
         String[] ords = orderBy == null ? null : orderBy.split(",");
@@ -299,7 +294,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         }
 
         if (executorId > 0) {
-            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executor.id", executorId)));
+            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executors.id", executorId)));
         }
 
         return getCountOf(getSearchCriteria(detachedCriteria, filter));
@@ -318,11 +313,11 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
         if (parentId != null && !parentId.equals("")) {
-            detachedCriteria.add(Restrictions.eq("parentId", parentId));
+            detachedCriteria.add(Restrictions.eq("parent.id", parentId));
         }
 
         if (executorId > 0) {
-            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executor.id", executorId)));
+            detachedCriteria.add(Restrictions.disjunction().add(Restrictions.eq("author.id", executorId)).add(Restrictions.eq("executors.id", executorId)));
         }
 
         addOrder(detachedCriteria, "id", true);
@@ -446,8 +441,9 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     protected DetachedCriteria getSearchCriteria(DetachedCriteria criteria, String filter) {
         if (StringUtils.isNotEmpty(filter)) {
             Disjunction disjunction = Restrictions.disjunction();
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(creationDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(controlDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
+            //TODO this_ надо бы как- нибудь попроще, без привязки к Hibernate
+            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.creationDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
+            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.controlDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
             disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("taskNumber", filter, MatchMode.ANYWHERE));
             //criteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
@@ -455,9 +451,9 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
             //criteria.createAlias("executor", "executor", CriteriaSpecification.LEFT_JOIN);
-            disjunction.add(Restrictions.ilike("executor.lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("executor.middleName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("executor.firstName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("executors.lastName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("executors.middleName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("executors.firstName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("initiator.lastName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("initiator.middleName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("initiator.firstName", filter, MatchMode.ANYWHERE));
@@ -489,18 +485,18 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             }
 
             detachedCriteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("executor", "executor", CriteriaSpecification.LEFT_JOIN);
+            detachedCriteria.createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("initiator", "initiator", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
 
             detachedCriteria.createAlias("author.roles", "authorRoles", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("executor.roles", "executorRoles", CriteriaSpecification.LEFT_JOIN);
+            detachedCriteria.createAlias("executors.roles", "executorsRoles", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("initiator.roles", "initiatorRoles", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("controller.roles", "controllerRoles", CriteriaSpecification.LEFT_JOIN);
 
             if (!isAdminRole) {
                 disjunction.add(Restrictions.eq("author.id", userId));
-                disjunction.add(Restrictions.eq("executor.id", userId));
+                disjunction.add(Restrictions.eq("executors.id", userId));
                 disjunction.add(Restrictions.eq("initiator.id", userId));
                 disjunction.add(Restrictions.eq("controller.id", userId));
 
@@ -514,7 +510,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
                     }
                 }
                 //disjunction.add(Restrictions.in("authorRoles.id", rolesId));
-                //disjunction.add(Restrictions.in("executorRoles.id", rolesId));
+                //disjunction.add(Restrictions.in("executorsRoles.id", rolesId));
                 //disjunction.add(Restrictions.in("initiatorRoles.id", rolesId));
                 //disjunction.add(Restrictions.in("controllerRoles.id", rolesId));
 
@@ -630,7 +626,8 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         DetachedCriteria searchCriteria = getAccessControlSearchCriteriaByUser(user);
         searchCriteria.add(Restrictions.eq("deleted", false));
         searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DRAFT.getId())));
-        searchCriteria.add(Restrictions.or(Restrictions.eq("rootDocumentId", docKey), Restrictions.eq("parentId", docKey)));
+        //TODO найти упоминания и модифицировать согласно новой реализации схемы БД
+        searchCriteria.add(Restrictions.or(Restrictions.eq("rootDocumentId", docKey), Restrictions.eq("parent.id", docKey)));
         searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         return (getCountOf(searchCriteria) > 0);
     }
@@ -665,4 +662,33 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         return getHibernateTemplate().findByCriteria(criteria);
     }
 
+    /**
+     * Получить список подпоручений рекурсивно, начиная с заданного
+     * @param parentId  ид основного поручения
+     * @param showDeleted включать ли в результат удаленные
+     * @return список подпоручений
+     */
+    public List<Task> getChildrenTaskByParentId(Integer parentId, boolean showDeleted) {
+        if(parentId != 0) {
+            final DetachedCriteria criteria = DetachedCriteria.forClass(getPersistentClass());
+            criteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+            if(!showDeleted){
+                criteria.add(Restrictions.eq("deleted", false));
+            }
+            criteria.add(Restrictions.eq("parent.id", parentId));
+            //Sorting по дате создания а потом по номеру
+            criteria.addOrder(Order.desc("creationDate"));
+            criteria.addOrder(Order.asc("taskNumber"));
+
+            final List<Task> subResult = getHibernateTemplate().findByCriteria(criteria);
+            final List<Task> result = new ArrayList<Task>(subResult.size());
+            for (Task task : subResult) {
+                result.add(task);
+                result.addAll(getChildrenTaskByParentId(task.getId(), showDeleted));
+            }
+            return result;
+        } else {
+            return new ArrayList<Task>(0);
+        }
+    }
 }

@@ -106,11 +106,11 @@ public class TasksExecuted extends AbstractDocumentListHolderBean<Task> {
         return super.getDocuments();
     }
 
-    public List<Task> getDocumentsByParent(String parentId) {
+    public List<Task> getDocumentsByParent(int parentId) {
         getDocuments();
         List<Task> result = new ArrayList<Task>();
         try {
-            if (parentId != null && !parentId.equals("")) {
+            if (parentId != 0) {
                 result = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findResolutionsByParent(parentId);
             }
         } catch (Exception e) {
@@ -119,10 +119,10 @@ public class TasksExecuted extends AbstractDocumentListHolderBean<Task> {
         return result;
     }
 
-    public List<Task> getDocumentsTreeByParent(String parentId) {
+    public List<Task> getDocumentsTreeByParent(int parentId) {
         List<Task> result = new ArrayList<Task>();
         try {
-            if (parentId != null && !parentId.equals("")) {
+            if (parentId != 0) {
                 TaskDAOImpl dao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
                 List<Task> descendants = loadChildTree(dao, parentId, 0);
                 if (descendants.size() > 0) result.addAll(descendants);
@@ -133,11 +133,11 @@ public class TasksExecuted extends AbstractDocumentListHolderBean<Task> {
         return result;
     }
 
-    private List<Task> loadChildTree(TaskDAOImpl dao, String parentId, int level) throws Exception {
+    private List<Task> loadChildTree(TaskDAOImpl dao, int parentId, int level) throws Exception {
         List<Task> result = new ArrayList<Task>();
         List<Task> list = dao.findResolutionsByParent(parentId);
         for (Task entry : list) {
-                        List<Task> descendants = loadChildTree(dao, entry.getUniqueId(), level + 1);
+                        List<Task> descendants = loadChildTree(dao, entry.getId(), level + 1);
             result.add(entry);
             if (descendants.size() > 0) {
                                result.addAll(descendants);

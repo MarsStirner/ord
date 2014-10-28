@@ -49,12 +49,14 @@
         <div class="defbutton">
             <h:commandLink action="#{in_documents_by_executing_date.collapseAll()}">
                 <h:graphicImage value="#{resource['images:minus.png']}"/>
+                <f:ajax render="main_data_tbl"/>
                 Свернуть
             </h:commandLink>
         </div>
         <div class="defbutton">
             <h:commandLink action="#{in_documents_by_executing_date.expandAll()}">
                 <h:graphicImage value="#{resource['images:plus.png']}"/>
+                <f:ajax render="main_data_tbl"/>
                 Развернуть
             </h:commandLink>
         </div>

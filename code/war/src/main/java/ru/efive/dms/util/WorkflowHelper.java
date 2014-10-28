@@ -1,6 +1,8 @@
 package ru.efive.dms.util;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -12,6 +14,7 @@ import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.data.MailMessage;
 import ru.efive.wf.core.util.EngineHelper;
 import ru.entity.model.document.*;
+import ru.entity.model.enums.DocumentAction;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
@@ -26,10 +29,14 @@ import javax.faces.context.FacesContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
 
 public final class WorkflowHelper {
+
+    private static final Logger taskLogger = LoggerFactory.getLogger("TASK");
 
     public static boolean changeTaskExecutionDateAction(NoStatusAction changeDateAction, Task task) {
         boolean result = false;
@@ -55,7 +62,7 @@ public final class WorkflowHelper {
                         }
                     }*/
                 final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
-                task.setWFResultDescription(String.format(delegateReason,task.getExecutors().get(0).getFullName()));
+                task.setWFResultDescription(String.format(delegateReason, task.getExecutors().get(0).getFullName()));
                 task.setExecutionDate(choosenDate);
                 result = true;
             } else {
@@ -92,7 +99,7 @@ public final class WorkflowHelper {
                     }
                 }
                 final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
-                task.setWFResultDescription(String.format(delegateReason,task.getExecutors().get(0).getFullName()));
+                task.setWFResultDescription(String.format(delegateReason, task.getExecutors().get(0).getFullName()));
                 final HashSet<User> users = new HashSet<User>(1);
                 users.add(selectedUser);
                 task.setExecutors(users);
@@ -1026,81 +1033,140 @@ public final class WorkflowHelper {
                 }
             }
         }
-        if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
+        if (StringUtils.isEmpty(doc.getShortDescription())) {
             in_result.append("Необходимо заполнить Текст поручения;").append(System.getProperty("line.separator"));
         }
-
+        //TODO OMG проверяем валидность по комментарию )
         if (in_result.toString().isEmpty()) {
             try {
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                if (doc == null) {
-                    result = false;
-                } else {
-                    if (doc != null) {
-                        if (doc.getTaskNumber() == null || doc.getTaskNumber().isEmpty()) {
-                            StringBuffer in_number = new StringBuffer();
-                            StringBuffer in_count = new StringBuffer();
-                            Map<String, Object> in_filters = new HashMap<String, Object>();
+                if (StringUtils.isEmpty(doc.getTaskNumber())) {
+                    //Номер не задан
+                    StringBuilder in_number = new StringBuilder();
+                    StringBuilder in_count = new StringBuilder();
+                    Map<String, Object> in_filters = new HashMap<String, Object>();
 
-                            String key = doc.getRootDocumentId();
-                            if (key != null && !key.isEmpty()) {
-                                in_filters.put("rootDocumentId", key);
-                                int pos = key.indexOf('_');
-                                if (pos != -1) {
-                                    String id = key.substring(pos + 1, key.length());
-                                    StringBuilder in_description = new StringBuilder("");
-
-                                    if (key.contains("incoming")) {
-                                        IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
-                                                INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(in_doc.getRegistrationNumber()).append("/");
-                                    } else if (key.contains("outgoing")) {
-                                        OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(out_doc.getRegistrationNumber()).append("/");
-                                    } else if (key.contains("internal")) {
-                                        InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(internal_doc.getRegistrationNumber()).append("/");
-                                    } else if (key.contains("request")) {
-                                        RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
-                                        in_number.append(request_doc.getRegistrationNumber()).append("/");
-                                    } else if (key.contains("task")) {
-                                        Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
-                                        in_number.append("");
-                                        in_filters.clear();
-                                        in_filters.put("taskDocumentId", "");
-                                    }
+                    final String key = doc.getRootDocumentId();
+                    if (StringUtils.isNotEmpty(key)) {
+                        in_filters.put("rootDocumentId", key);
+                        if (key.contains("_")) {
+                            //TODO лень переписывать поиск документов по строковому идентификатору, когда он является целочисленным = )
+                            final Integer idInt = ApplicationHelper.getIdFromUniqueIdString(key);
+                            if(idInt != null) {
+                                final String id = idInt.toString();
+                                if (key.contains("incoming")) {
+                                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
+                                            INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    in_number.append(in_doc.getRegistrationNumber()).append("/");
+                                } else if (key.contains("outgoing")) {
+                                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    in_number.append(out_doc.getRegistrationNumber()).append("/");
+                                } else if (key.contains("internal")) {
+                                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    in_number.append(internal_doc.getRegistrationNumber()).append("/");
+                                } else if (key.contains("request")) {
+                                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    in_number.append(request_doc.getRegistrationNumber()).append("/");
+                                } else if (key.contains("task")) {
+                                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
+                                    in_number.append("");
+                                    in_filters.clear();
+                                    in_filters.put("taskDocumentId", "");
                                 }
-                            } else {
-                                in_number.append("");
-                                in_filters.clear();
-                                in_filters.put("taskDocumentId", "");
                             }
-
-                            in_count.append(String.valueOf(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 1));
-                            in_number.append(in_count);
-                            doc.setTaskNumber(in_number.toString());
-
-                            Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                            doc.setRegistrationDate(calendar.getTime());
-
-                            result = true;
-                        } else {
-                            result = true;
                         }
+                    } else {
+                        in_number.append("");
+                        in_filters.clear();
+                        in_filters.put("taskDocumentId", "");
+                    }
+
+                    in_count.append(String.valueOf(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 1));
+                    in_number.append(in_count);
+                    doc.setTaskNumber(in_number.toString());
+
+                    Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
+                    doc.setRegistrationDate(calendar.getTime());
+                    result = true;
+                } else {
+                    //Номер задан - > Нихера не делаем?!
+                    result = true;
+                }
+        }catch(Exception e){
+            result = false;
+            e.printStackTrace();
+        }
+
+        if (result) {
+            doc.setWFResultDescription("");
+        }
+    }
+
+    else
+
+    {
+        doc.setWFResultDescription(in_result.toString());
+    }
+
+    return result;
+}
+
+    public static boolean cloneTasks(Task doc){
+        try {
+            final FacesContext context = FacesContext.getCurrentInstance();
+            final SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+
+            //TODO когда-нибудь, когда мир станет вновь светлым и ясным, когда прекратятся войны, исчезнет коррупция,
+            //TODO ну или что более вероятно когда перепишут эту фабрику действий - то этот жуткий костыль превратится в красивое и элегантное решение
+            //TODO когда-нибудь... но только не сегодня. @27-10-2014
+            if (doc.getExecutors().size() > 1) {
+                taskLogger.debug("Group task start clone");
+                //Групповое поручение
+                final Task templateTask = (Task) doc.clone();
+                templateTask.setId(0);
+                templateTask.getExecutors().clear();
+                templateTask.setParent(doc);
+                templateTask.getHistory().clear();
+
+                final Map<String, Object> in_filters = new HashMap<String, Object>();
+                final Matcher matcher = Pattern.compile("(.*)([0-9]+)$").matcher(doc.getTaskNumber());
+                if (matcher.find()) {
+                    templateTask.setTaskNumber(matcher.group(1));
+                    in_filters.put("rootDocumentId", doc.getRootDocumentId());
+                }  else {
+                    in_filters.put("taskDocumentId", "");
+                }
+
+                for (User currentExecutor : doc.getExecutors()) {
+                    final Task currentTask = (Task) templateTask.clone();
+                    final Set<User> executorsSet = new HashSet<User>(1);
+                    executorsSet.add(currentExecutor);
+                    currentTask.setExecutors(executorsSet);
+                    //+2 потому что жизнь-боль и первое поручение еще не сохранено в БД с корректным номером
+                    int numberOffset = (new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 2);
+                    currentTask.setTaskNumber(currentTask.getTaskNumber().concat(String.valueOf(numberOffset)));
+                    Set<HistoryEntry> history = new HashSet<HistoryEntry>(1);
+                    final HistoryEntry entry = new HistoryEntry();
+                    entry.setActionId(DocumentAction.REDIRECT_TO_EXECUTION_1.getId());
+                    entry.setCreated(new Date());
+                    entry.setCommentary("Создано из группового поручения");
+                    entry.setFromStatusId(1);
+                    entry.setToStatusId(DocumentStatus.ON_EXECUTION_2.getId());
+                    currentTask.setHistory(history);
+                    currentTask.setDocumentStatus(DocumentStatus.ON_EXECUTION_2);
+                    sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).save(currentTask);
+                    taskLogger.debug("Sub-task[{}] {}", currentTask.getId(), currentTask.getTaskNumber());
+                    if(taskLogger.isTraceEnabled()){
+                        taskLogger.trace("Sub-task Info: {}", currentTask);
                     }
                 }
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
+                return true;
             }
-
-            if (result) {
-                doc.setWFResultDescription("");
-            }
-        } else {
-            doc.setWFResultDescription(in_result.toString());
+        }catch (Exception e){
+            taskLogger.error("Error while cloning tasks:", e);
+            return false;
         }
-        return result;
+        return false;
     }
 
     public static boolean formAgreementTree(AgreementIssue doc, HumanTaskTree template) {

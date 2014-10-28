@@ -1,4 +1,5 @@
 package ru.util;
+
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.enums.DocumentStatus;
@@ -11,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class ApplicationHelper {
     public static String STORE_NAME = "E5 DMS";
@@ -21,6 +24,8 @@ public final class ApplicationHelper {
     private static final Locale locale = new Locale("ru", "RU");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy", locale);
 
+    private static final Pattern idPattern = Pattern.compile(".*_(\\d+)");
+
     public static Locale getLocale() {
         return locale;
     }
@@ -30,10 +35,23 @@ public final class ApplicationHelper {
     }
 
     public static String formatDate(Date date) {
-        if(date == null) {
+        if (date == null) {
             return "NULL";
         }
         return DATE_FORMAT.format(date);
+    }
+
+    public static Integer getIdFromUniqueIdString(String uniqueId) {
+        final Matcher matcher = idPattern.matcher(uniqueId);
+        if (matcher.find()) {
+            final String subResult = matcher.group(1);
+            try {
+                return Integer.valueOf(subResult);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        }
+        return null;
     }
 
     public static String getMD5(String input) {

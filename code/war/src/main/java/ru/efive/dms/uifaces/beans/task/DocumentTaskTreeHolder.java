@@ -9,12 +9,16 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.Task;
+import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
 
@@ -54,6 +58,15 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     protected List<Task> loadDocuments(Pagination pagination) {
         if (StringUtils.isEmpty(rootDocumentId)) {
             return new ArrayList<Task>(0);
+        } else if(rootDocumentId.startsWith("task")){
+            logger.debug("Start loading Tasks on \"{}\"", rootDocumentId);
+            final Integer parentId = ApplicationHelper.getIdFromUniqueIdString(rootDocumentId);
+            if(parentId != null) {
+                return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getChildrenTaskByParentId(parentId, false);
+            } else {
+                logger.warn("ParentId is not match pattern!");
+                return new ArrayList<Task>(0);
+            }
         }
         logger.debug("Start loading Tasks on \"{}\"", rootDocumentId);
         return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getTaskListByRootDocumentId(rootDocumentId, false);
@@ -74,11 +87,28 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
                 for (Task task : documents) {
                     logger.trace("{}", task);
                 }
-
             }
-
+            final HashMap<Integer, DefaultTreeNode> taskMap = new HashMap<Integer, DefaultTreeNode>(documents.size());
             for (Task document : documents) {
-                new DefaultTreeNode("task", document, root);
+                taskMap.put(document.getId(), new DefaultTreeNode("task", document, null));
+            }
+            for (Map.Entry<Integer, DefaultTreeNode> entry : taskMap.entrySet()) {
+                final DefaultTreeNode node = entry.getValue();
+                final Task data = (Task) node.getData();
+                if (data.getParent() != null) {
+                    final DefaultTreeNode parentNode = taskMap.get(data.getParent().getId());
+                    if(parentNode != null) {
+                        node.setParent(parentNode);
+                        parentNode.getChildren().add(node);
+                    } else {
+                        logger.warn("Cannot find parentNode[{}] in list. Add to Root", data.getParent().getId());
+                        node.setParent(root);
+                        root.getChildren().add(node);
+                    }
+                } else {
+                    node.setParent(root);
+                    root.getChildren().add(node);
+                }
             }
         }
         return root;
@@ -87,7 +117,7 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     /**
      * Инициализация ранжирования по страницам
      *
-     * @return Изначальный режим ренжирования
+     * @return Изначальный режим ранжирования
      */
     @Override
     protected Pagination initPagination() {

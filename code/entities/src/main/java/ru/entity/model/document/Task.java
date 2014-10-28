@@ -150,7 +150,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * История
      */
-    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "dms_task_history",
             joinColumns = {@JoinColumn(name = "task_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
@@ -270,7 +270,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         this.parent = parent;
     }
 
-    public Task getParentId() {
+    public Task getParent() {
         return parent;
     }
 

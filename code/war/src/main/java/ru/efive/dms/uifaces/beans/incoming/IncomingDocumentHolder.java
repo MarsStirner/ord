@@ -34,7 +34,6 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
@@ -46,7 +45,18 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     //Именованный логгер (INCOMING_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy");
+
+    public boolean isReadPermission() {
+        return readPermission;
+    }
+
+    public boolean isEditPermission() {
+        return editPermission;
+    }
+
+    public boolean isExecutePermission() {
+        return executePermission;
+    }
 
     @Override
     public boolean isCanDelete() {
@@ -176,7 +186,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             //Установка идшника для поиска поручений
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             //Поиск поручений
-            taskTreeHolder.refresh(true);
+            taskTreeHolder.changeOffset(0);
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
@@ -486,14 +496,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         return result;
     }
 
-    public boolean isCurrentUserDocEditor() {
-        return editPermission;
-    }
-
-    public boolean isCurrentUserDocExecutor() {
-        return executePermission;
-    }
-
     // FILES
 
     public List<Attachment> getAttachments() {
@@ -607,36 +609,36 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 if (key.contains("incoming")) {
                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
-                            "Черновик входщяего документа от " + DATE_FORMAT.format(in_doc.getCreationDate()) :
-                            "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(in_doc.getRegistrationDate())
+                            "Черновик входщяего документа от " + ApplicationHelper.formatDate(in_doc.getCreationDate()) :
+                            "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(in_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
-                            "Черновик исходящего документа от " + DATE_FORMAT.format(out_doc.getCreationDate()) :
-                            "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(out_doc.getRegistrationDate())
+                            "Черновик исходящего документа от " + ApplicationHelper.formatDate(out_doc.getCreationDate()) :
+                            "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(out_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
-                            "Черновик внутреннего документа от " + DATE_FORMAT.format(internal_doc.getCreationDate()) :
-                            "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(internal_doc.getRegistrationDate())
+                            "Черновик внутреннего документа от " + ApplicationHelper.formatDate(internal_doc.getCreationDate()) :
+                            "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(internal_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
-                            "Черновик обращения граждан от " + DATE_FORMAT.format(request_doc.getCreationDate()) :
-                            "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + DATE_FORMAT.format(request_doc.getRegistrationDate())
+                            "Черновик обращения граждан от " + ApplicationHelper.formatDate(request_doc.getCreationDate()) :
+                            "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(request_doc.getRegistrationDate())
                     );
 
                 } else if (key.contains("task")) {
                     Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
-                            "Черновик поручения от " + DATE_FORMAT.format(task_doc.getCreationDate()) :
-                            "Поручение № " + task_doc.getTaskNumber() + " от " + DATE_FORMAT.format(task_doc.getCreationDate())
+                            "Черновик поручения от " + ApplicationHelper.formatDate(task_doc.getCreationDate()) :
+                            "Поручение № " + task_doc.getTaskNumber() + " от " + ApplicationHelper.formatDate(task_doc.getCreationDate())
                     );
                 }
                 return in_description.toString();
@@ -798,62 +800,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     /* =================== */
 
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public boolean isRouteTabSelected() {
-        return isRouteTabSelected;
-    }
-
-    public void setRouteTabSelected(boolean isRouteTabSelected) {
-        this.isRouteTabSelected = isRouteTabSelected;
-    }
-
-    public boolean isRelationTabSelected() {
-        return isRelationTabSelected;
-    }
-
-    public void setRelationTabSelected(boolean isRelationTabSelected) {
-        this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public boolean isAccessTabSelected() {
-        return isAccessTabSelected;
-    }
-
-    public void setAccessTabSelected(boolean isAccessTabSelected) {
-        this.isAccessTabSelected = isAccessTabSelected;
-    }
-
-    public void setOriginalTabSelected(boolean isOriginalTabSelected) {
-        this.isOriginalTabSelected = isOriginalTabSelected;
-    }
-
-    public boolean isOriginalTabSelected() {
-        return isOriginalTabSelected;
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isRouteTabSelected = false;
-    private boolean isRelationTabSelected = false;
-    private boolean isOriginalTabSelected = false;
-    private boolean isAccessTabSelected = false;
-    private boolean isHistoryTabSelected = false;
-
     private ContragentSelectModal contragentSelectModal = new ContragentSelectModal();
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
@@ -863,10 +809,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     public UserSelectModalBean getControllerSelectModal() {
-        return controllerSelectModal;
-    }
-
-    public UserSelectModalBean getControllerSelectModalByGroupName(String groupName) {
         return controllerSelectModal;
     }
 

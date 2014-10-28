@@ -63,7 +63,7 @@
 
     <logger name="SESSION_LISTENER" level="DEBUG"/>
 
-    <logger name="TASK" level="TRACE">
+    <logger name="TASK" level="TRACE" additivity="false">
         <appender-ref ref="APPENDER_TASK"/>
     </logger>
 
