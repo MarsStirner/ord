@@ -93,7 +93,7 @@ public class Group extends DictionaryEntity {
     /**
      * пользователи
      */
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
     @JoinTable(name = "groups_dms_system_persons",
             joinColumns = {@JoinColumn(name = "groups_id")},
             inverseJoinColumns = {@JoinColumn(name = "members_id")})

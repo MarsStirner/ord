@@ -1,10 +1,12 @@
 package ru.efive.dms.uifaces.beans;
 
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.user.Group;
+import ru.entity.model.user.User;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
@@ -24,13 +26,12 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).delete(getDocument());
+            getDocument().setDeleted(true);
+            sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).update(getDocument());
             FacesContext.getCurrentInstance().getExternalContext().redirect("deleted_group.xhtml");
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -66,18 +67,14 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
             Group group = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).update(getDocument());
 
             if (group == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 setDocument(group);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -89,40 +86,19 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
         try {
             Group group = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).save(getDocument());
             if (group == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 setDocument(group);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return result;
     }
 
-    @Override
-    protected String doAfterCreate() {
-        //markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        //userList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        //userList.markNeedRefresh();
-        return super.doAfterSave();
-    }
 
     protected boolean isCurrentUserDocEditor() {
         //Group group=sessionManagement.getLoggedUser();
@@ -154,7 +130,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
         @Override
         protected void doSave() {
             super.doSave();
-            getDocument().setMembers(new HashSet(getUsers()));
+            getDocument().setMembers(new HashSet<User>(getUsers()));
         }
 
         @Override
