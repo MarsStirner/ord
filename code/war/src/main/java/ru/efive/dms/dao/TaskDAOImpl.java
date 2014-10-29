@@ -447,6 +447,10 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("taskNumber", filter, MatchMode.ANYWHERE));
             //criteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
+            criteria.createAlias("author","author")
+                    .createAlias("executors", "executors")
+                    .createAlias("initiator", "initiator")
+                    .createAlias("controller", "controller");
             disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
@@ -461,6 +465,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             disjunction.add(Restrictions.ilike("controller.middleName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("controller.firstName", filter, MatchMode.ANYWHERE));
             criteria.add(disjunction);
+
         }
         return criteria;
     }
@@ -484,15 +489,15 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
                 }
             }
 
-            detachedCriteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("initiator", "initiator", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
-
-            detachedCriteria.createAlias("author.roles", "authorRoles", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("executors.roles", "executorsRoles", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("initiator.roles", "initiatorRoles", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("controller.roles", "controllerRoles", CriteriaSpecification.LEFT_JOIN);
+//            detachedCriteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
+//            detachedCriteria.createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN);
+//            detachedCriteria.createAlias("initiator", "initiator", CriteriaSpecification.LEFT_JOIN);
+//            detachedCriteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
+//
+//            detachedCriteria.createAlias("author.roles", "authorRoles", CriteriaSpecification.LEFT_JOIN);
+//            detachedCriteria.createAlias("executors.roles", "executorsRoles", CriteriaSpecification.LEFT_JOIN);
+//            detachedCriteria.createAlias("initiator.roles", "initiatorRoles", CriteriaSpecification.LEFT_JOIN);
+//            detachedCriteria.createAlias("controller.roles", "controllerRoles", CriteriaSpecification.LEFT_JOIN);
 
             if (!isAdminRole) {
                 disjunction.add(Restrictions.eq("author.id", userId));

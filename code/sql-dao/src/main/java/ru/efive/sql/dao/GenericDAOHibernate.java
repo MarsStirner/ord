@@ -241,6 +241,9 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
 
         if (orders[0].contains(".")) {
             String[] parts = orders[0].split("\\.");
+            for (int i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
             int length = parts.length;
             if (length == 2) {
                 orderingCriteria = detachedCriteria.createCriteria(parts[0], DetachedCriteria.LEFT_JOIN);
@@ -256,6 +259,9 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
         }
         for (String order : orders) {
             String[] parts = order.split("\\.");
+            for (int i = 0; i < parts.length; i++) {
+                parts[i] = parts[i].trim();
+            }
             orderingCriteria.addOrder(asc ? Order.asc(parts[parts.length - 1]) : Order.desc(parts[parts.length - 1]));
         }
 
@@ -279,6 +285,9 @@ public class GenericDAOHibernate<T extends AbstractEntity> extends HibernateDaoS
             Criteria orderingCriteria = criteria;
             if (orderBy.contains(".")) {
                 String[] parts = orderBy.split("\\.");
+                for (int i = 0; i < parts.length; i++) {
+                    parts[i] = parts[i].trim();
+                }
                 int length = parts.length;
                 if (length == 2) {
                     orderingCriteria = criteria.createCriteria(parts[0], Criteria.LEFT_JOIN);

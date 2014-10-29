@@ -73,7 +73,9 @@
                                 <f:facet name="header">
                                     <p>Исполнитель</p>
                                 </f:facet>
-                                <h:outputText value="#{row.executor.getFullName()}"/>
+                                <ui:repeat value="#{row.executors}" var="executor">
+                                    <h:outputText value="#{executor.descriptionShort}"/><br/>
+                                </ui:repeat>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
