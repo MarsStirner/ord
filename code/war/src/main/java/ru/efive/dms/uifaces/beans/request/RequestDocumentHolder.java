@@ -7,9 +7,11 @@ import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
+import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -43,15 +45,11 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         try {
             result = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при удалении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -129,18 +127,18 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                         someReaders.addAll(document.getPersonEditors());
                         Set<Group> recipientGroups = currentUser.getGroups();
                         if (recipientGroups.size() != 0) {
-                            Iterator itr = recipientGroups.iterator();
+                            Iterator<Group> itr = recipientGroups.iterator();
                             while (itr.hasNext()) {
-                                Group group = (Group) itr.next();
+                                Group group = itr.next();
                                 someReaders.addAll(group.getMembersList());
                             }
                         }
 
 
                         if (someReaders.size() != 0) {
-                            Iterator itr = someReaders.iterator();
+                            Iterator<User> itr = someReaders.iterator();
                             while (itr.hasNext()) {
-                                User user = (User) itr.next();
+                                User user = itr.next();
                                 allReadersId.add(user.getId());
                             }
                         }
@@ -156,14 +154,13 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
                     }
                 }
-
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+                taskTreeHolder.changePageOffset(0);
 
                 updateAttachments();
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при инициализации.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
@@ -251,20 +248,16 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            RequestDocument document = (RequestDocument) getDocument();
+            RequestDocument document = getDocument();
             document = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
         }
         return result;
     }
@@ -277,9 +270,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             RequestDocument document = (RequestDocument) getDocument();
             document = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
@@ -291,7 +282,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                 paperCopy.setAuthor(sessionManagement.getLoggedUser());
 
                 String parentId = document.getUniqueId();
-                if (parentId != null || !parentId.isEmpty()) {
+                if (StringUtils.isNotEmpty(parentId)) {
                     paperCopy.setParentDocumentId(parentId);
                 }
 
@@ -327,37 +318,12 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении нового документа.", ""));
-        }//}
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+        }
         return result;
     }
 
 
-    @Override
-    protected String doAfterCreate() {
-        requestDocumentList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterEdit() {
-        requestDocumentList.markNeedRefresh();
-        return super.doAfterEdit();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        requestDocumentList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        requestDocumentList.markNeedRefresh();
-        return super.doAfterSave();
-    }
 
 /*	protected boolean validateHolder() {
         boolean result = true;
@@ -662,7 +628,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         }
 
         public boolean selected(DeliveryType value) {
-            return this.value != null ? this.value.getValue().equals(value.getValue()) : false;
+            return this.value != null && this.value.getValue().equals(value.getValue());
         }
 
         public void select(DeliveryType value) {
@@ -709,7 +675,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         }
 
         public boolean selected(Region value) {
-            return this.value != null ? this.value.getValue().equals(value.getValue()) : false;
+            return this.value != null && this.value.getValue().equals(value.getValue());
         }
 
         public void select(Region value) {
@@ -766,7 +732,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         }
 
         public boolean selected(Contragent contragent) {
-            return this.contragent == null ? false : this.contragent.getFullName().equals(contragent.getFullName());
+            return this.contragent != null && this.contragent.getFullName().equals(contragent.getFullName());
         }
 
         @Override
@@ -797,86 +763,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     // END OF MODAL HOLDERS
 
     /* =================== */
-
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRouteTabHeader() {
-        return "<span><span>Движение документа</span></span>";
-    }
-
-    public boolean isRouteTabSelected() {
-        return isRouteTabSelected;
-    }
-
-    public void setRouteTabSelected(boolean isRouteTabSelected) {
-        this.isRouteTabSelected = isRouteTabSelected;
-    }
-
-    public String getAccessTabHeader() {
-        return "<span><span>Доступ</span></span>";
-    }
-
-    public boolean isAccessTabSelected() {
-        return isAccessTabSelected;
-    }
-
-    public void setAccessTabSelected(boolean isAccessTabSelected) {
-        this.isAccessTabSelected = isAccessTabSelected;
-    }
-
-    public String getRelationTabHeader() {
-        return "<span><span>Связи</span></span>";
-    }
-
-    public boolean isRelationTabSelected() {
-        return isRelationTabSelected;
-    }
-
-    public void setRelationTabSelected(boolean isRelationTabSelected) {
-        this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public String getOriginalTabHeader() {
-        return "<span><span>Оригинал</span></span>";
-    }
-
-    public void setOriginalTabSelected(boolean isOriginalTabSelected) {
-        this.isOriginalTabSelected = isOriginalTabSelected;
-    }
-
-    public boolean isOriginalTabSelected() {
-        return isOriginalTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isRouteTabSelected = false;
-    private boolean isRelationTabSelected = false;
-    private boolean isOriginalTabSelected = false;
-    private boolean isAccessTabSelected = false;
-    private boolean isHistoryTabSelected = false;
 
     private RegionSelectModal regionSelectModal = new RegionSelectModal();
     private DeliveryTypeSelectModal deliveryTypeSelectModal = new DeliveryTypeSelectModal();
@@ -974,7 +860,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
         @Override
         protected void doSave() {
-            getDocument().setRecipientGroups(new HashSet(getGroups()));
+            getDocument().setRecipientGroups(new HashSet<Group>(getGroups()));
             getDocument().setRecipientUsers(getUsers());
             super.doSave();
         }
@@ -1160,7 +1046,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
     public void setUsersDialogSelected(boolean isUsersDialogSelected) {
         if (isUsersDialogSelected) {
-            this.isUsersDialogSelected = isUsersDialogSelected;
+            this.isUsersDialogSelected = true;
             this.isGroupsDialogSelected = false;
         }
     }
@@ -1171,7 +1057,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
     public void setGroupsDialogSelected(boolean isGroupsDialogSelected) {
         if (isGroupsDialogSelected) {
-            this.isGroupsDialogSelected = isGroupsDialogSelected;
+            this.isGroupsDialogSelected = true;
             this.isUsersDialogSelected = false;
         }
     }
@@ -1191,21 +1077,26 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
     private transient String stateComment;
 
+    public DocumentTaskTreeHolder getTaskTreeHolder() {
+        return taskTreeHolder;
+    }
+
+    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
+        this.taskTreeHolder = taskTreeHolder;
+    }
+
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    @Inject
-    @Named("request_documents")
-    private transient RequestDocumentListHolder requestDocumentList;
-    @Inject
-    @Named("dictionaryManagement")
-    private transient DictionaryManagementBean dictionaryManagement;
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;
     @Inject
     @Named("contragentList")
     private transient ContragentListHolderBean contragentList;
+    @Inject
+    @Named("documentTaskTree")
+    private transient DocumentTaskTreeHolder taskTreeHolder;
 
     private static final long serialVersionUID = 4716264614655470705L;
 }

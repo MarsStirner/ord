@@ -14,10 +14,9 @@
 <ui:define name="running_head">
     <!-- #{task.document.id}  -->
     <e5ui-comp:userSessionUpdate interval="300"/>
-    <h:outputScript library="js" name="datepicker.js" target="head"/>
-    <h:outputScript library="js" name="datepicker-cp.js" target="head"/>
-    <h:outputScript library="js" name="datepicker_init_ru.js" target="head"/>
     <h:outputScript library="js" name="forms.js" target="head"/>
+    <h:outputScript library="js" name="primefacesLocale_ru.js"/>
+    <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
     <e5ui-comp:outputUtilScript/>
 </ui:define>
 
@@ -216,13 +215,13 @@
         <table class="form_grid">
             <tr class="row">
                 <td class="first">
-                    <label for="controlDate:dateEditor">
+                    <label for="controlDate">
                         <span class="title">Срок исполнения:</span>
                     </label>
                 </td>
                 <td class="second">
-                    <e5ui-comp:inputDate value="#{task.document.controlDate}" id="controlDate" lang="ru"
-                                         required="false" immediate="true"/>
+                    <p:calendar id="controlDate" value="#{task.document.controlDate}" lang="ru" locale="ru"
+                                widgetVar="controlDateVar" pattern="dd.MM.yyyy" showOn="both"/>
                 </td>
                 <td class="third">
                     <label>

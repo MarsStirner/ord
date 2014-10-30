@@ -33,7 +33,7 @@ public class DmsSessionTimeoutFilter implements Filter {
                     String uri = request.getRequestURL().toString();
                     String queryString = request.getQueryString();
                     int pos = StringUtils.indexOf(uri, "/component/");
-                    if (pos != -1 && StringUtils.containsNone(queryString, "cid=")) {
+                    if (pos != -1 && (queryString!= null &&!queryString.contains("cid="))) {
                         uri = StringUtils.right(uri, uri.length() - pos);
                         if (StringUtils.isNotEmpty(uri)) {
                             requestUrl = uri;

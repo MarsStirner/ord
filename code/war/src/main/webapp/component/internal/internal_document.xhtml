@@ -14,11 +14,11 @@
 <ui:define name="running_head">
     <!-- #{internal_doc.document.id}  -->
     <e5ui-comp:userSessionUpdate interval="300"/>
-    <h:outputScript library="js" name="datepicker_init_ru.js"
-                    target="head"/>
     <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
     <h:outputScript library="js" name="forms.js" target="head"/>
     <e5ui-comp:outputUtilScript/>
+    <h:outputScript library="js" name="primefacesLocale_ru.js"/>
+    <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
 </ui:define>
 
 <ui:define name="header">
@@ -317,114 +317,118 @@
 <div class="row">
 <table class="form_grid">
 <tr class="row">
-    <td class="first"><label
-            for="main_content_form:shortDescription"> <span
-            class="title">Краткое содержание</span>
-    </label></td>
-    <td class="second" colspan="3"><h:inputText
-            id="shortDescription"
-            value="#{internal_doc.document.shortDescription}"
-            class="wide" immediate="true"/> <e5ui:marker
-            for="shortDescription"/></td>
+    <td class="first">
+        <label for="shortDescription">
+            <span class="title">Краткое содержание</span>
+        </label>
+    </td>
+    <td class="second" colspan="3">
+        <h:inputText id="shortDescription" value="#{internal_doc.document.shortDescription}" class="wide"
+                     immediate="true"/>
+        <e5ui:marker for="shortDescription"/>
+    </td>
 </tr>
 <tr class="row">
-    <td class="first"><label> <span class="title">Дата
-													подписания:</span>
-    </label></td>
-    <td class="second"><e5ui-comp:inputDate
-            id="signatureDate"
-            value="#{internal_doc.document.signatureDate}" lang="ru"
-            immediate="true"/> <e5ui:marker for="signatureDate"/></td>
-    <td class="third"><label> <span class="title">
-													<h:outputLink title="Руководитель:"
-                                                                  onclick="signerSelectModalWidget.clickOpen('signerSelectModal'); return false;">
-                                                        Руководитель
-                                                    </h:outputLink>
-											</span>
-    </label> <e5ui-comp:modalWindow id="signerSelectModal"
-                                    modalWindowHolder="#{internal_doc.signerSelectModal}"
-                                    render="signer" execute="select_table"
-                                    showButtons="false" style="width: 500px;"
-                                    widgetVar="signerSelectModalWidget">
-        <div id="title">Выбор руководителя</div>
-        <div id="modal_container" style="margin-top: 0;">
-            <div class="searchbar">
-                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                <h:inputText id="filter_string"
-                             value="#{internal_doc.signerSelectModal.userList.filter}"
-                             style="display:block; float:left; margin-right:10px;"
-                             title="Поиск"/>
-                <h:commandButton value=" "
-                                 action="#{internal_doc.signerSelectModal.userList.changePageOffset(0)}"
-                                 styleClass="searchbutton">
-                    <f:ajax
-                            execute="signerSelectModal:filter_string"
-                            render="signerSelectModal:ajaxModal signerSelectModal:modal_paging"/>
-                </h:commandButton>
-            </div>
-            <div class="wrap"
-                 style="height: 250px; width: 100%; margin: 0px;">
-                <div class="inner" style="height: 250px;">
-                    <e5ui:dataTable id="select_table" border="0"
-                                    cellpadding="0" cellspacing="0"
-                                    value="#{staffManagement.findGroupByAlias('TopManagers').membersList}"
-                                    var="row" grouping="false" width="100%">
-                        <e5ui:row
-                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                styleClass="#{internal_doc.signerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                        <e5ui:column>
-                            <f:facet name="header">
-                                <p>Руководитель</p>
-                            </f:facet>
-                            <h:outputText value="#{row}"
-                                          converter="PersonConverter"/>
-                            <h:commandLink id="selectLink" style="display: none;"
-                                           rendered="#{not internal_doc.signerSelectModal.selected(row)}"
-                                           action="#{internal_doc.signerSelectModal.select(row)}"/>
-                        </e5ui:column>
-                    </e5ui:dataTable>
+    <td class="first">
+        <label>
+            <span class="title">Дата подписания:</span>
+        </label>
+    </td>
+    <td class="second">
+        <p:calendar id="signatureDate" value="#{internal_doc.document.signatureDate}" lang="ru" locale="ru"
+                    widgetVar="signatureDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+    </td>
+    <td class="third">
+        <label>
+            <span class="title">
+                <h:outputLink title="Руководитель:"
+                              onclick="signerSelectModalWidget.clickOpen('signerSelectModal'); return false;">
+                    Руководитель
+                </h:outputLink>
+            </span>
+        </label>
+        <e5ui-comp:modalWindow id="signerSelectModal"
+                               modalWindowHolder="#{internal_doc.signerSelectModal}"
+                               render="signer" execute="select_table"
+                               showButtons="false" style="width: 500px;"
+                               widgetVar="signerSelectModalWidget">
+            <div id="title">Выбор руководителя</div>
+            <div id="modal_container" style="margin-top: 0;">
+                <div class="searchbar">
+                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                    <h:inputText id="filter_string"
+                                 value="#{internal_doc.signerSelectModal.userList.filter}"
+                                 style="display:block; float:left; margin-right:10px;"
+                                 title="Поиск"/>
+                    <h:commandButton value=" "
+                                     action="#{internal_doc.signerSelectModal.userList.changePageOffset(0)}"
+                                     styleClass="searchbutton">
+                        <f:ajax execute="signerSelectModal:filter_string"
+                                render="signerSelectModal:ajaxModal signerSelectModal:modal_paging"/>
+                    </h:commandButton>
+                </div>
+                <div class="wrap"
+                     style="height: 250px; width: 100%; margin: 0px;">
+                    <div class="inner" style="height: 250px;">
+                        <e5ui:dataTable id="select_table" border="0"
+                                        cellpadding="0" cellspacing="0"
+                                        value="#{staffManagement.findGroupByAlias('TopManagers').membersList}"
+                                        var="row" grouping="false" width="100%">
+                            <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                      styleClass="#{internal_doc.signerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                            <e5ui:column>
+                                <f:facet name="header">
+                                    <p>Руководитель</p>
+                                </f:facet>
+                                <h:outputText value="#{row}"
+                                              converter="PersonConverter"/>
+                                <h:commandLink id="selectLink" style="display: none;"
+                                               rendered="#{not internal_doc.signerSelectModal.selected(row)}"
+                                               action="#{internal_doc.signerSelectModal.select(row)}"/>
+                            </e5ui:column>
+                        </e5ui:dataTable>
+                    </div>
+                </div>
+                <div style="clear: both;">
+                    <h:panelGroup id="modal_paging" rendered="false">
+                        <e5ui-comp:tablePager id="pager"
+                                              documentListHolder="#{internal_doc.signerSelectModal.userList}"/>
+                    </h:panelGroup>
                 </div>
             </div>
-            <div style="clear: both;">
-                <h:panelGroup id="modal_paging" rendered="false">
-                    <e5ui-comp:tablePager id="pager"
-                                          documentListHolder="#{internal_doc.signerSelectModal.userList}"/>
-                </h:panelGroup>
+            <div class="e5ui-modal-bottombuttons">
+                <h:button onclick="signerSelectModalWidget.clickSave(); return false;" value="Выбрать"/>
+                <h:button onclick="signerSelectModalWidget.clickClose(); return false;" value="Отмена"/>
             </div>
-        </div>
-        <div class="e5ui-modal-bottombuttons">
-            <h:button
-                    onclick="signerSelectModalWidget.clickSave(); return false;"
-                    value="Выбрать"/>
-            <h:button
-                    onclick="signerSelectModalWidget.clickClose(); return false;"
-                    value="Отмена"/>
-        </div>
-    </e5ui-comp:modalWindow></td>
-    <td class="fourth"><h:outputText id="signer"
-                                     value="#{internal_doc.document.signer}"
-                                     converter="PersonConverter" class="wide"/></td>
+        </e5ui-comp:modalWindow>
+    </td>
+    <td class="fourth">
+        <h:outputText id="signer" value="#{internal_doc.document.signer}" converter="PersonConverter" class="wide"/>
+    </td>
 </tr>
 <tr class="row">
-    <td class="first"><label
-            for="main_content_form:executionDate:dateEditor"> <span
-            class="title">Срок исполнения</span>
-    </label></td>
-    <td class="second"><e5ui-comp:inputDate
-            id="executionDate"
-            value="#{internal_doc.document.executionDate}" lang="ru"
-            immediate="true"/></td>
-    <td class="third"><label> <span class="title">
-													<h:outputLink title="Контроль исполнения"
-                                                                  onclick="responsibleSelectModalWidget.clickOpen('responsibleSelectModal'); return false;">
-                                                        Контроль исполнения:
-                                                    </h:outputLink>
-											</span>
-    </label> <e5ui-comp:modalWindow id="responsibleSelectModal"
-                                    modalWindowHolder="#{internal_doc.responsibleSelectModal}"
-                                    render="executor" execute="select_table"
-                                    showButtons="false" style="width: 500px;"
-                                    widgetVar="responsibleSelectModalWidget">
+    <td class="first">
+        <label for="executionDate">
+            <span class="title">Срок исполнения</span>
+        </label>
+    </td>
+    <td class="second">
+        <p:calendar id="executionDate" value="#{internal_doc.document.executionDate}" lang="ru" locale="ru"
+                    widgetVar="executionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+    </td>
+    <td class="third">
+        <label>
+            <span class="title">
+                <h:outputLink onclick="responsibleSelectModalWidget.clickOpen('responsibleSelectModal'); return false;">
+                    Контроль исполнения:
+                </h:outputLink>
+			</span>
+        </label>
+        <e5ui-comp:modalWindow id="responsibleSelectModal"
+                                        modalWindowHolder="#{internal_doc.responsibleSelectModal}"
+                                        render="executor" execute="select_table"
+                                        showButtons="false" style="width: 500px;"
+                                        widgetVar="responsibleSelectModalWidget">
         <div id="title">Выбор</div>
         <div id="modal_container" style="margin-top: 0;">
             <div class="searchbar">
@@ -436,8 +440,7 @@
                 <h:commandButton value=" "
                                  action="#{internal_doc.responsibleSelectModal.userList.changePageOffset(0)}"
                                  styleClass="searchbutton">
-                    <f:ajax
-                            execute="responsibleSelectModal:users_filter_string"
+                    <f:ajax execute="responsibleSelectModal:users_filter_string"
                             render="responsibleSelectModal:ajaxModal responsibleSelectModal:executors_modal_paging"/>
                 </h:commandButton>
             </div>
@@ -1015,9 +1018,9 @@
                         </div>
                         <div class="e5ui-modal-bottombuttons">
                             <h:button onclick="humanTaskExecutorSelectModal.clickSave(); return false;"
-                                    value="Выбрать"/>
+                                      value="Выбрать"/>
                             <h:button onclick="humanTaskExecutorSelectModal.clickClose(); return false;"
-                                    value="Отмена"/>
+                                      value="Отмена"/>
                         </div>
                     </e5ui-comp:modalWindow>
 
@@ -1068,9 +1071,11 @@
 </h:panelGroup>
 </p:tab>
 
-<p:tab title="Связи" rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
+<p:tab title="Связи"
+       rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
 </p:tab>
-<p:tab title="Оригинал" rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
+<p:tab title="Оригинал"
+       rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <fieldset>
         <script type="text/javascript">
             document.ondblclick = function DoubleClick(evt) {
@@ -1210,7 +1215,7 @@
                                                 var="row"
                                                 grouping="false" width="100%">
                                     <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                            styleClass="#{internal_doc.personReadersPickList.selected(row)? 'grid_row_selected': ''}"/>
+                                              styleClass="#{internal_doc.personReadersPickList.selected(row)? 'grid_row_selected': ''}"/>
                                     <e5ui:column>
                                         <f:facet name="header">
                                             <p>Читатели</p>
@@ -1676,7 +1681,7 @@
 </p:tab>
 
 <p:tab title="История"
-              rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
+       rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <div style="width: 100%; margin: 0;">
         <p:dataTable id="history_list" value="#{internal_doc.document.historyList}"
                      var="history_entry" grouping="false">

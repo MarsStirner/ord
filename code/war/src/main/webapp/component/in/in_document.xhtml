@@ -13,9 +13,9 @@
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
 <ui:define name="running_head">
-
+    <h:outputScript library="js" name="primefacesLocale_ru.js"/>
+    <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
     <e5ui-comp:userSessionUpdate rendered="#{in_doc.editState or in_doc.createState}" interval="300"/>
-    <h:outputScript library="js" name="datepicker_init_ru.js" target="head"/>
     <e5ui-comp:outputUtilScript/>
     <h:outputScript>
         function goToDocumentByUniqueId(parentId) {
@@ -45,7 +45,7 @@
                 window.getSelection().removeAllRanges();
             else if (document.selection)
                 document.selection.empty();
-        }
+        };
     </script>
 </ui:define>
 
@@ -244,14 +244,13 @@
         <table class="form_grid">
             <tr class="row">
                 <td class="first">
-                    <label for="deliveryDate:dateEditor">
+                    <label for="deliveryDate">
                         <span class="title">Дата поступления</span>
                     </label>
                 </td>
                 <td class="second">
-                    <e5ui-comp:inputDate id="deliveryDate" value="#{in_doc.document.deliveryDate}" lang="ru"
-                                         required="true" immediate="true"/>
-                    <e5ui:marker for="deliveryDate"/>
+                    <p:calendar id="deliveryDate" value="#{in_doc.document.deliveryDate}" lang="ru" locale="ru"
+                                widgetVar="deliveryDateVar" pattern="dd.MM.yyyy" showOn="both"/>
                 </td>
                 <td class="third">
                     <label for="author">
@@ -263,14 +262,15 @@
                 </td>
             </tr>
             <tr class="row">
-                <td class="first"><label
-                        for="executionDate:dateEditor"> <span
-                        class="title">Срок исполнения</span>
-                </label></td>
-                <td class="second"><e5ui-comp:inputDate id="executionDate"
-                                                        value="#{in_doc.document.executionDate}" lang="ru"
-                                                        immediate="true">
-                </e5ui-comp:inputDate> <e5ui:marker for="executionDate"/></td>
+                <td class="first">
+                    <label for="executionDate">
+                        <span class="title">Срок исполнения</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <p:calendar id="executionDate" value="#{in_doc.document.executionDate}" lang="ru" locale="ru"
+                                widgetVar="executionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </td>
                 <td class="third">
                     <label> 
                         <span class="title">
@@ -511,13 +511,12 @@
 </tr>
 <tr class="row">
     <td class="first">
-        <label for="receivedDocDate">
+        <label for="receivedDate">
             <span class="title">Дата поступившего</span>
         </label>
     </td>
     <td class="second" colspan="3">
-        <e5ui-comp:inputDate id="receivedDocDate" value="#{in_doc.document.receivedDocumentDate}" lang="ru"
-                             immediate="true"/>
+        <p:calendar id="receivedDate" value="#{in_doc.document.receivedDocumentDate}" lang="ru" locale = "ru" widgetVar = "recievedDateVar" pattern= "dd.MM.yyyy" showOn= "both" />
     </td>
 </tr>
 <tr class="row">
@@ -912,12 +911,13 @@
         <h:panelGroup>
             <style type="text/css">
                 /* Иконка раворачивания элемента */
-                .ui-icon-triangle-1-e{
+                .ui-icon-triangle-1-e {
                     background-image: url('#{resource["images:plus.png"]}') !important;
                     background-position: 0 0;
                 }
+
                 /* Иконка сворачивания элемента */
-                .ui-icon-triangle-1-s{
+                .ui-icon-triangle-1-s {
                     background-image: url('#{resource["images:minus.png"]}') !important;
                     background-position: 0 0;
                 }
