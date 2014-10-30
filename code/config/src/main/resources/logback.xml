@@ -52,6 +52,18 @@
         </rollingPolicy>
     </appender>
 
+    <!--Для DAO-->
+    <appender name="APPENDER_DAO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/DAO/DAO.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
 
     <logger name="INCOMING_DOCUMENT" level="DEBUG"/>
 
@@ -82,6 +94,13 @@
     </logger>
 
     <logger name="HUMAN_TASK" level="DEBUG"/>
+
+    <!--Логгеры для DAO-->
+    <!--У каждого свой, но пишут все в один APPENDER_DAO-->
+    <logger name="TASK_DAO" level="DEBUG">
+        <appender-ref ref="APPENDER_DAO"/>
+    </logger>
+    <!--Конец логгеров для DAO-->
 
     <!--Hibernate SQL LOGGER-->
     <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">

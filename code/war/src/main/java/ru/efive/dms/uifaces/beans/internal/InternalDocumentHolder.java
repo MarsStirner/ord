@@ -15,6 +15,7 @@ import ru.efive.dms.uifaces.beans.GroupsSelectModalBean;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
+import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
@@ -215,6 +216,11 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                     }
                 }
 
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+                //Поиск поручений
+                taskTreeHolder.changeOffset(0);
+
                 updateAttachments();
             }
         } catch (Exception e) {
@@ -374,27 +380,10 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         return result;
     }
 
-    @Override
-    protected String doAfterCreate() {
-        InternalDocumentList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
 
-    @Override
-    protected String doAfterEdit() {
-        InternalDocumentList.markNeedRefresh();
-        return super.doAfterEdit();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        InternalDocumentList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
 
     @Override
     protected String doAfterSave() {
-        InternalDocumentList.markNeedRefresh();
         UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
         if (userAccessLevel == null) {
             userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
@@ -1208,13 +1197,24 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     };
 
     private transient String stateComment;
+    /////////////////// Injected beans
+
+    public DocumentTaskTreeHolder getTaskTreeHolder() {
+        return taskTreeHolder;
+    }
+
+    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
+        this.taskTreeHolder = taskTreeHolder;
+    }
+
+    @Inject
+    @Named("documentTaskTree")
+    private transient DocumentTaskTreeHolder taskTreeHolder;
 
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    @Inject
-    @Named("internal_documents")
-    private transient InternalDocumentsListHolder InternalDocumentList;
+
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;

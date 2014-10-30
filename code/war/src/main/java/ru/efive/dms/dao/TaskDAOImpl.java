@@ -4,6 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.document.Task;
@@ -18,6 +20,7 @@ import java.util.*;
 //import ru.entity.model.document.IncomingDocument;
 
 public class TaskDAOImpl extends GenericDAOHibernate<Task> {
+    private static final Logger logger = LoggerFactory.getLogger("TASK_DAO");
 
     @Override
     protected Class<Task> getPersistentClass() {
@@ -532,12 +535,20 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     }
 
     public Task findDocumentById(String id) {
+        logger.debug("Call findDocumentById({})", id);
+        int identifier;
+        try{
+            identifier = Integer.valueOf(id);
+        } catch (NumberFormatException e){
+            logger.warn("Identifier is not integer: \"{}\" return null", id);
+            return null;
+        }
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
-        detachedCriteria.add(Restrictions.eq("id", Integer.valueOf(id)));
+        detachedCriteria.add(Restrictions.eq("id", identifier ));
         List<Task> in_results = getHibernateTemplate().findByCriteria(detachedCriteria);
-        if (in_results != null && in_results.size() > 0) {
+        if (in_results != null && !in_results.isEmpty()) {
             return in_results.get(0);
         } else {
             return null;
