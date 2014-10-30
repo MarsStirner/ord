@@ -649,7 +649,8 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     }
 
 
-    public Task getTask(Integer id) {
+    public Task getTask(int id) {
+        logger.debug("Call -> getTask({})", id);
         final DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         detachedCriteria.add(Restrictions.idEq(id));
@@ -669,6 +670,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
      */
 
     public List<Task> getTaskListByRootDocumentId(final String rootId, final boolean showDeleted){
+        logger.debug("Call -> getTaskListByRootDocumentId(\"{}\", {})", rootId, showDeleted);
         final DetachedCriteria criteria = DetachedCriteria.forClass(getPersistentClass());
         criteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         if(!showDeleted){
@@ -684,7 +686,8 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
      * @param showDeleted включать ли в результат удаленные
      * @return список подпоручений
      */
-    public List<Task> getChildrenTaskByParentId(Integer parentId, boolean showDeleted) {
+    public List<Task> getChildrenTaskByParentId(int parentId, boolean showDeleted) {
+        logger.debug("Call -> getChildrenTaskByParentId({}, {})", parentId, showDeleted);
         if(parentId != 0) {
             final DetachedCriteria criteria = DetachedCriteria.forClass(getPersistentClass());
             criteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
@@ -704,6 +707,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             }
             return result;
         } else {
+            logger.warn("parentId  = 0. return empty list");
             return new ArrayList<Task>(0);
         }
     }
