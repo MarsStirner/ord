@@ -21,58 +21,80 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 public class AuthenticationFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         final HttpServletRequest request = (HttpServletRequest) req;
-        if (request.getSession().getAttribute(SessionManagementBean.AUTH_KEY) == null) {
-            if (isSessionControlRequiredForThisResource(request)) {
-                String requestUrl = "";
-                String uri = request.getRequestURL().toString();
-                String queryString = request.getQueryString();
-                int pos = StringUtils.indexOf(uri, "/component/");
-                if (pos != -1 && (queryString!= null &&!queryString.contains("cid="))) {
-                    uri = StringUtils.right(uri, uri.length() - pos);
-                    if (StringUtils.isNotEmpty(uri)) {
-                        requestUrl = uri;
-                    }
-                    if (StringUtils.isNotEmpty(requestUrl)) {
-                        requestUrl = requestUrl + "?" + queryString;
-                    }
-                    LOGGER.info("AUTH: requestUrl={}", requestUrl);
-                }
-                if (StringUtils.isNotEmpty(requestUrl)) {
-                    LOGGER.info("AUTH: Setting requestUrl session parameter: {} ", requestUrl);
-                    request.getSession().setAttribute(SessionManagementBean.BACK_URL, requestUrl);
-                }
-                ((HttpServletResponse) resp).sendRedirect(request.getContextPath() + "/" + getTimeoutPage());
+        //1 Проверяем требуется ли наличие контроля сессисии (по ходу он не нужен только для страницы логина =))
+        if(isSessionControlRequiredForThisResource(request)){
+            //Проверяем авторизацию
+            if (request.getSession().getAttribute(SessionManagementBean.AUTH_KEY) == null) {
+               //ее нет
+                LOGGER.error("{} >>  has not been authorized", getClientIpAddr(request));
+                makeRedirect(request, resp);
+            } else if (isSessionInvalid(request)){
+                //Проверяем валидность сессии
+                LOGGER.error("{} >>  has invalid session [{}]", getClientIpAddr(request),request.getRequestedSessionId());
+                makeRedirect(request, resp);
+            } else {
+                //Все ок
+                chain.doFilter(request, resp);
             }
-        } else {
-            chain.doFilter(req, resp);
+
+        }   else {
+            //Иначе пропускаем дальше
+            chain.doFilter(request, resp);
         }
+    }
+
+    private void makeRedirect(HttpServletRequest request, ServletResponse resp) throws IOException {
+        final String requestPath = request.getRequestURI();
+        final String queryPart = request.getQueryString();
+        LOGGER.warn("Requested URL is \"{}\" params \"{}\"", requestPath, queryPart);
+        final StringBuilder redirectTo = new StringBuilder(requestPath);
+        if(queryPart != null && !queryPart.contains("cid=")){
+            redirectTo.append('?').append(queryPart);
+        }
+        request.getSession().setAttribute(SessionManagementBean.BACK_URL, redirectTo.toString());
+        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
+        ((HttpServletResponse) resp).sendRedirect(request.getContextPath().concat("/").concat(LOGIN_PAGE));
     }
 
     private boolean isSessionControlRequiredForThisResource(HttpServletRequest httpServletRequest) {
         String requestPath = httpServletRequest.getRequestURI();
-        return !StringUtils.contains(requestPath, getTimeoutPage());
+        return !StringUtils.contains(requestPath, LOGIN_PAGE);
     }
 
-    public void init(FilterConfig config) throws ServletException {
-        this.config = config;
+    private boolean isSessionInvalid(HttpServletRequest httpServletRequest) {
+        return (httpServletRequest.getRequestedSessionId() != null) && !httpServletRequest.isRequestedSessionIdValid();
     }
 
+
+    public static String getClientIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+    }
+
+    @Override
     public void destroy() {
-        config = null;
     }
 
-    public String getTimeoutPage() {
-        return timeoutPage;
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
     }
 
-    public void setTimeoutPage(String timeoutPage) {
-        this.timeoutPage = timeoutPage;
-    }
+    private static final String LOGIN_PAGE = "index.xhtml";
 
-
-    private String timeoutPage = "index.xhtml";
-
-    private FilterConfig config;
-
-    private final static Logger LOGGER = LoggerFactory.getLogger("FILTER");
+    private static final Logger LOGGER = LoggerFactory.getLogger("FILTER");
 }
