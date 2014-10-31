@@ -3,24 +3,15 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
-
 <ui:define name="running_head">
-    <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-    <h:outputScript library="js" name="forms.js" target="head"/>
     <!-- #{user.document.id}  -->
-    <e5ui-comp:userSessionUpdate interval="300"/>
 </ui:define>
-
-<ui:define name="left_menu"/>
-
 <ui:define name="header">
     <div id="form_header">
         <div class="actionbar">
@@ -31,22 +22,19 @@
                     </h:outputLink>
                 </div>
                 <div class="defbutton">
-                    <h:commandLink action="#{user.edit}"
-                                   rendered="#{user.viewState and (isAdministrator or isHr)}">
+                    <h:commandLink action="#{user.edit}" rendered="#{user.viewState and (isAdministrator or isHr)}">
                         <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                         Редактировать
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
-                    <h:commandLink action="#{user.cancel}"
-                                   rendered="#{user.editState or user.createState}">
+                    <h:commandLink action="#{user.cancel}" rendered="#{user.editState or user.createState}">
                         <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
                         Отменить
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
-                    <h:commandLink action="#{user.save}"
-                                   rendered="#{user.editState or user.createState}">
+                    <h:commandLink action="#{user.save}" rendered="#{user.editState or user.createState}">
                         <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
                         Сохранить
                     </h:commandLink>
@@ -90,323 +78,294 @@
 </div>
 
 <div class="main_content">
-<e5ui:tabPanel id="content_table">
-<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Реквизиты&lt;/span&gt;&lt;/span&gt;"
-              actionBehavior="#{user.viewState ? 'client' : 'submit'}">
-<c:if test="#{user.viewState}">
-    <h:panelGroup>
-        <div class="row">
-            <table class="form_grid">
-                <tr class="row">
-                    <td class="first">Фамилия:</td>
-                    <td><h:outputText value="#{user.document.lastName}"
-                                      class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Имя:</td>
-                    <td><h:outputText value="#{user.document.firstName}"
-                                      class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Отчество:</td>
-                    <td><h:outputText value="#{user.document.middleName}"
-                                      class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Подразделение:</td>
-                    <td><h:outputText value="#{user.document.jobDepartment.value}"
-                                      class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Должность:</td>
-                    <td><h:outputText value="#{user.document.jobPosition.value}"
-                                      class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Email:</td>
-                    <td><h:outputText value="#{user.document.email}"
-                                      class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td><h3>Контактные данные</h3></td>
-                </tr>
-                <tr class="row">
-                    <td colspan="2">
-                        <div id="main_table" style="width:100%">
-                            <div class="wrap_main" id="table_wrap">
-                                <div class="inner" id="table_inner">
-                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="view_contacts_tbl"
-                                                    value="#{user.document.contacts}" var="row" grouping="false"
-                                                    width="100%">
-                                        <e5ui:column style="min-width:9em">
-                                            <f:facet name="header">
-                                                <h:commandLink>
-                                                    Тип
-                                                </h:commandLink>
-                                            </f:facet>
-                                            <h:outputText value="#{row.type}" />
-                                        </e5ui:column>
-                                        <e5ui:column style="min-width:9em">
-                                            <f:facet name="header">
-                                                <h:commandLink>
-                                                    Номер
-                                                </h:commandLink>
-                                            </f:facet>
-                                            <h:outputText value="#{row.value}"/>
-                                        </e5ui:column>
-                                    </e5ui:dataTable>
-                                </div>
+<p:tabView activeIndex="0" widgetVar="userTabViewVar" id="content_table">
+<p:tab title="Реквизиты">
+    <c:if test="#{user.viewState}">
+        <h:panelGroup>
+            <div class="row">
+                <table class="form_grid">
+                    <tr class="row">
+                        <td class="first">Фамилия:</td>
+                        <td>
+                            <h:outputText value="#{user.document.lastName}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Имя:</td>
+                        <td>
+                            <h:outputText value="#{user.document.firstName}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Отчество:</td>
+                        <td>
+                            <h:outputText value="#{user.document.middleName}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Подразделение:</td>
+                        <td>
+                            <h:outputText value="#{user.document.jobDepartment.value}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Должность:</td>
+                        <td>
+                            <h:outputText value="#{user.document.jobPosition.value}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Email:</td>
+                        <td>
+                            <h:outputText value="#{user.document.email}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td><h3>Контактные данные</h3></td>
+                    </tr>
+                    <tr class="row">
+                        <td colspan="2">
+                            <div id="main_table" style="width:100%">
+                                <p:dataTable id="view_contacts_tbl"
+                                             value="#{user.document.contacts}"
+                                             var="contact"
+                                             width="100%">
+                                    <p:column headerText="Тип">
+                                        <h:outputText value="#{contact.type}"/>
+                                    </p:column>
+                                    <p:column headerText="Номер">
+                                        <h:outputText value="#{contact.value}"/>
+                                    </p:column>
+                                </p:dataTable>
                             </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </h:panelGroup>
-</c:if>
-<c:if test="#{user.createState or user.editState}">
-    <h:panelGroup>
-        <div class="row">
-            <table class="form_grid">
-                <tr class="row">
-                    <td class="first">Фамилия:</td>
-                    <td><h:inputText value="#{user.document.lastName}"
-                                     class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Имя:</td>
-                    <td><h:inputText value="#{user.document.firstName}"
-                                     class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Отчество:</td>
-                    <td><h:inputText value="#{user.document.middleName}"
-                                     class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Логин:</td>
-                    <td><h:inputText value="#{user.document.login}"
-                                     class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Пароль:</td>
-                    <td>
-                        <h:inputText binding="#{newPass}" class="wide">
-                            <f:ajax listener="#{user.changePassword(newPass.value)}" />
-                        </h:inputText>
-                    </td>
-                </tr>
-                <tr class="row">
-                    <td class="first">
-                        Подразделение
-                    </td>
-                    <td>
-                        <p:autoComplete
-                                id="jobDepartmentPicker"
-                                value="#{user.document.jobDepartment}"
-                                completeMethod="#{autoCompleteView.completeDepartment}"
-                                var="item"
-                                itemValue="#{item}"
-                                itemLabel="#{item.value}"
-                                converter="departmentConverter"
-                                forceSelection="true"
-                                minQueryLength="2"
-                                queryDelay="500"
-                                size="100"
-                                emptyMessage="Нету элементов"
-                                placeHolder="Выберете подразделение"
-                                maxResults="10"
-                                converterMessage="Не существует такого отделения"
-                                />
-                        <p:watermark for="jobDepartmentPicker"
-                                     value="Введите первые символы для поиска соответствий в справочнике"/>
-                    </td>
-                </tr>
-                <tr class="row">
-                    <td class="first">
-                        Должность
-                    </td>
-                    <td>
-                        <p:autoComplete
-                                id="jobPositionPicker"
-                                value="#{user.document.jobPosition}"
-                                completeMethod="#{autoCompleteView.completePosition}"
-                                var="item"
-                                itemValue="#{item}"
-                                itemLabel="#{item.value}"
-                                converter="positionConverter"
-                                forceSelection="true"
-                                minQueryLength="2"
-                                queryDelay="500"
-                                size="100"
-                                emptyMessage="Нету элементов"
-                                maxResults="10"
-                                converterMessage="Не существует такой должности"
-                                />
-                        <p:watermark for="jobPositionPicker"
-                                     value="Введите первые символы для поиска соответствий в справочнике"/>
-                    </td>
-                </tr>
-                <tr class="row">
-                    <td class="first">Email:</td>
-                    <td><h:inputText value="#{user.document.email}"
-                                     class="wide"/></td>
-                </tr>
-                <tr class="row">
-                    <td><h3>Контактные данные</h3></td>
-                </tr>
-                <tr class="row">
-                    <td colspan="2">
-                        <div id="main_table" style="width:100%">
-                            <div class="wrap_main" id="table_wrap">
-                                <div class="inner" id="table_inner">
-                                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="edit_contacts_tbl"
-                                                    value="#{user.document.contacts}" var="row" grouping="false"
-                                                    width="100%">
-                                        <e5ui:column style="min-width:9em">
-                                            <f:facet name="header">
-                                                <h:commandLink>
-                                                    Тип
-                                                </h:commandLink>
-                                            </f:facet>
-                                            <h:selectOneMenu
-                                                    id="contactTypeSelectMenu" value="#{row.type}"
-                                                    converter="ContactTypeConverter" style="font-size:10pt;"
-                                                    immediate="true" >
-                                            <f:selectItems value="#{dictionaryManagement.contactTypes}"/>
-                                            </h:selectOneMenu>
-                                        </e5ui:column>
-                                        <e5ui:column style="min-width:9em">
-                                            <f:facet name="header">
-                                                <h:commandLink>
-                                                    Номер
-                                                </h:commandLink>
-                                            </f:facet>
-                                            <h:inputText value="#{row.value}"/>
-                                        </e5ui:column>
-                                        <e5ui:column style="width:10%">
-                                            <f:facet name="header">
-                                                <h:commandLink>
-                                                    Удалить
-                                                </h:commandLink>
-                                            </f:facet>
-                                            <h:commandLink action="#{user.deleteContact(row)}">
-                                                <h:graphicImage value="#{resource['images:button-reject.png']}"/>
-                                            </h:commandLink>
-                                        </e5ui:column>
-                                    </e5ui:dataTable>
-                                    <h:commandButton value="Добавить новый контакт" action="#{user.addContact()}"/>
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
-    </h:panelGroup>
-</c:if>
-</e5ui:tabPage>
-<c:if test="#{isAdministrator or isHr}">
-<e5ui:tabPage headerText="&lt;span&gt;&lt;span&gt;Права доступа|допуска&lt;/span&gt;&lt;/span&gt;"
-              actionBehavior="client">
-    <h:panelGroup rendered="#{user.createState or user.editState}">
-        <table class="form_grid">
-            <tr class="row">
-                <td class="first"><label> <span class="title">
-											Максимальный уровень допуска: </span>
-                </label></td>
-                <td class="second" colspan="3"><h:selectOneMenu
-                        id="accessLevel" value="#{user.document.maxUserAccessLevel}"
-                        converter="UserAccessLevelConverter">
-                    <f:selectItems
-                            value="#{dictionaryManagement.userAccessLevels}"/>
-                </h:selectOneMenu></td>
-            </tr>
-            <tr class="row">
-                <td class="first"><label> <span class="title">
-											Текущий уровень допуска: </span>
-                </label></td>
-                <td class="second" colspan="3"><h:outputText
-                        value="#{user.document.currentUserAccessLevel}"
-                        converter="UserAccessLevelConverter"/></td>
-            </tr>
-            <tr class="row">
-                <td class="first" colspan="2">
-                    <fieldset>
-                        <legend>
-                            <label><span class="title">Роли</span> </label>
-                        </legend>
-                        <h:selectManyCheckbox collectionType="java.util.HashSet"
-                                              layout="pageDirection" value="#{user.document.roles}"
-                                              converter="RoleConverter">
-                            <f:selectItems value="#{roleList.availableRoles}"/>
-                        </h:selectManyCheckbox>
-                    </fieldset>
-                </td>
-            </tr>
-        </table>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{user.viewState}">
-        <table class="form_grid">
-            <tr class="row">
-                <td class="first"><label> <span class="title">
-											Максимальный уровень допуска: </span>
-                </label></td>
-                <td class="second" colspan="3"><h:outputText
-                        value="#{user.document.maxUserAccessLevel}"
-                        converter="UserAccessLevelConverter"/></td>
-            </tr>
-            <tr class="row">
-                <td class="first"><label> <span class="title">
-											Текущий уровень допуска: </span>
-                </label></td>
-                <td class="second" colspan="3"><h:outputText
-                        value="#{user.document.currentUserAccessLevel}"
-                        converter="UserAccessLevelConverter"/></td>
-            </tr>
-            <tr class="row">
-                <td class="first" colspan="4">
-                    <fieldset>
-                        <legend>
-                            <label><span class="title">Роли</span> </label>
-                        </legend>
-                        <h:selectManyCheckbox collectionType="java.util.HashSet"
-                                              layout="pageDirection" value="#{user.document.roles}"
-                                              converter="RoleConverter" disabled="true">
-                            <f:selectItems value="#{roleList.availableRoles}"/>
-                        </h:selectManyCheckbox>
-                    </fieldset>
-                </td>
-            </tr>
-        </table>
-    </h:panelGroup>
-</e5ui:tabPage>
-</c:if>
-</e5ui:tabPanel>
-</div>
-
-</ui:define>
-
-<ui:define name="footer">
-    <e5ui-comp:splashScreen id="splash_screen" timeout="0">
-        <f:facet name="timeoutPanel">
-            <div
-                    style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                Пожалуйста, подождите...
+                        </td>
+                    </tr>
+                </table>
             </div>
-        </f:facet>
-    </e5ui-comp:splashScreen>
-    <script>
-        e5ui_splashScreen.startShowOnSubmit('splash_screen',
-                [ 'main_content_form' ]);
-    </script>
-    <h:outputStylesheet library="css" name="datepicker.css"/>
-    <h:outputStylesheet library="css" name="datatable.css"/>
-    <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
-    <h:outputStylesheet library="css" name="tabPanel.css"/>
+        </h:panelGroup>
+    </c:if>
+    <c:if test="#{user.createState or user.editState}">
+        <h:panelGroup>
+            <div class="row">
+                <table class="form_grid">
+                    <tr class="row">
+                        <td class="first">Фамилия:</td>
+                        <td>
+                            <h:inputText value="#{user.document.lastName}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Имя:</td>
+                        <td>
+                            <h:inputText value="#{user.document.firstName}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Отчество:</td>
+                        <td>
+                            <h:inputText value="#{user.document.middleName}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Логин:</td>
+                        <td>
+                            <h:inputText value="#{user.document.login}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Пароль:</td>
+                        <td>
+                            <h:inputText binding="#{newPass}" class="wide">
+                                <f:ajax listener="#{user.changePassword(newPass.value)}"/>
+                            </h:inputText>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">
+                            Подразделение
+                        </td>
+                        <td>
+                            <p:autoComplete
+                                    id="jobDepartmentPicker"
+                                    value="#{user.document.jobDepartment}"
+                                    completeMethod="#{autoCompleteView.completeDepartment}"
+                                    var="item"
+                                    itemValue="#{item}"
+                                    itemLabel="#{item.value}"
+                                    converter="departmentConverter"
+                                    forceSelection="true"
+                                    minQueryLength="2"
+                                    queryDelay="500"
+                                    size="100"
+                                    emptyMessage="Нету элементов"
+                                    placeHolder="Выберете подразделение"
+                                    maxResults="10"
+                                    converterMessage="Не существует такого отделения"
+                                    />
+                            <p:watermark for="jobDepartmentPicker"
+                                         value="Введите первые символы для поиска соответствий в справочнике"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">
+                            Должность
+                        </td>
+                        <td>
+                            <p:autoComplete
+                                    id="jobPositionPicker"
+                                    value="#{user.document.jobPosition}"
+                                    completeMethod="#{autoCompleteView.completePosition}"
+                                    var="item"
+                                    itemValue="#{item}"
+                                    itemLabel="#{item.value}"
+                                    converter="positionConverter"
+                                    forceSelection="true"
+                                    minQueryLength="2"
+                                    queryDelay="500"
+                                    size="100"
+                                    emptyMessage="Нету элементов"
+                                    maxResults="10"
+                                    converterMessage="Не существует такой должности"
+                                    />
+                            <p:watermark for="jobPositionPicker"
+                                         value="Введите первые символы для поиска соответствий в справочнике"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">Email:</td>
+                        <td>
+                            <h:inputText value="#{user.document.email}" class="wide"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td><h3>Контактные данные</h3></td>
+                    </tr>
+                    <tr class="row">
+                        <td colspan="2">
+                            <div id="main_table" style="width:100%">
+                                <p:dataTable id="edit_contacts_tbl"
+                                             value="#{user.document.contacts}" var="contact"
+                                             width="100%">
+                                    <p:column headerText="Тип">
+                                        <h:selectOneMenu
+                                                id="contactTypeSelectMenu" value="#{contact.type}"
+                                                converter="ContactTypeConverter" style="font-size:10pt;"
+                                                immediate="true">
+                                            <f:selectItems value="#{dictionaryManagement.contactTypes}"/>
+                                        </h:selectOneMenu>
+                                    </p:column>
+                                    <p:column headerText="Номер">
+                                        <h:inputText value="#{contact.value}"/>
+                                    </p:column>
+                                    <p:column headerText="Удалить">
+                                        <h:commandLink action="#{user.deleteContact(contact)}">
+                                            <h:graphicImage value="#{resource['images:button-reject.png']}"/>
+                                        </h:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                                <h:commandButton value="Добавить новый контакт" action="#{user.addContact()}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </h:panelGroup>
+    </c:if>
+</p:tab>
+<c:if test="#{isAdministrator or isHr}">
+    <p:tab title="Права доступа|допуска">
+        <h:panelGroup rendered="#{user.createState or user.editState}">
+            <table class="form_grid">
+                <tr class="row">
+                    <td class="first">
+                        <label>
+                            <span class="title">Максимальный уровень допуска: </span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:selectOneMenu id="accessLevel" value="#{user.document.maxUserAccessLevel}"
+                                         converter="UserAccessLevelConverter">
+                            <f:selectItems value="#{dictionaryManagement.userAccessLevels}"/>
+                        </h:selectOneMenu>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="first">
+                        <label>
+                            <span class="title">Текущий уровень допуска: </span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:outputText value="#{user.document.currentUserAccessLevel}"
+                                      converter="UserAccessLevelConverter"/>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="first" colspan="2">
+                        <fieldset>
+                            <legend>
+                                <label>
+                                    <span class="title">Роли</span>
+                                </label>
+                            </legend>
+                            <h:selectManyCheckbox collectionType="java.util.HashSet"
+                                                  layout="pageDirection" value="#{user.document.roles}"
+                                                  converter="RoleConverter">
+                                <f:selectItems value="#{roleList.availableRoles}"/>
+                            </h:selectManyCheckbox>
+                        </fieldset>
+                    </td>
+                </tr>
+            </table>
+        </h:panelGroup>
+        <h:panelGroup rendered="#{user.viewState}">
+            <table class="form_grid">
+                <tr class="row">
+                    <td class="first">
+                        <label>
+                            <span class="title">Максимальный уровень допуска: </span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:outputText value="#{user.document.maxUserAccessLevel}"
+                                      converter="UserAccessLevelConverter"/>
+                    </td>
+                </tr>
+                <tr class="row">
+                    <td class="first">
+                        <label>
+                            <span class="title">Текущий уровень допуска: </span>
+                        </label>
+                    </td>
+                    <td class="second" colspan="3">
+                        <h:outputText value="#{user.document.currentUserAccessLevel}"
+                                      converter="UserAccessLevelConverter"/></td>
+                </tr>
+                <tr class="row">
+                    <td class="first" colspan="4">
+                        <fieldset>
+                            <legend>
+                                <label><span class="title">Роли</span> </label>
+                            </legend>
+                            <h:selectManyCheckbox collectionType="java.util.HashSet"
+                                                  layout="pageDirection" value="#{user.document.roles}"
+                                                  converter="RoleConverter" disabled="true">
+                                <f:selectItems value="#{roleList.availableRoles}"/>
+                            </h:selectManyCheckbox>
+                        </fieldset>
+                    </td>
+                </tr>
+            </table>
+        </h:panelGroup>
+    </p:tab>
+</c:if>
+</p:tabView>
+</div>
 </ui:define>
+
+<ui:define name="left_menu"/>
+
+<ui:define name="footer"/>
 
 </ui:composition>
-
-</html>
+</html>  

@@ -221,7 +221,10 @@ public class SessionManagementBean implements Serializable {
             return url + "/component/in/in_documents.xhtml";
         } else {
             LOGGER.info("redirectUrl:{}", backUrl);
-            return url + backUrl;
+            final String redirectTo = url + backUrl;
+            //Должно стрелять только один раз
+            backUrl = "";
+            return redirectTo;
         }
     }
 

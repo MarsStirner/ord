@@ -853,7 +853,7 @@
                             </e5ui:column>
                             <e5ui:column>
                                 <h:outputText
-                                        value="#{userList.getUserDescription(row.currentRevision.authorId)}"/>
+                                        value="#{userList.getUserFullNameById(row.currentRevision.authorId)}"/>
                             </e5ui:column>
                             <e5ui:column>
                                 <h:outputLink
@@ -949,7 +949,7 @@
                                             </e5ui:column>
                                             <e5ui:column style="min-width:12em;">
                                                 <h:outputText
-                                                        value="#{userList.getUserDescription(row.authorId eq 0? task.versionHistoryModal.attachment.authorId: row.authorId)}"/>
+                                                        value="#{userList.getUserFullNameById(row.authorId eq 0? task.versionHistoryModal.attachment.authorId: row.authorId)}"/>
                                             </e5ui:column>
                                             <e5ui:column style="min-width:7em;">
                                                 <h:outputLink
@@ -1016,7 +1016,6 @@
     e5ui_splashScreen.startShowOnSubmit('splash_screen',
             [ 'main_content_form' ]);
 </script>
-<h:outputStylesheet library="css" name="datepicker.css"/>
 <h:outputStylesheet library="css" name="datatable.css"/>
 <h:outputStylesheet library="css" name="modalWindow.css"/>
 <h:outputStylesheet library="css" name="multiMarker.css"/>

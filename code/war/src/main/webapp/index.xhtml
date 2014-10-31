@@ -2,18 +2,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <h:head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-
     <h:outputStylesheet library="css" name="style.css"/>
-    <!--[if lte ie 8]>
-         <link rel="stylesheet" type="text/css" href="/e5_dms/resources/css/ie.css" />
-     <![endif]-->
-
     <title>Документооборот ФНКЦ ДГОИ</title>
 </h:head>
 
@@ -43,14 +37,16 @@
                         <div>
                             <h:inputSecret value="#{sessionManagement.password}" styleClass="inp"/>
                         </div>
-                        <div><h:commandButton styleClass="but" type="submit" action="#{sessionManagement.logIn}"
-                                              value="Войти"/></div>
+                        <div>
+                            <h:commandButton styleClass="but" type="submit" action="#{sessionManagement.logIn}" value="Войти"/>
+                        </div>
                     </h:panelGroup>
-                    <h:panelGroup rendered="#{sessionManagement.loggedIn}">
+                    <c:if test="#{sessionManagement.loggedIn}">
                         <h:outputScript>
                             location.href = "#{sessionManagement.backUrl}";
                         </h:outputScript>
-                    </h:panelGroup>
+                    </c:if>
+
                     <div>
                         <h:messages errorClass="e5ui-error" layout="table" globalOnly="true" showSummary="true"
                                     showDetail="false"/>
