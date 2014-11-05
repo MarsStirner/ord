@@ -140,9 +140,6 @@ label select.multiple option {height:20px;}
 label textarea {width:100%; height:73px; font-family: Arial; font-size:12px;}
 label label {display:inline;}
 
-#left_menu {padding:0; width:15.5%; float:left; clear:left;  min-height:100%; height: 100%;}
-#left_menu .header {color:#15428B; font-weight:bold; padding:6px; border-bottom:1px solid #7AD6B4; border-top:1px solid #7AD6B4; background:transparent url('#{resource['images:white-top-bottom.gif']}') 0 -1px repeat-x;}
-
 .searchbar {float:right; margin:0 5px 5px; display:block;}
 .main_searchbar {display:block;float:left;width:100%; padding:0; font-size:12px; font-family:Tahoma, Geneva, sans-serif; border-bottom:1px solid #7AD6B4; border-bottom:1px solid #7AD6B4; height:27px; background:#D1F3DB url('#{resource['images:bg.gif']}') 0 0 repeat-x;}
 .searchbar .searchbutton, .main_searchbar .searchbutton {
@@ -160,18 +157,6 @@ label label {display:inline;}
 
 }
 .searchbar input {width:250px;}
-
-div.e5ui-menu {display:block; margin:0; padding:0 10px 0 0; list-style:none; overflow-y:auto;}
-div.e5ui-menu img {vertical-align:middle;}
-div.e5ui-menuItem[e5ui-level="0"] {margin:3px 0; padding:0 0 0 5px;}
-div.e5ui-menuItem[e5ui-level="0"] a {height:18px; text-decoration:none; color:#454c4e;}
-div.e5ui-menuItem div.e5ui-menuItem-childrens{}
-div.e5ui-menuItem[e5ui-level="1"] {padding:0 0 0 20px;}
-div.e5ui-menuItem[e5ui-level="1"] a {color:#454c4e;}
-div.e5ui-menuItem[e5ui-level="2"] {padding:0 0 0 40px;}
-div.e5ui-menuItem[e5ui-level="2"] a {color:#454c4e;}
-div.e5ui-menuItem[e5ui-selected] {background:#E0FFDB;}
-div.e5ui-menuItem[e5ui-selected] a {color:#000000;}
 
 /*customization*/
 #news {position: absolute; padding:0px; left:0; bottom:0; min-height:20%; height:20%; width:19.5%; min-width:195px}

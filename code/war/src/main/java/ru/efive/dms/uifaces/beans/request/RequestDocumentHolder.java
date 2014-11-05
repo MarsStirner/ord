@@ -1,6 +1,6 @@
 package ru.efive.dms.uifaces.beans.request;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.*;
