@@ -29,14 +29,6 @@
     </ui:define>
 
     <ui:define name="content">
-        <script type="text/javascript">
-            document.ondblclick = function DoubleClick(evt) {
-                if (window.getSelection)
-                    window.getSelection().removeAllRanges();
-                else if (document.selection)
-                    document.selection.empty();
-            }
-        </script>
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
         <h:outputScript>
             function goToDocument(id) {

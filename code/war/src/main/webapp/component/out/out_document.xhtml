@@ -1098,14 +1098,6 @@
               selected="#{out_doc.originalTabSelected}"
               rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
     <fieldset>
-        <script type="text/javascript">
-            document.ondblclick = function DoubleClick(evt) {
-                if (window.getSelection)
-                    window.getSelection().removeAllRanges();
-                else if (document.selection)
-                    document.selection.empty();
-            }
-        </script>
         <h:outputScript>
             function goToPaperCopy(id) {
             if (id != "") {

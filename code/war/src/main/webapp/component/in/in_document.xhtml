@@ -39,14 +39,6 @@
         }
         }
     </h:outputScript>
-    <script type="text/javascript">
-        document.ondblclick = function DoubleClick(evt) {
-            if (window.getSelection)
-                window.getSelection().removeAllRanges();
-            else if (document.selection)
-                document.selection.empty();
-        };
-    </script>
 </ui:define>
 
 <ui:define name="header">
@@ -282,7 +274,7 @@
                     </label>
                     <e5ui-comp:modalWindow id="controllerSelectModal"
                                            modalWindowHolder="#{in_doc.controllerSelectModal}"
-                                           render=":main_content_form:controller" execute="select_table"
+                                           render="controller" execute="select_table"
                                            showButtons="false" style="width: 500px;"
                                            widgetVar="controllerSelectModalVar">
                         <div id="title">Выбор руководителя</div>
@@ -1099,7 +1091,7 @@
                     </label>
                     <e5ui-comp:modalWindow id="personReadersPickList"
                                            modalWindowHolder="#{in_doc.personReadersPickList}"
-                                           render=":main_content_form:personReaders"
+                                           render="personReaders"
                                            execute="select_table" showButtons="false"
                                            style="width: 500px;"
                                            widgetVar="personReadersPickListWidget">
@@ -1114,8 +1106,8 @@
                                 <h:commandButton value=" "
                                                  action="#{in_doc.personReadersPickList.userList.changePageOffset(0)}"
                                                  styleClass="searchbutton">
-                                    <f:ajax execute=":main_content_form:personReadersPickList:filter_string"
-                                            render=":main_content_form:personReadersPickList:select_table :main_content_form:personReadersPickList:modal_paging"/>
+                                    <f:ajax execute="personReadersPickList:filter_string"
+                                            render="personReadersPickList:select_table personReadersPickList:modal_paging"/>
                                 </h:commandButton>
                             </div>
                             <div class="wrap" style="height: 300px;">
@@ -1181,7 +1173,7 @@
                     </label>
                     <e5ui-comp:modalWindow id="personEditorsPickList"
                                            modalWindowHolder="#{in_doc.personEditorsPickList}"
-                                           render=":main_content_form:personEditors"
+                                           render="personEditors"
                                            execute="select_table" showButtons="false"
                                            style="width: 500px;"
                                            widgetVar="personEditorsPickListWidget">
@@ -1196,8 +1188,8 @@
                                 <h:commandButton value=" "
                                                  action="#{in_doc.personEditorsPickList.userList.changePageOffset(0)}"
                                                  styleClass="searchbutton">
-                                    <f:ajax execute=":main_content_form:personEditorsPickList:filter_string"
-                                            render=":main_content_form:personEditorsPickList:select_table :main_content_form:personEditorsPickList:modal_paging"/>
+                                    <f:ajax execute="personEditorsPickList:filter_string"
+                                            render="personEditorsPickList:select_table personEditorsPickList:modal_paging"/>
                                 </h:commandButton>
                             </div>
                             <div class="wrap" style="height: 300px;">
@@ -1276,7 +1268,7 @@
                     </label>
                     <e5ui-comp:modalWindow id="roleReadersPickList"
                                            modalWindowHolder="#{in_doc.roleReadersPickList}"
-                                           render=":main_content_form:roleReaders"
+                                           render="roleReaders"
                                            execute="select_table" showButtons="false"
                                            style="width: 500px;"
                                            widgetVar="roleReadersPickListWidget">
@@ -1291,8 +1283,8 @@
                                 <h:commandButton value=" "
                                                  action="#{in_doc.roleReadersPickList.roleList.changePageOffset(0)}"
                                                  styleClass="searchbutton">
-                                    <f:ajax execute=":main_content_form:roleReadersPickList:filter_string"
-                                            render=":main_content_form:roleReadersPickList:select_table :main_content_form:roleReadersPickList:modal_paging"/>
+                                    <f:ajax execute="roleReadersPickList:filter_string"
+                                            render="roleReadersPickList:select_table roleReadersPickList:modal_paging"/>
                                 </h:commandButton>
                             </div>
                             <div class="wrap" style="height: 300px;">
@@ -1359,7 +1351,7 @@
                     </label>
                     <e5ui-comp:modalWindow id="roleEditorsPickList"
                                            modalWindowHolder="#{in_doc.roleEditorsPickList}"
-                                           render=":main_content_form:roleEditors"
+                                           render="roleEditors"
                                            execute="select_table" showButtons="false"
                                            style="width: 500px;"
                                            widgetVar="roleEditorsPickListWidget">
@@ -1374,8 +1366,8 @@
                                 <h:commandButton value=" "
                                                  action="#{in_doc.roleEditorsPickList.roleList.changePageOffset(0)}"
                                                  styleClass="searchbutton">
-                                    <f:ajax execute=":main_content_form:roleEditorsPickList:filter_string"
-                                            render=":main_content_form:roleEditorsPickList:select_table :main_content_form:roleEditorsPickList:modal_paging"/>
+                                    <f:ajax execute="roleEditorsPickList:filter_string"
+                                            render="roleEditorsPickList:select_table roleEditorsPickList:modal_paging"/>
                                 </h:commandButton>
                             </div>
                             <div class="wrap" style="height: 300px;">

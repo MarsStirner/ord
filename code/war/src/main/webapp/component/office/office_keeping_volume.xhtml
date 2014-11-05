@@ -379,14 +379,6 @@
         selected="#{officeKeepingVolume.documentsTabSelected}">
     <fieldset>
         <legend></legend>
-        <script type="text/javascript">
-            document.ondblclick = function DoubleClick(evt) {
-                if (window.getSelection)
-                    window.getSelection().removeAllRanges();
-                else if (document.selection)
-                    document.selection.empty();
-            }
-        </script>
         <h:outputScript>
             function goToDocument(id) {
             if (id != "") {

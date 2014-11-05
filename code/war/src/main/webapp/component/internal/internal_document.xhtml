@@ -1077,14 +1077,6 @@
 <p:tab title="Оригинал"
        rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <fieldset>
-        <script type="text/javascript">
-            document.ondblclick = function DoubleClick(evt) {
-                if (window.getSelection)
-                    window.getSelection().removeAllRanges();
-                else if (document.selection)
-                    document.selection.empty();
-            }
-        </script>
         <h:outputScript>
             function goToDocument(id) {
             if (id != "") {
