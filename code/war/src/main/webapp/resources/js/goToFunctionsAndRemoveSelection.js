@@ -17,3 +17,9 @@ function goToTask(id) {
         window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
     }
 }
+ // К входящим документам
+function goToIncomingDocument(id) {
+    if (id != 0) {
+        window.open('#{facesContext.externalContext.requestContextPath}/component/in/in_document.xhtml?docId=' + id,'_blank');
+    }
+}

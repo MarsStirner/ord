@@ -20,7 +20,7 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:outputLink value="#{contextPath}/component/in/in_document.xhtml"
+            <h:outputLink value="/component/in/in_document.xhtml"
                           target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый документ
@@ -31,132 +31,125 @@
             <h:commandLink action="#{in_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render = "main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != 0) {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/in/in_document.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{in_documents.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;"
-                                 title="Поиск"/>
-                    <h:commandButton value=" "
-                                     action="#{in_documents.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax execute="filter_string"
-                                render="main_data_tbl main_data_paging"/>
-                    </h:commandButton>
-                    <h:outputLink target="_blank"
-                                  value="/component/in/in_document_search_form.xhtml"
-                                  title="Перейти к форме расширенного поиска"
-                                  style="margin: 0px 20px;">
-                        Расширенный поиск
-                    </h:outputLink>
 
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                        style="width:100%;" value="#{in_documents.documents}" var="row"
-                                        id="main_data_tbl">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}">
-                                        Номер
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{in_documents.sort('registrationDate')}">
-                                        Дата регистрации
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.registrationDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{in_documents.sort('contragent')}">
-                                        Корреспондент
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.contragent.shortName}"/> </b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <p>Исполнитель</p>
-                                </f:facet>
-                                <ui:repeat value="#{row.executors}" var="element">
-                                    <div>
-                                        <h:outputText value="#{element}" converter="PersonConverter"/>
-                                    </div>
-                                </ui:repeat>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{in_documents.sort('form')}">
-                                        Вид документа
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.form}"/> </b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header" style="min-width:100px">
-                                    <h:commandLink action="#{in_documents.sort('executionDate')}">
-                                        Срок исполнения
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.executionDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{in_documents.sort('statusId')}">
-                                        Статус
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:25em">
-                                <f:facet name="header">
-                                    <p>Краткое содержание</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{in_documents}"
-                                              style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector
-                                documentListHolder="#{in_documents}"
-                                style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
+        <div id="main_table">
+            <div id="searchbar" class="main_searchbar">
+                <h:inputText id="filter_string" value="#{in_documents.filter}"
+                             style="display:block; float:left; width:60%; margin:2px 10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" "
+                                 action="#{in_documents.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax execute="filter_string"
+                            render="main_data_tbl main_data_paging"/>
+                </h:commandButton>
+                <h:outputLink target="_blank"
+                              value="/component/in/in_document_search_form.xhtml"
+                              title="Перейти к форме расширенного поиска"
+                              style="margin: 0px 20px;">
+                    Расширенный поиск
+                </h:outputLink>
+            </div>
+            <div class="wrap_main" id="table_wrap">
+                <div class="inner" id="table_inner">
+                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+                                    style="width:100%;" value="#{in_documents.documents}" var="row"
+                                    id="main_data_tbl">
+                        <e5ui:row ondblclick="goToIncomingDocument('#{row.id}');"/>
+                        <e5ui:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}">
+                                    Номер
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <b><h:outputText value="#{row.registrationNumber}"/></b>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{in_documents.sort('registrationDate')}">
+                                    Дата регистрации
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.registrationDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{in_documents.sort('contragent')}">
+                                    Корреспондент
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <b><h:outputText value="#{row.contragent.shortName}"/> </b>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:10em">
+                            <f:facet name="header">
+                                <p>Исполнитель</p>
+                            </f:facet>
+                            <ui:repeat value="#{row.executors}" var="element">
+                                <div>
+                                    <h:outputText value="#{element}" converter="PersonConverter"/>
+                                </div>
+                            </ui:repeat>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{in_documents.sort('form')}">
+                                    Вид документа
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <b><h:outputText value="#{row.form}"/> </b>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header" style="min-width:100px">
+                                <h:commandLink action="#{in_documents.sort('executionDate')}">
+                                    Срок исполнения
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.executionDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:10em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{in_documents.sort('statusId')}">
+                                    Статус
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:25em">
+                            <f:facet name="header">
+                                <p>Краткое содержание</p>
+                            </f:facet>
+                            <h:outputText value="#{row.shortDescription}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
                 </div>
             </div>
+            <div id="table_paging">
+                <h:panelGroup id="main_data_paging">
+                    <e5ui-comp:tablePager documentListHolder="#{in_documents}"
+                                          style="display:inline;"/>
+                    <e5ui-comp:tablePageSizeSelector
+                            documentListHolder="#{in_documents}"
+                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                </h:panelGroup>
+            </div>
+        </div>
 
     </ui:define>
 
