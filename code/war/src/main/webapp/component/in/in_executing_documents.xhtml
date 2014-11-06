@@ -75,18 +75,17 @@
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
         <style type="text/css">
             .year {
-                color: blue;
-                background: #F9FBFF;
+                color: yellow !important;
+                text-shadow: 1px 1px 1px black, 0 0 1px red; /* Параметры тени */
             }
 
             .month {
-                color: red;
+                color: red !important;
+                text-shadow: 1px 1px 1px black, 0 0 1px red; /* Параметры тени */
                 text-transform: uppercase;
-                background: #FFFAFA;
             }
 
             .document {
-                background: #F5F5F5;
             }
 
             .ui-treetable tbody td {
@@ -110,6 +109,7 @@
                                  var="node"
                                  style="width:100%; overflow-x:hidden;"
                                  widgetVar="treeTableVar"
+                                 selectionMode="single"
                             >
                         <p:column headerText="Срок исполнения">
                             <h:outputText value="#{node.header}"/>
@@ -137,7 +137,7 @@
                         <p:column style="display:none;">
                             <input type="hidden" value="#{node.document.id}"/>
                         </p:column>
-                        <p:ajax event="expand" oncomplete="addRowHandlers()"/>
+                        <p:ajax event="select" oncomplete="addRowHandlers()"/>
                     </p:treeTable>
                 </div>
             </div>
@@ -162,10 +162,10 @@
                                 goToIncomingDocument(row.lastChild.lastChild.value);
                             };
                         };
+                        document.getElementById(currentRow.id).className = document.getElementById(currentRow.id).className.replace('ui-state-highlight', '');
                         currentRow.ondblclick = createClickHandler(currentRow);
                     }
                 }
-                window.onload = addRowHandlers();
             </script>
         </div>
     </ui:define>

@@ -70,10 +70,9 @@
                     <p:menuitem value="Мои проекты" url="/component/personal/personal_internal_documents.xhtml"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/personal/personal_internal_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem
-                            styleClass="#{currentView eq '/component/internal/internal_documents_on_review.xhtml' ? 'selectedMenuItem' : 'menuItem'}">
+                    <p:menuitem>
                         <h:link outcome="/component/internal/internal_documents_on_review.xhtml"
-                                styleClass="ui-menuitem-link ui-corner-all">
+                                styleClass="ui-menuitem-link ui-corner-all #{currentView eq '/component/internal/internal_documents_on_review.xhtml' ? 'selectedMenuItem' : 'menuItem'}">
                             <span class="ui-menuitem-icon ui-icon leafIcon"/>
                             <f:param name="key" value="statusId"/>
                             <f:param name="value" value="2"/>
@@ -83,11 +82,9 @@
                     <p:menuitem value="На согласовании" url="/component/internal/internal_documents_on_agreement.xhtml"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_documents_on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem
-                            styleClass="#{currentView eq '/component/internal/internal_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}">
-
+                    <p:menuitem>
                         <h:link outcome="/component/internal/internal_documents_by_number.xhtml"
-                                styleClass="ui-menuitem-link ui-corner-all">
+                                styleClass="ui-menuitem-link ui-corner-all #{currentView eq '/component/internal/internal_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}">
                             <span class="ui-menuitem-icon ui-icon leafIcon"/>
                             <f:param name="key" value="registrationNumber"/>
                             <f:param name="value" value="%"/>

@@ -20,7 +20,7 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:outputLink value="#{contextPath}/component/request/request_document.xhtml" target="_blank">
+            <h:outputLink value="/component/request/request_document.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый документ
                 <f:param name="docAction" value="create"/>
@@ -56,7 +56,7 @@
                     </h:commandButton>
 
                     <h:outputLink
-                            value="#{contextPath}/component/request/request_document_search_form.xhtml"
+                            value="/component/request/request_document_search_form.xhtml"
                             title="Перейти к форме расширенного поиска"
                             style="margin: 0pt 20px;">
                         Расширенный поиск

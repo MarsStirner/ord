@@ -22,7 +22,7 @@
     <ui:define name="header_buttons">
         <c:if test="#{isAdministrator}">
             <div class="defbutton">
-                <h:outputLink value="#{contextPath}/component/admin/department.xhtml" target="_blank">
+                <h:outputLink value="/component/admin/department.xhtml" target="_blank">
                     <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                     Новое подразделение
                     <f:param name="docAction" value="create"/>
@@ -42,7 +42,7 @@
         <h:outputScript>
             function goToDocument(id) {
             if (id != 0) {
-            window.open('#{contextPath}/component/admin/department.xhtml?docId=' + id,'_blank');
+            window.open('/component/admin/department.xhtml?docId=' + id,'_blank');
             }
             }
         </h:outputScript>

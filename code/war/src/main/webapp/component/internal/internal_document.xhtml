@@ -29,7 +29,7 @@
                 <div class="menu">
                     <div class="defbutton">
                         <h:outputLink
-                                value="#{contextPath}/component/internal/internal_documents_by_number.xhtml">
+                                value="/component/internal/internal_documents_by_number.xhtml">
                             <h:graphicImage value="#{resource['images:home.png']}"/>
                         </h:outputLink>
                     </div>
@@ -682,7 +682,7 @@
                 <h:panelGroup
                         rendered="#{(internal_doc.document.getDocumentStatus().getId() eq 5)}">
                     <div class="defbutton">
-                        <h:outputLink value="#{contextPath}/component/task/task.xhtml"
+                        <h:outputLink value="/component/task/task.xhtml"
                                       target="_blank">
                             <h:graphicImage
                                     value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -697,7 +697,7 @@
                 <h:panelGroup
                         rendered="#{(internal_doc.document.getDocumentStatus().getId() eq 80)}">
                     <div class="defbutton">
-                        <h:outputLink value="#{contextPath}/component/task/task.xhtml"
+                        <h:outputLink value="/component/task/task.xhtml"
                                       target="_blank">
                             <h:graphicImage
                                     value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -712,7 +712,7 @@
                 <h:panelGroup
                         rendered="#{(internal_doc.document.form.value.equals('Служебная записка'))and(internal_doc.document.getDocumentStatus().getId() lt 80)}">
                     <div class="defbutton">
-                        <h:outputLink value="#{contextPath}/component/task/task.xhtml"
+                        <h:outputLink value="/component/task/task.xhtml"
                                       target="_blank">
                             <h:graphicImage
                                     value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -1090,7 +1090,7 @@
                 <h:panelGroup rendered="#{internal_doc.document.getDocumentStatus().getId() gt 0}">
                     <div class="defbutton">
                         <h:outputLink
-                                value="#{contextPath}/component/paper_copy_document.xhtml"
+                                value="/component/paper_copy_document.xhtml"
                                 target="_blank">
                             <h:graphicImage
                                     value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -1765,7 +1765,7 @@
                                 </e5ui:column>
                                 <e5ui:column>
                                     <h:outputLink
-                                            value="#{contextPath}/component/file/download.xhtml"
+                                            value="/component/file/download.xhtml"
                                             target="_blank">
                                         <h:graphicImage value="/resources/images/download_doc.gif"/>
                                         <f:param name="id" value="#{row.id}"/>
@@ -1864,7 +1864,7 @@
                                                 </e5ui:column>
                                                 <e5ui:column style="min-width:7em;">
                                                     <h:outputLink
-                                                            value="#{contextPath}/component/file/download.xhtml"
+                                                            value="/component/file/download.xhtml"
                                                             target="_blank">
                                                         <h:graphicImage
                                                                 value="/resources/images/download_doc.gif"/>
