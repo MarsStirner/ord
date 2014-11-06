@@ -8,3 +8,12 @@ document.ondblclick = function DoubleClick(evt) {
     else if (document.selection)
         document.selection.empty();
 };
+/*
+ * Переходы на различные документы
+ */
+// К поручениям
+function goToTask(id) {
+    if (id != 0) {
+        window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
+    }
+}

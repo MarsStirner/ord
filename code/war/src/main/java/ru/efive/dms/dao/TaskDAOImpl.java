@@ -668,7 +668,6 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
      * @param showDeleted  включать ли в список поручения с флагом deleted = true
      * @return список поручения у которых исходный документ равен заданному
      */
-
     public List<Task> getTaskListByRootDocumentId(final String rootId, final boolean showDeleted){
         logger.debug("Call -> getTaskListByRootDocumentId(\"{}\", {})", rootId, showDeleted);
         final DetachedCriteria criteria = DetachedCriteria.forClass(getPersistentClass());

@@ -20,7 +20,7 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:outputLink value="#{contextPath}/component/task/task.xhtml" target="_blank">
+            <h:outputLink value="/component/task/task.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый документ
                 <f:param name="docAction" value="create"/>
@@ -30,35 +30,26 @@
             <h:commandLink action="#{personal_tasks.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != 0) {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-        <e5ui:formPart id="main_table_part">
             <div id="main_table">
                 <div id="searchbar" class="main_searchbar">
                     <h:inputText id="filter_string" value="#{personal_tasks.filter}"
                                  style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
                     <h:commandButton value=" " action="#{personal_tasks.changePageOffset(0)}" styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
+                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                     </h:commandButton>
                 </div>
                 <div class="wrap_main" id="table_wrap">
                     <div class="inner" id="table_inner">
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" value="#{personal_tasks.documents}"
                                         var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToTask('#{row.id}');"/>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{personal_tasks.sort('task_number')}">
@@ -116,7 +107,6 @@
                     </h:panelGroup>
                 </div>
             </div>
-        </e5ui:formPart>
 
         <e5ui-comp:ajaxStatusGlobal timeout="300">
             <f:facet name="waitPanel">

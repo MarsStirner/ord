@@ -42,25 +42,6 @@ public class PersonalTaskListHolder extends AbstractDocumentListHolderBean<Task>
                 false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
     }
 
-    @Override
-    public List<Task> getDocuments() {
-        return super.getDocuments();
-    }
-
-    public List<Task> getDocumentsByParent(String parentId) {
-        getDocuments();
-        List<Task> result = new ArrayList<Task>();
-        try {
-            if (parentId != null && !parentId.equals("")) {
-                result = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findResolutionsByParent(
-                        sessionManagement.getLoggedUser().getId(), parentId);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
     public String getFilter() {
         return filter;
     }

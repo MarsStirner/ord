@@ -11,7 +11,7 @@
 <h:head>
     <h:outputStylesheet library="css" name="style.css"/>
     <h:outputStylesheet library="css" name="menu.css"/>
-    <h:outputScript library="js" name="doubleClickRemoveSelection.js"/>
+    <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
 
     <title>Документооборот ФНКЦ ДГОИ</title>
 </h:head>
@@ -145,8 +145,8 @@
                 <p:submenu label="Поручения|Задачи" styleCalss="subMenuItem">
                     <p:menuitem value="Мои проекты" url="/component/personal/personal_tasks.xhtml" icon="leafIcon"
                                 styleClass="#{currentView eq '/component/personal/personal_tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="По номеру" url="/component/task/tasks_and_exercises.xhtml" icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_and_exercises.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+                    <p:menuitem value="По номеру" url="/component/task/tasks.xhtml" icon="leafIcon"
+                                styleClass="#{currentView eq '/component/task/tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                     <p:menuitem value="На исполнении" url="/component/task/tasks_on_execution.xhtml" icon="leafIcon"
                                 styleClass="#{currentView eq '/component/task/tasks_on_execution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                     <p:menuitem value="Исполненные" url="/component/task/tasks_executed.xhtml" icon="leafIcon"
