@@ -156,32 +156,9 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         return result;
     }
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getVolumesTabHeader() {
-        return "<span><span>Тома дел</span></span>";
-    }
-
-    public boolean isVolumesTabSelected() {
-        return isVolumesTabSelected;
-    }
-
-    public void setVolumesTabSelected(boolean isVolumesTabSelected) {
-        this.isVolumesTabSelected = isVolumesTabSelected;
-    }
 
     public String getLocationTabHeader() {
-        return "<span><span>Местоположение</span></span>";
+        return "<span><span></span></span>";
     }
 
     public boolean isLocationTabSelected() {

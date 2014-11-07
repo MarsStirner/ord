@@ -3,10 +3,10 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -38,6 +38,12 @@
 
     <ui:define name="content">
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+        <h:outputStylesheet>
+            .ui-column-title, .ui-commandlink{
+                position: relative !important;
+                padding: 0 !important;
+            }
+        </h:outputStylesheet>
 
         <div id="main_table">
             <div id="searchbar" class="main_searchbar">
@@ -47,8 +53,7 @@
                 <h:commandButton value=" "
                                  action="#{in_documents.changePageOffset(0)}"
                                  styleClass="searchbutton">
-                    <f:ajax execute="filter_string"
-                            render="main_data_tbl main_data_paging"/>
+                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                 </h:commandButton>
                 <h:outputLink target="_blank"
                               value="/component/in/in_document_search_form.xhtml"
@@ -57,88 +62,109 @@
                     Расширенный поиск
                 </h:outputLink>
             </div>
-            <div class="wrap_main" id="table_wrap">
-                <div class="inner" id="table_inner">
-                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                    style="width:100%;" value="#{in_documents.documents}" var="row"
-                                    id="main_data_tbl">
-                        <e5ui:row ondblclick="goToIncomingDocument('#{row.id}');"/>
-                        <e5ui:column style="min-width:5em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}">
-                                    Номер
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <b><h:outputText value="#{row.registrationNumber}"/></b>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:5em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{in_documents.sort('registrationDate')}">
-                                    Дата регистрации
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.registrationDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                            </h:outputText>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:12em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{in_documents.sort('contragent')}">
-                                    Корреспондент
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <b><h:outputText value="#{row.contragent.shortName}"/> </b>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:10em">
-                            <f:facet name="header">
-                                <p>Исполнитель</p>
-                            </f:facet>
-                            <ui:repeat value="#{row.executors}" var="element">
-                                <div>
-                                    <h:outputText value="#{element}" converter="PersonConverter"/>
-                                </div>
-                            </ui:repeat>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:7em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{in_documents.sort('form')}">
-                                    Вид документа
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <b><h:outputText value="#{row.form}"/> </b>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:7em">
-                            <f:facet name="header" style="min-width:100px">
-                                <h:commandLink action="#{in_documents.sort('executionDate')}">
-                                    Срок исполнения
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.executionDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                            </h:outputText>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:10em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{in_documents.sort('statusId')}">
-                                    Статус
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:25em">
-                            <f:facet name="header">
-                                <p>Краткое содержание</p>
-                            </f:facet>
-                            <h:outputText value="#{row.shortDescription}"/>
-                        </e5ui:column>
-                    </e5ui:dataTable>
-                </div>
+            <div class="inner" id="table_wrap" style="overflow:auto;">
+                <p:dataTable id="main_data_tbl"
+                             value="#{in_documents.documents}"
+                             var="row"
+                             rowKey="#{row.id}"
+                             selectionMode = "single"
+                             stickyHeader="true"
+                             scrollable="true"
+                             widgetVar="documentTableVar">
+                    <p:row ondblclick="goToIncomingDocument('#{row.id}');"/>
+                    <p:column style = "width:5em;">
+                        <f:facet name="header">
+                            <p:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}">
+                                Номер
+                                <f:ajax render="main_data_tbl"/>
+                            </p:commandLink>
+                        </f:facet>
+                        <b><h:outputText value="#{row.registrationNumber}"/></b>
+                    </p:column>
+                    <p:column style="width:5em;">
+                        <f:facet name="header">
+                            <p:commandLink action="#{in_documents.sort('registrationDate')}" title = "Дата регистрации">
+                                Дата
+                                <f:ajax render="main_data_tbl"/>
+                            </p:commandLink>
+                        </f:facet>
+                        <h:outputText value="#{row.registrationDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column style="width:12em;">
+                        <f:facet name="header">
+                            <p:commandLink action="#{in_documents.sort('contragent')}">
+                                Корреспондент
+                                <f:ajax render="main_data_tbl"/>
+                            </p:commandLink>
+                        </f:facet>
+                        <b><h:outputText value="#{row.contragent.shortName}"/> </b>
+                    </p:column>
+                    <p:column style="width:10em;">
+                        <f:facet name="header">
+                            Исполнитель
+                        </f:facet>
+                        <ui:repeat value="#{row.executors}" var="element">
+                            <div>
+                                <h:outputText value="#{element}" converter="PersonConverter"/>
+                            </div>
+                        </ui:repeat>
+                    </p:column>
+                    <p:column style="width:8em;">
+                        <f:facet name="header">
+                            <p:commandLink action="#{in_documents.sort('form')}" title = "Вид документа">
+                                Вид
+                                <f:ajax render="main_data_tbl"/>
+                            </p:commandLink>
+                        </f:facet>
+                        <b><h:outputText value="#{row.form}"/> </b>
+                    </p:column>
+                    <p:column style="width:5em;">
+                        <f:facet name="header">
+                            <p:commandLink action="#{in_documents.sort('executionDate')}" title = "Срок исполнения">
+                                Срок
+                                <f:ajax render="main_data_tbl"/>
+                            </p:commandLink>
+                        </f:facet>
+                        <h:outputText value="#{row.executionDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column style="width:10em;">
+                        <f:facet name="header">
+                            <p:commandLink action="#{in_documents.sort('statusId')}">
+                                <span> Статус </span>
+                                <f:ajax render="main_data_tbl"/>
+                            </p:commandLink>
+                        </f:facet>
+                        <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            Краткое содержание
+                        </f:facet>
+                        <h:outputText value="#{row.shortDescription}"/>
+                    </p:column>
+                    <p:ajax event="rowSelect" onstart="addRowHandlers()"/>
+                </p:dataTable>
+                <script type="text/javascript">
+                    function addRowHandlers() {
+                        console.log("refresh table row onclick handlers");
+                        var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
+                        var rows = table.getElementsByClassName("ui-datatable-selectable");
+                        for (var i = 0; i &lt; rows.length; i++) {
+                            var currentRow = rows[i];
+                            var createClickHandler = function (row) {
+                                return function () {
+                                    goToIncomingDocument(row.getAttribute("data-rk"));
+                                };
+                            };
+                            currentRow.className = currentRow.className.replace('ui-state-highlight', '');
+                            currentRow.ondblclick = createClickHandler(currentRow);
+                        }
+                    }
+                </script>
             </div>
             <div id="table_paging">
                 <h:panelGroup id="main_data_paging">

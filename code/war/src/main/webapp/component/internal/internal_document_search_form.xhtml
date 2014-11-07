@@ -48,7 +48,7 @@
     </div>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="content">
 <div id="header_content">
@@ -59,9 +59,7 @@
 
 <div class="main_content">
 <e5ui:formPart id="editFormPart">
-<!-- <e5ui:tabPanel id="content_table">
-                    <e5ui:tabPage headerText="Реквизиты" actionBehavior="submit"
-                        selected="true"> -->
+
 <h:panelGroup rendered="true">
 <div class="row">
 <table class="form_grid">
@@ -455,8 +453,6 @@
 </table>
 </div>
 </h:panelGroup>
-<!-- </e5ui:tabPage>
-                </e5ui:tabPanel> -->
 
 </e5ui:formPart>
 </div>
@@ -490,7 +486,6 @@
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
     <h:outputStylesheet library="css" name="multiMarker.css"/>
-    <h:outputStylesheet library="css" name="tabPanel.css"/>
 </ui:define>
 
 </ui:composition>

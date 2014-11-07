@@ -312,8 +312,7 @@
         </table>
     </div>
 </h:panelGroup>
-<h:panelGroup
-        rendered="#{in_doc.viewState or (in_doc.editState and (in_doc.document.getDocumentStatus().getId() ge 2))}">
+<h:panelGroup rendered="#{in_doc.viewState or (in_doc.editState and (in_doc.document.getDocumentStatus().getId() ge 2))}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
@@ -842,14 +841,6 @@
        rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.editPermission)}">
     <fieldset>
         <legend>Поручения</legend>
-        <h:outputScript>
-            function goToTask(id) {
-            if (id != "") {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-
         <div class="actionbar">
             <div class="menu">
                 <h:panelGroup rendered="#{(in_doc.document.getDocumentStatus().getId() eq 2)}">
@@ -1778,7 +1769,6 @@
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
     <h:outputStylesheet library="css" name="multiMarker.css"/>
-    <h:outputStylesheet library="css" name="tabPanel.css"/>
 </ui:define>
 
 </ui:composition>

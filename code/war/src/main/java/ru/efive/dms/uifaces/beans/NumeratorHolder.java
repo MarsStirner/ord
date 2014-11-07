@@ -254,34 +254,6 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
 
     /* =================== */
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isHistoryTabSelected = false;
-
     public OfficeKeepingVolumeSelectModal getOfficeKeepingVolumeSelectModal() {
         return officeKeepingVolumeSelectModal;
     }
