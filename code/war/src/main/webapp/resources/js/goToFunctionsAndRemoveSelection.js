@@ -23,3 +23,16 @@ function goToIncomingDocument(id) {
         window.open('/component/in/in_document.xhtml?docId=' + id,'_blank');
     }
 }
+// К томам дел
+function goToOfficeKeepingVolume(id) {
+    if (id != "" && id != 0) {
+        window.open('/component/office/office_keeping_file.xhtml?docId=' + id,'_blank');
+    }
+}
+
+// К бумажным копиям документа
+function goToPaperCopyDocument(id) {
+    if (id != "") {
+        window.open('/component/paper_copy_document.xhtml?docId=' + id,'_blank');
+    }
+}

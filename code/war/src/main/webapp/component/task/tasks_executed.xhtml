@@ -39,13 +39,6 @@
 
     <ui:define name="content">
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != 0) {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
         <e5ui:formPart id="main_table_part">
             <div id="main_table">
                 <div id="searchbar" class="main_searchbar">
@@ -63,7 +56,7 @@
                     <div class="inner" id="table_inner">
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
                                         value="#{tasks_executed.documents}" var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToTask('#{row.id}');"/>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{tasks_executed.sort('task_number')}">

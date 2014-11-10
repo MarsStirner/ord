@@ -8,12 +8,12 @@
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <!--<value>file:/usr/local/ord/configuration/jdbc.properties</value>-->
-                <!--<value>file:/usr/local/ord/configuration/mail.properties</value>-->
-                <!--<value>file:/usr/local/ord/configuration/ldap.properties</value>-->
-                <value>jdbc.properties</value>
-                <value>mail.properties</value>
-                <value>ldap.properties</value>
+                <value>file:/usr/local/ord/configuration/jdbc.properties</value>
+                <value>file:/usr/local/ord/configuration/mail.properties</value>
+                <value>file:/usr/local/ord/configuration/ldap.properties</value>
+                <!--<value>jdbc.properties</value>-->
+                <!--<value>mail.properties</value>-->
+                <!--<value>ldap.properties</value>-->
                 <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
             </list>

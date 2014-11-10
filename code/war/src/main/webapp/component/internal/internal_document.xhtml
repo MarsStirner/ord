@@ -669,14 +669,6 @@
        rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <fieldset>
         <legend>Поручения</legend>
-        <h:outputScript>
-            function goToTask(id) {
-            if (id != "") {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-
         <div class="actionbar">
             <div class="menu">
                 <h:panelGroup
@@ -1077,14 +1069,6 @@
 <p:tab title="Оригинал"
        rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
     <fieldset>
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != "") {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/paper_copy_document.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-
         <div class="actionbar">
             <div class="menu">
                 <h:panelGroup rendered="#{internal_doc.document.getDocumentStatus().getId() gt 0}">
@@ -1121,7 +1105,7 @@
                                         cellpadding="0" cellspacing="0"
                                         value="#{paperCopyDocuments.getAllDocumentsByParentDocumentId(internal_doc.document.uniqueId)}"
                                         var="row" style="width:100%">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToPaperCopyDocument('#{row.id}');"/>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <p>Номер</p>

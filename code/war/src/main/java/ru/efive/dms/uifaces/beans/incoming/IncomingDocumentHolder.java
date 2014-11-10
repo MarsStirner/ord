@@ -178,7 +178,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             hibernateTemplate.initialize(document.getRecipientGroups());
             hibernateTemplate.initialize(document.getRecipientUsers());
             session.close();
-            updateAttachments();
             setDocument(document);
             //Проверка прав на открытие
             checkPermission(currentUser, document);
@@ -187,6 +186,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             //Поиск поручений
             taskTreeHolder.changeOffset(0);
+            updateAttachments();
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);

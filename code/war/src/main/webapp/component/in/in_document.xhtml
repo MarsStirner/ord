@@ -166,7 +166,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </h:panelGroup>
 </ui:define>
@@ -176,17 +175,14 @@
 <ui:define name="content">
 <div id="header_content">
     <h:panelGroup rendered="#{in_doc.createState}">
-        <e5ui:formPart id="editHeaderPart">
-            <div class="name">
-                Входящий документ
-                <h:selectOneMenu id="form" value="#{in_doc.document.form}"
-                                 converter="IncomingDocumentFormConverter" immediate="true">
-                    <f:selectItems
-                            value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
-                </h:selectOneMenu>
-            </div>
-        </e5ui:formPart>
-
+        <div class="name">
+            Входящий документ
+            <h:selectOneMenu id="form" value="#{in_doc.document.form}"
+                             converter="IncomingDocumentFormConverter" immediate="true">
+                <f:selectItems
+                        value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
+            </h:selectOneMenu>
+        </div>
         <div class="title">
             <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
         </div>
@@ -229,7 +225,53 @@
 </div>
 
 <div class="main_content">
-<h:panelGroup rendered="#{in_doc.createState or (in_doc.editState and (in_doc.document.getDocumentStatus().getId() lt 2))}">
+<h:panelGroup rendered="#{in_doc.viewState}">
+    <div class="row">
+        <table class="form_grid">
+            <tr class="row">
+                <td class="first">
+                    <label>
+                        <span class="title">Дата поступления</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <h:outputText value="#{in_doc.document.deliveryDate}" lang="ru">
+                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </td>
+                <td class="third">
+                    <label>
+                        <span class="title">Автор:</span>
+                    </label>
+                </td>
+                <td class="fourth">
+                    <h:outputText value="#{in_doc.document.author.getFullName()}" lang="ru"/>
+                </td>
+            </tr>
+            <tr class="row">
+                <td class="first">
+                    <label>
+                        <span class="title">Срок исполнения</span>
+                    </label>
+                </td>
+                <td class="second">
+                    <h:outputText value="#{in_doc.document.executionDate}" lang="ru">
+                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </td>
+                <td class="third">
+                    <label>
+                        <span class="title">Руководитель</span>
+                    </label>
+                </td>
+                <td class="fourth">
+                    <h:outputText value="#{in_doc.document.controller.getFullName()}" class="wide"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+</h:panelGroup>
+<h:panelGroup rendered="#{in_doc.createState or in_doc.editState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
@@ -239,8 +281,17 @@
                     </label>
                 </td>
                 <td class="second">
-                    <p:calendar id="deliveryDate" value="#{in_doc.document.deliveryDate}" lang="ru" locale="ru"
-                                widgetVar="deliveryDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                    <c:choose>
+                        <c:when test="#{(in_doc.document.getDocumentStatus().getId() eq 1) or in_doc.createState}">
+                            <p:calendar id="deliveryDate" value="#{in_doc.document.deliveryDate}" lang="ru" locale="ru"
+                                        widgetVar="deliveryDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                        </c:when>
+                        <c:otherwise>
+                            <h:outputText value="#{in_doc.document.deliveryDate}" lang="ru">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </c:otherwise>
+                    </c:choose>
                 </td>
                 <td class="third">
                     <label for="author">
@@ -264,100 +315,63 @@
                 <td class="third">
                     <label> 
                         <span class="title">
-                            <h:outputLink
-                                    onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
-                                Руководитель
-                            </h:outputLink>
+                            <c:choose>
+                                <c:when test="#{(in_doc.document.getDocumentStatus().getId() eq 1) or in_doc.createState}">
+                                    <h:outputLink
+                                            onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
+                                        Руководитель
+                                    </h:outputLink>
+                                </c:when>
+                                <c:otherwise>
+                                    <label>
+                                        <span class="title">Руководитель</span>
+                                    </label>
+                                </c:otherwise>
+                            </c:choose>
+                            <e5ui-comp:modalWindow id="controllerSelectModal"
+                                                   modalWindowHolder="#{in_doc.controllerSelectModal}"
+                                                   render="controller" execute="select_table"
+                                                   showButtons="false" style="width: 500px;"
+                                                   widgetVar="controllerSelectModalVar">
+                                <div id="title">Выбор руководителя</div>
+                                <div id="modal_container" style="margin-top: 0;">
+                                    <div class="wrap" style="height: 300px;">
+                                        <div class="inner" style="height: 300px;">
+                                            <e5ui:dataTable id="select_table" border="0"
+                                                            cellpadding="0" cellspacing="0"
+                                                            value="#{staffManagement.findGroupByAlias('TopManagers').membersList}"
+                                                            var="row" grouping="false" width="100%">
+                                                <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                          styleClass="#{in_doc.controllerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                                                <e5ui:column>
+                                                    <f:facet name="header">
+                                                        <p>Руководитель</p>
+                                                    </f:facet>
+                                                    <h:outputText value="#{row}" converter="PersonConverter"/>
+                                                    <h:commandLink id="selectLink" style="display: none;"
+                                                                   rendered="#{not in_doc.controllerSelectModal.selected(row)}"
+                                                                   action="#{in_doc.controllerSelectModal.select(row)}"/>
+                                                </e5ui:column>
+                                            </e5ui:dataTable>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="e5ui-modal-bottombuttons">
+                                    <h:button onclick="controllerSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                                    <h:button onclick="controllerSelectModalVar.clickClose(); return false;" value="Отмена"/>
+                                </div>
+                            </e5ui-comp:modalWindow>
                         </span>
                     </label>
-                    <e5ui-comp:modalWindow id="controllerSelectModal"
-                                           modalWindowHolder="#{in_doc.controllerSelectModal}"
-                                           render="controller" execute="select_table"
-                                           showButtons="false" style="width: 500px;"
-                                           widgetVar="controllerSelectModalVar">
-                        <div id="title">Выбор руководителя</div>
-                        <div id="modal_container" style="margin-top: 0;">
-                            <div class="wrap" style="height: 300px;">
-                                <div class="inner" style="height: 300px;">
-                                    <e5ui:dataTable id="select_table" border="0"
-                                                    cellpadding="0" cellspacing="0"
-                                                    value="#{staffManagement.findGroupByAlias('TopManagers').membersList}"
-                                                    var="row" grouping="false" width="100%">
-                                        <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                  styleClass="#{in_doc.controllerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                        <e5ui:column>
-                                            <f:facet name="header">
-                                                <p>Руководитель</p>
-                                            </f:facet>
-                                            <h:outputText value="#{row}" converter="PersonConverter"/>
-                                            <h:commandLink id="selectLink" style="display: none;"
-                                                           rendered="#{not in_doc.controllerSelectModal.selected(row)}"
-                                                           action="#{in_doc.controllerSelectModal.select(row)}"/>
-                                        </e5ui:column>
-                                    </e5ui:dataTable>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="e5ui-modal-bottombuttons">
-                            <h:button onclick="controllerSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                            <h:button onclick="controllerSelectModalVar.clickClose(); return false;" value="Отмена"/>
-                        </div>
-                    </e5ui-comp:modalWindow>
                 </td>
                 <td class="fourth">
-                    <h:outputText id="controller" value="#{in_doc.document.controller}" converter="PersonConverter"
-                                  class="wide"/>
+                    <h:outputText id="controller" value="#{in_doc.document.controller.getFullName()}" class="wide"/>
                 </td>
             </tr>
         </table>
     </div>
 </h:panelGroup>
-<h:panelGroup rendered="#{in_doc.viewState or (in_doc.editState and (in_doc.document.getDocumentStatus().getId() ge 2))}">
-    <div class="row">
-        <table class="form_grid">
-            <tr class="row">
-                <td class="first">
-                    <label>
-                        <span class="title">Дата поступления</span>
-                    </label>
-                </td>
-                <td class="second">
-                    <h:outputText value="#{in_doc.document.deliveryDate}" lang="ru">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                    </h:outputText>
-                </td>
-                <td class="third">
-                    <label>
-                        <span class="title">Автор:</span>
-                    </label>
-                </td>
-                <td class="fourth">
-                    <h:outputText value="#{in_doc.document.author}" converter="PersonConverter" lang="ru"/>
-                </td>
-            </tr>
-            <tr class="row">
-                <td class="first">
-                    <label>
-                        <span class="title">Срок исполнения</span>
-                    </label>
-                </td>
-                <td class="second">
-                    <h:outputText value="#{in_doc.document.executionDate}" lang="ru">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                    </h:outputText>
-                </td>
-                <td class="third">
-                    <label>
-                        <span class="title">Руководитель</span>
-                    </label>
-                </td>
-                <td class="fourth">
-                    <h:outputText value="#{in_doc.document.controller}" converter="PersonConverter" class="wide"/>
-                </td>
-            </tr>
-        </table>
-    </div>
-</h:panelGroup>
+
 <p:tabView widgetVar="incomingDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
            effectDuration="fast">
 <p:tab title="Реквизиты"
@@ -505,7 +519,8 @@
         </label>
     </td>
     <td class="second" colspan="3">
-        <p:calendar id="receivedDate" value="#{in_doc.document.receivedDocumentDate}" lang="ru" locale = "ru" widgetVar = "recievedDateVar" pattern= "dd.MM.yyyy" showOn= "both" />
+        <p:calendar id="receivedDate" value="#{in_doc.document.receivedDocumentDate}" lang="ru" locale="ru"
+                    widgetVar="recievedDateVar" pattern="dd.MM.yyyy" showOn="both"/>
     </td>
 </tr>
 <tr class="row">
@@ -981,14 +996,6 @@
 <p:tab title="Оригинал"
        rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.editPermission)}">
     <fieldset>
-        <h:outputScript>
-            function goToPaperCopy(id) {
-            if (id != "") {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/paper_copy_document.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-
         <div class="actionbar">
             <div class="menu">
                 <h:panelGroup rendered="#{in_doc.document.getDocumentStatus().getId() gt 0}">
@@ -1019,7 +1026,7 @@
                                         cellpadding="0" cellspacing="0"
                                         value="#{paperCopyDocuments.getAllDocumentsByParentDocumentId(in_doc.document.uniqueId)}"
                                         var="row_paper_copy" style="width:100%">
-                            <e5ui:row ondblclick="goToPaperCopy('#{row_paper_copy.id}');"/>
+                            <e5ui:row ondblclick="goToPaperCopyDocument('#{row_paper_copy.id}');"/>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <p>Номер</p>

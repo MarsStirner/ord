@@ -597,14 +597,6 @@
 <p:tab title="Движение документа">
     <fieldset>
         <legend>Поручения</legend>
-        <h:outputScript>
-            function goToTask(id) {
-            if (id != "") {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/task/task.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-
         <div class="actionbar">
             <div class="menu">
                 <div class="defbutton">
