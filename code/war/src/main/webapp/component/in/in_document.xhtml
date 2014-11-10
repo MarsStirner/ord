@@ -317,52 +317,49 @@
                         <span class="title">
                             <c:choose>
                                 <c:when test="#{(in_doc.document.getDocumentStatus().getId() eq 1) or in_doc.createState}">
-                                    <h:outputLink
-                                            onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
+                                    <h:outputLink onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
                                         Руководитель
                                     </h:outputLink>
                                 </c:when>
                                 <c:otherwise>
-                                    <label>
-                                        <span class="title">Руководитель</span>
-                                    </label>
+                                    Руководитель
                                 </c:otherwise>
-                            </c:choose>
-                            <e5ui-comp:modalWindow id="controllerSelectModal"
-                                                   modalWindowHolder="#{in_doc.controllerSelectModal}"
-                                                   render="controller" execute="select_table"
-                                                   showButtons="false" style="width: 500px;"
-                                                   widgetVar="controllerSelectModalVar">
-                                <div id="title">Выбор руководителя</div>
-                                <div id="modal_container" style="margin-top: 0;">
-                                    <div class="wrap" style="height: 300px;">
-                                        <div class="inner" style="height: 300px;">
-                                            <e5ui:dataTable id="select_table" border="0"
-                                                            cellpadding="0" cellspacing="0"
-                                                            value="#{staffManagement.findGroupByAlias('TopManagers').membersList}"
-                                                            var="row" grouping="false" width="100%">
-                                                <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                          styleClass="#{in_doc.controllerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                <e5ui:column>
-                                                    <f:facet name="header">
-                                                        <p>Руководитель</p>
-                                                    </f:facet>
-                                                    <h:outputText value="#{row}" converter="PersonConverter"/>
-                                                    <h:commandLink id="selectLink" style="display: none;"
-                                                                   rendered="#{not in_doc.controllerSelectModal.selected(row)}"
-                                                                   action="#{in_doc.controllerSelectModal.select(row)}"/>
-                                                </e5ui:column>
-                                            </e5ui:dataTable>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="e5ui-modal-bottombuttons">
-                                    <h:button onclick="controllerSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                                    <h:button onclick="controllerSelectModalVar.clickClose(); return false;" value="Отмена"/>
-                                </div>
-                            </e5ui-comp:modalWindow>
+                            </c:choose>                            
                         </span>
                     </label>
+                    <e5ui-comp:modalWindow id="controllerSelectModal"
+                                           modalWindowHolder="#{in_doc.controllerSelectModal}"
+                                           render="controller" execute="select_table"
+                                           showButtons="false" style="width: 500px;"
+                                           widgetVar="controllerSelectModalVar">
+                        <div id="title">Выбор руководителя</div>
+                        <div id="modal_container" style="margin-top: 0;">
+                            <div class="wrap" style="height: 300px;">
+                                <div class="inner" style="height: 300px;">
+                                    <e5ui:dataTable id="select_table" border="0"
+                                                    cellpadding="0" cellspacing="0"
+                                                    value="#{staffManagement.findGroupByAlias('TopManagers').membersList}"
+                                                    var="row" grouping="false" width="100%">
+                                        <e5ui:row onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                  styleClass="#{in_doc.controllerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                                        <e5ui:column>
+                                            <f:facet name="header">
+                                                <p>Руководитель</p>
+                                            </f:facet>
+                                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                                            <h:commandLink id="selectLink" style="display: none;"
+                                                           rendered="#{not in_doc.controllerSelectModal.selected(row)}"
+                                                           action="#{in_doc.controllerSelectModal.select(row)}"/>
+                                        </e5ui:column>
+                                    </e5ui:dataTable>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="e5ui-modal-bottombuttons">
+                            <h:button onclick="controllerSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="controllerSelectModalVar.clickClose(); return false;" value="Отмена"/>
+                        </div>
+                    </e5ui-comp:modalWindow>
                 </td>
                 <td class="fourth">
                     <h:outputText id="controller" value="#{in_doc.document.controller.getFullName()}" class="wide"/>
