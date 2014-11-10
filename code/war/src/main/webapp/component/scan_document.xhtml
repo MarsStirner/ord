@@ -6,7 +6,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite" xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -83,7 +83,7 @@
     </div>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="content">
     <div id="header_content">
@@ -120,8 +120,6 @@
     </div>
 
     <div class="main_content">
-        <e5ui:formPart id="editFormPart"
-                       rendered="#{scan_copy_document.viewState or scan_copy_document.createState or scan_copy_document.editState}">
             <h:panelGroup
                     rendered="#{scan_copy_document.editState or scan_copy_document.viewState or scan_copy_document.createState}">
                 <div class="row">
@@ -139,11 +137,9 @@
                     </table>
                 </div>
             </h:panelGroup>
-            <e5ui:tabPanel id="content_table">
-                <e5ui:tabPage
-                        headerText="#{scan_copy_document.requisitesTabHeader}"
-                        actionBehavior="#{scan_copy_document.viewState ? 'client': 'submit'}"
-                        selected="#{scan_copy_document.requisitesTabSelected}">
+        <p:tabView widgetVar="scanDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
+                   effectDuration="fast">
+            <p:tab title="Реквизиты">
                     <h:panelGroup rendered="#{scan_copy_document.viewState}">
                         <div class="row">
                             <table class="form_grid">
@@ -163,7 +159,7 @@
                             <table class="form_grid">
                                 <tr class="row">
                                     <td class="first"><label
-                                            for="main_content_form:shortDescription"> <span
+                                            for="shortDescription"> <span
                                             class="title">Краткое содержание</span>
                                     </label></td>
                                     <td class="second" colspan="3"><h:inputText
@@ -175,61 +171,34 @@
                             </table>
                         </div>
                     </h:panelGroup>
-                </e5ui:tabPage>
+                </p:tab>
 
-                <e5ui:tabPage headerText="#{scan_copy_document.historyTabHeader}"
-                              actionBehavior="client"
-                              selected="#{scan_copy_document.historyTabSelected}">
-                    <fieldset>
-                        <legend>
-                            <label><span class="title">История</span> </label>
-                        </legend>
-                        <div class="wrap"
-                             style="height: 250px; width: 100%; margin: 0px;">
-                            <div class="inner" style="height: 250px;">
-                                <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                                id="history_list"
-                                                value="#{scan_copy_document.document.historyList}" var="row"
-                                                grouping="false">
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Дата</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row.startDate}">
-                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/>
-                                        </h:outputText>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Статус</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row.fromStatusName}"/>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Действие</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row.actionName}"/>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Автор</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row.owner.descriptionShort}"/>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <f:facet name="header">
-                                            <p>Комментарий</p>
-                                        </f:facet>
-                                        <h:outputText value="#{row.commentary}"/>
-                                    </e5ui:column>
-                                </e5ui:dataTable>
-                            </div>
-                        </div>
-                    </fieldset>
-                </e5ui:tabPage>
-            </e5ui:tabPanel>
-        </e5ui:formPart>
+            <p:tab title="История"
+                   rendered="#{scan_copy_document.viewState or scan_copy_document.createState or (scan_copy_document.editState)}">
+                <div style="width: 100%; margin: 0;">
+                    <p:dataTable id="history_list" value="#{scan_copy_document.document.historyList}"
+                                 var="history_entry" grouping="false">
+                        <p:column headerText="Дата">
+                            <h:outputText value="#{history_entry.startDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Статус">
+                            <h:outputText value="#{history_entry.fromStatusName}"/>
+                        </p:column>
+                        <p:column headerText="Действие">
+                            <h:outputText value="#{history_entry.actionName}"/>
+                        </p:column>
+                        <p:column headerText="Автор">
+                            <h:outputText value="#{history_entry.owner.descriptionShort}"/>
+                        </p:column>
+                        <p:column headerText="Комментарий">
+                            <h:outputText value="#{history_entry.commentary}"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:tab>
+        </p:tabView>
     </div>
 
     <e5ui-comp:splashScreen id="splash_screen" timeout="0">
@@ -255,199 +224,6 @@
 </ui:define>
 
 <ui:define name="footer">
-    <h:form id="file_upload_form" enctype="multipart/form-data"
-            rendered="#{scan_copy_document.viewState or scan_copy_document.createState or scan_copy_document.editState}">
-        <div style="padding-top: 10px;">
-            <fieldset>
-                <legend>Файлы</legend>
-                <div class="menu">
-                    <div class="defbutton">
-                        <e5ui:fileUpload id="file_upload" multiple="true"
-                                         actionBehavior="separate" maxFilesCount="0"
-                                         uploadHandler="#{fileManagement.uploadHandler}"
-                                         action="#{scan_copy_document.uploadAttachments(fileManagement.details)}"
-                                         onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
-                                         onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
-                            <f:ajax render=":file_upload_form"/>
-                        </e5ui:fileUpload>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{scan_copy_document.updateAttachments()}">
-                            <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                            Обновить
-                            <f:ajax render=":file_upload_form"/>
-                        </h:commandLink>
-                    </div>
-                </div>
-                <div style="margin-top: 10px;">
-                    <div class="wrap_main" id="table_wrap">
-                        <div class="inner" id="table_inner">
-                            <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                            id="file_table" value="#{scan_copy_document.attachments}"
-                                            var="row">
-                                <e5ui:column>
-                                    <h:outputText value="#{row.currentRevision.fileName}"/>
-                                </e5ui:column>
-                                <e5ui:column>
-                                    <h:outputText value="#{row.currentRevision.version}"/>
-                                </e5ui:column>
-                                <e5ui:column>
-                                    <h:outputText
-                                            value="#{userList.getUserFullNameById(row.currentRevision.authorId)}"/>
-                                </e5ui:column>
-                                <e5ui:column>
-                                    <h:outputLink
-                                            value="/component/file/download.xhtml"
-                                            target="_blank">
-                                        <h:graphicImage value="/resources/images/download_doc.gif"/>
-                                        <f:param name="id" value="#{row.id}"/>
-                                        Скачать
-                                    </h:outputLink>
-                                </e5ui:column>
-                                <e5ui:column>
-                                    <h:commandLink
-                                            action="#{scan_copy_document.initializeVersionAppender(row)}">
-                                        <h:graphicImage value="/resources/images/CheckOut_icon.gif"/>
-                                        <f:ajax render=":file_upload_form"/>
-                                        Добавить версию документа
-                                    </h:commandLink>
-                                </e5ui:column>
-                                <e5ui:column>
-                                    <h:commandLink
-                                            action="#{scan_copy_document.initializeVersionHistory(row)}">
-                                        <h:graphicImage value="/resources/images/CheckOut_icon.gif"/>
-                                        <f:ajax render=":file_upload_form"/>
-                                        История версий
-                                    </h:commandLink>
-                                </e5ui:column>
-                                <e5ui:column>
-                                    <h:commandLink
-                                            action="#{scan_copy_document.deleteAttachment(row)}">
-                                        <h:graphicImage value="/resources/images/delete.gif"/>
-                                        <f:ajax render=":file_upload_form :main_content_form"/>
-                                        Удалить
-                                    </h:commandLink>
-                                </e5ui:column>
-                            </e5ui:dataTable>
-
-                            <e5ui-comp:modalWindow id="versionAppenderModal"
-                                                   modalWindowHolder="#{scan_copy_document.versionAppenderModal}"
-                                                   render=":file_upload_form" execute=":file_upload_form"
-                                                   style="width:300px;" showButtons="false"
-                                                   widgetVar="versionAppenderModal">
-                                <div id="title">Добавление версии документа</div>
-                                <div id="modal_container" style="margin-top: 0;">
-                                    <div>
-                                        Документ:
-                                        <h:outputText
-                                                value="#{scan_copy_document.versionAppenderModal.attachment.currentRevision.fileName}"/>
-                                    </div>
-                                    <div>
-                                        Текущая версия:
-                                        <h:outputText
-                                                value="#{scan_copy_document.versionAppenderModal.attachment.currentRevision.version}"/>
-                                    </div>
-                                    <div>
-                                        <h:selectBooleanCheckbox
-                                                value="#{scan_copy_document.versionAppenderModal.majorVersion}"/>
-                                        Увеличить старший номер
-                                    </div>
-                                    <div style="margin-top: 5px;">
-                                        <e5ui:fileUpload id="version_upload" multiple="false"
-                                                         actionBehavior="separate" maxFilesCount="1"
-                                                         uploadHandler="#{fileManagement.uploadHandler}"
-                                                         action="#{scan_copy_document.versionAppenderModal.saveAttachment}"
-                                                         onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
-                                                         onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
-                                            <f:ajax render=":file_upload_form"
-                                                    execute=":file_upload_form:versionAppenderModal"/>
-                                        </e5ui:fileUpload>
-                                    </div>
-                                </div>
-                                <div class="e5ui-modal-bottombuttons">
-                                    <h:button
-                                            onclick="versionAppenderModal.clickClose(); return false;"
-                                            value="Отмена"/>
-                                </div>
-                            </e5ui-comp:modalWindow>
-
-                            <e5ui-comp:modalWindow id="versionHistoryModal"
-                                                   modalWindowHolder="#{scan_copy_document.versionHistoryModal}"
-                                                   render=":file_upload_form" execute=":file_upload_form"
-                                                   style="width:500px;" showButtons="false"
-                                                   widgetVar="versionHistoryModal">
-                                <div id="title">История версий документа</div>
-                                <div id="modal_container" style="margin-top: 0;">
-                                    <div class="wrap_main" id="table_wrap">
-                                        <div class="inner" id="table_inner">
-                                            <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                                            id="version_table"
-                                                            value="#{scan_copy_document.versionHistoryModal.versionList}"
-                                                            var="row">
-                                                <e5ui:column style="min-width:8em;">
-                                                    <h:outputText
-                                                            value="#{row.fileName eq null? scan_copy_document.versionHistoryModal.attachment.fileName: row.fileName}"/>
-                                                </e5ui:column>
-                                                <e5ui:column style="min-width:5em;">
-                                                    <h:outputText value="#{row.version}"/>
-                                                </e5ui:column>
-                                                <e5ui:column style="min-width:12em;">
-                                                    <h:outputText
-                                                            value="#{userList.getUserFullNameById(row.authorId eq 0? scan_copy_document.versionHistoryModal.attachment.authorId: row.authorId)}"/>
-                                                </e5ui:column>
-                                                <e5ui:column style="min-width:7em;">
-                                                    <h:outputLink
-                                                            value="/component/file/download.xhtml"
-                                                            target="_blank">
-                                                        <h:graphicImage
-                                                                value="/resources/images/download_doc.gif"/>
-                                                        <f:param name="id"
-                                                                 value="#{scan_copy_document.versionHistoryModal.attachment.id}"/>
-                                                        <f:param name="revision" value="#{row.version}"/>
-                                                        Скачать
-                                                    </h:outputLink>
-                                                </e5ui:column>
-                                            </e5ui:dataTable>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="e5ui-modal-bottombuttons">
-                                    <h:button
-                                            onclick="versionHistoryModal.clickClose(); return false;"
-                                            value="Закрыть"/>
-                                </div>
-                            </e5ui-comp:modalWindow>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
-        </div>
-        <e5ui-comp:splashScreen id="splash_screen_2"
-                                widgetVar="splash_screen_2" timeout="0">
-            <f:facet name="timeoutPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:splashScreen>
-        <script>
-            e5ui_splashScreen.startShowOnSubmit('splash_screen_2',
-                    [ 'file_upload_form' ]);
-        </script>
-    </h:form>
-
-    <e5ui:multiMarker id="main_form_marker" rendered="true"
-                      hintWindowStyleClass="e5ui-marker-hintWindow"
-                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
-                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
-                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
-                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
-                      displayMode="window">
-        <h:button
-                onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
-                value="ОК"/>
-    </e5ui:multiMarker>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
     <h:outputStylesheet library="css" name="multiMarker.css"/>

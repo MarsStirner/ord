@@ -35,8 +35,6 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
     private transient ScanDocumentsHolder scanDocumentsHolder;
 
     private transient String stateComment;
-    private boolean isRequisitesTabSelected = true;
-    private boolean isHistoryTabSelected = false;
 
     public void setStateComment(String stateComment) {
         this.stateComment = stateComment;
@@ -45,31 +43,6 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
     public String getStateComment() {
         return stateComment;
     }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
 
     @Override
     protected String doAfterCreate() {
@@ -215,7 +188,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
      * Check user authorities to document
      */
     private boolean isUserHasAccess(ScanCopyDocument document, User currentUser) {
-        if (document.getAuthor() == null || !document.getAuthor().equals(currentUser.getId())) {
+        if (document.getAuthor() == null || !document.getAuthor().equals(currentUser)) {
             setState(STATE_FORBIDDEN);
             setStateComment("В доступе отказано.");
             return false;

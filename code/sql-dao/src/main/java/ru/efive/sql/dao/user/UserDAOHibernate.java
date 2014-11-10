@@ -68,6 +68,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
             detachedCriteria.add(Restrictions.eq("password", password));
             //EAGER LOADING OF GROUPS
             detachedCriteria.setFetchMode("groups", FetchMode.JOIN);
+            detachedCriteria.setFetchMode("roles", FetchMode.SELECT);
 
             List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria, -1, 1);
             if ((users != null) && !users.isEmpty()) {

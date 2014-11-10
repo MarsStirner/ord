@@ -13,6 +13,7 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
+import ru.util.ApplicationHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -48,6 +49,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
     public long countAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
+        applyAliases(in_searchCriteria);
 
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
@@ -67,6 +69,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
     public List<Task> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
+        applyAliases(in_searchCriteria);
 
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
@@ -95,6 +98,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
     public List<Task> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
+        applyAliases(in_searchCriteria);
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
         }
@@ -111,6 +115,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
     public List<Task> findAllDocumentsOnExecutionByUser(String filter, User user, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
+        applyAliases(in_searchCriteria);
 
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
@@ -142,6 +147,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
 
     public List<Task> findAllExecutedDocumentsByUser(String filter, User user, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
+        applyAliases(in_searchCriteria);
 
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
@@ -202,6 +208,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public List<Task> findResolutionsByExecutor(int executorId, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
@@ -232,6 +239,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public long countResolutionsByExecutor(int executorId, boolean showDeleted) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
@@ -260,6 +268,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public List<Task> findResolutionsByExecutor(String filter, int executorId, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
@@ -291,6 +300,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public long countResolutionsByExecutor(String filter, int executorId, boolean showDeleted) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
@@ -314,6 +324,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public List<Task> findResolutionsByParent(int executorId, String parentId) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (parentId != null && !parentId.equals("")) {
             detachedCriteria.add(Restrictions.eq("parent.id", parentId));
@@ -333,6 +344,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public List<Task> findDraftDocumentsByAuthor(String filter, User user, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
@@ -367,6 +379,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public long countDraftDocumentsByAuthor(User user, boolean showDeleted) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
@@ -386,6 +399,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public List<Task> findAllRegistratedDocuments(String filter, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
@@ -430,12 +444,14 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     public long countAllRegistratedDocuments(String filter, boolean showDeleted) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        applyAliases(detachedCriteria);
 
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
 
         detachedCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DRAFT.getId())));
+        applyAliases(detachedCriteria);
         return getCountOf(getSearchCriteria(detachedCriteria, filter));
     }
 
@@ -449,12 +465,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.controlDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
             disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("taskNumber", filter, MatchMode.ANYWHERE));
-            //criteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
-            criteria.createAlias("author","author")
-                    .createAlias("executors", "executors")
-                    .createAlias("initiator", "initiator")
-                    .createAlias("controller", "controller");
-            disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
+            //criteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN)                                                                                                        disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
             //criteria.createAlias("executor", "executor", CriteriaSpecification.LEFT_JOIN);
@@ -473,36 +484,21 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         return criteria;
     }
 
+    private void applyAliases(DetachedCriteria criteria) {
+        criteria.createAlias("author","author")
+                .createAlias("executors", "executors")
+                .createAlias("initiator", "initiator")
+                .createAlias("controller", "controller");
+    }
+
     protected DetachedCriteria getAccessControlSearchCriteriaByUser(User user) {
         DetachedCriteria in_result = null;
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        //in_result=detachedCriteria;
         Disjunction disjunction = Restrictions.disjunction();
 
         int userId = user.getId();
         if (userId > 0) {
-            boolean isAdminRole = false;
-            List<Role> in_roles = user.getRoleList();
-            if (in_roles != null) {
-                for (Role in_role : in_roles) {
-                    if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                        isAdminRole = true;
-                        break;
-                    }
-                }
-            }
-
-//            detachedCriteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
-//            detachedCriteria.createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN);
-//            detachedCriteria.createAlias("initiator", "initiator", CriteriaSpecification.LEFT_JOIN);
-//            detachedCriteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
-//
-//            detachedCriteria.createAlias("author.roles", "authorRoles", CriteriaSpecification.LEFT_JOIN);
-//            detachedCriteria.createAlias("executors.roles", "executorsRoles", CriteriaSpecification.LEFT_JOIN);
-//            detachedCriteria.createAlias("initiator.roles", "initiatorRoles", CriteriaSpecification.LEFT_JOIN);
-//            detachedCriteria.createAlias("controller.roles", "controllerRoles", CriteriaSpecification.LEFT_JOIN);
-
-            if (!isAdminRole) {
+            if(!user.isAdministrator())       {
                 disjunction.add(Restrictions.eq("author.id", userId));
                 disjunction.add(Restrictions.eq("executors.id", userId));
                 disjunction.add(Restrictions.eq("initiator.id", userId));
@@ -517,16 +513,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
                         rolesId.add(role.getId());
                     }
                 }
-                //disjunction.add(Restrictions.in("authorRoles.id", rolesId));
-                //disjunction.add(Restrictions.in("executorsRoles.id", rolesId));
-                //disjunction.add(Restrictions.in("initiatorRoles.id", rolesId));
-                //disjunction.add(Restrictions.in("controllerRoles.id", rolesId));
-
                 detachedCriteria.add(disjunction);
-                /*detachedCriteria.setProjection(Projections.groupProperty("id"));
-
-                DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass());
-                resultCriteria.add(Subqueries.propertyIn("id", detachedCriteria));*/
             }
         }
         in_result = detachedCriteria;
@@ -642,8 +629,9 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         DetachedCriteria searchCriteria = getAccessControlSearchCriteriaByUser(user);
         searchCriteria.add(Restrictions.eq("deleted", false));
         searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DRAFT.getId())));
+        applyAliases(searchCriteria);
         //TODO найти упоминания и модифицировать согласно новой реализации схемы БД
-        searchCriteria.add(Restrictions.or(Restrictions.eq("rootDocumentId", docKey), Restrictions.eq("parent.id", docKey)));
+        searchCriteria.add(Restrictions.or(Restrictions.eq("rootDocumentId", docKey), Restrictions.eq("parent.id", ApplicationHelper.getIdFromUniqueIdString(docKey))));
         searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         return (getCountOf(searchCriteria) > 0);
     }

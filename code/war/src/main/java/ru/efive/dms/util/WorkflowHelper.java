@@ -38,7 +38,7 @@ public final class WorkflowHelper {
 
     private static final Logger taskLogger = LoggerFactory.getLogger("TASK");
 
-    private static final int LEFT_PAD_COUNT = 4;
+    private static final int LEFT_PAD_COUNT = 5;
     private static final char LEFT_PAD_CHAR = '0';
 
     public static boolean changeTaskExecutionDateAction(NoStatusAction changeDateAction, Task task) {
@@ -241,12 +241,11 @@ public final class WorkflowHelper {
 
     public static boolean checkOutgoingPropertiesForArchiving(OutgoingDocument doc) {
         boolean result = false;
-        OutgoingDocument document = doc;
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuffer in_result = new StringBuffer("");
 
         SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -264,10 +263,10 @@ public final class WorkflowHelper {
                 e.printStackTrace();
             }
             if (result) {
-                document.setWFResultDescription("");
+                doc.setWFResultDescription("");
             }
         } else {
-            document.setWFResultDescription(in_result.toString());
+            doc.setWFResultDescription(in_result.toString());
         }
         return result;
     }
@@ -294,30 +293,17 @@ public final class WorkflowHelper {
 
     public static boolean setPaperCopyParentVolumeUnitsCount(PaperCopyDocument document) {
         FacesContext context = FacesContext.getCurrentInstance();
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        boolean result = false;
-        String in_result = "";
+        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
         OfficeKeepingVolume parentVolume = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocumentById(String.valueOf(document.getOfficeKeepingVolume().getId()));
         if (parentVolume != null) {
             int units = parentVolume.getUnitsCount() + document.getSheetsCount();
             parentVolume.setUnitsCount(units);
             sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).save(parentVolume);
-            result = true;
-        }
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                document.setWFResultDescription("");
-            }
+            document.setWFResultDescription("");
+            return true;
         } else {
-            document.setWFResultDescription(in_result.toString());
+            return false;
         }
-        return result;
     }
 
     public static boolean setIncomingRegistrationNumber(IncomingDocument doc) {
@@ -522,10 +508,9 @@ public final class WorkflowHelper {
                     if (in_form.equals("Распоряжение")) {
                         //Р/индекс/номер по порядку
                         in_number = new StringBuffer();
-                        //  if (in_nomenclature != null) {
-                        //      in_number.append("Р/" + in_nomenclature.getCategory() + "/");
-                        //  } else {
-                        {
+                        if (in_nomenclature != null) {
+                            in_number.append("Р/").append(in_nomenclature.getCategory()).append("/");
+                        } else {
                             in_number.append("Р/01/");
                         }
 
@@ -563,10 +548,9 @@ public final class WorkflowHelper {
 
                     } else if (in_form.equals("Служебная записка")) {
                         in_number = new StringBuffer();
-                        // if (in_nomenclature != null) {
-                        //    in_number.append("СЗ/" + in_nomenclature.getCategory() + "/");
-                        // } else {
-                        {
+                        if (in_nomenclature != null) {
+                            in_number.append("СЗ/" + in_nomenclature.getCategory() + "/");
+                        } else {
                             in_number.append("СЗ/01/");
                         }
                         in_filters.put("registrationNumber", in_number);

@@ -349,7 +349,7 @@
         </table>
     </div>
 </h:panelGroup>
-<p:tabView widgetVar="incomingDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
+<p:tabView id = "content_table" widgetVar="incomingDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
            effectDuration="fast">
 <p:tab title="Реквизиты"
        rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
@@ -1050,7 +1050,7 @@
 
                 <div class="defbutton">
                     <h:commandLink action="paperCopyDocuments.refresh()">
-                        <f:ajax render=":main_content_form:select_table_2"/>
+                        <f:ajax render="select_table_2"/>
                         <h:graphicImage
                                 value="#{resource['images:button-refresh.png']}"/>
                         Обновить
