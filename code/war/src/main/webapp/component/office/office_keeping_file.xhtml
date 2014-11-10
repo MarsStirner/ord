@@ -15,7 +15,7 @@
     <e5ui-comp:userSessionUpdate interval="300"/>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="header">
     <div id="form_header">
@@ -213,13 +213,6 @@
 <p:tab title="Тома дел">
     <fieldset>
         <legend>Тома дела</legend>
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != "") {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/office/office_keeping_volume.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
 
         <div class="actionbar">
             <div class="menu">
@@ -251,7 +244,7 @@
                                         cellspacing="0"
                                         value="#{officeKeepingVolumes.getAllVolumesByParentFileId(officeKeepingFile.document.id)}"
                                         var="row" style="width:100%">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToOfficeKeepingVolume('#{row.id}');"/>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <p>Индекс</p>

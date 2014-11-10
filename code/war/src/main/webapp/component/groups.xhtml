@@ -31,20 +31,13 @@
             <h:commandLink action="#{groups.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != 0) {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/group.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
-        <e5ui:formPart id="main_table_part">
+
             <div id="main_table">
                 <div id="searchbar" class="main_searchbar">
                     <h:inputText id="filter_string" value="#{groups.filter}"
@@ -53,15 +46,14 @@
                     <h:commandButton value=" "
                                      action="#{groups.changePageOffset(0)}"
                                      styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl"/>
+                        <f:ajax execute="filter_string" render="main_data_tbl"/>
                     </h:commandButton>
                 </div>
                 <div class="wrap_main" id="table_wrap">
                     <div class="inner" id="table_inner">
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
                                         value="#{groups.documents}" var="row" grouping="false">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToGroup('#{row.id}');"/>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{groups.sort('description')}">
@@ -89,7 +81,7 @@
                                                      pageSizes="10,25,50,100"/>
                 </div>
             </div>
-        </e5ui:formPart>
+
 
         <e5ui-comp:ajaxStatusGlobal timeout="300">
             <f:facet name="waitPanel">

@@ -42,13 +42,7 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != 0) {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/admin/route_template.xhtml?docId=' + id,'_blank');
-            }
-            }
-        </h:outputScript>
+
         <e5ui:formPart id="main_table_part">
             <div id="main_table">
                 <div class="wrap_main" id="table_wrap">
@@ -56,7 +50,7 @@
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
                                         id="main_data_tbl" value="#{routeTemplates.documents}" var="row"
                                         grouping="false">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToRouteTemplate('#{row.id}');"/>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <h:commandLink action="#{routeTemplates.sort('name')}">

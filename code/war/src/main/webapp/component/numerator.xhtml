@@ -308,24 +308,7 @@
 </h:panelGroup>
 <fieldset>
     <legend>Шаблон</legend>
-    <h:outputScript>
-        function goToDocument(docType, id) {
-        if (id != "") {
-        if (docType != "") {
-        if(docType.indexOf('incoming')!=-1){
-        componentType='in/in_document';
-        }else if(docType.indexOf('outgoing')!=-1){
-        componentType='out/out_document';
-        }else if(docType.indexOf('internal')!=-1){
-        componentType='internal/internal_document';
-        }else if(docType.indexOf('request')!=-1){
-        componentType='request/request_document';
-        }
-        window.open('#{facesContext.externalContext.requestContextPath}/component/'+componentType+'.xhtml?docId=' + id,'_blank');
-        }
-        }
-        }
-    </h:outputScript>
+
 
     <div class="actionbar">
         <div class="menu">

@@ -17,28 +17,6 @@
     <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
     <e5ui-comp:userSessionUpdate rendered="#{in_doc.editState or in_doc.createState}" interval="300"/>
     <e5ui-comp:outputUtilScript/>
-    <h:outputScript>
-        function goToDocumentByUniqueId(parentId) {
-        if (parentId != "") {
-        var pos=parentId.indexOf('_');
-        if(pos!=-1){
-        var id=parentId.substring(pos+1,parentId.length);
-        if(parentId.indexOf('incoming')!=-1){
-        componentType='in/in_document';
-        }else if(parentId.indexOf('outgoing')!=-1){
-        componentType='out/out_document';
-        }else if(parentId.indexOf('internal')!=-1){
-        componentType='internal/internal_document';
-        }else if(parentId.indexOf('request')!=-1){
-        componentType='request/request_document';
-        }else if(parentId.indexOf('task')!=-1){
-        componentType='task/task';
-        }
-        window.open('#{facesContext.externalContext.requestContextPath}/component/'+componentType+'.xhtml?docId=' + id,'_blank');
-        }
-        }
-        }
-    </h:outputScript>
 </ui:define>
 
 <ui:define name="header">

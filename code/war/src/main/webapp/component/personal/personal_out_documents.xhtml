@@ -37,13 +37,7 @@
 
     <ui:define name="content">
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-        <h:outputScript>
-            function goToDocument(id) {
-            if (id != 0) {
-            window.open('#{facesContext.externalContext.requestContextPath}/component/out/out_document.xhtml?docId=' + id, '_blank');
-            }
-            }
-        </h:outputScript>
+
         <e5ui:formPart id="main_table_part">
             <div id="main_table">
                 <div id="searchbar" class="main_searchbar">
@@ -60,7 +54,7 @@
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
                                         value="#{personal_out_documents.documents}" var="row"
                                         id="main_data_tbl">
-                            <e5ui:row ondblclick="goToDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToOutgoingDocument('#{row.id}');"/>
                             <e5ui:column style="min-width:5em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{personal_out_documents.sort('out_number')}">

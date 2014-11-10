@@ -708,29 +708,6 @@
     </fieldset>
 </p:tab>
 <p:tab title="Связи">
-    <h:outputScript>
-        function goToDocumentByParentId(parentId) {
-        if (parentId != "") {
-        var pos=parentId.indexOf('_');
-        if(pos!=-1){
-        var id=parentId.substring(pos+1,parentId.length);
-        if(parentId.indexOf('incoming')!=-1){
-        componentType='in/in_document';
-        }else if(parentId.indexOf('outgoing')!=-1){
-        componentType='out/out_document';
-        }else if(parentId.indexOf('internal')!=-1){
-        componentType='internal/internal_document';
-        }else if(parentId.indexOf('request')!=-1){
-        componentType='request/request_document';
-        }else if(parentId.indexOf('task')!=-1){
-        componentType='task/task';
-        }
-        window.open('#{facesContext.externalContext.requestContextPath}/component/'+componentType+'.xhtml?docId=' + id,'_blank');
-        }
-        }
-        }
-    </h:outputScript>
-
     <div class="row">
         <table class="form_grid">
             <h:panelGroup
@@ -743,7 +720,7 @@
                     </td>
                     <td colspan="3">
                         <h:outputLink style="margin-left:5px;"
-                                      onclick="goToDocumentByParentId('#{task.document.rootDocumentId}');">
+                                      onclick="goToDocumentByUniqueId('#{task.document.rootDocumentId}');">
                             <h:graphicImage value="#{resource['images:link.png']}"/>
                             <h:outputText value="#{task.getLinkDescriptionById(task.document.rootDocumentId)}"/>
                         </h:outputLink>
