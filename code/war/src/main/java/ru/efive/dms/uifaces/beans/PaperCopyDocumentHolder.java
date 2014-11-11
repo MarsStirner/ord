@@ -7,6 +7,7 @@ import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -24,6 +25,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 
 @Named("paper_copy_document")
@@ -36,8 +38,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("delete_document.xhtml");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
                 e.printStackTrace();
             }
             return in_result;
@@ -52,15 +53,11 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
         try {
             result = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при удалении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null,MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -86,9 +83,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
                 updateAttachments();
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при инициализации.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
@@ -102,7 +97,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
         doc.setAuthor(sessionManagement.getLoggedUser());
 
         String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentDocumentId");
-        if (parentId != null || !parentId.isEmpty()) {
+        if (StringUtils.isNotEmpty(parentId)) {
             doc.setParentDocumentId(parentId);
         }
 
@@ -134,17 +129,13 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
             PaperCopyDocument document = (PaperCopyDocument) getDocument();
             document = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null,MSG_ERROR_ON_SAVE);
         }
         return result;
     }
@@ -157,9 +148,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
             PaperCopyDocument document = (PaperCopyDocument) getDocument();
             document = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 System.out.println("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
@@ -173,9 +162,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении нового документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
         }//}
         return result;
     }
@@ -188,19 +175,19 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
                 String id = key.substring(pos + 1, key.length());
 
                 List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(key);
-                if (key.indexOf("incoming") != -1) {
+                if (key.contains("incoming")) {
                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(in_doc);
                     getDocument().setRegistrationNumber((in_doc.getRegistrationNumber() != null ? in_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
-                } else if (key.indexOf("outgoing") != -1) {
+                } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(out_doc);
                     getDocument().setRegistrationNumber((out_doc.getRegistrationNumber() != null ? out_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
-                } else if (key.indexOf("internal") != -1) {
+                } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(internal_doc);
                     getDocument().setRegistrationNumber((internal_doc.getRegistrationNumber() != null ? internal_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
-                } else if (key.indexOf("request") != -1) {
+                } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     getDocument().setParentDocument(request_doc);
                     getDocument().setRegistrationNumber((request_doc.getRegistrationNumber() != null ? request_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1));
@@ -208,30 +195,6 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
             }
         }
         //this.setDocument(null);
-    }
-
-    @Override
-    protected String doAfterCreate() {
-        paperCopyDocuments.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterEdit() {
-        paperCopyDocuments.markNeedRefresh();
-        return super.doAfterEdit();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        paperCopyDocuments.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        paperCopyDocuments.markNeedRefresh();
-        return super.doAfterSave();
     }
 
     // FILES
@@ -255,9 +218,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -282,9 +243,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -415,7 +374,7 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
         }
 
         public boolean selected(DeliveryType value) {
-            return this.value != null ? this.value.getValue().equals(value.getValue()) : false;
+            return this.value != null && this.value.getValue().equals(value.getValue());
         }
 
         public void select(DeliveryType value) {
@@ -452,103 +411,25 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
 
     /* =================== */
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRouteTabHeader() {
-        return "<span><span>Движение документа</span></span>";
-    }
-
-    public boolean isRouteTabSelected() {
-        return isRouteTabSelected;
-    }
-
-    public void setRouteTabSelected(boolean isRouteTabSelected) {
-        this.isRouteTabSelected = isRouteTabSelected;
-    }
-
-    public String getRelationTabHeader() {
-        return "<span><span>Связи</span></span>";
-    }
-
-    public boolean isRelationTabSelected() {
-        return isRelationTabSelected;
-    }
-
-    public void setRelationTabSelected(boolean isRelationTabSelected) {
-        this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public String getAccessTabHeader() {
-        return "<span><span>Доступ</span></span>";
-    }
-
-    public boolean isAccessTabSelected() {
-        return isAccessTabSelected;
-    }
-
-    public void setAccessTabSelected(boolean isAccessTabSelected) {
-        this.isAccessTabSelected = isAccessTabSelected;
-    }
-
-    public String getOriginalTabHeader() {
-        return "<span><span>Оригинал</span></span>";
-    }
-
-    public void setOriginalTabSelected(boolean isOriginalTabSelected) {
-        this.isOriginalTabSelected = isOriginalTabSelected;
-    }
-
-    public boolean isOriginalTabSelected() {
-        return isOriginalTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
 
     public String getHomeLink() {
         String key = getDocument().getParentDocumentId();
         if (!key.isEmpty()) {
             int pos = key.indexOf('_');
             if (pos != -1) {
-                if (key.indexOf("incoming") != -1) {
+                if (key.contains("incoming")) {
                     return "/component/in/in_documents.xhtml";
-                } else if (key.indexOf("outgoing") != -1) {
+                } else if (key.contains("outgoing")) {
                     return "/component/out/out_documents_by_number.xhtml";
-                } else if (key.indexOf("internal") != -1) {
+                } else if (key.contains("internal")) {
                     return "/component/internal/internal_documents_by_number.xhtml";
-                } else if (key.indexOf("request") != -1) {
+                } else if (key.contains("request")) {
                     return "/component/request/request_documents.xhtml";
                 }
             }
         }
         return null;
     }
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isRouteTabSelected = false;
-    private boolean isRelationTabSelected = false;
-    private boolean isOriginalTabSelected = false;
-    private boolean isAccessTabSelected = false;
-    private boolean isHistoryTabSelected = false;
 
     private DeliveryTypeSelectModal deliveryTypeSelectModal = new DeliveryTypeSelectModal();
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
@@ -638,9 +519,6 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    @Inject
-    @Named("paperCopyDocuments")
-    private transient PaperCopyDocumentsHolderBean paperCopyDocuments;
     @Inject
     @Named("dictionaryManagement")
     private transient DictionaryManagementBean dictionaryManagement;

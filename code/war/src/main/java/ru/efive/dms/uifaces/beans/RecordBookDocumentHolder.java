@@ -20,6 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.RECORD_BOOK_DAO;
 
 @Named("record_book_doc")
@@ -32,15 +33,11 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
         try {
             result = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при удалении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -65,9 +62,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
                 updateAttachments();
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при инициализации.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
@@ -86,20 +81,16 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            RecordBookDocument document = (RecordBookDocument) getDocument();
+            RecordBookDocument document = getDocument();
             document = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
         }
         return result;
     }
@@ -109,12 +100,10 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
         boolean result = false;
         if (validateHolder()) {
             try {
-                RecordBookDocument document = (RecordBookDocument) getDocument();
+                RecordBookDocument document = getDocument();
                 document = sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).save(document);
                 if (document == null) {
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                    FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
                 } else {
                     System.out.println("uploading newly created files");
                     for (int i = 0; i < files.size(); i++) {
@@ -128,38 +117,13 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Внутренняя ошибка при сохранении нового документа.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             }
         }
         return result;
     }
 
 
-    @Override
-    protected String doAfterCreate() {
-        RecordBookDocumentList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterEdit() {
-        RecordBookDocumentList.markNeedRefresh();
-        return super.doAfterEdit();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        RecordBookDocumentList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        RecordBookDocumentList.markNeedRefresh();
-        return super.doAfterSave();
-    }
 
     protected boolean validateHolder() {
         boolean result = true;
@@ -171,34 +135,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
 
         return result;
     }
-
-    public boolean doRegistrate() {
-        boolean result = false;
-        if (validateHolder()) {
-            try {
-                RecordBookDocument document = (RecordBookDocument) getDocument();
-                if (document != null) {
-
-                }
-                if (document == null) {
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            "Документ не может быть зарегистрирован. Попробуйте повторить позже.", ""));
-                } else {
-                    result = true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Внутренняя ошибка при регистрации документа.", ""));
-            }
-            save();
-        }
-        return result;
-    }
-
-    // FILES
+       // FILES
 
     public List<Attachment> getAttachments() {
         return attachments;
@@ -247,9 +184,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -380,72 +315,6 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
 
     /* =================== */
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRouteTabHeader() {
-        return "<span><span>Движение документа</span></span>";
-    }
-
-    public boolean isRouteTabSelected() {
-        return isRouteTabSelected;
-    }
-
-    public void setRouteTabSelected(boolean isRouteTabSelected) {
-        this.isRouteTabSelected = isRouteTabSelected;
-    }
-
-    public String getRelationTabHeader() {
-        return "<span><span>Связи</span></span>";
-    }
-
-    public boolean isRelationTabSelected() {
-        return isRelationTabSelected;
-    }
-
-    public void setRelationTabSelected(boolean isRelationTabSelected) {
-        this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public String getOriginalTabHeader() {
-        return "<span><span>Оригинал</span></span>";
-    }
-
-    public void setOriginalTabSelected(boolean isOriginalTabSelected) {
-        this.isOriginalTabSelected = isOriginalTabSelected;
-    }
-
-    public boolean isOriginalTabSelected() {
-        return isOriginalTabSelected;
-    }
-
-    public String getFilesTabHeader() {
-        return "<span><span>Файлы</span></span>";
-    }
-
-    public void setFilesTabSelected(boolean isFilesTabSelected) {
-        this.isFilesTabSelected = isFilesTabSelected;
-    }
-
-    public boolean isFilesTabSelected() {
-        return isFilesTabSelected;
-    }
-
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isRouteTabSelected = false;
-    private boolean isRelationTabSelected = false;
-    private boolean isOriginalTabSelected = false;
-    private boolean isFilesTabSelected = false;
 
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
@@ -453,9 +322,6 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    @Inject
-    @Named("record_book_documents")
-    private transient RecordBookDocumentListHolder RecordBookDocumentList;
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;
