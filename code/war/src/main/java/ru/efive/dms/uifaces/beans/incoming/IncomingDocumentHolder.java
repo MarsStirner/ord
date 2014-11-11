@@ -324,11 +324,16 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
-        if (docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
+        if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
             LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]",
-                    new Object[]{document.getId(), docAccessLevel.getValue(), user.getCurrentUserAccessLevel().getValue()});
+                    new Object[]{
+                            document.getId(),
+                            docAccessLevel.getValue(),
+                            user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null"
+                    }
+            );
             return false;
         }
         return true;

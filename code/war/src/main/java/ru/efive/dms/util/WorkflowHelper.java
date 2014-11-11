@@ -1099,12 +1099,14 @@ public final class WorkflowHelper {
                     }
                 }
                 return true;
+            } else {
+                taskLogger.debug("NOT need to clone task");
+                return true;
             }
         } catch (Exception e) {
             taskLogger.error("Error while cloning tasks:", e);
             return false;
         }
-        return false;
     }
 
     public static boolean formAgreementTree(AgreementIssue doc, HumanTaskTree template) {

@@ -100,6 +100,19 @@ public class SessionManagementBean implements Serializable {
                         loggedUser = null;
                         return;
                     }
+                    // Проверка уровня доступа
+                    if (loggedUser.getMaxUserAccessLevel() == null) {
+                        LOGGER.warn("USER[{}] HAS NULL MAX_ACCESS_LEVEL", loggedUser.getId());
+                        FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NO_MAX_ACCESS_LEVEL);
+                        loggedUser = null;
+                        return;
+                    }
+                    // Выставление текущего уровня допуска
+                    if (loggedUser.getCurrentUserAccessLevel() == null) {
+                        LOGGER.warn("USER[{}] HAS NO CURRENT_ACCESS_LEVEL", loggedUser.getId());
+                        loggedUser.setCurrentUserAccessLevel(loggedUser.getMaxUserAccessLevel());
+                        loggedUser = dao.save(loggedUser);
+                    }
                     //Выставление признаков ролей
                     isAdministrator = loggedUser.isAdministrator();
                     isRecorder = loggedUser.isRecorder();

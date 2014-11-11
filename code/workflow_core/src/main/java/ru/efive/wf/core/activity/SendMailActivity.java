@@ -4,13 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -77,7 +71,13 @@ public class SendMailActivity implements IActivity {
         try {
             mailSettings = (MailSettings) context.getBean("mailSettings");
             MimeMessage mimeMessage = getMimeMessage();
-            System.out.println("####DEBUG MESSAGE:\""+mimeMessage.getSubject()+"\" TO: "+mimeMessage.getAllRecipients());
+            try {
+                for (Address address : mimeMessage.getAllRecipients()) {
+                    System.out.println("####DEBUG MESSAGE:\"" + mimeMessage.getSubject() + "\" TO: " + ((InternetAddress) address).getAddress());
+                }
+            }catch (Exception e){
+                //TODO
+            }
             Transport.send(mimeMessage);
             result = true;
         } catch (NamingException e) {
