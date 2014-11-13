@@ -3,6 +3,8 @@
     <jmxConfigurator/>
     <contextName>ORD</contextName>
 
+    <!--APPENDERS-->
+
     <!-- Основные настройки для консоли-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -76,6 +78,20 @@
         </rollingPolicy>
     </appender>
 
+   <!--Для альфреско-->
+    <appender name="APPENDER_ALFRESCO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ALFRESCO/alfresco.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <!--LOGGERS-->
+
     <!--Логгеры для документов-->
     <!--У каждого свой но все отписывают в один APPENDER_DOC-->
     <logger name="INCOMING_DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
@@ -123,6 +139,11 @@
     <!--Логгер для интеграции с ЛДАП-->
     <logger name="LDAP" level="DEBUG" additivity="false">
         <appender-ref ref="APPENDER_LDAP"/>
+    </logger>
+
+    <!--Логгер для интеграции с альфреско-->
+    <logger name="ALFRESCO" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_ALFRESCO"/>
     </logger>
 
     <!--Hibernate SQL LOGGER-->

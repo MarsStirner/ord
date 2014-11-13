@@ -35,6 +35,8 @@ import org.alfresco.webservice.util.Constants;
 import org.alfresco.webservice.util.ContentUtils;
 import org.alfresco.webservice.util.Utils;
 import org.alfresco.webservice.util.WebServiceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dao.DAO;
 import ru.efive.dao.InitializationException;
 
@@ -48,6 +50,8 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
 
     protected final Store STORE = new Store(Constants.WORKSPACE_STORE, "SpacesStore");
     protected final Store STORE_LIGHTWEIGHT = new Store("versionStore", "version2Store");
+    private static final ContentFormat CONTENT_FORMAT = new ContentFormat("application/octet-stream", "utf-8");
+    private static final Logger logger = LoggerFactory.getLogger("ALFRESCO");
 
     public AlfrescoDAO() {
         super();
@@ -73,46 +77,37 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
         try {
             this.class_ = class_;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Init class Exception", e);
             throw new InitializationException();
         }
     }
 
     @Override
     public boolean connect() {
-        boolean result = false;
         try {
             WebServiceFactory.setEndpointAddress(serverUrl);
             AuthenticationUtils.startSession(login, password);
-            result = true;
+            return true;
         } catch (Exception e) {
-            result = false;
-            e.printStackTrace();
+            logger.error("Exception while connect alfresco service", e);
+           return false;
         }
-        return result;
     }
 
     @Override
     public boolean disconnect() {
-        boolean result = false;
         try {
-            System.out.println("Disconnecting session");
+            logger.warn("Disconnecting session");
             AuthenticationUtils.endSession();
-            result = true;
+            return true;
         } catch (Exception e) {
-            result = false;
-            e.printStackTrace();
+            logger.error("Exception while disconnect", e);
+            return false;
         }
-        return result;
-    }
-
-    private ContentFormat getContentFormat() {
-        return new ContentFormat("application/octet-stream", "utf-8");
     }
 
     protected ParentReference getCompanyHome() {
-        ParentReference companyHomeParent = new ParentReference(STORE, null, path, Constants.ASSOC_CONTAINS, null);
-        return companyHomeParent;
+        return new ParentReference(STORE, null, path, Constants.ASSOC_CONTAINS, null);
     }
 
     protected RepositoryServiceSoapBindingStub getRepositoryService() {
@@ -145,12 +140,11 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     protected Reference createSpace(String spacename) throws Exception {
         Reference space = null;
         try {
-            System.out.println("Entering space " + spacename);
+            logger.info("Entering space {}", spacename);
             space = new Reference(STORE, null, getCompanyHome().getPath() + "/cm:" + normilizeNodeName(spacename));
             getRepositoryService().get(new Predicate(new Reference[]{space}, STORE, null));
         } catch (Exception e1) {
-            System.out.println("The space named " + spacename + " does not exist. Creating it.");
-
+            logger.warn("The space named \"{}\" does not exist. Creating it.", spacename);
             ParentReference companyHome = getCompanyHome();
             companyHome.setChildName(Constants.createQNameString(Constants.NAMESPACE_CONTENT_MODEL, normilizeNodeName(spacename)));
 
@@ -162,22 +156,23 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             try {
                 getRepositoryService().update(cml);
             } catch (Exception e2) {
-                System.err.println("Can't create the space.");
+                logger.error("Can't create the space.");
                 throw e2;
             }
         }
         return space;
     }
 
+    //TODO redirect createSpace(spaceName); to this method
     protected Reference createSpace(Reference parentref, String spacename) throws Exception {
         Reference space = null;
         ParentReference parent = ReferenceToParent(parentref);
         try {
-            System.out.println("Entering space " + spacename);
+            logger.info("Entering space {}", spacename);
             space = new Reference(STORE, null, parent.getPath() + "/cm:" + normilizeNodeName(spacename));
             WebServiceFactory.getRepositoryService().get(new Predicate(new Reference[]{space}, STORE, null));
         } catch (Exception e1) {
-            System.out.println("The space named " + spacename + " does not exist. Creating it.");
+            logger.warn("The space named \"{}\" does not exist. Creating it.", spacename);
 
             parent.setChildName(Constants.createQNameString(Constants.NAMESPACE_CONTENT_MODEL, normilizeNodeName(spacename)));
 
@@ -189,7 +184,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             try {
                 getRepositoryService().update(cml);
             } catch (Exception e2) {
-                System.err.println("Can't create the space.");
+                logger.error("Can't create the space.");
                 throw e2;
             }
         }
@@ -208,7 +203,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
         Predicate predicate = new Predicate(new Reference[]{reference}, null, null);
         Node[] nodes = getRepositoryService().get(predicate);
         if (nodes.length > 0) {
-            System.out.println("Found node");
+            logger.info("Found node");
             for (String aspect : nodes[0].getAspects()) {
                 if (aspect.equals(Constants.ASPECT_VERSIONABLE)) {
                     return true;
@@ -235,7 +230,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 revisions.add(revision);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception in getVersionHistory", e);
         }
         return revisions;
     }
@@ -247,43 +242,27 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
 
     @Override
     public List<T> getDataList() {
-        List<T> result = new ArrayList<T>();
         try {
-            Query query = new Query(Constants.QUERY_LANG_LUCENE, "TYPE:\"" + class_.newInstance().getNamedNodeType() + "\"");
-            System.out.println("Prepare query: " + query.getStatement());
-            QueryResult queryResult = getRepositoryService().query(STORE, query, false);
-            ResultSet resultSet = queryResult.getResultSet();
-            ResultSetRow[] rows = resultSet.getRows();
-            if (rows != null) {
-                System.out.println("Result set is not null, length - " + rows.length);
-                for (ResultSetRow row : rows) {
-                    T data = class_.newInstance();
-                    data.setId(row.getNode().getId());
-                    data.setNodeProperties(row.getColumns());
-                    Reference nodeReference = getNodeReference(data);
-                    if (isVersionable(nodeReference)) {
-                        data.setVersionable(true);
-                        data.setRevisions(getVersionHistory(nodeReference));
-                    }
-                    result.add(data);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            return getDataList("TYPE:\"" + class_.newInstance().getNamedNodeType() + "\"");
+        } catch (InstantiationException e) {
+            logger.error("Exception in getDataList (queryPrepare)", e);
+            return new ArrayList<T>();
+        } catch (IllegalAccessException e) {
+            logger.error("Exception in getDataList (queryPrepare)", e);
+            return new ArrayList<T>();
         }
-        return result;
     }
 
     public List<T> getDataList(String queryString) {
         List<T> result = new ArrayList<T>();
         try {
             Query query = new Query(Constants.QUERY_LANG_LUCENE, queryString);
-            System.out.println("Prepare query: " + query.getStatement());
+            logger.info("Prepare query: {}", query.getStatement());
             QueryResult queryResult = getRepositoryService().query(STORE, query, false);
             ResultSet resultSet = queryResult.getResultSet();
             ResultSetRow[] rows = resultSet.getRows();
             if (rows != null) {
-                System.out.println("Result set is not null, length - " + rows.length);
+                logger.info("Result set is not null, length - {} ", rows.length);
                 for (ResultSetRow row : rows) {
                     T data = class_.newInstance();
                     data.setId(row.getNode().getId());
@@ -297,7 +276,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception in getDataList", e);
         }
         return result;
     }
@@ -310,7 +289,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             Predicate predicate = new Predicate(new Reference[]{nodeReference}, null, null);
             Node[] nodes = getRepositoryService().get(predicate);
             if (nodes.length > 0) {
-                System.out.println("Found nodes");
+                logger.info("Found nodes");
                 Node node = nodes[0];
                 data = class_.newInstance();
                 data.setId(node.getReference().getUuid());
@@ -331,7 +310,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             }
         } catch (Exception e) {
             data = null;
-            e.printStackTrace();
+            logger.error("Exception in getDataById({})", id,  e);
         }
         return data;
     }
@@ -364,14 +343,14 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 if (destination != null) {
                     destinationId = destination.getUuid();
                 }
-                System.out.println("Command = " + updateResult.getStatement() + "; Source = " + sourceId + "; Destination = " + destinationId);
+                logger.info("Command = {}; Source = {}; Destination = {}", new Object[]{updateResult.getStatement(), sourceId, destinationId});
                 data.setId(destinationId);
             }
 
             result = true;
         } catch (Exception e) {
             result = false;
-            e.printStackTrace();
+            logger.error("In createData", e);
         }
         return result;
     }
@@ -398,16 +377,16 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                     if (destination != null) {
                         destinationId = destination.getUuid();
                     }
-                    System.out.println("Command = " + updateResult.getStatement() + "; Source = " + sourceId + "; Destination = " + destinationId);
+                   logger.info("Command = {}; Source = {}; Destination = {}", new Object[]{updateResult.getStatement(), sourceId, destinationId});
                 }
                 result = true;
             } else {
-                System.out.println("Node not found, creating it.");
+               logger.info("Node not found, creating it.");
                 result = createData(data);
             }
         } catch (Exception e) {
             result = false;
-            e.printStackTrace();
+            logger.error("In updateData", e);
         }
         return result;
     }
@@ -423,7 +402,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             WebServiceFactory.getRepositoryService().update(cml);
             result = true;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("In deleteData", e);
             result = false;
         }
         return result;
@@ -437,18 +416,18 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 Node node = getNode(data);
                 if (node != null) {
                     byte[] bytes = ContentUtils.convertToByteArray(inputStream);
-                    System.out.println("Content length - " + bytes.length);
-                    getContentService().write(node.getReference(), Constants.PROP_CONTENT, bytes, getContentFormat());
+                   logger.info("Content length - {}", bytes.length);
+                    getContentService().write(node.getReference(), Constants.PROP_CONTENT, bytes, CONTENT_FORMAT);
                     result = true;
                 } else {
-                    System.out.println("Failure during node update.");
+                   logger.info("Failure during node update.");
                 }
             } else {
-                System.out.println("Unable to get node.");
+               logger.info("Unable to get node.");
             }
         } catch (Exception e) {
             result = false;
-            e.printStackTrace();
+            logger.error("In createContent", e);
         }
         return result;
     }
@@ -459,18 +438,18 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             if (updateData(data)) {
                 Node node = getNode(data);
                 if (node != null) {
-                    System.out.println("Content length - " + bytes.length);
-                    getContentService().write(node.getReference(), Constants.PROP_CONTENT, bytes, getContentFormat());
+                   logger.info("Content length - {}",  bytes.length);
+                    getContentService().write(node.getReference(), Constants.PROP_CONTENT, bytes, CONTENT_FORMAT);
                     result = true;
                 } else {
-                    System.out.println("Failure during node update.");
+                   logger.info("Failure during node update.");
                 }
             } else {
-                System.out.println("Unable to get node.");
+               logger.info("Unable to get node.");
             }
         } catch (Exception e) {
             result = false;
-            e.printStackTrace();
+            logger.error("In createContent", e);
         }
         return result;
     }
@@ -483,14 +462,14 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 Content[] contentArray = getContentService().read(new Predicate(new Reference[]{node.getReference()},
                         null, null), Constants.PROP_CONTENT);
                 if (contentArray.length > 0) {
-                    System.out.println("found content");
+                   logger.info("found content");
                     Content content = contentArray[0];
-                    System.out.println("content size - " + content.getLength());
+                   logger.info("content size - {}", content.getLength());
                     bytes = ContentUtils.convertToByteArray(ContentUtils.getContentAsInputStream(content));
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("In getContent", e);
         }
         return bytes;
     }
@@ -504,11 +483,11 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 if (contentArray.length > 0) {
                     Content content = contentArray[0];
                     result = content.getLength();
-                    System.out.println("content size - " + result);
+                   logger.info("content size - {}", result);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("In getContentSize", e);
         }
         return result;
     }
@@ -525,8 +504,8 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             Reference workingCopyReference = checkOutResult.getWorkingCopies()[0];
 
             byte[] bytes = ContentUtils.convertToByteArray(inputStream);
-            System.out.println("Content length - " + bytes.length);
-            getContentService().write(workingCopyReference, Constants.PROP_CONTENT, bytes, getContentFormat());
+           logger.info("Content length - {} ", bytes.length);
+            getContentService().write(workingCopyReference, Constants.PROP_CONTENT, bytes, CONTENT_FORMAT);
 
             Predicate predicate = new Predicate(new Reference[]{workingCopyReference}, null, null);
 
@@ -536,7 +515,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             result = true;
         } catch (Exception e) {
             result = false;
-            e.printStackTrace();
+            logger.error("In createVersion", e);
         }
         return result;
     }
@@ -552,8 +531,8 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             CheckoutResult checkOutResult = getAuthoringService().checkout(itemsToCheckOut, null);
             Reference workingCopyReference = checkOutResult.getWorkingCopies()[0];
 
-            System.out.println("Content length - " + bytes.length);
-            getContentService().write(workingCopyReference, Constants.PROP_CONTENT, bytes, getContentFormat());
+           logger.info("Content length - {}", bytes.length);
+            getContentService().write(workingCopyReference, Constants.PROP_CONTENT, bytes, CONTENT_FORMAT);
 
             Predicate predicate = new Predicate(new Reference[]{workingCopyReference}, null, null);
 
@@ -569,7 +548,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             result = true;
         } catch (Exception e) {
             result = false;
-            e.printStackTrace();
+            logger.error("In createVersion", e);
         }
         return result;
     }
@@ -583,7 +562,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             }
             result = getVersionHistory(nodeReference);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("In getRevisions", e);
         }
         return result;
     }
@@ -602,16 +581,16 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
 
                         Content[] contentArray = getContentService().read(new Predicate(new Reference[]{reference}, null, null), Constants.TYPE_CONTENT);
                         if (contentArray.length > 0) {
-                            System.out.println("found revision content");
+                           logger.info("found revision content");
                             Content content = contentArray[0];
-                            System.out.println("content size - " + content.getLength());
+                           logger.info("content size - {}",  content.getLength());
                             bytes = ContentUtils.convertToByteArray(ContentUtils.getContentAsInputStream(content));
                         }
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("In getContent", e);
         }
         return bytes;
     }
@@ -626,14 +605,14 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
         if (data.getId() == null || data.getId().equals("")) return null;
         ParentReference parentReference = getCompanyHome();
         for (int i = 0; i < data.getPath().size(); i++) {
-            System.out.println("entering space " + data.getPath().get(i));
+           logger.info("entering space {}", data.getPath().get(i));
             parentReference = ReferenceToParent(createSpace(parentReference, data.getPath().get(i)));
         }
         Reference nodeReference = new Reference(STORE, data.getId(), parentReference.getPath());
         Predicate predicate = new Predicate(new Reference[]{nodeReference}, null, null);
         Node[] nodes = getRepositoryService().get(predicate);
         if (nodes.length > 0) {
-            System.out.println("Found node");
+           logger.info("Found node");
             return nodes[0];
         } else {
             return null;
@@ -644,7 +623,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
         if (data.getId() == null || data.getId().equals("")) return null;
         ParentReference parentReference = getCompanyHome();
         for (int i = 0; i < data.getPath().size(); i++) {
-            System.out.println("entering space " + data.getPath().get(i));
+           logger.info("entering space {}", data.getPath().get(i));
             parentReference = ReferenceToParent(createSpace(parentReference, data.getPath().get(i)));
         }
         return new Reference(STORE, data.getId(), parentReference.getPath());

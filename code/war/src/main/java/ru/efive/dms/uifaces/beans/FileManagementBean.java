@@ -1,26 +1,27 @@
 package ru.efive.dms.uifaces.beans;
 
+import org.alfresco.webservice.util.ContentUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.efive.dao.alfresco.AlfrescoDAO;
+import ru.efive.dao.alfresco.Attachment;
+import ru.efive.dao.alfresco.Revision;
+import ru.efive.uifaces.filter.UploadHandler;
+import ru.efive.uifaces.filter.UploadInfo;
+import ru.util.ApplicationHelper;
+
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.alfresco.webservice.util.ContentUtils;
-
-import ru.efive.dao.alfresco.AlfrescoDAO;
-import ru.efive.dao.alfresco.Revision;
-import ru.efive.dao.alfresco.Attachment;
-import ru.efive.uifaces.filter.UploadHandler;
-import ru.efive.uifaces.filter.UploadInfo;
-import ru.util.ApplicationHelper;
-
 @Named("fileManagement")
 @SessionScoped
 public class FileManagementBean implements java.io.Serializable, UploadHandler {
+    private static final Logger logger = LoggerFactory.getLogger("ALFRESCO");
 
     // uploading
 
@@ -32,7 +33,7 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
     public void handleUpload(UploadInfo uploadInfo) {
         details = new FileUploadDetails();
         if (uploadInfo.getFileName() == null || uploadInfo.getFileName().isEmpty()) {
-            System.out.println("file name is " + (uploadInfo.getFileName() == null ? "null" : "empty"));
+            logger.info("file name is \"{}\"", (uploadInfo.getFileName() == null ? "null" : "empty"));
             return;
         }
         try {
@@ -45,7 +46,7 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
             details.setAttachment(attachment);
             details.setByteArray(byteArray);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
     }
 
@@ -88,10 +89,13 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return null;
+            }
             result = dao.getDataById(Integer.toString(id));
         } catch (Exception e) {
             result = null;
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if (dao != null) dao.disconnect();
         }
@@ -103,10 +107,13 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return null;
+            }
             result = dao.getDataById(id);
         } catch (Exception e) {
             result = null;
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if (dao != null) dao.disconnect();
         }
@@ -118,12 +125,15 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return result;
+            }
             result = dao.getDataList(
                     "+TYPE:\"" + new Attachment().getNamedNodeType() + "\"" +
                             " +@e5-dms\\:parentId:\"" + id + "\"");
             //" +ALL:\""+ id+ "\"");
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if (dao != null) dao.disconnect();
         }
@@ -135,9 +145,12 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return false;
+            }
             result = dao.createContent(file, bytes);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if (dao != null) dao.disconnect();
         }
@@ -149,9 +162,12 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return false;
+            }
             result = dao.deleteData(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if (dao != null) dao.disconnect();
         }
@@ -164,10 +180,13 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         if (id != null && !id.equals("")) {
             try {
                 dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+                if (dao == null) {
+                    return result;
+                }
                 Attachment attachment = dao.getDataById(id);
                 result = dao.getContent(attachment);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("", e);
             } finally {
                 if (dao != null) dao.disconnect();
             }
@@ -181,10 +200,13 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         if (id != null && !id.equals("")) {
             try {
                 dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+                if (dao == null) {
+                    return result;
+                }
                 Attachment attachment = dao.getDataById(id);
                 result = dao.getContent(attachment, version);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("", e);
             } finally {
                 if (dao != null) dao.disconnect();
             }
@@ -197,9 +219,12 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return false;
+            }
             result = dao.createVersion(file, bytes, sessionManagementBean.getLoggedUser().getId(), fileName, majorVersion);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if (dao != null) dao.disconnect();
         }
@@ -211,9 +236,12 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return result;
+            }
             result = dao.getRevisions(file);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         } finally {
             if (dao != null) dao.disconnect();
         }
