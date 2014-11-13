@@ -13,6 +13,8 @@
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
 <ui:define name="running_head">
+    <!--#{reportTemplate.document.id}-->
+
     <h:outputScript library="js" name="primefacesLocale_ru.js" target="head"/>
     <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css" target="head"/>
     <h:outputScript  target="head">
@@ -267,7 +269,9 @@
 </div>
 </ui:define>
 
-<ui:define name="footer"/>
+<ui:define name="footer">
+    <h:outputStylesheet library="css" name="datatable.css"/>
+</ui:define>
 
 
 </ui:composition>
