@@ -29,7 +29,7 @@ public class OutgoingDocumentsOnConsiderationHolder extends AbstractDocumentList
     }
 
     public void setNeedRefresh(boolean needRefresh) {
-        if (needRefresh == true) {
+        if (needRefresh) {
             this.markNeedRefresh();
         }
         this.needRefresh = needRefresh;

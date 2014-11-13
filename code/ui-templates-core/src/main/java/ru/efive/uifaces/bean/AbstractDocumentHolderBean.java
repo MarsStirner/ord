@@ -215,7 +215,6 @@ public abstract class AbstractDocumentHolderBean<D extends Serializable, I exten
         if (state.isErrorState() || !isCanEdit()) {
             return doAfterError();
         }
-
         boolean success;
         if (STATE_CREATE.equals(state)) {
             success = saveNewDocument();

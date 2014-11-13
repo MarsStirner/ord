@@ -41,7 +41,7 @@ public class OutgoingDocumentsOnAgreementHolder extends AbstractDocumentListHold
     }
 
     public void setNeedRefresh(boolean needRefresh) {
-        if (needRefresh == true) {
+        if (needRefresh) {
             this.markNeedRefresh();
         }
         this.needRefresh = needRefresh;

@@ -343,8 +343,8 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
         filters.put("endSignatureDate", signatureDate);
     }
 
-    public void setSigner(User signer) {
-        filters.put("signer", signer);
+    public void setSigner(User controller) {
+        filters.put("controller", controller);
     }
 
     public void setExecutor(User executor) {
@@ -452,7 +452,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
 
     public User getSigner() {
         //if((User) filters.get("controller") !=null){System.out.println("######"+((User) filters.get("controller")).getLastName());}
-        return (User) filters.get("signer");
+        return (User) filters.get("controller");
     }
 
     public User getExecutor() {

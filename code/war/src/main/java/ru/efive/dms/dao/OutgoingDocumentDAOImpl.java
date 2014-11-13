@@ -370,7 +370,7 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
     /**
      * Кол-во документов по автору
      *
-     * @param userId      - идентификатор пользователя
+     * @param user      -  пользователь
      * @param showDeleted true - show deleted, false - hide deleted
      * @return кол-во результатов
      */
@@ -405,10 +405,10 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
             disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
-            //criteria.createAlias("signer", "signer", CriteriaSpecification.LEFT_JOIN);
-            disjunction.add(Restrictions.ilike("signer.lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("signer.middleName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("signer.firstName", filter, MatchMode.ANYWHERE));
+            //criteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
+            disjunction.add(Restrictions.ilike("controller.lastName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("controller.middleName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("controller.firstName", filter, MatchMode.ANYWHERE));
             //criteria.createAlias("executor", "executor", CriteriaSpecification.LEFT_JOIN);
             disjunction.add(Restrictions.ilike("executor.lastName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("executor.middleName", filter, MatchMode.ANYWHERE));
@@ -419,7 +419,7 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
             //disjunction.add(Restrictions.ilike("causeIncomingDocument.registrationNumber", filter, MatchMode.ANYWHERE));
 
             String docType = getPersistentClass().getName();
-            List<Integer> statusIdList = DocumentType.getStatusIdListByStrKey((docType.indexOf(".") >= 0 ? docType.substring(docType.lastIndexOf(".") + 1) : docType), filter);
+            List<Integer> statusIdList = DocumentType.getStatusIdListByStrKey((docType.contains(".") ? docType.substring(docType.lastIndexOf(".") + 1) : docType), filter);
             if (statusIdList.size() > 0) {
                 disjunction.add(Restrictions.in("statusId", statusIdList));
             }
@@ -463,9 +463,6 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
                 conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
             }
 
-            Double dbl = new Double("1.0");
-            String str = ((dbl.doubleValue() != 0) && (dbl.doubleValue() != 0)) ? "3" : (((dbl.doubleValue() != 0) && (dbl.doubleValue() != 0)) ? "2" : "");
-
             in_key = "startSendingDate";
             if (in_map.get(in_key) != null) {
                 conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
@@ -486,7 +483,7 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
                 conjunction.add(Restrictions.eq(in_key, Integer.parseInt(in_map.get(in_key).toString())));
             }
 
-            in_key = "signer";
+            in_key = "controller";
             if (in_map.get(in_key) != null) {
                 User controller = (User) in_map.get(in_key);
                 //criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
@@ -588,7 +585,7 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
             detachedCriteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("roleEditors", "roleEditros", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("personReaders", "readers", CriteriaSpecification.LEFT_JOIN);
-            detachedCriteria.createAlias("signer", "signer", CriteriaSpecification.LEFT_JOIN);
+            detachedCriteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("executor", "executor", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("personEditors", "editors", CriteriaSpecification.LEFT_JOIN);
             detachedCriteria.createAlias("agreementUsers", "agreementUsers", CriteriaSpecification.LEFT_JOIN);
@@ -597,7 +594,7 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
             if (!isAdminRole) {
                 disjunction.add(Restrictions.eq("author.id", userId));
                 disjunction.add(Restrictions.eq("executor.id", userId));
-                disjunction.add(Restrictions.eq("signer.id", userId));
+                disjunction.add(Restrictions.eq("controller.id", userId));
                 disjunction.add(Restrictions.eq("readers.id", userId));
                 disjunction.add(Restrictions.eq("editors.id", userId));
                 disjunction.add(Restrictions.eq("agreementUsers.id", userId));

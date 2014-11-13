@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="
-           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>file:/usr/local/ord/configuration/jdbc.properties</value>
-                <value>file:/usr/local/ord/configuration/mail.properties</value>
-                <value>file:/usr/local/ord/configuration/ldap.properties</value>
-                <!--<value>jdbc.properties</value>-->
-                <!--<value>mail.properties</value>-->
-                <!--<value>ldap.properties</value>-->
+                <!--<value>file:/usr/local/ord/configuration/jdbc.properties</value>-->
+                <!--<value>file:/usr/local/ord/configuration/mail.properties</value>-->
+                <!--<value>file:/usr/local/ord/configuration/ldap.properties</value>-->
+                <value>jdbc.properties</value>
+                <value>mail.properties</value>
+                <value>ldap.properties</value>
                 <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
             </list>
@@ -454,7 +453,7 @@
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean id="RegionDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+    <bean id="regionDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
         <property name="target" ref="regionDao"/>
         <property name="interceptorNames">
             <list>

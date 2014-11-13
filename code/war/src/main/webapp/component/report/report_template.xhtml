@@ -4,6 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
@@ -11,7 +12,13 @@
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
-<ui:define name="running_head"/>
+<ui:define name="running_head">
+    <h:outputScript library="js" name="primefacesLocale_ru.js" target="head"/>
+    <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css" target="head"/>
+    <h:outputScript  target="head">
+        jQuery.noConflict(true);
+    </h:outputScript>
+</ui:define>
 
 
 <ui:define name="header">
@@ -19,7 +26,7 @@
         <div class="actionbar">
             <div class="menu">
                 <div class="defbutton">
-                    <h:commandLink action="#{reportTemplate.save}" rendered="#{reportTemplate.viewState and false}">
+                    <h:commandLink action="#{reportTemplate.save}" rendered="#{reportTemplate.viewState}">
                         <h:graphicImage value="#{resource['images:blank.png']}"/>
                         Сформировать
                     </h:commandLink>
@@ -55,7 +62,7 @@
 
 <div class="main_content">
 Отчеты временно недоступны и находятся в стадии доработки
-<h:panelGroup rendered="#{reportTemplate.viewState and false}">
+<h:panelGroup rendered="#{reportTemplate.viewState}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
@@ -63,10 +70,8 @@
                     <h:outputText value="#{reportTemplate.document.startDescription}"/>:
                 </td>
                 <td>
-                    <h:outputText escape="true"
-                                  value="e5ui-comp:inputDate id=startDate value=#{reportTemplate.document.startDate} lang=ru
-                                 immediate=true"/>
-
+                    <p:calendar id="startDate" value="#{reportTemplate.document.startDate}" lang="ru" locale="ru"
+                                widgetVar="startDateVar" pattern="dd.MM.yyyy" showOn="both"/>
                 </td>
             </tr>
             <h:panelGroup rendered="#{(reportTemplate.document.type eq 1) or(reportTemplate.document.type eq 101)}">
@@ -75,9 +80,8 @@
                         <h:outputText value="#{reportTemplate.document.endDescription}"/>:
                     </td>
                     <td>
-                        <h:outputText escape="true"
-                                      value="e5ui-comp:inputDate id=endDate value=#{reportTemplate.document.endDate} lang=ru
-                                 immediate=true"/>
+                        <p:calendar id="endDate" value="#{reportTemplate.document.endDate}" lang="ru" locale="ru"
+                                    widgetVar="endDateVar" pattern="dd.MM.yyyy" showOn="both"/>
                     </td>
                 </tr>
             </h:panelGroup>
