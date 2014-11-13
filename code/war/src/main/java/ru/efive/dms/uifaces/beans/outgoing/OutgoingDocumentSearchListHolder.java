@@ -98,7 +98,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
                             c2.setTime(ApplicationHelper.getNotNull(o2.getRegistrationDate()));
                             result = c2.compareTo(c1);
                         } else if(colId.equalsIgnoreCase("signer")) {
-                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getSigner()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getSigner()).getDescriptionShort()));
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getController()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getController()).getDescriptionShort()));
                         } else if(colId.equalsIgnoreCase("form")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getForm()).toString()));
                         } else if(colId.equalsIgnoreCase("status_id")) {

@@ -85,12 +85,12 @@
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{internal_documents.sort('initiator')}">
+                                    <h:commandLink action="#{internal_documents.sort('author')}">
                                         Автор
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.initiator}" converter="PersonConverter"/></b>
+                                <b><h:outputText value="#{row.author}" converter="PersonConverter"/></b>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">

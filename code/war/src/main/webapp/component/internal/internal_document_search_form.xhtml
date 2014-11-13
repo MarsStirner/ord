@@ -88,7 +88,7 @@
 									</span>
     </label> <e5ui-comp:modalWindow id="initiatorSelectModal"
                                     modalWindowHolder="#{internal_search_documents.initiatorSelectModal}"
-                                    render=":main_content_form:initiator" execute="select_table"
+                                    render=":main_content_form:author" execute="select_table"
                                     showButtons="false" style="width: 500px;"
                                     widgetVar="initiatorSelectModalVar">
         <div id="title">Выбор автора</div>
@@ -144,8 +144,8 @@
                     value="Отмена"/>
         </div>
     </e5ui-comp:modalWindow></td>
-    <td class="second" colspan="3"><h:outputText id="initiator"
-                                                 value="#{internal_search_documents.initiator}"
+    <td class="second" colspan="3"><h:outputText id="author"
+                                                 value="#{internal_search_documents.author}"
                                                  converter="PersonConverter" class="wide"/></td>
 </tr>
 <tr class="row">

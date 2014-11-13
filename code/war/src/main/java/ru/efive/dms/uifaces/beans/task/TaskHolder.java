@@ -13,18 +13,19 @@ import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.security.PermissionChecker;
+import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -35,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @Named("task")
 @ConversationScoped
@@ -42,55 +44,53 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
 
     private static final Logger logger = LoggerFactory.getLogger("TASK");
 
-    private boolean readPermission = false;
-    private boolean editPermission = false;
-    private boolean executePermission = false;
+    private Permissions permissions;
 
     public boolean isReadPermission() {
-        return readPermission;
+        return permissions.hasPermission(READ);
     }
 
     public boolean isEditPermission() {
-        return editPermission;
+        return permissions.hasPermission(WRITE);
     }
 
     public boolean isExecutePermission() {
-        return executePermission;
+        return permissions.hasPermission(EXECUTE);
     }
 
     @Override
     public boolean isCanDelete() {
-        if (!editPermission) {
+        if (!permissions.hasPermission(WRITE)) {
             setStateComment("Доступ запрещен");
             logger.error("USER[{}] DELETE ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return editPermission;
+        return permissions.hasPermission(WRITE);
     }
 
     @Override
     public boolean isCanEdit() {
-        if (!editPermission) {
+        if (!permissions.hasPermission(WRITE)) {
             setStateComment("Доступ запрещен");
             logger.error("USER[{}] EDIT ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return editPermission;
+        return permissions.hasPermission(WRITE);
     }
 
     @Override
     public boolean isCanView() {
-        if (!readPermission) {
+        if (!permissions.hasPermission(READ)) {
             setStateComment("Доступ запрещен");
             logger.error("USER[{}] VIEW ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return readPermission;
+        return permissions.hasPermission(READ);
     }
 
     public boolean isCanExecute() {
-        if (!executePermission) {
+        if (!permissions.hasPermission(EXECUTE)) {
             setStateComment("Доступ запрещен");
             logger.error("USER[{}] EXECUTE ACCESS TO TASK[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return executePermission;
+        return permissions.hasPermission(EXECUTE);
     }
 
     @Override
@@ -141,82 +141,17 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         logger.info("Open TASK[{}] by user[{}]", id, currentUser.getId());
         try {
             final Task document = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getTask(id);
-            readPermission = false;
-            editPermission = false;
-            executePermission = false;
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
-            checkPermission(currentUser, document);
+            permissions = permissionChecker.getPermissions(currentUser, document);
             setDocument(document);
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             taskTreeHolder.changeOffset(0);
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             logger.error("INTERNAL ERROR ON INITIALIZATION:", e);
-        }
-    }
-
-    /**
-     * 1) админ
-     * 2) автор
-     * 3) инициатор
-     * 4) контролер
-     * 5) исполнитель
-     * Просмотр: 1-2-3-4-5
-     * Редактирование документа: 1-2-3
-     * Действия: 1-2-3-4-5       *
-     *
-     * @param user     пользователь для которого проверяем права
-     * @param document документи, на который проверяем права
-     * @return флаг просмотра
-     */
-    private boolean checkPermission(final User user, final Task document) {
-        //1) админ
-        if (user.isAdministrator()) {
-            logger.debug("{}:Permission RWX granted: AdminRole", document.getId());
-            readPermission = true;
-            editPermission = true;
-            executePermission = true;
-            return true;
-        }
-        //2) автор
-        if (user.equals(document.getAuthor())) {
-            logger.debug("{}:Permission RWX granted: Author", document.getId());
-            readPermission = true;
-            editPermission = true;
-            executePermission = true;
-            return true;
-        }
-        //3) инициатор
-        if (user.equals(document.getInitiator())) {
-            logger.debug("{}:Permission RWX granted: Initiator", document.getId());
-            readPermission = true;
-            editPermission = true;
-            executePermission = true;
-            return true;
-        }
-        //4) Контролер
-        if (user.equals(document.getController())) {
-            logger.debug("{}:Permission RX granted: Controller", document.getId());
-            readPermission = true;
-            executePermission = true;
-        }
-        //5) исполнитель
-        for (User currentUser : document.getExecutors()) {
-            if (user.equals(currentUser)) {
-                logger.debug("{}:Permission RX granted: Executor", document.getId());
-                readPermission = true;
-                executePermission = true;
-            }
-        }
-
-        if (!readPermission && !editPermission && !executePermission) {
-            logger.error("{}:Permission denied to user[{}]", document.getId(), user.getId());
-            return false; //readPermission || editPermission;
-        } else {
-            return readPermission || editPermission || executePermission;
         }
     }
 
@@ -245,9 +180,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     @Override
     protected void initNewDocument() {
         Task doc = new Task();
-        readPermission = true;
-        editPermission = true;
-        executePermission = true;
+        permissions = Permissions.ALL_PERMISSIONS;
         final LocalDateTime created = new LocalDateTime();
         doc.setCreationDate(created.toDate());
         doc.setAuthor(sessionManagement.getLoggedUser());
@@ -296,7 +229,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             doc.setForm(form);
         }
         HistoryEntry historyEntry = getInitialHistoryEntry(doc, created.toDate());
-        Set<HistoryEntry> history = new HashSet<HistoryEntry>();
+        Set<HistoryEntry> history = new HashSet<HistoryEntry>(1);
         history.add(historyEntry);
         doc.setHistory(history);
         setDocument(doc);
@@ -450,7 +383,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                     initiator = in_doc.getController();
                 } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                    initiator = out_doc.getSigner();
+                    initiator = out_doc.getController();
                 } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = internal_doc.getController();
@@ -825,6 +758,9 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     @Inject
     @Named("documentTaskTree")
     private transient DocumentTaskTreeHolder taskTreeHolder;
+    //Для проверки прав доступа
+    @EJB
+    private PermissionChecker permissionChecker;
 
     private static final long serialVersionUID = 4716264614655470705L;
 }

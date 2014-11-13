@@ -172,8 +172,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
 
                     if (!(isAdminRole || isUserReaderByRole)) {
-                        if (document.getInitiator() != null) {
-                            allReadersId.add(document.getInitiator().getId());
+                        if (document.getAuthor() != null) {
+                            allReadersId.add(document.getAuthor().getId());
                         }
                         if (document.getSigner() != null) {
                             allReadersId.add(document.getSigner().getId());
@@ -235,7 +235,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     protected void initNewDocument() {
         InternalDocument doc = new InternalDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
-        doc.setInitiator(sessionManagement.getLoggedUser());
+        doc.setAuthor(sessionManagement.getLoggedUser());
         Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
         doc.setCreationDate(created);
 
@@ -326,7 +326,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             } else {
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
-                document.setInitiator(sessionManagement.getLoggedUser());
+                document.setAuthor(sessionManagement.getLoggedUser());
 
                 PaperCopyDocument paperCopy = new PaperCopyDocument();
                 paperCopy.setDocumentStatus(DocumentStatus.NEW);
@@ -466,8 +466,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         if (in_doc.getController() != null) {
             in_editorsId.add(in_doc.getController().getId());
         }
-        if (in_doc.getInitiator() != null) {
-            in_editorsId.add(in_doc.getInitiator().getId());
+        if (in_doc.getAuthor() != null) {
+            in_editorsId.add(in_doc.getAuthor().getId());
         }
 
         if (in_doc.getSigner() != null) {
@@ -617,7 +617,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         try {
             int loggedUserId = sessionManagement.getLoggedUser().getId();
             if (getDocument().getAgreementTree() != null && (isViewState() || getDocument().getDocumentStatus().getId() != 1)) {
-                if (loggedUserId == getDocument().getInitiator().getId() || loggedUserId == getDocument().getSigner().getId()) {
+                if (loggedUserId == getDocument().getAuthor().getId() || loggedUserId == getDocument().getSigner().getId()) {
                     return true;
                 }
             }
@@ -628,7 +628,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public boolean isAgreementTreeEditAvailable() {
-        return getDocument().getDocumentStatus().getId() == 1 && (isEditState() || isCreateState()) && (getDocument().getInitiator().getId() == sessionManagement.getLoggedUser().getId());
+        return getDocument().getDocumentStatus().getId() == 1 && (isEditState() || isCreateState()) && (getDocument().getAuthor().getId() == sessionManagement.getLoggedUser().getId());
     }
 
     // MODAL HOLDERS

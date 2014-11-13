@@ -158,7 +158,7 @@ public class TasksExecuted extends AbstractDocumentListHolderBean<Task> {
                         return in_doc.getController().getDescriptionShort();
                     } else if (key.contains("outgoing")) {
                         OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                        return out_doc.getSigner().getDescriptionShort();
+                        return out_doc.getController().getDescriptionShort();
                     } else if (key.contains("internal")) {
                         InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                         return internal_doc.getSigner().getDescriptionShort();

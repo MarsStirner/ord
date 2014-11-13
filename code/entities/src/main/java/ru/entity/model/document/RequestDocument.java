@@ -66,7 +66,7 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     private Date executionDate;
 
     /**
-     * Контролер
+     * Руководитель
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinTable(name = "dms_request_documents_controllers")

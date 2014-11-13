@@ -170,7 +170,7 @@
 									</span>
     </label> <e5ui-comp:modalWindow id="signerSelectModal"
                                     modalWindowHolder="#{out_search_documents.signerSelectModal}"
-                                    render=":main_content_form:signer" execute="select_table"
+                                    render=":main_content_form:controller" execute="select_table"
                                     showButtons="false" style="width: 500px;"
                                     widgetVar="signerSelectModalVar">
         <div id="title">Выбор руководителя</div>
@@ -206,8 +206,8 @@
                     value="Отмена"/>
         </div>
     </e5ui-comp:modalWindow></td>
-    <td class="second" colspan="3"><h:outputText id="signer"
-                                                 value="#{out_search_documents.signer}"
+    <td class="second" colspan="3"><h:outputText id="controller"
+                                                 value="#{out_search_documents.controller}"
                                                  converter="PersonConverter" class="wide"/></td>
 </tr>
 <tr class="row">

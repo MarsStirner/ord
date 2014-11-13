@@ -8,14 +8,19 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.*;
-import ru.efive.dms.uifaces.beans.*;
+import ru.efive.dms.uifaces.beans.ContragentListHolderBean;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.security.PermissionChecker;
+import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -29,6 +34,7 @@ import ru.entity.model.user.User;
 import ru.entity.model.user.UserAccessLevel;
 import ru.util.ApplicationHelper;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -37,6 +43,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @Named("in_doc")
 @ConversationScoped
@@ -47,66 +54,68 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
 
     public boolean isReadPermission() {
-        return readPermission;
+        return permissions.hasPermission(READ);
     }
 
     public boolean isEditPermission() {
-        return editPermission;
+        return permissions.hasPermission(WRITE);
     }
 
     public boolean isExecutePermission() {
-        return executePermission;
+        return permissions.hasPermission(EXECUTE);
     }
 
     @Override
     public boolean isCanDelete() {
-        if (!editPermission) {
+        if (!permissions.hasPermission(WRITE)) {
             setStateComment("Доступ запрещен");
             LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return editPermission;
+        return permissions.hasPermission(WRITE);
     }
 
     @Override
     public boolean isCanEdit() {
-        if (!editPermission) {
+        if (!permissions.hasPermission(WRITE)) {
             setStateComment("Доступ запрещен");
             LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return editPermission;
+        return permissions.hasPermission(WRITE);
     }
 
     @Override
     public boolean isCanView() {
-        if (!readPermission) {
+        if (!permissions.hasPermission(READ)) {
             setStateComment("Доступ запрещен");
             LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return readPermission;
+        return permissions.hasPermission(READ);
     }
 
 
     private boolean isUsersDialogSelected = true;
     private boolean isGroupsDialogSelected = false;
     //TODO ACL
-    private boolean readPermission = false;
-    private boolean editPermission = false;
-    private boolean executePermission = false;
+    private Permissions permissions;
 
     private transient String stateComment;
 
     @Inject
     @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
+    private SessionManagementBean sessionManagement;
     @Inject
     @Named("fileManagement")
-    private transient FileManagementBean fileManagement;
+    private FileManagementBean fileManagement;
     @Inject
     @Named("contragentList")
-    private transient ContragentListHolderBean contragentList;
+    private ContragentListHolderBean contragentList;
     @Inject
     @Named("documentTaskTree")
-    private transient DocumentTaskTreeHolder taskTreeHolder;
+    private DocumentTaskTreeHolder taskTreeHolder;
+
+    //Для проверки прав доступа
+    @EJB
+    private PermissionChecker permissionChecker;
 
     @Override
     public String delete() {
@@ -153,9 +162,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
             final IncomingDocument document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).get(id);
-            readPermission = false;
-            editPermission = false;
-            executePermission = false;
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
@@ -180,130 +186,21 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             session.close();
             setDocument(document);
             //Проверка прав на открытие
-            checkPermission(currentUser, document);
-
+            permissions = permissionChecker.getPermissions(currentUser, document);
             //Установка идшника для поиска поручений
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             //Поиск поручений
             taskTreeHolder.changeOffset(0);
-            updateAttachments();
+            try {
+                updateAttachments();
+            } catch (Exception e) {
+                LOGGER.warn("Exception while check upload files", e);
+            }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
-
-    /**
-     * 1) админ
-     * 2) автор
-     * 3) исполнители
-     * 4) список пользователей на редактирование
-     * 5) список пользователей на просмотр
-     * 6) список ролей на редактирование
-     * 7) список ролей на просмотр
-     * 8) руководитель
-     * 9) пользователи адресаты
-     * 10) группы адресаты
-     * 11) пользователи, учавствующие в согласованиях <SUMMARY>
-     * Просмотр: 1-2-3-4-5-6-7-8-9-10-11
-     * Редактирование документа: 1-2-4-6-8
-     * Действия: 1-2-3-8-9-10        *
-     *
-     * @param user     пользователь для которого проверяем права
-     * @param document документи, на который проверяем права
-     * @return флаг просмотра
-     */
-    private boolean checkPermission(final User user, final IncomingDocument document) {
-        //1) админ
-        if (user.isAdministrator()) {
-            LOGGER.debug("{}:Permission RWX granted: AdminRole", document.getId());
-            readPermission = true;
-            editPermission = true;
-            executePermission = true;
-            return true;
-        }
-        //2) автор
-        if (user.equals(document.getAuthor())) {
-            LOGGER.debug("{}:Permission RWX granted: Author", document.getId());
-            readPermission = true;
-            editPermission = true;
-            executePermission = true;
-            return true;
-        }
-        //3) исполнитель
-        for (User currentUser : document.getExecutors()) {
-            if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission RX granted: Executor", document.getId());
-                readPermission = true;
-                executePermission = true;
-            }
-        }
-        //4) список пользователей на редактирование
-        for (User currentUser : document.getPersonEditors()) {
-            if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission RW granted: PersonEditor", document.getId());
-                readPermission = true;
-                editPermission = true;
-            }
-        }
-        //5) список пользователей на просмотр
-        for (User currentUser : document.getPersonReaders()) {
-            if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission R granted: PersonReader", document.getId());
-                readPermission = true;
-            }
-        }
-        //   6) список ролей на редактирование
-        //   7) список ролей на просмотр
-        for (Role currentRole : user.getRoles()) {
-            if (document.getRoleEditors().contains(currentRole)) {
-                LOGGER.debug("{}:Permission  RW granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
-                readPermission = true;
-                editPermission = true;
-            }
-            if (!readPermission && document.getRoleReaders().contains(currentRole)) {
-                LOGGER.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
-                readPermission = true;
-            }
-        }
-        //8) руководитель
-        if (user.equals(document.getController())) {
-            LOGGER.debug("{}:Permission RWX granted: Controller", document.getId());
-            readPermission = true;
-            editPermission = true;
-            executePermission = true;
-            return true;
-        }
-        //9) пользователи адресаты
-        for (User currentUser : document.getRecipientUsers()) {
-            if (user.equals(currentUser)) {
-                LOGGER.debug("{}:Permission RX granted: RecipientUser", document.getId());
-                readPermission = true;
-                executePermission = true;
-            }
-        }
-        //10) группы адресаты
-        for (Group currentGroup : user.getGroups()) {
-            if (document.getRecipientGroups().contains(currentGroup)) {
-                LOGGER.debug("{}:Permission RX granted: RecipientGroup [{}] ", document.getId(), currentGroup.getValue());
-                readPermission = true;
-                executePermission = true;
-            }
-        }
-        //11) пользователи, учавствующие в согласованиях
-        if (sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "incoming_" + document.getId())) {
-            LOGGER.debug("{}:Permission R granted: TASK", document.getId());
-            readPermission = true;
-        }
-
-        if (!readPermission && !editPermission && !executePermission) {
-            LOGGER.error("{}:Permission denied to user[{}]", document.getId(), user.getId());
-            return false; //readPermission || editPermission;
-        } else {
-            return readPermission || editPermission || executePermission;
-        }
-    }
-
 
     /**
      * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
@@ -341,9 +238,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     @Override
     protected void initNewDocument() {
-        readPermission = true;
-        editPermission = true;
-        executePermission = true;
+        permissions = Permissions.ALL_PERMISSIONS;
         IncomingDocument doc = new IncomingDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
         Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
@@ -411,7 +306,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Override
     protected boolean saveNewDocument() {
         boolean result = false;
-        //if (validateHolder()) {
         try {
             IncomingDocument document = getDocument();
             document = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).save(document);
@@ -497,7 +391,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             context.addMessage(null, MessageHolder.MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
-
         return result;
     }
 
@@ -589,7 +482,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private List<Attachment> attachments = new ArrayList<Attachment>();
     private List<byte[]> files = new ArrayList<byte[]>();
 
-    protected List<String> getRelatedDocumentsUniqueId() {
+    public List<String> getRelatedDocumentsUniqueId() {
         List<String> ids = new ArrayList<String>();
         String key = "incoming_" + getDocument().getId();
         if (!key.isEmpty()) {
@@ -602,7 +495,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         return ids;
     }
 
-    protected String getLinkDescriptionByUniqueId(String key) {
+    public String getLinkDescriptionByUniqueId(String key) {
         if (!key.isEmpty()) {
             int pos = key.indexOf('_');
             if (pos != -1) {

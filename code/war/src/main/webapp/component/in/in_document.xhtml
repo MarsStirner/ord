@@ -15,8 +15,6 @@
 <ui:define name="running_head">
     <h:outputScript library="js" name="primefacesLocale_ru.js"/>
     <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
-    <e5ui-comp:userSessionUpdate rendered="#{in_doc.editState or in_doc.createState}" interval="300"/>
-    <e5ui-comp:outputUtilScript/>
 </ui:define>
 
 <ui:define name="header">
@@ -295,7 +293,8 @@
                         <span class="title">
                             <c:choose>
                                 <c:when test="#{(in_doc.document.getDocumentStatus().getId() eq 1) or in_doc.createState}">
-                                    <h:outputLink onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
+                                    <h:outputLink
+                                            onclick="controllerSelectModalVar.clickOpen('controllerSelectModal'); return false;">
                                         Руководитель
                                     </h:outputLink>
                                 </c:when>
@@ -347,8 +346,7 @@
     </div>
 </h:panelGroup>
 
-<p:tabView widgetVar="incomingDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
-           effectDuration="fast">
+<p:tabView id="documentTabPanel" widgetVar="incomingDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
 <p:tab title="Реквизиты"
        rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.editPermission)}">
 <c:if test="#{in_doc.viewState}">
@@ -803,7 +801,6 @@
     <td class="second" colspan="3">
         <h:inputTextarea id="shortDescription" rows="6" value="#{in_doc.document.shortDescription}" class="wide"
                          immediate="true"/>
-        <e5ui:marker for="shortDescription"/>
     </td>
 </tr>
 <tr class="row">
@@ -1536,26 +1533,11 @@
 </p:tabView>
 </div>
 
-<e5ui-comp:splashScreen id="splash_screen" timeout="0">
-    <f:facet name="timeoutPanel">
-        <div
-                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-            Пожалуйста, подождите...
-        </div>
-    </f:facet>
-</e5ui-comp:splashScreen>
-<script type="text/javascript">
-    e5ui_splashScreen.startShowOnSubmit('splash_screen',
-            [ 'main_content_form' ]);
-</script>
-<e5ui-comp:ajaxStatusGlobal timeout="300">
-    <f:facet name="waitPanel">
-        <div
-                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-            Пожалуйста, подождите...
-        </div>
-    </f:facet>
-</e5ui-comp:ajaxStatusGlobal>
+<p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+    Пожалуйста, подождите...
+</p:dialog>
+
 </ui:define>
 
 <ui:define name="footer">
@@ -1724,33 +1706,12 @@
             </fieldset>
         </div>
 
-        <e5ui-comp:splashScreen id="splash_screen_2"
-                                widgetVar="splash_screen_2" timeout="0">
-            <f:facet name="timeoutPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:splashScreen>
-        <script>
-            e5ui_splashScreen.startShowOnSubmit('splash_screen_2',
-                    [ 'file_upload_form' ]);
-        </script>
     </h:form>
 
-    <e5ui:multiMarker id="main_form_marker" rendered="true"
-                      hintWindowStyleClass="e5ui-marker-hintWindow"
-                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
-                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
-                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
-                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
-                      displayMode="window">
-        <h:button onclick="e5ui_multiMarker.remove('main_form_marker'); return false;" value="ОК"/>
-    </e5ui:multiMarker>
+
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
+
 </ui:define>
 
 </ui:composition>

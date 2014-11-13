@@ -8,7 +8,7 @@
     <parent>
         <groupId>ru.efive.dms</groupId>
         <artifactId>dms-app</artifactId>
-        <version>0.2.5</version>
+        <version>0.2.6</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -60,5 +60,9 @@
         <log.format>%5p [%d][%thread][%logger{0}] %msg%n</log.format>
         <!-- Уровень записи лога по умолчанию -->
         <logs.level>INFO</logs.level>
+        <!--Уровень логов для разных типов документов-->
+        <logs.document.level>DEBUG</logs.document.level>
+        <!--Аддитивность для лога документов-->
+        <logs.document.additivity>true</logs.document.additivity>
     </properties>
 </project>

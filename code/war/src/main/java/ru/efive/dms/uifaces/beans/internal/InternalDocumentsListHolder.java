@@ -94,7 +94,7 @@ public class InternalDocumentsListHolder extends AbstractDocumentListHolderBean<
                         } else if (colId.equalsIgnoreCase("signer")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getSigner()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getSigner()).getDescriptionShort()));
                         } else if (colId.equalsIgnoreCase("initiator")) {
-                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getInitiator()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getInitiator()).getDescriptionShort()));
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getAuthor()).getDescriptionShort()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getAuthor()).getDescriptionShort()));
                         } else if (colId.equalsIgnoreCase("form")) {
                             result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getForm()).toString()));
                         } else if (colId.equalsIgnoreCase("status_id")) {

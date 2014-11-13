@@ -485,14 +485,13 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     }
 
     private void applyAliases(DetachedCriteria criteria) {
-        criteria.createAlias("author","author")
-                .createAlias("executors", "executors")
-                .createAlias("initiator", "initiator")
-                .createAlias("controller", "controller");
+        criteria.createAlias("author","author", CriteriaSpecification.INNER_JOIN)
+                .createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN)
+                .createAlias("initiator", "initiator", CriteriaSpecification.LEFT_JOIN)
+                .createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
     }
 
     protected DetachedCriteria getAccessControlSearchCriteriaByUser(User user) {
-        DetachedCriteria in_result = null;
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         Disjunction disjunction = Restrictions.disjunction();
 
@@ -503,21 +502,10 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
                 disjunction.add(Restrictions.eq("executors.id", userId));
                 disjunction.add(Restrictions.eq("initiator.id", userId));
                 disjunction.add(Restrictions.eq("controller.id", userId));
-
-                List<Integer> rolesId = new ArrayList<Integer>();
-                List<Role> roles = user.getRoleList();
-                if (roles.size() != 0) {
-                    Iterator itr = roles.iterator();
-                    while (itr.hasNext()) {
-                        Role role = (Role) itr.next();
-                        rolesId.add(role.getId());
-                    }
-                }
                 detachedCriteria.add(disjunction);
             }
         }
-        in_result = detachedCriteria;
-        return in_result;
+        return detachedCriteria;
 
     }
 
@@ -619,18 +607,16 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
     }
 
     /**
-     * Может ли пользователь получить доступ к документу благодаря ассоциациям
+     * Может ли пользователь получить доступ к документу благодаря ассоциациям (поручениям)
      *
      * @param user   пользователь
      * @param docKey идентификатор документа вида "incoming_000"
      */
-
     public boolean isAccessGrantedByAssociation(User user, String docKey) {
         DetachedCriteria searchCriteria = getAccessControlSearchCriteriaByUser(user);
         searchCriteria.add(Restrictions.eq("deleted", false));
         searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DRAFT.getId())));
         applyAliases(searchCriteria);
-        //TODO найти упоминания и модифицировать согласно новой реализации схемы БД
         searchCriteria.add(Restrictions.or(Restrictions.eq("rootDocumentId", docKey), Restrictions.eq("parent.id", ApplicationHelper.getIdFromUniqueIdString(docKey))));
         searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         return (getCountOf(searchCriteria) > 0);

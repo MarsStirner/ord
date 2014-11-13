@@ -80,12 +80,12 @@
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
                                     <h:commandLink
-                                            action="#{out_search_documents.sort('signer')}">
+                                            action="#{out_search_documents.sort('controller')}">
                                         Руководитель
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.signer}"
+                                <b><h:outputText value="#{row.controller}"
                                                  converter="PersonConverter"/> </b>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">

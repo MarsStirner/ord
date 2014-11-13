@@ -155,7 +155,7 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        if (doc.getSigner() == null) {
+        if (doc.getController() == null) {
             in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (doc.getExecutor() == null) {
@@ -175,7 +175,7 @@ public final class WorkflowHelper {
 
                 if (doc.getRegistrationNumber() == null || doc.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getSigner().getUNID());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getController().getUNID());
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {

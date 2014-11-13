@@ -452,8 +452,7 @@
 </h:panelGroup>
 </table>
 </div>
-<p:tabView widgetVar="outgoingDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
-           effectDuration="fast">
+<p:tabView widgetVar="outgoingDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
 <p:tab title="Реквизиты"
        rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
 <h:panelGroup rendered="#{out_doc.viewState}">
@@ -478,7 +477,7 @@
                     </label>
                 </td>
                 <td class="second" colspan="3">
-                    <h:outputText value="#{out_doc.document.signer}" converter="PersonConverter"/>
+                    <h:outputText value="#{out_doc.document.controller}" converter="PersonConverter"/>
                 </td>
             </tr>
             <tr class="row">
@@ -563,7 +562,7 @@
         </label>
         <e5ui-comp:modalWindow id="signerSelectModal"
                                modalWindowHolder="#{out_doc.signerSelectModal}"
-                               render="signer" execute="select_table"
+                               render="controller" execute="select_table"
                                showButtons="false" style="width: 500px;"
                                widgetVar="signerSelectModalVar">
             <div id="title">Выбор руководителя</div>
@@ -596,7 +595,7 @@
         </e5ui-comp:modalWindow>
     </td>
     <td class="second" colspan="3">
-        <h:outputText id="signer" value="#{out_doc.document.signer}" converter="PersonConverter" class="wide"/>
+        <h:outputText id="controller" value="#{out_doc.document.controller}" converter="PersonConverter" class="wide"/>
     </td>
 </tr>
 <tr class="row">

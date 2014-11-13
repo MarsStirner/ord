@@ -1,34 +1,6 @@
 package ru.entity.model.document;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import org.hibernate.annotations.LazyToOne;
-import org.hibernate.annotations.LazyToOneOption;
-
+import org.hibernate.annotations.*;
 import ru.entity.model.crm.Contact;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
@@ -41,6 +13,12 @@ import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
 import ru.util.ApplicationHelper;
+
+import javax.persistence.CascadeType;
+import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.util.*;
 
 
 /**
@@ -148,11 +126,11 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     private User executor;
 
     /**
-     * Подписант
+     * Руководитель
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_signers")
-    private User signer;
+    @JoinTable(name = "dms_outgoing_documents_signers", inverseJoinColumns = {@JoinColumn(name = "signer_id")})
+    private User controller;
 
     /**
      * Дата подписания
@@ -354,13 +332,11 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.nomenclature = nomenclature;
     }
 
-    ;
 
     public Nomenclature getNomenclature() {
         return nomenclature;
     }
 
-    ;
 
     public void setRegistrationDate(Date registrationDate) {
         this.registrationDate = registrationDate;
@@ -434,12 +410,12 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         return executor;
     }
 
-    public void setSigner(User signer) {
-        this.signer = signer;
+    public void setController(User controller) {
+        this.controller = controller;
     }
 
-    public User getSigner() {
-        return signer;
+    public User getController() {
+        return controller;
     }
 
     public Date getSignatureDate() {
@@ -472,11 +448,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
 
     public boolean isRegistered() {
         return registered;
-    }
-
-    @Transient
-    public String getTypeAlias() {
-        return "Исходящий документ";
     }
 
     @Transient

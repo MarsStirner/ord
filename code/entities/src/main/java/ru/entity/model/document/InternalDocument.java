@@ -20,7 +20,7 @@ import javax.persistence.Table;
 import java.util.*;
 
 /**
- * Входящий документ
+ * Внутренний документ
  *
  * @author Alexey Vagizov
  */
@@ -51,7 +51,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "initiator_id")
-    private User initiator;
+    private User author;
 
     /**
      * Дата регистрации
@@ -287,12 +287,12 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         this.WFResultDescription = WFResultDescription;
     }
 
-    public User getInitiator() {
-        return initiator;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setInitiator(User initiator) {
-        this.initiator = initiator;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public String getRegistrationNumber() {

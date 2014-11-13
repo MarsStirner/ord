@@ -52,6 +52,18 @@
         </rollingPolicy>
     </appender>
 
+    <!--Для разных типов документов-->
+    <appender name="APPENDER_DOC" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/documents/doc.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
     <!--Для DAO-->
     <appender name="APPENDER_DAO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
@@ -64,8 +76,18 @@
         </rollingPolicy>
     </appender>
 
-
-    <logger name="INCOMING_DOCUMENT" level="DEBUG"/>
+    <!--Логгеры для документов-->
+    <!--У каждого свой но все отписывают в один APPENDER_DOC-->
+    <logger name="INCOMING_DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
+        <appender-ref ref="APPENDER_DOC"/>
+    </logger>
+    <logger name="INTERNAL_DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
+        <appender-ref ref="APPENDER_DOC"/>
+    </logger>
+    <logger name="OUTGOING_DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
+        <appender-ref ref="APPENDER_DOC"/>
+    </logger>
+    <!--Конец логгеров для документов-->
 
     <logger name="AUTH" level="DEBUG"/>
 
@@ -75,7 +97,7 @@
 
     <logger name="SESSION_LISTENER" level="DEBUG"/>
 
-    <logger name="TASK" level="TRACE" additivity="false">
+    <logger name="TASK" level="${logs.document.level}" additivity="${logs.document.additivity}">
         <appender-ref ref="APPENDER_TASK"/>
     </logger>
 
@@ -88,19 +110,20 @@
     <!--Логгер для действий с пользователями-->
     <logger name="USER" level="DEBUG"/>
 
-    <!--Логгер для интеграции с ЛДАП-->
-    <logger name="LDAP" level="DEBUG">
-        <appender-ref ref="APPENDER_LDAP"/>
-    </logger>
 
     <logger name="HUMAN_TASK" level="DEBUG"/>
 
     <!--Логгеры для DAO-->
     <!--У каждого свой, но пишут все в один APPENDER_DAO-->
-    <logger name="TASK_DAO" level="DEBUG">
+    <logger name="TASK_DAO" level="DEBUG" additivity="false">
         <appender-ref ref="APPENDER_DAO"/>
     </logger>
     <!--Конец логгеров для DAO-->
+
+    <!--Логгер для интеграции с ЛДАП-->
+    <logger name="LDAP" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_LDAP"/>
+    </logger>
 
     <!--Hibernate SQL LOGGER-->
     <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">

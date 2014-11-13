@@ -139,7 +139,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                     session.getTransaction().commit();
 
                     hibernateTemplate.initialize(document.getExecutor());
-                    hibernateTemplate.initialize(document.getSigner());
+                    hibernateTemplate.initialize(document.getController());
                     hibernateTemplate.initialize(document.getAuthor());
                     hibernateTemplate.initialize(document.getNomenclature());
                     hibernateTemplate.initialize(document.getCauseIncomingDocument());
@@ -180,8 +180,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                         if (document.getExecutor() != null) {
                             allReadersId.add(document.getExecutor().getId());
                         }
-                        if (document.getSigner() != null) {
-                            allReadersId.add(document.getSigner().getId());
+                        if (document.getController() != null) {
+                            allReadersId.add(document.getController().getId());
                         }
 
                         List<User> someReaders = new ArrayList<User>();
@@ -459,7 +459,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     protected boolean validateHolder() {
         boolean result = true;
         FacesContext context = FacesContext.getCurrentInstance();
-        if (getDocument().getSigner() == null) {
+        if (getDocument().getController() == null) {
             context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Руководителя", ""));
             result = false;
         }
@@ -524,8 +524,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 in_editorsId.add(user.getId());
             }
         }
-        if (out_doc.getSigner() != null) {
-            in_editorsId.add(out_doc.getSigner().getId());
+        if (out_doc.getController() != null) {
+            in_editorsId.add(out_doc.getController().getId());
         }
         if (out_doc.getAuthor() != null) {
             in_editorsId.add(out_doc.getAuthor().getId());
@@ -677,7 +677,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         try {
             int loggedUserId = sessionManagement.getLoggedUser().getId();
             if (getDocument().getAgreementTree() != null && (isViewState() || getDocument().getDocumentStatus().getId() != 1)) {
-                if (loggedUserId == getDocument().getAuthor().getId() || loggedUserId == getDocument().getSigner().getId()) {
+                if (loggedUserId == getDocument().getAuthor().getId() || loggedUserId == getDocument().getController().getId()) {
                     return true;
                 }
             }
@@ -981,7 +981,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         @Override
         protected void doSave() {
-            getDocument().setSigner(getUser());
+            getDocument().setController(getUser());
             super.doSave();
         }
 
