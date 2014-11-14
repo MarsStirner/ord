@@ -74,8 +74,28 @@ public class PermissionChecker {
             loggerIncomingDocument.debug("{}:Permission RWX granted: Controller", document.getId());
             return ALL_PERMISSIONS;
         }
-
         final Permissions result = new Permissions();
+        //   6) список ролей на редактирование
+        //   7) список ролей на просмотр
+        for (Role currentRole : user.getRoles()) {
+            if (document.getRoleEditors().contains(currentRole)) {
+                loggerIncomingDocument.debug("{}:Permission  RWX granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
+                return ALL_PERMISSIONS;
+            }
+            if (!result.hasPermission(READ) && document.getRoleReaders().contains(currentRole)) {
+                loggerIncomingDocument.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
+                result.addPermission(READ);
+            }
+        }
+
+        //4) список пользователей на редактирование
+        for (User currentUser : document.getPersonEditors()) {
+            if (user.equals(currentUser)) {
+                loggerIncomingDocument.debug("{}:Permission RWX granted: PersonEditor", document.getId());
+                return ALL_PERMISSIONS;
+            }
+        }
+
         //3) исполнитель
         for (User currentUser : document.getExecutors()) {
             if (user.equals(currentUser)) {
@@ -85,35 +105,15 @@ public class PermissionChecker {
                 break;
             }
         }
-        //4) список пользователей на редактирование
-        for (User currentUser : document.getPersonEditors()) {
-            if (user.equals(currentUser)) {
-                loggerIncomingDocument.debug("{}:Permission RW granted: PersonEditor", document.getId());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
-            }
-        }
+
         //5) список пользователей на просмотр
-        for (User currentUser : document.getPersonReaders()) {
-            if (user.equals(currentUser)) {
-                loggerIncomingDocument.debug("{}:Permission R granted: PersonReader", document.getId());
-                result.addPermission(READ);
-                break;
-            }
-        }
-        //   6) список ролей на редактирование
-        //   7) список ролей на просмотр
-        for (Role currentRole : user.getRoles()) {
-            if (document.getRoleEditors().contains(currentRole)) {
-                loggerIncomingDocument.debug("{}:Permission  RW granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
-            }
-            if (!result.hasPermission(READ) && document.getRoleReaders().contains(currentRole)) {
-                loggerIncomingDocument.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
-                result.addPermission(READ);
+        if(!result.hasPermission(READ)) {
+            for (User currentUser : document.getPersonReaders()) {
+                if (user.equals(currentUser)) {
+                    loggerIncomingDocument.debug("{}:Permission R granted: PersonReader", document.getId());
+                    result.addPermission(READ);
+                    break;
+                }
             }
         }
 
@@ -243,10 +243,8 @@ public class PermissionChecker {
         //4) список пользователей на редактирование
         for (User currentUser : document.getPersonEditors()) {
             if (user.equals(currentUser)) {
-                loggerOutgoingDocument.debug("{}:Permission RW granted: PersonEditor", document.getId());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
+                loggerOutgoingDocument.debug("{}:Permission RWX granted: PersonEditor", document.getId());
+                return ALL_PERMISSIONS;
             }
         }
         //5) список пользователей на просмотр
@@ -261,10 +259,8 @@ public class PermissionChecker {
         //   7) список ролей на просмотр
         for (Role currentRole : user.getRoles()) {
             if (document.getRoleEditors().contains(currentRole)) {
-                loggerOutgoingDocument.debug("{}:Permission  RW granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
+                loggerOutgoingDocument.debug("{}:Permission  RWX granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
+                return ALL_PERMISSIONS;
             }
             if (!result.hasPermission(READ) && document.getRoleReaders().contains(currentRole)) {
                 loggerOutgoingDocument.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
@@ -331,10 +327,8 @@ public class PermissionChecker {
         //4) список пользователей на редактирование
         for (User currentUser : document.getPersonEditors()) {
             if (user.equals(currentUser)) {
-                loggerInternalDocument.debug("{}:Permission RW granted: PersonEditor", document.getId());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
+                loggerInternalDocument.debug("{}:Permission RWX granted: PersonEditor", document.getId());
+                return ALL_PERMISSIONS;
             }
         }
         //5) список пользователей на просмотр
@@ -349,10 +343,8 @@ public class PermissionChecker {
         //   7) список ролей на просмотр
         for (Role currentRole : user.getRoles()) {
             if (document.getRoleEditors().contains(currentRole)) {
-                loggerInternalDocument.debug("{}:Permission  RW granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
+                loggerInternalDocument.debug("{}:Permission  RWX granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
+                return ALL_PERMISSIONS;
             }
             if (!result.hasPermission(READ) && document.getRoleReaders().contains(currentRole)) {
                 loggerInternalDocument.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
@@ -436,10 +428,8 @@ public class PermissionChecker {
         //4) список пользователей на редактирование
         for (User currentUser : document.getPersonEditors()) {
             if (user.equals(currentUser)) {
-                loggerIncomingDocument.debug("{}:Permission RW granted: PersonEditor", document.getId());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
+                loggerIncomingDocument.debug("{}:Permission RWX granted: PersonEditor", document.getId());
+                return ALL_PERMISSIONS;
             }
         }
         //5) список пользователей на просмотр
@@ -454,10 +444,8 @@ public class PermissionChecker {
         //   7) список ролей на просмотр
         for (Role currentRole : user.getRoles()) {
             if (document.getRoleEditors().contains(currentRole)) {
-                loggerIncomingDocument.debug("{}:Permission  RW granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
-                result.addPermission(READ);
-                result.addPermission(WRITE);
-                break;
+                loggerIncomingDocument.debug("{}:Permission  RWX granted: RoleEditor [{}] ", document.getId(), currentRole.getName());
+                return ALL_PERMISSIONS;
             }
             if (!result.hasPermission(READ) && document.getRoleReaders().contains(currentRole)) {
                 loggerIncomingDocument.debug("{}:Permission R granted: RoleReader [{}] ", document.getId(), currentRole.getName());
@@ -506,7 +494,8 @@ public class PermissionChecker {
         final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
         if (rootDocumentId != null) {
             if (documentKey.contains("incoming")) {
-                final IncomingDocument rootDocument = ((IncomingDocumentDAOImpl) indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO)).get(rootDocumentId);
+                //TODO String id method ?!?!?!? WHY??????
+                final IncomingDocument rootDocument = ((IncomingDocumentDAOImpl) indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO)).findDocumentById(rootDocumentId.toString());
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<incoming[{}]> permissions: {}", rootDocumentId, fromRootDocument);

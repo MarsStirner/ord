@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-16"?>
+<?xml version="1.0" encoding="utf-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Отчет Сергеева Входящие" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="7"/>
@@ -42,19 +42,7 @@
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
-	</style>
-	<subDataset name="Controler">
-		<parameter name="docId" class="java.lang.Integer" isForPrompting="false"/>
-		<queryString>
-			<![CDATA[SELECT
-     group_concat(concat(person.`lastName`," ",person.`firstName`," ",person.`middleName`,"")separator " ") AS fio
-FROM
-     `dms_incoming_documents` dms_incoming_documents INNER JOIN `dms_incoming_documents_controllers` dms_incoming_documents_controllers ON dms_incoming_documents.`id` = dms_incoming_documents_controllers.`id`
-     INNER JOIN `dms_system_persons` person ON dms_incoming_documents_controllers.`controller_id` = person.`id`
-where dms_incoming_documents.`id`=$P{docId}]]>
-		</queryString>
-		<field name="fio" class="java.lang.String"/>
-	</subDataset>
+	</style>	
 	<subDataset name="ExecDate">
 		<parameter name="DocId" class="java.lang.Integer">
 			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
@@ -93,6 +81,7 @@ dms_incoming_documents.`id` as docId,
      dms_incoming_documents.`registrationNumber` AS dms_incoming_documents_registrationNumber,
      dms_incoming_documents.`shortDescription` AS dms_incoming_documents_shortDescription,
      dms_incoming_documents.`creationDate` AS dms_incoming_documents_creationDate,
+	 CONCAT_WS(' ', controller.lastName, controller.firstName, controller.middleName ) AS controllerFio,
       group_concat(distinct concat(person.`lastName`," ",LEFT(person.`firstName`,1),"."," ",LEFT(person.`middleName`,1),".","") separator ", ") AS fio,
      dms_incoming_documents_executors.`dms_incoming_documents_id` AS dms_incoming_documents_executors_dms_incoming_documents_id,
      dms_incoming_documents_executors.`executors_id` AS dms_incoming_documents_executors_executors_id,
@@ -102,15 +91,13 @@ FROM
      INNER JOIN `dms_incoming_documents_executors` dms_incoming_documents_executors ON dms_incoming_documents.`id` = dms_incoming_documents_executors.`dms_incoming_documents_id`
      INNER JOIN `dms_system_persons` person ON dms_incoming_documents_executors.`executors_id` = person.`id`
      INNER JOIN `dms_incoming_documents_executors` exec ON person.`id` = exec.`executors_id`
-     inner join dms_incoming_documents_controllers control on control.`id`=dms_incoming_documents.`id`
+     inner join `dms_system_persons` controller ON dms_incoming_documents.`controller_id` = controller.`id`
 WHERE
      date(dms_incoming_documents.`registrationDate`) >= date($P{StartDate})
      and date(dms_incoming_documents.`registrationDate`) <= date($P{EndDate})
-     and dms_incoming_documents.executionDate!=""
-     and control.`controller_id` = $P{ManagerId}
+     and dms_incoming_documents.executionDate IS NOT NULL
+     and dms_incoming_documents.`controller_id` = $P{ManagerId}
      AND dms_incoming_documents.deleted = 0
-
-
 GROUP BY
      dms_incoming_documents.`id`]]>
 	</queryString>
@@ -125,6 +112,7 @@ GROUP BY
 	<field name="dms_incoming_documents_shortDescription" class="java.lang.String"/>
 	<field name="dms_incoming_documents_creationDate" class="java.sql.Timestamp"/>
 	<field name="fio" class="java.lang.String"/>
+	<field name="controllerFio" class="java.lang.String"/>
 	<field name="dms_incoming_documents_executors_dms_incoming_documents_id" class="java.lang.Integer"/>
 	<field name="dms_incoming_documents_executors_executors_id" class="java.lang.Integer"/>
 	<field name="dms_incoming_documents_executors_ID3" class="java.lang.Integer"/>
@@ -182,28 +170,13 @@ GROUP BY
 				</textElement>
 				<text><![CDATA[Руководитель:]]></text>
 			</staticText>
-			<componentElement>
+			<textField>
 				<reportElement key="table 1" x="563" y="59" width="239" height="20"/>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Controler">
-						<datasetParameter name="docId">
-							<datasetParameterExpression><![CDATA[$F{docId}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="239">
-						<jr:detailCell height="20" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="233" height="20"/>
 								<textElement>
 									<font fontName="Tahoma" size="12"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{fio}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-				</jr:table>
-			</componentElement>
+								<textFieldExpression><![CDATA[$F{controllerFio}]]></textFieldExpression>
+			</textField>
 		</band>
 	</title>
 	<pageHeader>

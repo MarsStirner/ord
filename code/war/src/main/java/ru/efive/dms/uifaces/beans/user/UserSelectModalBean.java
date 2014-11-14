@@ -30,7 +30,7 @@ public class UserSelectModalBean extends ModalWindowHolderBean {
     }
 
     public boolean selected(User user) {
-        return this.user == null ? false : this.user.equals(user);
+        return this.user != null && this.user.equals(user);
     }
 
     @Override

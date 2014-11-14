@@ -264,7 +264,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
         }
 
         if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("initiator.id", userId));
+            detachedCriteria.add(Restrictions.eq("author.id", userId));
             String[] ords = orderBy == null ? null : orderBy.split(",");
             if (ords != null) {
                 if (ords.length > 1) {
@@ -295,7 +295,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
         }
 
         if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("initiator.id", userId));
+            detachedCriteria.add(Restrictions.eq("author.id", userId));
             return getCountOf(detachedCriteria);
         } else {
             return 0;
@@ -324,7 +324,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
         }
 
         if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("initiator.id", userId));
+            detachedCriteria.add(Restrictions.eq("author.id", userId));
             String[] ords = orderBy == null ? null : orderBy.split(",");
             if (ords != null) {
                 if (ords.length > 1) {
@@ -356,7 +356,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
         }
 
         if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("initiator.id", userId));
+            detachedCriteria.add(Restrictions.eq("author.id", userId));
             return getCountOf(getSearchCriteria(detachedCriteria, filter));
         } else {
             return 0;
@@ -374,7 +374,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
 
         int userId = user.getId();
         if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("initiator.id", userId));
+            detachedCriteria.add(Restrictions.eq("author.id", userId));
             List<Integer> statuses = new ArrayList<Integer>();
             statuses.add(DocumentStatus.DOC_PROJECT_1.getId());
             statuses.add(DocumentStatus.CANCEL_150.getId());
@@ -412,7 +412,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
 
         int userId = user.getId();
         if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("initiator.id", userId));
+            detachedCriteria.add(Restrictions.eq("author.id", userId));
             detachedCriteria.add(Restrictions.eq("statusId", DocumentStatus.DOC_PROJECT_1.getId()));
             return getCountOf(detachedCriteria);
         } else {
@@ -427,10 +427,10 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
             disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(creationDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
             disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(executionDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
             disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
-            //criteria.createAlias("initiator", "initiator", CriteriaSpecification.LEFT_JOIN);
-            disjunction.add(Restrictions.ilike("initiator.lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("initiator.middleName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("initiator.firstName", filter, MatchMode.ANYWHERE));
+            //criteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
+            disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
             //
             disjunction.add(Restrictions.ilike("responsible.lastName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("responsible.middleName", filter, MatchMode.ANYWHERE));
@@ -444,7 +444,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
             disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
 
             String docType = getPersistentClass().getName();
-            List<Integer> statusIdList = DocumentType.getStatusIdListByStrKey((docType.indexOf(".") >= 0 ? docType.substring(docType.lastIndexOf(".") + 1) : docType), filter);
+            List<Integer> statusIdList = DocumentType.getStatusIdListByStrKey((docType.contains(".") ? docType.substring(docType.lastIndexOf(".") + 1) : docType), filter);
             if (statusIdList.size() > 0) {
                 disjunction.add(Restrictions.in("statusId", statusIdList));
             }
@@ -598,7 +598,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
                 conjunction.add(Restrictions.eq(in_key, Integer.parseInt(in_map.get(in_key).toString())));
             }
 
-            in_key = "initiator";
+            in_key = "author";
             if (in_map.get(in_key) != null) {
                 User author = (User) in_map.get(in_key);
                 //criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
@@ -672,7 +672,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
 
         detachedCriteria.createAlias("form", "form", CriteriaSpecification.LEFT_JOIN);
 
-        detachedCriteria.createAlias("initiator", "initiator", CriteriaSpecification.LEFT_JOIN);
+        detachedCriteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("signer", "signer", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("responsible", "responsible", CriteriaSpecification.LEFT_JOIN);
@@ -709,7 +709,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
             }
 
             if (!isAdminRole) {
-                disjunction.add(Restrictions.eq("initiator.id", userId));
+                disjunction.add(Restrictions.eq("author.id", userId));
                 disjunction.add(Restrictions.eq("signer.id", userId));
                 disjunction.add(Restrictions.eq("responsible.id", userId));
                 disjunction.add(Restrictions.eq("controller.id", userId));

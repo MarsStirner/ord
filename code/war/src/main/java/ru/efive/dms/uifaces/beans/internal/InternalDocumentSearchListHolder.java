@@ -32,7 +32,7 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
     }
 
     public void setNeedRefresh(boolean needRefresh) {
-        if (needRefresh == true) {
+        if (needRefresh) {
             this.markNeedRefresh();
         }
         this.needRefresh = needRefresh;
@@ -243,7 +243,7 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
         @Override
         protected void doSave() {
             super.doSave();
-            filters.put("initiator", getUser());
+            setInitiator(getUser());
         }
 
         @Override
@@ -310,7 +310,7 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
     }
 
     public void setInitiator(User initiator) {
-        filters.put("initiator", initiator);
+        filters.put("author", initiator);
     }
 
     public void setStartExecutionDate(Date executionDate) {
@@ -402,7 +402,7 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
     }
 
     public User getInitiator() {
-        return (User) filters.get("initiator");
+        return (User) filters.get("author");
     }
 
     public Date getStartExecutionDate() {
