@@ -131,7 +131,7 @@ public final class ProcessFactory {
         if (!recipients.isEmpty()) sendTo.addAll(recipients);
 
         //если приказ, то отправить письмо Адресатам, Автору, Руководителя,Контроль исполнения
-        prop = PropertyUtils.getProperty(t, "initiator");
+        prop = PropertyUtils.getProperty(t, "author");
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
@@ -449,7 +449,7 @@ public final class ProcessFactory {
 
         if (!recipients.isEmpty()) sendTo.addAll(recipients);
 
-        prop = PropertyUtils.getProperty(t, "initiator");
+        prop = PropertyUtils.getProperty(t, "author");
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
@@ -629,7 +629,7 @@ public final class ProcessFactory {
         if (!recipients.isEmpty()) sendTo.addAll(recipients);
 
         //если приказ, то отправить письмо Адресатам, Автору, Руководителя,Контроль исполнения
-        prop = PropertyUtils.getProperty(t, "initiator");
+        prop = PropertyUtils.getProperty(t, "author");
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
@@ -685,7 +685,7 @@ public final class ProcessFactory {
 
         if (!recipients.isEmpty()) sendTo.addAll(recipients);
 
-        prop = PropertyUtils.getProperty(t, "initiator");
+        prop = PropertyUtils.getProperty(t, "author");
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
@@ -774,13 +774,13 @@ public final class ProcessFactory {
         activites.add(localActivity3);
         toStatusAction.setLocalActivities(activites);
 
-        prop = PropertyUtils.getProperty(t, "initiator");
-        User initiator = (prop == null ? null : (User) prop);
+        prop = PropertyUtils.getProperty(t, "author");
+        User author = (prop == null ? null : (User) prop);
 
-        if (initiator != null) {
+        if (author != null) {
             sendTo = new ArrayList<String>();
-            if ((initiator.getEmail() != null) && (!initiator.getEmail().isEmpty())) {
-                sendTo.add(initiator.getEmail());
+            if (StringUtils.isNotEmpty(author.getEmail())) {
+                sendTo.add(author.getEmail());
             }
             if (recipients.size() > 0 && !docFormValue.equals("Приказ")) {
                 sendTo.addAll(recipients);

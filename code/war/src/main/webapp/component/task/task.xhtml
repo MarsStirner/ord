@@ -684,7 +684,7 @@
                     <p:column style="display:none;">
                         <input type="hidden" value="#{row_task.id}"/>
                     </p:column>
-                    <p:ajax event="select" onstart="addRowHandlers()"/>
+                    <p:ajax event="expand" oncomplete="addRowHandlers()"/>
                 </p:treeTable>
                 <script type="text/javascript">
                     function addRowHandlers() {
@@ -702,6 +702,7 @@
                             currentRow.ondblclick = createClickHandler(currentRow);
                         }
                     }
+                    window.onload = addRowHandlers;
                 </script>
             </div>
         </h:panelGroup>

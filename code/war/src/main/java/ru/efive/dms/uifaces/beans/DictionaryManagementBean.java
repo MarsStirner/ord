@@ -60,6 +60,20 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
+    public List<UserAccessLevel> getUserAccessLevelsWithEmptyValue() {
+        List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
+        try {
+            result = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findDocuments();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        UserAccessLevel empty = new UserAccessLevel();
+        empty.setValue("");
+        result.add(0, empty);
+        return result;
+    }
+
+
     public List<Region> getRegions() {
         List<Region> result = new ArrayList<Region>();
         try {
@@ -86,6 +100,14 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
+    public List<SenderType> getSenderTypesWithEmptyValue() {
+        List<SenderType> result = getSenderTypes();
+        SenderType empty = new SenderType();
+        empty.setValue("");
+        result.add(0, empty);
+        return result;
+    }
+
     public List<DeliveryType> getDeliveryTypes() {
         List<DeliveryType> result = new ArrayList<DeliveryType>();
         try {
@@ -93,6 +115,14 @@ public class DictionaryManagementBean implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return result;
+    }
+
+    public List<DeliveryType> getDeliveryTypesWithEmptyValue() {
+        List<DeliveryType> result = getDeliveryTypes();
+        DeliveryType empty = new DeliveryType();
+        empty.setValue("");
+        result.add(0, empty);
         return result;
     }
 
@@ -111,12 +141,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<DocumentForm> getDocumentFormsWithEmptyValue() {
-        List<DocumentForm> result = new ArrayList<DocumentForm>();
-        try {
-            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<DocumentForm> result = getDocumentForms();
         DocumentForm empty = new DocumentForm();
         empty.setValue("");
         result.add(0, empty);
@@ -128,12 +153,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<DocumentForm> getDocumentFormsByCategoryWithEmptyValue(String category) {
-        List<DocumentForm> result = new ArrayList<DocumentForm>();
-        try {
-            result = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory(category);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<DocumentForm> result = getDocumentFormsByCategory(category);
         DocumentForm empty = new DocumentForm();
         empty.setValue("");
         result.add(0, empty);

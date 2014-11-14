@@ -689,10 +689,8 @@
                 <h:panelGroup
                         rendered="#{(internal_doc.document.getDocumentStatus().getId() eq 80)}">
                     <div class="defbutton">
-                        <h:outputLink value="/component/task/task.xhtml"
-                                      target="_blank">
-                            <h:graphicImage
-                                    value="#{resource['images:newf_buttn_icon.png']}"/>
+                        <h:outputLink value="/component/task/task.xhtml" target="_blank">
+                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                             Новое поручение
                             <f:param name="docAction" value="create"/>
                             <f:param name="rootDocumentId"
@@ -792,7 +790,7 @@
                     <p:column style="display:none;">
                         <input type="hidden" value="#{row_task.id}"/>
                     </p:column>
-                    <p:ajax event="select" onstart="addRowHandlers()"/>
+                    <p:ajax event="expand" oncomplete="addRowHandlers()"/>
                 </p:treeTable>
                 <script type="text/javascript">
                     function addRowHandlers() {
@@ -810,6 +808,7 @@
                             currentRow.ondblclick = createClickHandler(currentRow);
                         }
                     }
+                    window.onload = addRowHandlers;
                 </script>
             </div>
         </h:panelGroup>
