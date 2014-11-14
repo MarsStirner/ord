@@ -32,7 +32,8 @@
      wf_history.`startDate` AS wf_history_startDate,
      wf_history.`to_status_id` AS wf_history_to_status_id
 FROM
-     `dms_tasks` dms_tasks LEFT OUTER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
+     `dms_tasks` dms_tasks
+     LEFT OUTER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
      inner JOIN `dms_task_history` dms_task_history ON dms_tasks.`id` = dms_task_history.`task_id`
      inner JOIN `wf_history` wf_history ON dms_task_history.`history_entry_id` = wf_history.`id` and
      wf_history.`to_status_id` = 3
@@ -69,15 +70,14 @@ FROM
      `dms_tasks` dms_tasks
 LEFT OUTER join dms_task_history hist on hist.task_id=dms_tasks.id
 LEFT OUTER join wf_history wf on wf.id=hist.history_entry_id and wf.to_status_id=3
- LEFT OUTER JOIN `dms_tasks_authors` dms_tasks_authors ON dms_tasks.`id` = dms_tasks_authors.`id`
-     LEFT OUTER JOIN `dms_system_persons` dms_system_persons ON dms_tasks_authors.`author_id` = dms_system_persons.`id`
+     INNER JOIN `dms_system_persons` dms_system_persons ON dms_tasks.`author_id` = dms_system_persons.`id`
      LEFT OUTER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
      RIGHT OUTER JOIN `dms_system_persons` dms_system_persons_A ON dms_tasks_executors.`executor_id` = dms_system_persons_A.`id`
 WHERE
      DATE(dms_tasks.`creationDate`) >= DATE($P{StartDate})
  AND DATE(dms_tasks.`creationDate`) <= DATE($P{EndDate})
  AND dms_tasks.`deleted` = 0
-and dms_tasks_authors.`author_id` = $P{AuthorId}
+and dms_tasks.`author_id` = $P{AuthorId}
 group by dms_tasks.id
 ORDER BY
      dms_tasks.`controlDate` ASC]]>

@@ -68,16 +68,10 @@ where dms_internal_documents.`id`=$P{docId}]]>
      dms_system_persons.`deleted` AS dms_system_persons_deleted,
      dms_system_persons.`email` AS dms_system_persons_email,
      dms_system_persons.`firstName` AS dms_system_persons_firstName,
-     dms_system_persons.`lastLogin` AS dms_system_persons_lastLogin,
      dms_system_persons.`lastName` AS dms_system_persons_lastName,
      dms_system_persons.`login` AS dms_system_persons_login,
      dms_system_persons.`middleName` AS dms_system_persons_middleName,
-     dms_system_persons.`password` AS dms_system_persons_password,
      dms_system_persons.`unid` AS dms_system_persons_unid,
-     dms_system_persons.`phone` AS dms_system_persons_phone,
-     dms_system_persons.`internalNumber` AS dms_system_persons_internalNumber,
-     dms_system_persons.`mobilePhone` AS dms_system_persons_mobilePhone,
-     dms_system_persons.`workPhone` AS dms_system_persons_workPhone,
      documents_forms.`value` AS documents_forms_value
 FROM
      `dms_system_persons` dms_system_persons INNER JOIN `dms_internal_documents` dms_internal_documents ON dms_system_persons.`id` = dms_internal_documents.`responsible_id`
@@ -116,16 +110,10 @@ and dms_internal_documents.`deleted` = 0
 	<field name="dms_system_persons_deleted" class="java.lang.Boolean"/>
 	<field name="dms_system_persons_email" class="java.lang.String"/>
 	<field name="dms_system_persons_firstName" class="java.lang.String"/>
-	<field name="dms_system_persons_lastLogin" class="java.sql.Timestamp"/>
 	<field name="dms_system_persons_lastName" class="java.lang.String"/>
 	<field name="dms_system_persons_login" class="java.lang.String"/>
 	<field name="dms_system_persons_middleName" class="java.lang.String"/>
-	<field name="dms_system_persons_password" class="java.lang.String"/>
 	<field name="dms_system_persons_unid" class="java.lang.String"/>
-	<field name="dms_system_persons_phone" class="java.lang.String"/>
-	<field name="dms_system_persons_internalNumber" class="java.lang.String"/>
-	<field name="dms_system_persons_mobilePhone" class="java.lang.String"/>
-	<field name="dms_system_persons_workPhone" class="java.lang.String"/>
 	<field name="documents_forms_value" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
