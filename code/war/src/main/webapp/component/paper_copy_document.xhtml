@@ -16,8 +16,6 @@
     <e5ui-comp:userSessionUpdate
             rendered="#{paper_copy_document.editState or paper_copy_document.createState}"
             interval="300"/>
-    <h:outputScript library="js" name="datepicker_init_ru.js"
-                    target="head"/>
     <e5ui-comp:outputUtilScript/>
 </ui:define>
 
@@ -307,14 +305,14 @@
                         <h:outputText id="collector" value="#{paper_copy_document.document.collector.getFullName()}"/>
                     </td>
                     <td class="third">
-                        <label for="returnDate:dateEditor">
+                        <label for="returnDate">
                             <span class="title">Срок возврата</span>
                         </label>
                     </td>
                     <td class="fourth">
-                        <e5ui-comp:inputDate id="returnDate"
-                                             value="#{paper_copy_document.document.returnDate}" lang="ru"
-                                             immediate="true"/>
+                        <p:calendar id="returnDate"  value="#{paper_copy_document.document.returnDate}" lang="ru"
+                                    locale="ru"
+                                    widgetVar="returnDateVar" pattern="dd.MM.yyyy" showOn="both"/>
                     </td>
                 </tr>
             </table>

@@ -188,7 +188,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
             this.setEndCreationDate(null);
             this.setForm(null);
             this.setDeliveryType(null);
-            this.setSigner(null);
+            this.setController(null);
             this.setExecutor(null);
             this.setCopiesCount(0);
             this.setSheetsCount(0);
@@ -234,7 +234,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
         @Override
         protected void doSave() {
             super.doSave();
-            filters.put("signer", getUser());
+            filters.put("controller", getUser());
         }
 
         @Override
@@ -343,7 +343,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
         filters.put("endSignatureDate", signatureDate);
     }
 
-    public void setSigner(User controller) {
+    public void setController(User controller) {
         filters.put("controller", controller);
     }
 
@@ -450,8 +450,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
         return (Date) filters.get("endSignatureDate");
     }
 
-    public User getSigner() {
-        //if((User) filters.get("controller") !=null){System.out.println("######"+((User) filters.get("controller")).getLastName());}
+    public User getController() {
         return (User) filters.get("controller");
     }
 
