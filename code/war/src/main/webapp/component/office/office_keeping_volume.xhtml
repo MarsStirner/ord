@@ -247,12 +247,13 @@
                                   converter="PersonConverter" class="wide"/>
                 </td>
                 <td class="third">
-                    <label for="returnDate:dateEditor">
-                        <span class="title">Срок возврата</span> </label>
+                    <label for="returnDate">
+                        <span class="title">Срок возврата</span>
+                    </label>
                 </td>
                 <td class="fourth">
-                    <e5ui-comp:inputDate id="returnDate" value="#{officeKeepingVolume.document.returnDate}" lang="ru"
-                                         immediate="true"/>
+                    <p:calendar id="returnDate" value="#{officeKeepingVolume.document.returnDate}" lang="ru" locale="ru"
+                                widgetVar="returnDateVar" pattern="dd.MM.yyyy" showOn="both"/>
                 </td>
             </tr>
         </table>
@@ -286,8 +287,7 @@
         </table>
     </div>
 </h:panelGroup>
-<p:tabView id="documentTabPanel" widgetVar="officeKeepingVolumeTabViewVar" activeIndex="0"
-           dynamic="true" cache="true" effect="fade" effectDuration="fast">
+<p:tabView id="documentTabPanel" widgetVar="officeKeepingVolumeTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
 <p:tab title="Реквизиты">
     <h:panelGroup rendered="#{officeKeepingVolume.viewState}">
         <div class="row">
@@ -359,8 +359,7 @@
                 <tr class="row">
                     <td class="first">Количество ед. хранения:</td>
                     <td>
-                        <h:outputText value="#{officeKeepingVolume.document.unitsCount}"
-                                      class="wide"/>
+                        <h:outputText value="#{officeKeepingVolume.document.unitsCount}" class="wide"/>
                     </td>
                 </tr>
             </table>
@@ -564,21 +563,12 @@
 </ui:define>
 
 <ui:define name="footer">
-    <e5ui-comp:splashScreen id="splash_screen" timeout="0">
-        <f:facet name="timeoutPanel">
-            <div
-                    style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                Пожалуйста, подождите...
-            </div>
-        </f:facet>
-    </e5ui-comp:splashScreen>
-    <script>
-        e5ui_splashScreen.startShowOnSubmit('splash_screen',
-                [ 'main_content_form' ]);
-    </script>
+    <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+        Пожалуйста, подождите...
+    </p:dialog>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
 </ui:define>
 
 </ui:composition>

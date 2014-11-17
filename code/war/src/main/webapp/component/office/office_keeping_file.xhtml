@@ -156,8 +156,7 @@
 </div>
 
 <div class="main_content">
-<p:tabView widgetVar="officeKeepingFileTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
-           effectDuration="fast">
+<p:tabView widgetVar="officeKeepingFileTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
 <p:tab title="Реквизиты">
     <h:panelGroup rendered="#{officeKeepingFile.viewState}">
         <div class="row">
@@ -323,7 +322,7 @@
                     </label>
                     </td>
                     <td class="second">
-                        <h:outputText value="#{officeKeepingFile.document.boxNumber}"class="short"/>
+                        <h:outputText value="#{officeKeepingFile.document.boxNumber}" class="short"/>
                     </td>
                     <td class="third"/>
                     <td class="fourth"/>

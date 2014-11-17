@@ -294,6 +294,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 return false;
             } else {
                 setDocument(document);
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(document.getUniqueId());
                 return true;
             }
         } catch (Exception e) {
@@ -355,6 +357,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                     }
                 }
                 result = true;
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(document.getUniqueId());
             }
         } catch (Exception e) {
             LOGGER.error("saveNewDocument ERROR:", e);

@@ -246,6 +246,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 result = true;
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -271,6 +272,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                     }
                 }
                 setDocument(task);
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
                 return true;
             }
         } catch (Exception e) {

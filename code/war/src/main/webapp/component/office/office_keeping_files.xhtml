@@ -21,9 +21,7 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:outputLink
-                    value="/component/office/office_keeping_file.xhtml"
-                    target="_blank">
+            <h:outputLink value="/component/office/office_keeping_file.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новая номенклатура дела
                 <f:param name="docAction" value="create"/>
@@ -46,7 +44,7 @@
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
                                         id="main_data_tbl" value="#{officeKeepingFiles.documents}"
                                         var="row" grouping="false">
-                            <e5ui:row ondblclick="goToOfficeKeepingVolume('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToOfficeKeepingFile('#{row.id}');"/>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{officeKeepingFiles.sort('name')}">

@@ -360,8 +360,7 @@
         </table>
     </div>
 </h:panelGroup>
-<p:tabView widgetVar="taskTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
-           effectDuration="fast">
+<p:tabView widgetVar="taskTabViewVar" activeIndex="0"  effect="fade"  effectDuration="fast">
 <p:tab title="Реквизиты">
 <h:panelGroup rendered="#{task.viewState}">
     <div class="row">
@@ -612,7 +611,7 @@
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{task.taskTreeHolder.refresh()}">
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
@@ -620,14 +619,14 @@
                 <div class="defbutton">
                     <h:commandLink action="#{task.taskTreeHolder.collapseAll()}">
                         <h:graphicImage value="#{resource['images:minus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Свернуть все
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{task.taskTreeHolder.expandAll()}">
                         <h:graphicImage value="#{resource['images:plus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Развернуть все
                     </h:commandLink>
                 </div>

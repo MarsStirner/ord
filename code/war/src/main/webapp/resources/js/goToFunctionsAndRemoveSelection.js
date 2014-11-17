@@ -64,7 +64,7 @@ function goToIncomingDocument(id) {
 // К томам дел
 function goToOfficeKeepingVolume(id) {
     if (id != "" && id != 0) {
-        window.open('/component/office/office_keeping_file.xhtml?docId=' + id,'_blank');
+        window.open('/component/office/office_keeping_volume.xhtml?docId=' + id,'_blank');
     }
 }
 

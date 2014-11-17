@@ -350,8 +350,7 @@
         </table>
     </div>
 </h:panelGroup>
-<p:tabView id = "content_table" widgetVar="incomingDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
-           effectDuration="fast">
+<p:tabView id = "content_table" widgetVar="incomingDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
 <p:tab title="Реквизиты"
        rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
 <h:panelGroup rendered="#{request_doc.viewState}">
@@ -906,7 +905,7 @@
 
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.taskTreeHolder.refresh()}">
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
@@ -914,14 +913,14 @@
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.taskTreeHolder.collapseAll()}">
                         <h:graphicImage value="#{resource['images:minus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Свернуть все
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.taskTreeHolder.expandAll()}">
                         <h:graphicImage value="#{resource['images:plus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Развернуть все
                     </h:commandLink>
                 </div>

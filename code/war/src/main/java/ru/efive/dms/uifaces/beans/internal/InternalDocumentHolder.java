@@ -19,6 +19,7 @@ import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.sql.dao.user.UserAccessLevelDAO;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
@@ -37,7 +38,6 @@ import ru.entity.model.user.UserAccessLevel;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -66,15 +66,11 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         try {
             result = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при удалении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -224,9 +220,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 updateAttachments();
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при инициализации.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
@@ -297,17 +291,15 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
             //document = sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 result = true;
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
         }
         return result;
     }
@@ -320,9 +312,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             InternalDocument document = (InternalDocument) getDocument();
             document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
@@ -367,19 +357,17 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                     }
                 }
                 result = true;
-                if (result) {
-                    setDocument(document);
-                }
+                setDocument(document);
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при сохранении нового документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }
-
 
 
     @Override
@@ -537,9 +525,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -564,9 +550,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -726,34 +710,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     /* =================== */
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRouteTabHeader() {
-        return "<span><span>Движение документа</span></span>";
-    }
-
-    public boolean isRouteTabSelected() {
-        return isRouteTabSelected;
-    }
-
-    public void setRouteTabSelected(boolean isRouteTabSelected) {
-        this.isRouteTabSelected = isRouteTabSelected;
-    }
-
-    public String getAccessTabHeader() {
-        return "<span><span>Доступ</span></span>";
-    }
-
     public boolean isUsersDialogSelected() {
         return isUsersDialogSelected;
     }
@@ -776,70 +732,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         }
     }
 
-    public boolean isAccessTabSelected() {
-        return isAccessTabSelected;
-    }
-
-    public void setAccessTabSelected(boolean isAccessTabSelected) {
-        this.isAccessTabSelected = isAccessTabSelected;
-    }
-
-    public String getRelationTabHeader() {
-        return "<span><span>Связи</span></span>";
-    }
-
-    public boolean isRelationTabSelected() {
-        return isRelationTabSelected;
-    }
-
-    public void setRelationTabSelected(boolean isRelationTabSelected) {
-        this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public String getOriginalTabHeader() {
-        return "<span><span>Оригинал</span></span>";
-    }
-
-    public void setOriginalTabSelected(boolean isOriginalTabSelected) {
-        this.isOriginalTabSelected = isOriginalTabSelected;
-    }
-
-    public boolean isOriginalTabSelected() {
-        return isOriginalTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
-    public String getAgreementTabHeader() {
-        return "<span><span>Согласование</span></span>";
-    }
-
-    public void setAgreementTabSelected(boolean agreementTabSelected) {
-        this.agreementTabSelected = agreementTabSelected;
-    }
-
-    public boolean isAgreementTabSelected() {
-        return agreementTabSelected;
-    }
-
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isRouteTabSelected = false;
-    private boolean isRelationTabSelected = false;
-    private boolean isOriginalTabSelected = false;
-    private boolean isAccessTabSelected = false;
-    private boolean isHistoryTabSelected = false;
-    private boolean agreementTabSelected = false;
 
     private boolean isUsersDialogSelected = true;
     private boolean isGroupsDialogSelected = false;

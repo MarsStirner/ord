@@ -254,6 +254,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 result = true;
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -315,6 +316,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                     }
                 }
                 result = true;
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
             }
         } catch (Exception e) {
             e.printStackTrace();

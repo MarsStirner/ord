@@ -233,8 +233,7 @@
         </table>
     </div>
 </h:panelGroup>
-<p:tabView widgetVar="internalDocumentTabViewVar" activeIndex="0" dynamic="true" cache="true" effect="fade"
-           effectDuration="fast">
+<p:tabView widgetVar="internalDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
 <p:tab title="Реквизиты"
        rendered="#{internal_doc.viewState or internal_doc.createState or (internal_doc.editState and internal_doc.currentUserDocEditor)}">
 <h:panelGroup rendered="#{internal_doc.viewState}">
@@ -716,8 +715,8 @@
                 </h:panelGroup>
 
                 <div class="defbutton">
-                    <h:commandLink action="#{internal_doc.taskTreeHolder.refresh()}">
-                        <f:ajax render="task_table"/>
+                    <h:commandLink action="#{internal_doc.taskTreeHolder.refresh()}" >
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
@@ -725,14 +724,14 @@
                 <div class="defbutton">
                     <h:commandLink action="#{internal_doc.taskTreeHolder.collapseAll()}">
                         <h:graphicImage value="#{resource['images:minus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Свернуть все
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{internal_doc.taskTreeHolder.expandAll()}">
                         <h:graphicImage value="#{resource['images:plus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Развернуть все
                     </h:commandLink>
                 </div>

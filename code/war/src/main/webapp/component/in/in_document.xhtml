@@ -856,7 +856,7 @@
 
                 <div class="defbutton">
                     <h:commandLink action="#{in_doc.taskTreeHolder.refresh()}">
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
@@ -864,14 +864,14 @@
                 <div class="defbutton">
                     <h:commandLink action="#{in_doc.taskTreeHolder.collapseAll()}">
                         <h:graphicImage value="#{resource['images:minus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Свернуть все
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{in_doc.taskTreeHolder.expandAll()}">
                         <h:graphicImage value="#{resource['images:plus.png']}"/>
-                        <f:ajax render="task_table"/>
+                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Развернуть все
                     </h:commandLink>
                 </div>
