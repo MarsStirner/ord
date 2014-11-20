@@ -67,7 +67,7 @@ function goToOfficeKeepingVolume(id) {
         window.open('/component/office/office_keeping_volume.xhtml?docId=' + id,'_blank');
     }
 }
-
+// К Номенклатурам дел
 function goToOfficeKeepingRecord(id) {
     if (id != 0) {
         window.open('/component/office/office_keeping_record.xhtml?docId=' + id,'_blank');
@@ -151,7 +151,7 @@ function goToRole(id) {
         window.open('/component/role.xhtml?docId=' + id,'_blank');
     }
 }
-//TODO
+//К шаблонам согласований
 function goToRouteTemplate(id) {
     if (id != 0) {
         window.open('/component/admin/route_template.xhtml?docId=' + id,'_blank');
@@ -161,5 +161,11 @@ function goToRouteTemplate(id) {
 function goToScanDocument(id) {
     if (id != 0) {
         window.open('/component/scan_document.xhtml?docId=' + id, '_blank');
+    }
+}
+// К замещениям
+function goToSubstitution(id) {
+    if (id != 0) {
+        window.open('/component/user_substitution.xhtml?docId=' + id, '_blank');
     }
 }

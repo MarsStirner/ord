@@ -428,7 +428,7 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
         }
 
         detachedCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DRAFT.getId())));
-        if (key == null || key.isEmpty() || key.indexOf("task") == -1) {
+        if (key == null || key.isEmpty() || !key.contains("task")) {
             detachedCriteria.add(Restrictions.ilike("rootDocumentId", key + "%"));
         } else {
             detachedCriteria.add(Restrictions.eq("rootDocumentId", key));

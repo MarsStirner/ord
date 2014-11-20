@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+<ui:composition template="/WEB-INF/jsf-template/template.xhtml">
+
+    <ui:define name="running_head"/>
+
+    <ui:define name="header_top">
+        <div id="viewtitle">Список замещений, помощников и и\о</div>
+    </ui:define>
+
+    <ui:define name="header_buttons">
+        <div class="defbutton">
+            <h:outputLink value="/component/user_substitution.xhtml" target="_blank">
+                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
+                Новое замещение
+                <f:param name="docAction" value="create"/>
+            </h:outputLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{substitutions.refresh()}">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                Обновить
+                <f:ajax render="data_table"/>
+            </h:commandLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="content">
+        <div id="main_table">
+            <div id="searchbar" class="main_searchbar">
+                <h:inputText id="filter_string" value="#{substitutions.filter}"
+                             style="display:block; float:left; width:60%; margin:2px 10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" " action="#{substitutions.refresh()}" styleClass="searchbutton">
+                    <f:ajax execute="filter_string" render="data_table"/>
+                </h:commandButton>
+            </div>
+            <p:dataTable
+                    id="data_table"
+                    lazy="true"
+                    value="#{substitutions.lazyModel}"
+                    var="substitution_entry"
+                    rowKey="#{substitution_entry.id}"
+                    paginator="true" rows="10"
+                    paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                    rowsPerPageTemplate="5,10,15,25,50,100"
+                    paginatorPosition = "bottom"
+                    >
+                <p:column headerText="Номер">
+                    <h:commandButton onclick="goToSubstitution(#{substitution_entry.id})" value="Перейти к документу"/>
+                    <h:outputText value="   #{substitution_entry.id}"/>
+                </p:column>
+                <p:column headerText="Дата начала">
+                    <h:outputText value="#{substitution_entry.startDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Дата окончания">
+                    <h:outputText value="#{substitution_entry.endDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Замещаемый пользователь">
+                    <h:outputText value="#{substitution_entry.person}" converter="PersonConverter"/>
+                </p:column>
+                <p:column headerText="Заместитель">
+                    <h:outputText value="#{substitution_entry.substitution}" converter="PersonConverter"/>
+                </p:column>
+            </p:dataTable>
+        </div>
+
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+            Пожалуйста, подождите...
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>
+
+</html>

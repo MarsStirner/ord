@@ -205,6 +205,14 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         return result;
     }
 
+    /**
+     * Является ли текущий пользователь владельцем карточки (сам открыл себя)
+     * @return true- текущий пользователь открыл свою карточку
+     */
+    public boolean isOwner(){
+        return sessionManagement.getLoggedUser().equals(getDocument());
+    }
+
     @Inject
     @Named("sessionManagement")
     SessionManagementBean sessionManagement = new SessionManagementBean();
