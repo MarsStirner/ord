@@ -139,7 +139,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         }
         if (document.getPerson() != null && document.getSubstitution() != null && document.getPerson().equals(document.getSubstitution())) {
             logger.error("Save cancelled: person and substitution is one people");
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ошибка валидации", "Замещаемое лицо и заместитель один и тот-же человек. Спрашивается: нахрена?"));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ошибка валидации", "Замещаемое лицо и заместитель один и тот-же человек."));
             result = false;
         }
         return result;

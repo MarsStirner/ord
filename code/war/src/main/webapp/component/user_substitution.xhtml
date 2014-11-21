@@ -152,7 +152,7 @@
                                     <span class="title">Замещаемое лицо</span>
                                 </p:commandLink>
                                 <p:dialog header="Выберите замещаемое лицо" widgetVar="selectPersonDialog"
-                                          fitViewport="true" position="top,left" height="550" width="550">
+                                          fitViewport="true" position="top,left" height="550" width="550" modal="true">
                                     <p:inputText id="filter" value="#{personList.filter}"/>
                                     <p:commandButton value="Поиск">
                                         <f:ajax execute="filter" render="selectPersonTable"/>
@@ -208,7 +208,7 @@
                                     <span class="title">Заместитель</span>
                                 </p:commandLink>
                                 <p:dialog header="Выберите заместителя" widgetVar="selectSubstitutionDialog"
-                                          fitViewport="true" position="top,left" height="550" width="550">
+                                          fitViewport="true" position="top,left" height="550" width="550" modal="true">
                                     <p:inputText id="substitution_filter" value="#{personList.filter}"/>
                                     <p:commandButton value="Поиск">
                                         <f:ajax execute="substitution_filter" render="selectSubstitutionTable"/>

@@ -1,6 +1,7 @@
 package ru.efive.dms.dao.ejb;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.*;
 import org.joda.time.LocalDate;
 import org.primefaces.model.SortOrder;
@@ -71,6 +72,7 @@ public class SubstitutionDaoImpl extends GenericDAOHibernate<Substitution> {
     public List<Substitution> findDocumentsOnSubstitution(User substitution, boolean showDeleted) {
         final DetachedCriteria criteria = getDistinctCriteria(showDeleted);
         criteria.add(Restrictions.eq("substitution.id", substitution.getId()));
+        criteria.setFetchMode("person.groups", FetchMode.JOIN);
         return getHibernateTemplate().findByCriteria(criteria);
     }
 
@@ -78,6 +80,7 @@ public class SubstitutionDaoImpl extends GenericDAOHibernate<Substitution> {
         final DetachedCriteria criteria = getDistinctCriteria(showDeleted);
         criteria.add(Restrictions.eq("substitution.id", substitution.getId()));
         addCurrentDateRestrictions(criteria);
+        criteria.setFetchMode("person.groups", FetchMode.JOIN);
         return getHibernateTemplate().findByCriteria(criteria);
     }
 

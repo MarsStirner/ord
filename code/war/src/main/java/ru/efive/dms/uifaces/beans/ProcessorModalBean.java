@@ -91,8 +91,7 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                 state = ProcessState.FAILURE;
             }
             FacesContext context = FacesContext.getCurrentInstance();
-            sessionManagement = context.getApplication().evaluateExpressionGet(
-                    context, "#{sessionManagement}", SessionManagementBean.class);
+            sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
             if (sessionManagement == null) {
                 actionResult = EngineHelper.DEFAULT_ERROR_MESSAGE;
                 System.out.println(EngineHelper.WRONG_SESSION_BEAN);
@@ -107,7 +106,7 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
             for (IAction action : engine.getActions()) {
                 availableActions.add(action);
             }
-            if (availableActions.size() > 0) {
+            if (!availableActions.isEmpty()) {
                 state = ProcessState.ACTIONS_AVAILABLE;
             } else {
                 actionResult = EngineHelper.PROCESSOR_NO_ACTIONS;
@@ -166,8 +165,6 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                         if (documentInitializationResult.getDescription() != null && !documentInitializationResult.getDescription().equals("")) {
                             actionResult = documentInitializationResult.getDescription();
                             state = ProcessState.FAILURE;
-                        } else {
-
                         }
                         return;
                     }

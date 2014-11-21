@@ -186,7 +186,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             session.close();
             setDocument(document);
             //Проверка прав на открытие
-            permissions = permissionChecker.getPermissions(currentUser, document);
+            permissions = permissionChecker.getPermissions(sessionManagement, document);
             //Установка идшника для поиска поручений
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             //Поиск поручений

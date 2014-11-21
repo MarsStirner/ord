@@ -12,6 +12,11 @@ import java.util.Set;
  */
 public class Permissions {
 
+    public boolean hasAllPermissions(){
+        //TODO переписать правильно с перебором
+        return value.size() == Permission.values().length;
+    }
+
     public void mergePermissions(Permissions toMergeWith) {
         if(toMergeWith != null){
           value.addAll(toMergeWith.getValue());

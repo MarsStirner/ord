@@ -15,17 +15,15 @@
     <e5ui-comp:userSessionUpdate interval="300"/>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="header">
     <div id="form_header">
         <div class="actionbar">
             <div class="menu">
-                <h:panelGroup
-                        rendered="#{isAdministrator or isOfficeManager}">
+                <h:panelGroup rendered="#{isAdministrator or isOfficeManager}">
                     <div class="defbutton">
-                        <h:commandLink action="#{routeTemplate.edit}"
-                                       rendered="#{routeTemplate.viewState}">
+                        <h:commandLink action="#{routeTemplate.edit}" rendered="#{routeTemplate.viewState}">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>
@@ -85,8 +83,8 @@
         <table class="form_grid">
             <tr class="row">
                 <td class="first">Название:</td>
-                <td><h:outputText value="#{routeTemplate.document.name}"
-                                  class="wide"/>
+                <td>
+                    <h:outputText value="#{routeTemplate.document.name}" class="wide"/>
                 </td>
             </tr>
         </table>

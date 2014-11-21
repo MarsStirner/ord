@@ -102,4 +102,28 @@ public class Substitution extends AbstractEntity{
     public void setType(int type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Substitution[");
+        sb.append("id=").append(id);
+        sb.append(", startDate=").append(startDate);
+        sb.append(", endDate=").append(endDate);
+        sb.append(", deleted=").append(deleted);
+        sb.append(", person=");
+        if(person != null) {
+            sb.append('[').append(person.getId()).append(' ').append(person.getFullName()).append(']');
+        } else {
+            sb.append("NULL");
+        }
+        sb.append(", substitution=");
+        if(substitution != null) {
+            sb.append('[').append(substitution.getId()).append(' ').append(substitution.getFullName()).append(']');
+        } else {
+            sb.append("NULL");
+        }
+        sb.append(", type=").append(type);
+        sb.append(']');
+        return sb.toString();
+    }
 }

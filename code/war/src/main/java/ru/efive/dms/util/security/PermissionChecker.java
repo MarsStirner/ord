@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.entity.model.document.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
@@ -16,7 +17,8 @@ import javax.ejb.Stateless;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.ALL_PERMISSIONS;
-import static ru.efive.dms.util.security.Permissions.Permission.*;
+import static ru.efive.dms.util.security.Permissions.Permission.EXECUTE;
+import static ru.efive.dms.util.security.Permissions.Permission.READ;
 
 /**
  * Author: Upatov Egor <br>
@@ -107,7 +109,7 @@ public class PermissionChecker {
         }
 
         //5) список пользователей на просмотр
-        if(!result.hasPermission(READ)) {
+        if (!result.hasPermission(READ)) {
             for (User currentUser : document.getPersonReaders()) {
                 if (user.equals(currentUser)) {
                     loggerIncomingDocument.debug("{}:Permission R granted: PersonReader", document.getId());
@@ -489,7 +491,6 @@ public class PermissionChecker {
      * @param logger      логгер, которые отписывает отладаочную инфу
      * @return права пользователя на документ
      */
-
     public Permissions getPermissionsFromExternalDocument(User user, String documentKey, Logger logger) {
         final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
         if (rootDocumentId != null) {
@@ -545,4 +546,80 @@ public class PermissionChecker {
     }
 
 
+    /**
+     * Получения прав текущего авторизованного пользователя (вместе со всей инфой)
+     *
+     * @param sessionManagement информация об авторизованном пользователе
+     * @param document          входящий документ, на который проверяем права
+     * @return суммарный набор прав для текущих данных по авторизации
+     */
+    public Permissions getPermissions(SessionManagementBean sessionManagement, IncomingDocument document) {
+        if (sessionManagement.isAdministrator()) {
+            loggerIncomingDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
+                    sessionManagement.getLoggedUser().getId(), document.getId()
+            );
+            return ALL_PERMISSIONS;
+        }
+        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
+        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+                loggerIncomingDocument.debug("Get permissions on substituted user [{}] {}",
+                        currentUser.getId(), currentUser.getFullName()
+                );
+                Permissions subResult = getPermissions(currentUser, document);
+                loggerIncomingDocument.debug("Sub permissions: {}", subResult.toString());
+                result.mergePermissions(subResult);
+                if (result.hasAllPermissions()) {
+                    loggerIncomingDocument.debug("Reached ALL permissions on this substitution");
+                    break;
+                }
+            }
+        }
+        loggerIncomingDocument.info("Result permissions for user[{}] to document[{}] is {}",
+                new Object[]{
+                        sessionManagement.getLoggedUser().getId(),
+                        document.getId(),
+                        result
+                }
+        );
+        return result;
+    }
+
+    /**
+     * Получения прав текущего авторизованного пользователя (вместе со всей инфой)
+     * @param sessionManagement информация об авторизованном пользователе
+     * @param document          входящий документ, на который проверяем права
+     * @return суммарный набор прав для текущих данных по авторизации
+     */
+    public Permissions getPermissions(SessionManagementBean sessionManagement, Task document) {
+        if (sessionManagement.isAdministrator()) {
+            loggerTask.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
+                    sessionManagement.getLoggedUser().getId(), document.getId()
+            );
+            return ALL_PERMISSIONS;
+        }
+        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
+        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+                loggerTask.debug("Get permissions on substituted user [{}] {}",
+                        currentUser.getId(), currentUser.getFullName()
+                );
+                Permissions subResult = getPermissions(currentUser, document);
+                loggerTask.debug("Sub permissions: {}", subResult.toString());
+                result.mergePermissions(subResult);
+                if (result.hasAllPermissions()) {
+                    loggerIncomingDocument.debug("Reached ALL permissions on this substitution");
+                    break;
+                }
+            }
+        }
+        loggerTask.info("Result permissions for user[{}] to document[{}] is {}",
+                new Object[]{
+                        sessionManagement.getLoggedUser().getId(),
+                        document.getId(),
+                        result
+                }
+        );
+        return result;
+    }
 }

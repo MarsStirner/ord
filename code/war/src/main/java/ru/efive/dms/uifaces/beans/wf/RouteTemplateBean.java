@@ -13,6 +13,7 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.entity.model.enums.DocumentStatus;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
@@ -24,6 +25,7 @@ import ru.entity.model.wf.HumanTaskTreeNode;
 import ru.entity.model.wf.RouteTemplate;
 import ru.util.ApplicationHelper;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.ENGINE_DAO;
 
 @Named("routeTemplate")
@@ -36,13 +38,11 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         try {
             result = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при удалении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -65,8 +65,7 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
                 setState(STATE_NOT_FOUND);
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при инициализации.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
@@ -87,15 +86,13 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         try {
             RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).save(RouteTemplate.class, getDocument());
             if (template == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при сохранении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
         }
         return result;
     }
@@ -106,15 +103,13 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         try {
             RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).save(RouteTemplate.class, getDocument());
             if (template == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка при сохранении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }

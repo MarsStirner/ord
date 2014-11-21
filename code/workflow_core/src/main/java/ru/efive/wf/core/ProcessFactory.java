@@ -1935,7 +1935,6 @@ public final class ProcessFactory {
             public boolean isAvailable() {
                 boolean result = false;
                 try {
-                    ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
@@ -1990,8 +1989,7 @@ public final class ProcessFactory {
             if (sendTo.size() > 0) {
                 mailActivity = new SendMailActivity();
                 MailMessage message1 = new MailMessage(sendTo, null, "Вы назнaчены ответственным по документу @DocumentNumber" + docNumber,
-                        new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").
-                                append("<a href=\"" + getHost() + "/component/in/in_document.xhtml?docId=").
+                        new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").append("<a href=\"").append(getHost()).append("/component/in/in_document.xhtml?docId=").
                                 append(id).append("\" >Ссылка на документ</a>").toString());
                 message1.setContentType("text/html");
                 mailActivity.setMessage(message1);
@@ -2007,8 +2005,7 @@ public final class ProcessFactory {
 
         if (recipients.size() > 0) {
             MailMessage message2 = new MailMessage(new ArrayList(recipients), null, "Вам адресован документ @DocumentNumber" + docNumber,
-                    new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").
-                            append("<a href=\"" + getHost() + "/component/in/in_document.xhtml?docId=").
+                    new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").append("<a href=\"").append(getHost()).append("/component/in/in_document.xhtml?docId=").
                             append(id).append("\" >Ссылка на документ</a>").toString());
             activites.add(getMailActivity(message2));
             toStatus.setPreStatusActivities(activites);

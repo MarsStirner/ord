@@ -21,11 +21,8 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:panelGroup
-                    rendered="#{isAdministrator or isOfficeManager}">
-                <h:outputLink
-                        value="/component/admin/route_template.xhtml"
-                        target="_blank">
+            <h:panelGroup rendered="#{isAdministrator or isOfficeManager}">
+                <h:outputLink value="/component/admin/route_template.xhtml" target="_blank">
                     <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                     Новый шаблон
                     <f:param name="docAction" value="create"/>
@@ -65,8 +62,7 @@
                 </div>
                 <div id="table_paging">
                     <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{routeTemplates}"
-                                              style="display:inline;"/>
+                        <e5ui-comp:tablePager documentListHolder="#{routeTemplates}" style="display:inline;"/>
                         <e5ui-comp:tablePageSizeSelector
                                 documentListHolder="#{routeTemplates}"
                                 style="display:inline;float:right;" pageSizes="10,25,50,100"/>

@@ -145,7 +145,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 setDocument(document);
                 return;
             }
-            permissions = permissionChecker.getPermissions(currentUser, document);
+            permissions = permissionChecker.getPermissions(sessionManagement, document);
             setDocument(document);
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             taskTreeHolder.changeOffset(0);
