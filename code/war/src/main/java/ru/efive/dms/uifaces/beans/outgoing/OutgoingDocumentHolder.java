@@ -32,9 +32,9 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 
 @Named("out_doc")
@@ -48,8 +48,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
                 e.printStackTrace();
             }
             return in_result;
@@ -64,15 +63,11 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         try {
             result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -288,17 +283,13 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             OutgoingDocument document = (OutgoingDocument) getDocument();
             document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
+            FacesContext.getCurrentInstance().addMessage(null,MSG_ERROR_ON_SAVE);
         }
         return result;
     }
@@ -310,9 +301,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             OutgoingDocument document = (OutgoingDocument) getDocument();
             document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(getDocument());
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
@@ -360,35 +349,14 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }
 
 
     @Override
-    protected String doAfterCreate() {
-        outgoingDocumentList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterEdit() {
-        outgoingDocumentList.markNeedRefresh();
-        return super.doAfterEdit();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        outgoingDocumentList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
     protected String doAfterSave() {
-        outgoingDocumentList.markNeedRefresh();
         UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
         if (userAccessLevel == null) {
             userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
@@ -406,48 +374,48 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         return super.doAfterSave();
     }
 
-    protected String getLinkDescriptionById(String key) {
+    public String getLinkDescriptionByUniqueId(String key) {
         if (!key.isEmpty()) {
             int pos = key.indexOf('_');
             if (pos != -1) {
                 String id = key.substring(pos + 1, key.length());
                 //String in_type=key.substring(0,pos);
                 StringBuffer in_description = new StringBuffer("");
-                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
 
-                if (key.indexOf("incoming") != -1) {
+
+                if (key.contains("incoming")) {
                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
-                            "Черновик входщяего документа от " + sdf.format(in_doc.getCreationDate()) :
-                            "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + sdf.format(in_doc.getRegistrationDate())
+                            "Черновик входщяего документа от " + ApplicationHelper.formatDate(in_doc.getCreationDate()) :
+                            "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(in_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("outgoing") != -1) {
+                } else if (key.contains("outgoing")) {
                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
-                            "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) :
-                            "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + sdf.format(out_doc.getRegistrationDate())
+                            "Черновик исходящего документа от " + ApplicationHelper.formatDate(out_doc.getCreationDate()) :
+                            "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(out_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("internal") != -1) {
+                } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
-                            "Черновик внутреннего документа от " + sdf.format(internal_doc.getCreationDate()) :
-                            "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate())
+                            "Черновик внутреннего документа от " + ApplicationHelper.formatDate(internal_doc.getCreationDate()) :
+                            "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(internal_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("request") != -1) {
+                } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
-                            "Черновик обращения граждан от " + sdf.format(request_doc.getCreationDate()) :
-                            "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate())
+                            "Черновик обращения граждан от " + ApplicationHelper.formatDate(request_doc.getCreationDate()) :
+                            "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(request_doc.getRegistrationDate())
                     );
 
-                } else if (key.indexOf("task") != -1) {
+                } else if (key.contains("task")) {
                     Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                     in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
-                            "Черновик поручения от " + sdf.format(task_doc.getCreationDate()) :
-                            "Поручение № " + task_doc.getTaskNumber() + " от " + sdf.format(task_doc.getCreationDate())
+                            "Черновик поручения от " + ApplicationHelper.formatDate(task_doc.getCreationDate()) :
+                            "Поручение № " + task_doc.getTaskNumber() + " от " + ApplicationHelper.formatDate(task_doc.getCreationDate())
                     );
                 }
                 return in_description.toString();
@@ -460,19 +428,19 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         boolean result = true;
         FacesContext context = FacesContext.getCurrentInstance();
         if (getDocument().getController() == null) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Руководителя", ""));
+            context.addMessage(null, MSG_CONTROLLER_NOT_SET);
             result = false;
         }
         if (getDocument().getExecutor() == null) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Ответственного исполнителя", ""));
+            context.addMessage(null, MSG_EXECUTOR_NOT_SET);
             result = false;
         }
         if (getDocument().getRecipientContragents() == null || getDocument().getRecipientContragents().size() == 0) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Адресата", ""));
+            context.addMessage(null, MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
         if (getDocument().getShortDescription() == null || getDocument().getShortDescription().equals("")) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", ""));
+            context.addMessage(null, MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
         return result;
@@ -597,9 +565,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -624,9 +590,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null,MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -658,10 +622,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
         setDocument(document);
 
-        if (attachment != null) {
-            if (fileManagement.deleteFile(attachment)) {
-                updateAttachments();
-            }
+        if (fileManagement.deleteFile(attachment)) {
+            updateAttachments();
         }
 
         document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
@@ -796,7 +758,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
 
         public boolean selected(DeliveryType value) {
-            return this.value != null ? this.value.getValue().equals(value.getValue()) : false;
+            return this.value != null && this.value.getValue().equals(value.getValue());
         }
 
         public void select(DeliveryType value) {
@@ -832,89 +794,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     // END OF MODAL HOLDERS
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
 
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getRouteTabHeader() {
-        return "<span><span>Движение документа</span></span>";
-    }
-
-    public boolean isRouteTabSelected() {
-        return isRouteTabSelected;
-    }
-
-    public void setRouteTabSelected(boolean isRouteTabSelected) {
-        this.isRouteTabSelected = isRouteTabSelected;
-    }
-
-    public String getAccessTabHeader() {
-        return "<span><span>Доступ</span></span>";
-    }
-
-    public boolean isAccessTabSelected() {
-        return isAccessTabSelected;
-    }
-
-    public void setAccessTabSelected(boolean isAccessTabSelected) {
-        this.isAccessTabSelected = isAccessTabSelected;
-    }
-
-    public String getRelationTabHeader() {
-        return "<span><span>Связи</span></span>";
-    }
-
-    public boolean isRelationTabSelected() {
-        return isRelationTabSelected;
-    }
-
-    public void setRelationTabSelected(boolean isRelationTabSelected) {
-        this.isRelationTabSelected = isRelationTabSelected;
-    }
-
-    public String getOriginalTabHeader() {
-        return "<span><span>Оригинал</span></span>";
-    }
-
-    public void setOriginalTabSelected(boolean isOriginalTabSelected) {
-        this.isOriginalTabSelected = isOriginalTabSelected;
-    }
-
-    public boolean isOriginalTabSelected() {
-        return isOriginalTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
-    public String getAgreementTabHeader() {
-        return "<span><span>Согласование</span></span>";
-    }
-
-    public void setAgreementTabSelected(boolean agreementTabSelected) {
-        this.agreementTabSelected = agreementTabSelected;
-    }
-
-    public boolean isAgreementTabSelected() {
-        return agreementTabSelected;
-    }
 
     public ContragentListSelectModalBean getRecipientContragentsSelectModal() {
         return recipientContragentsSelectModal;
@@ -1195,14 +1075,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
     };
 
-    private boolean isRequisitesTabSelected = true;
-    private boolean isRouteTabSelected = false;
-    private boolean isRelationTabSelected = false;
-    private boolean isOriginalTabSelected = false;
-    private boolean isAccessTabSelected = false;
-    private boolean isHistoryTabSelected = false;
-    private boolean agreementTabSelected = false;
-
     private DeliveryTypeSelectModal deliveryTypeSelectModal = new DeliveryTypeSelectModal();
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
@@ -1215,9 +1087,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Inject
     @Named("dictionaryManagement")
     private transient DictionaryManagementBean dictionaryManagement;
-    @Inject
-    @Named("out_documents")
-    private transient OutgoingDocumentListHolder outgoingDocumentList;
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;

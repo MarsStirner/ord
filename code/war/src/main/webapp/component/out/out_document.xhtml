@@ -6,7 +6,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite" xmlns:p="http://primefaces.org/ui"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:p="http://primefaces.org/ui"
         >
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -225,7 +226,7 @@
             <h:outputLink style="margin-left:5px;" value="#"
                           onclick="goToDocumentByUniqueId('#{out_doc.document.reasonDocumentId}');">
                 <h:graphicImage value="#{resource['images:link.png']}"/>
-                <h:outputText value="#{out_doc.getLinkDescriptionById(out_doc.document.reasonDocumentId)}"/>
+                <h:outputText value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
             </h:outputLink>
         </td>
         <td class="third"/>
@@ -280,7 +281,7 @@
                     </h:commandButton>
                     <h:button onclick="reasonDocumentSelectModalVar.clickClose(); return false;" value="Отмена"/>
 
-                    <div style="clear: both;"></div>
+                    <div style="clear: both;"/>
                 </div>
             </h:panelGroup>
             <h:panelGroup
@@ -443,7 +444,7 @@
     <h:outputLink id="reason_document" style="margin-left:5px;" value="#"
                   onclick="goToDocumentByLinkId('#{out_doc.document.reasonDocumentId}');">
         <h:graphicImage value="#{resource['images:link.png']}"/>
-        <h:outputText value="#{out_doc.getLinkDescriptionById(out_doc.document.reasonDocumentId)}"/>
+        <h:outputText value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
     </h:outputLink
             ></td>
 <td class="third"/>
@@ -1649,26 +1650,10 @@
 
 </div>
 
-<e5ui-comp:splashScreen id="splash_screen" timeout="0">
-    <f:facet name="timeoutPanel">
-        <div
-                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-            Пожалуйста, подождите...
-        </div>
-    </f:facet>
-</e5ui-comp:splashScreen>
-<script>
-    e5ui_splashScreen.startShowOnSubmit('splash_screen',
-            [ 'main_content_form' ]);
-</script>
-<e5ui-comp:ajaxStatusGlobal timeout="300">
-    <f:facet name="waitPanel">
-        <div
-                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-            Пожалуйста, подождите...
-        </div>
-    </f:facet>
-</e5ui-comp:ajaxStatusGlobal>
+<p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+    Пожалуйста, подождите...
+</p:dialog>
 </ui:define>
 
 <ui:define name="footer">
@@ -1852,21 +1837,8 @@
                     [ 'file_upload_form' ]);
         </script>
     </h:form>
-
-    <e5ui:multiMarker id="main_form_marker" rendered="true"
-                      hintWindowStyleClass="e5ui-marker-hintWindow"
-                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
-                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
-                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
-                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
-                      displayMode="window">
-        <h:button
-                onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
-                value="ОК"/>
-    </e5ui:multiMarker>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
 </ui:define>
 
 </ui:composition>

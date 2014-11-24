@@ -22,6 +22,7 @@ public class MessageHolder {
     public static final FacesMessage MSG_CONTRAGENT_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Корреспондента", "");
     public static final FacesMessage MSG_RECIPIENTS_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Адресатов", "");
     public static final FacesMessage MSG_SHORT_DESCRIPTION_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", "");
+    public static final FacesMessage MSG_EXECUTOR_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Ответственного исполнителя", "");
 
     //Сообщения об ошибках авторизации
     public final static FacesMessage MSG_AUTH_FIRED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");

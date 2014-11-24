@@ -6,165 +6,62 @@ import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.user.User;
-import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 
 @Named("outDocumentsByNumber")
 @SessionScoped
 public class OutgoingDocumentsByNumberHolder extends AbstractDocumentListHolderBean<OutgoingDocument> {
-    private static final String beanName = "outDocumentsByNumber";
-
-    private List<OutgoingDocument> hashDocuments;
-    private boolean needRefresh = true;
-
-    public boolean isNeedRefresh() {
-        return needRefresh;
-    }
-
-    public void setNeedRefresh(boolean needRefresh) {
-        if (needRefresh) {
-            this.markNeedRefresh();
-        }
-        this.needRefresh = needRefresh;
-    }
-
-    protected List<OutgoingDocument> getHashDocuments(int fromIndex, int toIndex) {
-        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
-        List<OutgoingDocument> result = new ArrayList<OutgoingDocument>(this.getHashDocuments().subList(fromIndex, toIndex));
-        return result;
-    }
-
-    protected List<OutgoingDocument> getHashDocuments() {
-        List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
-        if (needRefresh) {
-            try {
-                User user = sessionManagement.getLoggedUser();
-                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
-
-                Collections.sort(result, new Comparator<OutgoingDocument>() {
-                    public int compare(OutgoingDocument o1, OutgoingDocument o2) {
-                        int result = 0;
-                        String colId = getSorting().getColumnId();
-
-                        if (colId.equalsIgnoreCase("registrationDate")) {
-                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
-                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c1.setTime(d1);
-                            c1.set(Calendar.HOUR_OF_DAY, 0);
-                            c1.set(Calendar.MINUTE, 0);
-                            c1.set(Calendar.SECOND, 0);
-                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
-                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c2.setTime(d2);
-                            c2.set(Calendar.HOUR_OF_DAY, 0);
-                            c2.set(Calendar.MINUTE, 0);
-                            c2.set(Calendar.SECOND, 0);
-                            if (c1.equals(c2)) {
-                                try {
-                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
-                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
-                                    result = i1.compareTo(i2);
-                                } catch (NumberFormatException e) {
-                                    result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
-                                }
-                            } else {
-                                result = c1.compareTo(c2);
-                            }
-                        } else if (colId.equalsIgnoreCase("registrationNumber")) {
-                            try {
-                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
-                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
-                                result = i1.compareTo(i2);
-                            } catch (NumberFormatException e) {
-                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
-                            }
-                        } else if (colId.equalsIgnoreCase("registrationNumber")) {
-                            try {
-                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
-                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
-                                result = i1.compareTo(i2);
-                            } catch (NumberFormatException e) {
-                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
-                            }
-                        } else if (colId.equalsIgnoreCase("signatureDate")) {
-                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c1.setTime(ApplicationHelper.getNotNull(o1.getSignatureDate()));
-                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c2.setTime(ApplicationHelper.getNotNull(o2.getSignatureDate()));
-                            result = c2.compareTo(c1);
-                        } else if (colId.equalsIgnoreCase("status_id")) {
-                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
-                        }
-
-                        if (getSorting().isAsc()) {
-                            result *= -1;
-                        }
-                        return result;
-                    }
-                });
-
-                this.hashDocuments = result;
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } else {
-            result = this.hashDocuments;
-            //needRefresh=false;
-        }
-        return result;
-    }
 
     @Override
     protected Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 100);
+        return new Pagination(0, getTotalCount(), 50);
+        //Ранжирование по страницам по-умолчанию  (50 на страницу, начиная с нуля)
     }
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("registrationDate", true);
+        return new Sorting("registrationDate", false);
+        //Сортировка по-умолчанию (дата регистрации документа)
     }
-
 
     @Override
     protected int getTotalCount() {
-        int result = 0;
-        try {
-            result = new Long(this.getHashDocuments().size()).intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!sessionManagement.isSubstitution()) {
+            //Без замещения
+            return new Long(
+                    sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                            .countAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false)
+            ).intValue();
+        }  else {
+            // С замещением
+            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
+            userList.add(sessionManagement.getLoggedUser());
+            return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).countAllDocumentsByUserList(filters, filter, userList, false, false)).intValue();
         }
-        return result;
     }
 
     @Override
     protected List<OutgoingDocument> loadDocuments() {
-        List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
-        try {
-            this.needRefresh = true;
-            result = this.getHashDocuments(getPagination().getOffset(), getPagination().getPageSize());
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!sessionManagement.isSubstitution()) {
+            // Без замещения
+            return sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                    .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+        } else {
+            // С замещением
+            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
+            userList.add(sessionManagement.getLoggedUser());
+            return sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                    .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         }
-        return result;
-    }
-
-    @Override
-    public void refresh() {
-        this.needRefresh = true;
-        super.refresh();
-    }
-
-    @Override
-    public List<OutgoingDocument> getDocuments() {
-        return super.getDocuments();
     }
 
     public String getFilter() {
@@ -172,21 +69,23 @@ public class OutgoingDocumentsByNumberHolder extends AbstractDocumentListHolderB
     }
 
     public void setFilter(String filter) {
-        this.needRefresh = true;
         this.filter = filter;
     }
 
 
-    private String filter;
-    static private Map<String, Object> filters = new HashMap<String, Object>();
-
-    static {
-        filters.put("registrationNumber", "%");
-    }
-
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
+
+    private Map<String, Object> filters = new HashMap<String, Object>();
+    //Initialize block
+    {
+        filters.put("registrationNumber", "%");
+    }
+
+    private String filter;
+
+
 
     private static final long serialVersionUID = 8535420074467871583L;
 }
