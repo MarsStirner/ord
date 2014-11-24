@@ -12,9 +12,6 @@
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
 <ui:define name="running_head">
-    <!-- #{out_doc.document.id}  -->
-    <e5ui-comp:userSessionUpdate
-            rendered="#{out_doc.editState or out_doc.createState}" interval="300"/>
     <h:outputScript library="js" name="primefacesLocale_ru.js"/>
     <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
 </ui:define>
@@ -30,7 +27,7 @@
                         </h:outputLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{out_doc.edit}" rendered="#{out_doc.viewState}">
+                        <h:commandLink action="#{out_doc.edit}" rendered="#{out_doc.viewState and out_doc.editPermission}">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>
@@ -53,7 +50,7 @@
                         <e5ui:formPart id="actions_fp">
                             <h:commandLink
                                     onclick="actionsModal.clickOpen('actionsModal'); return false;"
-                                    rendered="#{not(out_doc.currentUserAdvDocReader)}">
+                                    rendered="#{out_doc.viewState and out_doc.executePermission}">
                                 <h:graphicImage value="#{resource['images:button-do.png']}"/>
                                 Действия
                             </h:commandLink>
@@ -171,7 +168,6 @@
                 <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Исходящие документы')}"/>
             </h:selectOneMenu>
         </div>
-
         <div class="title">
             <h:outputText value="#{out_doc.document.getDocumentStatus().getName()}"/>
         </div>
@@ -685,7 +681,7 @@
                               onclick="contragentListSelectModalVar.clickOpen('recipientContragentsSelectModal'); return false;">
                     Адресаты
                 </h:outputLink>
-											</span>
+			</span>
         </label>
         <e5ui-comp:modalWindow id="recipientContragentsSelectModal"
                                modalWindowHolder="#{out_doc.recipientContragentsSelectModal}"
@@ -793,49 +789,49 @@
         <div class="wrap" style="width:100%; margin: 0px">
             <div class="inner">
                 <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                var="row"
+                                var="human_task"
                                 value="#{out_doc.document.agreementTree.humanTaskTree}"
                                 grouping="true" levelCount="100">
-                    <e5ui:row level="#{row.grouping}" group="#{row.parentNode}"
+                    <e5ui:row level="#{human_task.grouping}" group="#{human_task.parentNode}"
                               fullRow="false" collapsed="false"/>
                     <e5ui:column>
                         <f:facet name="header">
                             <p>Согласующий</p>
                         </f:facet>
-                        <h:panelGroup rendered="#{row.groupedNode}">
-                            <ui:repeat value="#{row.taskList}" var="element">
+                        <h:panelGroup rendered="#{human_task.groupedNode}">
+                            <ui:repeat value="#{human_task.taskList}" var="element">
                                 <h:outputText value="#{element.executor}"
                                               converter="PersonConverter"/>
                                 <br/>
                             </ui:repeat>
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{not (row.groupedNode)}">
-                            <h:outputText value="#{row.firstTask.executor}"
+                        <h:panelGroup rendered="#{not (human_task.groupedNode)}">
+                            <h:outputText value="#{human_task.firstTask.executor}"
                                           converter="PersonConverter"/>
                         </h:panelGroup>
                     </e5ui:column>
                     <e5ui:column rendered="#{out_doc.document.getDocumentStatus().getId() gt 1}">
-                        <h:panelGroup rendered="#{row.groupedNode}">
-                            <ui:repeat value="#{row.taskList}" var="element">
+                        <h:panelGroup rendered="#{human_task.groupedNode}">
+                            <ui:repeat value="#{human_task.taskList}" var="element">
                                 <h:graphicImage
                                         value="#{resource[element.getDocumentStatus().getId() eq 2?'images:document_letter_okay.png':(element.statusId eq -1? 'images:document_letter_remove.png': 'images:document_letter_warning.png')]}"/>
                                 <br/>
                             </ui:repeat>
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{not (row.groupedNode)}">
+                        <h:panelGroup rendered="#{not (human_task.groupedNode)}">
                             <h:graphicImage
-                                    value="#{resource[row.firstTask.getDocumentStatus().getId() eq 2?'images:document_letter_okay.png':(row.firstTask.statusId eq -1? 'images:document_letter_remove.png': 'images:document_letter_warning.png')]}"/>
+                                    value="#{resource[human_task.firstTask.getDocumentStatus().getId() eq 2?'images:document_letter_okay.png':(human_task.firstTask.statusId eq -1? 'images:document_letter_remove.png': 'images:document_letter_warning.png')]}"/>
                         </h:panelGroup>
                     </e5ui:column>
                     <e5ui:column rendered="#{out_doc.document.getDocumentStatus().getId() gt 1}">
-                        <h:panelGroup rendered="#{row.groupedNode}">
-                            <ui:repeat value="#{row.taskList}" var="element">
+                        <h:panelGroup rendered="#{human_task.groupedNode}">
+                            <ui:repeat value="#{human_task.taskList}" var="element">
                                 <h:outputText value="#{element.commentary}"/>
                                 <br/>
                             </ui:repeat>
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{not (row.groupedNode)}">
-                            <h:outputText value="#{row.firstTask.commentary}"/>
+                        <h:panelGroup rendered="#{not (human_task.groupedNode)}">
+                            <h:outputText value="#{human_task.firstTask.commentary}"/>
                         </h:panelGroup>
                     </e5ui:column>
                 </e5ui:dataTable>
@@ -856,8 +852,7 @@
                         </h:commandLink>
                     </div>
                 </h:panelGroup>
-                <h:panelGroup
-                        rendered="#{not (out_doc.document.agreementTree eq null)}">
+                <h:panelGroup rendered="#{not (out_doc.document.agreementTree eq null)}">
                     <div class="defbutton">
                         <h:commandLink
                                 action="#{humanTaskTreeControl.addRootHumanTask(out_doc.document.agreementTree)}">
@@ -964,12 +959,8 @@
                         </div>
                     </div>
                     <div class="e5ui-modal-bottombuttons">
-                        <h:button
-                                onclick="humanTaskExecutorSelectModal.clickSave(); return false;"
-                                value="Выбрать"/>
-                        <h:button
-                                onclick="humanTaskExecutorSelectModal.clickClose(); return false;"
-                                value="Отмена"/>
+                        <h:button onclick="humanTaskExecutorSelectModal.clickSave(); return false;" value="Выбрать"/>
+                        <h:button onclick="humanTaskExecutorSelectModal.clickClose(); return false;" value="Отмена"/>
                     </div>
                 </e5ui-comp:modalWindow>
 
@@ -1008,12 +999,8 @@
                         </div>
                     </div>
                     <div class="e5ui-modal-bottombuttons">
-                        <h:button
-                                onclick="routeTemplateSelectModal.clickSave(); return false;"
-                                value="Выбрать"/>
-                        <h:button
-                                onclick="routeTemplateSelectModal.clickClose(); return false;"
-                                value="Отмена"/>
+                        <h:button onclick="routeTemplateSelectModal.clickSave(); return false;" value="Выбрать"/>
+                        <h:button onclick="routeTemplateSelectModal.clickClose(); return false;" value="Отмена"/>
                     </div>
                 </e5ui-comp:modalWindow>
             </div>
@@ -1032,10 +1019,8 @@
             <div class="menu">
                 <h:panelGroup rendered="#{out_doc.document.getDocumentStatus().getId() gt 0}">
                     <div class="defbutton">
-                        <h:outputLink value="/component/paper_copy_document.xhtml"
-                                      target="_blank">
-                            <h:graphicImage
-                                    value="#{resource['images:newf_buttn_icon.png']}"/>
+                        <h:outputLink value="/component/paper_copy_document.xhtml" target="_blank">
+                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                             Новый оригинал
                             <f:param name="docAction" value="create"/>
                             <f:param name="parentDocumentId" value="#{out_doc.document.uniqueId}"/>
@@ -1060,25 +1045,25 @@
                         <e5ui:dataTable id="select_table" border="0" cellpadding="0"
                                         cellspacing="0"
                                         value="#{paperCopyDocuments.getAllDocumentsByParentDocumentId(out_doc.document.uniqueId)}"
-                                        var="row" style="width:100%">
-                            <e5ui:row ondblclick="goToPaperCopyDocument('#{row.id}');"/>
+                                        var="paper_copy" style="width:100%">
+                            <e5ui:row ondblclick="goToPaperCopyDocument('#{paper_copy.id}');"/>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <p>Номер</p>
                                 </f:facet>
-                                <h:outputText value="#{row.registrationNumber}"/>
+                                <h:outputText value="#{paper_copy.registrationNumber}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:15em">
                                 <f:facet name="header">
                                     <p>Заголовок</p>
                                 </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
+                                <h:outputText value="#{paper_copy.shortDescription}"/>
                             </e5ui:column>
                             <e5ui:column>
                                 <f:facet name="header">
                                     <p>Статус</p>
                                 </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                                <h:outputText value="#{paper_copy.getDocumentStatus().getName()}"/>
                             </e5ui:column>
                         </e5ui:dataTable>
                     </div>
@@ -1697,9 +1682,7 @@
                                             value="#{userList.getUserFullNameById(row.currentRevision.authorId)}"/>
                                 </e5ui:column>
                                 <e5ui:column>
-                                    <h:outputLink
-                                            value="/component/file/download.xhtml"
-                                            target="_blank">
+                                    <h:outputLink value="/component/file/download.xhtml" target="_blank">
                                         <h:graphicImage value="/resources/images/download_doc.gif"/>
                                         <f:param name="id" value="#{row.id}"/>
                                         Скачать
@@ -1758,8 +1741,8 @@
                                                          actionBehavior="separate" maxFilesCount="1"
                                                          uploadHandler="#{fileManagement.uploadHandler}"
                                                          action="#{out_doc.versionAppenderModal.saveAttachment}"
-                                                         onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
-                                                         onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
+                                                         onuploading=""
+                                                         onuploaded="">
                                             <f:ajax render=":file_upload_form"
                                                     execute=":file_upload_form:versionAppenderModal"/>
                                         </e5ui:fileUpload>
@@ -1797,11 +1780,8 @@
                                                             value="#{userList.getUserFullNameById(row.authorId eq 0? out_doc.versionHistoryModal.attachment.authorId: row.authorId)}"/>
                                                 </e5ui:column>
                                                 <e5ui:column style="min-width:7em;">
-                                                    <h:outputLink
-                                                            value="/component/file/download.xhtml"
-                                                            target="_blank">
-                                                        <h:graphicImage
-                                                                value="/resources/images/download_doc.gif"/>
+                                                    <h:outputLink value="/component/file/download.xhtml" target="_blank">
+                                                        <h:graphicImage value="/resources/images/download_doc.gif"/>
                                                         <f:param name="id"
                                                                  value="#{out_doc.versionHistoryModal.attachment.id}"/>
                                                         <f:param name="revision" value="#{row.version}"/>
@@ -1813,9 +1793,7 @@
                                     </div>
                                 </div>
                                 <div class="e5ui-modal-bottombuttons">
-                                    <h:button
-                                            onclick="versionHistoryModal.clickClose(); return false;"
-                                            value="Закрыть"/>
+                                    <h:button onclick="versionHistoryModal.clickClose(); return false;" value="Закрыть"/>
                                 </div>
                             </e5ui-comp:modalWindow>
                         </div>
@@ -1823,19 +1801,6 @@
                 </div>
             </fieldset>
         </div>
-        <e5ui-comp:splashScreen id="splash_screen_2"
-                                widgetVar="splash_screen_2" timeout="0">
-            <f:facet name="timeoutPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:splashScreen>
-        <script>
-            e5ui_splashScreen.startShowOnSubmit('splash_screen_2',
-                    [ 'file_upload_form' ]);
-        </script>
     </h:form>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>

@@ -2,6 +2,8 @@ package ru.efive.dms.uifaces.beans.outgoing;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
@@ -12,6 +14,9 @@ import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentSelectModal;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.security.PermissionChecker;
+import ru.efive.dms.util.security.Permissions;
 import ru.efive.sql.dao.user.UserAccessLevelDAO;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
@@ -19,15 +24,13 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.RoleType;
-import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.user.UserAccessLevel;
 import ru.util.ApplicationHelper;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -36,40 +39,87 @@ import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @Named("out_doc")
 @ConversationScoped
 public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingDocument, Integer> implements Serializable {
 
+    //Именованный логгер (OUTGOING_DOCUMENT)
+    private static final Logger LOGGER = LoggerFactory.getLogger("OUTGOING_DOCUMENT");
+
+    public boolean isReadPermission() {
+        return permissions.hasPermission(READ);
+    }
+
+    public boolean isEditPermission() {
+        return permissions.hasPermission(WRITE);
+    }
+
+    public boolean isExecutePermission() {
+        return permissions.hasPermission(EXECUTE);
+    }
+
+    @Override
+    public boolean isCanDelete() {
+        if (!permissions.hasPermission(WRITE)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(WRITE);
+    }
+
+    @Override
+    public boolean isCanEdit() {
+        if (!permissions.hasPermission(WRITE)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(WRITE);
+    }
+
+    @Override
+    public boolean isCanView() {
+        if (!permissions.hasPermission(READ)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(READ);
+    }
+
+    //Для проверки прав доступа
+    @EJB
+    private PermissionChecker permissionChecker;
+    //TODO ACL
+    private Permissions permissions;
+
     @Override
     public String delete() {
-        String in_result = super.delete();
-        if (in_result != null && in_result.equals("delete")) {
+        final String in_result = super.delete();
+        if (AbstractDocumentHolderBean.ACTION_RESULT_DELETE.equals(in_result)) {
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
-                e.printStackTrace();
+                LOGGER.error("INTERNAL ERROR ON DELETE:", e);
             }
-            return in_result;
-        } else {
-            return in_result;
         }
+        return in_result;
     }
 
     @Override
     protected boolean deleteDocument() {
-        boolean result = false;
         try {
-            result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            final boolean result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
+            return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
+            return false;
         }
-        return result;
     }
 
     @Override
@@ -82,149 +132,85 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         return FromStringConverter.INTEGER_CONVERTER;
     }
 
+    /**
+     * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
+     *
+     * @param document документ для проверки
+     * @return true - допуск есть
+     */
+    private boolean checkState(final OutgoingDocument document, final User user) {
+        if (document == null) {
+            setState(STATE_NOT_FOUND);
+            LOGGER.warn("IncomingDocument NOT FOUND");
+            return false;
+        }
+        if (document.isDeleted()) {
+            setState(STATE_DELETED);
+            setStateComment("Документ удален");
+            LOGGER.warn("IncomingDocument[{}] IS DELETED", document.getId());
+            return false;
+        }
+        final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
+        if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
+            setState(STATE_FORBIDDEN);
+            setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
+            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]",
+                    new Object[]{
+                            document.getId(),
+                            docAccessLevel.getValue(),
+                            user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null"
+                    }
+            );
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void initDocument(Integer id) {
+        final User currentUser = sessionManagement.getLoggedUser();
+        LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            setDocument(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).get(id));
-            if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
-            } else {
-                UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-                if (userAccessLevel == null) {
-                    userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                }
+            final OutgoingDocument document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).get(id);
+            if (!checkState(document, currentUser)) {
+                setDocument(document);
+                return;
+            }
+            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getHibernateTemplate();
+            Session session = hibernateTemplate.getSessionFactory().openSession();
+            session.beginTransaction();
+            session.update(document);
+            session.getTransaction().commit();
 
-                UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
-                if (docAccessLevel == null) {
-                    docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                    getDocument().setUserAccessLevel(docAccessLevel);
-                }
-                if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
-                    /*FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                                 FacesMessage.SEVERITY_ERROR,
-                                 "Уровень допуска к документу выше вашего уровня допуска.", ""));*/
-                    setState(STATE_FORBIDDEN);
-                    setStateComment("Уровень допуска к документу выше вашего уровня допуска.");
-                    return;
-                }
-
-                Set<Integer> allReadersId = new HashSet<Integer>();
-
-                User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
-                int userId = currentUser.getId();
-                if (userId > 0) {
-                    boolean isAdminRole = false;
-                    List<Role> in_roles = currentUser.getRoleList();
-                    if (in_roles != null) {
-                        for (Role in_role : in_roles) {
-                            if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                                isAdminRole = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    OutgoingDocument document = getDocument();
-
-                    HibernateTemplate hibernateTemplate = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getHibernateTemplate();
-                    Session session = hibernateTemplate.getSessionFactory().openSession();
-                    session.beginTransaction();
-                    session.update(document);
-                    session.getTransaction().commit();
-
-                    hibernateTemplate.initialize(document.getExecutor());
-                    hibernateTemplate.initialize(document.getController());
-                    hibernateTemplate.initialize(document.getAuthor());
-                    hibernateTemplate.initialize(document.getNomenclature());
-                    hibernateTemplate.initialize(document.getCauseIncomingDocument());
-                    hibernateTemplate.initialize(document.getPersonReaders());
-                    hibernateTemplate.initialize(document.getPersonEditors());
-                    hibernateTemplate.initialize(document.getAgreementUsers());
-                    hibernateTemplate.initialize(document.getHistory());
-                    hibernateTemplate.initialize(document.getRoleEditors());
-                    hibernateTemplate.initialize(document.getRoleReaders());
-
-
-                    session.close();
-
-                    List<Role> documentRoles = new ArrayList<Role>();
-                    documentRoles.addAll(document.getRoleEditors());
-                    documentRoles.addAll(document.getRoleReaders());
-                    Set<Integer> documentRolesId = new HashSet<Integer>();
-                    for (Role role : documentRoles) {
-                        documentRolesId.add(role.getId());
-                    }
-
-                    Set<Integer> userRolesId = new HashSet<Integer>();
-                    for (Role role : currentUser.getRoles()) {
-                        userRolesId.add(role.getId());
-                    }
-
-                    boolean isUserReaderByRole = false;
-                    if (userRolesId.size() > 0 && documentRolesId.size() > 0) {
-                        userRolesId.retainAll(documentRolesId);
-                        isUserReaderByRole = (userRolesId.size() > 0);
-                    }
-
-
-                    if (!(isAdminRole || isUserReaderByRole)) {
-                        if (document.getAuthor() != null) {
-                            allReadersId.add(document.getAuthor().getId());
-                        }
-                        if (document.getExecutor() != null) {
-                            allReadersId.add(document.getExecutor().getId());
-                        }
-                        if (document.getController() != null) {
-                            allReadersId.add(document.getController().getId());
-                        }
-
-                        List<User> someReaders = new ArrayList<User>();
-                        someReaders.addAll(document.getAgreementUsers());
-                        someReaders.addAll(document.getPersonReaders());
-                        someReaders.addAll(document.getPersonEditors());
-                        Set<Group> recipientGroups = currentUser.getGroups();
-                        if (recipientGroups.size() != 0) {
-                            Iterator itr = recipientGroups.iterator();
-                            while (itr.hasNext()) {
-                                Group group = (Group) itr.next();
-                                someReaders.addAll(group.getMembersList());
-                            }
-                        }
-
-
-                        if (someReaders.size() != 0) {
-                            Iterator itr = someReaders.iterator();
-                            while (itr.hasNext()) {
-                                User user = (User) itr.next();
-                                allReadersId.add(user.getId());
-                            }
-                        }
-
-                        if (!allReadersId.contains(currentUser.getId())) {
-                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
-                            if (!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "outgoing_" + document.getId())) {
-                                setState(STATE_FORBIDDEN);
-                                setStateComment("Доступ запрещен");
-                                return;
-                            }
-                        }
-
-                    }
-                }
-
+            hibernateTemplate.initialize(document.getExecutor());
+            hibernateTemplate.initialize(document.getController());
+            hibernateTemplate.initialize(document.getAuthor());
+            hibernateTemplate.initialize(document.getNomenclature());
+            hibernateTemplate.initialize(document.getCauseIncomingDocument());
+            hibernateTemplate.initialize(document.getPersonReaders());
+            hibernateTemplate.initialize(document.getPersonEditors());
+            hibernateTemplate.initialize(document.getAgreementUsers());
+            hibernateTemplate.initialize(document.getHistory());
+            hibernateTemplate.initialize(document.getRoleEditors());
+            hibernateTemplate.initialize(document.getRoleReaders());
+            session.close();
+            setDocument(document);
+            //Проверка прав на открытие
+            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            try {
                 updateAttachments();
+            } catch (Exception e) {
+                LOGGER.warn("Exception while check upload files", e);
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка.", ""));
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
+            LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
 
     @Override
     protected void initNewDocument() {
+        permissions = Permissions.ALL_PERMISSIONS;
         OutgoingDocument document = new OutgoingDocument();
         document.setDocumentStatus(DocumentStatus.NEW);
         Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
@@ -232,7 +218,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         document.setAuthor(sessionManagement.getLoggedUser());
 
         String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
-        if (isDocumentTemplate != null && isDocumentTemplate.toLowerCase().equals("yes")) {
+        if ("yes".equals(isDocumentTemplate.toLowerCase())) {
             document.setTemplateFlag(true);
         } else {
             document.setTemplateFlag(false);
@@ -278,28 +264,28 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     @Override
     protected boolean saveDocument() {
-        boolean result = false;
         try {
-            OutgoingDocument document = (OutgoingDocument) getDocument();
+            OutgoingDocument document = getDocument();
             document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                return false;
             } else {
-                result = true;
+                setDocument(document);
+                return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null,MSG_ERROR_ON_SAVE);
+            LOGGER.error("saveDocument ERROR:", e);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+            return false;
         }
-        return result;
     }
 
     @Override
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            OutgoingDocument document = (OutgoingDocument) getDocument();
-            document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(getDocument());
+            OutgoingDocument document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(getDocument());
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
@@ -313,7 +299,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 paperCopy.setAuthor(sessionManagement.getLoggedUser());
 
                 String parentId = document.getUniqueId();
-                if (parentId != null || !parentId.isEmpty()) {
+                if (StringUtils.isNotEmpty(parentId)) {
                     paperCopy.setParentDocumentId(parentId);
                 }
 
@@ -337,7 +323,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
                 sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
 
-                System.out.println("uploading newly created files");
+                LOGGER.debug("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
                     Attachment tmpAttachment = attachments.get(i);
                     if (tmpAttachment != null) {
@@ -348,7 +334,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 result = true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveNewDocument ERROR:", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
@@ -357,20 +343,9 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     @Override
     protected String doAfterSave() {
-        UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-        if (userAccessLevel == null) {
-            userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-        }
-
-        UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
-        if (docAccessLevel == null) {
-            docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-            getDocument().setUserAccessLevel(docAccessLevel);
-        }
-        if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
+        if (getDocument().getUserAccessLevel().getLevel() > sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
         }
-
         return super.doAfterSave();
     }
 
@@ -439,110 +414,13 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             context.addMessage(null, MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
-        if (getDocument().getShortDescription() == null || getDocument().getShortDescription().equals("")) {
+        if (StringUtils.isEmpty(getDocument().getShortDescription())) {
             context.addMessage(null, MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
         return result;
     }
 
-    public boolean isCurrentUserAccessEdit() {
-        User inUser = sessionManagement.getLoggedUser();
-        //inUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(  inUser.getLogin(), inUser.getPassword());
-        OutgoingDocument outDoc = getDocument();
-
-        List<Integer> recipUsers = new ArrayList<Integer>();
-        if (outDoc.getPersonReaders() != null) {
-            for (User user : outDoc.getPersonReaders()) {
-                recipUsers.add(user.getId());
-            }
-        }
-        if (recipUsers.contains(inUser.getId())) {
-            return true;
-        }
-
-        List<Integer> accessRoles = new ArrayList<Integer>();
-        if (outDoc.getRoleReaders() != null) {
-            for (Role role : outDoc.getRoleReaders()) {
-                accessRoles.add(role.getId());
-            }
-        }
-        for (Role role : inUser.getRoles()) {
-            if (accessRoles.contains(role.getId())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    protected boolean isCurrentUserDocEditor() {
-
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-        OutgoingDocument out_doc = getDocument();
-
-        if (in_user.isAdministrator()) {
-            return true;
-        }
-
-        List<Integer> in_editorsId = new ArrayList<Integer>();
-        if (out_doc.getPersonEditors() != null) {
-            for (User user : out_doc.getPersonEditors()) {
-                in_editorsId.add(user.getId());
-            }
-        }
-        if (out_doc.getController() != null) {
-            in_editorsId.add(out_doc.getController().getId());
-        }
-        if (out_doc.getAuthor() != null) {
-            in_editorsId.add(out_doc.getAuthor().getId());
-        }
-
-        if (in_editorsId.contains(in_user.getId())) {
-            return true;
-        }
-
-
-        List<Integer> in_rolesId = new ArrayList<Integer>();
-        for (Role role : out_doc.getRoleEditors()) {
-            in_rolesId.add(role.getId());
-        }
-
-        if (in_rolesId.size() != 0) {
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_rolesId.contains(in_role.getId())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    protected boolean isCurrentUserAdvDocReader() {
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-
-        OutgoingDocument out_doc = getDocument();
-
-        List<User> in_advReaders = new ArrayList<User>();
-        if (out_doc.getPersonReaders() != null) in_advReaders.addAll(out_doc.getPersonReaders());
-        if (in_advReaders.contains(in_user)) {
-            return true;
-        }
-
-        List<Role> in_roles = out_doc.getRoleReaders();
-        if (in_roles != null) {
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_roles.contains(in_role)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
     // FILES
 
     public List<Attachment> getAttachments() {
@@ -590,7 +468,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null,MSG_ERROR_ON_ATTACH);
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }
@@ -626,7 +504,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             updateAttachments();
         }
 
-        document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
+        sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
     }
 
     private List<Attachment> attachments = new ArrayList<Attachment>();
@@ -793,7 +671,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     /* =================== */
 
     // END OF MODAL HOLDERS
-
 
 
     public ContragentListSelectModalBean getRecipientContragentsSelectModal() {

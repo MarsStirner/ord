@@ -324,7 +324,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 paperCopy.setAuthor(sessionManagement.getLoggedUser());
 
                 String parentId = document.getUniqueId();
-                if (parentId != null && !parentId.isEmpty()) {
+                if (StringUtils.isNotEmpty(parentId)) {
                     paperCopy.setParentDocumentId(parentId);
                 }
 
