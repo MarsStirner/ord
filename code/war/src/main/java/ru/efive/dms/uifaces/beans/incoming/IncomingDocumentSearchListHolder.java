@@ -28,7 +28,6 @@ import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 @Named("in_search_documents")
 @SessionScoped
 public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolderBean<IncomingDocument> {
-    private static final String beanName = "in_search_documents";
 
     public boolean isNeedRefresh() {
         return needRefresh;

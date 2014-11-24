@@ -1,29 +1,20 @@
 package ru.efive.dms.dao;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
-
-import ru.entity.model.crm.Contragent;
+import org.joda.time.LocalDate;
 import ru.efive.sql.dao.GenericDAOHibernate;
+import ru.entity.model.crm.Contragent;
+import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.document.DeliveryType;
-import ru.entity.model.document.DocumentForm;
-import ru.entity.model.document.IncomingDocument;
-import ru.entity.model.document.OfficeKeepingVolume;
-import ru.entity.model.document.PaperCopyDocument;
+
+import java.util.*;
 
 public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocument> {
 
@@ -40,7 +31,7 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
         detachedCriteria.add(Restrictions.eq("id", Integer.valueOf(id)));
         List<IncomingDocument> in_results = getHibernateTemplate().findByCriteria(detachedCriteria);
-        if (in_results != null && in_results.size() > 0) {
+        if (in_results != null && !in_results.isEmpty()) {
             return in_results.get(0);
         } else {
             return null;
@@ -55,7 +46,7 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
         detachedCriteria.add(Restrictions.eq("parentNumeratorId", Integer.valueOf(id)));
         List<IncomingDocument> in_results = getHibernateTemplate().findByCriteria(detachedCriteria);
-        if (in_results != null && in_results.size() > 0) {
+        if (in_results != null && !in_results.isEmpty()) {
             return in_results.get(0);
         } else {
             return null;
@@ -83,8 +74,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
         detachedCriteria.add(Restrictions.ilike("registrationNumber", "%" + in_criteria + "%"));
 
-        Calendar calendar = Calendar.getInstance();
-        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", calendar.get(Calendar.YEAR) + "%", new StringType()));
+        LocalDate currentDate = new LocalDate();
+        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()));
 
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
@@ -94,37 +85,23 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
-
         if (!showDrafts) {
             detachedCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
         }
+        System.out.println("subSrart"); //TODO wtf? =)
+        return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria, in_map), filter), -1, 0);
 
-        int userId = user.getId();
-        if (userId > 0) {
-            System.out.println("subSrart");
-            return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria, in_map), filter), -1, 0);
-        } else {
-            return new ArrayList<IncomingDocument>(0);
-        }
     }
 
     public long countAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
         }
-
         if (!showDrafts) {
             in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
         }
-
-        int userId = user.getId();
-        if (userId > 0) {
-            return getCountOf(getSearchCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), filter));
-        } else {
-            return 0;
-        }
+        return getCountOf(getSearchCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), filter));
     }
 
     public long countAllDocuments(Map<String, Object> in_map, boolean showDeleted, boolean showDrafts) {
@@ -170,17 +147,10 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
         }
-
         if (!showDrafts) {
             in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
         }
-
-        int userId = user.getId();
-        if (userId > 0) {
-            return getCountOf(getConjunctionSearchCriteria(in_searchCriteria, in_map));
-        } else {
-            return 0;
-        }
+        return getCountOf(getConjunctionSearchCriteria(in_searchCriteria, in_map));
     }
 
     public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
@@ -189,26 +159,18 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
         }
-
         if (!showDrafts) {
             in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
         }
-
-        int userId = user.getId();
-        if (userId > 0) {
-            String[] ords = orderBy == null ? null : orderBy.split(",");
-            if (ords != null) {
-                if (ords.length > 1) {
-                    addOrder(in_searchCriteria, ords, orderAsc);
-                } else {
-                    addOrder(in_searchCriteria, orderBy, orderAsc);
-                }
+        String[] ords = orderBy == null ? null : orderBy.split(",");
+        if (ords != null) {
+            if (ords.length > 1) {
+                addOrder(in_searchCriteria, ords, orderAsc);
+            } else {
+                addOrder(in_searchCriteria, orderBy, orderAsc);
             }
-            return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset, count);
-
-        } else {
-            return new ArrayList<IncomingDocument>(0);
         }
+        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset, count);
     }
 
     public long countAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
@@ -220,12 +182,7 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDrafts) {
             in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
         }
-        int userId = user.getId();
-        if (userId > 0) {
-            return getCountOf(getSearchCriteria(in_searchCriteria, filter));
-        } else {
-            return 0;
-        }
+        return getCountOf(getSearchCriteria(in_searchCriteria, filter));
     }
 
     public List<IncomingDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
@@ -237,12 +194,7 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDrafts) {
             in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
         }
-        int userId = user.getId();
-        if (userId > 0) {
-            return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter));
-        } else {
-            return new ArrayList<IncomingDocument>(0);
-        }
+        return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter));
     }
 
 
@@ -252,43 +204,43 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDeleted) {
             in_searchCriteria.add(Restrictions.eq("deleted", false));
         }
-
         if (!showDrafts) {
             in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
         }
+        String[] ords = orderBy == null ? null : orderBy.split(",");
+        if (ords != null) {
+            if (ords.length > 1) {
+                addOrder(in_searchCriteria, ords, orderAsc);
+            } else {
+                addOrder(in_searchCriteria, orderBy, orderAsc);
+            }
+        }
 
-        int userId = user.getId();
-        if (userId > 0) {
-            String[] ords = orderBy == null ? null : orderBy.split(",");
-            if (ords != null) {
-                if (ords.length > 1) {
-                    addOrder(in_searchCriteria, ords, orderAsc);
-                } else {
-                    addOrder(in_searchCriteria, orderBy, orderAsc);
-                }
-            }
-
-            in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-            //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-            List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
-            if (ids.isEmpty()) {
-                return new ArrayList<IncomingDocument>(0);
-            }
-            //Ищем только по этим ключам с упорядочиванием
-            DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
-            if (ords != null) {
-                if (ords.length > 1) {
-                    addOrder(resultCriteria, ords, orderAsc);
-                } else {
-                    addOrder(resultCriteria, orderBy, orderAsc);
-                }
-            }
-            setCriteriaAliases(resultCriteria);
-            resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-            return getHibernateTemplate().findByCriteria(resultCriteria);
-        } else {
+        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
+        if (ids.isEmpty()) {
             return new ArrayList<IncomingDocument>(0);
         }
+        //Ищем только по этим ключам с упорядочиванием
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, ords, orderBy, orderAsc));
+
+    }
+
+    private DetachedCriteria getIDListCriteria(List ids, String[] ords, String orderBy, boolean orderAsc) {
+        final DetachedCriteria result = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
+        if (ords != null) {
+            if (ords.length > 1) {
+                addOrder(result, ords, orderAsc);
+            } else {
+                addOrder(result, orderBy, orderAsc);
+            }
+        } else {
+            addOrder(result, orderBy, orderAsc);
+        }
+        setCriteriaAliases(result);
+        result.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        return result;
     }
 
     //// Запросы с проверкой на руководителя документа /////////////////////////////////////////////////////////////////
@@ -297,13 +249,9 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             final String filter,
             final User user,
             final boolean showDeleted) {
-        if (user != null && user.getId() > 0) {
-            DetachedCriteria resultCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
-            resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-            return getHibernateTemplate().findByCriteria(resultCriteria);
-        } else {
-            return new ArrayList<IncomingDocument>(0);
-        }
+        DetachedCriteria resultCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
+        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        return getHibernateTemplate().findByCriteria(resultCriteria);
     }
 
 
@@ -316,24 +264,16 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             final int count,
             final String order,
             final boolean asc) {
-        if (user != null && user.getId() > 0) {
-            DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
-            addOrder(in_searchCriteria, order, asc);
-            in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-            //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-            List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
-            if (ids.isEmpty()) {
-                return new ArrayList<IncomingDocument>(0);
-            }
-            //Ищем только по этим ключам с упорядочиванием
-            DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
-            addOrder(resultCriteria, order, asc);
-            setCriteriaAliases(resultCriteria);
-            resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-            return getHibernateTemplate().findByCriteria(resultCriteria);
-        } else {
+        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
+        addOrder(in_searchCriteria, order, asc);
+        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
+        if (ids.isEmpty()) {
             return new ArrayList<IncomingDocument>(0);
         }
+        //Ищем только по этим ключам с упорядочиванием
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, order, asc));
     }
 
     @SuppressWarnings("unchecked")
@@ -346,40 +286,25 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             final int count,
             final String order,
             final boolean asc) {
-        if (user != null && user.getId() > 0) {
-            DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate);
-            addOrder(in_searchCriteria, order, asc);
-            in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-            //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-            List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
-            if (ids.isEmpty()) {
-                return new ArrayList<IncomingDocument>(0);
-            }
-            //Ищем только по этим ключам с упорядочиванием
-            DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
-            addOrder(resultCriteria, order, asc);
-            setCriteriaAliases(resultCriteria);
-            resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-            return getHibernateTemplate().findByCriteria(resultCriteria);
-        } else {
+        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate);
+        addOrder(in_searchCriteria, order, asc);
+        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
+        if (ids.isEmpty()) {
             return new ArrayList<IncomingDocument>(0);
         }
+        //Ищем только по этим ключам с упорядочиванием
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, order, asc));
+
     }
 
     public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted) {
-        if (user != null && user.getId() > 0) {
-            return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter));
-        } else {
-            return 0;
-        }
+        return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter));
     }
 
     public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted, final Date beforeDate) {
-        if (user != null && user.getId() > 0) {
-            return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate));
-        } else {
-            return 0;
-        }
+        return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate));
     }
 
     /**
@@ -425,6 +350,62 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final String filter, final Date beforeDate) {
         return getControlledDocumentsByUserCriteria(user, showDeleted, filter).add(Restrictions.lt("executionDate", beforeDate));
     }
+
+    /**
+     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -  руководитель (если не админ)
+     *
+     * @param userList    список пользователей, для которых генерируем критерии
+     * @param showDeleted включать ли удаленные документы в результат
+     * @param filter      поисковый шаблон
+     * @param beforeDate  Ограничение по дате, до которой должен быть срок исполнения
+     * @return набор критериев для поиска требуемых документов
+     */
+    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted, String filter, Date beforeDate) {
+        return getControlledDocumentsByUserListCriteria(userList, showDeleted, filter).add(Restrictions.lt("executionDate", beforeDate));
+    }
+
+    /**
+     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -  руководитель (если не админ)
+     *
+     * @param userList    список пользователей, для которых генерируем критерии
+     * @param showDeleted включать ли удаленные документы в результат
+     * @param filter      поисковый шаблон
+     * @return набор критериев для поиска требуемых документов
+     */
+    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted, String filter) {
+        final DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass());
+        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        setCriteriaAliases(resultCriteria);
+        boolean isAdministrator = false;
+        final List<Integer> userIdList = new ArrayList<Integer>(userList.size());
+        for (User user : userList) {
+            if (user.isAdministrator()) {
+                isAdministrator = true;
+                break;
+            } else {
+                userIdList.add(user.getId());
+            }
+        }
+        if (!isAdministrator) {
+            resultCriteria.add(Restrictions.in("controller.id", userIdList));
+        }
+        resultCriteria.add(Restrictions.isNotNull("executionDate"));
+        resultCriteria.add(Restrictions.in("statusId",
+                        ImmutableList.of(
+                                DocumentStatus.ON_REGISTRATION.getId(),
+                                DocumentStatus.CHECK_IN_2.getId(),
+                                DocumentStatus.ON_EXECUTION_80.getId()
+                        )
+                )
+        );
+        if (!showDeleted) {
+            resultCriteria.add(Restrictions.eq("deleted", false));
+        }
+        getSearchCriteria(resultCriteria, filter);
+        return resultCriteria;
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -436,18 +417,10 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
-
-        int userId = user.getId();
-        if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("author.id", userId));
-            detachedCriteria.add(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId()));
-
-            addOrderWithoutAliases(detachedCriteria, orderBy, orderAsc);
-
-            return getHibernateTemplate().findByCriteria(getSearchCriteria(detachedCriteria, filter), offset, count);
-        } else {
-            return new ArrayList<IncomingDocument>(0);
-        }
+        detachedCriteria.add(Restrictions.eq("author.id", user.getId()));
+        detachedCriteria.add(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId()));
+        addOrderWithoutAliases(detachedCriteria, orderBy, orderAsc);
+        return getHibernateTemplate().findByCriteria(getSearchCriteria(detachedCriteria, filter), offset, count);
     }
 
     private void addOrderWithoutAliases(final DetachedCriteria criteria, final String orderBy, final boolean asc) {
@@ -471,14 +444,10 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (!showDeleted) {
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
-        int userId = user.getId();
-        if (userId > 0) {
-            detachedCriteria.add(Restrictions.eq("author.id", userId));
-            detachedCriteria.add(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId()));
-            return getCountOf(detachedCriteria);
-        } else {
-            return 0;
-        }
+        detachedCriteria.add(Restrictions.eq("author.id", user.getId()));
+        detachedCriteria.add(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId()));
+        return getCountOf(detachedCriteria);
+
     }
 
 
@@ -494,7 +463,7 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         criteria.createAlias("personReaders", "readers", CriteriaSpecification.LEFT_JOIN);
         criteria.createAlias("personEditors", "editors", CriteriaSpecification.LEFT_JOIN);
         criteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("roleEditors", "roleEditros", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
         criteria.createAlias("userAccessLevel", "userAccessLevel", CriteriaSpecification.LEFT_JOIN);
         return criteria;
     }
@@ -550,11 +519,9 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
     protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
-        if ((in_map != null) && (in_map.size() > 0)) {
+        if (in_map != null && !in_map.isEmpty()) {
             Conjunction conjunction = Restrictions.conjunction();
-            String in_key = "";
-
-            in_key = "parentNumeratorId";
+            String in_key = "parentNumeratorId";
             if (in_map.get(in_key) != null) {
                 conjunction.add(Restrictions.isNotNull(in_key));
             }
@@ -628,11 +595,9 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             in_key = "recipientUsers";
             if (in_map.get(in_key) != null) {
                 List<User> recipients = (List<User>) in_map.get(in_key);
-                if (recipients.size() != 0) {
+                if (!recipients.isEmpty()) {
                     List<Integer> recipientsId = new ArrayList<Integer>();
-                    Iterator itr = recipients.iterator();
-                    while (itr.hasNext()) {
-                        User user = (User) itr.next();
+                    for (User user : recipients) {
                         recipientsId.add(user.getId());
                     }
                     conjunction.add(Restrictions.in("recipientUsers.id", recipientsId));
@@ -648,11 +613,9 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             in_key = "executors";
             if (in_map.get(in_key) != null) {
                 List<User> executors = (List<User>) in_map.get(in_key);
-                if (executors.size() != 0) {
+                if (!executors.isEmpty()) {
                     List<Integer> executorsId = new ArrayList<Integer>();
-                    Iterator itr = executors.iterator();
-                    while (itr.hasNext()) {
-                        User user = (User) itr.next();
+                    for (User user : executors) {
                         executorsId.add(user.getId());
                     }
                     conjunction.add(Restrictions.in("executors.id", executorsId));
@@ -717,35 +680,185 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         Disjunction disjunction = Restrictions.disjunction();
 
         int userId = user.getId();
-        if (userId > 0) {
-            if (!user.isAdministrator()) {
-                disjunction.add(Restrictions.eq("author.id", userId));
-                disjunction.add(Restrictions.eq("executors.id", userId));
-                disjunction.add(Restrictions.eq("controller.id", userId));
-                disjunction.add(Restrictions.eq("recipientUsers.id", userId));
-                disjunction.add(Restrictions.eq("readers.id", userId));
-                disjunction.add(Restrictions.eq("editors.id", userId));
-                if (!user.getRoleList().isEmpty()) {
-                    List<Integer> rolesId = new ArrayList<Integer>();
-                    for (Role role : user.getRoleList()) {
-                        rolesId.add(role.getId());
-                    }
-                    disjunction.add(Restrictions.in("roleReaders.id", rolesId));
-                    disjunction.add(Restrictions.in("roleEditros.id", rolesId));
+        if (!user.isAdministrator()) {
+            disjunction.add(Restrictions.eq("author.id", userId));
+            disjunction.add(Restrictions.eq("executors.id", userId));
+            disjunction.add(Restrictions.eq("controller.id", userId));
+            disjunction.add(Restrictions.eq("recipientUsers.id", userId));
+            disjunction.add(Restrictions.eq("readers.id", userId));
+            disjunction.add(Restrictions.eq("editors.id", userId));
+            if (!user.getRoleList().isEmpty()) {
+                List<Integer> rolesId = new ArrayList<Integer>();
+                for (Role role : user.getRoleList()) {
+                    rolesId.add(role.getId());
                 }
-                if (!user.getGroups().isEmpty()) {
-                    final List<Integer> recipientGroupsId = new ArrayList<Integer>();
-                    for (Group group : user.getGroups()) {
-                        recipientGroupsId.add(group.getId());
-                    }
-                    disjunction.add(Restrictions.in("recipientGroups.id", recipientGroupsId));
-                }
-                detachedCriteria.add(disjunction);
+                disjunction.add(Restrictions.in("roleReaders.id", rolesId));
+                disjunction.add(Restrictions.in("roleEditors.id", rolesId));
             }
-            int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
-            detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
+            if (!user.getGroups().isEmpty()) {
+                final List<Integer> recipientGroupsId = new ArrayList<Integer>();
+                for (Group group : user.getGroups()) {
+                    recipientGroupsId.add(group.getId());
+                }
+                disjunction.add(Restrictions.in("recipientGroups.id", recipientGroupsId));
+            }
+            detachedCriteria.add(disjunction);
         }
+        int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
+        detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
+        return detachedCriteria;
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Работа с группами пользователей (для режима замещения)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Поиск документов, доступных хотя-бы одному из пользователй в списке
+     *
+     * @param filter      поисковая строка
+     * @param userList    список пользователей
+     * @param showDeleted показывать удаленные документы
+     * @param showDrafts  показывать незарегистрированные документы
+     * @param offset      смещение для разбивки запроса на страницы
+     * @param pageSize    размер страницы
+     * @param orderBy     сортировка
+     * @param orderAsc    сортировка по возрастанию?
+     * @return список документов, удовлетворяющий всем ограничениям
+     */
+    public List<IncomingDocument> findAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, boolean showDrafts, int offset, int pageSize, String orderBy, boolean orderAsc) {
+        if (userList.size() == 1) {
+            // Если в списке один пользователь - то вызов запроса по одному пользоваетлю
+            return findAllDocumentsByUser(filter, userList.get(0), showDeleted, showDrafts, offset, pageSize, orderBy, orderAsc);
+        }
+        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
+        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
+        if (!showDeleted) {
+            in_searchCriteria.add(Restrictions.eq("deleted", false));
+        }
+        if (!showDrafts) {
+            in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
+        }
+        String[] ords = orderBy == null ? null : orderBy.split(",");
+        if (ords != null) {
+            if (ords.length > 1) {
+                addOrder(in_searchCriteria, ords, orderAsc);
+            } else {
+                addOrder(in_searchCriteria, orderBy, orderAsc);
+            }
+        }
+
+        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, pageSize);
+        if (ids.isEmpty()) {
+            return new ArrayList<IncomingDocument>(0);
+        }
+        //Ищем только по этим ключам с упорядочиванием
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, ords, orderBy, orderAsc));
+    }
+
+    /**
+     * Формирование ограничений на список входящих документов для группы пользователей (обычно используется для замещений)
+     *
+     * @param userList
+     * @return
+     */
+    private DetachedCriteria getAccessControlSearchCriteriaByUserList(List<User> userList) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
+        Disjunction disjunction = Restrictions.disjunction();
+        boolean isAdministrator = false;
+        final List<Integer> userIdList = new ArrayList<Integer>(userList.size());
+        final Set<Integer> roleList = new HashSet<Integer>();
+        final Set<Integer> groupList = new HashSet<Integer>();
+        //Сбор идшников всех пользователей в список и проверка админских прав
+        //Также сбор всех групп и ролей
+        for (User current : userList) {
+            if (current.isAdministrator()) {
+                isAdministrator = true;
+                break;
+            } else {
+                userIdList.add(current.getId());
+                if (!current.getRoles().isEmpty()) {
+                    for (Role currentRole : current.getRoles()) {
+                        roleList.add(currentRole.getId());
+                    }
+                }
+                if (!current.getGroups().isEmpty()) {
+                    for (Group currentGroup : current.getGroups()) {
+                        groupList.add(currentGroup.getId());
+                    }
+                }
+            }
+        }
+        // Ежели админских прав нет, то проверять чтобы хоть один из идшников пользователей был в списках
+        if (!isAdministrator) {
+            disjunction.add(Restrictions.in("author.id", userIdList));
+            disjunction.add(Restrictions.in("executors.id", userIdList));
+            disjunction.add(Restrictions.in("controller.id", userIdList));
+            disjunction.add(Restrictions.in("recipientUsers.id", userIdList));
+            disjunction.add(Restrictions.in("readers.id", userIdList));
+            disjunction.add(Restrictions.in("editors.id", userIdList));
+            disjunction.add(Restrictions.in("roleReaders.id", roleList));
+            disjunction.add(Restrictions.in("roleEditors.id", roleList));
+
+            if (!groupList.isEmpty()) {
+                disjunction.add(Restrictions.in("recipientGroups.id", groupList));
+            }
+            detachedCriteria.add(disjunction);
+        }
+        //TODO починить поиском наибольшего в сборе или уточнять
+//        int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
+//        detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
+
         return detachedCriteria;
     }
 
+    /**
+     * Подсчет количества документов, доступных группе пользователей
+     */
+    public long countAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, boolean showDrafts) {
+        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
+        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
+        if (!showDeleted) {
+            in_searchCriteria.add(Restrictions.eq("deleted", false));
+        }
+        if (!showDrafts) {
+            in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId())));
+        }
+        return getCountOf(getSearchCriteria(in_searchCriteria, filter));
+    }
+
+    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, Date beforeDate, int offset, int pageSize, String orderBy, boolean asc) {
+        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserListCriteria(userList, showDeleted, filter, beforeDate);
+        addOrder(in_searchCriteria, orderBy, asc);
+        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, pageSize);
+        if (ids.isEmpty()) {
+            return new ArrayList<IncomingDocument>(0);
+        }
+        //Ищем только по этим ключам с упорядочиванием
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, orderBy, asc));
+    }
+
+    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, int offset, int pageSize, String orderBy, boolean asc) {
+        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserListCriteria(userList, showDeleted, filter);
+        addOrder(in_searchCriteria, orderBy, asc);
+        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, pageSize);
+        if (ids.isEmpty()) {
+            return new ArrayList<IncomingDocument>(0);
+        }
+        //Ищем только по этим ключам с упорядочиванием
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, orderBy, asc));
+    }
+
+    public long countControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, Date beforeDate) {
+        return getCountOf(getControlledDocumentsByUserListCriteria(userList, showDeleted, filter, beforeDate));
+    }
+
+    public long countControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted) {
+        return getCountOf(getControlledDocumentsByUserListCriteria(userList, showDeleted, filter));
+    }
 }

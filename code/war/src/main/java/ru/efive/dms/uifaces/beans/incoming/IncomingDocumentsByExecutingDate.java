@@ -7,6 +7,7 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,27 +47,64 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
 
     @Override
     protected List<IncomingDocument> loadDocuments(final Pagination pagination) {
-        if (showExpiredFlag) {
-            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+        if (!sessionManagement.isSubstitution()) {
+            // Без замещения
+            if (showExpiredFlag) {
+                //для просроченных
+                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+            } else {
+                // все
+                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+            }
         } else {
-            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+            //С замещением
+            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
+            userList.add(sessionManagement.getLoggedUser());
+            if (showExpiredFlag) {
+                //для просроченных
+                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .findControlledDocumentsByUserList(filter, userList, false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+            } else {
+                // все
+                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .findControlledDocumentsByUserList(filter, userList, false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+            }
         }
     }
 
     protected int getTotalCount() {
-        if (showExpiredFlag) {
-            return new Long(
-                    sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                            .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate())
-            ).intValue();
+        if (!sessionManagement.isSubstitution()) {
+            // Без замещения
+            if (showExpiredFlag) {
+                return new Long(
+                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                                .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate())
+                ).intValue();
+            } else {
+                return new Long(
+                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                                .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false)
+                ).intValue();
+            }
         } else {
-            return new Long(
-                    sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                            .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false)
-            ).intValue();
+            //С замещением
+            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
+            userList.add(sessionManagement.getLoggedUser());
+            if (showExpiredFlag) {
+                return new Long(
+                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                                .countControlledDocumentsByUserList(filter, userList, false, currentDate.toDate())
+                ).intValue();
+            } else {
+                return new Long(
+                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                                .countControlledDocumentsByUserList(filter, userList, false)
+                ).intValue();
+            }
         }
+
     }
 
     @Override

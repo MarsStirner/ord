@@ -1,13 +1,12 @@
 package ru.efive.dms.uifaces.beans.internal;
 
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationDAONames;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.InternalDocument;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-
 import ru.entity.model.user.User;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
@@ -115,18 +114,6 @@ public class InternalDirectionDocumentsHolder extends AbstractDocumentListHolder
     protected Sorting initSorting() {
         return new Sorting("registrationDate", true);
     }
-
-    /*@Override
-     protected int getTotalCount() {
-         return new Long(sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
-                 sessionManagement.getLoggedUser(), false, false)).intValue();
-     }
-
-     @Override
-     protected List<InternalDocument> loadDocuments() {
-         return sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, sessionManagement.getLoggedUser(),
-                 false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
-     }*/
 
     @Override
     protected int getTotalCount() {

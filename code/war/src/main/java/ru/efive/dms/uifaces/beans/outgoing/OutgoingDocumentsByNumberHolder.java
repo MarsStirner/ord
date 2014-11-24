@@ -132,46 +132,6 @@ public class OutgoingDocumentsByNumberHolder extends AbstractDocumentListHolderB
         return new Sorting("registrationDate", true);
     }
 
-    /*@Override
-        protected int getTotalCount() {
-            int result = 0;
-            try {
-                User user=sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
-                return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class,OUTGOING_DOCUMENT_FORM_DAO).countAllDocumentsByUser(filter,
-                        user, false, false)).intValue();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-
-        @Override
-        protected List<OutgoingDocument> loadDocuments() {
-            List<OutgoingDocument> result = new ArrayList<OutgoingDocument>();
-            try {
-                User user=sessionManagement.getLoggedUser();
-                user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
-                result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class,OUTGOING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, user,
-                        false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
-                result = new ArrayList<OutgoingDocument>(new HashSet<OutgoingDocument>(result));
-                Collections.sort(result, new Comparator<OutgoingDocument>() {
-                    public int compare(OutgoingDocument o1, OutgoingDocument o2) {
-                        Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c1.setTime(o1.getRegistrationDate());
-                        Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                        c2.setTime(o2.getRegistrationDate());
-                        return c2.compareTo(c1);
-                    }
-                });
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-            return result;
-        }
-    */
 
     @Override
     protected int getTotalCount() {
