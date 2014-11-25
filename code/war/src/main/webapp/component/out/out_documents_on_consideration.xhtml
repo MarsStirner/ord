@@ -39,93 +39,89 @@
     <ui:define name="content">
         <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
 
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{outDocumentsOnConsideration.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                    <h:commandButton value=" " action="#{outDocumentsOnConsideration.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
-                    </h:commandButton>
-                    <h:outputLink
-                            target="_blank"
-                            value="/component/out/out_document_search_form.xhtml"
-                            title="Перейти к форме расширенного поиска"
-                            style="margin: 0pt 20px;">
-                        Расширенный поиск
-                    </h:outputLink>
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                        value="#{outDocumentsOnConsideration.documents}" var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToOutgoingDocument('#{row.id}');"/>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{outDocumentsOnConsideration.sort('registrationNumber')}">
-                                        Номер
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{outDocumentsOnConsideration.sort('registrationDate')}">
-                                        Дата
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.registered? row.registrationDate: row.creationDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <p>Вид документа</p>
-                                </f:facet>
-                                <h:outputText value="#{row.form.value}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <p>Адресаты</p>
-                                </f:facet>
-                                <ui:repeat value="#{row.recipientContragents}" var="element">
-                                    <div><h:outputText value="#{element.fullName}"/></div>
-                                </ui:repeat>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{outDocumentsOnConsideration.sort('status_id')}">
-                                        Статус
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Краткое содержание</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{outDocumentsOnConsideration}"
-                                              style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{outDocumentsOnConsideration}"
-                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
+        <div id="main_table">
+            <div id="searchbar" class="main_searchbar">
+                <h:inputText id="filter_string" value="#{outDocumentsOnConsideration.filter}"
+                             style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
+                <h:commandButton value=" " action="#{outDocumentsOnConsideration.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
+                </h:commandButton>
+                <h:outputLink target="_blank" value="/component/out/out_document_search_form.xhtml"
+                              title="Перейти к форме расширенного поиска"
+                              style="margin: 0 20px;">
+                    Расширенный поиск
+                </h:outputLink>
+            </div>
+            <div class="wrap_main" id="table_wrap">
+                <div class="inner" id="table_inner">
+                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+                                    value="#{outDocumentsOnConsideration.documents}" var="row" id="main_data_tbl">
+                        <e5ui:row ondblclick="goToOutgoingDocument('#{row.id}');"/>
+                        <e5ui:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{outDocumentsOnConsideration.sort('registrationNumber')}">
+                                    Номер
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <strong><h:outputText value="#{row.registrationNumber}"/></strong>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{outDocumentsOnConsideration.sort('registrationDate')}">
+                                    Дата
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.registered? row.registrationDate: row.creationDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <p>Вид документа</p>
+                            </f:facet>
+                            <h:outputText value="#{row.form.value}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:10em">
+                            <f:facet name="header">
+                                <p>Адресаты</p>
+                            </f:facet>
+                            <ui:repeat value="#{row.recipientContragents}" var="element">
+                                <div><h:outputText value="#{element.fullName}"/></div>
+                            </ui:repeat>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:10em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{outDocumentsOnConsideration.sort('status_id')}">
+                                    Статус
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <p>Краткое содержание</p>
+                            </f:facet>
+                            <h:outputText value="#{row.shortDescription}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
                 </div>
             </div>
-        </e5ui:formPart>
-
+            <div id="table_paging">
+                <h:panelGroup id="main_data_paging">
+                    <e5ui-comp:tablePager documentListHolder="#{outDocumentsOnConsideration}"
+                                          style="display:inline;"/>
+                    <e5ui-comp:tablePageSizeSelector documentListHolder="#{outDocumentsOnConsideration}"
+                                                     style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                </h:panelGroup>
+            </div>
+        </div>
         <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" position="center center">
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
             Пожалуйста, подождите...
         </p:dialog>
 

@@ -1,16 +1,16 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import javax.faces.context.FacesContext;
-
-import ru.entity.model.document.IncomingDocument;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.document.IncomingDocument;
+
+import javax.faces.context.FacesContext;
 
 public class IncomingDocumentSelectModal extends ModalWindowHolderBean {
 
     public IncomingDocumentListHolder getIncomingDocumentList() {
         if (incomingDocumentList == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            incomingDocumentList = (IncomingDocumentListHolder) context.getApplication().evaluateExpressionGet(context, "#{in_documents}", IncomingDocumentListHolder.class);
+            incomingDocumentList = context.getApplication().evaluateExpressionGet(context, "#{in_documents}", IncomingDocumentListHolder.class);
         }
         return incomingDocumentList;
     }
@@ -28,7 +28,7 @@ public class IncomingDocumentSelectModal extends ModalWindowHolderBean {
     }
 
     public boolean selected(IncomingDocument incomingDocument) {
-        return this.incomingDocument == null ? false : this.incomingDocument.equals(incomingDocument);
+        return this.incomingDocument != null && this.incomingDocument.equals(incomingDocument);
     }
 
     @Override

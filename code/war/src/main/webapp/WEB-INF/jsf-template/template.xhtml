@@ -85,15 +85,9 @@
                     <p:menuitem value="На согласовании" url="/component/internal/internal_documents_on_agreement.xhtml"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_documents_on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem>
-                        <h:link outcome="/component/internal/internal_documents_by_number.xhtml"
-                                styleClass="ui-menuitem-link ui-corner-all #{currentView eq '/component/internal/internal_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}">
-                            <span class="ui-menuitem-icon ui-icon leafIcon"/>
-                            <f:param name="key" value="registrationNumber"/>
-                            <f:param name="value" value="%"/>
-                            <span class="ui-menuitem-text">По номеру</span>
-                        </h:link>
-                    </p:menuitem>
+                    <p:menuitem value="По номеру" url="/component/internal/internal_documents_by_number.xhtml"
+                                icon = "leafIcon"
+                                styleClass="#{currentView eq '/component/internal/internal_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                     <p:menuitem value="Распоряжения" url="/component/internal/internal_direction_documents.xhtml"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_direction_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
