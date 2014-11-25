@@ -6,7 +6,8 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -30,7 +31,7 @@
             <h:commandLink action="#{outDocumentsOnConsideration.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
@@ -45,8 +46,7 @@
                                  style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
                     <h:commandButton value=" " action="#{outDocumentsOnConsideration.changePageOffset(0)}"
                                      styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
+                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                     </h:commandButton>
                     <h:outputLink
                             target="_blank"
@@ -124,14 +124,10 @@
             </div>
         </e5ui:formPart>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 
