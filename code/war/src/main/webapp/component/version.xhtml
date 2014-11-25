@@ -3,9 +3,6 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
@@ -26,18 +23,12 @@
     <ui:define name="content">
 
         <h:outputText value="Организационно-распорядительный документооборот"/>
-        <ui:fragment><br/></ui:fragment>
-        <h:outputText value="Версия #{versionHolderBean.version}"/><br/>
+        <ui:fragment>
+            <br/>
+        </ui:fragment>
+        <h:outputText value="Версия #{versionHolderBean.version}"/>
+        <br/>
         <h:outputText value="от #{versionHolderBean.buildDate} г."/>
-
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
 
     </ui:define>
 

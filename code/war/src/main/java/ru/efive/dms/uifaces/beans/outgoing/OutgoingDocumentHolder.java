@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans.outgoing;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -17,7 +18,6 @@ import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -211,10 +211,10 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     protected void initNewDocument() {
         permissions = Permissions.ALL_PERMISSIONS;
-        OutgoingDocument document = new OutgoingDocument();
+        final OutgoingDocument document = new OutgoingDocument();
         document.setDocumentStatus(DocumentStatus.NEW);
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-        document.setCreationDate(created);
+        final LocalDateTime created = new LocalDateTime();
+        document.setCreationDate(created.toDate());
         document.setAuthor(sessionManagement.getLoggedUser());
 
         String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
@@ -225,13 +225,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
 
         DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Исходящие документы", "Письмо");
-        if (list.size() > 0) {
+        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Внутренние документы", "Служебная записка");
+        if (!list.isEmpty()) {
             form = list.get(0);
-
         } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Исходящие документы");
-            if (list.size() > 0) {
+            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Внутренние документы");
+            if (!list.isEmpty()) {
                 form = list.get(0);
             }
         }
@@ -239,20 +238,17 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             document.setForm(form);
         }
         UserAccessLevel accessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-        if (accessLevel == null) {
-            accessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-        }
         document.setUserAccessLevel(accessLevel);
 
         HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
+        historyEntry.setCreated(created.toDate());
+        historyEntry.setStartDate(created.toDate());
         historyEntry.setOwner(sessionManagement.getLoggedUser());
         historyEntry.setDocType(document.getDocumentType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
+        historyEntry.setEndDate(created.toDate());
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
         Set<HistoryEntry> history = new HashSet<HistoryEntry>();
@@ -289,30 +285,30 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
-                Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-                document.setCreationDate(created);
+                final LocalDateTime created = new LocalDateTime();
+                document.setCreationDate(created.toDate());
                 document.setAuthor(sessionManagement.getLoggedUser());
 
                 PaperCopyDocument paperCopy = new PaperCopyDocument();
                 paperCopy.setDocumentStatus(DocumentStatus.NEW);
-                paperCopy.setCreationDate(created);
+                paperCopy.setCreationDate(created.toDate());
                 paperCopy.setAuthor(sessionManagement.getLoggedUser());
 
-                String parentId = document.getUniqueId();
+                final String parentId = document.getUniqueId();
                 if (StringUtils.isNotEmpty(parentId)) {
                     paperCopy.setParentDocumentId(parentId);
                 }
 
                 paperCopy.setRegistrationNumber(".../1");
                 HistoryEntry historyEntry = new HistoryEntry();
-                historyEntry.setCreated(created);
-                historyEntry.setStartDate(created);
+                historyEntry.setCreated(created.toDate());
+                historyEntry.setStartDate(created.toDate());
                 historyEntry.setOwner(sessionManagement.getLoggedUser());
                 historyEntry.setDocType(paperCopy.getDocumentType().getName());
                 historyEntry.setParentId(paperCopy.getId());
                 historyEntry.setActionId(0);
                 historyEntry.setFromStatusId(1);
-                historyEntry.setEndDate(created);
+                historyEntry.setEndDate(created.toDate());
                 historyEntry.setProcessed(true);
                 historyEntry.setCommentary("");
                 Set<HistoryEntry> history = new HashSet<HistoryEntry>();

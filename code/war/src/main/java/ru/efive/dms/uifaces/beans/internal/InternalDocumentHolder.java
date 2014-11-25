@@ -2,13 +2,15 @@ package ru.efive.dms.uifaces.beans.internal;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.GroupsSelectModalBean;
@@ -20,7 +22,8 @@ import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
+import ru.efive.dms.util.security.PermissionChecker;
+import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -30,13 +33,13 @@ import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.InternalDocument;
 import ru.entity.model.document.PaperCopyDocument;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.user.UserAccessLevel;
 import ru.util.ApplicationHelper;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -44,35 +47,88 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @Named("internal_doc")
 @ConversationScoped
 public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalDocument, Integer> implements Serializable {
+    //Именованный логгер (INTERNAL_DOCUMENT)
+    private static final Logger LOGGER = LoggerFactory.getLogger("INTERNAL_DOCUMENT");
+
+    public boolean isReadPermission() {
+        return permissions.hasPermission(READ);
+    }
+
+    public boolean isEditPermission() {
+        return permissions.hasPermission(WRITE);
+    }
+
+    public boolean isExecutePermission() {
+        return permissions.hasPermission(EXECUTE);
+    }
 
     @Override
-    public String save() {
-        if (getDocument().isClosePeriodRegistrationFlag()) {
-            InternalDocument doc = getDocument();
-            //doc.setRegistrationNumber(null);
-            setDocument(doc);
+    public boolean isCanDelete() {
+        if (!permissions.hasPermission(WRITE)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
         }
-        return super.save();
+        return permissions.hasPermission(WRITE);
+    }
+
+    @Override
+    public boolean isCanEdit() {
+        if (!permissions.hasPermission(WRITE)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(WRITE);
+    }
+
+    @Override
+    public boolean isCanView() {
+        if (!permissions.hasPermission(READ)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(READ);
+    }
+
+    //Для проверки прав доступа
+    @EJB
+    private PermissionChecker permissionChecker;
+    //TODO ACL
+    private Permissions permissions;
+
+    @Override
+    public String delete() {
+        final String in_result = super.delete();
+        if (AbstractDocumentHolderBean.ACTION_RESULT_DELETE.equals(in_result)) {
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+                LOGGER.error("INTERNAL ERROR ON DELETE:", e);
+            }
+        }
+        return in_result;
     }
 
     @Override
     protected boolean deleteDocument() {
-        boolean result = false;
         try {
-            result = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            final boolean result = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
             }
+            return result;
         } catch (Exception e) {
-            e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+            LOGGER.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
+            return false;
         }
-        return result;
     }
 
     @Override
@@ -85,156 +141,98 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         return FromStringConverter.INTEGER_CONVERTER;
     }
 
+    /**
+     * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
+     *
+     * @param document документ для проверки
+     * @return true - допуск есть
+     */
+    private boolean checkState(final InternalDocument document, final User user) {
+        if (document == null) {
+            setState(STATE_NOT_FOUND);
+            LOGGER.warn("IncomingDocument NOT FOUND");
+            return false;
+        }
+        if (document.isDeleted()) {
+            setState(STATE_DELETED);
+            setStateComment("Документ удален");
+            LOGGER.warn("IncomingDocument[{}] IS DELETED", document.getId());
+            return false;
+        }
+        final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
+        if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
+            setState(STATE_FORBIDDEN);
+            setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
+            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]",
+                    new Object[]{
+                            document.getId(),
+                            docAccessLevel.getValue(),
+                            user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null"
+                    }
+            );
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void initDocument(Integer id) {
+        final User currentUser = sessionManagement.getLoggedUser();
+        LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            setDocument(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).get(id));
-            if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
-            } else {
-                UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-                if (userAccessLevel == null) {
-                    userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                }
+            final InternalDocument document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).get(id);
+            if (!checkState(document, currentUser)) {
+                setDocument(document);
+                return;
+            }
+            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).getHibernateTemplate();
+            Session session = hibernateTemplate.getSessionFactory().openSession();
+            session.beginTransaction();
+            session.update(document);
+            session.getTransaction().commit();
 
-                UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
-                if (docAccessLevel == null) {
-                    docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-                    getDocument().setUserAccessLevel(docAccessLevel);
-                }
+            hibernateTemplate.initialize(document.getPersonReaders());
+            hibernateTemplate.initialize(document.getPersonEditors());
+            hibernateTemplate.initialize(document.getHistory());
+            hibernateTemplate.initialize(document.getSigner());
+            hibernateTemplate.initialize(document.getRoleEditors());
+            hibernateTemplate.initialize(document.getRoleReaders());
 
-                if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
-                    setState(STATE_FORBIDDEN);
-                    setStateComment("Уровень допуска к документу выше вашего уровня допуска.");
-                    return;
-                }
+            hibernateTemplate.initialize(document.getRecipientGroups());
+            hibernateTemplate.initialize(document.getRecipientUsers());
 
-                Set<Integer> allReadersId = new HashSet<Integer>();
+            session.close();
+            setDocument(document);
+            //Проверка прав на открытие
+            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            //Установка идшника для поиска поручений
+            taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+            //Поиск поручений
+            taskTreeHolder.changeOffset(0);
 
-                User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
-                int userId = currentUser.getId();
-                if (userId > 0) {
-                    boolean isAdminRole = false;
-                    List<Role> in_roles = currentUser.getRoleList();
-                    if (in_roles != null) {
-                        for (Role in_role : in_roles) {
-                            if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                                isAdminRole = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    InternalDocument document = getDocument();
-
-                    HibernateTemplate hibernateTemplate = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).getHibernateTemplate();
-                    Session session = hibernateTemplate.getSessionFactory().openSession();
-                    session.beginTransaction();
-                    session.update(document);
-                    session.getTransaction().commit();
-
-                    hibernateTemplate.initialize(document.getPersonReaders());
-                    hibernateTemplate.initialize(document.getPersonEditors());
-                    hibernateTemplate.initialize(document.getHistory());
-                    hibernateTemplate.initialize(document.getSigner());
-                    hibernateTemplate.initialize(document.getRoleEditors());
-                    hibernateTemplate.initialize(document.getRoleReaders());
-
-                    hibernateTemplate.initialize(document.getRecipientGroups());
-                    hibernateTemplate.initialize(document.getRecipientUsers());
-
-                    session.close();
-
-
-                    List<Role> documentRoles = new ArrayList<Role>();
-                    documentRoles.addAll(document.getRoleEditors());
-                    documentRoles.addAll(document.getRoleReaders());
-                    Set<Integer> documentRolesId = new HashSet<Integer>();
-                    for (Role role : documentRoles) {
-                        documentRolesId.add(role.getId());
-                    }
-
-                    Set<Integer> userRolesId = new HashSet<Integer>();
-                    for (Role role : currentUser.getRoles()) {
-                        userRolesId.add(role.getId());
-                    }
-
-                    boolean isUserReaderByRole = false;
-                    if (userRolesId.size() > 0 && documentRolesId.size() > 0) {
-                        userRolesId.retainAll(documentRolesId);
-                        isUserReaderByRole = (userRolesId.size() > 0);
-                    }
-
-
-                    if (!(isAdminRole || isUserReaderByRole)) {
-                        if (document.getAuthor() != null) {
-                            allReadersId.add(document.getAuthor().getId());
-                        }
-                        if (document.getSigner() != null) {
-                            allReadersId.add(document.getSigner().getId());
-                        }
-                        if (document.getResponsible() != null) {
-                            allReadersId.add(document.getResponsible().getId());
-                        }
-
-                        List<User> someReaders = new ArrayList<User>();
-                        someReaders.addAll(document.getRecipientUsersList());
-                        someReaders.addAll(document.getPersonReaders());
-                        someReaders.addAll(document.getPersonEditors());
-                        Set<Group> recipientGroups = currentUser.getGroups();
-                        if (recipientGroups.size() != 0) {
-                            Iterator itr = recipientGroups.iterator();
-                            while (itr.hasNext()) {
-                                Group group = (Group) itr.next();
-                                someReaders.addAll(group.getMembersList());
-                            }
-                        }
-
-
-                        if (someReaders.size() != 0) {
-                            Iterator itr = someReaders.iterator();
-                            while (itr.hasNext()) {
-                                User user = (User) itr.next();
-                                allReadersId.add(user.getId());
-                            }
-                        }
-
-                        if (!allReadersId.contains(currentUser.getId())) {
-                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
-                            if (!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "internal_" + document.getId())) {
-                                setState(STATE_FORBIDDEN);
-                                setStateComment("Доступ запрещен");
-                                return;
-                            }
-                        }
-
-                    }
-                }
-
-                //Установка идшника для поиска поручений
-                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
-                //Поиск поручений
-                taskTreeHolder.changeOffset(0);
-
+            updateAttachments();
+            try {
                 updateAttachments();
+            } catch (Exception e) {
+                LOGGER.warn("Exception while check upload files", e);
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
+            LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
 
     @Override
     protected void initNewDocument() {
-        InternalDocument doc = new InternalDocument();
+        permissions = Permissions.ALL_PERMISSIONS;
+        final InternalDocument doc = new InternalDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
         doc.setAuthor(sessionManagement.getLoggedUser());
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-        doc.setCreationDate(created);
+        final LocalDateTime created = new LocalDateTime();
+        doc.setCreationDate(created.toDate());
 
         String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
-        if (isDocumentTemplate != null && StringUtils.isNotEmpty(isDocumentTemplate) && isDocumentTemplate.toLowerCase().equals("yes")) {
+        if (StringUtils.isNotEmpty(isDocumentTemplate) && "yes".equals(isDocumentTemplate.toLowerCase())) {
             doc.setTemplateFlag(true);
         } else {
             doc.setTemplateFlag(false);
@@ -242,12 +240,11 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
         DocumentForm form = null;
         List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Внутренние документы", "Служебная записка");
-        if (list.size() > 0) {
+        if (!list.isEmpty()) {
             form = list.get(0);
-
         } else {
             list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Внутренние документы");
-            if (list.size() > 0) {
+            if (!list.isEmpty()) {
                 form = list.get(0);
             }
         }
@@ -255,24 +252,21 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             doc.setForm(form);
         }
         UserAccessLevel accessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-        if (accessLevel == null) {
-            accessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-        }
         doc.setUserAccessLevel(accessLevel);
 
-        doc.setRoleReaders(new ArrayList<Role>());
-        doc.setRoleEditors(new ArrayList<Role>());
-        doc.setRecipientUsers(new ArrayList<User>());
+        doc.setRoleReaders(new ArrayList<Role>(0));
+        doc.setRoleEditors(new ArrayList<Role>(0));
+        doc.setRecipientUsers(new ArrayList<User>(0));
 
         HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
+        historyEntry.setCreated(created.toDate());
+        historyEntry.setStartDate(created.toDate());
         historyEntry.setOwner(sessionManagement.getLoggedUser());
         historyEntry.setDocType(doc.getDocumentType().getName());
         historyEntry.setParentId(doc.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
+        historyEntry.setEndDate(created.toDate());
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
         Set<HistoryEntry> history = new HashSet<HistoryEntry>();
@@ -284,24 +278,23 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     @Override
     protected boolean saveDocument() {
-        boolean result = false;
         try {
-            InternalDocument document = (InternalDocument) getDocument();
+            InternalDocument document = getDocument();
             document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(document);
-
-            //document = sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
+                return false;
             } else {
-                result = true;
+                setDocument(document);
                 //Установка идшника для поиска поручений
                 taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+                return true;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }  catch (Exception e) {
+            LOGGER.error("saveDocument ERROR:", e);
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+            return false;
         }
-        return result;
     }
 
 
@@ -309,35 +302,34 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            InternalDocument document = (InternalDocument) getDocument();
-            document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(document);
+            InternalDocument document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(getDocument());
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
-                Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-                document.setCreationDate(created);
+                final LocalDateTime created = new LocalDateTime();
+                document.setCreationDate(created.toDate());
                 document.setAuthor(sessionManagement.getLoggedUser());
 
                 PaperCopyDocument paperCopy = new PaperCopyDocument();
                 paperCopy.setDocumentStatus(DocumentStatus.NEW);
-                paperCopy.setCreationDate(created);
+                paperCopy.setCreationDate(created.toDate());
                 paperCopy.setAuthor(sessionManagement.getLoggedUser());
 
-                String parentId = document.getUniqueId();
-                if (parentId != null || !parentId.isEmpty()) {
+                final String parentId = document.getUniqueId();
+                if (StringUtils.isNotEmpty(parentId)) {
                     paperCopy.setParentDocumentId(parentId);
                 }
 
                 paperCopy.setRegistrationNumber(".../1");
                 HistoryEntry historyEntry = new HistoryEntry();
-                historyEntry.setCreated(created);
-                historyEntry.setStartDate(created);
+                historyEntry.setCreated(created.toDate());
+                historyEntry.setStartDate(created.toDate());
                 historyEntry.setOwner(sessionManagement.getLoggedUser());
                 historyEntry.setDocType(paperCopy.getDocumentType().getName());
                 historyEntry.setParentId(paperCopy.getId());
                 historyEntry.setActionId(0);
                 historyEntry.setFromStatusId(1);
-                historyEntry.setEndDate(created);
+                historyEntry.setEndDate(created.toDate());
                 historyEntry.setProcessed(true);
                 historyEntry.setCommentary("");
                 Set<HistoryEntry> history = new HashSet<HistoryEntry>();
@@ -348,7 +340,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
                 sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
 
-                System.out.println("uploading newly created files");
+                LOGGER.debug("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
                     Attachment tmpAttachment = attachments.get(i);
                     if (tmpAttachment != null) {
@@ -363,8 +355,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+            LOGGER.error("saveNewDocument ERROR:", e);
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }
@@ -372,138 +364,14 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     @Override
     protected String doAfterSave() {
-        UserAccessLevel userAccessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
-        if (userAccessLevel == null) {
-            userAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-        }
-
-        UserAccessLevel docAccessLevel = getDocument().getUserAccessLevel();
-        if (docAccessLevel == null) {
-            docAccessLevel = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findByLevel(1);
-            getDocument().setUserAccessLevel(docAccessLevel);
-        }
-        if (docAccessLevel.getLevel() > userAccessLevel.getLevel()) {
+        if (getDocument().getUserAccessLevel().getLevel() > sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
         }
-
         return super.doAfterSave();
     }
 
-    public boolean isCurrentUserAccessEdit() {
-        User inUser = sessionManagement.getLoggedUser();
-        //inUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(inUser.getLogin(), inUser.getPassword());
-        InternalDocument inDoc = getDocument();
 
-        List<Integer> recipUsers = new ArrayList<Integer>();
-        if (inDoc.getRecipientUsers() != null) {
-            for (User user : inDoc.getRecipientUsers()) {
-                recipUsers.add(user.getId());
-            }
-        }
-        if (inDoc.getPersonReaders() != null) {
-            for (User user : inDoc.getPersonReaders()) {
-                recipUsers.add(user.getId());
-            }
-        }
-        if (recipUsers.contains(inUser.getId())) {
-            return true;
-        }
 
-        List<Integer> accesGroups = new ArrayList<Integer>();
-        if (inDoc.getRecipientGroups() != null) {
-            for (Group group : inDoc.getRecipientGroups()) {
-                accesGroups.add(group.getId());
-            }
-        }
-        for (Group group : inUser.getGroups()) {
-            if (accesGroups.contains(group.getId())) {
-                return true;
-            }
-        }
-
-        List<Integer> accessRoles = new ArrayList<Integer>();
-        if (inDoc.getRoleReaders() != null) {
-            for (Role role : inDoc.getRoleReaders()) {
-                accessRoles.add(role.getId());
-            }
-        }
-        for (Role role : inUser.getRoles()) {
-            if (accessRoles.contains(role.getId())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    protected boolean isCurrentUserDocEditor() {
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-        InternalDocument in_doc = getDocument();
-
-        if (in_user.isAdministrator()) {
-            return true;
-        }
-        List<User> in_editors = new ArrayList<User>();
-        List<Integer> in_editorsId = new ArrayList<Integer>();
-        if (in_doc.getPersonEditors() != null) {
-            for (User user : in_doc.getPersonEditors()) {
-                in_editorsId.add(user.getId());
-            }
-        }
-        if (in_doc.getController() != null) {
-            in_editorsId.add(in_doc.getController().getId());
-        }
-        if (in_doc.getAuthor() != null) {
-            in_editorsId.add(in_doc.getAuthor().getId());
-        }
-
-        if (in_doc.getSigner() != null) {
-            in_editorsId.add(in_doc.getSigner().getId());
-        }
-        if (in_editorsId.contains(in_user.getId())) {
-            return true;
-        }
-
-        List<Integer> in_rolesId = new ArrayList<Integer>();
-        for (Role role : in_doc.getRoleEditors()) {
-            in_rolesId.add(role.getId());
-        }
-
-        if (in_rolesId.size() != 0) {
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_rolesId.contains(in_role.getId())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    protected boolean isCurrentUserAdvDocReader() {
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-
-        InternalDocument internal_doc = getDocument();
-
-        List<User> in_advReaders = new ArrayList<User>();
-        if (internal_doc.getPersonReaders() != null) in_advReaders.addAll(internal_doc.getPersonReaders());
-        if (in_advReaders.contains(in_user)) {
-            return true;
-        }
-
-        List<Role> in_roles = internal_doc.getRoleReaders();
-        if (in_roles != null) {
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_roles.contains(in_role)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 
     public List<Attachment> getAttachments() {
         return attachments;
@@ -582,13 +450,10 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
         setDocument(document);
 
-        if (attachment != null) {
-            if (fileManagement.deleteFile(attachment)) {
-                updateAttachments();
-            }
+        if (fileManagement.deleteFile(attachment)) {
+            updateAttachments();
         }
-
-        document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(document);
+        sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(document);
     }
 
     private List<Attachment> attachments = new ArrayList<Attachment>();
@@ -716,7 +581,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void setUsersDialogSelected(boolean isUsersDialogSelected) {
         if (isUsersDialogSelected) {
-            this.isUsersDialogSelected = isUsersDialogSelected;
+            this.isUsersDialogSelected = true;
             this.isGroupsDialogSelected = false;
         }
     }
@@ -727,7 +592,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void setGroupsDialogSelected(boolean isGroupsDialogSelected) {
         if (isGroupsDialogSelected) {
-            this.isGroupsDialogSelected = isGroupsDialogSelected;
+            this.isGroupsDialogSelected = true;
             this.isUsersDialogSelected = false;
         }
     }
@@ -852,7 +717,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
         @Override
         protected void doSave() {
-            getDocument().setRecipientGroups(new HashSet(getGroups()));
+            getDocument().setRecipientGroups(new HashSet<Group>(getGroups()));
             super.doSave();
         }
 
@@ -877,7 +742,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
         @Override
         protected void doSave() {
-            getDocument().setRecipientGroups(new HashSet(getGroups()));
+            getDocument().setRecipientGroups(new HashSet<Group>(getGroups()));
             getDocument().setRecipientUsers(getUsers());
             super.doSave();
         }

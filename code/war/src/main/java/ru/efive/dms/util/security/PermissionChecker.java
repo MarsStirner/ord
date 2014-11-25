@@ -654,4 +654,36 @@ public class PermissionChecker {
         );
         return result;
     }
+
+    public Permissions getPermissions(SessionManagementBean sessionManagement, InternalDocument document) {
+        if (sessionManagement.isAdministrator()) {
+            loggerInternalDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
+                    sessionManagement.getLoggedUser().getId(), document.getId()
+            );
+            return ALL_PERMISSIONS;
+        }
+        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
+        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+                loggerInternalDocument.debug("Get permissions on substituted user [{}] {}",
+                        currentUser.getId(), currentUser.getFullName()
+                );
+                Permissions subResult = getPermissions(currentUser, document);
+                loggerInternalDocument.debug("Sub permissions: {}", subResult.toString());
+                result.mergePermissions(subResult);
+                if (result.hasAllPermissions()) {
+                    loggerInternalDocument.debug("Reached ALL permissions on this substitution");
+                    break;
+                }
+            }
+        }
+        loggerInternalDocument.info("Result permissions for user[{}] to document[{}] is {}",
+                new Object[]{
+                        sessionManagement.getLoggedUser().getId(),
+                        document.getId(),
+                        result
+                }
+        );
+        return result;
+    }
 }
