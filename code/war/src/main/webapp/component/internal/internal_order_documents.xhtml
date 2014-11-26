@@ -6,7 +6,7 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -27,53 +27,50 @@
             </h:outputLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{internal_orders.refresh()}">
+            <h:commandLink action="#{internal_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-        <e5ui:formPart id="main_table_part">
             <div id="main_table">
                 <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{internal_orders.filter}"
+                    <h:inputText id="filter_string" value="#{internal_documents.filter}"
                                  style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                    <h:commandButton value=" " action="#{internal_orders.changePageOffset(0)}"
+                    <h:commandButton value=" " action="#{internal_documents.changePageOffset(0)}"
                                      styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
+                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                     </h:commandButton>
 
                     <h:outputLink
                             target="_blank"
                             value="/component/internal/internal_document_search_form.xhtml"
                             title="Перейти к форме расширенного поиска"
-                            style="margin: 0pt 20px;">
+                            style="margin: 0 20px;">
                         Расширенный поиск
                     </h:outputLink>
                 </div>
                 <div class="wrap_main" id="table_wrap">
                     <div class="inner" id="table_inner">
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%"
-                                        value="#{internal_orders.getDocuments()}"
+                                        value="#{internal_documents.getDocuments()}"
                                         var="row" id="main_data_tbl">
                             <e5ui:row ondblclick="goToInternalDocument('#{row.id}');"/>
                             <e5ui:column style="min-width:12em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{internal_orders.sort('registrationNumber')}">
+                                    <h:commandLink action="#{internal_documents.sort('registrationNumber')}">
                                         Номер
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
+                                <strong><h:outputText value="#{row.registrationNumber}"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:8em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{internal_orders.sort('signatureDate')}">
+                                    <h:commandLink action="#{internal_documents.sort('signatureDate')}">
                                         Дата подписания
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
@@ -84,35 +81,35 @@
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{internal_orders.sort('responsible')}">
+                                    <h:commandLink action="#{internal_documents.sort('responsible')}">
                                         Ответственный
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.responsible}" converter="PersonConverter"/></b>
+                                <strong><h:outputText value="#{row.responsible}" converter="PersonConverter"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{internal_orders.sort('signer')}">
+                                    <h:commandLink action="#{internal_documents.sort('signer')}">
                                         Руководитель
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.signer}" converter="PersonConverter"/></b>
+                                <strong><h:outputText value="#{row.signer}" converter="PersonConverter"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{internal_orders.sort('form')}">
+                                    <h:commandLink action="#{internal_documents.sort('form')}">
                                         Вид документа
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.form}"/></b>
+                                <strong><h:outputText value="#{row.form}"/></strong>
                             </e5ui:column>
 
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{internal_orders.sort('status_id')}">
+                                    <h:commandLink action="#{internal_documents.sort('status_id')}">
                                         Статус
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
@@ -130,22 +127,18 @@
                 </div>
                 <div id="table_paging">
                     <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{internal_orders}" style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{internal_orders}"
+                        <e5ui-comp:tablePager documentListHolder="#{internal_documents}" style="display:inline;"/>
+                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{internal_documents}"
                                                          style="display:inline;float:right;" pageSizes="10,25,50,100"/>
                     </h:panelGroup>
                 </div>
             </div>
-        </e5ui:formPart>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 

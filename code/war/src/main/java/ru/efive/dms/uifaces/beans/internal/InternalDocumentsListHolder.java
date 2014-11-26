@@ -1,5 +1,7 @@
 package ru.efive.dms.uifaces.beans.internal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
@@ -7,7 +9,10 @@ import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.InternalDocument;
 import ru.entity.model.user.User;
 
-import javax.enterprise.context.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -17,9 +22,30 @@ import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
 
-@Named("internal_documents")
-@SessionScoped
+@ManagedBean(name = "internal_documents")
+@ViewScoped
 public class InternalDocumentsListHolder extends AbstractDocumentListHolderBean<InternalDocument> {
+
+    private static final Logger logger = LoggerFactory.getLogger("INTERNAL_DOCUMENT");
+
+    @PostConstruct
+    /**
+     * При каждом запросе страницы (нового view) инициализировать список фильтров
+     */
+    public void initInternalDocumentList(){
+        if(!FacesContext.getCurrentInstance().isPostback()) {
+            final Map<String, String> parameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+            if (!parameterMap.isEmpty()) {
+                logger.info("List initialize with {} params", parameterMap.size());
+                filters.clear();
+                for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+                    logger.info("{} = {}", entry.getKey(), entry.getValue());
+                    filters.put(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+    }
+
     @Override
     protected Pagination initPagination() {
         return new Pagination(0, getTotalCount(), 50);

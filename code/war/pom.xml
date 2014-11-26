@@ -19,6 +19,14 @@
     </parent>
 
     <dependencies>
+
+        <dependency>
+            <groupId>javax.faces</groupId>
+            <artifactId>jsf-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>ru.hitsl.dms</groupId>
             <artifactId>entities</artifactId>
@@ -43,13 +51,6 @@
             <groupId>org.primefaces.themes</groupId>
             <artifactId>all-themes</artifactId>
             <version>1.0.10</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.glassfish.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
-            <version>3.1.1</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>

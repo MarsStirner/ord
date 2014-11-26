@@ -4,7 +4,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui">
 
@@ -14,7 +13,7 @@
     <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
 
     <!--TODO migration fixes-->
-    <h:outputScript library="js" name ="jquery-migrate-1.0.0.js"/>
+    <h:outputScript library="js" name="jquery-migrate-1.0.0.js"/>
 
     <title>Документооборот ФНКЦ ДГОИ</title>
 </h:head>
@@ -70,48 +69,54 @@
                 </p:submenu>
 
                 <p:submenu label="Внутренние документы" styleClass="subMenuItem">
-                    <p:menuitem value="Мои проекты" url="/component/personal/personal_internal_documents.xhtml"
+                    <p:menuitem value="Мои проекты"
+                                url="/component/personal/personal_internal_documents.xhtml"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/personal/personal_internal_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem>
-                        <h:link outcome="/component/internal/internal_documents_on_review.xhtml"
-                                styleClass="ui-menuitem-link ui-corner-all #{currentView eq '/component/internal/internal_documents_on_review.xhtml' ? 'selectedMenuItem' : 'menuItem'}">
-                            <span class="ui-menuitem-icon ui-icon leafIcon"/>
-                            <f:param name="key" value="statusId"/>
-                            <f:param name="value" value="2"/>
-                            <span class="ui-menuitem-text">На рассмотрении</span>
-                        </h:link>
-                    </p:menuitem>
-                    <p:menuitem value="На согласовании" url="/component/internal/internal_documents_on_agreement.xhtml"
+                    <p:menuitem value="На рассмотрении"
+                                url="/component/internal/internal_documents_on_review.xhtml?statusId=2"
+                                icon="leafIcon"
+                                styleClass="ui-menuitem-link ui-corner-all #{currentView eq '/component/internal/internal_documents_on_review.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+                    <p:menuitem value="На согласовании"
+                                url="/component/internal/internal_documents_on_agreement.xhtml?statusId=3"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_documents_on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="По номеру" url="/component/internal/internal_documents_by_number.xhtml"
-                                icon = "leafIcon"
+                    <p:menuitem value="По номеру"
+                                url="/component/internal/internal_documents_by_number.xhtml"
+                                icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Распоряжения" url="/component/internal/internal_direction_documents.xhtml"
+                    <p:menuitem value="Распоряжения"
+                                url="/component/internal/internal_direction_documents.xhtml?formValue=Распоряжение&amp;formCategory=Внутренние документы"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_direction_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Приказы" url="/component/internal/internal_order_documents.xhtml" icon="leafIcon"
+                    <p:menuitem value="Приказы"
+                                url="/component/internal/internal_order_documents.xhtml?formValue=Приказ&amp;formCategory=Внутренние документы&amp;registrationNumber=%25" icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_order_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Служебные записки" url="/component/internal/internal_office_memo_documents.xhtml"
+                    <p:menuitem value="Служебные записки"
+                                url="/component/internal/internal_office_memo_documents.xhtml?formValue=Служебная записка&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
                                 icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_office_memo_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+                                styleClass="#{currentView eq '/component/internal/internal_office_memo_documents.xhtml?' ? 'selectedMenuItem' : 'menuItem'}"/>
                     <p:menuitem icon="leafIcon" value="Информационные письма"
-                                url="/component/internal/internal_information_memo_documents.xhtml"
+                                url="/component/internal/internal_information_memo_documents.xhtml?formValue=Информационное письмо&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
                                 styleClass="#{currentView eq '/component/internal/internal_information_memo_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Инструкции" url="/component/internal/internal_instruction_documents.xhtml"
+                    <p:menuitem value="Инструкции"
+                                url="/component/internal/internal_instruction_documents.xhtml?formValue=Инструкция&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_instruction_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Методические пособия" url="/component/internal/internal_manual_documents.xhtml"
+                    <p:menuitem value="Методические пособия"
+                                url="/component/internal/internal_manual_documents.xhtml?formValue=Методическое пособие&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_manual_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem icon="leafIcon" value="Правила внутреннего распорядка"
-                                url="/component/internal/internal_rule_documents.xhtml"
+                    <p:menuitem value="Правила внутреннего распорядка"
+                                icon="leafIcon"
+                                url="/component/internal/internal_rule_documents.xhtml?formValue=Правила внутреннего распорядка&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
                                 styleClass="#{currentView eq '/component/internal/internal_rule_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Положения" url="/component/internal/internal_position_documents.xhtml"
+                    <p:menuitem value="Положения"
+                                url="/component/internal/internal_position_documents.xhtml?formValue=Положение&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_position_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Гарантийные письма" url="/component/internal/internal_garantee_documents.xhtml"
+                    <p:menuitem value="Гарантийные письма"
+                                url="/component/internal/internal_garantee_documents.xhtml?formValue=Гарантийное письмо&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
                                 icon="leafIcon"
                                 styleClass="#{currentView eq '/component/internal/internal_garantee_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                 </p:submenu>
@@ -164,7 +169,7 @@
                                     styleClass="#{currentView eq '/component/users.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                         <p:menuitem value="Группы" url="/component/groups.xhtml" icon="leafIcon"
                                     styleClass="#{currentView eq '/component/groups.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value = "Замещение" url = "/component/user_substitutions.xhtml" icon = "leafIcon"
+                        <p:menuitem value="Замещение" url="/component/user_substitutions.xhtml" icon="leafIcon"
                                     styleClass="#{currentView eq '/component/user_substitutions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                     </p:submenu>
                     <p:submenu label="Записная книжка" styleCalss="subMenuItem">

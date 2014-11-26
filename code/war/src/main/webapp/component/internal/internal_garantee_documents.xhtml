@@ -6,7 +6,8 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -30,29 +31,26 @@
             <h:commandLink action="#{internal_garantees.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-        <e5ui:formPart id="main_table_part">
             <div id="main_table">
                 <div id="searchbar" class="main_searchbar">
                     <h:inputText id="filter_string" value="#{internal_garantees.filter}"
                                  style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
                     <h:commandButton value=" " action="#{internal_garantees.changePageOffset(0)}"
                                      styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
+                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                     </h:commandButton>
 
                     <h:outputLink
                             target="_blank"
                             value="/component/internal/internal_document_search_form.xhtml"
                             title="Перейти к форме расширенного поиска"
-                            style="margin: 0pt 20px;">
+                            style="margin: 0 20px;">
                         Расширенный поиск
                     </h:outputLink>
                 </div>
@@ -69,7 +67,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
+                                <strong><h:outputText value="#{row.registrationNumber}"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:8em">
                                 <f:facet name="header">
@@ -89,7 +87,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.responsible}" converter="PersonConverter"/></b>
+                                <strong><h:outputText value="#{row.responsible}" converter="PersonConverter"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
@@ -98,7 +96,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.signer}" converter="PersonConverter"/></b>
+                                <strong><h:outputText value="#{row.signer}" converter="PersonConverter"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
@@ -107,7 +105,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.form}"/></b>
+                                <strong><h:outputText value="#{row.form}"/></strong>
                             </e5ui:column>
 
                             <e5ui:column style="min-width:10em">
@@ -136,16 +134,11 @@
                     </h:panelGroup>
                 </div>
             </div>
-        </e5ui:formPart>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 
