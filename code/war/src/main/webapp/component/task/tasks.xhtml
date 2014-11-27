@@ -6,7 +6,8 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -37,15 +38,12 @@
     </ui:define>
 
     <ui:define name="content">
-        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-
         <div id="main_table">
             <div id="searchbar" class="main_searchbar">
                 <h:inputText id="filter_string" value="#{tasks.filter}"
                              style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
                 <h:commandButton value=" " action="#{tasks.changePageOffset(0)}" styleClass="searchbutton">
-                    <f:ajax execute="filter_string"
-                            render="main_data_tbl main_data_paging"/>
+                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                 </h:commandButton>
             </div>
             <div class="wrap_main" id="table_wrap">
@@ -112,14 +110,10 @@
             </div>
         </div>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 

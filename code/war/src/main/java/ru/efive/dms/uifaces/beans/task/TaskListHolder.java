@@ -1,14 +1,17 @@
 package ru.efive.dms.uifaces.beans.task;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.*;
 import ru.entity.model.user.User;
-import ru.util.ApplicationHelper;
 
-import javax.enterprise.context.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -16,179 +19,115 @@ import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
 
-@Named("tasks")
-@SessionScoped
+@ManagedBean(name = "tasks")
+@ViewScoped
 public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
 
     private static final long serialVersionUID = 4130764164049044408L;
 
-    protected List<Task> getHashDocuments(int fromIndex, int toIndex) {
-        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
-        List<Task> result = new ArrayList<Task>(this.getHashDocuments().subList(fromIndex, toIndex));
-        return result;
-    }
 
-    protected List<Task> getHashDocuments() {
-        List<Task> result = new ArrayList<Task>();
-        if (needRefresh) {
-            try {
-                User user = sessionManagement.getLoggedUser();
-                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
-                result = new ArrayList<Task>(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+    private static final Logger logger = LoggerFactory.getLogger("TASK");
+    private Map<String, Object> filters = new HashMap<String, Object>();
+    private String filter;
 
-                Collections.sort(result, new Comparator<Task>() {
-                    public int compare(Task o1, Task o2) {
-                        int result = 0;
-                        String colId = getSorting().getColumnId();
+    @Inject
+    @Named("sessionManagement")
+    private transient SessionManagementBean sessionManagement;
 
-                        if (colId.equalsIgnoreCase("task_number")) {
-                            try {
-                                Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
-                                Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
-                                result = i1.compareTo(i2);
-                            } catch (NumberFormatException e) {
-                                result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
-                            }
-                        } else if (colId.equalsIgnoreCase("registration_date")) {
-                            Date d1 = ApplicationHelper.getNotNull(o1.getRegistrationDate());
-                            Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c1.setTime(d1);
-                            c1.set(Calendar.HOUR_OF_DAY, 0);
-                            c1.set(Calendar.MINUTE, 0);
-                            c1.set(Calendar.SECOND, 0);
-                            Date d2 = ApplicationHelper.getNotNull(o2.getRegistrationDate());
-                            Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                            c2.setTime(d2);
-                            c2.set(Calendar.HOUR_OF_DAY, 0);
-                            c2.set(Calendar.MINUTE, 0);
-                            c2.set(Calendar.SECOND, 0);
-                            if (c1.equals(c2)) {
-                                try {
-                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getTaskNumber()));
-                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getTaskNumber()));
-                                    result = i1.compareTo(i2);
-                                } catch (NumberFormatException e) {
-                                    result = ApplicationHelper.getNotNull(o1.getTaskNumber()).compareTo(ApplicationHelper.getNotNull(o2.getTaskNumber()));
+
+    @PostConstruct
+    /**
+     * При каждом запросе страницы (нового view) инициализировать список фильтров
+     */
+    public void initTaskDocumentList() {
+        if (!FacesContext.getCurrentInstance().isPostback()) {
+            final Map<String, String> parameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+            if (!parameterMap.isEmpty()) {
+                logger.info("List initialize with {} params", parameterMap.size());
+                filters.clear();
+                for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+                    final String value = entry.getValue();
+                    logger.info("{} = {}", entry.getKey(), value);
+                    if (value.startsWith("{") && value.endsWith("}")) {
+                        // Список
+                        final List<String> strings = Arrays.asList(value.substring(1, value.length() - 1).split("\\s*,\\s*"));
+                        if (!strings.isEmpty()) {
+                            //Для некоторых парметров надо приводить типы
+                            if ("statusesId".equals(entry.getKey())) {
+                                final ArrayList<Integer> ints = new ArrayList<Integer>(strings.size());
+                                for (String string : strings) {
+                                    ints.add(Integer.valueOf(string));
                                 }
+                                filters.put(entry.getKey(), ints);
                             } else {
-                                result = c1.compareTo(c2);
+                                filters.put(entry.getKey(), new ArrayList<String>(strings));
                             }
                         }
-
-                        if (getSorting().isAsc()) {
-                            result *= -1;
-                        }
-                        return result;
+                    } else {
+                        //Одиночное значение
+                        filters.put(entry.getKey(), value);
                     }
-                });
-
-                this.hashDocuments = result;
-                needRefresh = false;
-            } catch (Exception e) {
-                e.printStackTrace();
+                }
             }
-        } else {
-            result = this.hashDocuments;
-            //needRefresh=false;
         }
-        return result;
     }
 
     @Override
     protected Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 100);
+        return new Pagination(0, getTotalCount(), 50);
+        //Ранжирование по страницам по-умолчанию  (50 на страницу, начиная с нуля)
     }
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("registration_date", true);
+        return new Sorting("registrationDate", true);
+        //Сортировка по-умолчанию (дата регистрации документа)
     }
 
     @Override
     protected int getTotalCount() {
-        int result = 0;
-        try {
-            result = new Long(this.getHashDocuments().size()).intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!sessionManagement.isSubstitution()) {
+            //Без замещения
+            return new Long(
+                    sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
+                            .countAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false)
+            ).intValue();
+        } else {
+            // С замещением
+            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
+            userList.add(sessionManagement.getLoggedUser());
+            return new Long(
+                    sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
+                            .countAllDocumentsByUserList(filters, filter, userList, false, false)
+            ).intValue();
         }
-        return result;
     }
+
 
     @Override
     protected List<Task> loadDocuments() {
-        List<Task> result = new ArrayList<Task>();
-        try {
-            this.needRefresh = true;
-            result = this.getHashDocuments(getPagination().getOffset(), getPagination().getPageSize());
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (!sessionManagement.isSubstitution()) {
+            // Без замещения
+            return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
+                    .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+        } else {
+            // С замещением
+            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
+            userList.add(sessionManagement.getLoggedUser());
+            return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
+                    .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         }
-        return result;
     }
 
-    @Override
-    public void refresh() {
-        this.needRefresh = true;
-        super.refresh();
+
+    public String getFilter() {
+        return filter;
     }
 
-    @Override
-    public List<Task> getDocuments() {
-        String key = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("key");
-        if (key != null && !key.isEmpty()) {
-            if (!filters.containsKey(key)) {
-                this.needRefresh = true;
-                markNeedRefresh();
-                this.filters.clear();
-                String value = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("value");
-                this.filters.put(key, value);
-            }
-        }
-        return super.getDocuments();
+    public void setFilter(String filter) {
+        this.filter = filter;
     }
 
-    public List<Task> getDocumentsByParent(int parentId) {
-        getDocuments();
-        List<Task> result = new ArrayList<Task>();
-        try {
-            if (parentId != 0) {
-                result = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findResolutionsByParent(parentId);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public List<Task> getDocumentsTreeByParent(int parentId) {
-        List<Task> result = new ArrayList<Task>();
-        try {
-            if (parentId != 0) {
-                TaskDAOImpl dao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
-                List<Task> descendants = loadChildTree(dao, parentId, 0);
-                if (descendants.size() > 0) result.addAll(descendants);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private List<Task> loadChildTree(TaskDAOImpl dao, int parentId, int level) throws Exception {
-        List<Task> result = new ArrayList<Task>();
-        List<Task> list = dao.findResolutionsByParent(parentId);
-        for (Task entry : list) {
-           // entry.setGrouping(level);
-            List<Task> descendants = loadChildTree(dao, entry.getId(), level + 1);
-            result.add(entry);
-            if (descendants.size() > 0) {
-             //   entry.setParent(true);
-                result.addAll(descendants);
-            }
-        }
-        return result;
-    }
 
     public String getTopDocumentControllerByTaskDocument(Task task) {
         if (task != null) {
@@ -226,25 +165,5 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
             return "";
         }
     }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.needRefresh = true;
-        this.filter = filter;
-    }
-
-    private List<Task> hashDocuments;
-    private boolean needRefresh = true;
-
-    private String filter;
-    private Map<String, Object> filters = new HashMap<String, Object>();
-
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
-
 
 }

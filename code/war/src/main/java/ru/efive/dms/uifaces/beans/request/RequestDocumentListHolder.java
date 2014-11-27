@@ -126,5 +126,4 @@ public class RequestDocumentListHolder extends AbstractDocumentListHolderBean<Re
         this.filter = filter;
     }
 
-
 }
