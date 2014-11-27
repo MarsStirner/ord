@@ -122,21 +122,28 @@
                 </p:submenu>
                 <c:if test="#{isRequestManager or canViewRequestDocuments}">
                     <p:submenu label="Обращения граждан" styleClass="subMenuItem">
-                        <p:menuitem value="Мои проекты" url="/component/personal/personal_request_documents.xhtml"
+                        <p:menuitem value="Мои проекты"
+                                    url="/component/personal/personal_request_documents.xhtml"
                                     icon="leafIcon"
                                     styleClass="#{currentView eq '/component/personal/personal_request_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="На контроле" url="/component/request/request_documents_on_control.xhtml"
+                        <p:menuitem value="На контроле"
+                                    url="/component/request/request_documents_on_control.xhtml?executionDate=%25&amp;statusesId={2,80}"
                                     icon="leafIcon"
                                     styleClass="#{currentView eq '/component/request/request_documents_on_control.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="По номеру" url="/component/request/request_documents.xhtml" icon="leafIcon"
+                        <p:menuitem value="По номеру"
+                                    url="/component/request/request_documents.xhtml"
+                                    icon="leafIcon"
                                     styleClass="#{currentView eq '/component/request/request_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Заявки на лечение" url="/component/request/request_documents_eq_claim.xhtml"
+                        <p:menuitem value="Заявки на лечение"
+                                    url="/component/request/request_documents_eq_claim.xhtml?formCategory=Обращения граждан&amp;formValue=Заявка на лечение"
                                     icon="leafIcon"
                                     styleClass="#{currentView eq '/component/request/request_documents_eq_claim.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Жалобы" url="/component/request/request_documents_eq_appeal.xhtml"
+                        <p:menuitem value="Жалобы"
+                                    url="/component/request/request_documents_eq_appeal.xhtml?formCategory=Обращения граждан&amp;formValue=Жалоба"
                                     icon="leafIcon"
                                     styleClass="#{currentView eq '/component/request/request_documents_eq_appeal.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Благодарности" url="/component/request/request_documents_eq_gratitude.xhtml"
+                        <p:menuitem value="Благодарности"
+                                    url="/component/request/request_documents_eq_gratitude.xhtml?formCategory=Обращения граждан&amp;formValue=Благодарность"
                                     icon="leafIcon"
                                     styleClass="#{currentView eq '/component/request/request_documents_eq_gratitude.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                     </p:submenu>

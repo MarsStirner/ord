@@ -36,6 +36,7 @@ public class PermissionChecker {
     private static final Logger loggerIncomingDocument = LoggerFactory.getLogger("INCOMING_DOCUMENT");
     private static final Logger loggerOutgoingDocument = LoggerFactory.getLogger("OUTGOING_DOCUMENT");
     private static final Logger loggerInternalDocument = LoggerFactory.getLogger("INTERNAL_DOCUMENT");
+    private static final Logger loggerRequestDocument = LoggerFactory.getLogger("REQUEST_DOCUMENT");
     private static final Logger loggerTask = LoggerFactory.getLogger("TASK");
 
     /**
@@ -678,6 +679,38 @@ public class PermissionChecker {
             }
         }
         loggerInternalDocument.info("Result permissions for user[{}] to document[{}] is {}",
+                new Object[]{
+                        sessionManagement.getLoggedUser().getId(),
+                        document.getId(),
+                        result
+                }
+        );
+        return result;
+    }
+
+    public Permissions getPermissions(SessionManagementBean sessionManagement, RequestDocument document) {
+        if (sessionManagement.isAdministrator()) {
+            loggerRequestDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
+                    sessionManagement.getLoggedUser().getId(), document.getId()
+            );
+            return ALL_PERMISSIONS;
+        }
+        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
+        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+                loggerRequestDocument.debug("Get permissions on substituted user [{}] {}",
+                        currentUser.getId(), currentUser.getFullName()
+                );
+                Permissions subResult = getPermissions(currentUser, document);
+                loggerRequestDocument.debug("Sub permissions: {}", subResult.toString());
+                result.mergePermissions(subResult);
+                if (result.hasAllPermissions()) {
+                    loggerRequestDocument.debug("Reached ALL permissions on this substitution");
+                    break;
+                }
+            }
+        }
+        loggerRequestDocument.info("Result permissions for user[{}] to document[{}] is {}",
                 new Object[]{
                         sessionManagement.getLoggedUser().getId(),
                         document.getId(),

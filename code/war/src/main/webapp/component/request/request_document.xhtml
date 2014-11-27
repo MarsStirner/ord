@@ -13,11 +13,6 @@
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
 <ui:define name="running_head">
-    <!-- #{request_doc.document.id}  -->
-    <e5ui-comp:userSessionUpdate
-            rendered="#{request_doc.editState or request_doc.createState}"
-            interval="300"/>
-    <e5ui-comp:outputUtilScript/>
     <h:outputScript library="js" name="primefacesLocale_ru.js"/>
     <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
 </ui:define>
@@ -27,14 +22,13 @@
         <div class="actionbar">
             <div class="menu">
                 <div class="defbutton">
-                    <h:outputLink
-                            value="/component/request/request_documents.xhtml">
+                    <h:outputLink value="/component/request/request_documents.xhtml">
                         <h:graphicImage value="#{resource['images:home.png']}"/>
                     </h:outputLink>
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.edit}"
-                                   rendered="#{request_doc.viewState}">
+                                   rendered="#{request_doc.viewState and request_doc.editPermission}">
                         <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                         Редактировать
                     </h:commandLink>
@@ -50,7 +44,7 @@
                     <e5ui:formPart id="actions_fp">
                         <h:commandLink
                                 onclick="actionsModal.clickOpen('actionsModal'); return false;"
-                                rendered="#{not(request_doc.currentUserAdvDocReader)}">
+                                rendered="#{request_doc.executePermission}">
                             <h:graphicImage value="#{resource['images:button-do.png']}"/>
                             Действия
                         </h:commandLink>
@@ -123,15 +117,15 @@
                 </div>
                 <div class="top">
                     <h:commandLink styleClass="top_link" onclick="return false;">
-							<span> <h:graphicImage
-                                    value="#{resource['images:button-print.png']}"/> Печать
+							<span>
+                                <h:graphicImage value="#{resource['images:button-print.png']}"/>
+                                Печать
 							</span>
                     </h:commandLink>
 
                     <div class="sub">
                         <div class="item">
-                            <h:commandLink
-                                    action='#{reports.previewSqlReportByRequestParams()}'>
+                            <h:commandLink action='#{reports.previewSqlReportByRequestParams()}'>
                                 <h:graphicImage value="#{resource['images:blank.png']}"/>
                                 <f:param name="reportName" value="request_note.jrxml"/>
                                 <f:param name="docId" value="#{request_doc.document.id}"/>
@@ -151,16 +145,13 @@
 <div id="header_content">
     <h:panelGroup
             rendered="#{(request_doc.editState and request_doc.document.registrationNumber==null) or request_doc.createState }">
-        <e5ui:formPart id="editHeaderPart">
-            <div class="name">
-                Обращение
-                <h:selectOneMenu id="form" value="#{request_doc.document.form}" converter="RequestDocumentFormConverter"
-                                 immediate="true">
-                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Обращения граждан')}"/>
-                </h:selectOneMenu>
-            </div>
-        </e5ui:formPart>
-
+        <div class="name">
+            Обращение
+            <h:selectOneMenu id="form" value="#{request_doc.document.form}" converter="RequestDocumentFormConverter"
+                             immediate="true">
+                <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Обращения граждан')}"/>
+            </h:selectOneMenu>
+        </div>
         <div class="title">
             <h:outputText value="#{request_doc.document.getDocumentStatus().getName()}"/>
         </div>
@@ -199,7 +190,6 @@
 </div>
 
 <div class="main_content">
-<e5ui:formPart id="editFormPart">
 <h:panelGroup
         rendered="#{request_doc.createState or (request_doc.editState and request_doc.document.registrationNumber==null)}">
     <div class="row">
@@ -350,9 +340,9 @@
         </table>
     </div>
 </h:panelGroup>
-<p:tabView id = "content_table" widgetVar="incomingDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
-<p:tab title="Реквизиты"
-       rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
+<p:tabView id="content_table" widgetVar="incomingDocumentTabViewVar" activeIndex="0" effect="fade"
+           effectDuration="fast">
+<p:tab title="Реквизиты" rendered="#{request_doc.viewState or request_doc.createState or request_doc.editState}">
 <h:panelGroup rendered="#{request_doc.viewState}">
     <div class="row">
         <table class="form_grid">
@@ -519,8 +509,7 @@
                          style="font-size:10pt;"
                          immediate="true">
             <f:selectItems value="#{dictionaryManagement.senderTypes}"/>
-            <f:ajax execute="senderType"
-                    render="content_table"/>
+            <f:ajax execute="senderType" render="content_table"/>
         </h:selectOneMenu>
     </td>
     <td class="third"/>
@@ -709,10 +698,9 @@
         </label>
     </td>
     <td class="second" colspan="3">
-        <h:inputText id="shortDescription"
-                     value="#{request_doc.document.shortDescription}"
-                     class="wide" immediate="true"/>
-        <e5ui:marker for="shortDescription"/></td>
+        <h:inputText id="shortDescription" value="#{request_doc.document.shortDescription}" class="wide"
+                     immediate="true"/>
+    </td>
 </tr>
 <tr class="row">
     <td class="first">
@@ -882,12 +870,11 @@
 <tr class="row">
 </tr>
 </table>
-
 </div>
 </h:panelGroup>
 </p:tab>
 <p:tab title="Движение документа"
-       rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
+       rendered="#{request_doc.viewState or request_doc.createState or request_doc.editState}">
     <fieldset>
         <legend>Поручения</legend>
         <div class="actionbar">
@@ -905,7 +892,8 @@
 
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.taskTreeHolder.refresh()}">
-                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
+                        <f:ajax render="task_table"
+                                onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
@@ -913,14 +901,16 @@
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.taskTreeHolder.collapseAll()}">
                         <h:graphicImage value="#{resource['images:minus.png']}"/>
-                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
+                        <f:ajax render="task_table"
+                                onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Свернуть все
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{request_doc.taskTreeHolder.expandAll()}">
                         <h:graphicImage value="#{resource['images:plus.png']}"/>
-                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
+                        <f:ajax render="task_table"
+                                onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
                         Развернуть все
                     </h:commandLink>
                 </div>
@@ -961,7 +951,8 @@
                     </p:column>
                     <p:column headerText="Исполнитель">
                         <ui:repeat value="#{row_task.executors}" var="executor">
-                            <h:outputText value="#{executor}" converter="PersonConverter"/> <br/>
+                            <h:outputText value="#{executor}" converter="PersonConverter"/>
+                            <br/>
                         </ui:repeat>
                     </p:column>
                     <p:column headerText="Срок исполнения">
@@ -1002,25 +993,19 @@
         </h:panelGroup>
     </fieldset>
 </p:tab>
-<p:tab title="Связи"
-       rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
+<p:tab title="Связи" rendered="#{request_doc.viewState or request_doc.createState or request_doc.editState}">
 </p:tab>
-<p:tab title="Оригинал"
-       rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
+<p:tab title="Оригинал" rendered="#{request_doc.viewState or request_doc.createState or request_doc.editState}">
     <fieldset>
         <div class="actionbar">
             <div class="menu">
                 <h:panelGroup rendered="#{request_doc.document.getDocumentStatus().getId() gt 0}">
                     <div class="defbutton">
-                        <h:outputLink
-                                value="/component/paper_copy_document.xhtml"
-                                target="_blank">
-                            <h:graphicImage
-                                    value="#{resource['images:newf_buttn_icon.png']}"/>
+                        <h:outputLink value="/component/paper_copy_document.xhtml" target="_blank">
+                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                             Новый оригинал
                             <f:param name="docAction" value="create"/>
-                            <f:param name="parentDocumentId"
-                                     value="#{request_doc.document.uniqueId}"/>
+                            <f:param name="parentDocumentId" value="#{request_doc.document.uniqueId}"/>
                         </h:outputLink>
                     </div>
                 </h:panelGroup>
@@ -1028,8 +1013,7 @@
                 <div class="defbutton">
                     <h:commandLink action="paperCopyDocuments.refresh()">
                         <f:ajax render="select_table_2"/>
-                        <h:graphicImage
-                                value="#{resource['images:button-refresh.png']}"/>
+                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
                     </h:commandLink>
                 </div>
@@ -1038,7 +1022,7 @@
         <h:panelGroup>
             <div id="modal_container" style="margin-top: 0;">
                 <div class="wrap"
-                     style="height: 250px; width: 100%; margin: 0px;">
+                     style="height: 250px; width: 100%; margin: 0;">
                     <div class="inner" style="height: 250px;">
                         <e5ui:dataTable id="select_table_2" border="0"
                                         cellpadding="0" cellspacing="0"
@@ -1455,44 +1439,46 @@
                         <legend>Пользователи</legend>
                         <table class="form_grid">
                             <tr class="row">
-                                <td class="first"><label> <span class="title">
-																	Читатели: </span>
-                                </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">Читатели: </span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{request_doc.document.personReaders}"
-                                                var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="PersonConverter" class="width"/>
-                                            <br/>
-                                        </ui:repeat> </label>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{request_doc.document.personReaders}" var="element">
+                                                <h:outputText value="#{element}" converter="PersonConverter"
+                                                              class="width"/>
+                                                <br/>
+                                            </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
                             <tr class="row">
-                                <td class="first"><label> <span class="title">
-																	Редакторы: </span>
-                                </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">Редакторы: </span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{request_doc.document.personEditors}"
-                                                var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="PersonConverter" class="width"/>
-                                            <br/>
-                                        </ui:repeat> </label>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{request_doc.document.personEditors}" var="element">
+                                                <h:outputText value="#{element}" converter="PersonConverter"
+                                                              class="width"/>
+                                                <br/>
+                                            </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
                             <tr class="row">
-                                <td class="first"></td>
-                                <td class="second"></td>
-                                <td class="third"></td>
-                                <td class="fourth"></td>
+                                <td class="first"/>
+                                <td class="second"/>
+                                <td class="third"/>
+                                <td class="fourth"/>
                             </tr>
                         </table>
                     </fieldset>
@@ -1502,63 +1488,64 @@
                         <legend>Роли</legend>
                         <table class="form_grid">
                             <tr class="row">
-                                <td class="first"><label> <span class="title">
-																	На чтение: </span>
-                                </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">На чтение: </span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{request_doc.document.roleReaders}"
-                                                var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="RoleConverter" class="width"/>
-                                            <br/>
-                                        </ui:repeat> </label>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{request_doc.document.roleReaders}" var="element">
+                                                <h:outputText value="#{element}" converter="RoleConverter"
+                                                              class="width"/>
+                                                <br/>
+                                            </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
                             <tr class="row">
-                                <td class="first"><label><span class="title">На
-																	редактирование:</span> </label></td>
+                                <td class="first">
+                                    <label>
+                                        <span class="title">На редактирование:</span>
+                                    </label>
+                                </td>
                                 <td class="second" colspan="3">
-                                    <div
-                                            style="overflow-y: scroll; height: 90px">
-                                        <label><ui:repeat
-                                                value="#{request_doc.document.roleEditors}"
-                                                var="element">
-                                            <h:outputText value="#{element}"
-                                                          converter="RoleConverter" class="width"/>
+                                    <div style="overflow-y: scroll; height: 90px">
+                                        <label>
+                                            <ui:repeat value="#{request_doc.document.roleEditors}" var="element">
+                                            <h:outputText value="#{element}" converter="RoleConverter" class="width"/>
                                             <br/>
-                                        </ui:repeat> </label>
+                                        </ui:repeat>
+                                        </label>
                                     </div>
                                 </td>
                             </tr>
                             <tr class="row">
-                                <td class="first"></td>
-                                <td class="second"></td>
-                                <td class="third"></td>
-                                <td class="fourth"></td>
+                                <td class="first"/>
+                                <td class="second"/>
+                                <td class="third"/>
+                                <td class="fourth"/>
                             </tr>
                         </table>
                     </fieldset>
                 </td>
             </tr>
             <tr class="row">
-                <td class="first"></td>
-                <td class="second"></td>
-                <td class="third"></td>
-                <td class="fourth"></td>
+                <td class="first"/>
+                <td class="second"/>
+                <td class="third"/>
+                <td class="fourth"/>
             </tr>
         </table>
     </div>
 </h:panelGroup>
 </p:tab>
 
-<p:tab  title="История" rendered="#{request_doc.viewState or request_doc.createState or (request_doc.editState and request_doc.currentUserDocEditor)}">
+<p:tab title="История" rendered="#{request_doc.viewState or request_doc.createState or request_doc.editState}">
     <div style="width: 100%; margin: 0;">
-        <p:dataTable id="history_list" value="#{request_doc.document.historyList}"
-                     var="history_entry" grouping="false">
+        <p:dataTable id="history_list" value="#{request_doc.document.historyList}" var="history_entry" grouping="false">
             <p:column headerText="Дата">
                 <h:outputText value="#{history_entry.startDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
@@ -1580,29 +1567,12 @@
     </div>
 </p:tab>
 </p:tabView>
-</e5ui:formPart>
 </div>
 
-<e5ui-comp:splashScreen id="splash_screen" timeout="0">
-    <f:facet name="timeoutPanel">
-        <div
-                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-            Пожалуйста, подождите...
-        </div>
-    </f:facet>
-</e5ui-comp:splashScreen>
-<script>
-    e5ui_splashScreen.startShowOnSubmit('splash_screen',
-            [ 'main_content_form' ]);
-</script>
-<e5ui-comp:ajaxStatusGlobal timeout="300">
-    <f:facet name="waitPanel">
-        <div
-                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-            Пожалуйста, подождите...
-        </div>
-    </f:facet>
-</e5ui-comp:ajaxStatusGlobal>
+<p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+<p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+    Пожалуйста, подождите...
+</p:dialog>
 </ui:define>
 
 <ui:define name="footer">
@@ -1760,9 +1730,8 @@
                                     </div>
                                 </div>
                                 <div class="e5ui-modal-bottombuttons">
-                                    <h:button
-                                            onclick="versionHistoryModal.clickClose(); return false;"
-                                            value="Закрыть"/>
+                                    <h:button onclick="versionHistoryModal.clickClose(); return false;"
+                                              value="Закрыть"/>
                                 </div>
                             </e5ui-comp:modalWindow>
                         </div>
@@ -1784,21 +1753,8 @@
                     [ 'file_upload_form' ]);
         </script>
     </h:form>
-
-    <e5ui:multiMarker id="main_form_marker" rendered="true"
-                      hintWindowStyleClass="e5ui-marker-hintWindow"
-                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
-                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
-                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
-                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
-                      displayMode="window">
-        <h:button
-                onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
-                value="ОК"/>
-    </e5ui:multiMarker>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
 </ui:define>
 
 </ui:composition>

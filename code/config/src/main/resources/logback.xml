@@ -103,6 +103,9 @@
     <logger name="OUTGOING_DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
         <appender-ref ref="APPENDER_DOC"/>
     </logger>
+    <logger name="REQUEST_DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
+        <appender-ref ref="APPENDER_DOC"/>
+    </logger>
     <!--Конец логгеров для документов-->
 
     <logger name="AUTH" level="DEBUG"/>

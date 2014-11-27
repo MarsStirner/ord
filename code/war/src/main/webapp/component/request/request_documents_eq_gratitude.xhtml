@@ -6,7 +6,8 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -27,127 +28,118 @@
             </h:outputLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{gratitudeRequestDocuments.refresh()}">
+            <h:commandLink action="#{request_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+        <div id="main_table">
+            <div id="searchbar" class="main_searchbar">
+                <h:inputText id="filter_string" value="#{request_documents.filter}"
+                             style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
+                <h:commandButton value=" " action="#{request_documents.changePageOffset(0)}"
+                                 styleClass="searchbutton">
+                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
+                </h:commandButton>
 
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{gratitudeRequestDocuments.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                    <h:commandButton value=" " action="#{gratitudeRequestDocuments.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
-                    </h:commandButton>
-
-                    <h:outputLink
-                            target="_blank"
-                            value="/component/request/request_document_search_form.xhtml"
-                            title="Перейти к форме расширенного поиска"
-                            style="margin: 0pt 20px;">
-                        Расширенный поиск
-                    </h:outputLink>
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%;"
-                                        value="#{gratitudeRequestDocuments.documents}" var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToRequestDocument('#{row.id}');"/>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{gratitudeRequestDocuments.sort('registrationNumber')}">
-                                        Номер
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{gratitudeRequestDocuments.sort('deliveryDate')}">
-                                        Дата
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.deliveryDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{gratitudeRequestDocuments.sort('contragent')}">
-                                        ФИО
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.senderDescriptionShort}"/></b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{gratitudeRequestDocuments.sort('form')}">
-                                        Вид документа
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.form}"/></b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{gratitudeRequestDocuments.sort('executionDate')}">
-                                        Срок исполнения
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.executionDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{gratitudeRequestDocuments.sort('status_id')}">
-                                        Статус
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Краткое содержание</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{gratitudeRequestDocuments}"
-                                              style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{gratitudeRequestDocuments}"
-                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
+                <h:outputLink
+                        target="_blank"
+                        value="/component/request/request_document_search_form.xhtml"
+                        title="Перейти к форме расширенного поиска"
+                        style="margin: 0pt 20px;">
+                    Расширенный поиск
+                </h:outputLink>
+            </div>
+            <div class="wrap_main" id="table_wrap">
+                <div class="inner" id="table_inner">
+                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%;"
+                                    value="#{request_documents.documents}" var="row" id="main_data_tbl">
+                        <e5ui:row ondblclick="goToRequestDocument('#{row.id}');"/>
+                        <e5ui:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{request_documents.sort('registrationNumber')}">
+                                    Номер
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <b><h:outputText value="#{row.registrationNumber}"/></b>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{request_documents.sort('deliveryDate')}">
+                                    Дата
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.deliveryDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:10em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{request_documents.sort('contragent')}">
+                                    ФИО
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <b><h:outputText value="#{row.senderDescriptionShort}"/></b>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{request_documents.sort('form')}">
+                                    Вид документа
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <b><h:outputText value="#{row.form}"/></b>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{request_documents.sort('executionDate')}">
+                                    Срок исполнения
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.executionDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:10em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{request_documents.sort('status_id')}">
+                                    Статус
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <p>Краткое содержание</p>
+                            </f:facet>
+                            <h:outputText value="#{row.shortDescription}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
                 </div>
             </div>
-        </e5ui:formPart>
-
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+            <div id="table_paging">
+                <h:panelGroup id="main_data_paging">
+                    <e5ui-comp:tablePager documentListHolder="#{request_documents}"
+                                          style="display:inline;"/>
+                    <e5ui-comp:tablePageSizeSelector documentListHolder="#{request_documents}"
+                                                     style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                </h:panelGroup>
+            </div>
+        </div>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 

@@ -1,17 +1,24 @@
 package ru.efive.dms.uifaces.beans.request;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.*;
-import ru.efive.dms.uifaces.beans.*;
+import ru.efive.dms.uifaces.beans.ContragentListHolderBean;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.ProcessorModalBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.security.PermissionChecker;
+import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -19,14 +26,13 @@ import ru.efive.wf.core.ActionResult;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
+import javax.ejb.EJB;
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,24 +40,101 @@ import java.io.Serializable;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @Named("request_doc")
 @ConversationScoped
 public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDocument, Integer> implements Serializable {
 
+    //Именованный логгер (REQUEST_DOCUMENT)
+    private static final Logger LOGGER = LoggerFactory.getLogger("REQUEST_DOCUMENT");
+
+    public boolean isReadPermission() {
+        return permissions.hasPermission(READ);
+    }
+
+    public boolean isEditPermission() {
+        return permissions.hasPermission(WRITE);
+    }
+
+    public boolean isExecutePermission() {
+        return permissions.hasPermission(EXECUTE);
+    }
+
+    @Override
+    public boolean isCanDelete() {
+        if (!permissions.hasPermission(WRITE)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(WRITE);
+    }
+
+    @Override
+    public boolean isCanEdit() {
+        if (!permissions.hasPermission(WRITE)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(WRITE);
+    }
+
+    @Override
+    public boolean isCanView() {
+        if (!permissions.hasPermission(READ)) {
+            setStateComment("Доступ запрещен");
+            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+        }
+        return permissions.hasPermission(READ);
+    }
+
+    //TODO ACL
+    private Permissions permissions;
+
+    //Для проверки прав доступа
+    @EJB
+    private PermissionChecker permissionChecker;
+    @Inject
+    @Named("sessionManagement")
+    private transient SessionManagementBean sessionManagement;
+    @Inject
+    @Named("fileManagement")
+    private transient FileManagementBean fileManagement;
+    @Inject
+    @Named("contragentList")
+    private transient ContragentListHolderBean contragentList;
+    @Inject
+    @Named("documentTaskTree")
+    private transient DocumentTaskTreeHolder taskTreeHolder;
+
+
+    @Override
+    public String delete() {
+        String in_result = super.delete();
+        if (AbstractDocumentHolderBean.ACTION_RESULT_DELETE.equals(in_result)) {
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
+            } catch (Exception e) {
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
+                LOGGER.error("INTERNAL ERROR ON DELETE:", e);
+            }
+        }
+        return in_result;
+    }
+
     @Override
     protected boolean deleteDocument() {
-        boolean result = false;
         try {
-            result = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            final boolean result = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
             }
+            return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+            return false;
         }
-        return result;
     }
 
     @Override
@@ -66,116 +149,59 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
     @Override
     protected void initDocument(Integer id) {
+        final User currentUser = sessionManagement.getLoggedUser();
+        LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            setDocument(sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).get(id));
-            if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
-            } else {
-                Set<Integer> allReadersId = new HashSet<Integer>();
-
-                User currentUser = sessionManagement.getLoggedUser();
-                //currentUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(currentUser.getLogin(), currentUser.getPassword());
-                int userId = currentUser.getId();
-                if (userId > 0) {
-                    boolean isAdminRole = false;
-                    List<Role> in_roles = currentUser.getRoleList();
-                    if (in_roles != null) {
-                        for (Role in_role : in_roles) {
-                            if (in_role.getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                                isAdminRole = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    RequestDocument document = getDocument();
-
-                    List<Role> documentRoles = new ArrayList<Role>();
-                    documentRoles.addAll(document.getRoleEditors());
-                    documentRoles.addAll(document.getRoleReaders());
-                    Set<Integer> documentRolesId = new HashSet<Integer>();
-                    for (Role role : documentRoles) {
-                        documentRolesId.add(role.getId());
-                    }
-
-                    Set<Integer> userRolesId = new HashSet<Integer>();
-                    for (Role role : currentUser.getRoles()) {
-                        userRolesId.add(role.getId());
-                    }
-
-                    boolean isUserReaderByRole = false;
-                    if (userRolesId.size() > 0 && documentRolesId.size() > 0) {
-                        userRolesId.retainAll(documentRolesId);
-                        isUserReaderByRole = (userRolesId.size() > 0);
-                    }
-
-
-                    if (!(isAdminRole || isUserReaderByRole)) {
-                        if (document.getAuthor() != null) {
-                            allReadersId.add(document.getAuthor().getId());
-                        }
-                        if (document.getExecutor() != null) {
-                            allReadersId.add(document.getExecutor().getId());
-                        }
-                        if (document.getController() != null) {
-                            allReadersId.add(document.getController().getId());
-                        }
-
-                        List<User> someReaders = new ArrayList<User>();
-                        someReaders.addAll(document.getRecipientUsers());
-                        someReaders.addAll(document.getPersonReaders());
-                        someReaders.addAll(document.getPersonEditors());
-                        Set<Group> recipientGroups = currentUser.getGroups();
-                        if (recipientGroups.size() != 0) {
-                            Iterator<Group> itr = recipientGroups.iterator();
-                            while (itr.hasNext()) {
-                                Group group = itr.next();
-                                someReaders.addAll(group.getMembersList());
-                            }
-                        }
-
-
-                        if (someReaders.size() != 0) {
-                            Iterator<User> itr = someReaders.iterator();
-                            while (itr.hasNext()) {
-                                User user = itr.next();
-                                allReadersId.add(user.getId());
-                            }
-                        }
-
-                        if (!allReadersId.contains(currentUser.getId())) {
-                            TaskDAOImpl taskDao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
-                            if (!taskDao.isAccessGrantedByAssociation(sessionManagement.getLoggedUser(), "request_" + document.getId())) {
-                                setState(STATE_FORBIDDEN);
-                                setStateComment("Доступ запрещен");
-                                return;
-                            }
-                        }
-
-                    }
-                }
-                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
-                taskTreeHolder.changePageOffset(0);
-
-                updateAttachments();
+            final RequestDocument document = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).get(id);
+            if (!checkState(document, currentUser)) {
+                setDocument(document);
+                return;
             }
+            setDocument(document);
+            //Проверка прав на открытие
+            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+            taskTreeHolder.changePageOffset(0);
+            updateAttachments();
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
 
+    /**
+     * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
+     *
+     * @param document документ для проверки
+     * @return true - допуск есть
+     */
+    private boolean checkState(final RequestDocument document, final User user) {
+        if (document == null) {
+            setState(STATE_NOT_FOUND);
+            LOGGER.warn("Document NOT FOUND");
+            return false;
+        }
+        if (document.isDeleted()) {
+            setState(STATE_DELETED);
+            setStateComment("Документ удален");
+            LOGGER.warn("Document[{}] IS DELETED", document.getId());
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void initNewDocument() {
+        permissions = Permissions.ALL_PERMISSIONS;
         RequestDocument doc = new RequestDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+        final Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
         doc.setDeliveryDate(created);
         doc.setCreationDate(created);
         doc.setAuthor(sessionManagement.getLoggedUser());
 
         String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
-        if (isDocumentTemplate != null && isDocumentTemplate.toLowerCase().equals("yes")) {
+        if (isDocumentTemplate != null && "yes".equals(isDocumentTemplate.toLowerCase())) {
             doc.setTemplateFlag(true);
         } else {
             doc.setTemplateFlag(false);
@@ -239,36 +265,36 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         Set<HistoryEntry> history = new HashSet<HistoryEntry>();
         history.add(historyEntry);
         doc.setHistory(history);
-
         doc.setShortDescription("Выписка из истории болезни");
         setDocument(doc);
     }
 
     @Override
     protected boolean saveDocument() {
-        boolean result = false;
         try {
             RequestDocument document = getDocument();
             document = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
+                return false;
             } else {
-                result = true;
-                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+                setDocument(document);
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(document.getUniqueId());
+                return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveDocument ERROR:", e);
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+            return false;
         }
-        return result;
     }
 
     @Override
     protected boolean saveNewDocument() {
         boolean result = false;
-        //resultif (validateHolder()) {
         try {
-            RequestDocument document = (RequestDocument) getDocument();
+            RequestDocument document = getDocument();
             document = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
@@ -307,147 +333,24 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
                 sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
 
-                System.out.println("uploading newly created files");
+                LOGGER.debug("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
                     Attachment tmpAttachment = attachments.get(i);
                     if (tmpAttachment != null) {
-                        tmpAttachment.setParentId(new String(("request_" + getDocumentId()).getBytes(), "utf-8"));
+                        tmpAttachment.setParentId(new String(("incoming_" + getDocumentId()).getBytes(), "utf-8"));
                         fileManagement.createFile(tmpAttachment, files.get(i));
                     }
                 }
                 result = true;
-                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(document.getUniqueId());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("saveNewDocument ERROR:", e);
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }
-
-
-
-/*	protected boolean validateHolder() {
-        boolean result = true;
-		FacesContext context = FacesContext.getCurrentInstance();		
-		if (getDocument().getSenderLastName()==null) {
-			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо указать Фамилию адресанта", ""));
-			result = false;
-		}	
-		if (getDocument().getRecipientUsers()==null || getDocument().getRecipientUsers().size()==0) {
-			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Адресатов", ""));
-			result = false;
-		}	    		   
-		if (getDocument().getShortDescription()==null||getDocument().getShortDescription().equals("")) {
-			context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", ""));
-			result = false;
-		}	    		   
-
-		return result;
-	}
-*/
-
-    public boolean isCurrentUserAccessEdit() {
-        User inUser = sessionManagement.getLoggedUser();
-        //inUser = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(inUser.getLogin(), inUser.getPassword());
-        RequestDocument reqDoc = getDocument();
-
-        List<Integer> recipUsers = new ArrayList<Integer>();
-        if (reqDoc.getRecipientUsers() != null) {
-            for (User user : reqDoc.getRecipientUsers()) {
-                recipUsers.add(user.getId());
-            }
-        }
-        if (reqDoc.getPersonReaders() != null) {
-            for (User user : reqDoc.getPersonReaders()) {
-                recipUsers.add(user.getId());
-            }
-        }
-        if (recipUsers.contains(inUser.getId())) {
-            return true;
-        }
-
-        List<Integer> accesGroups = new ArrayList<Integer>();
-        if (reqDoc.getRecipientGroups() != null) {
-            for (Group group : reqDoc.getRecipientGroups()) {
-                accesGroups.add(group.getId());
-            }
-        }
-        for (Group group : inUser.getGroups()) {
-            if (accesGroups.contains(group.getId())) {
-                return true;
-            }
-        }
-
-        List<Integer> accessRoles = new ArrayList<Integer>();
-        if (reqDoc.getRoleReaders() != null) {
-            for (Role role : reqDoc.getRoleReaders()) {
-                accessRoles.add(role.getId());
-            }
-        }
-        for (Role role : inUser.getRoles()) {
-            if (accessRoles.contains(role.getId())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    protected boolean isCurrentUserDocEditor() {
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-        if (in_user != null) {
-            if (in_user.isAdministrator()) {
-                return true;
-            }
-
-            RequestDocument request_doc = getDocument();
-
-            List<User> in_editors = new ArrayList<User>();
-            if (request_doc.getPersonEditors() != null) in_editors.addAll(request_doc.getPersonEditors());
-            if (request_doc.getController() != null) in_editors.add(request_doc.getController());
-            if (request_doc.getAuthor() != null) in_editors.add(request_doc.getAuthor());
-            if (in_editors.contains(in_user)) {
-                return true;
-            }
-
-            List<Role> in_roles = request_doc.getRoleEditors();
-            if (in_roles != null) {
-                for (Role in_role : in_user.getRoleList()) {
-                    if (in_roles.contains(in_role)) {
-                        return true;
-                    }
-                }
-            }
-
-        }
-        return false;
-    }
-
-    protected boolean isCurrentUserAdvDocReader() {
-        User in_user = sessionManagement.getLoggedUser();
-        //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
-
-        RequestDocument request_doc = getDocument();
-
-        List<User> in_advReaders = new ArrayList<User>();
-        if (request_doc.getPersonReaders() != null) in_advReaders.addAll(request_doc.getPersonReaders());
-        if (in_advReaders.contains(in_user)) {
-            return true;
-        }
-
-        List<Role> in_roles = request_doc.getRoleReaders();
-        if (in_roles != null)
-            for (Role in_role : in_user.getRoleList()) {
-                if (in_roles.contains(in_role)) {
-                    return true;
-                }
-            }
-
-        return false;
-    }
-
     // FILES
 
     public List<Attachment> getAttachments() {
@@ -470,10 +373,8 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
+            LOGGER.error("uploadAttachments ERROR:", e);
         }
     }
 
@@ -497,10 +398,8 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
-            e.printStackTrace();
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_ATTACH);
+            LOGGER.error("uploadAttachments ERROR:", e);
         }
     }
 
@@ -618,7 +517,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         versionHistoryModal.show();
     }
 
-    /* =================== */
+      /* =================== */
 
     public class DeliveryTypeSelectModal extends ModalWindowHolderBean {
         public DeliveryType getValue() {
@@ -713,7 +612,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         return regionSelectModal;
     }
 
-    /* =================== */
+      /* =================== */
 
     public class ContragentSelectModal extends ModalWindowHolderBean {
 
@@ -760,11 +659,11 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     }
     // END OF MODAL HOLDERS
 
-    /* =================== */
+      /* =================== */
 
     // END OF MODAL HOLDERS
 
-    /* =================== */
+      /* =================== */
 
     private RegionSelectModal regionSelectModal = new RegionSelectModal();
     private DeliveryTypeSelectModal deliveryTypeSelectModal = new DeliveryTypeSelectModal();
@@ -1087,18 +986,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         this.taskTreeHolder = taskTreeHolder;
     }
 
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
-    @Inject
-    @Named("fileManagement")
-    private transient FileManagementBean fileManagement;
-    @Inject
-    @Named("contragentList")
-    private transient ContragentListHolderBean contragentList;
-    @Inject
-    @Named("documentTaskTree")
-    private transient DocumentTaskTreeHolder taskTreeHolder;
 
     private static final long serialVersionUID = 4716264614655470705L;
 }

@@ -211,20 +211,20 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     private boolean checkState(final IncomingDocument document, final User user) {
         if (document == null) {
             setState(STATE_NOT_FOUND);
-            LOGGER.warn("IncomingDocument NOT FOUND");
+            LOGGER.warn("Document NOT FOUND");
             return false;
         }
         if (document.isDeleted()) {
             setState(STATE_DELETED);
             setStateComment("Документ удален");
-            LOGGER.warn("IncomingDocument[{}] IS DELETED", document.getId());
+            LOGGER.warn("Document[{}] IS DELETED", document.getId());
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
         if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
-            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]",
+            LOGGER.warn("Document[{}] has higher accessLevel[{}] then user[{}]",
                     new Object[]{
                             document.getId(),
                             docAccessLevel.getValue(),
@@ -241,7 +241,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         permissions = Permissions.ALL_PERMISSIONS;
         IncomingDocument doc = new IncomingDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+        final Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
         doc.setDeliveryDate(created);
         doc.setCreationDate(created);
         doc.setAuthor(sessionManagement.getLoggedUser());

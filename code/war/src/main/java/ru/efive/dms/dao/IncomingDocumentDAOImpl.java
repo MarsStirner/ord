@@ -798,7 +798,6 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
      * @param orderAsc направление сортировки
      * @return запрос, с ограничениями на идентификаторы документов и сортировки
      */
-
     private DetachedCriteria getIDListCriteria(List ids, String[] ords, String orderBy, boolean orderAsc) {
         final DetachedCriteria result = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
         if (ords != null) {

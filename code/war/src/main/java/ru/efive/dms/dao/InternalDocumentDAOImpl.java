@@ -740,7 +740,6 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
 
     /**
      * Получить список документов, к которым есть доступ у группы пользователей
-     *
      * @param filters     карта ограничений
      * @param filter      поисковая строка
      * @param userList    список пользователей, права которых будут проверяться
