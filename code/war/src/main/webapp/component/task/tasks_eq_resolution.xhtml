@@ -6,7 +6,8 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -20,100 +21,94 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:commandLink action="#{resolutions.refresh()}">
+            <h:commandLink action="#{tasks.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{resolutions.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                    <h:commandButton value=" " action="#{resolutions.changePageOffset(0)}" styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" value="#{resolutions.documents}"
-                                        var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToTask('#{row.id}');"/>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{resolutions.sort('task_number')}">
-                                        Номер поручения
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.taskNumber}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Исполнитель</p>
-                                </f:facet>
-                                <ui:repeat value="#{row.executors}" var="executor">
-                                    <h:outputText value="#{executor.descriptionShort}"/><br/>
-                                </ui:repeat>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{resolutions.sort('registration_date')}">
-                                        Срок исполнения
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.controlDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Статус</p>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
 
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Автор</p>
-                                </f:facet>
-                                <h:outputText value="#{row.author.descriptionShort}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Текст поручения</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{resolutions}" style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{resolutions}"
-                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
+        <div id="main_table">
+            <div id="searchbar" class="main_searchbar">
+                <h:inputText id="filter_string" value="#{tasks.filter}"
+                             style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
+                <h:commandButton value=" " action="#{tasks.changePageOffset(0)}" styleClass="searchbutton">
+                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
+                </h:commandButton>
+            </div>
+            <div class="wrap_main" id="table_wrap">
+                <div class="inner" id="table_inner">
+                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" value="#{tasks.documents}"
+                                    var="row" id="main_data_tbl">
+                        <e5ui:row ondblclick="goToTask('#{row.id}');"/>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{tasks.sort('task_number')}">
+                                    Номер поручения
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.taskNumber}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <p>Исполнитель</p>
+                            </f:facet>
+                            <ui:repeat value="#{row.executors}" var="executor">
+                                <h:outputText value="#{executor.descriptionShort}"/><br/>
+                            </ui:repeat>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{tasks.sort('registration_date')}">
+                                    Срок исполнения
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.controlDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <p>Статус</p>
+                            </f:facet>
+                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                        </e5ui:column>
+
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <p>Автор</p>
+                            </f:facet>
+                            <h:outputText value="#{row.author.descriptionShort}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:12em">
+                            <f:facet name="header">
+                                <p>Текст поручения</p>
+                            </f:facet>
+                            <h:outputText value="#{row.shortDescription}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
                 </div>
             </div>
-        </e5ui:formPart>
+            <div id="table_paging">
+                <h:panelGroup id="main_data_paging">
+                    <e5ui-comp:tablePager documentListHolder="#{tasks}" style="display:inline;"/>
+                    <e5ui-comp:tablePageSizeSelector documentListHolder="#{tasks}"
+                                                     style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                </h:panelGroup>
+            </div>
+        </div>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
 
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false">
+            Пожалуйста, подождите...
+        </p:dialog>
     </ui:define>
 
 </ui:composition>

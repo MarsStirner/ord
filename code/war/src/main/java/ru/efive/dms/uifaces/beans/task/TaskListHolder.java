@@ -151,19 +151,10 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
                     } else if (key.contains("task")) {
                         Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
                         return getTopDocumentControllerByTaskDocument(task_doc);
-                    } else {
-                        return "";
                     }
                 }
-            } else {
-                //return task.getAuthor().getDescriptionShort();
-                return "";
             }
-            //return task.getAuthor().getDescriptionShort();
-            return "";
-        } else {
-            return "";
         }
+        return "";
     }
-
 }

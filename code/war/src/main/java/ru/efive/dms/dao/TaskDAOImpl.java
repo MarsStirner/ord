@@ -461,6 +461,10 @@ public class TaskDAOImpl extends GenericDAOHibernate<Task> {
             if (in_map.containsKey(in_key)) {
                 conjunction.add(Restrictions.ilike("exerciseType.description", in_map.get(in_key).toString(), MatchMode.ANYWHERE));
             }
+            in_key="statusId";
+            if (in_map.containsKey(in_key)) {
+                conjunction.add(Restrictions.eq("statusId", Integer.parseInt(in_map.get(in_key).toString())));
+            }
             //TODO: поиск по адресатам
 
             criteria.add(conjunction);
