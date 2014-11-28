@@ -33,226 +33,230 @@
 <c:set var="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
 <c:set var="isOuter" value="#{sessionManagement.isOuter()}"/>
 <c:set var="isHr" value="#{sessionManagement.isHr()}"/>
+<c:set var="isFilling" value="#{sessionManagement.isFilling()}"/>
 
 <ui:insert name="left_menu">
-    <div id="leftMenu">
-        <div id="leftMenuTiltle">Документооборот ФНКЦ ДГОИ</div>
-        <div id="leftMenuHolder">
-            <p:menu id="navigationMenu" toggleable="true" widgetVar="navigationMenuVar" style="width:100%;">
-                <c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
-                    <p:submenu label="Электронные документы" styleClass="subMenuItem">
-                        <p:menuitem value="Мои документы" url="/component/scan_documents.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/scan_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                </c:if>
-                <p:submenu label="Входящие документы" styleClass="subMenuItem">
-                    <p:menuitem value="Мои проекты" url="/component/personal/personal_in_documents.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/personal/personal_in_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="По номеру" url="/component/in/in_documents.xhtml" icon="leafIcon"
-                                styleClass="#{currentView eq '/component/in/in_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="На контроле" url="/component/in/in_executing_documents.xhtml" icon="leafIcon"
-                                styleClass="#{currentView eq '/component/in/in_executing_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                </p:submenu>
-                <p:submenu label="Исходящие документы" styleClass="subMenuItem">
-                    <p:menuitem value="Мои проекты" url="/component/personal/personal_out_documents.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/personal/personal_out_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="На рассмотрении" url="/component/out/out_documents_on_consideration.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/out/out_documents_on_consideration.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="На согласовании" url="/component/out/out_documents_on_agreement.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/out/out_documents_on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="По номеру" url="/component/out/out_documents_by_number.xhtml" icon="leafIcon"
-                                styleClass="#{currentView eq '/component/out/out_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                </p:submenu>
+<div id="leftMenu">
+<div id="leftMenuTiltle">Документооборот ФНКЦ ДГОИ</div>
+<div id="leftMenuHolder">
+<p:menu id="navigationMenu" toggleable="true" widgetVar="navigationMenuVar" style="width:100%;">
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
+    <p:submenu label="Электронные документы" styleClass="subMenuItem">
+        <p:menuitem value="Мои документы" url="/component/scan_documents.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/scan_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    </p:submenu>
+</c:if>
+<p:submenu label="Входящие документы" styleClass="subMenuItem">
+    <p:menuitem value="Мои проекты" url="/component/personal/personal_in_documents.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/personal/personal_in_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="По номеру" url="/component/in/in_documents.xhtml" icon="leafIcon"
+                styleClass="#{currentView eq '/component/in/in_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="На контроле" url="/component/in/in_executing_documents.xhtml" icon="leafIcon"
+                styleClass="#{currentView eq '/component/in/in_executing_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+</p:submenu>
+<p:submenu label="Исходящие документы" styleClass="subMenuItem">
+    <p:menuitem value="Мои проекты" url="/component/personal/personal_out_documents.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/personal/personal_out_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="На рассмотрении" url="/component/out/out_documents_on_consideration.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/out/out_documents_on_consideration.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="На согласовании" url="/component/out/out_documents_on_agreement.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/out/out_documents_on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="По номеру" url="/component/out/out_documents_by_number.xhtml" icon="leafIcon"
+                styleClass="#{currentView eq '/component/out/out_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+</p:submenu>
 
-                <p:submenu label="Внутренние документы" styleClass="subMenuItem">
-                    <p:menuitem value="Мои проекты"
-                                url="/component/personal/personal_internal_documents.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/personal/personal_internal_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="На рассмотрении"
-                                url="/component/internal/internal_documents_on_review.xhtml?statusId=2"
-                                icon="leafIcon"
-                                styleClass="ui-menuitem-link ui-corner-all #{currentView eq '/component/internal/internal_documents_on_review.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="На согласовании"
-                                url="/component/internal/internal_documents_on_agreement.xhtml?statusId=3"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_documents_on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="По номеру"
-                                url="/component/internal/internal_documents_by_number.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Распоряжения"
-                                url="/component/internal/internal_direction_documents.xhtml?formValue=Распоряжение&amp;formCategory=Внутренние документы"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_direction_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Приказы"
-                                url="/component/internal/internal_order_documents.xhtml?formValue=Приказ&amp;formCategory=Внутренние документы&amp;registrationNumber=%25" icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_order_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Служебные записки"
-                                url="/component/internal/internal_office_memo_documents.xhtml?formValue=Служебная записка&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_office_memo_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem icon="leafIcon" value="Информационные письма"
-                                url="/component/internal/internal_information_memo_documents.xhtml?formValue=Информационное письмо&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
-                                styleClass="#{currentView eq '/component/internal/internal_information_memo_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Инструкции"
-                                url="/component/internal/internal_instruction_documents.xhtml?formValue=Инструкция&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_instruction_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Методические пособия"
-                                url="/component/internal/internal_manual_documents.xhtml?formValue=Методическое пособие&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_manual_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Правила внутреннего распорядка"
-                                icon="leafIcon"
-                                url="/component/internal/internal_rule_documents.xhtml?formValue=Правила внутреннего распорядка&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
-                                styleClass="#{currentView eq '/component/internal/internal_rule_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Положения"
-                                url="/component/internal/internal_position_documents.xhtml?formValue=Положение&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_position_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Гарантийные письма"
-                                url="/component/internal/internal_garantee_documents.xhtml?formValue=Гарантийное письмо&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/internal/internal_garantee_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                </p:submenu>
-                <c:if test="#{isRequestManager or canViewRequestDocuments}">
-                    <p:submenu label="Обращения граждан" styleClass="subMenuItem">
-                        <p:menuitem value="Мои проекты"
-                                    url="/component/personal/personal_request_documents.xhtml"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/personal/personal_request_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="На контроле"
-                                    url="/component/request/request_documents_on_control.xhtml?executionDate=%25&amp;statusesId={2,80}"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/request/request_documents_on_control.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="По номеру"
-                                    url="/component/request/request_documents.xhtml"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/request/request_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Заявки на лечение"
-                                    url="/component/request/request_documents_eq_claim.xhtml?formCategory=Обращения граждан&amp;formValue=Заявка на лечение"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/request/request_documents_eq_claim.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Жалобы"
-                                    url="/component/request/request_documents_eq_appeal.xhtml?formCategory=Обращения граждан&amp;formValue=Жалоба"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/request/request_documents_eq_appeal.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Благодарности"
-                                    url="/component/request/request_documents_eq_gratitude.xhtml?formCategory=Обращения граждан&amp;formValue=Благодарность"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/request/request_documents_eq_gratitude.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                </c:if>
-                <p:submenu label="Поручения|Задачи" styleCalss="subMenuItem">
-                    <p:menuitem value="Мои проекты"
-                                url="/component/personal/personal_tasks.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/personal/personal_tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="По номеру"
-                                url="/component/task/tasks.xhtml"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="На исполнении"
-                                url="/component/task/tasks_on_execution.xhtml?statusId=2"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_on_execution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Исполненные"
-                                url="/component/task/tasks_executed.xhtml?statusId=3"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_executed.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Резолюции"
-                                url="/component/task/tasks_eq_resolution.xhtml?formCategory=Поручения&amp;formDescription=resolution"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_eq_resolution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Поручения"
-                                url="/component/task/tasks_eq_task.xhtml?formCategory=Поручения&amp;formDescription=task"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_eq_task.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Задачи"
-                                url="/component/task/tasks_eq_exercise.xhtml?exerciseTypeValue=Задача&amp;exerciseTypeCategory=Задачи"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_eq_exercise.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Обращения"
-                                url="/component/task/tasks_eq_request.xhtml?exerciseTypeValue=Обращение&amp;exerciseTypeCategory=Задачи"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_eq_request.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Заявления"
-                                url="/component/task/tasks_eq_petition.xhtml?exerciseTypeValue=Заявление&amp;exerciseTypeCategory=Задачи"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_eq_petition.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    <p:menuitem value="Заявки"
-                                url="/component/task/tasks_eq_claim.xhtml?exerciseTypeValue=Заявка&amp;exerciseTypeCategory=Задачи"
-                                icon="leafIcon"
-                                styleClass="#{currentView eq '/component/task/tasks_eq_claim.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                </p:submenu>
-                <c:if test="#{not isOuter}">
-                    <p:submenu label="Пользователи" styleCalss="subMenuItem">
-                        <p:menuitem value="Телефонный справочник" url="/component/users.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/users.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Группы" url="/component/groups.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/groups.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Замещение" url="/component/user_substitutions.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/user_substitutions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                    <p:submenu label="Записная книжка" styleCalss="subMenuItem">
-                        <p:menuitem value="По дате" url="/component/record_book_documents.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/record_book_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                </c:if>
-                <c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
-                    <p:submenu label="Контрагенты" styleCalss="subMenuItem">
-                        <p:menuitem value="По названию" url="/component/contragents.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/contragents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                </c:if>
-                <c:if test="#{isAdministrator or isRecorder}">
-                    <p:submenu label="Архивирование" styleCalss="subMenuItem">
-                        <p:menuitem value="Дела" url="/component/office/office_keeping_files.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/office/office_keeping_files.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Тома дел" url="/component/office/office_keeping_volumes.xhtml"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/office/office_keeping_volumes.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                </c:if>
-                <c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
-                    <p:submenu label="Шаблоны согласования" styleCalss="subMenuItem">
-                        <p:menuitem value="По названию" url="/component/admin/route_templates.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/admin/route_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                </c:if>
-                <c:if test="#{isAdministrator}">
-                    <p:submenu label="Администрирование" styleCalss="subMenuItem">
-                        <p:menuitem value="Сотрудники" url="/component/users.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/users.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Роли" url="/component/roles.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/roles.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Подразделения" url="/component/admin/departments.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/admin/departments.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Должности" url="/component/admin/positions.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/admin/positions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Нумератор" url="/component/numerators.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/numerators.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="О программе" url="/component/version.xhtml" icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/version.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                        <p:menuitem value="Настройки базы данных" url="/component/admin/system_properties.xhtml"
-                                    icon="leafIcon"
-                                    styleClass="#{currentView eq '/component/admin/system_properties.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                    </p:submenu>
-                </c:if>
-                <c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
-                    <p:menuitem value="Отчеты" url="/component/report/report_templates.xhtml" icon="leafIcon"
-                                styleClass="#{currentView eq '/component/report/report_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                </c:if>
+<p:submenu label="Внутренние документы" styleClass="subMenuItem">
+    <p:menuitem value="Мои проекты"
+                url="/component/personal/personal_internal_documents.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/personal/personal_internal_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="На рассмотрении"
+                url="/component/internal/internal_documents_on_review.xhtml?statusId=2"
+                icon="leafIcon"
+                styleClass="ui-menuitem-link ui-corner-all #{currentView eq '/component/internal/internal_documents_on_review.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="На согласовании"
+                url="/component/internal/internal_documents_on_agreement.xhtml?statusId=3"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_documents_on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="По номеру"
+                url="/component/internal/internal_documents_by_number.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_documents_by_number.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Распоряжения"
+                url="/component/internal/internal_direction_documents.xhtml?formValue=Распоряжение&amp;formCategory=Внутренние документы"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_direction_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Приказы"
+                url="/component/internal/internal_order_documents.xhtml?formValue=Приказ&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_order_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Служебные записки"
+                url="/component/internal/internal_office_memo_documents.xhtml?formValue=Служебная записка&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_office_memo_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem icon="leafIcon" value="Информационные письма"
+                url="/component/internal/internal_information_memo_documents.xhtml?formValue=Информационное письмо&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                styleClass="#{currentView eq '/component/internal/internal_information_memo_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Инструкции"
+                url="/component/internal/internal_instruction_documents.xhtml?formValue=Инструкция&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_instruction_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Методические пособия"
+                url="/component/internal/internal_manual_documents.xhtml?formValue=Методическое пособие&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_manual_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Правила внутреннего распорядка"
+                icon="leafIcon"
+                url="/component/internal/internal_rule_documents.xhtml?formValue=Правила внутреннего распорядка&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                styleClass="#{currentView eq '/component/internal/internal_rule_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Положения"
+                url="/component/internal/internal_position_documents.xhtml?formValue=Положение&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_position_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Гарантийные письма"
+                url="/component/internal/internal_garantee_documents.xhtml?formValue=Гарантийное письмо&amp;formCategory=Внутренние документы&amp;registrationNumber=%25"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/internal/internal_garantee_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+</p:submenu>
+<c:if test="#{isRequestManager or canViewRequestDocuments}">
+    <p:submenu label="Обращения граждан" styleClass="subMenuItem">
+        <p:menuitem value="Мои проекты"
+                    url="/component/personal/personal_request_documents.xhtml"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/personal/personal_request_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="На контроле"
+                    url="/component/request/request_documents_on_control.xhtml?executionDate=%25&amp;statusesId={2,80}"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/request/request_documents_on_control.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="По номеру"
+                    url="/component/request/request_documents.xhtml"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/request/request_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Заявки на лечение"
+                    url="/component/request/request_documents_eq_claim.xhtml?formCategory=Обращения граждан&amp;formValue=Заявка на лечение"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/request/request_documents_eq_claim.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Жалобы"
+                    url="/component/request/request_documents_eq_appeal.xhtml?formCategory=Обращения граждан&amp;formValue=Жалоба"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/request/request_documents_eq_appeal.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Благодарности"
+                    url="/component/request/request_documents_eq_gratitude.xhtml?formCategory=Обращения граждан&amp;formValue=Благодарность"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/request/request_documents_eq_gratitude.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    </p:submenu>
+</c:if>
+<p:submenu label="Поручения|Задачи" styleCalss="subMenuItem">
+    <p:menuitem value="Мои проекты"
+                url="/component/personal/personal_tasks.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/personal/personal_tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="По номеру"
+                url="/component/task/tasks.xhtml"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="На исполнении"
+                url="/component/task/tasks_on_execution.xhtml?statusId=2"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_on_execution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Исполненные"
+                url="/component/task/tasks_executed.xhtml?statusId=3"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_executed.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Резолюции"
+                url="/component/task/tasks_eq_resolution.xhtml?formCategory=Поручения&amp;formDescription=resolution"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_eq_resolution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Поручения"
+                url="/component/task/tasks_eq_task.xhtml?formCategory=Поручения&amp;formDescription=task"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_eq_task.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Задачи"
+                url="/component/task/tasks_eq_exercise.xhtml?exerciseTypeValue=Задача&amp;exerciseTypeCategory=Задачи"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_eq_exercise.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Обращения"
+                url="/component/task/tasks_eq_request.xhtml?exerciseTypeValue=Обращение&amp;exerciseTypeCategory=Задачи"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_eq_request.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Заявления"
+                url="/component/task/tasks_eq_petition.xhtml?exerciseTypeValue=Заявление&amp;exerciseTypeCategory=Задачи"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_eq_petition.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    <p:menuitem value="Заявки"
+                url="/component/task/tasks_eq_claim.xhtml?exerciseTypeValue=Заявка&amp;exerciseTypeCategory=Задачи"
+                icon="leafIcon"
+                styleClass="#{currentView eq '/component/task/tasks_eq_claim.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+</p:submenu>
+<c:if test="#{not isOuter}">
+    <p:submenu label="Пользователи" styleCalss="subMenuItem">
+        <p:menuitem value="Телефонный справочник" url="/component/users.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/users.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Группы" url="/component/groups.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/groups.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <c:if test="#{isFilling}">
+            <p:menuitem value="Замещение" url="/component/user_substitutions.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/user_substitutions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        </c:if>
+    </p:submenu>
+    <p:submenu label="Записная книжка" styleCalss="subMenuItem">
+        <p:menuitem value="По дате" url="/component/record_book_documents.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/record_book_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    </p:submenu>
+</c:if>
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
+    <p:submenu label="Контрагенты" styleCalss="subMenuItem">
+        <p:menuitem value="По названию" url="/component/contragents.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/contragents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    </p:submenu>
+</c:if>
+<c:if test="#{isAdministrator or isRecorder}">
+    <p:submenu label="Архивирование" styleCalss="subMenuItem">
+        <p:menuitem value="Дела" url="/component/office/office_keeping_files.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/office/office_keeping_files.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Тома дел" url="/component/office/office_keeping_volumes.xhtml"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/office/office_keeping_volumes.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    </p:submenu>
+</c:if>
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
+    <p:submenu label="Шаблоны согласования" styleCalss="subMenuItem">
+        <p:menuitem value="По названию" url="/component/admin/route_templates.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/admin/route_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    </p:submenu>
+</c:if>
+<c:if test="#{isAdministrator}">
+    <p:submenu label="Администрирование" styleCalss="subMenuItem">
+        <p:menuitem value="Сотрудники" url="/component/users.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/users.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Роли" url="/component/roles.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/roles.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Подразделения" url="/component/admin/departments.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/admin/departments.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Должности" url="/component/admin/positions.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/admin/positions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Нумератор" url="/component/numerators.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/numerators.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="О программе" url="/component/version.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/version.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Настройки базы данных" url="/component/admin/system_properties.xhtml"
+                    icon="leafIcon"
+                    styleClass="#{currentView eq '/component/admin/system_properties.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+    </p:submenu>
+</c:if>
+<c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
+    <p:menuitem value="Отчеты" url="/component/report/report_templates.xhtml" icon="leafIcon"
+                styleClass="#{currentView eq '/component/report/report_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+</c:if>
 
-            </p:menu>
-        </div>
-    </div>
-    <div id="split"/>
+</p:menu>
+</div>
+</div>
+<div id="split"/>
 </ui:insert>
 
 <ui:insert name="header">

@@ -63,6 +63,7 @@ public class SessionManagementBean implements Serializable {
     private boolean isEmployer = false;
     private boolean isOuter = false;
     private boolean isHr = false;
+    private boolean isFilling = false;
 
     @Inject
     @Named("indexManagement")
@@ -207,6 +208,9 @@ public class SessionManagementBean implements Serializable {
                 if (!isHr) {
                     isHr = user.isHr();
                 }
+                if(!isFilling){
+                    isFilling = user.isFilling();
+                }
                 //Все роли есть - поиск дальше не нужен
                 if(hasAllRoles()){
                     break;
@@ -220,7 +224,7 @@ public class SessionManagementBean implements Serializable {
      * @return true - все, false - есть невыставленные роли
      */
     private boolean hasAllRoles() {
-        return isAdministrator && isRecorder && isOfficeManager && isRequestManager && isEmployer && isOuter && isHr;
+        return isAdministrator && isRecorder && isOfficeManager && isRequestManager && isEmployer && isOuter && isHr && isFilling;
     }
 
     /**
@@ -235,6 +239,7 @@ public class SessionManagementBean implements Serializable {
         isEmployer = loggedUser.isEmployer();
         isOuter = loggedUser.isOuter();
         isHr = loggedUser.isHr();
+        isFilling = loggedUser.isFilling();
     }
 
     private void printRoleFlags() {
@@ -258,6 +263,9 @@ public class SessionManagementBean implements Serializable {
         }
         if (isHr) {
             LOGGER.debug("HR");
+        }
+        if(isFilling){
+            LOGGER.debug("FILLING");
         }
     }
 
@@ -413,5 +421,9 @@ public class SessionManagementBean implements Serializable {
 
     public void setIndexManagement(IndexManagementBean indexManagement) {
         this.indexManagement = indexManagement;
+    }
+
+    public boolean isFilling() {
+        return isFilling;
     }
 }

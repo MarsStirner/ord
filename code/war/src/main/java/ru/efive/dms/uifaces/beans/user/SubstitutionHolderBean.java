@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
@@ -33,6 +32,26 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     private User selectedPerson = null;
     private User selectedSubstitution = null;
+
+    @Override
+    public boolean isCanCreate() {
+        return super.isCanCreate() && sessionManagement.isFilling();
+    }
+
+    @Override
+    public boolean isCanDelete() {
+        return super.isCanDelete()&& sessionManagement.isFilling();
+    }
+
+    @Override
+    public boolean isCanEdit() {
+        return super.isCanEdit() && sessionManagement.isFilling();
+    }
+
+    @Override
+    public boolean isCanView() {
+        return super.isCanView() && sessionManagement.isFilling();
+    }
 
     public void confirmPersonSelection() {
         getDocument().setPerson(selectedPerson);

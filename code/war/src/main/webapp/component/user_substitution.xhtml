@@ -18,7 +18,7 @@
 </ui:define>
 
 <ui:define name="header">
-    <h:panelGroup rendered="#{substitution.viewState or substitution.createState or substitution.editState}">
+    <h:panelGroup rendered="#{(substitution.viewState or substitution.createState or substitution.editState) and isFilling}">
         <div id="form_header">
             <div class="actionbar">
                 <div class="menu">
@@ -28,8 +28,7 @@
                         </h:outputLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{substitution.edit}"
-                                       rendered="#{substitution.viewState }">
+                        <h:commandLink action="#{substitution.edit}" rendered="#{substitution.viewState }">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>

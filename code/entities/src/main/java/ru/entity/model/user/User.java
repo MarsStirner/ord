@@ -1,18 +1,11 @@
 package ru.entity.model.user;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.*;
-
-
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.util.ApplicationHelper;
 import ru.util.StoredCodes;
+
+import javax.persistence.*;
+import java.util.*;
 
 /**
  * Пользователь системы
@@ -337,6 +330,15 @@ public class User extends IdentifiedEntity {
         return false;
     }
 
+    @Transient
+    public boolean isFilling() {
+        for (Role role : roles) {
+            if (StoredCodes.RoleType.FILLING.equals(role.getRoleType().name())) {
+                return true;
+            }
+        }
+        return false;
+    }
     public Date getCreated() {
         return created;
     }
