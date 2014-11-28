@@ -168,26 +168,20 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
-
                     ProcessUser user = getProcess().getProcessUser();
-
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
         toStatusAction.setAction(DocumentAction.CHECK_IN_5);
@@ -218,25 +212,20 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
                     ProcessUser user = getProcess().getProcessUser();
-
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -266,26 +255,21 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
-                    ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
 
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -340,26 +324,20 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
-                    ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
-
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -485,25 +463,17 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
-                    ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
-
-                    boolean isAdmin = false;
-                    for (int i = 0; i < user.getRoles().size(); i++) {
-                        if (user.getRoles().iterator().next().getRoleType().equals(RoleType.ADMINISTRATOR)) {
-                            isAdmin = true;
+                    for (Role role : user.getRoles()) {
+                        if (RoleType.ADMINISTRATOR.equals(role.getRoleType())) {
+                            return true;
                         }
                     }
-                    if (isAdmin) {
-                        result = true;
-                    }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -531,26 +501,20 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
-                    ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
-
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -811,14 +775,13 @@ public final class ProcessFactory {
         NoStatusAction changeAccessLevelAction = new NoStatusAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = true;
                 try {
                     if (getProcess().getProcessedData().getDocumentStatus().getId() == 1) return false;
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
+                    return false;
                 }
-                return result;
+                return true;
             }
         };
         changeAccessLevelAction.setAction(DocumentAction.CHANGE_ACCESS_LEVEL);
@@ -1561,26 +1524,20 @@ public final class ProcessFactory {
         StatusChangeAction toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
-                    ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
-
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -1687,26 +1644,20 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
-                    ProcessedData data = getProcess().getProcessedData();
                     ProcessUser user = getProcess().getProcessUser();
-
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -1792,25 +1743,17 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
-                try {
-                    ProcessedData data = getProcess().getProcessedData();
+                 try {
                     ProcessUser user = getProcess().getProcessUser();
-
-                    boolean isAdmin = false;
-                    for (int i = 0; i < user.getRoles().size(); i++) {
-                        if ((user.getRoles().iterator().next().getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            isAdmin = true;
+                    for (Role role : user.getRoles()) {
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
-                    if (isAdmin) {
-                        result = true;
-                    }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
         toStatus = statuses.get(DocumentStatus.CHECK_IN_80);
@@ -1883,14 +1826,13 @@ public final class ProcessFactory {
         NoStatusAction changeAccessLevelAction = new NoStatusAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = true;
                 try {
                     if (getProcess().getProcessedData().getDocumentStatus().equals(DocumentStatus.NEW)) return false;
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
+                    return false;
                 }
-                return result;
+                return true;
             }
         };
         changeAccessLevelAction.setAction(DocumentAction.CHANGE_ACCESS_LEVEL);
@@ -1933,25 +1875,20 @@ public final class ProcessFactory {
         StatusChangeAction toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
                     ProcessUser user = getProcess().getProcessUser();
-
                     for (Role role : user.getRoles()) {
-                        if ((role.getRoleType().equals(RoleType.ADMINISTRATOR))) {
-                            result = true;
-                            break;
+                        if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {
+                            return true;
                         }
-                        if ((role.getRoleType().equals(RoleType.OFFICE_MANAGER))) {
-                            result = true;
-                            break;
+                        if ((RoleType.OFFICE_MANAGER.equals(role.getRoleType()))) {
+                            return true;
                         }
                     }
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
 
@@ -2088,16 +2025,14 @@ public final class ProcessFactory {
         NoStatusAction changeDateAction = new NoStatusAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = false;
                 try {
                     if (getProcess().getProcessedData().getDocumentStatus().getId() >= 2 &&
                             getProcess().getProcessedData().getDocumentStatus().getId() < 100)
                         return true;
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
                 }
-                return result;
+                return false;
             }
         };
         changeDateAction.setAction(DocumentAction.CHANGE_EXECUTION_DATE);
@@ -2124,15 +2059,14 @@ public final class ProcessFactory {
         NoStatusAction changeAccessLevelAction = new NoStatusAction(process) {
             @Override
             public boolean isAvailable() {
-                boolean result = true;
                 try {
                     if (getProcess().getProcessedData().getDocumentStatus().equals(DocumentStatus.NEW))
                         return false;
                 } catch (Exception e) {
-                    result = false;
                     e.printStackTrace();
+                    return false;
                 }
-                return result;
+                return true;
             }
         };
         changeAccessLevelAction.setAction(DocumentAction.CHANGE_ACCESS_LEVEL);
