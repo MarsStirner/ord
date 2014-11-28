@@ -37,5 +37,7 @@ public enum RoleType {
 
     OFFICE_07,
 
-    OFFICE_08
+    OFFICE_08,
+
+    FILLING
 }

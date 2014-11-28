@@ -1,27 +1,14 @@
 package ru.entity.model.user;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
-
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.mapped.IdentifiedEntity;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.*;
 
 /**
  * Роль пользователя системы
@@ -46,7 +33,7 @@ public class Role extends IdentifiedEntity implements Comparable<Role>{
     /**
      * пользователи
      */
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "roles")
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "roles")
     @Type(type = "java.util.Set")
     @Fetch(value = FetchMode.SELECT)
     private Set<User> persons = new HashSet<User>();

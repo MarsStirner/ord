@@ -8,14 +8,15 @@ import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
 
 @Named("role")
@@ -29,9 +30,7 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> im
             sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
         }
         return result;
     }
@@ -65,18 +64,14 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> im
         try {
             Role role = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).update(getDocument());
             if (role == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 setDocument(role);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -88,46 +83,22 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> im
         try {
             Role role = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).save(getDocument());
             if (role == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null,MSG_CANT_SAVE);
             } else {
                 setDocument(role);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return result;
     }
 
-    @Override
-    protected String doAfterCreate() {
-        roleList.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        roleList.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        roleList.markNeedRefresh();
-        return super.doAfterSave();
-    }
-
     public List<RoleType> getTypes() {
         List<RoleType> result = new ArrayList<RoleType>();
-        for (RoleType type : RoleType.values()) {
-            result.add(type);
-        }
+        Collections.addAll(result, RoleType.values());
         return result;
     }
 
@@ -135,9 +106,7 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> im
     @Inject
     @Named("sessionManagement")
     SessionManagementBean sessionManagement = new SessionManagementBean();
-    @Inject
-    @Named("roleList")
-    RoleListHolderBean roleList = new RoleListHolderBean();
+
 
     private static final long serialVersionUID = 5947443099767481905L;
 }

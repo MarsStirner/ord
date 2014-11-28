@@ -1,21 +1,18 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.*;
-
-import javax.faces.context.FacesContext;
-
 import org.apache.commons.lang.StringUtils;
-
-import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.Person;
-
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.*;
 import ru.efive.wf.core.activity.enums.ProcessState;
 import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.Person;
 import ru.external.ProcessedData;
 import ru.util.ApplicationHelper;
+
+import javax.faces.context.FacesContext;
+import java.util.*;
 
 public class ProcessorModalBean extends ModalWindowHolderBean {
     private static final long serialVersionUID = 8956219164518339475L;
@@ -101,7 +98,12 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
             localPreActionActivities = Collections.synchronizedList(new ArrayList<LocalActivity>());
             processedActivity = null;
             engine = new Engine();
-            Person person = new Person(sessionManagement.getLoggedUser());
+            Person person;
+            if (!sessionManagement.isSubstitution()) {
+                person = new Person(sessionManagement.getLoggedUser());
+            } else {
+                person = new Person(sessionManagement.getLoggedUser(), sessionManagement.getSubstitutedUsers());
+            }
             engine.initialize(getProcessedData(), person);
             for (IAction action : engine.getActions()) {
                 availableActions.add(action);
@@ -181,7 +183,12 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                 } else {
                     if (engine == null) {
                         engine = new Engine();
-                        Person person = new Person(sessionManagement.getLoggedUser());
+                        Person person;
+                        if (!sessionManagement.isSubstitution()) {
+                            person = new Person(sessionManagement.getLoggedUser());
+                        } else {
+                            person = new Person(sessionManagement.getLoggedUser(), sessionManagement.getSubstitutedUsers());
+                        }
                         new Engine().initialize(getProcessedData(), person);
                     }
                     if (selectedAction != null &&
