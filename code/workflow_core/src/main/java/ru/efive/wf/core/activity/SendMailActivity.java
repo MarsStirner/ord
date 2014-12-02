@@ -1,8 +1,12 @@
 package ru.efive.wf.core.activity;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.Properties;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.efive.wf.core.IActivity;
+import ru.efive.wf.core.MailSettings;
+import ru.efive.wf.core.data.MailMessage;
+import ru.entity.model.enums.DocumentType;
+import ru.external.ProcessedData;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
@@ -11,15 +15,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import ru.entity.model.enums.DocumentType;
-import ru.efive.wf.core.IActivity;
-import ru.efive.wf.core.MailSettings;
-import ru.external.ProcessedData;
-import ru.efive.wf.core.data.MailMessage;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.Properties;
 
 public class SendMailActivity implements IActivity {
     Class<? extends ProcessedData> class_;
@@ -224,6 +222,4 @@ public class SendMailActivity implements IActivity {
         mimeMultipart.addBodyPart(mimeBodyPart);
         return mimeMultipart;
     }
-
-    ;
 }

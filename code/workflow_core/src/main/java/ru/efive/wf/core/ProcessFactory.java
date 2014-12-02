@@ -34,7 +34,7 @@ public final class ProcessFactory {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return properties.getProperty("app.host").toString();
+        return properties.getProperty("app.host");
     }
 
     public static <T extends ProcessedData> Process getProcessByType(T t) {
@@ -100,7 +100,6 @@ public final class ProcessFactory {
             prop = PropertyUtils.getProperty(t, "form.value");
             docFormValue = (prop == null ? "" : (String) prop);
         }
-
         Set<String> recipients = getRecipients(t);
 
         Status<T> processStatus = new Status<T>();
@@ -128,8 +127,9 @@ public final class ProcessFactory {
         activites = new ArrayList<IActivity>();
         //1-mail
         List<String> sendTo = new ArrayList<String>();
-        if (!recipients.isEmpty()) sendTo.addAll(recipients);
-
+        if (!recipients.isEmpty()) {
+            sendTo.addAll(recipients);
+        }
         //если приказ, то отправить письмо Адресатам, Автору, Руководителя,Контроль исполнения
         prop = PropertyUtils.getProperty(t, "author");
         if (prop != null)
@@ -1743,7 +1743,7 @@ public final class ProcessFactory {
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
-                 try {
+                try {
                     ProcessUser user = getProcess().getProcessUser();
                     for (Role role : user.getRoles()) {
                         if ((RoleType.ADMINISTRATOR.equals(role.getRoleType()))) {

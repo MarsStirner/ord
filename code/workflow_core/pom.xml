@@ -15,7 +15,7 @@
     <parent>
         <groupId>ru.efive.dms</groupId>
         <artifactId>dms-app</artifactId>
-        <version>0.2.6</version>
+        <version>0.3.0</version>
     </parent>
 
     <dependencies>
@@ -23,9 +23,6 @@
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
         </dependency>
-
-        <!-- <dependency> <groupId>javax.ejb</groupId> <artifactId>ejb-api</artifactId>
-              <version>3.0</version> <scope>provided</scope> </dependency> -->
 
         <dependency>
             <groupId>javax.mail</groupId>

@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context
-	   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="propertyConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <!--<value>file:/usr/local/ord/configuration/jdbc.properties</value>-->
-                <!--<value>file:/usr/local/ord/configuration/mail.properties</value>-->
-                <!--<value>file:/usr/local/ord/configuration/ldap.properties</value>-->
-                <value>jdbc.properties</value>
-                <value>mail.properties</value>
-                <value>ldap.properties</value>
+                <value>file:/usr/local/ord/configuration/jdbc.properties</value>
+                <value>file:/usr/local/ord/configuration/mail.properties</value>
+                <value>file:/usr/local/ord/configuration/ldap.properties</value>
+                <!--<value>jdbc.properties</value>-->
+                <!--<value>mail.properties</value>-->
+                <!--<value>ldap.properties</value>-->
                 <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
             </list>
