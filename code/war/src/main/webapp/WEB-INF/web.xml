@@ -74,6 +74,21 @@
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
 
+    <!--This is basically GET request based. Every GET request creates a new logical view.-->
+    <context-param>
+        <param-name>com.sun.faces.numberOfViewsInSession</param-name>
+        <param-value>50</param-value>
+    </context-param>
+    <!--
+        This is basically synchronous (non-ajax!) POST request based.
+        Every synchronous POST request creates a new physical view.
+        They are all stored on basis of a logical view like so Map<LogicalView, Map<PhysicalView, ViewState>>.
+    -->
+    <context-param>
+        <param-name>com.sun.faces.numberOfLogicalViews</param-name>
+        <param-value>50</param-value>
+    </context-param>
+
     <servlet>
         <servlet-name>fileDownloadServlet</servlet-name>
         <servlet-class>ru.efive.dms.uifaces.FileDownloadServlet</servlet-class>
@@ -87,6 +102,8 @@
         <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
         <param-value>true</param-value>
     </context-param>
+
+    <!--Тема для элементов из библиотеки primefaces-->
     <context-param>
         <param-name>primefaces.THEME</param-name>
         <param-value>bootstrap</param-value>

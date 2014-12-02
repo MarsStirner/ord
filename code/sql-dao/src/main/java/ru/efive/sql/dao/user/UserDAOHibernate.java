@@ -1,20 +1,18 @@
 package ru.efive.sql.dao.user;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.*;
-
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.entity.model.enums.PermissionType;
 import ru.entity.model.user.Permission;
 import ru.entity.model.user.PersonContact;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.util.ApplicationHelper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserDAO {
 
@@ -466,7 +464,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         if (!showFired) {
             detachedCriteria.add(Restrictions.eq("fired", false));
         }
-        detachedCriteria.setProjection(Projections.id());
+        detachedCriteria.setProjection(Projections.distinct(Projections.id()));
         String[] ords = orderBy == null ? null : orderBy.split(",");
         if (ords != null) {
             if (ords.length > 1) {
@@ -577,7 +575,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
             detachedCriteria.add(Restrictions.eq("deleted", false));
         }
         detachedCriteria.add(Restrictions.eq("fired", true));
-        detachedCriteria.setProjection(Projections.id());
+        detachedCriteria.setProjection(Projections.distinct(Projections.id()));
         String[] ords = orderBy == null ? null : orderBy.split(",");
         if (ords != null) {
             if (ords.length > 1) {
