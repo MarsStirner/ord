@@ -48,8 +48,7 @@
         <property name="smtpPort" value="${smtp.port}"/>
     </bean>
 
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
-          destroy-method="close">
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClassName}"/>
         <property name="url" value="${jdbc.url}"/>
         <property name="username" value="${jdbc.username}"/>
@@ -152,14 +151,12 @@
 
     <!-- Transaction manager for a single Hibernate SessionFactory (alternative
          to JTA) -->
-    <bean id="transactionManager"
-          class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
         <property name="dataSource" ref="dataSource"/>
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean id="transactionInterceptor"
-          class="org.springframework.transaction.interceptor.TransactionInterceptor">
+    <bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
         <property name="transactionManager" ref="transactionManager"/>
         <property name="transactionAttributes">
             <props>

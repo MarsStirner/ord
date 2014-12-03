@@ -16,7 +16,7 @@
 
     <ui:define name="header_top">
         <span>
-            <h:outputText
+            <h:outputText id = "userListHeader"
                     value="#{(userList.showFired ? 'Уволенные' : 'Работающие').concat(' пользователи по фамилии')}"/>
         </span>
     </ui:define>
@@ -46,10 +46,10 @@
         <div class="defbutton">
             <h:commandLink action="#{userList.changeShowFiredFlag}">
                 <label>
-                    <h:selectBooleanCheckbox value="#{userList.getShowFired()}" readonly="true"/>
+                    <h:selectBooleanCheckbox id = "firedFlag" value="#{userList.getShowFired()}" readonly="true"/>
                     Показать только уволенных
                 </label>
-                <f:ajax render="main_data_tbl main_data_paging"/>
+                <f:ajax render="main_data_tbl main_data_paging userListHeader firedFlag"/>
             </h:commandLink>
         </div>
     </ui:define>
