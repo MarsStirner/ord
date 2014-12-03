@@ -1,41 +1,29 @@
 package ru.efive.dms.uifaces.beans.user;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.LDAPImportService;
 import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.User;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.Conversation;
-import javax.enterprise.context.ConversationScoped;
-
-import org.slf4j.Logger;
-
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.List;
 
-@Named("userList")
-@ConversationScoped
+@ManagedBean(name = "userList")
+@ViewScoped
 public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
 
     private static final Logger logger = LoggerFactory.getLogger("USERLIST");
 
     private static final long serialVersionUID = 8282506863686518183L;
-    @Inject
-    private Conversation conversation;
-
-    @PostConstruct
-    public void init(){
-        if(conversation.isTransient()) {
-            conversation.begin();
-        }
-    }
 
     @Inject
     @Named("sessionManagement")

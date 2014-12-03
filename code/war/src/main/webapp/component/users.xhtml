@@ -11,19 +11,19 @@
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
     <ui:define name="running_head">
-        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
         <h:outputScript library="js" name="forms.js" target="head"/>
     </ui:define>
 
     <ui:define name="header_top">
-        <span><h:outputText
-                value="#{(userList.showFired ? 'Уволенные' : 'Работающие').concat(' пользователи по фамилии')}"/></span>
+        <span>
+            <h:outputText
+                    value="#{(userList.showFired ? 'Уволенные' : 'Работающие').concat(' пользователи по фамилии')}"/>
+        </span>
     </ui:define>
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:outputLink value="/component/user.xhtml" target="_blank"
-                          rendered="#{isAdministrator or isHr}">
+            <h:outputLink value="/component/user.xhtml" target="_blank" rendered="#{isAdministrator or isHr}">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый пользователь
                 <f:param name="docAction" value="create"/>
@@ -33,14 +33,14 @@
             <h:commandLink action="#{userList.importLDAPUsers()}" rendered="#{isAdministrator or isHr}">
                 <h:graphicImage value="#{resource['images:users.png']}" width="16" height="16"/>
                 Импортировать пользователей из LDAP
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
         <div class="defbutton">
             <h:commandLink action="#{userList.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
         <div class="defbutton">
@@ -49,22 +49,19 @@
                     <h:selectBooleanCheckbox value="#{userList.getShowFired()}" readonly="true"/>
                     Показать только уволенных
                 </label>
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-
-        <e5ui:formPart id="main_table_part">
             <div id="main_table">
                 <div id="searchbar" class="main_searchbar">
                     <h:inputText id="filter_string" value="#{userList.filter}"
                                  style="display:block; float:left; width:60%; margin:2px 10px;"
                                  title="Поиск"/>
-                    <h:commandButton value=" "
-                                     action="#{userList.refresh()}"
-                                     styleClass="searchbutton">
+                    <h:commandButton value=" " action="#{userList.refresh()}" styleClass="searchbutton">
+                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                     </h:commandButton>
 
                 </div>
@@ -139,12 +136,13 @@
                     </div>
                 </div>
                 <div id="table_paging">
-                    <e5ui-comp:tablePager documentListHolder="#{userList}" style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector documentListHolder="#{userList}"
-                                                     style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                    <h:panelGroup id="main_data_paging">
+                        <e5ui-comp:tablePager documentListHolder="#{userList}" style="display:inline;"/>
+                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{userList}"
+                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                    </h:panelGroup>
                 </div>
             </div>
-        </e5ui:formPart>
 
         <e5ui-comp:ajaxStatusGlobal timeout="300">
             <f:facet name="waitPanel">
