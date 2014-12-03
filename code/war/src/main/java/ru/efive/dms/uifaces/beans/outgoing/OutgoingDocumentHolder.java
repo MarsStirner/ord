@@ -218,7 +218,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         document.setAuthor(sessionManagement.getLoggedUser());
 
         String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
-        if ("yes".equals(isDocumentTemplate.toLowerCase())) {
+        if (StringUtils.isNotEmpty(isDocumentTemplate) && "yes".equals(isDocumentTemplate.toLowerCase())) {
             document.setTemplateFlag(true);
         } else {
             document.setTemplateFlag(false);

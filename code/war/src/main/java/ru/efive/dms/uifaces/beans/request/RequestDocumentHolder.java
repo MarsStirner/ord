@@ -201,7 +201,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         doc.setAuthor(sessionManagement.getLoggedUser());
 
         String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
-        if (isDocumentTemplate != null && "yes".equals(isDocumentTemplate.toLowerCase())) {
+        if (StringUtils.isNotEmpty(isDocumentTemplate) && "yes".equals(isDocumentTemplate.toLowerCase())) {
             doc.setTemplateFlag(true);
         } else {
             doc.setTemplateFlag(false);

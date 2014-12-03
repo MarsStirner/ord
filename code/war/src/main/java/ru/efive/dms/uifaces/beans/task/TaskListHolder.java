@@ -80,7 +80,7 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
 
     @Override
     protected Sorting initSorting() {
-        return new Sorting("registrationDate", true);
+        return new Sorting("registrationDate", false);
         //Сортировка по-умолчанию (дата регистрации документа)
     }
 
