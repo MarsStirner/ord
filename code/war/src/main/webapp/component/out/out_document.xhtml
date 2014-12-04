@@ -27,7 +27,8 @@
                         </h:outputLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{out_doc.edit}" rendered="#{out_doc.viewState and out_doc.editPermission}">
+                        <h:commandLink action="#{out_doc.edit}"
+                                       rendered="#{out_doc.viewState and out_doc.editPermission}">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>
@@ -451,7 +452,7 @@
 </div>
 <p:tabView widgetVar="outgoingDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
 <p:tab title="Реквизиты"
-       rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
+       rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
 <h:panelGroup rendered="#{out_doc.viewState}">
     <div class="row">
         <table class="form_grid">
@@ -779,10 +780,10 @@
 </h:panelGroup>
 </p:tab>
 <p:tab title="Движение документа"
-       rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
+       rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
 </p:tab>
 <p:tab title="Согласование"
-       rendered="#{(out_doc.agreementTreeEditAvailable or out_doc.agreementTreeViewAvailable) and (out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor))}">
+       rendered="#{(out_doc.agreementTreeEditAvailable or out_doc.agreementTreeViewAvailable) and (out_doc.viewState or out_doc.createState or out_doc.editState)}">
 <h:panelGroup id="agreement_tree_part">
 <h:panelGroup rendered="#{out_doc.agreementTreeViewAvailable}">
     <div class="row" style="height: 300px; width: 100%; margin: 0px; padding: 0px">
@@ -1010,10 +1011,10 @@
 </h:panelGroup>
 </p:tab>
 <p:tab title="Связи"
-       rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
+       rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
 </p:tab>
 <p:tab title="Оригинал"
-       rendered="#{out_doc.viewState or out_doc.createState or (out_doc.editState and out_doc.currentUserDocEditor)}">
+       rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
     <fieldset>
         <div class="actionbar">
             <div class="menu">
@@ -1252,12 +1253,8 @@
                             </div>
                         </div>
                         <div class="e5ui-modal-bottombuttons">
-                            <h:button
-                                    onclick="personEditorsPickListWidget.clickSave(); return false;"
-                                    value="Выбрать"/>
-                            <h:button
-                                    onclick="personEditorsPickListWidget.clickClose(); return false;"
-                                    value="Отмена"/>
+                            <h:button onclick="personEditorsPickListWidget.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="personEditorsPickListWidget.clickClose(); return false;" value="Отмена"/>
                         </div>
                     </e5ui-comp:modalWindow>
                 </td>
@@ -1353,12 +1350,8 @@
                             </div>
                         </div>
                         <div class="e5ui-modal-bottombuttons">
-                            <h:button
-                                    onclick="roleReadersPickListWidget.clickSave(); return false;"
-                                    value="Выбрать"/>
-                            <h:button
-                                    onclick="roleReadersPickListWidget.clickClose(); return false;"
-                                    value="Отмена"/>
+                            <h:button onclick="roleReadersPickListWidget.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="roleReadersPickListWidget.clickClose(); return false;" value="Отмена"/>
                         </div>
                     </e5ui-comp:modalWindow>
                 </td>
@@ -1440,12 +1433,8 @@
                             </div>
                         </div>
                         <div class="e5ui-modal-bottombuttons">
-                            <h:button
-                                    onclick="roleEditorsPickListWidget.clickSave(); return false;"
-                                    value="Выбрать"/>
-                            <h:button
-                                    onclick="roleEditorsPickListWidget.clickClose(); return false;"
-                                    value="Отмена"/>
+                            <h:button onclick="roleEditorsPickListWidget.clickSave(); return false;" value="Выбрать"/>
+                            <h:button onclick="roleEditorsPickListWidget.clickClose(); return false;" value="Отмена"/>
                         </div>
                     </e5ui-comp:modalWindow>
                 </td>
@@ -1653,8 +1642,8 @@
                                          actionBehavior="separate" maxFilesCount="0"
                                          uploadHandler="#{fileManagement.uploadHandler}"
                                          action="#{out_doc.uploadAttachments(fileManagement.details)}"
-                                         onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
-                                         onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
+                                         onuploading="e5ui_ajaxStatus.ajsgStopped=true;"
+                                         onuploaded="e5ui_ajaxStatus.ajsgStopped=false;">
                             <f:ajax render=":file_upload_form"/>
                         </e5ui:fileUpload>
                     </div>
@@ -1749,7 +1738,8 @@
                                     </div>
                                 </div>
                                 <div class="e5ui-modal-bottombuttons">
-                                    <h:button onclick="versionAppenderModal.clickClose(); return false;"                                           value="Отмена"/>
+                                    <h:button onclick="versionAppenderModal.clickClose(); return false;"
+                                              value="Отмена"/>
                                 </div>
                             </e5ui-comp:modalWindow>
 
@@ -1778,7 +1768,8 @@
                                                             value="#{userList.getUserFullNameById(row.authorId eq 0? out_doc.versionHistoryModal.attachment.authorId: row.authorId)}"/>
                                                 </e5ui:column>
                                                 <e5ui:column style="min-width:7em;">
-                                                    <h:outputLink value="/component/file/download.xhtml" target="_blank">
+                                                    <h:outputLink value="/component/file/download.xhtml"
+                                                                  target="_blank">
                                                         <h:graphicImage value="/resources/images/download_doc.gif"/>
                                                         <f:param name="id"
                                                                  value="#{out_doc.versionHistoryModal.attachment.id}"/>
@@ -1791,7 +1782,8 @@
                                     </div>
                                 </div>
                                 <div class="e5ui-modal-bottombuttons">
-                                    <h:button onclick="versionHistoryModal.clickClose(); return false;" value="Закрыть"/>
+                                    <h:button onclick="versionHistoryModal.clickClose(); return false;"
+                                              value="Закрыть"/>
                                 </div>
                             </e5ui-comp:modalWindow>
                         </div>

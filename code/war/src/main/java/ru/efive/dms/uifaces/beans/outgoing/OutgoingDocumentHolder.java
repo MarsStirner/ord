@@ -225,11 +225,11 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
 
         DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Внутренние документы", "Служебная записка");
+        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Исходящие документы", "Письмо");
         if (!list.isEmpty()) {
             form = list.get(0);
         } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Внутренние документы");
+            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Исходящие документы");
             if (!list.isEmpty()) {
                 form = list.get(0);
             }
