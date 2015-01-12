@@ -443,82 +443,86 @@ public class LDAPImportService {
      */
     private void synchronizeUser(LDAPUser ldapUser, User localUser) {
         LOGGER.debug("Synchronize with localID=" + localUser.getId());
-        if (localUser.getLastModified() != null && localUser.getLastModified().getTime() == ldapUser.getLastModified().getTime() && localUser.getGUID() != null) {
-            LOGGER.debug("Already Up to Date");
-        } else {
-            localUser.setGUID(ldapUser.getGuid());
-            localUser.setLastModified(ldapUser.getLastModified());
-            localUser.setFired(ldapUser.isFired());
-            localUser.setLogin(ldapUser.getLogin());
-            localUser.setFirstName(ldapUser.getFirstName());
-            localUser.setLastName(ldapUser.getLastName());
-            localUser.setMiddleName(ldapUser.getPatrName());
-            if (
-                    ldapUser.getJobPosition() != null
-                            && !ldapUser.getJobPosition().isEmpty()
-                            && localUser.getJobPosition() != null
-                            && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())
-                    ) {
-                final String requestedPositionName = ldapUser.getJobPosition().trim();
-                boolean founded = false;
-                for (Position position : ALL_POSITIONS) {
-                    if (requestedPositionName.equalsIgnoreCase(position.getValue())) {
-                        localUser.setJobPosition(position);
-                        founded = true;
-                        break;
+        try {
+            if (localUser.getLastModified() != null && localUser.getLastModified().getTime() == ldapUser.getLastModified().getTime() && localUser.getGUID() != null) {
+                LOGGER.debug("Already Up to Date");
+            } else {
+                localUser.setGUID(ldapUser.getGuid());
+                localUser.setLastModified(ldapUser.getLastModified());
+                localUser.setFired(ldapUser.isFired());
+                localUser.setLogin(ldapUser.getLogin());
+                localUser.setFirstName(ldapUser.getFirstName());
+                localUser.setLastName(ldapUser.getLastName());
+                localUser.setMiddleName(ldapUser.getPatrName());
+                if (
+                        ldapUser.getJobPosition() != null
+                                && !ldapUser.getJobPosition().isEmpty()
+                                && localUser.getJobPosition() != null
+                                && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())
+                        ) {
+                    final String requestedPositionName = ldapUser.getJobPosition().trim();
+                    boolean founded = false;
+                    for (Position position : ALL_POSITIONS) {
+                        if (requestedPositionName.equalsIgnoreCase(position.getValue())) {
+                            localUser.setJobPosition(position);
+                            founded = true;
+                            break;
+                        }
+                    }
+                    if (!founded) {
+                        LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
                     }
                 }
-                if (!founded) {
-                    LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
-                }
-            }
-            if (
-                    ldapUser.getJobDepartment() != null
-                            && !ldapUser.getJobDepartment().isEmpty()
-                            && localUser.getJobDepartment() != null
-                            && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())
-                    ) {
-                final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
-                boolean founded = false;
-                for (Department department : ALL_DEPARTMENTS) {
-                    if (requestedDepartmentName.equalsIgnoreCase(department.getValue())) {
-                        localUser.setJobDepartment(department);
-                        founded = true;
-                        break;
+                if (
+                        ldapUser.getJobDepartment() != null
+                                && !ldapUser.getJobDepartment().isEmpty()
+                                && localUser.getJobDepartment() != null
+                                && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())
+                        ) {
+                    final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
+                    boolean founded = false;
+                    for (Department department : ALL_DEPARTMENTS) {
+                        if (requestedDepartmentName.equalsIgnoreCase(department.getValue())) {
+                            localUser.setJobDepartment(department);
+                            founded = true;
+                            break;
+                        }
+                    }
+                    if (!founded) {
+                        LOGGER.error("NOT FOUND JobDepartment [" + requestedDepartmentName + "]");
                     }
                 }
-                if (!founded) {
-                    LOGGER.error("NOT FOUND JobDepartment [" + requestedDepartmentName + "]");
+                localUser.setLastModified(ldapUser.getLastModified());
+                //Поиск и обновление контактных данных
+                boolean foundedEmail = ldapUser.getMail() == null || ldapUser.getMail().isEmpty();
+                boolean foundedPhone = ldapUser.getPhone() == null || ldapUser.getPhone().isEmpty();
+                boolean foundedMobile = ldapUser.getMobile() == null || ldapUser.getMobile().isEmpty();
+                for (PersonContact contact : localUser.getContacts()) {
+                    if (!foundedEmail && EMAIL_CONTACT_TYPE.equals(contact.getType())) {
+                        contact.setValue(ldapUser.getMail());
+                        foundedEmail = true;
+                    } else if (!foundedPhone && PHONE_CONTACT_TYPE.equals(contact.getType())) {
+                        contact.setValue(ldapUser.getPhone());
+                        foundedPhone = true;
+                    } else if (!foundedMobile && MOBILE_CONTACT_TYPE.equals(contact.getType())) {
+                        contact.setValue(ldapUser.getMobile());
+                        foundedMobile = true;
+                    }
                 }
-            }
-            localUser.setLastModified(ldapUser.getLastModified());
-            //Поиск и обновление контактных данных
-            boolean foundedEmail = ldapUser.getMail() == null || ldapUser.getMail().isEmpty();
-            boolean foundedPhone = ldapUser.getPhone() == null || ldapUser.getPhone().isEmpty();
-            boolean foundedMobile = ldapUser.getMobile() == null || ldapUser.getMobile().isEmpty();
-            for (PersonContact contact : localUser.getContacts()) {
-                if (!foundedEmail && EMAIL_CONTACT_TYPE.equals(contact.getType())) {
-                    contact.setValue(ldapUser.getMail());
-                    foundedEmail = true;
-                } else if (!foundedPhone && PHONE_CONTACT_TYPE.equals(contact.getType())) {
-                    contact.setValue(ldapUser.getPhone());
-                    foundedPhone = true;
-                } else if (!foundedMobile && MOBILE_CONTACT_TYPE.equals(contact.getType())) {
-                    contact.setValue(ldapUser.getMobile());
-                    foundedMobile = true;
+                if (!foundedEmail) {
+                    localUser.addToContacts(new PersonContact(localUser, EMAIL_CONTACT_TYPE, ldapUser.getMail()));
                 }
+                if (!foundedPhone) {
+                    localUser.addToContacts(new PersonContact(localUser, PHONE_CONTACT_TYPE, ldapUser.getPhone()));
+                }
+                if (!foundedMobile) {
+                    localUser.addToContacts(new PersonContact(localUser, MOBILE_CONTACT_TYPE, ldapUser.getMobile()));
+                }
+                userDAO.save(localUser);
+                LOGGER.debug("Updated");
             }
-            if (!foundedEmail) {
-                localUser.addToContacts(new PersonContact(localUser, EMAIL_CONTACT_TYPE, ldapUser.getMail()));
-            }
-            if (!foundedPhone) {
-                localUser.addToContacts(new PersonContact(localUser, PHONE_CONTACT_TYPE, ldapUser.getPhone()));
-            }
-            if (!foundedMobile) {
-                localUser.addToContacts(new PersonContact(localUser, MOBILE_CONTACT_TYPE, ldapUser.getMobile()));
-            }
-            userDAO.save(localUser);
-            LOGGER.debug("Updated");
+        } catch (Exception e){
+            LOGGER.error("Synchronize with localID=" + localUser.getId()+ " FAILED.", e);
         }
     }
 
