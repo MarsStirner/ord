@@ -23,20 +23,17 @@ public class PaperCopyDocumentsByOfficeVolume extends AbstractDocumentListHolder
 
     @Override
     protected int getTotalCount() {
-        int in_result;
-        in_result = new Long(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).countAllDocuments(filters, filter, false, false)).intValue();
-        return in_result;
+        return new Long(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).countAllDocuments(filters, filter, false, false)).intValue();
     }
 
     @Override
     protected List<PaperCopyDocument> loadDocuments() {
-        List<PaperCopyDocument> result = new ArrayList<PaperCopyDocument>(new HashSet<PaperCopyDocument>(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc())));
-        return result;
+        return new ArrayList<PaperCopyDocument>(new HashSet<PaperCopyDocument>(sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocuments(filters, filter, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc())));
     }
 
-    public List<PaperCopyDocument> getDocuments(int value) {
+    public List<PaperCopyDocument> getDocumentsById(int value) {
         if (filters.size() == 0) {
-            filters.put("officeKeepingVolume", Integer.valueOf(value));
+            filters.put("officeKeepingVolume", value);
         }
         return super.getDocuments();
     }
