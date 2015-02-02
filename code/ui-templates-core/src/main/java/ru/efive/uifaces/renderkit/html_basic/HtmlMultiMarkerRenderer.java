@@ -1,8 +1,9 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import ru.efive.uifaces.component.ComponentFamily;
+import ru.efive.uifaces.component.html.HtmlMultiMarker;
+import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
+import ru.efive.uifaces.renderkit.html_basic.base.ComponentAttribute;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.ResourceDependencies;
@@ -10,11 +11,9 @@ import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.render.FacesRenderer;
-
-import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.component.html.HtmlMultiMarker;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.ComponentAttribute;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Renderer class for {@link HtmlMultiMarker} component class.
@@ -26,7 +25,6 @@ import ru.efive.uifaces.renderkit.html_basic.base.ComponentAttribute;
         @ResourceDependency(name = "modalWindow.css", target = "head", library = "e5ui/css"),
         @ResourceDependency(name = "multiMarker.css", target = "head", library = "e5ui/css"),
         @ResourceDependency(name = "simpletip.css", target = "head", library = "e5ui/css"),
-        @ResourceDependency(name = "jquery.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "jquery.simpletip.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "util.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "multiMarker.js", target = "head", library = "e5ui/js")

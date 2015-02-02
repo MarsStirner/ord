@@ -1,9 +1,9 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import ru.efive.uifaces.component.ComponentFamily;
+import ru.efive.uifaces.component.html.HtmlMarker;
+import ru.efive.uifaces.component.html.HtmlMultiMarker;
+import ru.efive.uifaces.renderkit.html_basic.base.*;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.ResourceDependencies;
@@ -12,18 +12,13 @@ import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.render.FacesRenderer;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.component.html.HtmlMarker;
-import ru.efive.uifaces.component.html.HtmlMultiMarker;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.ComponentAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
-
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 import static java.lang.String.format;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
  * Renderer class for {@link HtmlMarker} component class.
@@ -34,7 +29,6 @@ import static java.lang.String.format;
 @ResourceDependencies({
         @ResourceDependency(name = "marker.css", target = "head", library = "e5ui/css"),
         @ResourceDependency(name = "simpletip.css", target = "head", library = "e5ui/css"),
-        @ResourceDependency(name = "jquery.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "jquery.simpletip.js", target = "head", library = "e5ui/js")
 })
 public class HtmlMarkerRenderer extends HtmlBasicRenderer {

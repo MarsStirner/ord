@@ -1,30 +1,27 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.util.Calendar;
-import ru.efive.uifaces.bean.calendarPlan.CalendarPlanPresentation;
+import ru.efive.uifaces.bean.calendarPlan.*;
+import ru.efive.uifaces.component.ComponentFamily;
+import ru.efive.uifaces.component.html.CalendarPlan;
+import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
+import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
+
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.render.FacesRenderer;
-import ru.efive.uifaces.bean.calendarPlan.CalendarPlanDayPresentation;
-import ru.efive.uifaces.bean.calendarPlan.CalendarPlanHolder;
-import ru.efive.uifaces.bean.calendarPlan.CalendarPlanMonthPresentation;
-import ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation;
-import ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation;
-import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.component.html.CalendarPlan;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyle;
-import static javax.faces.context.PartialViewContext.PARTIAL_EXECUTE_PARAM_NAME;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
 import static javax.faces.context.PartialViewContext.ALL_PARTIAL_PHASE_CLIENT_IDS;
+import static javax.faces.context.PartialViewContext.PARTIAL_EXECUTE_PARAM_NAME;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyle;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
 /**
@@ -36,7 +33,6 @@ import static javax.faces.context.PartialViewContext.ALL_PARTIAL_PHASE_CLIENT_ID
     rendererType = CalendarPlanRenderer.RENDERER,
     componentFamily = ComponentFamily.CALENDAR_PLAN)
 @ResourceDependencies({
-    @ResourceDependency(name = "jquery.js", target = "head", library = "e5ui/js"),
     @ResourceDependency(name = "calendarPlan.js", target = "head", library = "e5ui/js"),
     @ResourceDependency(name = "calendarPlan.css", target = "head", library = "e5ui/css")})
 public class CalendarPlanRenderer extends HtmlBasicRenderer {

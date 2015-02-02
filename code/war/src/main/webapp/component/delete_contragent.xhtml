@@ -3,36 +3,17 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      >
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
-    <ui:define name="left_menu"></ui:define>
-    <ui:define name="header"></ui:define>
+    <ui:define name="left_menu"/>
+    <ui:define name="header"/>
 
     <ui:define name="content">
         <div id="header_content">
-            <e5ui:formPart id="editHeaderPart">
                 <div class="name">Контрагент удален</div>
-            </e5ui:formPart>
         </div>
-
-        <e5ui:multiMarker id="main_form_marker" rendered="true"
-                          hintWindowStyleClass="e5ui-marker-hintWindow"
-                          hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
-                          hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
-                          hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
-                          hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
-                          displayMode="window">
-            <h:button
-                    onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
-                    value="ОК"/>
-        </e5ui:multiMarker>
-        <h:outputStylesheet library="css" name="datatable.css"/>
     </ui:define>
 
 </ui:composition>

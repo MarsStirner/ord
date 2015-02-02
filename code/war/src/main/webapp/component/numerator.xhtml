@@ -369,7 +369,7 @@
     </div>
     <h:panelGroup>
         <div id="modal_container" style="margin-top: 0;">
-            <div class="wrap" style="height: 250px; width: 100%; margin: 0px;">
+            <div class="wrap" style="height: 250px; width: 100%; margin: 0;">
                 <div class="inner" style="height: 250px;">
                     <e5ui:dataTable id="select_table" border="0" cellpadding="0"
                                     cellspacing="0"
@@ -401,7 +401,7 @@
 
 <p:tab title="История">
     <div class="row">
-        <div class="wrap" style="width: 100%; margin: 0px">
+        <div class="wrap" style="width: 100%; margin: 0">
             <div class="inner">
                 <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
                                 id="history_list" value="#{numerator.document.historyList}"
@@ -454,7 +454,7 @@
         </div>
     </f:facet>
 </e5ui-comp:splashScreen>
-<script>
+<script type="javascript">
     e5ui_splashScreen.startShowOnSubmit('splash_screen',
             [ 'main_content_form' ]);
 </script>
@@ -469,21 +469,8 @@
 </ui:define>
 
 <ui:define name="footer">
-
-    <e5ui:multiMarker id="main_form_marker" rendered="true"
-                      hintWindowStyleClass="e5ui-marker-hintWindow"
-                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
-                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
-                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
-                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
-                      displayMode="window">
-        <h:button
-                onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
-                value="ОК"/>
-    </e5ui:multiMarker>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
 </ui:define>
 
 </ui:composition>

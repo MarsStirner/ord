@@ -1,35 +1,30 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttributeValue;
-import javax.el.ValueExpression;
-import javax.faces.component.behavior.ClientBehavior;
-import javax.faces.component.behavior.ClientBehaviorContext;
-import javax.faces.event.ActionEvent;
-import ru.efive.uifaces.filter.UploadInfo;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
+import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.component.html.FileUpload;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import ru.efive.uifaces.filter.UploadHandler;
+import ru.efive.uifaces.filter.UploadInfo;
+import ru.efive.uifaces.renderkit.html_basic.base.*;
+
+import javax.el.ValueExpression;
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.component.behavior.AjaxBehavior;
+import javax.faces.component.behavior.ClientBehavior;
+import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.render.FacesRenderer;
-import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.filter.UploadHandler;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
-import static ru.efive.uifaces.util.JSFUtils.getFacesContext;
-import static javax.faces.context.PartialViewContext.PARTIAL_EXECUTE_PARAM_NAME;
 import static javax.faces.context.PartialViewContext.ALL_PARTIAL_PHASE_CLIENT_IDS;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyle;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.findEnclosingForm;
+import static javax.faces.context.PartialViewContext.PARTIAL_EXECUTE_PARAM_NAME;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.*;
+import static ru.efive.uifaces.util.JSFUtils.getFacesContext;
 
 /**
  * The renderer for output {@link FileUpload}.
@@ -44,7 +39,6 @@ import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.
         componentFamily = ComponentFamily.FILE_UPLOAD)
 @ResourceDependencies({
         @ResourceDependency(name = "jsf.js", target = "head", library = "javax.faces"),
-        @ResourceDependency(name = "jquery.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "ajaxStatus.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "fileUpload.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "fileUpload.i18n.js", target = "head", library = "e5ui/js"),

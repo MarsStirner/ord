@@ -15,7 +15,7 @@
     <e5ui-comp:userSessionUpdate interval="300"/>
 </ui:define>
 
-<ui:define name="left_menu"></ui:define>
+<ui:define name="left_menu"/>
 
 <ui:define name="header">
     <div id="form_header">
@@ -43,7 +43,7 @@
                 </div>
                 <div class="defbutton">
                     <h:commandLink action="#{group.delete()}"
-                                   rendered="#{isAdministrator or (group.document.author.id eq sessionManagement.getLoggedUser('false').id)}">
+                                   rendered="#{isAdministrator or (group.document.author.id eq sessionManagement.getLoggedUser().id)}">
                         <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
                         Удалить
                         <f:param name="docAction" value="delete"/>
@@ -116,10 +116,10 @@
                         </td>
                     </tr>
                     <tr class="row">
-                        <td class="first"></td>
-                        <td class="second"></td>
-                        <td class="third"></td>
-                        <td class="fourth"></td>
+                        <td class="first"/>
+                        <td class="second"/>
+                        <td class="third"/>
+                        <td class="fourth"/>
                     </tr>
                 </table>
             </div>
@@ -230,10 +230,10 @@
                         </td>
                     </tr>
                     <tr class="row">
-                        <td class="first"></td>
-                        <td class="second"></td>
-                        <td class="third"></td>
-                        <td class="fourth"></td>
+                        <td class="first"/>
+                        <td class="second"/>
+                        <td class="third"/>
+                        <td class="fourth"/>
                     </tr>
                 </table>
             </div>
@@ -251,25 +251,14 @@
             </div>
         </f:facet>
     </e5ui-comp:splashScreen>
-    <script>
+    <script type="javascript">
         e5ui_splashScreen.startShowOnSubmit('splash_screen',
                 [ 'main_content_form' ]);
     </script>
 
-    <e5ui:multiMarker id="main_form_marker" rendered="true"
-                      hintWindowStyleClass="e5ui-marker-hintWindow"
-                      hintWindowInfoStyleClass="e5ui-marker-hintWindow-info"
-                      hintWindowWarnStyleClass="e5ui-marker-hintWindow-warn"
-                      hintWindowErrorStyleClass="e5ui-marker-hintWindow-error"
-                      hintWindowFatalStyleClass="e5ui-marker-hintWindow-fatal"
-                      displayMode="window">
-        <h:button
-                onclick="e5ui_multiMarker.remove('main_form_marker'); return false;"
-                value="ОК"/>
-    </e5ui:multiMarker>
+
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
 </ui:define>
 
 </ui:composition>

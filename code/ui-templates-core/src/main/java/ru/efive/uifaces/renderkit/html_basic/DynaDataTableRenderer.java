@@ -1,28 +1,24 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.util.Map;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.component.ComponentFamily;
+import ru.efive.uifaces.component.html.DynaDataTable;
+import ru.efive.uifaces.renderkit.html_basic.base.*;
+
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.render.FacesRenderer;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.component.html.DynaDataTable;
-import ru.efive.uifaces.renderkit.html_basic.base.AbstractTableRenderer;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttributeValue;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyle;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+
 import static java.lang.String.format;
-import static javax.faces.context.PartialViewContext.PARTIAL_EXECUTE_PARAM_NAME;
-import static javax.faces.context.PartialViewContext.ALL_PARTIAL_PHASE_CLIENT_IDS;
-import static javax.faces.context.PartialViewContext.PARTIAL_RENDER_PARAM_NAME;
+import static javax.faces.context.PartialViewContext.*;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyle;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
  *
@@ -33,7 +29,6 @@ import static javax.faces.context.PartialViewContext.PARTIAL_RENDER_PARAM_NAME;
         rendererType = DynaDataTableRenderer.RENDERER_TYPE,
         componentFamily = ComponentFamily.DATA_TABLE)
 @ResourceDependencies({
-    @ResourceDependency(name = "jquery.js", target = "head", library = "e5ui/js"),
     @ResourceDependency(name = "jquery.cookie.js", target = "head", library = "e5ui/js"),
     //@ResourceDependency(name = "datatable.js", target = "head", library = "e5ui/js"),
     @ResourceDependency(name = "datatable.css", target = "head", library = "e5ui/css"),

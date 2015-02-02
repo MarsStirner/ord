@@ -1,9 +1,11 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import ru.efive.uifaces.component.ComponentFamily;
+import ru.efive.uifaces.component.html.HtmlTabPage;
+import ru.efive.uifaces.component.html.HtmlTabPage.ActionBehavior;
+import ru.efive.uifaces.component.html.HtmlTabPanel;
+import ru.efive.uifaces.renderkit.html_basic.base.*;
+
 import javax.faces.application.ResourceDependencies;
 import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
@@ -13,21 +15,13 @@ import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.render.FacesRenderer;
-import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.component.html.HtmlTabPage;
-import ru.efive.uifaces.component.html.HtmlTabPage.ActionBehavior;
-import ru.efive.uifaces.component.html.HtmlTabPanel;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttributeValue;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyle;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.findEnclosingForm;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.updateComponentAttribute;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.*;
 
 /**
  * The renderer for output {@link HtmlTabPanel} and {@link HtmlTabPage}.
@@ -39,7 +33,6 @@ import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.
         rendererType = HtmlTabPanelRenderer.RENDERER,
         componentFamily = ComponentFamily.TAB_PANEL)
 @ResourceDependencies({
-        @ResourceDependency(name = "jquery.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "tabPanel.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "tabPanel.css", target = "head", library = "e5ui/css")})
 public class HtmlTabPanelRenderer extends HtmlBasicRenderer {

@@ -2,7 +2,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:composite="http://java.sun.com/jsf/composite">
 
@@ -16,7 +15,7 @@
             <composite:attribute name="styleClass" required="false" type="java.lang.String" shortDescription="Space-separated list of CSS style class(es) to be applied when this element is rendered. This value must be passed through as the 'class' attribute on generated markup." />
         </composite:interface>
         <composite:implementation>
-            <h:outputScript library="e5ui/js" name="jquery.js" target="head" />
+            <h:outputScript library="primefaces" name="jquery/jquery.js" />
             <h:outputScript library="e5ui/js" name="pagerHead.js" target="head" />
             <h:outputStylesheet library="e5ui/css" name="tablePager.css" target="head" />
             <div class="e5ui-tablePager #{cc.attrs.styleClass}" style="#{cc.attrs.style}">

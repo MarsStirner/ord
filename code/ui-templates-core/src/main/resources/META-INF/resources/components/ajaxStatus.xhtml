@@ -17,7 +17,7 @@
             <composite:facet name="error" shortDescription="Rendered when ajax request completed with error."/>
         </composite:interface>
         <composite:implementation>
-            <h:outputScript library="e5ui/js" name="jquery.js" target="head"/>
+            <h:outputScript library="primefaces" name="jquery/jquery.js" />
             <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
             <h:outputScript library="e5ui/js" name="ajaxStatus.js" target="head"/>
             <c:if test="#{not empty cc.attrs.onBegin}">
