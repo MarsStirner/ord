@@ -10,144 +10,149 @@
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
-<ui:define name="running_head">
-    <e5ui-comp:userSessionUpdate interval="300"/>
-    <h:outputScript library="js" name="datepicker_init_ru.js"
-                    target="head"/>
-    <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
-    <h:outputScript library="js" name="forms.js" target="head"/>
-    <e5ui-comp:outputUtilScript/>
-</ui:define>
+    <ui:define name="running_head">
+        <e5ui-comp:userSessionUpdate interval="300"/>
+        <h:outputScript library="js" name="datepicker_init_ru.js"
+                        target="head"/>
 
-<ui:define name="header">
-    <div id="form_header">
-        <div class="actionbar">
-            <div class="menu">
-                <div class="defbutton">
-                    <h:outputLink value="/component/scan_documents.xhtml">
-                        <h:graphicImage value="#{resource['images:home.png']}"/>
-                    </h:outputLink>
-                </div>
-                <div class="defbutton">
-                    <h:commandLink action="#{scan_copy_document.save}"
-                                   rendered="#{scan_copy_document.editState or scan_copy_document.createState}">
-                        <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                        Сохранить
-                        <e5ui:formPartTarget formPart="editFormPart"/>
-                    </h:commandLink>
-                </div>
-                <div class="defbutton">
-                    <h:commandLink action="#{scan_copy_document.delete()}"
-                                   rendered="#{(scan_copy_document.editState)}">
-                        <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                        Удалить
-                        <f:param name="docAction" value="delete"/>
-                    </h:commandLink>
-                </div>
-                <div class="top">
-                    <h:commandLink styleClass="top_link" onclick="return false;">
+        <h:outputScript library="js" name="forms.js" target="head"/>
+        <e5ui-comp:outputUtilScript/>
+    </ui:define>
+
+    <ui:define name="header">
+        <div id="form_header">
+            <div class="actionbar">
+                <div class="menu">
+                    <div class="defbutton">
+                        <h:outputLink value="/component/scan_documents.xhtml">
+                            <h:graphicImage value="#{resource['images:home.png']}"/>
+                        </h:outputLink>
+                    </div>
+                    <div class="defbutton">
+                        <h:commandLink action="#{scan_copy_document.save}"
+                                       rendered="#{scan_copy_document.editState or scan_copy_document.createState}">
+                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                            Сохранить
+                        </h:commandLink>
+                    </div>
+                    <div class="defbutton">
+                        <h:commandLink action="#{scan_copy_document.delete()}"
+                                       rendered="#{(scan_copy_document.editState)}">
+                            <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
+                            Удалить
+                            <f:param name="docAction" value="delete"/>
+                        </h:commandLink>
+                    </div>
+                    <div class="top">
+                        <h:commandLink styleClass="top_link" onclick="return false;">
 								<span> <h:graphicImage
                                         value="#{resource['images:button-do.png']}"/> Действия
 								</span>
-                    </h:commandLink>
+                        </h:commandLink>
 
-                    <div class="sub">
-                        <div class="item">
-                            <h:commandLink
-                                    action='#{scan_copy_document.initNewIncomingDocument()}'>
-                                Проект входящего документа
-                            </h:commandLink>
-                        </div>
-                        <div class="item">
-                            <h:commandLink
-                                    action='#{scan_copy_document.initNewIncomingDocument()}'>
-                                Проект исходящего документа
-                            </h:commandLink>
-                        </div>
-                        <div class="item">
-                            <h:commandLink
-                                    action='#{scan_copy_document.initNewOutgoingDocument()}'>
-                                Проект внутреннего документа
-                            </h:commandLink>
-                        </div>
-                        <div class="item">
-                            <h:commandLink
-                                    action='#{scan_copy_document.initNewTaskDocument()}'>
-                                Проект резолюции/поручения
-                            </h:commandLink>
+                        <div class="sub">
+                            <div class="item">
+                                <h:commandLink
+                                        action='#{scan_copy_document.initNewIncomingDocument()}'>
+                                    Проект входящего документа
+                                </h:commandLink>
+                            </div>
+                            <div class="item">
+                                <h:commandLink
+                                        action='#{scan_copy_document.initNewIncomingDocument()}'>
+                                    Проект исходящего документа
+                                </h:commandLink>
+                            </div>
+                            <div class="item">
+                                <h:commandLink
+                                        action='#{scan_copy_document.initNewOutgoingDocument()}'>
+                                    Проект внутреннего документа
+                                </h:commandLink>
+                            </div>
+                            <div class="item">
+                                <h:commandLink
+                                        action='#{scan_copy_document.initNewTaskDocument()}'>
+                                    Проект резолюции/поручения
+                                </h:commandLink>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</ui:define>
+    </ui:define>
 
-<ui:define name="left_menu"/>
+    <ui:define name="left_menu"/>
 
-<ui:define name="content">
-    <div id="header_content">
-        <h:panelGroup
-                rendered="#{(scan_copy_document.editState and scan_copy_document.document.registrationNumber==null) or scan_copy_document.createState }">
-            <e5ui:formPart id="editHeaderPart">
+    <ui:define name="content">
+        <div id="header_content">
+            <h:panelGroup
+                    rendered="#{(scan_copy_document.editState and scan_copy_document.document.registrationNumber==null) or scan_copy_document.createState }">
+                <e5ui:formPart id="editHeaderPart">
+                    <div class="name">Электронный документ</div>
+                </e5ui:formPart>
+
+                <div class="title">
+                    <h:outputText value="#{scan_copy_document.document.getDocumentStatus().getName()}"/>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup
+                    rendered="#{(scan_copy_document.editState and scan_copy_document.document.registrationNumber!=null) or scan_copy_document.viewState}">
                 <div class="name">Электронный документ</div>
-            </e5ui:formPart>
+                <div class="title">
+                    <h:outputText value="#{scan_copy_document.document.getDocumentStatus().getName()}"/>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{scan_copy_document.notFoundState}">
+                <div class="name">404 - Документ не найден</div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{scan_copy_document.forbiddenState}">
+                <div class="name">
+                    В доступе отказано.
+                    <h:outputText value="#{scan_copy_document.stateComment}" lang="ru"/>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup
+                    rendered="#{not(scan_copy_document.createState or scan_copy_document.editState or scan_copy_document.viewState or scan_copy_document.notFoundState or scan_copy_document.forbiddenState)}">
+                <div class="name">В доступе отказано</div>
+            </h:panelGroup>
+        </div>
 
-            <div class="title">
-                <h:outputText value="#{scan_copy_document.document.getDocumentStatus().getName()}"/>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup
-                rendered="#{(scan_copy_document.editState and scan_copy_document.document.registrationNumber!=null) or scan_copy_document.viewState}">
-            <div class="name">Электронный документ</div>
-            <div class="title">
-                <h:outputText value="#{scan_copy_document.document.getDocumentStatus().getName()}"/>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{scan_copy_document.notFoundState}">
-            <div class="name">404 - Документ не найден</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{scan_copy_document.forbiddenState}">
-            <div class="name">
-                В доступе отказано.
-                <h:outputText value="#{scan_copy_document.stateComment}" lang="ru"/>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup
-                rendered="#{not(scan_copy_document.createState or scan_copy_document.editState or scan_copy_document.viewState or scan_copy_document.notFoundState or scan_copy_document.forbiddenState)}">
-            <div class="name">В доступе отказано</div>
-        </h:panelGroup>
-    </div>
-
-    <div class="main_content">
+        <div class="main_content">
             <h:panelGroup
                     rendered="#{scan_copy_document.editState or scan_copy_document.viewState or scan_copy_document.createState}">
                 <div class="row">
                     <table class="form_grid">
                         <tr class="row">
-                            <td class="third"></td>
-                            <td class="forth"></td>
-                            <td class="first"><label> <span class="title">Автор:</span>
-                            </label></td>
-                            <td class="second"><h:outputText
-                                    value="#{scan_copy_document.document.author}"
-                                    converter="PersonConverter" lang="ru"/></td>
-
+                            <td class="third"/>
+                            <td class="forth"/>
+                            <td class="first">
+                                <label>
+                                    <span class="title">Автор:</span>
+                                </label>
+                            </td>
+                            <td class="second">
+                                <h:outputText value="#{scan_copy_document.document.author}"
+                                              converter="PersonConverter" lang="ru"/>
+                            </td>
                         </tr>
                     </table>
                 </div>
             </h:panelGroup>
-        <p:tabView widgetVar="scanDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
-            <p:tab title="Реквизиты">
+            <p:tabView widgetVar="scanDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
+                <p:tab title="Реквизиты">
                     <h:panelGroup rendered="#{scan_copy_document.viewState}">
                         <div class="row">
                             <table class="form_grid">
                                 <tr class="row">
-                                    <td class="first"><label> <span class="title">
-                                            Краткое содержание:</span>
-                                    </label></td>
-                                    <td class="second" colspan="3"><h:outputText
-                                            value="#{scan_copy_document.document.shortDescription}"/></td>
+                                    <td class="first">
+                                        <label>
+                                            <span class="title">Краткое содержание:</span>
+                                        </label>
+                                    </td>
+                                    <td class="second" colspan="3">
+                                        <h:outputText value="#{scan_copy_document.document.shortDescription}"/>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
@@ -157,76 +162,61 @@
                         <div class="row">
                             <table class="form_grid">
                                 <tr class="row">
-                                    <td class="first"><label
-                                            for="shortDescription"> <span
-                                            class="title">Краткое содержание</span>
-                                    </label></td>
-                                    <td class="second" colspan="3"><h:inputText
-                                            id="shortDescription"
-                                            value="#{scan_copy_document.document.shortDescription}"
-                                            class="wide" immediate="true"/> <e5ui:marker
-                                            for="shortDescription"/></td>
+                                    <td class="first">
+                                        <label for="shortDescription">
+                                            <span class="title">Краткое содержание</span>
+                                        </label>
+                                    </td>
+                                    <td class="second" colspan="3">
+                                        <h:inputText id="shortDescription"
+                                                     value="#{scan_copy_document.document.shortDescription}"
+                                                     class="wide" immediate="true"/>
+                                    </td>
                                 </tr>
                             </table>
                         </div>
                     </h:panelGroup>
                 </p:tab>
 
-            <p:tab title="История"
-                   rendered="#{scan_copy_document.viewState or scan_copy_document.createState or (scan_copy_document.editState)}">
-                <div style="width: 100%; margin: 0;">
-                    <p:dataTable id="history_list" value="#{scan_copy_document.document.historyList}"
-                                 var="history_entry" grouping="false">
-                        <p:column headerText="Дата">
-                            <h:outputText value="#{history_entry.startDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Статус">
-                            <h:outputText value="#{history_entry.fromStatusName}"/>
-                        </p:column>
-                        <p:column headerText="Действие">
-                            <h:outputText value="#{history_entry.actionName}"/>
-                        </p:column>
-                        <p:column headerText="Автор">
-                            <h:outputText value="#{history_entry.owner.descriptionShort}"/>
-                        </p:column>
-                        <p:column headerText="Комментарий">
-                            <h:outputText value="#{history_entry.commentary}"/>
-                        </p:column>
-                    </p:dataTable>
-                </div>
-            </p:tab>
-        </p:tabView>
-    </div>
+                <p:tab title="История"
+                       rendered="#{scan_copy_document.viewState or scan_copy_document.createState or (scan_copy_document.editState)}">
+                    <div style="width: 100%; margin: 0;">
+                        <p:dataTable id="history_list" value="#{scan_copy_document.document.historyList}"
+                                     var="history_entry" grouping="false">
+                            <p:column headerText="Дата">
+                                <h:outputText value="#{history_entry.startDate}">
+                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Статус">
+                                <h:outputText value="#{history_entry.fromStatusName}"/>
+                            </p:column>
+                            <p:column headerText="Действие">
+                                <h:outputText value="#{history_entry.actionName}"/>
+                            </p:column>
+                            <p:column headerText="Автор">
+                                <h:outputText value="#{history_entry.owner.descriptionShort}"/>
+                            </p:column>
+                            <p:column headerText="Комментарий">
+                                <h:outputText value="#{history_entry.commentary}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </p:tab>
+            </p:tabView>
+        </div>
 
-    <e5ui-comp:splashScreen id="splash_screen" timeout="0">
-        <f:facet name="timeoutPanel">
-            <div
-                    style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                Пожалуйста, подождите...
-            </div>
-        </f:facet>
-    </e5ui-comp:splashScreen>
-    <script>
-        e5ui_splashScreen.startShowOnSubmit('splash_screen',
-                [ 'main_content_form' ]);
-    </script>
-    <e5ui-comp:ajaxStatusGlobal timeout="300">
-        <f:facet name="waitPanel">
-            <div
-                    style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                Пожалуйста, подождите...
-            </div>
-        </f:facet>
-    </e5ui-comp:ajaxStatusGlobal>
-</ui:define>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
+    </ui:define>
 
-<ui:define name="footer">
-    <h:outputStylesheet library="css" name="datatable.css"/>
-    <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
-</ui:define>
+    <ui:define name="footer">
+        <h:outputStylesheet library="css" name="datatable.css"/>
+        <h:outputStylesheet library="css" name="modalWindow.css"/>
+    </ui:define>
 
 </ui:composition>
 

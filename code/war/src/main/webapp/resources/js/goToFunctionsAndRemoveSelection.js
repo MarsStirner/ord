@@ -13,18 +13,8 @@ function goToDocumentByUniqueId(parentId) {
         var pos=parentId.indexOf('_');
         if(pos!=-1){
             var id=parentId.substring(pos+1,parentId.length);
-            if(parentId.indexOf('incoming')!=-1){
-                componentType='in/in_document';
-            }else if(parentId.indexOf('outgoing')!=-1){
-                componentType='out/out_document';
-            }else if(parentId.indexOf('internal')!=-1){
-                componentType='internal/internal_document';
-            }else if(parentId.indexOf('request')!=-1){
-                componentType='request/request_document';
-            }else if(parentId.indexOf('task')!=-1){
-                componentType='task/task';
-            }
-            window.open('/component/'+componentType+'.xhtml?docId=' + id,'_blank');
+            var docType = parentId.substring(0, pos);
+            goToDocument(docType, parentId);
         }
     }
 }
@@ -40,6 +30,8 @@ function goToDocument(docType, id) {
                 componentType='internal/internal_document';
             }else if(docType.indexOf('request')!=-1){
                 componentType='request/request_document';
+            } else if(parentId.indexOf('task')!=-1){
+                componentType='task/task';
             }
             window.open('/component/'+componentType+'.xhtml?docId=' + id,'_blank');
         }
@@ -73,7 +65,13 @@ function goToOfficeKeepingRecord(id) {
         window.open('/component/office/office_keeping_record.xhtml?docId=' + id,'_blank');
     }
 }
-// К бумажным копиям документа
+//TODO что за вакханалия?
+// К Номенклатурам дел
+function goToOfficeKeepingFile(id) {
+    if (id != 0) {
+        window.open('/component/office/office_keeping_file.xhtml?docId=' + id,'_blank');
+    }
+}// К бумажным копиям документа
 function goToPaperCopyDocument(id) {
     if (id != "") {
         window.open('/component/paper_copy_document.xhtml?docId=' + id,'_blank');

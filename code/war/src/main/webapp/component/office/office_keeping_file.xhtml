@@ -6,7 +6,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite" xmlns:p="http://primefaces.org/ui">
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
@@ -227,7 +228,7 @@
                 </h:panelGroup>
 
                 <div class="defbutton">
-                    <h:commandLink action="officeKeepingVolumes.refresh()">
+                    <h:commandLink action="#{officeKeepingVolumes.refresh()}">
                         <f:ajax render="select_table"/>
                         <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                         Обновить
@@ -237,7 +238,7 @@
         </div>
         <h:panelGroup>
             <div id="modal_container" style="margin-top: 0;">
-                <div class="wrap" style="height: 250px; width: 100%; margin: 0px;">
+                <div class="wrap" style="height: 250px; width: 100%; margin: 0;">
                     <div class="inner" style="height: 250px;">
                         <e5ui:dataTable id="select_table" border="0" cellpadding="0"
                                         cellspacing="0"
@@ -416,21 +417,13 @@
 </ui:define>
 
 <ui:define name="footer">
-    <e5ui-comp:splashScreen id="splash_screen" timeout="0">
-        <f:facet name="timeoutPanel">
-            <div
-                    style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                Пожалуйста, подождите...
-            </div>
-        </f:facet>
-    </e5ui-comp:splashScreen>
-    <script>
-        e5ui_splashScreen.startShowOnSubmit('splash_screen',
-                [ 'main_content_form' ]);
-    </script>
+    <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+              showHeader="false" position="center center">
+        Пожалуйста, подождите...
+    </p:dialog>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
-    <h:outputStylesheet library="css" name="multiMarker.css"/>
 </ui:define>
 
 </ui:composition>

@@ -6,12 +6,11 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/WEB-INF/jsf-template/template.xhtml">
 
     <ui:define name="running_head">
-        <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
         <h:outputScript library="js" name="forms.js" target="head"/>
     </ui:define>
 
@@ -31,68 +30,65 @@
             <h:commandLink action="#{officeKeepingFiles.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                        id="main_data_tbl" value="#{officeKeepingFiles.documents}"
-                                        var="row" grouping="false">
-                            <e5ui:row ondblclick="goToOfficeKeepingFile('#{row.id}');"/>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{officeKeepingFiles.sort('name')}">
-                                        Индекс
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.fileIndex}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:15em">
-                                <f:facet name="header">
-                                    <p>Заголовок</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:8em">
-                                <f:facet name="header">
-                                    <p>Срок хранения</p>
-                                </f:facet>
-                                <h:outputText value="#{row.keepingPeriodReasons}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Статус</p>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
+        <div id="main_table">
+            <div class="wrap_main" id="table_wrap">
+                <div class="inner" id="table_inner">
+                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
+                                    id="main_data_tbl" value="#{officeKeepingFiles.documents}"
+                                    var="row" grouping="false">
+                        <e5ui:row ondblclick="goToOfficeKeepingFile('#{row.id}');"/>
+                        <e5ui:column style="min-width:7em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{officeKeepingFiles.sort('name')}">
+                                    Индекс
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.fileIndex}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:15em">
+                            <f:facet name="header">
+                                <p>Заголовок</p>
+                            </f:facet>
+                            <h:outputText value="#{row.shortDescription}"/>
+                        </e5ui:column>
+                        <e5ui:column style="min-width:8em">
+                            <f:facet name="header">
+                                <p>Срок хранения</p>
+                            </f:facet>
+                            <h:outputText value="#{row.keepingPeriodReasons}"/>
+                        </e5ui:column>
+                        <e5ui:column>
+                            <f:facet name="header">
+                                <p>Статус</p>
+                            </f:facet>
+                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                        </e5ui:column>
+                    </e5ui:dataTable>
                 </div>
-                <div id="table_paging">
+            </div>
+            <div id="table_paging">
+                <h:panelGroup id="main_data_paging">
                     <e5ui-comp:tablePager documentListHolder="#{officeKeepingFiles}"
                                           style="display:inline;"/>
                     <e5ui-comp:tablePageSizeSelector
                             documentListHolder="#{officeKeepingFiles}"
                             style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </div>
+                </h:panelGroup>
             </div>
-        </e5ui:formPart>
+        </div>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 

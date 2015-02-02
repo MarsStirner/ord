@@ -18,7 +18,7 @@
         </composite:interface>
         <composite:implementation>
             <h:outputScript library="primefaces" name="jquery/jquery.js" />
-            <h:outputScript name="jsf.js" library="javax.faces" target="head"/>
+
             <h:outputScript library="e5ui/js" name="ajaxStatus.js" target="head"/>
             <c:if test="#{not empty cc.attrs.onBegin}">
                 <script type="text/javascript">e5ui_ajaxStatus.eventBegin['#{cc.clientId}']=function(event){#{cc.attrs.onBegin}};</script>
