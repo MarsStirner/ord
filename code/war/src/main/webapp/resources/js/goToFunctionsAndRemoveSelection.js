@@ -14,7 +14,7 @@ function goToDocumentByUniqueId(parentId) {
         if(pos!=-1){
             var id=parentId.substring(pos+1,parentId.length);
             var docType = parentId.substring(0, pos);
-            goToDocument(docType, parentId);
+            goToDocument(docType, id);
         }
     }
 }
