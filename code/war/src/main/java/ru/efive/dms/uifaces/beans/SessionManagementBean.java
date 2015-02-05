@@ -298,10 +298,7 @@ public class SessionManagementBean implements Serializable {
         password = null;
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        //WTF !!?!
         ExternalContext externalContext = facesContext.getExternalContext();
-        //externalContext.getSessionMap().remove(AUTH_KEY);
-        //Вот как это делается
         externalContext.invalidateSession();
         LOGGER.info("LOGOUT");
         return "/index?faces-redirect=true";//

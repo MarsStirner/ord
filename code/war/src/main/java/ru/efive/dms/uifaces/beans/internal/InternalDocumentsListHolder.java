@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @ManagedBean(name = "internal_documents")
 @ViewScoped
@@ -76,17 +78,24 @@ public class InternalDocumentsListHolder extends AbstractDocumentListHolderBean<
 
     @Override
     protected List<InternalDocument> loadDocuments() {
+        final List<InternalDocument> resultList;
         if (!sessionManagement.isSubstitution()) {
             // Без замещения
-            return sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+           resultList = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
                     .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } else {
             // С замещением
             final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
             userList.add(sessionManagement.getLoggedUser());
-            return sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+            resultList = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
                     .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         }
+        //Проверка и вытсавленние классов просмотра документов пользователем
+        if (!resultList.isEmpty()) {
+            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnInternalDocumentList
+                    (resultList, sessionManagement.getLoggedUser());
+        }
+        return resultList;
     }
 
     public String getFilter() {

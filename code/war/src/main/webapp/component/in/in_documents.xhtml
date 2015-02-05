@@ -31,7 +31,7 @@
             <h:commandLink action="#{in_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render = "main_data_tbl main_data_paging"/>
+                <f:ajax render = "main_data_tbl main_data_paging" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
             </h:commandLink>
         </div>
     </ui:define>
@@ -41,6 +41,12 @@
             .ui-column-title, .ui-commandlink{
                 position: relative !important;
                 padding: 0 !important;
+            }
+            .visited {
+                background: deepskyblue;
+            }
+            .unvisited{
+                background: indianred;
             }
         </h:outputStylesheet>
 
@@ -63,12 +69,11 @@
                 <p:dataTable id="main_data_tbl"
                              value="#{in_documents.documents}"
                              var="row"
-                             rowKey="#{row.id}"
-                             selectionMode = "single"
                              stickyHeader="true"
                              scrollable="true"
+                             rowStyleClass="#{row.styleClass}"
                              widgetVar="documentTableVar">
-                    <p:row ondblclick="goToIncomingDocument('#{row.id}');"/>
+                    <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
                     <p:column style = "width:5em;">
                         <f:facet name="header">
                             <p:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}">
@@ -143,18 +148,18 @@
                         </f:facet>
                         <h:outputText value="#{row.shortDescription}"/>
                     </p:column>
-                    <p:ajax event="rowSelect" onstart="addRowHandlers()"/>
+                    <p:ajax event="page" onstart="addRowHandlers()"/>
                 </p:dataTable>
                 <script type="text/javascript">
                     function addRowHandlers() {
                         console.log("refresh table row onclick handlers");
                         var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
-                        var rows = table.getElementsByClassName("ui-datatable-selectable");
-                        for (var i = 0; i &lt; rows.length; i++) {
-                            var currentRow = rows[i];
+                        var tbody = table.getElementsByTagName("tbody")[0];
+                        for (var i = 0; i &lt; tbody.rows.length; i++) {
+                            var currentRow = tbody.rows[i];
                             var createClickHandler = function (row) {
                                 return function () {
-                                    goToIncomingDocument(row.getAttribute("data-rk"));
+                                    goToIncomingDocument(row.firstChild.textContent);
                                 };
                             };
                             currentRow.className = currentRow.className.replace('ui-state-highlight', '');

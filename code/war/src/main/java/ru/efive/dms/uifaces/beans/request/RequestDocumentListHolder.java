@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.request;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
@@ -18,6 +19,7 @@ import javax.inject.Named;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @ManagedBean(name = "request_documents")
 @ViewScoped
@@ -104,17 +106,23 @@ public class RequestDocumentListHolder extends AbstractDocumentListHolderBean<Re
 
     @Override
     protected List<RequestDocument> loadDocuments() {
+        final List<RequestDocument> resultList;
         if (!sessionManagement.isSubstitution()) {
             // Без замещения
-            return sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+            resultList = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
                     .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } else {
             // С замещением
             final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
             userList.add(sessionManagement.getLoggedUser());
-            return sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+            resultList = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
                     .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         }
+        //Добавление стилей для прочитанных\новых документов
+        if(!resultList.isEmpty()){
+            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnRequestDocumentList(resultList, sessionManagement.getLoggedUser());
+        }
+        return resultList;
     }
 
 

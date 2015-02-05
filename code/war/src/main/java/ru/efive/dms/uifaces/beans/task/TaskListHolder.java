@@ -2,11 +2,12 @@ package ru.efive.dms.uifaces.beans.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.*;
+import ru.efive.dms.dao.TaskDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
-import ru.entity.model.document.*;
+import ru.entity.model.document.Task;
 import ru.entity.model.user.User;
 
 import javax.annotation.PostConstruct;
@@ -17,7 +18,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @ManagedBean(name = "tasks")
 @ViewScoped
@@ -106,17 +108,23 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
 
     @Override
     protected List<Task> loadDocuments() {
+        List<Task> resultList;
         if (!sessionManagement.isSubstitution()) {
             // Без замещения
-            return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
+            resultList = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
                     .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         } else {
             // С замещением
             final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
             userList.add(sessionManagement.getLoggedUser());
-            return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
+            resultList = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
                     .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         }
+        //Добавление стилей для прочитанных\новых документов
+        if(!resultList.isEmpty()){
+            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnTaskDocumentList(resultList, sessionManagement.getLoggedUser());
+        }
+        return resultList;
     }
 
 
@@ -126,35 +134,5 @@ public class TaskListHolder extends AbstractDocumentListHolderBean<Task> {
 
     public void setFilter(String filter) {
         this.filter = filter;
-    }
-
-
-    public String getTopDocumentControllerByTaskDocument(Task task) {
-        if (task != null) {
-            String key = task.getRootDocumentId();
-            if (key != null && !key.isEmpty()) {
-                int pos = key.indexOf('_');
-                if (pos != -1) {
-                    String id = key.substring(pos + 1, key.length());
-                    if (key.contains("incoming")) {
-                        IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                        return in_doc.getController().getDescriptionShort();
-                    } else if (key.contains("outgoing")) {
-                        OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                        return out_doc.getController().getDescriptionShort();
-                    } else if (key.contains("internal")) {
-                        InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
-                        return internal_doc.getSigner().getDescriptionShort();
-                    } else if (key.contains("request")) {
-                        RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
-                        return request_doc.getController().getDescriptionShort();
-                    } else if (key.contains("task")) {
-                        Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
-                        return getTopDocumentControllerByTaskDocument(task_doc);
-                    }
-                }
-            }
-        }
-        return "";
     }
 }

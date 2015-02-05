@@ -19,6 +19,7 @@ import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
@@ -187,15 +188,21 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             setDocument(document);
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
-            //Установка идшника для поиска поручений
-            taskTreeHolder.setRootDocumentId(document.getUniqueId());
-            //Поиск поручений
-            taskTreeHolder.changeOffset(0);
-            try {
-                updateAttachments();
-            } catch (Exception e) {
-                LOGGER.warn("Exception while check upload files", e);
+
+            if(permissions.hasPermission(READ)){
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser);
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(document.getUniqueId());
+                //Поиск поручений
+                taskTreeHolder.changeOffset(0);
+                try {
+                    updateAttachments();
+                } catch (Exception e) {
+                    LOGGER.warn("Exception while check upload files", e);
+                }
             }
+
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
@@ -314,14 +321,19 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
+                final User currentUser = sessionManagement.getLoggedUser();
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser);
+
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
-                document.setAuthor(sessionManagement.getLoggedUser());
+
+                document.setAuthor(currentUser);
 
                 PaperCopyDocument paperCopy = new PaperCopyDocument();
                 paperCopy.setDocumentStatus(DocumentStatus.NEW);
                 paperCopy.setCreationDate(created);
-                paperCopy.setAuthor(sessionManagement.getLoggedUser());
+                paperCopy.setAuthor(currentUser);
 
                 String parentId = document.getUniqueId();
                 if (StringUtils.isNotEmpty(parentId)) {
@@ -332,7 +344,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 HistoryEntry historyEntry = new HistoryEntry();
                 historyEntry.setCreated(created);
                 historyEntry.setStartDate(created);
-                historyEntry.setOwner(sessionManagement.getLoggedUser());
+                historyEntry.setOwner(currentUser);
                 historyEntry.setDocType(paperCopy.getDocumentType().getName());
                 historyEntry.setParentId(paperCopy.getId());
                 historyEntry.setActionId(0);

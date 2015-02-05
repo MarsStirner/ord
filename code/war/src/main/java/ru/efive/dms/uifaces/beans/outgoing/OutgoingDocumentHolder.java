@@ -16,6 +16,7 @@ import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
@@ -197,10 +198,14 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             setDocument(document);
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
-            try {
-                updateAttachments();
-            } catch (Exception e) {
-                LOGGER.warn("Exception while check upload files", e);
+            if(permissions.hasPermission(READ)){
+                //Простановка факта просмотра документа
+                sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser);
+                try {
+                    updateAttachments();
+                } catch (Exception e) {
+                    LOGGER.warn("Exception while check upload files", e);
+                }
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
@@ -285,14 +290,18 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
+                final User currentUser = sessionManagement.getLoggedUser();
+                //Простановка факта просмотра документа
+                sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser);
                 final LocalDateTime created = new LocalDateTime();
                 document.setCreationDate(created.toDate());
-                document.setAuthor(sessionManagement.getLoggedUser());
+
+                document.setAuthor(currentUser);
 
                 PaperCopyDocument paperCopy = new PaperCopyDocument();
                 paperCopy.setDocumentStatus(DocumentStatus.NEW);
                 paperCopy.setCreationDate(created.toDate());
-                paperCopy.setAuthor(sessionManagement.getLoggedUser());
+                paperCopy.setAuthor(currentUser);
 
                 final String parentId = document.getUniqueId();
                 if (StringUtils.isNotEmpty(parentId)) {
@@ -303,7 +312,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 HistoryEntry historyEntry = new HistoryEntry();
                 historyEntry.setCreated(created.toDate());
                 historyEntry.setStartDate(created.toDate());
-                historyEntry.setOwner(sessionManagement.getLoggedUser());
+                historyEntry.setOwner(currentUser);
                 historyEntry.setDocType(paperCopy.getDocumentType().getName());
                 historyEntry.setParentId(paperCopy.getId());
                 historyEntry.setActionId(0);

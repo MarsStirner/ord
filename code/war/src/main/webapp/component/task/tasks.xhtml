@@ -38,6 +38,18 @@
     </ui:define>
 
     <ui:define name="content">
+        <h:outputStylesheet>
+            .ui-column-title, .ui-commandlink{
+                position: relative !important;
+                padding: 0 !important;
+            }
+            .visited {
+                background: deepskyblue;
+            }
+            .unvisited{
+                background: indianred;
+            }
+        </h:outputStylesheet>
         <div id="main_table">
             <div id="searchbar" class="main_searchbar">
                 <h:inputText id="filter_string" value="#{tasks.filter}"
@@ -50,7 +62,7 @@
                 <div class="inner" id="table_inner">
                     <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" value="#{tasks.documents}" var="row"
                                     id="main_data_tbl">
-                        <e5ui:row ondblclick="goToTask('#{row.id}');"/>
+                        <e5ui:row ondblclick="goToTask('#{row.id}');" styleClass="#{row.styleClass}"/>
                         <e5ui:column style="min-width:7em">
                             <f:facet name="header">
                                 <h:commandLink action="#{tasks.sort('task_number')}">

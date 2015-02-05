@@ -11,6 +11,7 @@ import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.GroupsSelectModalBean;
@@ -53,7 +54,8 @@ import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @Named("internal_doc")
 @ConversationScoped
-public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalDocument, Integer> implements Serializable {
+public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalDocument, Integer> implements
+        Serializable {
     //Именованный логгер (INTERNAL_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("INTERNAL_DOCUMENT");
 
@@ -73,7 +75,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public boolean isCanDelete() {
         if (!permissions.hasPermission(WRITE)) {
             setStateComment("Доступ запрещен");
-            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId
+                    (), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
@@ -82,7 +85,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
             setStateComment("Доступ запрещен");
-            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(),
+                    getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
@@ -91,7 +95,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public boolean isCanView() {
         if (!permissions.hasPermission(READ)) {
             setStateComment("Доступ запрещен");
-            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(),
+                    getDocumentId());
         }
         return permissions.hasPermission(READ);
     }
@@ -119,7 +124,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     @Override
     protected boolean deleteDocument() {
         try {
-            final boolean result = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            final boolean result = sessionManagement.getDAO(InternalDocumentDAOImpl.class,
+                    INTERNAL_DOCUMENT_FORM_DAO).delete(getDocumentId());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
             }
@@ -160,16 +166,14 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
-        if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
+        if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel()
+                .getLevel()) {
             setState(STATE_FORBIDDEN);
-            setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
-            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]",
-                    new Object[]{
-                            document.getId(),
-                            docAccessLevel.getValue(),
-                            user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null"
-                    }
-            );
+            setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня " +
+                    "допуска.");
+            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]", new Object[]{document.getId
+                    (), docAccessLevel.getValue(), user.getCurrentUserAccessLevel() != null ? user
+                    .getCurrentUserAccessLevel().getValue() : "null"});
             return false;
         }
         return true;
@@ -180,12 +184,14 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         final User currentUser = sessionManagement.getLoggedUser();
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            final InternalDocument document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).get(id);
+            final InternalDocument document = sessionManagement.getDAO(InternalDocumentDAOImpl.class,
+                    INTERNAL_DOCUMENT_FORM_DAO).get(id);
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
-            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).getHibernateTemplate();
+            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(InternalDocumentDAOImpl.class,
+                    INTERNAL_DOCUMENT_FORM_DAO).getHibernateTemplate();
             Session session = hibernateTemplate.getSessionFactory().openSession();
             session.beginTransaction();
             session.update(document);
@@ -205,16 +211,20 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             setDocument(document);
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
-            //Установка идшника для поиска поручений
-            taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
-            //Поиск поручений
-            taskTreeHolder.changeOffset(0);
+            if (permissions.hasPermission(READ)) {
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser);
+                //Установка идшника для поиска поручений
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+                //Поиск поручений
+                taskTreeHolder.changeOffset(0);
 
-            updateAttachments();
-            try {
                 updateAttachments();
-            } catch (Exception e) {
-                LOGGER.warn("Exception while check upload files", e);
+                try {
+                    updateAttachments();
+                } catch (Exception e) {
+                    LOGGER.warn("Exception while check upload files", e);
+                }
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
@@ -231,7 +241,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         final LocalDateTime created = new LocalDateTime();
         doc.setCreationDate(created.toDate());
 
-        String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
+        String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+                .get("isDocumentTemplate");
         if (StringUtils.isNotEmpty(isDocumentTemplate) && "yes".equals(isDocumentTemplate.toLowerCase())) {
             doc.setTemplateFlag(true);
         } else {
@@ -239,11 +250,13 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         }
 
         DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Внутренние документы", "Служебная записка");
+        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                .findByCategoryAndValue("Внутренние документы", "Служебная записка");
         if (!list.isEmpty()) {
             form = list.get(0);
         } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Внутренние документы");
+            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory
+                    ("Внутренние документы");
             if (!list.isEmpty()) {
                 form = list.get(0);
             }
@@ -280,7 +293,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     protected boolean saveDocument() {
         try {
             InternalDocument document = getDocument();
-            document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(document);
+            document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save
+                    (document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
                 return false;
@@ -290,7 +304,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
                 return true;
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error("saveDocument ERROR:", e);
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
@@ -302,18 +316,22 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            InternalDocument document = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).save(getDocument());
+            InternalDocument document = sessionManagement.getDAO(InternalDocumentDAOImpl.class,
+                    INTERNAL_DOCUMENT_FORM_DAO).save(getDocument());
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
+                final User currentUser = sessionManagement.getLoggedUser();
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser);
+
                 final LocalDateTime created = new LocalDateTime();
                 document.setCreationDate(created.toDate());
-                document.setAuthor(sessionManagement.getLoggedUser());
-
+                document.setAuthor(currentUser);
                 PaperCopyDocument paperCopy = new PaperCopyDocument();
                 paperCopy.setDocumentStatus(DocumentStatus.NEW);
                 paperCopy.setCreationDate(created.toDate());
-                paperCopy.setAuthor(sessionManagement.getLoggedUser());
+                paperCopy.setAuthor(currentUser);
 
                 final String parentId = document.getUniqueId();
                 if (StringUtils.isNotEmpty(parentId)) {
@@ -324,7 +342,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 HistoryEntry historyEntry = new HistoryEntry();
                 historyEntry.setCreated(created.toDate());
                 historyEntry.setStartDate(created.toDate());
-                historyEntry.setOwner(sessionManagement.getLoggedUser());
+                historyEntry.setOwner(currentUser);
                 historyEntry.setDocType(paperCopy.getDocumentType().getName());
                 historyEntry.setParentId(paperCopy.getId());
                 historyEntry.setActionId(0);
@@ -364,13 +382,12 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     @Override
     protected String doAfterSave() {
-        if (getDocument().getUserAccessLevel().getLevel() > sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getLevel()) {
+        if (getDocument().getUserAccessLevel().getLevel() > sessionManagement.getLoggedUser()
+                .getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
         }
         return super.doAfterSave();
     }
-
-
 
 
     public List<Attachment> getAttachments() {
@@ -388,7 +405,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                     files.add(details.getByteArray());
                 } else {
                     attachment.setParentId(new String(("internal_" + getDocumentId()).getBytes(), "utf-8"));
-                    System.out.println("result of the upload operation - " + fileManagement.createFile(attachment, details.getByteArray()));
+                    System.out.println("result of the upload operation - " + fileManagement.createFile(attachment,
+                            details.getByteArray()));
                     updateAttachments();
                 }
             }
@@ -413,7 +431,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                         files.add(details.getByteArray());
                     }
                 } else {
-                    System.out.println("result of the upload operation - " + fileManagement.createVersion(attachment, details.getByteArray(), majorVersion, details.getAttachment().getFileName()));
+                    System.out.println("result of the upload operation - " + fileManagement.createVersion(attachment,
+                            details.getByteArray(), majorVersion, details.getAttachment().getFileName()));
                     updateAttachments();
                 }
             }
@@ -465,8 +484,10 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         boolean result = true;
         try {
             int loggedUserId = sessionManagement.getLoggedUser().getId();
-            if (getDocument().getAgreementTree() != null && (isViewState() || getDocument().getDocumentStatus().getId() != 1)) {
-                if (loggedUserId == getDocument().getAuthor().getId() || loggedUserId == getDocument().getSigner().getId()) {
+            if (getDocument().getAgreementTree() != null && (isViewState() || getDocument().getDocumentStatus().getId
+                    () != 1)) {
+                if (loggedUserId == getDocument().getAuthor().getId() || loggedUserId == getDocument().getSigner()
+                        .getId()) {
                     return true;
                 }
             }
@@ -477,7 +498,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public boolean isAgreementTreeEditAvailable() {
-        return getDocument().getDocumentStatus().getId() == 1 && (isEditState() || isCreateState()) && (getDocument().getAuthor().getId() == sessionManagement.getLoggedUser().getId());
+        return getDocument().getDocumentStatus().getId() == 1 && (isEditState() || isCreateState()) && (getDocument()
+                .getAuthor().getId() == sessionManagement.getLoggedUser().getId());
     }
 
     // MODAL HOLDERS

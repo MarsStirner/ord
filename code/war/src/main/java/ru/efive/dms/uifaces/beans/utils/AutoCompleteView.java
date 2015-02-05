@@ -34,6 +34,7 @@ public class AutoCompleteView {
 
     private DepartmentDAO departmentDAO;
     private List<Department> allDepartments;
+
     private PositionDAO positionDAO;
     private List<Position> allPositions;
 
@@ -96,7 +97,6 @@ public class AutoCompleteView {
                 }
             }
         } else {
-
             for (Position item : allPositions) {
                 if (i >= MAX_SEARCH_RESULTS) {
                     break;

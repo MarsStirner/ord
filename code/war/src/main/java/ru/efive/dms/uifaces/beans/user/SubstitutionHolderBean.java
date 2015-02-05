@@ -83,7 +83,16 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     @Override
     protected boolean deleteDocument() {
-        return false;
+        final Substitution doc = getDocument();
+        doc.setDeleted(true);
+        try {
+            setDocument(sessionManagement.getDAO(SubstitutionDaoImpl.class, ApplicationDAONames.SUBSTITUTION_DAO).save(doc));
+            return true;
+        } catch (Exception e) {
+            logger.error("saveDocument ERROR:", e);
+            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+            return false;
+        }
     }
 
     @Override

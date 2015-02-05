@@ -160,9 +160,13 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             setDocument(document);
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
-            taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
-            taskTreeHolder.changePageOffset(0);
-            updateAttachments();
+            if (permissions.hasPermission(READ)) {
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser);
+                taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
+                taskTreeHolder.changePageOffset(0);
+                updateAttachments();
+            }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
@@ -299,14 +303,18 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
+                final User currentUser = sessionManagement.getLoggedUser();
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser);
+
                 Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 document.setCreationDate(created);
-                document.setAuthor(sessionManagement.getLoggedUser());
+                document.setAuthor(currentUser);
 
                 PaperCopyDocument paperCopy = new PaperCopyDocument();
                 paperCopy.setDocumentStatus(DocumentStatus.NEW);
                 paperCopy.setCreationDate(created);
-                paperCopy.setAuthor(sessionManagement.getLoggedUser());
+                paperCopy.setAuthor(currentUser);
 
                 String parentId = document.getUniqueId();
                 if (StringUtils.isNotEmpty(parentId)) {
@@ -317,7 +325,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                 HistoryEntry historyEntry = new HistoryEntry();
                 historyEntry.setCreated(created);
                 historyEntry.setStartDate(created);
-                historyEntry.setOwner(sessionManagement.getLoggedUser());
+                historyEntry.setOwner(currentUser);
                 historyEntry.setDocType(paperCopy.getDocumentType().getName());
                 historyEntry.setParentId(paperCopy.getId());
                 historyEntry.setActionId(0);

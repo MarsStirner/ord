@@ -145,10 +145,14 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 setDocument(document);
                 return;
             }
-            permissions = permissionChecker.getPermissions(sessionManagement, document);
             setDocument(document);
-            taskTreeHolder.setRootDocumentId(document.getUniqueId());
-            taskTreeHolder.changeOffset(0);
+            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            if (permissions.hasPermission(READ)) {
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser);
+                taskTreeHolder.setRootDocumentId(document.getUniqueId());
+                taskTreeHolder.changeOffset(0);
+            }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             logger.error("INTERNAL ERROR ON INITIALIZATION:", e);
@@ -263,6 +267,9 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
                 return false;
             } else {
+                //Простановка факта просмотра записи
+                sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(task, sessionManagement.getLoggedUser());
+
                 logger.debug("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
                     Attachment tmpAttachment = attachments.get(i);
