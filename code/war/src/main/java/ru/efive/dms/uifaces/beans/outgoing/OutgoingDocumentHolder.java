@@ -155,13 +155,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
-            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]",
-                    new Object[]{
-                            document.getId(),
-                            docAccessLevel.getValue(),
-                            user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null"
-                    }
-            );
+            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]", document.getId(), docAccessLevel.getValue(), user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null");
             return false;
         }
         return true;
@@ -198,14 +192,13 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             setDocument(document);
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
-            if(permissions.hasPermission(READ)){
-                //Простановка факта просмотра документа
-                sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser);
-                try {
-                    updateAttachments();
-                } catch (Exception e) {
-                    LOGGER.warn("Exception while check upload files", e);
+            if(isReadPermission()){
+                //Простановка факта просмотра записи
+                if(sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser)){
+                    FacesContext.getCurrentInstance().addMessage("viewFact", MessageHolder.MSG_VIEW_FACT_REGISTERED);
                 }
+                updateAttachments();
+
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);

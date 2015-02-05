@@ -147,9 +147,11 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             }
             setDocument(document);
             permissions = permissionChecker.getPermissions(sessionManagement, document);
-            if (permissions.hasPermission(READ)) {
+            if(isReadPermission()){
                 //Простановка факта просмотра записи
-                sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser);
+                if(sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser)){
+                    FacesContext.getCurrentInstance().addMessage("viewFact", MessageHolder.MSG_VIEW_FACT_REGISTERED);
+                }
                 taskTreeHolder.setRootDocumentId(document.getUniqueId());
                 taskTreeHolder.changeOffset(0);
             }

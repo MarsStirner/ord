@@ -31,4 +31,8 @@ public class MessageHolder {
     public final static FacesMessage MSG_AUTH_NOT_FOUND = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Введены неверные данные.", "");
     public final static FacesMessage MSG_AUTH_NO_ROLE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Обратитесь к администратору системы для получения доступа", "");
     public final static FacesMessage MSG_AUTH_NO_MAX_ACCESS_LEVEL = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Обратитесь к администратору системы для назначения корректного уровня допуска", "");
+
+
+    //ORD-42 факты просмотров документов
+    public static final FacesMessage MSG_VIEW_FACT_REGISTERED = new FacesMessage(FacesMessage.SEVERITY_INFO, "Факт просмотра документа сохранен", "");
 }

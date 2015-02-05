@@ -189,9 +189,11 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
 
-            if(permissions.hasPermission(READ)){
+            if(isReadPermission()){
                 //Простановка факта просмотра записи
-                sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser);
+                if(sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser)){
+                    FacesContext.getCurrentInstance().addMessage("viewFact", MessageHolder.MSG_VIEW_FACT_REGISTERED);
+                }
                 //Установка идшника для поиска поручений
                 taskTreeHolder.setRootDocumentId(document.getUniqueId());
                 //Поиск поручений
@@ -231,13 +233,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
-            LOGGER.warn("Document[{}] has higher accessLevel[{}] then user[{}]",
-                    new Object[]{
-                            document.getId(),
-                            docAccessLevel.getValue(),
-                            user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null"
-                    }
-            );
+            LOGGER.warn("Document[{}] has higher accessLevel[{}] then user[{}]", document.getId(), docAccessLevel.getValue(), user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null");
             return false;
         }
         return true;
