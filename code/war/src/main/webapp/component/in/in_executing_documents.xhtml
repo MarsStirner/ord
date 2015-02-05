@@ -91,6 +91,12 @@
             .ui-treetable tbody td {
                 white-space: normal !important;
             }
+            .visited {
+                background: deepskyblue;
+            }
+            .unvisited{
+                background: indianred;
+            }
         </style>
         <div id="main_table">
             <div id="searchbar" class="main_searchbar">
@@ -110,6 +116,7 @@
                                  style="width:100%; overflow-x:hidden;"
                                  widgetVar="treeTableVar"
                                  selectionMode="single"
+                                 rowStyleClass="#{node.document.styleClass}"
                             >
                         <p:column headerText="Срок исполнения">
                             <h:outputText value="#{node.header}"/>

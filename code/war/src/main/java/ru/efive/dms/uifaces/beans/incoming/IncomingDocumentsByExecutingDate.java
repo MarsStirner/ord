@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.incoming;
 import org.joda.time.LocalDate;
 import org.primefaces.model.DefaultTreeNode;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.efive.uifaces.bean.Pagination;
@@ -20,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @Named("in_documents_by_executing_date")
 @SessionScoped
@@ -47,15 +49,16 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
 
     @Override
     protected List<IncomingDocument> loadDocuments(final Pagination pagination) {
+        final List<IncomingDocument> resultList;
         if (!sessionManagement.isSubstitution()) {
             // Без замещения
             if (showExpiredFlag) {
                 //для просроченных
-                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                         .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
             } else {
                 // все
-                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                         .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
             }
         } else {
@@ -64,14 +67,18 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
             userList.add(sessionManagement.getLoggedUser());
             if (showExpiredFlag) {
                 //для просроченных
-                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                         .findControlledDocumentsByUserList(filter, userList, false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
             } else {
                 // все
-                return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                         .findControlledDocumentsByUserList(filter, userList, false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
             }
         }
+        if(!resultList.isEmpty()){
+            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnIncomingDocumentList(resultList, sessionManagement.getLoggedUser());
+        }
+        return resultList;
     }
 
     protected int getTotalCount() {
