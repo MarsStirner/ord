@@ -195,7 +195,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             if(isReadPermission()){
                 //Простановка факта просмотра записи
                 if(sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser)){
-                    FacesContext.getCurrentInstance().addMessage("viewFact", MessageHolder.MSG_VIEW_FACT_REGISTERED);
+                    FacesContext.getCurrentInstance().addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
                 }
                 updateAttachments();
 

@@ -9,6 +9,8 @@ import javax.faces.application.FacesMessage;
  * Description: Хранилище сообщений для FACES MESSAGE<br>
  */
 public class MessageHolder {
+    public static final String MSG_KEY_FOR_VIEW_FACT = "viewFact";
+
     public static final FacesMessage MSG_CANT_DELETE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", "");
     public static final FacesMessage MSG_CANT_SAVE = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", "");
 
