@@ -103,6 +103,14 @@ public class Substitution extends AbstractEntity{
         this.type = type;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Substitution[");

@@ -118,6 +118,7 @@
                 <value>ru.entity.model.document.ReportTemplate</value>
                 <!-- /documents -->
 
+
                 <!-- workflow -->
                 <value>ru.entity.model.document.HistoryEntry</value>
                 <value>ru.entity.model.wf.RouteTemplate</value>
@@ -125,6 +126,11 @@
                 <value>ru.entity.model.wf.HumanTaskTree</value>
                 <value>ru.entity.model.wf.HumanTask</value>
                 <!-- /workflow -->
+            </list>
+        </property>
+        <property name="packagesToScan">
+            <list>
+                <value>ru.entity.model.document.viewFacts</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -165,370 +171,71 @@
         </property>
     </bean>
 
-    <bean id="userDao" class="ru.efive.sql.dao.user.UserDAOHibernate">
+    <!-- Standart settings to DAO classes-->
+    <bean id = "daoSettings" abstract="true">
         <property name="sessionFactory" ref="sessionFactory"/>
     </bean>
 
-    <bean id="userDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="userDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="userDao" class="ru.efive.sql.dao.user.UserDAOHibernate" parent="daoSettings"/>
 
-    <bean id="roleDao" class="ru.efive.sql.dao.user.RoleDAOHibernate">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="roleDao" class="ru.efive.sql.dao.user.RoleDAOHibernate" parent="daoSettings"/>
 
-    <bean id="roleDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="roleDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="groupDao" class="ru.efive.sql.dao.user.GroupDAOHibernate" parent="daoSettings"/>
 
-    <bean id="groupDao" class="ru.efive.sql.dao.user.GroupDAOHibernate">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="incomingDao" class="ru.efive.dms.dao.IncomingDocumentDAOImpl" parent="daoSettings"/>
 
-    <bean id="groupDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="groupDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="numeratorDao" class="ru.efive.dms.dao.NumeratorDAOImpl" parent="daoSettings"/>
 
-    <bean id="incomingDao" class="ru.efive.dms.dao.IncomingDocumentDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="scanDao" class="ru.efive.dms.dao.ScanCopyDocumentDAOImpl" parent="daoSettings"/>
 
-    <bean id="incomingDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="incomingDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="internalDao" class="ru.efive.dms.dao.InternalDocumentDAOImpl" parent="daoSettings"/>
 
-    <bean id="numeratorDao" class="ru.efive.dms.dao.NumeratorDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="outgoingDao" class="ru.efive.dms.dao.OutgoingDocumentDAOImpl" parent="daoSettings"/>
 
-    <bean id="numeratorDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="numeratorDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="paperCopyDao" class="ru.efive.dms.dao.PaperCopyDocumentDAOImpl" parent="daoSettings"/>
 
-    <bean id="scanDao" class="ru.efive.dms.dao.ScanCopyDocumentDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="requestDao" class="ru.efive.dms.dao.RequestDocumentDAOImpl" parent="daoSettings"/>
 
-    <bean id="scanDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="scanDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="taskDao" class="ru.efive.dms.dao.TaskDAOImpl" parent="daoSettings"/>
 
-    <bean id="internalDao" class="ru.efive.dms.dao.InternalDocumentDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="recordBookDao" class="ru.efive.dms.dao.RecordBookDocumentDAOImpl" parent="daoSettings"/>
 
-    <bean id="internalDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="internalDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="officeKeepingFileDao" class="ru.efive.dms.dao.OfficeKeepingFileDAOImpl" parent="daoSettings"/>
 
-    <bean id="outgoingDao" class="ru.efive.dms.dao.OutgoingDocumentDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="officeKeepingVolumeDao" class="ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl" parent="daoSettings"/>
 
-    <bean id="outgoingDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="outgoingDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="documentFormDao" class="ru.efive.dms.dao.DocumentFormDAOImpl" parent="daoSettings"/>
 
-    <bean id="paperCopyDao" class="ru.efive.dms.dao.PaperCopyDocumentDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="userAccessLevelDao" class="ru.efive.sql.dao.user.UserAccessLevelDAO" parent="daoSettings"/>
 
-    <bean id="paperCopyDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="paperCopyDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="departmentDao" class="ru.efive.sql.dao.user.DepartmentDAO" parent="daoSettings"/>
 
-    <bean id="requestDao" class="ru.efive.dms.dao.RequestDocumentDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="positionDao" class="ru.efive.sql.dao.user.PositionDAO" parent="daoSettings"/>
 
-    <bean id="requestDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="requestDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="nomenclatureDao" class="ru.efive.dms.dao.NomenclatureDAOImpl" parent="daoSettings"/>
 
-    <bean id="taskDao" class="ru.efive.dms.dao.TaskDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="deliveryTypeDao" class="ru.efive.dms.dao.DeliveryTypeDAOImpl" parent="daoSettings"/>
 
-    <bean id="taskDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="taskDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="groupTypeDao" class="ru.efive.sql.dao.user.GroupTypeDAO" parent="daoSettings"/>
 
-    <bean id="recordBookDao" class="ru.efive.dms.dao.RecordBookDocumentDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="contactTypeDao" class="ru.efive.sql.dao.user.RbContactTypeDAO" parent="daoSettings"/>
 
-    <bean id="recordBookDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="recordBookDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="senderTypeDao" class="ru.efive.dms.dao.SenderTypeDAOImpl" parent="daoSettings"/>
 
-    <bean id="officeKeepingFileDao" class="ru.efive.dms.dao.OfficeKeepingFileDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="regionDao" class="ru.efive.dms.dao.RegionDAOImpl" parent="daoSettings"/>
 
-    <bean id="officeKeepingFileDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="officeKeepingFileDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="contragentDao" class="ru.efive.crm.dao.ContragentDAOHibernate" parent="daoSettings"/>
 
-    <bean id="officeKeepingVolumeDao" class="ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="contragentNomenclatureDao" class="ru.efive.crm.dao.NomenclatureDAOImpl" parent="daoSettings"/>
 
-    <bean id="officeKeepingVolumeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="officeKeepingVolumeDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="historyDao" class="ru.efive.dms.dao.HistoryDAOImpl" parent="daoSettings"/>
 
-    <bean id="documentFormDao" class="ru.efive.dms.dao.DocumentFormDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="engineDao" class="ru.efive.wf.core.dao.EngineDAOImpl" parent="daoSettings"/>
 
-    <bean id="documentFormDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="documentFormDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
+    <bean id="reportDao" class="ru.efive.dms.dao.ReportDAOImpl" parent="daoSettings"/>
 
-    <bean id="userAccessLevelDao" class="ru.efive.sql.dao.user.UserAccessLevelDAO">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
+    <bean id="substitutionDao" class="ru.efive.dms.dao.ejb.SubstitutionDaoImpl" parent="daoSettings"/>
 
-    <bean id="userAccessLevelDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="userAccessLevelDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-
-    <bean id="departmentDao" class="ru.efive.sql.dao.user.DepartmentDAO">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="positionDao" class="ru.efive.sql.dao.user.PositionDAO">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="nomenclatureDao" class="ru.efive.dms.dao.NomenclatureDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="nomenclatureDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="nomenclatureDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="deliveryTypeDao" class="ru.efive.dms.dao.DeliveryTypeDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="deliveryTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="deliveryTypeDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="groupTypeDao" class="ru.efive.sql.dao.user.GroupTypeDAO">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="groupTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="groupTypeDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-
-    <bean id="contactTypeDao" class="ru.efive.sql.dao.user.RbContactTypeDAO">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="cotactTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="contactTypeDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="senderTypeDao" class="ru.efive.dms.dao.SenderTypeDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="senderTypeDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="senderTypeDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="regionDao" class="ru.efive.dms.dao.RegionDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="regionDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="regionDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="contragentDao" class="ru.efive.crm.dao.ContragentDAOHibernate">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="contragentDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="contragentDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="contragentNomenclatureDao" class="ru.efive.crm.dao.NomenclatureDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="contragentNomenclatureDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="contragentNomenclatureDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="historyDao" class="ru.efive.dms.dao.HistoryDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="historyDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="historyDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="engineDao" class="ru.efive.wf.core.dao.EngineDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="engineDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="engineDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="reportDao" class="ru.efive.dms.dao.ReportDAOImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
-    <bean id="reportDaoProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
-        <property name="target" ref="reportDao"/>
-        <property name="interceptorNames">
-            <list>
-                <value>transactionInterceptor</value>
-            </list>
-        </property>
-    </bean>
-
-    <bean id="substitutionDao" class="ru.efive.dms.dao.ejb.SubstitutionDaoImpl">
-        <property name="sessionFactory" ref="sessionFactory"/>
-    </bean>
-
+    <bean id="viewFactDao" class="ru.efive.dms.dao.ViewFactDaoImpl" parent="daoSettings"/>
 
 </beans>

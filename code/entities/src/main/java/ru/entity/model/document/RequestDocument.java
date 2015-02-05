@@ -1,20 +1,9 @@
 package ru.entity.model.document;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.*;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -24,6 +13,9 @@ import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 import ru.util.ApplicationHelper;
+
+import javax.persistence.*;
+import java.util.*;
 
 
 /**
@@ -648,5 +640,20 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
 
     public boolean getTemplateFlag() {
         return templateFlag;
+    }
+
+    //TODO сделать класс-обертку
+    /**
+     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     */
+    @Transient
+    private String styleClass;
+
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
     }
 }

@@ -1,8 +1,5 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
@@ -356,6 +353,20 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         return initiator;
     }
 
+    //TODO сделать класс-обертку
+    /**
+     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     */
+    @Transient
+    private String styleClass;
+
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
 
     @Override
     public Object clone() throws CloneNotSupportedException {

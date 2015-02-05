@@ -1,13 +1,8 @@
 package ru.entity.model.document;
 
-import java.util.*;
-import javax.persistence.*;
-
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
-
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -17,6 +12,9 @@ import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.user.UserAccessLevel;
 import ru.external.ProcessedData;
+
+import javax.persistence.*;
+import java.util.*;
 
 
 /**
@@ -558,6 +556,21 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
 
     public String getParentNumeratorId() {
         return parentNumeratorId;
+    }
+
+    //TODO сделать класс-обертку
+    /**
+     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     */
+    @Transient
+    private String styleClass;
+
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
     }
 
     private static final long serialVersionUID = -5522881582616193416L;

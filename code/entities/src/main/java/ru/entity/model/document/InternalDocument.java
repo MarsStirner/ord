@@ -615,4 +615,20 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         }
         return in_result;
     }
+
+
+    //TODO сделать класс-обертку
+    /**
+     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     */
+    @Transient
+    private String styleClass;
+
+    public String getStyleClass() {
+        return styleClass;
+    }
+
+    public void setStyleClass(String styleClass) {
+        this.styleClass = styleClass;
+    }
 }

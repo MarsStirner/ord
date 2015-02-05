@@ -30,4 +30,5 @@ public final class ApplicationDAONames {
     public static final String RECORD_BOOK_DAO = "recordBookDao";
     public static final String ENGINE_DAO = "engineDao";
     public static final String SUBSTITUTION_DAO = "substitutionDao";
+    public static final String VIEW_FACT_DAO = "viewFactDao";
 }
