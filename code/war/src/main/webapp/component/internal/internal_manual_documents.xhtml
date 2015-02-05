@@ -13,6 +13,7 @@
 
     <ui:define name="running_head">
         <h:outputScript library="js" name="forms.js" target="head"/>
+        <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
     <ui:define name="header_top">
@@ -45,12 +46,11 @@
                                      styleClass="searchbutton">
                         <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                     </h:commandButton>
-
                     <h:outputLink
                             target="_blank"
                             value="/component/internal/internal_document_search_form.xhtml"
                             title="Перейти к форме расширенного поиска"
-                            style="margin: 0pt 20px;">
+                            style="margin: 0 20px;">
                         Расширенный поиск
                     </h:outputLink>
                 </div>
@@ -59,7 +59,7 @@
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%"
                                         value="#{internal_documents.getDocuments()}"
                                         var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToInternalDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToInternalDocument('#{row.id}');" styleClass="#{row.styleClass}"/>
                             <e5ui:column style="min-width:12em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{internal_documents.sort('registrationNumber')}">
@@ -67,7 +67,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
+                                <strong><h:outputText value="#{row.registrationNumber}"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:8em">
                                 <f:facet name="header">
@@ -87,7 +87,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.responsible}" converter="PersonConverter"/></b>
+                                <strong><h:outputText value="#{row.responsible}" converter="PersonConverter"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
@@ -96,7 +96,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.signer}" converter="PersonConverter"/></b>
+                                <strong><h:outputText value="#{row.signer}" converter="PersonConverter"/></strong>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
@@ -105,7 +105,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.form}"/></b>
+                                <strong><h:outputText value="#{row.form}"/></strong>
                             </e5ui:column>
 
                             <e5ui:column style="min-width:10em">

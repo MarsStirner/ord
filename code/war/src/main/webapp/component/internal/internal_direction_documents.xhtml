@@ -13,6 +13,7 @@
 
     <ui:define name="running_head">
         <h:outputScript library="js" name="forms.js" target="head"/>
+        <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
     <ui:define name="header_top">
@@ -27,8 +28,8 @@
                 <f:param name="docAction" value="create"/>
             </h:outputLink>
         </div>
-        <div class="defbutton">            <h:commandLink action="#{internal_documents.refresh()}">
-
+        <div class="defbutton">
+            <h:commandLink action="#{internal_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
                 <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
@@ -55,7 +56,7 @@
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%"
                                         value="#{internal_documents.getDocuments()}"
                                         var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToInternalDocument('#{row.id}');"/>
+                            <e5ui:row ondblclick="goToInternalDocument('#{row.id}');" styleClass="#{row.styleClass}"/>
                             <e5ui:column style="min-width:12em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{internal_documents.sort('registrationNumber')}">

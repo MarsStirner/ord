@@ -13,6 +13,7 @@
 
     <ui:define name="running_head">
         <h:outputScript library="js" name="forms.js" target="head"/>
+        <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
     <ui:define name="header_top">
@@ -41,12 +42,6 @@
             .ui-column-title, .ui-commandlink{
                 position: relative !important;
                 padding: 0 !important;
-            }
-            .visited {
-                background: deepskyblue;
-            }
-            .unvisited{
-                background: indianred;
             }
         </h:outputStylesheet>
         <div id="main_table">
