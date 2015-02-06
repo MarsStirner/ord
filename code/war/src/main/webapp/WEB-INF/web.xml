@@ -3,14 +3,32 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <description>E5 Documents Management System</description>
     <display-name>E5 Documents Management System</display-name>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+
     <servlet>
         <description>Faces Servlet</description>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>fileDownloadServlet</servlet-name>
+        <servlet-class>ru.efive.dms.uifaces.FileDownloadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>fileDownloadServlet</servlet-name>
+        <url-pattern>/component/file/*</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -67,13 +85,6 @@
         <param-value>WEB-INF/classes/applicationContext.xml</param-value>
     </context-param>
 
-    <session-config>
-        <session-timeout>30</session-timeout>
-    </session-config>
-    <welcome-file-list>
-        <welcome-file>index.xhtml</welcome-file>
-    </welcome-file-list>
-
     <!--This is basically GET request based. Every GET request creates a new logical view.-->
     <context-param>
         <param-name>com.sun.faces.numberOfViewsInSession</param-name>
@@ -89,15 +100,6 @@
         <param-value>50</param-value>
     </context-param>
 
-    <servlet>
-        <servlet-name>fileDownloadServlet</servlet-name>
-        <servlet-class>ru.efive.dms.uifaces.FileDownloadServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>fileDownloadServlet</servlet-name>
-        <url-pattern>/component/file/*</url-pattern>
-    </servlet-mapping>
-
     <context-param>
         <param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
         <param-value>true</param-value>
@@ -108,37 +110,5 @@
         <param-name>primefaces.THEME</param-name>
         <param-value>bootstrap</param-value>
     </context-param>
-    <!-- 
-     <listener>  
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>  
-	</listener>
-	
-    <filter>
-		<filter-name>springSecurityFilterChain</filter-name>
-		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-	</filter>
-	
-    <filter>
-        <filter-name>encoding-filter</filter-name>
-        <filter-class>
-            org.springframework.web.filter.CharacterEncodingFilter
-        </filter-class>
-        <init-param>
-            <param-name>encoding</param-name>
-            <param-value>UTF-8</param-value>
-        </init-param>
-    </filter>
- 
-    <filter-mapping>
-        <filter-name>encoding-filter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
 
-    <filter-mapping>
-        <filter-name>springSecurityFilterChain</filter-name>
-        <url-pattern>/*</url-pattern>
-        <dispatcher>FORWARD</dispatcher>
-		<dispatcher>REQUEST</dispatcher>
-    </filter-mapping>
-     -->
 </web-app>

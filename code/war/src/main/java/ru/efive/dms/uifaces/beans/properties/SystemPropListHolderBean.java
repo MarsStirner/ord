@@ -1,29 +1,21 @@
 package ru.efive.dms.uifaces.beans.properties;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.TypedStringValue;
+import org.springframework.core.io.Resource;
+import ru.efive.dms.util.ApplicationContextHelper;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean.State;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import org.apache.commons.dbcp.BasicDataSource;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.TypedStringValue;
-import org.springframework.core.io.Resource;
-
-import ru.efive.dms.util.ApplicationContextHelper;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean.State;
+import javax.sql.DataSource;
+import java.io.*;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * @author Kuleshov
@@ -58,11 +50,16 @@ public class SystemPropListHolderBean implements Serializable {
 
     private void initValuesMapping() {
         managedPropValues = new HashMap<String, String>();
-        BasicDataSource datasource = ApplicationContextHelper.getBean("dataSource");
-        if (datasource != null) {
-            managedPropValues.put("jdbc.url", datasource.getUrl());
-            managedPropValues.put("jdbc.username", datasource.getUsername());
-            managedPropValues.put("jdbc.password", datasource.getPassword());
+        DataSource datasource = ApplicationContextHelper.getBean("dataSource");
+        try {
+            if(datasource != null) {
+                final DatabaseMetaData metaData = datasource.getConnection().getMetaData();
+                managedPropValues.put("jdbc.url", metaData.getURL());
+                managedPropValues.put("jdbc.username", metaData.getUserName());
+                managedPropValues.put("jdbc.password", "Нуну, а может еще чего показать? Эта страница вообще не нужна в приложении. Какого черта мы даем смотреть системные настройки? Кому надо и так знают. А редактировать отсюда все равно не получится. У нас етить-его настроенный пул, а вы хотите хост поменять? Удачи!");
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
         }
     }
 

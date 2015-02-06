@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dms-app</artifactId>
         <groupId>ru.efive.dms</groupId>
-        <version>0.3.1</version>
+        <version>0.3.2</version>
         <relativePath>../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>

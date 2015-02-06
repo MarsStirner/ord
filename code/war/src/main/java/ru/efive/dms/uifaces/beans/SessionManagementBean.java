@@ -30,6 +30,7 @@ import java.util.List;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 
+
 @Named("sessionManagement")
 @SessionScoped
 public class SessionManagementBean implements Serializable {

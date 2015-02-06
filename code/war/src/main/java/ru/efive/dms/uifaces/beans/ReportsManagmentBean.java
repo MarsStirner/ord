@@ -1,15 +1,15 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
+import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
+import net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory;
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.entity.model.document.ReportTemplate;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
@@ -25,26 +25,17 @@ import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.PrinterName;
 import javax.servlet.http.HttpServletResponse;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
-import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
-import net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory;
-
-import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import ru.entity.model.document.ReportTemplate;
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Named("reports")
 @RequestScoped
@@ -54,7 +45,7 @@ public class ReportsManagmentBean {
         Map<String, String> requestProperties = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String in_reportName = requestProperties.get("reportName");
         ClassPathXmlApplicationContext context = indexManagement.getContext();
-        BasicDataSource dataSource = (BasicDataSource) context.getBean("dataSource");
+        DataSource dataSource = (DataSource) context.getBean("dataSource");
         Connection conn = dataSource.getConnection();
 
         /* Get Data source */
@@ -108,7 +99,7 @@ public class ReportsManagmentBean {
         Connection conn = null;
         try {
             ClassPathXmlApplicationContext context = indexManagement.getContext();
-            BasicDataSource dataSource = (BasicDataSource) context.getBean("dataSource");
+            DataSource dataSource = (DataSource) context.getBean("dataSource");
             System.out.println("Data source is " + dataSource);
             conn = dataSource.getConnection();
             JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/customers.xml"));
@@ -239,7 +230,7 @@ public class ReportsManagmentBean {
         String in_reportName = requestProperties.get("reportName");
         String in_printerName = requestProperties.get("printerName");
         ClassPathXmlApplicationContext context = indexManagement.getContext(); //new ClassPathXmlApplicationContext("applicationContext.xml");
-        BasicDataSource dataSource = (BasicDataSource) context.getBean("dataSource");
+        DataSource dataSource = (DataSource) context.getBean("dataSource");
         Connection conn = dataSource.getConnection();
 
         //Properties printerProperties=new Properties();
@@ -344,7 +335,7 @@ public class ReportsManagmentBean {
         ClassPathXmlApplicationContext context = indexManagement.getContext();
         Map<String, Object> requestProperties = reportTemplate.getProperties();
         String in_reportName = requestProperties.get("reportName").toString();
-        BasicDataSource dataSource = (BasicDataSource) context.getBean("dataSource");
+        DataSource dataSource = (DataSource) context.getBean("dataSource");
         Connection conn = dataSource.getConnection();
 
         /* Get Data source */
