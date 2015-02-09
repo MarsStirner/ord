@@ -6,12 +6,38 @@ import javax.persistence.*;
 
 /**
  * Контакты
+ * (контактные лица различных организаций (предположение))
  *
  * @author Alexey Vagizov
  */
 @Entity
 @Table(name = "contacts")
 public class Contact extends IdentifiedEntity {
+    /**
+     * имя
+     */
+    @Column(name = "firstName")
+    private String firstName;
+
+    /**
+     * фамилия
+     */
+    @Column(name = "lastName")
+    private String lastName;
+
+    /**
+     * отчество
+     */
+    @Column(name = "middleName")
+    private String middleName;
+
+    /**
+     * Организация
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contragent_id", nullable = true)
+    private Contragent contragent;
+
 
     public String getFirstName() {
         return firstName;
@@ -37,6 +63,15 @@ public class Contact extends IdentifiedEntity {
         this.lastName = lastName;
     }
 
+    public Contragent getContragent() {
+        return contragent;
+    }
+
+    public void setContragent(Contragent contragent) {
+        this.contragent = contragent;
+    }
+
+
     /**
      * полное имя
      */
@@ -55,34 +90,7 @@ public class Contact extends IdentifiedEntity {
                 (middleName != null && !middleName.equals("") ? middleName.substring(0, 1) + "." : "");
     }
 
-    public Contragent getContragent() {
-        return contragent;
-    }
 
-    public void setContragent(Contragent contragent) {
-        this.contragent = contragent;
-    }
-
-    /**
-     * фамилия
-     */
-    private String lastName;
-
-    /**
-     * отчество
-     */
-    private String middleName;
-
-    /**
-     * имя
-     */
-    private String firstName;
-
-    /**
-     * Организация
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    private Contragent contragent;
 
     private static final long serialVersionUID = 2676252421021362937L;
 }
