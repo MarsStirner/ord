@@ -4,7 +4,6 @@ import ru.efive.dms.dao.*;
 import ru.efive.sql.dao.user.GroupTypeDAO;
 import ru.efive.sql.dao.user.RbContactTypeDAO;
 import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.entity.model.crm.ContragentNomenclature;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.GroupType;
 import ru.entity.model.user.RbContactInfoType;
@@ -189,17 +188,6 @@ public class DictionaryManagementBean implements Serializable {
         }
 
         return (result == null || result.isEmpty()) ? null : result.get(0);
-    }
-
-
-    public List<ContragentNomenclature> getContragentNomenclature() {
-        List<ContragentNomenclature> result = new ArrayList<ContragentNomenclature>();
-        try {
-            result = sessionManagement.getDictionaryDAO(ru.efive.crm.dao.NomenclatureDAOImpl.class, "contragentNomenclatureDao").findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     public List<RbContactInfoType> getContactTypes() {

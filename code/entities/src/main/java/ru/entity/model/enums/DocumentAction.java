@@ -3,7 +3,7 @@ package ru.entity.model.enums;
 /**
  * @author Nastya Peshekhonova
  *         TODO: Временное решение, следует перевести это в таблицe базы данных и использовать ее.От куда были взяты номера статусов непонятно
- * @see ru.entity.model.document.Action
+ * @see ru.entity.model.document.Action  // DELETED since 0.3.2
  */
 
 public enum DocumentAction {

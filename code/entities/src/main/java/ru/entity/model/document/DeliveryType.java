@@ -2,13 +2,24 @@ package ru.entity.model.document;
 
 import ru.entity.model.mapped.DictionaryEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-
+/**
+ * Типы доставки документов
+ */
 @Entity
 @Table(name = "dms_delivery_types")
 public class DeliveryType extends DictionaryEntity {
+
+
+    /**
+     * Универсальный код типа доставки
+     * @see ru.util.StoredCodes.DeliveryType
+     */
+    @Column(name="code")
+    private String code;
 
     @Override
     public String toString() {
@@ -17,7 +28,7 @@ public class DeliveryType extends DictionaryEntity {
 
     @Override
     public boolean equals(Object obj) {
-        return obj != null && obj instanceof DictionaryEntity && getValue().equals(((DictionaryEntity) obj).getValue());
+        return obj != null && obj instanceof DeliveryType && getValue().equals(((DeliveryType) obj).getValue());
     }
 
     @Override

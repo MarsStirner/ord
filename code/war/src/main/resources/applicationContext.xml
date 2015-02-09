@@ -210,8 +210,6 @@
 
     <bean id="contragentDao" class="ru.efive.crm.dao.ContragentDAOHibernate" parent="daoSettings"/>
 
-    <bean id="contragentNomenclatureDao" class="ru.efive.crm.dao.NomenclatureDAOImpl" parent="daoSettings"/>
-
     <bean id="historyDao" class="ru.efive.dms.dao.HistoryDAOImpl" parent="daoSettings"/>
 
     <bean id="engineDao" class="ru.efive.wf.core.dao.EngineDAOImpl" parent="daoSettings"/>

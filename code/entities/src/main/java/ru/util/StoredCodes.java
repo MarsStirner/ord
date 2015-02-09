@@ -43,4 +43,26 @@ public final class StoredCodes {
         public static final String HR = "HR";
         public static final String FILLING = "FILLING";
     }
+
+    /**
+     * Типы доставки
+     */
+    public class DeliveryType {
+        /**
+         * Почта
+         */
+        public static final String MAIL = "MAIL";
+        /**
+         * Факс
+         */
+        public static final String FAX = "FAX";
+        /**
+         * Электронная почта
+         */
+        public static final String EMAIL = "EMAIL";
+        /**
+         * Курьером
+         */
+        public static final String COURIER = "COURIER";
+    }
 }

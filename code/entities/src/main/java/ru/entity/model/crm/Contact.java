@@ -1,6 +1,8 @@
 package ru.entity.model.crm;
 
+import org.apache.commons.lang.StringUtils;
 import ru.entity.model.mapped.IdentifiedEntity;
+import ru.util.Descriptionable;
 
 import javax.persistence.*;
 
@@ -12,7 +14,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "contacts")
-public class Contact extends IdentifiedEntity {
+public class Contact extends IdentifiedEntity implements Descriptionable {
     /**
      * имя
      */
@@ -38,6 +40,12 @@ public class Contact extends IdentifiedEntity {
     @JoinColumn(name = "contragent_id", nullable = true)
     private Contragent contragent;
 
+    public Contact() {
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // GETTERS & SETTERS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getFirstName() {
         return firstName;
@@ -71,23 +79,54 @@ public class Contact extends IdentifiedEntity {
         this.contragent = contragent;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Interface Descriptionable
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * полное имя
-     */
-    @Transient
+
+    @Override
     public String getDescription() {
-        return lastName + " " + (firstName != null && !firstName.equals("") ? firstName + " " : "") +
-                (middleName != null && !middleName.equals("") ? middleName : "");
+        final StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotEmpty(lastName)){
+            sb.append(lastName);
+        }
+        if(StringUtils.isNotEmpty(firstName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+           sb.append(firstName);
+        }
+        if(StringUtils.isNotEmpty(middleName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+            sb.append(middleName);
+        }
+        return sb.toString();
     }
 
+    @Override
     /**
-     * краткая форма полного имени
+     * Иванов Иван Иванович - > Иванов И. И.
      */
-    @Transient
     public String getDescriptionShort() {
-        return lastName + " " + (firstName != null && !firstName.equals("") ? firstName.substring(0, 1) + ". " : "") +
-                (middleName != null && !middleName.equals("") ? middleName.substring(0, 1) + "." : "");
+        final StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotEmpty(lastName)){
+            sb.append(lastName);
+        }
+        if(StringUtils.isNotEmpty(firstName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+            sb.append(firstName.charAt(0)).append('.');
+        }
+        if(StringUtils.isNotEmpty(middleName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+            sb.append(middleName.charAt(0)).append('.');
+        }
+        return sb.toString();
     }
 
 

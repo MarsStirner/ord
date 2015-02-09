@@ -59,7 +59,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     @JoinColumn(name = "controller_id")
     private User controller;
 
-
     /**
      * Удален ли документ
      */

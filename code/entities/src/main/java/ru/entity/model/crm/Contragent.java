@@ -1,13 +1,9 @@
 package ru.entity.model.crm;
 
+import ru.entity.model.document.Nomenclature;
 import ru.entity.model.mapped.IdentifiedEntity;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 
 /**
@@ -18,6 +14,38 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "contragents")
 public class Contragent extends IdentifiedEntity {
+
+    /**
+     * Удален ли документ
+     */
+    @Column(name="deleted")
+    private boolean deleted;
+
+    /**
+     * Полное наименование
+     */
+    @Column(name="fullName")
+    private String fullName;
+
+    /**
+     * Краткое наименование
+     */
+    @Column(name="shortName")
+    private String shortName;
+
+    /**
+     * Номенклатура
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "nomenclature_id")
+    private Nomenclature nomenclature;
+
+    public Contragent() {
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // GETTERS & SETTERS
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getFullName() {
         return fullName;
@@ -35,11 +63,11 @@ public class Contragent extends IdentifiedEntity {
         this.shortName = shortName;
     }
 
-    public ContragentNomenclature getNomenclature() {
+    public Nomenclature getNomenclature() {
         return nomenclature;
     }
 
-    public void setNomenclature(ContragentNomenclature nomenclature) {
+    public void setNomenclature(Nomenclature nomenclature) {
         this.nomenclature = nomenclature;
     }
 
@@ -50,29 +78,6 @@ public class Contragent extends IdentifiedEntity {
     public boolean isDeleted() {
         return deleted;
     }
-
-
-    /**
-     * Полное наименование
-     */
-    private String fullName;
-
-    /**
-     * Краткое наименование
-     */
-    private String shortName;
-
-    /**
-     * Номенклатура
-     */
-    @OneToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "nomenclature_id")
-    private ContragentNomenclature nomenclature;
-
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
 
     private static final long serialVersionUID = 1123233260758669450L;
 }

@@ -1,16 +1,14 @@
 package ru.efive.crm.dao;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
-
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.util.ApplicationHelper;
 import ru.entity.model.crm.Contragent;
+
+import java.util.List;
 
 public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
 
@@ -19,20 +17,19 @@ public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
         return Contragent.class;
     }
 
-    public Contragent getByFullName(String fullname) {
+    public Contragent getByFullName(final String fullname) {
         if (StringUtils.isNotEmpty(fullname)) {
             DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Contragent.class);
             detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
             detachedCriteria.add(Restrictions.eq("fullName", fullname));
 
-            List<Contragent> contragents = getHibernateTemplate().findByCriteria(detachedCriteria, -1, 1);
+            final List contragents = getHibernateTemplate().findByCriteria(detachedCriteria);
             if ((contragents != null) && (!contragents.isEmpty())) {
                 return (Contragent) contragents.get(0);
             }
             return null;
         }
-
         return null;
     }
 
@@ -47,5 +44,4 @@ public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
         }
         return criteria;
     }
-
 }

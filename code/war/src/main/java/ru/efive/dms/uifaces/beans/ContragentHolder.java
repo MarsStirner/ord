@@ -8,8 +8,8 @@ import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.crm.Contragent;
-import ru.entity.model.crm.ContragentNomenclature;
 import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.document.Nomenclature;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.document.RequestDocument;
 
@@ -166,19 +166,19 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
 
     public class NomenclatureSelectModal extends ModalWindowHolderBean {
 
-        public ContragentNomenclature getValue() {
+        public Nomenclature getValue() {
             return value;
         }
 
-        public void setValue(ContragentNomenclature value) {
+        public void setValue(Nomenclature value) {
             this.value = value;
         }
 
-        public boolean selected(ContragentNomenclature value) {
-            return this.value != null ? this.value.getValue().equals(value.getValue()) : false;
+        public boolean selected(Nomenclature value) {
+            return this.value != null && this.value.getValue().equals(value.getValue());
         }
 
-        public void select(ContragentNomenclature value) {
+        public void select(Nomenclature value) {
             this.value = value;
         }
 
@@ -199,7 +199,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
             value = null;
         }
 
-        private ContragentNomenclature value;
+        private Nomenclature value;
         private static final long serialVersionUID = 3204083909477490577L;
     }
 
