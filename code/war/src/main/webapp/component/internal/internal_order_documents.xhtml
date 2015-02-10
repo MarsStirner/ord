@@ -56,7 +56,7 @@
                 <div class="wrap_main" id="table_wrap">
                     <div class="inner" id="table_inner">
                         <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%"
-                                        value="#{internal_documents.getDocuments()}"
+                                        value="#{internal_documents.documents}"
                                         var="row" id="main_data_tbl">
                             <e5ui:row ondblclick="goToInternalDocument('#{row.id}');" styleClass="#{row.styleClass}"/>
                             <e5ui:column style="min-width:12em">
@@ -66,7 +66,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.registrationNumber}"/></strong>
+                                <h:outputText value="#{row.registrationNumber}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:8em">
                                 <f:facet name="header">
@@ -86,7 +86,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.responsible}" converter="PersonConverter"/></strong>
+                                <h:outputText value="#{row.responsible.getDescriptionShort()}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
@@ -95,18 +95,8 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.signer}" converter="PersonConverter"/></strong>
+                                <h:outputText value="#{row.signer.getDescriptionShort()}"/>
                             </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{internal_documents.sort('form')}">
-                                        Вид документа
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <strong><h:outputText value="#{row.form}"/></strong>
-                            </e5ui:column>
-
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{internal_documents.sort('status_id')}">

@@ -65,7 +65,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.registrationNumber}"/></strong>
+                                <h:outputText value="#{row.registrationNumber}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
@@ -86,15 +86,13 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.form}"/></strong>
+                                <h:outputText value="#{row.form}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
                                     <p>Адресаты</p>
                                 </f:facet>
-                                <ui:repeat
-                                        value="#{row.recipientGroupsList}"
-                                        var="element">
+                                <ui:repeat value="#{row.recipientGroupsList}" var="element">
                                     <h:outputText value="#{element}" converter="GroupConverter" class="width"/>
                                     <br/>
                                 </ui:repeat>

@@ -76,7 +76,7 @@
                                 <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
-                        <strong><h:outputText value="#{row.registrationNumber}"/></strong>
+                        <h:outputText value="#{row.registrationNumber}"/>
                     </p:column>
                     <p:column style="width:5em;">
                         <f:facet name="header">
@@ -96,7 +96,7 @@
                                 <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
-                        <strong><h:outputText value="#{row.contragent.shortName}"/> </strong>
+                        <h:outputText value="#{row.contragent.shortName}"/>
                     </p:column>
                     <p:column style="width:10em;">
                         <f:facet name="header">
@@ -104,7 +104,7 @@
                         </f:facet>
                         <ui:repeat value="#{row.executors}" var="element">
                             <div>
-                                <h:outputText value="#{element}" converter="PersonConverter"/>
+                                <h:outputText value="#{element.getDescriptionShort()}"/>
                             </div>
                         </ui:repeat>
                     </p:column>
@@ -115,7 +115,7 @@
                                 <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
-                        <strong><h:outputText value="#{row.form}"/> </strong>
+                       <h:outputText value="#{row.form}"/>
                     </p:column>
                     <p:column style="width:5em;">
                         <f:facet name="header">

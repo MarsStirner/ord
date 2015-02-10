@@ -61,11 +61,9 @@
                                     <f:ajax render="main_data_tbl"/>
                                 </h:commandLink>
                             </f:facet>
-                            <strong>
-                                <h:outputText value="#{row.creationDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </strong>
+                            <h:outputText value="#{row.creationDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
                         </e5ui:column>
                         <e5ui:column style="min-width:12em">
                             <f:facet name="header">
@@ -74,9 +72,7 @@
                                     <f:ajax render="main_data_tbl"/>
                                 </h:commandLink>
                             </f:facet>
-                            <strong>
-                                <h:outputText value="#{row.contragent}" converter="ContragentConverter"/>
-                            </strong>
+                            <h:outputText value="#{row.contragent}" converter="ContragentConverter"/>
                         </e5ui:column>
                         <e5ui:column style="min-width:10em">
                             <f:facet name="header">
@@ -86,9 +82,7 @@
                                     <f:ajax render="main_data_tbl"/>
                                 </h:commandLink>
                             </f:facet>
-                            <strong>
-                                <h:outputText value="#{row.controller}" converter="PersonConverter"/>
-                            </strong>
+                            <h:outputText value="#{row.controller.getDescriptionShort()}"/>
                         </e5ui:column>
                         <e5ui:column style="min-width:7em">
                             <f:facet name="header">
@@ -97,9 +91,7 @@
                                     <f:ajax render="main_data_tbl"/>
                                 </h:commandLink>
                             </f:facet>
-                            <strong>
-                                <h:outputText value="#{row.form}"/>
-                            </strong>
+                            <h:outputText value="#{row.form}"/>
                         </e5ui:column>
                         <e5ui:column style="min-width:7em">
                             <f:facet name="header">

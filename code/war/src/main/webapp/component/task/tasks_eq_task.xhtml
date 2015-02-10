@@ -66,7 +66,7 @@
                                 <p>Исполнитель</p>
                             </f:facet>
                             <ui:repeat value="#{row.executors}" var="executor">
-                                <h:outputText value="#{executor.descriptionShort}"/><br/>
+                                <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
                             </ui:repeat>
                         </e5ui:column>
                         <e5ui:column style="min-width:7em">
@@ -86,12 +86,11 @@
                             </f:facet>
                             <h:outputText value="#{row.getDocumentStatus().getName()}"/>
                         </e5ui:column>
-
                         <e5ui:column style="min-width:12em">
                             <f:facet name="header">
                                 <p>Автор</p>
                             </f:facet>
-                            <h:outputText value="#{row.author.descriptionShort}"/>
+                            <h:outputText value="#{row.author.getDescriptionShort()}"/>
                         </e5ui:column>
                         <e5ui:column style="min-width:12em">
                             <f:facet name="header">

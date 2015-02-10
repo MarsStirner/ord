@@ -120,11 +120,11 @@
                             <h:outputText value="#{node.document.registrationNumber}"/>
                         </p:column>
                         <p:column headerText="Корреспондент">
-                            <h:outputText value="#{node.document.contragent.shortName}" style="font-weight: bold"/>
+                            <h:outputText value="#{node.document.contragent.shortName}"/>
                         </p:column>
                         <p:column headerText="Исполнитель">
                             <ui:repeat value="#{node.document.executors}" var="executor">
-                                <h:outputText value="#{executor}" converter="PersonConverter"/><br/>
+                                <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
                             </ui:repeat>
                         </p:column>
                         <p:column headerText="Вид документа">

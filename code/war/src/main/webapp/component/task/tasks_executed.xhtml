@@ -69,7 +69,7 @@
                                     <p>Исполнитель</p>
                                 </f:facet>
                                 <ui:repeat value="#{row.executors}" var="executor">
-                                    <h:outputText value="#{executor.descriptionShort}"/><br/>
+                                    <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
                                 </ui:repeat>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
@@ -94,7 +94,7 @@
                                 <f:facet name="header">
                                     <p>Автор</p>
                                 </f:facet>
-                                <h:outputText value="#{row.author.descriptionShort}"/>
+                                <h:outputText value="#{row.author.getDescriptionShort()}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:12em">
                                 <f:facet name="header">
@@ -107,10 +107,8 @@
                 </div>
                 <div id="table_paging">
                     <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{tasks}"
-                                              style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector
-                                documentListHolder="#{tasks}"
+                        <e5ui-comp:tablePager documentListHolder="#{tasks}" style="display:inline;"/>
+                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{tasks}"
                                 style="display:inline;float:right;" pageSizes="10,25,50,100"/>
                     </h:panelGroup>
                 </div>

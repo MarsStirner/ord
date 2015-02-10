@@ -68,7 +68,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.registrationNumber}"/></strong>
+                                <h:outputText value="#{row.registrationNumber}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:8em">
                                 <f:facet name="header">
@@ -88,7 +88,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.responsible}" converter="PersonConverter"/></strong>
+                                <h:outputText value="#{row.responsible.getDescriptionShort()}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
@@ -97,18 +97,8 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <strong><h:outputText value="#{row.signer}" converter="PersonConverter"/></strong>
+                                <h:outputText value="#{row.signer.getDescriptionShort()}"/>
                             </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{internal_documents.sort('form')}">
-                                        Вид документа
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <strong><h:outputText value="#{row.form}"/></strong>
-                            </e5ui:column>
-
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
                                     <h:commandLink action="#{internal_documents.sort('status_id')}">

@@ -52,7 +52,7 @@
                     <h:outputLink
                             value="/component/request/request_document_search_form.xhtml"
                             title="Перейти к форме расширенного поиска"
-                            style="margin: 0pt 20px;">
+                            style="margin: 0 20px;">
                         Расширенный поиск
                     </h:outputLink>
                 </div>
@@ -68,7 +68,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.registrationNumber}"/></b>
+                                <h:outputText value="#{row.registrationNumber}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:5em">
                                 <f:facet name="header">
@@ -88,7 +88,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.senderDescriptionShort}"/></b>
+                               <h:outputText value="#{row.senderDescriptionShort}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">
@@ -97,7 +97,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <b><h:outputText value="#{row.form}"/></b>
+                                <h:outputText value="#{row.form}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">

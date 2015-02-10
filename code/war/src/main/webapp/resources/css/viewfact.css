@@ -1,6 +1,8 @@
+/*Стиль для уже просмотренных документов*/
 .visited {
-    background: deepskyblue;
+    font-weight: normal;
 }
+/*Стиль для непросмотренных документов*/
 .unvisited{
-    background: indianred;
+    font-weight: bold;
 }
