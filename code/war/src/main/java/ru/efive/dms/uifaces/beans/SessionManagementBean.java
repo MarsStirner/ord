@@ -139,7 +139,7 @@ public class SessionManagementBean implements Serializable {
                             }
                             if (substitution.getPerson() != null) {
                                 substitutedUsers.add(substitution.getPerson());
-                                LOGGER.debug("[{}] {}", substitution.getPerson().getId(), substitution.getPerson().getFullName());
+                                LOGGER.debug("[{}] {}", substitution.getPerson().getId(), substitution.getPerson().getDescription());
                             } else {
                                 LOGGER.warn("Substitution[{}] has NULL Person! DATA={}", substitution.getId(), substitution.toString());
                             }

@@ -17,12 +17,12 @@ public class PersonConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
 
-            User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO)).getByLogin(value);
+            User in_user = (sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO)).getByLogin(value);
             if (in_user != null) {
                 result = in_user;
-                System.out.println("login: " + in_user.getFullName());
+                System.out.println("login: " + in_user.getDescription());
             } else {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
 

@@ -565,7 +565,7 @@ public class PermissionChecker {
         if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
             for (User currentUser : sessionManagement.getSubstitutedUsers()) {
                 loggerIncomingDocument.debug("Get permissions on substituted user [{}] {}",
-                        currentUser.getId(), currentUser.getFullName()
+                        currentUser.getId(), currentUser.getDescription()
                 );
                 Permissions subResult = getPermissions(currentUser, document);
                 loggerIncomingDocument.debug("Sub permissions: {}", subResult.toString());
@@ -603,7 +603,7 @@ public class PermissionChecker {
         if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
             for (User currentUser : sessionManagement.getSubstitutedUsers()) {
                 loggerTask.debug("Get permissions on substituted user [{}] {}",
-                        currentUser.getId(), currentUser.getFullName()
+                        currentUser.getId(), currentUser.getDescription()
                 );
                 Permissions subResult = getPermissions(currentUser, document);
                 loggerTask.debug("Sub permissions: {}", subResult.toString());
@@ -635,7 +635,7 @@ public class PermissionChecker {
         if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
             for (User currentUser : sessionManagement.getSubstitutedUsers()) {
                 loggerOutgoingDocument.debug("Get permissions on substituted user [{}] {}",
-                        currentUser.getId(), currentUser.getFullName()
+                        currentUser.getId(), currentUser.getDescription()
                 );
                 Permissions subResult = getPermissions(currentUser, document);
                 loggerOutgoingDocument.debug("Sub permissions: {}", subResult.toString());
@@ -667,7 +667,7 @@ public class PermissionChecker {
         if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
             for (User currentUser : sessionManagement.getSubstitutedUsers()) {
                 loggerInternalDocument.debug("Get permissions on substituted user [{}] {}",
-                        currentUser.getId(), currentUser.getFullName()
+                        currentUser.getId(), currentUser.getDescription()
                 );
                 Permissions subResult = getPermissions(currentUser, document);
                 loggerInternalDocument.debug("Sub permissions: {}", subResult.toString());
@@ -699,7 +699,7 @@ public class PermissionChecker {
         if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
             for (User currentUser : sessionManagement.getSubstitutedUsers()) {
                 loggerRequestDocument.debug("Get permissions on substituted user [{}] {}",
-                        currentUser.getId(), currentUser.getFullName()
+                        currentUser.getId(), currentUser.getDescription()
                 );
                 Permissions subResult = getPermissions(currentUser, document);
                 loggerRequestDocument.debug("Sub permissions: {}", subResult.toString());

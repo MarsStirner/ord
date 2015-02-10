@@ -24,13 +24,6 @@ public class Type extends IdentifiedEntity {
     @LazyCollection(LazyCollectionOption.TRUE)
     private Set<Status> statuses;
 
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @JoinTable(name = "dms_action_type",
-            joinColumns = {@JoinColumn(name = "type_id")},
-            inverseJoinColumns = {@JoinColumn(name = "action_id")})
-    @LazyCollection(LazyCollectionOption.TRUE)
-    private Set<Action> actions;
 
     public String getName() {
         return name;
@@ -48,11 +41,4 @@ public class Type extends IdentifiedEntity {
         this.statuses = statuses;
     }
 
-    public Set<Action> getActions() {
-        return actions;
-    }
-
-    public void setActions(Set<Action> actions) {
-        this.actions = actions;
-    }
 }

@@ -1,19 +1,12 @@
 package ru.entity.model.user;
 
 
-
-import javax.persistence.*;
-
 import org.hibernate.annotations.Type;
 import ru.entity.model.enums.GroupType;
 import ru.entity.model.mapped.DictionaryEntity;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.*;
+import java.util.*;
 
 /**
  * Группа пользователей
@@ -28,12 +21,7 @@ public class Group extends DictionaryEntity {
         if (members != null) {
             result.addAll(members);
         }
-        Collections.sort(result, new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return o1.getFullName().compareTo(o2.getFullName());
-            }
-        });
+        Collections.sort(result);
         return result;
     }
 

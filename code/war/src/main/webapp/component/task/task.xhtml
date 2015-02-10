@@ -310,7 +310,7 @@
                                     </e5ui-comp:modalWindow>
                                 </td>
                                 <td class="fourth">
-                                    <h:outputText id="initiator" value="#{task.document.initiator.getFullName()}"
+                                    <h:outputText id="initiator" value="#{task.document.initiator.getDescription()}"
                                                   class="wide"/>
                                 </td>
                             </tr>
@@ -323,7 +323,7 @@
                                     </label>
                                 </td>
                                 <td class="fourth">
-                                    <h:outputText value="#{task.document.author.getFullName()}"/>
+                                    <h:outputText value="#{task.document.author.getDescription()}"/>
                                 </td>
                             </tr>
                         </table>
@@ -353,7 +353,7 @@
                                     </label>
                                 </td>
                                 <td class="second">
-                                    <h:outputText value="#{task.document.initiator.getFullName()}" class="width"/>
+                                    <h:outputText value="#{task.document.initiator.getDescription()}" class="width"/>
                                 </td>
                             </tr>
                             <tr class="row">
@@ -365,7 +365,7 @@
                                     </label>
                                 </td>
                                 <td class="fourth">
-                                    <h:outputText value="#{task.document.author.getFullName()}"/>
+                                    <h:outputText value="#{task.document.author.getDescription()}"/>
                                 </td>
                             </tr>
                         </table>
@@ -384,7 +384,7 @@
                                         </td>
                                         <td class="second" colspan="3">
                                             <ui:repeat value="#{task.document.executors}" var="executor">
-                                                <h:outputText value="#{executor.getFullName()}" class="width"/>
+                                                <h:outputText value="#{executor.getDescription()}" class="width"/>
                                                 <br/>
                                             </ui:repeat>
                                         </td>
@@ -407,7 +407,7 @@
                                             </label>
                                         </td>
                                         <td class="second" colspan="3">
-                                            <h:outputText value="#{task.document.controller.getFullName()}"
+                                            <h:outputText value="#{task.document.controller.getDescription()}"
                                                           class="width"/>
                                         </td>
                                     </tr>
@@ -511,7 +511,7 @@
                                                 <h:panelGroup id="executors">
                                                     <label>
                                                         <ui:repeat value="#{task.document.executors}" var="element">
-                                                            <h:outputText value="#{element.getFullName()}"
+                                                            <h:outputText value="#{element.getDescription()}"
                                                                           class="width"/>
                                                             <br/>
                                                         </ui:repeat>
@@ -605,7 +605,7 @@
                                         </td>
                                         <td class="second" colspan="3">
                                             <h:outputText id="controller"
-                                                          value="#{task.document.controller.getFullName()}"
+                                                          value="#{task.document.controller.getDescription()}"
                                                           class="wide"/>
                                         </td>
                                     </tr>
@@ -702,7 +702,7 @@
                                             <h:outputText value="#{row_task.taskNumber}"/>
                                         </p:column>
                                         <p:column headerText="Автор">
-                                            <h:outputText value="#{row_task.author.getFullName()}"/>
+                                            <h:outputText value="#{row_task.author.getDescription()}"/>
                                         </p:column>
                                         <p:column headerText="Исполнитель">
                                             <ui:repeat value="#{row_task.executors}" var="executor">

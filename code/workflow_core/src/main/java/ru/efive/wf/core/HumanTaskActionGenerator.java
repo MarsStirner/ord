@@ -1,28 +1,27 @@
 package ru.efive.wf.core;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
-import ru.entity.model.enums.DocumentAction;
-import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.user.User;
 import ru.efive.wf.core.activity.InvokeMethodActivity;
 import ru.efive.wf.core.activity.ParametrizedPropertyLocalActivity;
 import ru.efive.wf.core.activity.SendMailActivity;
 import ru.efive.wf.core.activity.SetPropertyActivity;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
-import ru.entity.model.wf.HumanTask;
 import ru.efive.wf.core.data.MailMessage;
 import ru.efive.wf.core.data.impl.InputReasonForm;
 import ru.efive.wf.core.data.impl.SelectUserForm;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.entity.model.enums.DocumentAction;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.User;
+import ru.entity.model.wf.HumanTask;
 import ru.external.ProcessUser;
 import ru.external.ProcessedData;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HumanTaskActionGenerator {
 
@@ -61,7 +60,7 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 MailMessage message = new MailMessage(sendTo, null, "Согласовано",
-                        new StringBuilder("Согласовано\n").append(task.getExecutor().getFullName()).append("\n\n").
+                        new StringBuilder("Согласовано\n").append(task.getExecutor().getDescription()).append("\n\n").
                                 append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
                                 append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
                 message.setBlindCopyTo(blindCopyTo);
@@ -121,7 +120,7 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, null, "Отказ в согласовании ",
-                        new StringBuilder("Отказано в согласовании\n").append(task.getExecutor().getFullName()).append("\n\n").
+                        new StringBuilder("Отказано в согласовании\n").append(task.getExecutor().getDescription()).append("\n\n").
                                 append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
                                 append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
                 message.setBlindCopyTo(blindCopyTo);
@@ -168,7 +167,7 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, copyTo, "Делегирован запрос на согласование ",
-                        new StringBuilder("Делегирован запрос на согласование\n").append(task.getExecutor().getFullName()).append("\n\n").
+                        new StringBuilder("Делегирован запрос на согласование\n").append(task.getExecutor().getDescription()).append("\n\n").
                                 append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
                                 append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
                 message.setBlindCopyTo(blindCopyTo);

@@ -11,6 +11,7 @@ import java.util.Set;
 public class Person extends User implements ProcessUser {
     private Set<Role> totalRoles;
 
+
     @Override
     public Set<Role> getRoles(){
         return totalRoles;

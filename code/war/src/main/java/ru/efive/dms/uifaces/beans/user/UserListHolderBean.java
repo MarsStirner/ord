@@ -98,7 +98,7 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
         try {
             User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).get(id);
             if (user != null) {
-                return user.getFullName();
+                return user.getDescription();
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -60,7 +60,7 @@
     <h:panelGroup rendered="#{user.editState or user.viewState}">
         <div class="name">
             <div>
-                <h:outputText value="#{user.document.getFullName()}"/>
+                <h:outputText value="#{user.document.getDescription()}"/>
                 <h:outputText value=" [Уволен]" rendered="#{user.document.fired}"/>
             </div>
         </div>

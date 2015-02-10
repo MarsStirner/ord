@@ -14,7 +14,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_system_persons")
-public class User extends IdentifiedEntity implements Descriptionable{
+public class User extends IdentifiedEntity implements Descriptionable, Comparable<User>{
 
     /**********************************************************************
      * DATABASE FIELD MAPPING START
@@ -222,41 +222,17 @@ public class User extends IdentifiedEntity implements Descriptionable{
         this.middleName = middleName;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Interface Descriptionable
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Получение полного ФИО в виде строки
-     *
      * @return Строка с полным ФИО
      * "Иванов Иван Иванович"
      * если нету части ФИО - то выводится без нее
      * "Иван Иванович"\"Иванов Иван"\"Иванов Иванович"\"Иван"\"Иванов"\""
      */
-    @Transient
-    public String getFullName() {
-        StringBuilder sb = new StringBuilder("");
-        if (lastName != null) {
-            sb.append(lastName);
-        }
-        if (firstName != null) {
-            if (sb.length() != 0) {
-                sb.append(' ');
-            }
-            sb.append(firstName);
-        }
-        if (middleName != null) {
-            if (sb.length() != 0) {
-                sb.append(' ');
-            }
-            sb.append(middleName);
-        }
-        return sb.toString();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Interface Descriptionable
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
     @Override
     public String getDescription() {
         final StringBuilder sb = new StringBuilder();
@@ -300,6 +276,14 @@ public class User extends IdentifiedEntity implements Descriptionable{
             sb.append(middleName.charAt(0)).append('.');
         }
         return sb.toString();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Interface Comparable<User>
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Override
+    public int compareTo(User o) {
+        return getDescription().compareTo(o.getDescription());
     }
 
     @Transient
@@ -534,8 +518,7 @@ public class User extends IdentifiedEntity implements Descriptionable{
         } else if (!(obj instanceof User)) {
             return false;
         }
-        final User other = (User) obj;
-        return getId() == other.getId();
+        return getId() == ((User) obj).getId();
     }
 
     /**
@@ -556,6 +539,4 @@ public class User extends IdentifiedEntity implements Descriptionable{
        firedDate = date;
        lastModified = date;
     }
-
-
 }

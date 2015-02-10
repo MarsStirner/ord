@@ -925,7 +925,7 @@
                                                         <h:commandLink
                                                                 action="#{humanTaskTreeControl.composeHumanTaskExecutorSelectModal(element)}">
                                                             <h:outputText
-                                                                    value="#{element.executor eq null? '...': element.executor.getFullName()}"/>
+                                                                    value="#{element.executor eq null? '...': element.executor.getDescription()}"/>
                                                         </h:commandLink>
                                                         <br/>
                                                     </ui:repeat>

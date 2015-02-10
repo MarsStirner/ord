@@ -97,7 +97,6 @@
                 <value>ru.entity.model.document.DocumentForm</value>
                 <value>ru.entity.model.crm.Contragent</value>
                 <value>ru.entity.model.crm.Contact</value>
-                <value>ru.entity.model.crm.ContragentNomenclature</value>
                 <value>ru.entity.model.document.Numerator</value>
                 <value>ru.entity.model.document.ReportTemplate</value>
                 <!-- /documents -->

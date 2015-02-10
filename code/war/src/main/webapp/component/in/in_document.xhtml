@@ -224,7 +224,7 @@
                                 </label>
                             </td>
                             <td class="fourth">
-                                <h:outputText value="#{in_doc.document.author.getFullName()}" lang="ru"/>
+                                <h:outputText value="#{in_doc.document.author.getDescription()}" lang="ru"/>
                             </td>
                         </tr>
                         <tr class="row">
@@ -244,7 +244,7 @@
                                 </label>
                             </td>
                             <td class="fourth">
-                                <h:outputText value="#{in_doc.document.controller.getFullName()}" class="wide"/>
+                                <h:outputText value="#{in_doc.document.controller.getDescription()}" class="wide"/>
                             </td>
                         </tr>
                     </table>
@@ -279,7 +279,7 @@
                                 </label>
                             </td>
                             <td class="fourth">
-                                <h:outputText id="author" value="#{in_doc.document.author.getFullName()}" lang="ru"/>
+                                <h:outputText id="author" value="#{in_doc.document.author.getDescription()}" lang="ru"/>
                             </td>
                         </tr>
                         <tr class="row">
@@ -346,7 +346,7 @@
                                 </e5ui-comp:modalWindow>
                             </td>
                             <td class="fourth">
-                                <h:outputText id="controller" value="#{in_doc.document.controller.getFullName()}"
+                                <h:outputText id="controller" value="#{in_doc.document.controller.getDescription()}"
                                               class="wide"/>
                             </td>
                         </tr>
@@ -954,7 +954,7 @@
                                         <h:outputText value="#{row_task.taskNumber}"/>
                                     </p:column>
                                     <p:column headerText="Автор">
-                                        <h:outputText value="#{row_task.author.getFullName()}"/>
+                                        <h:outputText value="#{row_task.author.getDescription()}"/>
                                     </p:column>
                                     <p:column headerText="Исполнитель">
                                         <ui:repeat value="#{row_task.executors}" var="executor">

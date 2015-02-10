@@ -65,7 +65,7 @@ public final class WorkflowHelper {
                         }
                     }*/
                 final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
-                task.setWFResultDescription(String.format(delegateReason, task.getExecutors().get(0).getFullName()));
+                task.setWFResultDescription(String.format(delegateReason, task.getExecutors().get(0).getDescription()));
                 task.setExecutionDate(choosenDate);
                 result = true;
             } else {
@@ -102,7 +102,7 @@ public final class WorkflowHelper {
                     }
                 }
                 final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
-                task.setWFResultDescription(String.format(delegateReason, task.getExecutors().get(0).getFullName()));
+                task.setWFResultDescription(String.format(delegateReason, task.getExecutors().get(0).getDescription()));
                 final HashSet<User> users = new HashSet<User>(1);
                 users.add(selectedUser);
                 task.setExecutors(users);

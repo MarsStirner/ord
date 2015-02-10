@@ -120,13 +120,13 @@ public class Substitution extends AbstractEntity{
         sb.append(", deleted=").append(deleted);
         sb.append(", person=");
         if(person != null) {
-            sb.append('[').append(person.getId()).append(' ').append(person.getFullName()).append(']');
+            sb.append('[').append(person.getId()).append(' ').append(person.getDescription()).append(']');
         } else {
             sb.append("NULL");
         }
         sb.append(", substitution=");
         if(substitution != null) {
-            sb.append('[').append(substitution.getId()).append(' ').append(substitution.getFullName()).append(']');
+            sb.append('[').append(substitution.getId()).append(' ').append(substitution.getDescription()).append(']');
         } else {
             sb.append("NULL");
         }

@@ -401,9 +401,9 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         sb.append(getId()).append("]:{");
         sb.append("controlDate=").append(ApplicationHelper.formatDate(controlDate));
         sb.append(", creationDate=").append(ApplicationHelper.formatDate(creationDate));
-        sb.append(", author=").append(author.getFullName());
-        sb.append(", initiator=").append(initiator != null ? initiator.getFullName() : "null");
-        sb.append(", controller=").append(controller != null ? controller.getFullName() : "null");
+        sb.append(", author=").append(author.getDescription());
+        sb.append(", initiator=").append(initiator != null ? initiator.getDescription() : "null");
+        sb.append(", controller=").append(controller != null ? controller.getDescription() : "null");
         sb.append(", parent=").append(parent != null ? parent.getId() : "null");
         sb.append(", registrationDate=").append(ApplicationHelper.formatDate(registrationDate));
         sb.append(", shortDescription='").append(shortDescription).append('\'');

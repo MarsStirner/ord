@@ -78,12 +78,7 @@ public class Role extends IdentifiedEntity implements Comparable<Role>{
         if (persons != null) {
             result.addAll(persons);
         }
-        Collections.sort(result, new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return o1.getFullName().compareTo(o2.getFullName());
-            }
-        });
+        Collections.sort(result);
         return result;
     }
 

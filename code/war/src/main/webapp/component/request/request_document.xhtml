@@ -214,7 +214,7 @@
                                 </label>
                             </td>
                             <td class="fourth">
-                                <h:outputText id="author" value="#{request_doc.document.author.getFullName()}"
+                                <h:outputText id="author" value="#{request_doc.document.author.getDescription()}"
                                               lang="ru"/>
                             </td>
                         </tr>
@@ -998,7 +998,7 @@
                                         <h:outputText value="#{row_task.taskNumber}"/>
                                     </p:column>
                                     <p:column headerText="Автор">
-                                        <h:outputText value="#{row_task.author.getFullName()}"/>
+                                        <h:outputText value="#{row_task.author.getDescription()}"/>
                                     </p:column>
                                     <p:column headerText="Исполнитель">
                                         <ui:repeat value="#{row_task.executors}" var="executor">
