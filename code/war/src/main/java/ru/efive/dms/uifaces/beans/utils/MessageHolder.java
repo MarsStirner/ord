@@ -26,6 +26,8 @@ public class MessageHolder {
     public static final FacesMessage MSG_SHORT_DESCRIPTION_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", "");
     public static final FacesMessage MSG_EXECUTOR_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Ответственного исполнителя", "");
 
+
+    public static final FacesMessage MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить контрагента, так как к нему привязаны документы..", "");
     //Сообщения об ошибках авторизации
     public final static FacesMessage MSG_AUTH_FIRED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
     public final static FacesMessage MSG_AUTH_DELETED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");
@@ -37,4 +39,11 @@ public class MessageHolder {
 
     //ORD-42 факты просмотров документов
     public static final FacesMessage MSG_VIEW_FACT_REGISTERED = new FacesMessage(FacesMessage.SEVERITY_INFO, "Факт просмотра документа сохранен", "");
+
+
+    // Неизветсная внутренняя ошибка
+    public static final FacesMessage MSG_INTERNAL_ERROR = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка", "");
+
+
+
 }

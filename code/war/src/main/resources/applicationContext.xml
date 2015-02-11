@@ -8,10 +8,10 @@
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <!--<value>file:/usr/local/ord/configuration/mail.properties</value>-->
-                <!--<value>file:/usr/local/ord/configuration/ldap.properties</value>-->
-                <value>classpath:mail.properties</value>
-                <value>classpath:ldap.properties</value>
+                <value>file:/usr/local/ord/configuration/mail.properties</value>
+                <value>file:/usr/local/ord/configuration/ldap.properties</value>
+                <!--<value>classpath:mail.properties</value>-->
+                <!--<value>classpath:ldap.properties</value>-->
                 <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
             </list>
@@ -95,6 +95,7 @@
                 <value>ru.entity.model.document.SenderType</value>
                 <value>ru.entity.model.document.Region</value>
                 <value>ru.entity.model.document.DocumentForm</value>
+                <value>ru.entity.model.crm.ContragentType</value>
                 <value>ru.entity.model.crm.Contragent</value>
                 <value>ru.entity.model.crm.Contact</value>
                 <value>ru.entity.model.document.Numerator</value>
@@ -202,6 +203,8 @@
     <bean id="groupTypeDao" class="ru.efive.sql.dao.user.GroupTypeDAO" parent="daoSettings"/>
 
     <bean id="contactTypeDao" class="ru.efive.sql.dao.user.RbContactTypeDAO" parent="daoSettings"/>
+
+    <bean id="contragentTypeDao" class="ru.efive.sql.dao.RbContragentTypeDAOImpl" parent="daoSettings"/>
 
     <bean id="senderTypeDao" class="ru.efive.dms.dao.SenderTypeDAOImpl" parent="daoSettings"/>
 

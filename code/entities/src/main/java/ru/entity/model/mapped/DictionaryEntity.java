@@ -1,6 +1,7 @@
 package ru.entity.model.mapped;
 
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 /**
@@ -8,6 +9,17 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 public class DictionaryEntity extends IdentifiedEntity {
+    /**
+     * значение
+     */
+    @Column(name="value")
+    private String value;
+
+    /**
+     * true - удалён, false или null - не удалён
+     */
+    @Column(name="deleted", nullable = false)
+    private boolean deleted;
 
     /**
      * Конструктор по умолчанию.
@@ -31,17 +43,6 @@ public class DictionaryEntity extends IdentifiedEntity {
     public void setDeleted(Boolean deleted) {
         this.deleted = deleted;
     }
-
-
-    /**
-     * значение
-     */
-    private String value;
-
-    /**
-     * true - удалён, false или null - не удалён
-     */
-    private boolean deleted;
 
     private static final long serialVersionUID = -8239024131091899733L;
 }

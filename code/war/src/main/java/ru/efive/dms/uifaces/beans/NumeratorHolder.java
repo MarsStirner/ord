@@ -1,34 +1,33 @@
 package ru.efive.dms.uifaces.beans;
 
+import ru.efive.dms.dao.NumeratorDAOImpl;
+import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
+import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
+import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.wf.core.ActionResult;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.Numerator;
+import ru.entity.model.document.PaperCopyDocument;
+import ru.entity.model.enums.DocumentAction;
+import ru.entity.model.enums.DocumentStatus;
+import ru.util.ApplicationHelper;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import ru.efive.dms.dao.NumeratorDAOImpl;
-import ru.efive.dms.util.ApplicationDAONames;
-import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.Numerator;
-import ru.entity.model.document.PaperCopyDocument;
-import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
-import ru.entity.model.enums.DocumentAction;
-import ru.entity.model.enums.DocumentStatus;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
-import ru.efive.wf.core.ActionResult;
-import ru.util.ApplicationHelper;
-
 import static ru.efive.dms.util.ApplicationDAONames.NUMERATOR_DAO;
 
-@Named("numerator")
-@ConversationScoped
+@ManagedBean(name="numerator")
+@ViewScoped
 public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integer> implements Serializable {
     private static final long serialVersionUID = 4716264614655470705L;
     @Inject
@@ -43,9 +42,6 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;
-    @Inject
-    @Named("contragentList")
-    private transient ContragentListHolderBean contragentList;
 
     @Override
     public String delete() {
@@ -143,7 +139,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            Numerator document = (Numerator) getDocument();
+            Numerator document = getDocument();
             document = sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).save(document);
             if (document == null) {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(

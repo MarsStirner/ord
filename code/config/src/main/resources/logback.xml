@@ -126,6 +126,9 @@
     <!--Логгер для работы с должностями-->
     <logger name="POSITION" level="ERROR"/>
 
+    <!--Логгер для работы с контрагентами-->
+    <logger name="CONTRAGENT" level="INFO"/>
+
     <!--Логгер для действий с пользователями-->
     <logger name="USER" level="DEBUG"/>
 

@@ -1,6 +1,5 @@
 package ru.entity.model.crm;
 
-import ru.entity.model.document.Nomenclature;
 import ru.entity.model.mapped.IdentifiedEntity;
 
 import javax.persistence.*;
@@ -37,8 +36,8 @@ public class Contragent extends IdentifiedEntity {
      * Номенклатура
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "nomenclature_id")
-    private Nomenclature nomenclature;
+    @JoinColumn(name = "type_id")
+    private ContragentType type;
 
     public Contragent() {
     }
@@ -63,12 +62,12 @@ public class Contragent extends IdentifiedEntity {
         this.shortName = shortName;
     }
 
-    public Nomenclature getNomenclature() {
-        return nomenclature;
+    public ContragentType getType() {
+        return type;
     }
 
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
+    public void setType(ContragentType type) {
+        this.type = type;
     }
 
     public void setDeleted(boolean deleted) {

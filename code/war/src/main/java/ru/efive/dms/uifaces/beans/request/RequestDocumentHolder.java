@@ -32,7 +32,9 @@ import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
-import javax.enterprise.context.ConversationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,8 +44,8 @@ import java.util.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
-@Named("request_doc")
-@ConversationScoped
+@ManagedBean(name="request_doc")
+@ViewScoped
 public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDocument, Integer> implements Serializable {
 
     //Именованный логгер (REQUEST_DOCUMENT)
@@ -100,9 +102,18 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;
-    @Inject
-    @Named("contragentList")
+
+    @ManagedProperty("#{contragentList}")
     private transient ContragentListHolderBean contragentList;
+
+    public ContragentListHolderBean getContragentList() {
+        return contragentList;
+    }
+
+    public void setContragentList(ContragentListHolderBean contragentList) {
+        this.contragentList = contragentList;
+    }
+
     @Inject
     @Named("documentTaskTree")
     private transient DocumentTaskTreeHolder taskTreeHolder;

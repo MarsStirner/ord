@@ -1,15 +1,17 @@
 package ru.efive.dms.uifaces.beans;
 
 import ru.efive.dms.dao.*;
+import ru.efive.sql.dao.RbContragentTypeDAOImpl;
 import ru.efive.sql.dao.user.GroupTypeDAO;
 import ru.efive.sql.dao.user.RbContactTypeDAO;
 import ru.efive.sql.dao.user.UserAccessLevelDAO;
+import ru.entity.model.crm.ContragentType;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.GroupType;
 import ru.entity.model.user.RbContactInfoType;
 import ru.entity.model.user.UserAccessLevel;
 
-import javax.enterprise.context.ConversationScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -22,7 +24,7 @@ import static ru.efive.dms.util.ApplicationDAONames.*;
 
 
 @Named("dictionaryManagement")
-@ConversationScoped
+@SessionScoped
 public class DictionaryManagementBean implements Serializable {
 
     public List<UserAccessLevel> getUserAccessLevels() {
@@ -192,6 +194,10 @@ public class DictionaryManagementBean implements Serializable {
 
     public List<RbContactInfoType> getContactTypes() {
         return sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
+    }
+
+    public List<ContragentType> getContragentTypes(){
+        return sessionManagement.getDictionaryDAO(RbContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).findDocuments();
     }
 
 

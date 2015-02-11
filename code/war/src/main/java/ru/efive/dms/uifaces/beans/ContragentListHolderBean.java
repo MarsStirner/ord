@@ -1,21 +1,26 @@
 package ru.efive.dms.uifaces.beans;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.efive.crm.dao.ContragentDAOHibernate;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import ru.efive.uifaces.bean.Pagination;
+import ru.entity.model.crm.Contragent;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
 
-import ru.efive.crm.dao.ContragentDAOHibernate;
-import ru.efive.dms.util.ApplicationDAONames;
-import ru.efive.uifaces.bean.Pagination;
-import ru.entity.model.crm.Contragent;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-
-@Named("contragentList")
-@SessionScoped
+@ManagedBean(name = "contragentList")
+@ViewScoped
 public class ContragentListHolderBean extends AbstractDocumentListHolderBean<Contragent> {
+
+    private static final Logger logger = LoggerFactory.getLogger("CONTRAGENT");
 
     @Override
     public Pagination initPagination() {
@@ -30,9 +35,10 @@ public class ContragentListHolderBean extends AbstractDocumentListHolderBean<Con
     @Override
     protected int getTotalCount() {
         try {
-           return new Long(sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationDAONames.CONTRAGENT_DAO).countDocument(filter, false)).intValue();
+            return new Long(sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO)
+                    .countDocument(filter, false)).intValue();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception on count documents", e);
         }
         return 0;
     }
@@ -40,10 +46,11 @@ public class ContragentListHolderBean extends AbstractDocumentListHolderBean<Con
     @Override
     protected List<Contragent> loadDocuments() {
         try {
-          return sessionManagement.getDAO(ContragentDAOHibernate.class, ApplicationDAONames.CONTRAGENT_DAO).findDocuments(filter,
-                    false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+            return sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO)
+                    .findDocuments(filter, false, getPagination().getOffset(), getPagination().getPageSize(),
+                            getSorting().getColumnId(), getSorting().isAsc());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Exception on loadDocuments [filter={}]", filter, e);
         }
         return new ArrayList<Contragent>();
     }

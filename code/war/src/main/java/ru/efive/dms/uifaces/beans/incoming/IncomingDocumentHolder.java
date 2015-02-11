@@ -36,7 +36,9 @@ import ru.entity.model.user.UserAccessLevel;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
-import javax.enterprise.context.ConversationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -46,8 +48,8 @@ import java.util.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
-@Named("in_doc")
-@ConversationScoped
+@ManagedBean(name="in_doc")
+@ViewScoped
 public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument, Integer> implements Serializable {
     private static final long serialVersionUID = 4716264614655470705L;
 
@@ -107,9 +109,18 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Inject
     @Named("fileManagement")
     private FileManagementBean fileManagement;
-    @Inject
-    @Named("contragentList")
+
+    @ManagedProperty("#{contragentList}")
     private ContragentListHolderBean contragentList;
+
+    public ContragentListHolderBean getContragentList() {
+        return contragentList;
+    }
+
+    public void setContragentList(ContragentListHolderBean contragentList) {
+        this.contragentList = contragentList;
+    }
+
     @Inject
     @Named("documentTaskTree")
     private DocumentTaskTreeHolder taskTreeHolder;

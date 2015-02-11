@@ -5,6 +5,7 @@ public final class ApplicationDAONames {
     public static final String GROUP_DAO = "groupDao";
     public static final String ROLE_DAO = "roleDao";
     public static final String RB_CONTACT_TYPE_DAO = "contactTypeDao";
+    public static final String RB_CONTRAGENT_TYPE_DAO = "contragentTypeDao";
     public static final String POSITION_DAO = "positionDao";
     public static final String DEPARTMENT_DAO = "departmentDao";
     public static final String CONTRAGENT_DAO = "contragentDao";
