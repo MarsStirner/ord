@@ -10,7 +10,7 @@ import javax.persistence.Table;
  * Типы доставки документов
  */
 @Entity
-@Table(name = "dms_delivery_types")
+@Table(name = "rbDeliveryType")
 public class DeliveryType extends DictionaryEntity {
 
 
@@ -20,6 +20,14 @@ public class DeliveryType extends DictionaryEntity {
      */
     @Column(name="code")
     private String code;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     @Override
     public String toString() {
