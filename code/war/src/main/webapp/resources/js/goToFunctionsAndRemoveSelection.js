@@ -92,7 +92,7 @@ function goToPosition(id) {
 //К контрагентам
 function goToContragent(id) {
     if (id != 0) {
-        window.open('/component/contragent.xhtml?docId=' + id,'_blank');
+        window.open('/component/contragent/contragent.xhtml?docId=' + id,'_blank');
     }
 }
 // К группам
