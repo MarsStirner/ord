@@ -1,19 +1,18 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
+import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.contragent.ContragentListSelectModalBean;
+import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.dms.util.ApplicationDAONames;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.crm.Contragent;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.document.OutgoingDocument;
-import ru.efive.dms.uifaces.beans.ContragentListSelectModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-
 import ru.entity.model.user.User;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;

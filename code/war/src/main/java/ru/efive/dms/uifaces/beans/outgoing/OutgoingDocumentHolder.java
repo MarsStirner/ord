@@ -11,6 +11,7 @@ import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
+import ru.efive.dms.uifaces.beans.contragent.ContragentListSelectModalBean;
 import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentSelectModal;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;

@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.beans;
+package ru.efive.dms.uifaces.beans.contragent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,7 @@ import ru.efive.crm.dao.ContragentDAOHibernate;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.crm.Contragent;

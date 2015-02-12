@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.uifaces.beans.ContragentSelectModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.contragent.ContragentSelectModalBean;
 import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;

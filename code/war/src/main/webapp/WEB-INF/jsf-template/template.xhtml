@@ -11,7 +11,6 @@
     <h:outputStylesheet library="css" name="style.css"/>
     <h:outputStylesheet library="css" name="menu.css"/>
     <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
-
     <title>Документооборот ФНКЦ ДГОИ</title>
 </h:head>
 
@@ -207,8 +206,10 @@
 </c:if>
 <c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
     <p:submenu label="Контрагенты" styleCalss="subMenuItem">
-        <p:menuitem value="По названию" url="/component/contragents.xhtml" icon="leafIcon"
-                    styleClass="#{currentView eq '/component/contragents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="По названию" url="/component/contragent/contragents.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/contragent/contragents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Типы контрагентов" url="/component/contragent/contragentTypes.xhtml" icon="leafIcon"
+                    styleClass="#{currentView eq '/component/contragent/contragentTypes.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
     </p:submenu>
 </c:if>
 <c:if test="#{isAdministrator or isRecorder}">
@@ -260,9 +261,7 @@
     <div id="view_header">
         <div id="header">
             <div class="menu">
-
                 <ui:insert name="header_top"/>
-
                 <div class="username">
                     <div class="top">
                         <h:commandLink styleClass="top_link" onclick="return false;">
@@ -283,12 +282,10 @@
                 <div class="role">
                     <div class="top">
                         <h:commandLink styleClass="top_link" onclick="return false;">
-										<span>
-                                            <h:outputText
-                                                    value="#{sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getValue()}"/>
-										</span>
+                            <span>
+                                <h:outputText value="#{sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getValue()}"/>
+                            </span>
                         </h:commandLink>
-
                         <div class="sub">
                             <ui:repeat
                                     value="#{dictionaryManagement.getUserAccessLevelsLowerOrEqualMaxValue(sessionManagement.getLoggedUser().getMaxUserAccessLevel().level)}"

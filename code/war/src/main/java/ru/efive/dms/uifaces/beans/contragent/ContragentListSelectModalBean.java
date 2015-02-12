@@ -1,12 +1,11 @@
-package ru.efive.dms.uifaces.beans;
+package ru.efive.dms.uifaces.beans.contragent;
 
-import java.util.ArrayList;
-import java.util.List;
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.crm.Contragent;
 
 import javax.faces.context.FacesContext;
-
-import ru.entity.model.crm.Contragent;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ContragentListSelectModalBean extends ModalWindowHolderBean {
 
