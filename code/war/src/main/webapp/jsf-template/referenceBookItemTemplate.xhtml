@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+        >
+<h:head>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <title>
+        <ui:insert name="pageTitle">Документооборот ФНКЦ ДГОИ</ui:insert>
+    </title>
+    <ui:insert name="running_head"/>
+</h:head>
+<h:body id="main_body">
+    <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
+    <c:set var="isAdministrator" value="#{sessionManagement.isAdministrator()}" scope="session"/>
+    <c:set var="isRecorder" value="#{sessionManagement.isRecorder()}" scope="session"/>
+    <c:set var="isOfficeManager" value="#{sessionManagement.isOfficeManager()}" scope="session"/>
+    <c:set var="isRequestManager" value="#{sessionManagement.isRequestManager()}" scope="session"/>
+    <c:set var="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}" scope="session"/>
+    <c:set var="isOuter" value="#{sessionManagement.isOuter()}" scope="session"/>
+    <c:set var="isHr" value="#{sessionManagement.isHr()}" scope="session"/>
+    <c:set var="isFilling" value="#{sessionManagement.isFilling()}" scope="session"/>
+    <h:form>
+        <ui:insert name="header">
+            <div id="form_header">
+                <div class="menu">
+                    <ui:insert name="headerEditButton">
+                        <div class="defbutton">
+                            <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
+                            Кнопка для редактирования
+                        </div>
+                    </ui:insert>
+                    <ui:insert name="headerSaveButton">
+                        <div class="defbutton">
+                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                            Кнопка для Сохранения
+                        </div>
+                    </ui:insert>
+                    <ui:insert name="headerCancelButton">
+                        <div class="defbutton">
+                            <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
+                            Кнопка для Отмены
+                        </div>
+                    </ui:insert>
+                    <ui:insert name="headerDeleteButton">
+                        <div class="defbutton">
+                            <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
+                            Кнопка для Удаления
+                        </div>
+                    </ui:insert>
+                </div>
+            </div>
+        </ui:insert>
+        <ui:insert name="content">
+            <div id="header_content">
+                <div class="referenceBookName">
+                    <ui:insert name="contentReferenceBookName">
+                        <h:outputText value="Справочник &lt;Имя справочника&gt;"/>
+                    </ui:insert>
+                </div>
+                <div class="referenceBookItemName">
+                    <ui:insert name="contentItemName">
+                        <h:outputText value="Название открытой записи"/>
+                    </ui:insert>
+                </div>
+            </div>
+            <div class="main_content">
+                <ui:insert name="contentItemInfo">
+                    <h:outputText value="Таблица с информацией об открытой записи"/>
+                </ui:insert>
+            </div>
+        </ui:insert>
+    </h:form>
+</h:body>
+</html>
