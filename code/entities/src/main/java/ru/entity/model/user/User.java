@@ -1,6 +1,7 @@
 package ru.entity.model.user;
 
 import org.apache.commons.lang.StringUtils;
+import ru.entity.model.document.Nomenclature;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.util.ApplicationHelper;
 import ru.util.Descriptionable;
@@ -155,6 +156,10 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jobDepartment_id", nullable = true)
     private Department jobDepartment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="defaultNomeclature_id", nullable = true)
+    private Nomenclature defaultNomenclature;
 
     /**
      * *******************************************************************
@@ -467,6 +472,14 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
 
     public void setUNID(String UNID) {
         this.UNID = UNID;
+    }
+
+    public Nomenclature getDefaultNomenclature() {
+        return defaultNomenclature;
+    }
+
+    public void setDefaultNomenclature(Nomenclature defaultNomenclature) {
+        this.defaultNomenclature = defaultNomenclature;
     }
 
     //Collections *****************************

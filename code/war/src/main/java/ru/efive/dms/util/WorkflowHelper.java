@@ -175,12 +175,12 @@ public final class WorkflowHelper {
 
                 if (doc.getRegistrationNumber() == null || doc.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getController().getUNID());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                        in_number.append(in_nomenclature.getCategory()).append("-");
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                        in_number.append(in_nomenclature.getCode()).append("-");
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                         in_number.append("01-");
@@ -331,12 +331,12 @@ public final class WorkflowHelper {
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     final StringBuilder in_number = new StringBuilder();
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getController().getUNID());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                        in_number.append(in_nomenclature.getCategory()).append("-");
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                        in_number.append(in_nomenclature.getCode()).append("-");
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                         in_number.append("01-");
@@ -477,12 +477,12 @@ public final class WorkflowHelper {
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     StringBuffer in_number = new StringBuffer();
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getSigner().getUNID());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
-                        in_number.append(in_nomenclature.getCategory()).append("-");
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                        in_number.append(in_nomenclature.getCode()).append("-");
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                         in_number.append("01-");
@@ -509,7 +509,7 @@ public final class WorkflowHelper {
                         //Р/индекс/номер по порядку
                         in_number = new StringBuffer();
                         if (in_nomenclature != null) {
-                            in_number.append("Р/").append(in_nomenclature.getCategory()).append("/");
+                            in_number.append("Р/").append(in_nomenclature.getCode()).append("/");
                         } else {
                             in_number.append("Р/01/");
                         }
@@ -549,7 +549,7 @@ public final class WorkflowHelper {
                     } else if (in_form.equals("Служебная записка")) {
                         in_number = new StringBuffer();
                         if (in_nomenclature != null) {
-                            in_number.append("СЗ/" + in_nomenclature.getCategory() + "/");
+                            in_number.append("СЗ/" + in_nomenclature.getCode() + "/");
                         } else {
                             in_number.append("СЗ/01/");
                         }
@@ -719,11 +719,11 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
-                Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getSigner().getUNID());
+                Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
                 List<Role> in_roles = new ArrayList<Role>();
                 Role in_office;
                 if (in_nomenclature != null) {
-                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
                 } else {
                     in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                 }
@@ -847,14 +847,14 @@ public final class WorkflowHelper {
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUserUNID(doc.getSigner().getUNID());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
                     Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
                     List<Role> in_roles = new ArrayList<Role>();
                     in_roles.add(in_administrationRole);
 
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCategory()));
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                     }

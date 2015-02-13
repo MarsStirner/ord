@@ -14,11 +14,7 @@ import ru.util.ApplicationHelper;
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
 
@@ -88,7 +84,8 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
                     logger.trace("{}", task);
                 }
             }
-            final HashMap<Integer, DefaultTreeNode> taskMap = new HashMap<Integer, DefaultTreeNode>(documents.size());
+            //ORD-40 Так как мы работаем с сортированным списком - то перемешивать на основе хэша его не надо
+            final HashMap<Integer, DefaultTreeNode> taskMap = new LinkedHashMap<Integer, DefaultTreeNode>(documents.size());
             for (Task document : documents) {
                 taskMap.put(document.getId(), new DefaultTreeNode("task", document, null));
             }

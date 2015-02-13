@@ -18,6 +18,7 @@
         <div class="defbutton">
             <h:commandLink action="#{contragent.edit}" rendered="#{contragent.viewState}">
                 <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
+                <f:ajax execute="@form" render="@form" />
                 Редактировать
             </h:commandLink>
         </div>
@@ -27,6 +28,7 @@
             <h:commandLink action="#{contragent.save}"
                            rendered="#{contragent.editState or contragent.createState}">
                 <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                <f:ajax execute="@form" render="@form" />
                 Сохранить
             </h:commandLink>
         </div>
@@ -36,6 +38,7 @@
             <h:commandLink action="#{contragent.cancel}"
                            rendered="#{contragent.editState or contragent.createState}">
                 <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
+                <f:ajax execute="@form" render="@form" />
                 Отменить
             </h:commandLink>
         </div>
@@ -150,8 +153,8 @@
                         <td>
                             <p:selectOneMenu id="contragentTypeSelectOneMenu" value="#{contragent.document.type}"
                                              converter="ContragentTypeConverter">
-                                <f:selectItems value="#{dictionaryManagement.contragentTypes}" var="contragentType"
-                                               itemLabel="#{contragentType.value}"/>
+                                <f:selectItems value="#{dictionaryManagement.contragentTypes}" var="contragentType_row"
+                                               itemLabel="#{contragentType_row.value}"/>
                             </p:selectOneMenu>
                         </td>
                     </tr>

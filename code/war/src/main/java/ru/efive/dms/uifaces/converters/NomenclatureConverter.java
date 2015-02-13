@@ -19,13 +19,12 @@ public class NomenclatureConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement =
-                    (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
+            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
             List<Nomenclature> list = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findDocuments();
             if (list != null) {
                 for (Nomenclature e : list) {
-                    if (e.getDescription().equals(value)) {
+                    if (e.getCode().equals(value)) {
                         return e;
                     }
                     ;
@@ -43,7 +42,7 @@ public class NomenclatureConverter implements Converter {
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return ((Nomenclature) value).getDescription();
+        return ((Nomenclature) value).getCode();
     }
 
 }

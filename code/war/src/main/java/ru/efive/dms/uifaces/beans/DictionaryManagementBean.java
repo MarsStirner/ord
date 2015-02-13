@@ -9,6 +9,7 @@ import ru.entity.model.crm.ContragentType;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.GroupType;
 import ru.entity.model.user.RbContactInfoType;
+import ru.entity.model.user.User;
 import ru.entity.model.user.UserAccessLevel;
 
 import javax.enterprise.context.SessionScoped;
@@ -181,15 +182,8 @@ public class DictionaryManagementBean implements Serializable {
         return result.get(0);
     }
 
-    public Nomenclature getNomenclatureByUserUNID(String unid) {
-        List<Nomenclature> result = new ArrayList<Nomenclature>();
-        try {
-            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findByDescription(unid);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return (result == null || result.isEmpty()) ? null : result.get(0);
+    public Nomenclature getNomenclatureByUser(User user) {
+        return sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).getUserDefaultNomenclature(user);
     }
 
     public List<RbContactInfoType> getContactTypes() {
