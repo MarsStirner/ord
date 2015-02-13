@@ -6,7 +6,6 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui"
         >
 
@@ -44,7 +43,7 @@
     <ui:define name="headerDeleteButton">
         <div class="defbutton">
             <h:commandLink action="#{contragentType.delete()}"
-                           rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
+                           rendered="#{(isAdministrator or isOfficeManager or isRequestManager) and contragentType.viewState}">
                 <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
                 Удалить
                 <f:param name="docAction" value="delete"/>
@@ -136,20 +135,23 @@
                 </table>
             </div>
         </h:panelGroup>
-        <h:panelGroup rendered="#{contragentType.editState or contragentType.viewState}">
-            <c:choose>
-                <c:when test="#{contragentType.contragentList.isEmpty()}">
-                    <h:outputText value="Контрагентов с таким типом не найдено"/>
-                </c:when>
-                <c:otherwise>
-                    <h:outputText value="Контрагентов с таким типом: #{contragentType.contragentList.size()}"/>
-                    <ui:repeat value="#{contragentType.contragentList}" var="contragent_row">
-                        <div><h:outputText value="#{contragent_row.shortName}"/></div>
-                    </ui:repeat>
-                </c:otherwise>
-            </c:choose>
+        <ui:remove>
+            <!--Спсиок не нужен. пока-что....-->
+            <!--<h:panelGroup rendered="#{contragentType.editState or contragentType.viewState}">-->
+                <!--<c:choose>-->
+                    <!--<c:when test="#{contragentType.contragentList.isEmpty()}">-->
+                        <!--<h:outputText value="Контрагентов с таким типом не найдено"/>-->
+                    <!--</c:when>-->
+                    <!--<c:otherwise>-->
+                        <!--<h:outputText value="Контрагентов с таким типом: #{contragentType.contragentList.size()}"/>-->
+                        <!--<ui:repeat value="#{contragentType.contragentList}" var="contragent_row">-->
+                            <!--<div><h:outputText value="#{contragent_row.shortName}"/></div>-->
+                        <!--</ui:repeat>-->
+                    <!--</c:otherwise>-->
+                <!--</c:choose>-->
 
-        </h:panelGroup>
+            <!--</h:panelGroup>-->
+        </ui:remove>
     </ui:define>
 
 
