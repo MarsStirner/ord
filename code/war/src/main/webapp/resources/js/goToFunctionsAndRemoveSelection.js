@@ -95,6 +95,12 @@ function goToContragent(id) {
         window.open('/component/contragent/contragent.xhtml?docId=' + id,'_blank');
     }
 }
+//К типам контрагентов
+function goToContragentType(id){
+    if (id != 0) {
+        window.open('/component/contragent/contragentType.xhtml?docId=' + id,'_blank');
+    }
+}
 // К группам
 function goToGroup(id) {
     if (id != 0) {

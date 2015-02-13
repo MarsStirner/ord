@@ -16,17 +16,17 @@ import javax.persistence.Table;
 @Table(name="rbContragentType")
 public class ContragentType extends DictionaryEntity {
 
-    @Column(name = "category", unique = true)
-    private String category;
+    @Column(name = "code", unique = true)
+    private String code;
 
     public ContragentType() {
     }
 
-    public String getCategory() {
-        return category;
+    public String getCode() {
+        return code;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

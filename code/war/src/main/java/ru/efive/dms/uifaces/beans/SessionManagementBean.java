@@ -68,7 +68,7 @@ public class SessionManagementBean implements Serializable {
 
     @Inject
     @Named("indexManagement")
-    private transient IndexManagementBean indexManagement;
+    private IndexManagementBean indexManagement;
 
     private static final long serialVersionUID = -916300301346029630L;
 

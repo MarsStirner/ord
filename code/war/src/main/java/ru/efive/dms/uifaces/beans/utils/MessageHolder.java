@@ -27,7 +27,8 @@ public class MessageHolder {
     public static final FacesMessage MSG_EXECUTOR_NOT_SET = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо выбрать Ответственного исполнителя", "");
 
 
-    public static final FacesMessage MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить контрагента, так как к нему привязаны документы..", "");
+    public static final FacesMessage MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить контрагента, так как к нему привязаны документы.", "");
+    public static final FacesMessage MSG_RB_CONTRAGENT_TYPE_IS_USED_BY_SOME_CONTRAGENTS = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно удалить тип контрагента, так как к нему привязаны контрагенты.", "");
     //Сообщения об ошибках авторизации
     public final static FacesMessage MSG_AUTH_FIRED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
     public final static FacesMessage MSG_AUTH_DELETED = new FacesMessage(FacesMessage.SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");

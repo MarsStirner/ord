@@ -7,6 +7,7 @@ import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.entity.model.crm.Contragent;
+import ru.entity.model.crm.ContragentType;
 
 import java.util.List;
 
@@ -43,5 +44,12 @@ public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
             criteria.add(disjunction);
         }
         return criteria;
+    }
+
+    public List<Contragent> getByType(ContragentType type) {
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Contragent.class);
+        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        detachedCriteria.add(Restrictions.eq("type", type));
+        return  getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 }

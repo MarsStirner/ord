@@ -102,7 +102,14 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
                 addOrder(in_searchCriteria, orderBy, orderAsc);
             }
         }
-        return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
+        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
+        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
+        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
+        if (ids.isEmpty()) {
+            return new ArrayList<OutgoingDocument>(0);
+        }
+        //Ищем только по этим ключам с упорядочиванием
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, ords, orderBy, orderAsc));
     }
 
     public long countAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {

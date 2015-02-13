@@ -77,6 +77,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
                 contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(contragent);
                 if (contragent == null) {
                     FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+                    return false;
                 }
                 return true;
             } else {
