@@ -2,7 +2,7 @@ package ru.efive.dms.uifaces.beans.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.ApplicationContext;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.LDAPImportService;
@@ -88,7 +88,7 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
     }
 
     public void importLDAPUsers() {
-        ClassPathXmlApplicationContext context = sessionManagement.getIndexManagement().getContext();
+        ApplicationContext context = sessionManagement.getIndexManagement().getContext();
         LDAPImportService service = (LDAPImportService) context.getBean("ldapImportService");
         service.run();
     }

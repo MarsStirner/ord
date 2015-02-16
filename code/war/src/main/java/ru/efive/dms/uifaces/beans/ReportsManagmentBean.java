@@ -8,7 +8,7 @@ import net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.ApplicationContext;
 import ru.entity.model.document.ReportTemplate;
 
 import javax.enterprise.context.RequestScoped;
@@ -44,7 +44,7 @@ public class ReportsManagmentBean {
     public void previewSqlReportByRequestParams() throws IOException, ClassNotFoundException, SQLException {
         Map<String, String> requestProperties = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String in_reportName = requestProperties.get("reportName");
-        ClassPathXmlApplicationContext context = indexManagement.getContext();
+        ApplicationContext context = indexManagement.getContext();
         DataSource dataSource = (DataSource) context.getBean("dataSource");
         Connection conn = dataSource.getConnection();
 
@@ -82,10 +82,6 @@ public class ReportsManagmentBean {
             exporter.setParameter(JRExporterParameter.JASPER_PRINT, print);
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, response.getOutputStream());
             exporter.exportReport();
-            if (true) {
-                return;
-            }
-            ;
 
         } catch (JRException e) {
             e.printStackTrace();
@@ -98,7 +94,7 @@ public class ReportsManagmentBean {
         System.out.println("Starting");
         Connection conn = null;
         try {
-            ClassPathXmlApplicationContext context = indexManagement.getContext();
+            ApplicationContext context = indexManagement.getContext();
             DataSource dataSource = (DataSource) context.getBean("dataSource");
             System.out.println("Data source is " + dataSource);
             conn = dataSource.getConnection();
@@ -229,7 +225,7 @@ public class ReportsManagmentBean {
         Map<String, String> requestProperties = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         String in_reportName = requestProperties.get("reportName");
         String in_printerName = requestProperties.get("printerName");
-        ClassPathXmlApplicationContext context = indexManagement.getContext(); //new ClassPathXmlApplicationContext("applicationContext.xml");
+        ApplicationContext context = indexManagement.getContext(); //new ClassPathXmlApplicationContext("applicationContext.xml");
         DataSource dataSource = (DataSource) context.getBean("dataSource");
         Connection conn = dataSource.getConnection();
 
@@ -332,7 +328,7 @@ public class ReportsManagmentBean {
     }
 
     public void sqlPrintReportByRequestParams(ReportTemplate reportTemplate) throws IOException, ClassNotFoundException, SQLException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        ClassPathXmlApplicationContext context = indexManagement.getContext();
+        ApplicationContext context = indexManagement.getContext();
         Map<String, Object> requestProperties = reportTemplate.getProperties();
         String in_reportName = requestProperties.get("reportName").toString();
         DataSource dataSource = (DataSource) context.getBean("dataSource");

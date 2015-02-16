@@ -257,10 +257,6 @@
                                                 styleClass="#{currentView eq '/component/admin/nomenclatures.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                                     <p:menuitem value="О программе" url="/component/version.xhtml" icon="leafIcon"
                                                 styleClass="#{currentView eq '/component/version.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                                    <p:menuitem value="Настройки базы данных"
-                                                url="/component/admin/system_properties.xhtml"
-                                                icon="leafIcon"
-                                                styleClass="#{currentView eq '/component/admin/system_properties.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                                 </p:submenu>
                             </c:if>
                             <c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">

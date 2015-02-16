@@ -3,7 +3,7 @@ package ru.efive.dms.uifaces.beans;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.ApplicationContext;
 import ru.efive.dao.InitializationException;
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.AlfrescoNode;
@@ -281,7 +281,7 @@ public class SessionManagementBean implements Serializable {
     }
 
     public synchronized <M extends AlfrescoNode> AlfrescoDAO<M> getAlfrescoDAO(Class<M> class_) {
-        ClassPathXmlApplicationContext context = indexManagement.getContext();
+        ApplicationContext context = indexManagement.getContext();
         AlfrescoDAO alfrescoDao = (AlfrescoDAO) context.getBean("alfrescoDao");
         try {
             alfrescoDao.initClass(class_);
