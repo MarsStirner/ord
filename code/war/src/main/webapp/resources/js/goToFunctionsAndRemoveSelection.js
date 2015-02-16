@@ -71,7 +71,15 @@ function goToOfficeKeepingFile(id) {
     if (id != 0) {
         window.open('/component/office/office_keeping_file.xhtml?docId=' + id,'_blank');
     }
-}// К бумажным копиям документа
+}
+// К номенклатурам дел
+function goToNomenclature(id) {
+    if (id != 0) {
+        window.open('/component/admin/nomenclature.xhtml?docId=' + id,'_blank');
+    }
+}
+
+// К бумажным копиям документа
 function goToPaperCopyDocument(id) {
     if (id != "") {
         window.open('/component/paper_copy_document.xhtml?docId=' + id,'_blank');

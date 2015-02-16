@@ -3,6 +3,7 @@ package ru.efive.dms.dao;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import ru.efive.sql.dao.DictionaryDAOHibernate;
 import ru.entity.model.document.Nomenclature;
@@ -35,5 +36,12 @@ public class NomenclatureDAOImpl extends DictionaryDAOHibernate<Nomenclature> {
         detachedCriteria.setFetchMode("defaultNomenclature", FetchMode.JOIN);
         final List list = getHibernateTemplate().findByCriteria(detachedCriteria);
         return ((User)list.get(0)).getDefaultNomenclature();
+    }
+
+    public List<Nomenclature> findDocuments(){
+        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
+        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+        detachedCriteria.addOrder(Order.asc("code"));
+        return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 }

@@ -11,7 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.NOMENCLATURE_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
 
 @FacesConverter("NomenclatureConverter")
 public class NomenclatureConverter implements Converter {
@@ -21,7 +21,7 @@ public class NomenclatureConverter implements Converter {
         try {
             SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            List<Nomenclature> list = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findDocuments();
+            List<Nomenclature> list = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).findDocuments();
             if (list != null) {
                 for (Nomenclature e : list) {
                     if (e.getCode().equals(value)) {
@@ -42,7 +42,7 @@ public class NomenclatureConverter implements Converter {
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return ((Nomenclature) value).getCode();
+        return value != null ? ((Nomenclature) value).getCode() : "";
     }
 
 }

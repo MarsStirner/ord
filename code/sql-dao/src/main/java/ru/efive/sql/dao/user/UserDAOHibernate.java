@@ -613,6 +613,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         detachedCriteria.setFetchMode("jobPosition", FetchMode.JOIN);
         detachedCriteria.setFetchMode("jobDepartment", FetchMode.JOIN);
         detachedCriteria.setFetchMode("contacts", FetchMode.JOIN);
+        detachedCriteria.setFetchMode("defaultNomenclature", FetchMode.JOIN);
         detachedCriteria.add(Restrictions.eq("id", id));
         final List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria);
         if(!users.isEmpty()){

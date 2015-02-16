@@ -6,6 +6,7 @@ public final class ApplicationDAONames {
     public static final String ROLE_DAO = "roleDao";
     public static final String RB_CONTACT_TYPE_DAO = "contactTypeDao";
     public static final String RB_CONTRAGENT_TYPE_DAO = "contragentTypeDao";
+    public static final String RB_NOMENCLATURE_DAO = "nomenclatureDao";
     public static final String POSITION_DAO = "positionDao";
     public static final String DEPARTMENT_DAO = "departmentDao";
     public static final String CONTRAGENT_DAO = "contragentDao";
@@ -20,7 +21,6 @@ public final class ApplicationDAONames {
     public static final String REQUEST_DOCUMENT_FORM_DAO = "requestDao";
     public static final String INTERNAL_DOCUMENT_FORM_DAO = "internalDao";
     public static final String TASK_DAO = "taskDao";
-    public static final String NOMENCLATURE_DAO = "nomenclatureDao";
     public static final String DELIVERY_TYPE_DAO = "deliveryTypeDao";
     public static final String SENDER_TYPE_DAO = "senderTypeDao";
     public static final String REGION_DAO = "regionDao";

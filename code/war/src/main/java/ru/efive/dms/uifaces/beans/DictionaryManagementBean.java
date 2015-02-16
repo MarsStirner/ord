@@ -165,17 +165,23 @@ public class DictionaryManagementBean implements Serializable {
     public List<Nomenclature> getNomenclature() {
         List<Nomenclature> result = new ArrayList<Nomenclature>();
         try {
-            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findDocuments();
+            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).findDocuments();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
 
+    public List<Nomenclature> getNomenclatureWithEmptyValue(){
+        List<Nomenclature> result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).findDocuments();
+        result.add(0, null);
+        return result;
+    }
+
     public Nomenclature getNomenclatureByUserLogin(String login) {
         List<Nomenclature> result = new ArrayList<Nomenclature>();
         try {
-            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).findByDescription(login);
+            result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).findByDescription(login);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -183,7 +189,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public Nomenclature getNomenclatureByUser(User user) {
-        return sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, NOMENCLATURE_DAO).getUserDefaultNomenclature(user);
+        return sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).getUserDefaultNomenclature(user);
     }
 
     public List<RbContactInfoType> getContactTypes() {
