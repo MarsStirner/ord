@@ -1,4 +1,4 @@
-package ru.efive.dms.util;
+package ru.efive.dms.util.ldap;
 
 /**
  * @author Nastya Peshekhonova

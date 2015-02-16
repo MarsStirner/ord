@@ -1,4 +1,4 @@
-package ru.efive.dms.util;
+package ru.efive.dms.util.ldap;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;

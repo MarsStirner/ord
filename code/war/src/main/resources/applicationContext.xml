@@ -8,17 +8,17 @@
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
-                <value>file:/usr/local/ord/configuration/mail.properties</value>
-                <value>file:/usr/local/ord/configuration/ldap.properties</value>
-                <!--<value>classpath:mail.properties</value>-->
-                <!--<value>classpath:ldap.properties</value>-->
+                <!--<value>file:/usr/local/ord/configuration/mail.properties</value>-->
+                <!--<value>file:/usr/local/ord/configuration/ldap.properties</value>-->
+                <value>classpath:mail.properties</value>
+                <value>classpath:ldap.properties</value>
                 <value>classpath:alfresco.properties</value>
                 <value>classpath:workflow.properties</value>
             </list>
         </property>
     </bean>
 
-    <bean id="ldapImportService" class="ru.efive.dms.util.LDAPImportService">
+    <bean id="ldapImportService" class="ru.efive.dms.util.ldap.LDAPImportService">
         <property name="ldapAddressValue" value="${ldap.address.value}"/>
         <property name="loginValue" value="${ldap.login.value}"/>
         <property name="passwordValue" value="${ldap.password.value}"/>

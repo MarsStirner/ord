@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.util.ApplicationDAONames;
-import ru.efive.dms.util.LDAPImportService;
+import ru.efive.dms.util.ldap.LDAPImportService;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
