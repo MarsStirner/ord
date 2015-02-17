@@ -166,10 +166,10 @@
                             value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
                 </h:selectOneMenu>
                 <h:outputText value="#{in_doc.document.form.value}"
-                              rendered="#{in_doc.viewState or not(in_doc.editState and statusId_In_REG_OR_CHECK_OR_ON_EXEC)}"/>
+                              rendered="#{in_doc.viewState or (in_doc.editState and not statusId_In_REG_OR_CHECK_OR_ON_EXEC)}"/>
                 <h:outputText value=" № #{in_doc.document.registrationNumber} от "
                               rendered="#{in_doc.editState or in_doc.viewState}"/>
-                <h:outputText value="#{in_doc.document.registrationDate}">
+                <h:outputText value="#{in_doc.document.registrationDate}" rendered="#{in_doc.editState or in_doc.viewState}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </div>
