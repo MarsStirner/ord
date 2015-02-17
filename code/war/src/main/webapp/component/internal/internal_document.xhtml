@@ -155,33 +155,25 @@
         <p:growl id="viewFactMessage" for="viewFact"/>
 
         <div id="header_content">
-            <h:panelGroup
-                    rendered="#{(internal_doc.editState and internal_doc.document.registrationNumber==null) or internal_doc.createState }">
-                <div class="name">
-                    Внутренний документ
-                    <h:selectOneMenu id="form" value="#{internal_doc.document.form}"
-                                     converter="InternalDocumentFormConverter"
-                                     immediate="true">
-                        <f:selectItems
-                                value="#{dictionaryManagement.getDocumentFormsByCategory('Внутренние документы')}"/>
-                    </h:selectOneMenu>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup
-                    rendered="#{(internal_doc.editState and internal_doc.document.registrationNumber!=null) or internal_doc.viewState}">
-                <div class="name">
-                    Внутренний документ
-                    <h:outputText value="#{internal_doc.document.form.value}"/>
-                    №
-                    <h:outputText value="#{internal_doc.document.registrationNumber}"/>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
+            <div class="name">
+                Внутренний документ
+                <!--Давать выбирать вид документа на основании его статусов "Проект документа\На рассмотрении\Согласование\Зарегистрирован\На исполнении"-->
+                <ui:param name="statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN_OR_ON_EXEC"
+                          value="#{internal_doc.document.documentStatus.id eq 1 or internal_doc.document.documentStatus.id eq 2 or internal_doc.document.documentStatus.id eq 3 or internal_doc.document.documentStatus.id eq 5 or internal_doc.document.documentStatus.id eq 80}"/>
+                <h:selectOneMenu id="form" value="#{internal_doc.document.form}"
+                                 converter="InternalDocumentFormConverter"
+                                 immediate="true"
+                                 rendered="#{internal_doc.createState or (internal_doc.editState and statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN_OR_ON_EXEC)}">
+                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Внутренние документы')}"/>
+                </h:selectOneMenu>
+                <h:outputText value="#{internal_doc.document.form}"
+                              rendered="#{internal_doc.viewState or (internal_doc.editState and not statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN_OR_ON_EXEC)}"/>
+                <h:outputText value="№ #{internal_doc.document.registrationNumber}"
+                              rendered="#{internal_doc.editState or internal_doc.viewState}"/>
+            </div>
+            <div class="title">
+                <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
+            </div>
             <h:panelGroup rendered="#{internal_doc.notFoundState}">
                 <div class="name">404 - Документ не найден</div>
             </h:panelGroup>
