@@ -168,7 +168,7 @@
                 </h:selectOneMenu>
                 <h:outputText value="#{internal_doc.document.form}"
                               rendered="#{internal_doc.viewState or (internal_doc.editState and not statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN_OR_ON_EXEC)}"/>
-                <h:outputText value="№ #{internal_doc.document.registrationNumber}"
+                <h:outputText value=" № #{internal_doc.document.registrationNumber}"
                               rendered="#{internal_doc.editState or internal_doc.viewState}"/>
             </div>
             <div class="title">

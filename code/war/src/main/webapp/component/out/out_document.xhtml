@@ -170,7 +170,7 @@
                 </h:selectOneMenu>
                 <h:outputText value="#{out_doc.document.form}"
                               rendered="#{out_doc.viewState or (out_doc.editState and not statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN)}"/>
-                <h:outputText value="№ #{out_doc.document.registrationNumber}" rendered="#{out_doc.editState or in_doc.viewState}"/>
+                <h:outputText value="№ #{out_doc.document.registrationNumber}" rendered="#{out_doc.editState or out_doc.viewState}"/>
             </div>
             <div class="title">
                 <h:outputText value="#{out_doc.document.getDocumentStatus().getName()}"/>

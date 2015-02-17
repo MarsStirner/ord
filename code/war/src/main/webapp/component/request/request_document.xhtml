@@ -145,36 +145,28 @@
         <p:growl id="viewFactMessage" for="viewFact"/>
 
         <div id="header_content">
-            <h:panelGroup
-                    rendered="#{(request_doc.editState and request_doc.document.registrationNumber==null) or request_doc.createState }">
-                <div class="name">
-                    Обращение
-                    <h:selectOneMenu id="form" value="#{request_doc.document.form}"
-                                     converter="RequestDocumentFormConverter"
-                                     immediate="true">
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Обращения граждан')}"/>
-                    </h:selectOneMenu>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{request_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup
-                    rendered="#{(request_doc.editState and request_doc.document.registrationNumber!=null) or request_doc.viewState}">
-                <div class="name">
-                    Обращение
-                    <h:outputText value="#{request_doc.document.form}" converter="RequestDocumentFormConverter"/>
-                    №
-                    <h:outputText value="#{request_doc.document.registrationNumber}"/>
-                    от
-                    <h:outputText value="#{request_doc.document.deliveryDate}">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                    </h:outputText>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{request_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
+            <div class="name">
+                Обращение
+                <!--Давать выбирать вид документа на основании его статусов "На регистрации\Зарегистрирован\На исполнении"-->
+                <ui:param name="statusId_In_ON_REG_OR_CKECKIN_OR_ON_EXEC"
+                          value="#{request_doc.document.documentStatus.id eq 1 or request_doc.document.documentStatus.id eq 2 or request_doc.document.documentStatus.id eq 80}"/>
+                <h:selectOneMenu id="form" value="#{request_doc.document.form}"
+                                 converter="RequestDocumentFormConverter"
+                                 immediate="true"
+                                 rendered="#{request_doc.createState or (request_doc.editState and statusId_In_ON_REG_OR_CKECKIN_OR_ON_EXEC)}">
+                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Обращения граждан')}"/>
+                </h:selectOneMenu>
+                <h:outputText value="#{request_doc.document.form}"
+                              rendered="#{request_doc.viewState or (request_doc.editState and not statusId_In_ON_REG_OR_CKECKIN_OR_ON_EXEC)}"/>
+                <h:outputText value=" № #{request_doc.document.registrationNumber} от "
+                              rendered="#{request_doc.editState or request_doc.viewState}"/>
+                <h:outputText value="#{request_doc.document.deliveryDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </div>
+            <div class="title">
+                <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
+            </div>
             <h:panelGroup rendered="#{request_doc.notFoundState}">
                 <div class="name">
                     404 - Документ не найден
