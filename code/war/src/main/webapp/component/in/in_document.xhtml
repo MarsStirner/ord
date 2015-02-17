@@ -153,34 +153,30 @@
         <p:growl id="viewFactMessage" for="viewFact"/>
 
         <div id="header_content">
-            <h:panelGroup rendered="#{in_doc.createState}">
-                <div class="name">
-                    Входящий документ
-                    <h:selectOneMenu id="form" value="#{in_doc.document.form}"
-                                     converter="IncomingDocumentFormConverter" immediate="true">
-                        <f:selectItems
-                                value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
-                    </h:selectOneMenu>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{in_doc.editState or in_doc.viewState}">
-                <div class="name">
-                    Входящий документ
-                    <h:outputText value="#{in_doc.document.form.value}"/>
-                    №
-                    <h:outputText value="#{in_doc.document.registrationNumber}"/>
-                    от
-                    <h:outputText value="#{in_doc.document.deliveryDate}">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                    </h:outputText>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
+            <div class="name">
+                Входящий документ
+                <!--Давать выбирать увид документа на основании его статусов "На регистрации\Зарегистрирован\На исполнении"-->
+                <ui:param name="statusId_In_REG_OR_CHECK_OR_ON_EXEC"
+                          value="#{in_doc.document.documentStatus.id eq 1 or in_doc.document.documentStatus.id eq 2 or in_doc.document.documentStatus.id eq 80}"/>
+
+                <h:selectOneMenu id="form" value="#{in_doc.document.form}"
+                                 rendered="#{in_doc.createState or (in_doc.editState and statusId_In_REG_OR_CHECK_OR_ON_EXEC)}"
+                                 converter="IncomingDocumentFormConverter" immediate="true">
+                    <f:selectItems
+                            value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
+                </h:selectOneMenu>
+                <h:outputText value="#{in_doc.document.form.value}"
+                              rendered="#{in_doc.viewState or not(in_doc.editState and statusId_In_REG_OR_CHECK_OR_ON_EXEC)}"/>
+                <h:outputText value=" № #{in_doc.document.registrationNumber} от "
+                              rendered="#{in_doc.editState or in_doc.viewState}"/>
+                <h:outputText value="#{in_doc.document.registrationDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </div>
+            <div class="title">
+                <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
+            </div>
+
             <c:choose>
                 <c:when test="#{in_doc.notFoundState}">
                     <h:panelGroup>
