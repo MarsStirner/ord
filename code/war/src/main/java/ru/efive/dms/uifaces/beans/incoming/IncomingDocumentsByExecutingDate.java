@@ -11,7 +11,8 @@ import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.DateFormatSymbols;
@@ -23,8 +24,8 @@ import java.util.List;
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
-@Named("in_documents_by_executing_date")
-@SessionScoped
+@ManagedBean(name = "in_documents_by_executing_date")
+@ViewScoped
 public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolderBean<IncomingDocument> {
 
     private DateFormatSymbols dateFormatSymbols;
@@ -55,11 +56,13 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
             if (showExpiredFlag) {
                 //для просроченных
                 resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                        .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+                        .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate
+                                .toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
             } else {
                 // все
                 resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                        .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+                        .findControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, pagination
+                                .getOffset(), pagination.getPageSize(), "executionDate", false);
             }
         } else {
             //С замещением
@@ -68,15 +71,18 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
             if (showExpiredFlag) {
                 //для просроченных
                 resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                        .findControlledDocumentsByUserList(filter, userList, false, currentDate.toDate(), pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+                        .findControlledDocumentsByUserList(filter, userList, false, currentDate.toDate(), pagination
+                                .getOffset(), pagination.getPageSize(), "executionDate", false);
             } else {
                 // все
                 resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                        .findControlledDocumentsByUserList(filter, userList, false, pagination.getOffset(), pagination.getPageSize(), "executionDate", false);
+                        .findControlledDocumentsByUserList(filter, userList, false, pagination.getOffset(),
+                                pagination.getPageSize(), "executionDate", false);
             }
         }
-        if(!resultList.isEmpty()){
-            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnIncomingDocumentList(resultList, sessionManagement.getLoggedUser());
+        if (!resultList.isEmpty()) {
+            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnIncomingDocumentList
+                    (resultList, sessionManagement.getLoggedUser());
         }
         return resultList;
     }
@@ -85,30 +91,23 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
         if (!sessionManagement.isSubstitution()) {
             // Без замещения
             if (showExpiredFlag) {
-                return new Long(
-                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                                .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate.toDate())
-                ).intValue();
+                return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, currentDate
+                                .toDate())).intValue();
             } else {
-                return new Long(
-                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                                .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false)
-                ).intValue();
+                return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .countControlledDocumentsByUser(filter, sessionManagement.getLoggedUser(), false)).intValue();
             }
         } else {
             //С замещением
             final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
             userList.add(sessionManagement.getLoggedUser());
             if (showExpiredFlag) {
-                return new Long(
-                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                                .countControlledDocumentsByUserList(filter, userList, false, currentDate.toDate())
-                ).intValue();
+                return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .countControlledDocumentsByUserList(filter, userList, false, currentDate.toDate())).intValue();
             } else {
-                return new Long(
-                        sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                                .countControlledDocumentsByUserList(filter, userList, false)
-                ).intValue();
+                return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                        .countControlledDocumentsByUserList(filter, userList, false)).intValue();
             }
         }
 
@@ -129,25 +128,13 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
             IncomingDocument current = iterator.next();
             String[] date = year_month_day.format(current.getExecutionDate()).split(",");
             if (!lastYear.equals(date[0])) {
-                lastYearNode = new DefaultTreeNode(
-                        "year",
-                        new IncomingDocumentNode(
-                                IncomingDocumentNode.DOC_TYPE.YEAR,
-                                date[0]
-                        ),
-                        rootElement
-                );
+                lastYearNode = new DefaultTreeNode("year", new IncomingDocumentNode(IncomingDocumentNode.DOC_TYPE
+                        .YEAR, date[0]), rootElement);
                 lastYear = date[0];
             }
             if (!lastMonth.equals(date[1])) {
-                lastMonthNode = new DefaultTreeNode(
-                        "month",
-                        new IncomingDocumentNode(
-                                IncomingDocumentNode.DOC_TYPE.MONTH,
-                                dateFormatSymbols.getMonths()[Integer.valueOf(date[1]) - 1]
-                        ),
-                        lastYearNode
-                );
+                lastMonthNode = new DefaultTreeNode("month", new IncomingDocumentNode(IncomingDocumentNode.DOC_TYPE
+                        .MONTH, dateFormatSymbols.getMonths()[Integer.valueOf(date[1]) - 1]), lastYearNode);
                 lastMonth = date[1];
             }
             new DefaultTreeNode("document", new IncomingDocumentNode(current, date[2]), lastMonthNode);

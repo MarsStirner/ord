@@ -9,7 +9,8 @@ import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.user.User;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -20,8 +21,8 @@ import java.util.Map;
 import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
-@Named("outDocumentsOnConsideration")
-@SessionScoped
+@ManagedBean(name = "outDocumentsOnConsideration")
+@ViewScoped
 public class OutgoingDocumentsOnConsiderationHolder extends AbstractDocumentListHolderBean<OutgoingDocument> {
 
     private static final long serialVersionUID = 8535420074467871583L;
@@ -42,15 +43,15 @@ public class OutgoingDocumentsOnConsiderationHolder extends AbstractDocumentList
     protected int getTotalCount() {
         if (!sessionManagement.isSubstitution()) {
             //Без замещения
-            return new Long(
-                    sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
-                            .countAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false)
-            ).intValue();
-        }  else {
+            return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                    .countAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false))
+                    .intValue();
+        } else {
             // С замещением
             final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
             userList.add(sessionManagement.getLoggedUser());
-            return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).countAllDocumentsByUserList(filters, filter, userList, false, false)).intValue();
+            return new Long(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                    .countAllDocumentsByUserList(filters, filter, userList, false, false)).intValue();
         }
     }
 
@@ -60,16 +61,20 @@ public class OutgoingDocumentsOnConsiderationHolder extends AbstractDocumentList
         if (!sessionManagement.isSubstitution()) {
             // Без замещения
             resultList = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
-                    .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+                    .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false,
+                            getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(),
+                            getSorting().isAsc());
         } else {
             // С замещением
             final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
             userList.add(sessionManagement.getLoggedUser());
             resultList = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
-                    .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+                    .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(),
+                            getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
         }
-        if(!resultList.isEmpty()){
-            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnOutgoingDocumentList(resultList, sessionManagement.getLoggedUser());
+        if (!resultList.isEmpty()) {
+            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnOutgoingDocumentList
+                    (resultList, sessionManagement.getLoggedUser());
         }
         return resultList;
     }

@@ -6,7 +6,8 @@ import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.OutgoingDocument;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -14,8 +15,8 @@ import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 
-@Named("personal_out_documents")
-@SessionScoped
+@ManagedBean(name="personal_out_documents")
+@ViewScoped
 public class PersonalOutgoingDocumentListHolder extends AbstractDocumentListHolderBean<OutgoingDocument> {
 
     @Override

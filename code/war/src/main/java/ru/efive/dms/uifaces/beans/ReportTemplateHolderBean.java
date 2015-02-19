@@ -8,8 +8,9 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.Region;
 import ru.entity.model.document.ReportTemplate;
 
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -18,8 +19,8 @@ import java.util.Date;
 
 import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
 
-@Named("reportTemplate")
-@ConversationScoped
+@ManagedBean(name="reportTemplate")
+@ViewScoped
 public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate, Integer> implements Serializable {
 
     @Override
@@ -147,7 +148,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
         }
 
         public boolean selected(Region value) {
-            return this.value != null ? this.value.getValue().equals(value.getValue()) : false;
+            return this.value != null && this.value.getValue().equals(value.getValue());
         }
 
         public void select(Region value) {

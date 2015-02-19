@@ -100,7 +100,7 @@
                 <h:commandButton action="#{in_documents_by_executing_date.changePageOffset(0)}"
                                  styleClass="searchbutton"
                                  accesskey="13">
-                    <f:ajax render="main_data_tbl main_data_paging"/>
+                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
                 </h:commandButton>
             </div>
             <div class="wrap_main" id="table_wrap">

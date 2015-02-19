@@ -6,7 +6,8 @@ import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.IncomingDocument;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -14,8 +15,8 @@ import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 
-@Named("personal_in_documents")
-@SessionScoped
+@ManagedBean(name = "personal_in_documents")
+@ViewScoped
 public class PersonalIncomingDocumentListHolder extends AbstractDocumentListHolderBean<IncomingDocument> {
 
     @Override
@@ -31,8 +32,8 @@ public class PersonalIncomingDocumentListHolder extends AbstractDocumentListHold
     @Override
     protected int getTotalCount() {
         try {
-            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
-                    sessionManagement.getLoggedUser(), false)).intValue();
+            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                    .countDraftDocumentsByAuthor(sessionManagement.getLoggedUser(), false)).intValue();
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -42,8 +43,10 @@ public class PersonalIncomingDocumentListHolder extends AbstractDocumentListHold
     @Override
     protected List<IncomingDocument> loadDocuments() {
         try {
-            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
-                    false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                    .findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(), false, getPagination()
+                            .getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting()
+                            .isAsc());
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<IncomingDocument>(0);

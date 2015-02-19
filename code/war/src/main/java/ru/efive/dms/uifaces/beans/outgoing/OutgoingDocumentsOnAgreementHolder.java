@@ -9,7 +9,8 @@ import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.user.User;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -20,8 +21,8 @@ import java.util.Map;
 import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
-@Named("outDocumentsOnAgreement")
-@SessionScoped
+@ManagedBean(name="outDocumentsOnAgreement")
+@ViewScoped
 public class OutgoingDocumentsOnAgreementHolder extends AbstractDocumentListHolderBean<OutgoingDocument> {
     private static final long serialVersionUID = 8535420074467871583L;
     @Override

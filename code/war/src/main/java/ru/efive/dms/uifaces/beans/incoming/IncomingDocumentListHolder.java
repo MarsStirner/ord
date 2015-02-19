@@ -8,7 +8,8 @@ import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.user.User;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 
-@Named("in_documents")
-@SessionScoped
+@ManagedBean(name="in_documents")
+@ViewScoped
 public class IncomingDocumentListHolder extends AbstractDocumentListHolderBean<IncomingDocument> {
     private String filter;
 

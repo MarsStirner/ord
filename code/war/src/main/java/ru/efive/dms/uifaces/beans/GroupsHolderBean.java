@@ -1,13 +1,13 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.sql.dao.user.GroupDAOHibernate;
+import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.Group;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.util.ApplicationHelper;
 
-import javax.enterprise.context.SessionScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Collections;
@@ -16,8 +16,8 @@ import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
-@Named("groups")
-@SessionScoped
+@ManagedBean(name="groups")
+@ViewScoped
 public class GroupsHolderBean extends AbstractDocumentListHolderBean<Group> {
 
     private static final long serialVersionUID = -3555790276506205190L;
@@ -29,8 +29,7 @@ public class GroupsHolderBean extends AbstractDocumentListHolderBean<Group> {
 
     @Override
     protected int getTotalCount() {
-        int result = new Long(sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).countAllDocuments(filter, false)).intValue();
-        return result;
+        return new Long(sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).countAllDocuments(filter, false)).intValue();
     }
 
     @Override
