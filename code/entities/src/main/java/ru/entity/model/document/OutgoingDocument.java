@@ -164,11 +164,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
      */
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    //@JoinTable(name="dms_outgoings_cause_in_doc",
-    //joinColumns = @JoinColumn(name="FLIGHT_ID"),
-    //inverseJoinColumns = @JoinColumn(name="COMP_ID")
-    //)
-    //@IndexColumn(name="INDEX_COL")
     private IncomingDocument causeIncomingDocument;
 
     /**
