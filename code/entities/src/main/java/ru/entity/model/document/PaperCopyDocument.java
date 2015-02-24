@@ -31,8 +31,8 @@ public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData
     /**
      * Автор документа
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_paper_copy_documents_authors")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id")
     private User author;
 
     /**
@@ -209,7 +209,7 @@ public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData
     /**
      * Материал
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "material_id")
     private DocumentForm material;
 

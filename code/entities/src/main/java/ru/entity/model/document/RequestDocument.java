@@ -46,8 +46,8 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     /**
      * Автор документа
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_request_documents_authors")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id")
     private User author;
 
     /**

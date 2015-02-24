@@ -8,8 +8,8 @@ import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
 
-import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -18,8 +18,8 @@ import java.util.HashSet;
 
 import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
-@Named("group")
-@ConversationScoped
+@ManagedBean(name="group")
+@ViewScoped
 public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> implements Serializable {
 
     @Override

@@ -108,8 +108,8 @@ public class Group extends DictionaryEntity {
     /**
      * Автор документа
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "group_authors")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "author_id")
     private User author;
 
     private static final long serialVersionUID = 6366882739076305392L;
