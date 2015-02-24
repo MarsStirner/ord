@@ -8,7 +8,6 @@ import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
-import ru.util.ApplicationHelper;
 
 import javax.persistence.*;
 import java.util.*;
@@ -144,15 +143,7 @@ public class OfficeKeepingVolume extends IdentifiedEntity implements ProcessedDa
         if (history != null) {
             result.addAll(history);
         }
-        Collections.sort(result, new Comparator<HistoryEntry>() {
-            public int compare(HistoryEntry o1, HistoryEntry o2) {
-                Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c1.setTime(o1.getCreated());
-                Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c2.setTime(o2.getCreated());
-                return c1.compareTo(c2);
-            }
-        });
+        Collections.sort(result);
         return result;
     }
 
@@ -272,7 +263,6 @@ public class OfficeKeepingVolume extends IdentifiedEntity implements ProcessedDa
 
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinColumn(name = "parentFileId", nullable = false)
-    //@JoinTable(name="dms_office_keeping_volumes_by_files")
     private OfficeKeepingFile parentFile;
 
     /**

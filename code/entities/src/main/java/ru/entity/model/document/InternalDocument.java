@@ -11,7 +11,6 @@ import ru.entity.model.user.UserAccessLevel;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
-import ru.util.ApplicationHelper;
 
 import javax.persistence.CascadeType;
 import javax.persistence.*;
@@ -488,15 +487,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         if (history != null) {
             result.addAll(history);
         }
-        Collections.sort(result, new Comparator<HistoryEntry>() {
-            public int compare(HistoryEntry o1, HistoryEntry o2) {
-                Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c1.setTime(o1.getCreated());
-                Calendar c2 = Calendar.getInstance(ApplicationHelper.getLocale());
-                c2.setTime(o2.getCreated());
-                return c1.compareTo(c2);
-            }
-        });
+        Collections.sort(result);
         return result;
     }
 
