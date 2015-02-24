@@ -18,11 +18,7 @@ public class Region extends DictionaryEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof Region)) {
-            return false;
-        }
-        return getValue().equals(((Region) obj).getValue());
+        return obj != null && obj instanceof Region && getValue().equals(((Region) obj).getValue());
     }
 
     @Override

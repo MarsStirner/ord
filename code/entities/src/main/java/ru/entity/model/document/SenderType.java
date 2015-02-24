@@ -18,11 +18,7 @@ public class SenderType extends DictionaryEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof DictionaryEntity)) {
-            return false;
-        }
-        return getValue().equals(((DictionaryEntity) obj).getValue());
+        return obj != null && obj instanceof SenderType && getValue().equals(((SenderType) obj).getValue());
     }
 
     @Override

@@ -1,14 +1,14 @@
 package ru.entity.model.document;
 
-import java.util.Date;
-
-import javax.persistence.*;
-
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
 
+import javax.persistence.*;
+import java.util.Date;
+
 /**
  * Входящий документ
+ * Да ну на... Серьезно? Вот я лох думал что это записная книжка...(
  *
  * @author Alexey Vagizov
  */

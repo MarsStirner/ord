@@ -37,7 +37,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Вид документа
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     private DocumentForm form;
 
     /**

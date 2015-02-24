@@ -44,7 +44,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * Автор поручения
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
@@ -111,7 +111,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * Исполнитель поручения
      */
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "dms_tasks_executors",
             joinColumns = {@JoinColumn(name = "id")},
             inverseJoinColumns = {@JoinColumn(name = "executor_id")}
@@ -127,14 +127,14 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * Вид задачи
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "exerciseType_id")
     private DocumentForm exerciseType;
 
     /**
      * Вид документа
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "form_id")
     private DocumentForm form;
 
