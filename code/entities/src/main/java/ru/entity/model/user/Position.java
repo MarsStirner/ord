@@ -13,7 +13,7 @@ import javax.persistence.Table;
  * Description: Справочник должностей<br>
  */
 @Entity
-@Table(name = "dms_system_user_position")
+@Table(name = "rbPosition")
 public class Position extends DictionaryEntity {
     @Override
     public String toString(){

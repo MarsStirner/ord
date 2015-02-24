@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "user_access_levels")
+@Table(name = "rbUserAccessLevel")
 public class UserAccessLevel extends DictionaryEntity {
 
     private static final long serialVersionUID = 2190610453672852499L;

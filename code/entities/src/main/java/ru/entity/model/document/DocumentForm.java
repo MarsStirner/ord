@@ -6,8 +6,10 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "documents_forms")
-public class DocumentForm extends DictionaryEntity {
+@Table(name = "rbDocumentForms")
+/**
+ * Виды документов
+ */ public class DocumentForm extends DictionaryEntity {
 
     @Override
     public String toString() {
@@ -54,11 +56,11 @@ public class DocumentForm extends DictionaryEntity {
     //TODO а вот давай забацай и везде используй
     /**
      * Роли-читатели
-
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinTable(name = "mmRolesToDocumentForms")
-    private Set<Role> roleReaders;
+     *
+     * @ManyToMany
+     * @JoinTable(name = "mmRolesToDocumentForms")
+     * private Set<Role> roleReaders;
      */
+
     private static final long serialVersionUID = 7284023695000048879L;
 }

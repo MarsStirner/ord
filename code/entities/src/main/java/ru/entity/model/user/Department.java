@@ -14,7 +14,7 @@ import javax.persistence.Table;
  * Description: Справочник подразделений <br>
  */
 @Entity
-@Table(name = "dms_system_user_department")
+@Table(name = "rbDepartment")
 public class Department extends DictionaryEntity {
     @Override
     public String toString(){
