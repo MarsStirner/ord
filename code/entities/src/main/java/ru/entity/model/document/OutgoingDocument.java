@@ -135,8 +135,8 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Автор
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_authors")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="author_id")
     private User author;
 
     /**
