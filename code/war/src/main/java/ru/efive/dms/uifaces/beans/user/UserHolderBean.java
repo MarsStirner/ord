@@ -109,7 +109,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         final List<RbContactInfoType> typeList = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
         if (!typeList.isEmpty()) {
             newContact.setType(typeList.get(0));
-            return getDocument().getContacts().add(newContact);
+            return getDocument().addToContacts(newContact);
         }
         return false;
     }

@@ -19,7 +19,6 @@ public enum DocumentType {
     OfficeKeepingFile("OfficeKeepingFile", getOfficeKeepingFileStatuses(), getOfficeKeepingFileActions()),
     OfficeKeepingVolume("OfficeKeepingVolume", getOfficeKeepingVolumeStatuses(), getOfficeKeepingVolumeActions()),
     RequestDocument("RequestDocument", getRequestDocumentStatuses(), getRequestDocumentActions()),
-    Numerator("Numerator", getNumeratorStatuses(), getNumeratorActions()),
     ScanCopyDocument("ScanCopyDocument", getScanCopyDocumentStatuses(), getScanCopyDocumentActions());
 
     private final String name;
@@ -240,14 +239,6 @@ public enum DocumentType {
                 DocumentAction.RETURN_TO_ARCHIVE,
                 DocumentAction.REDIRECT_IN_OTHER_ARCHIVE_135,
                 DocumentAction.CREATE);
-    }
-
-    private static List<DocumentStatus> getNumeratorStatuses() {
-        return Arrays.asList(DocumentStatus.NEW);
-    }
-
-    private static List<DocumentAction> getNumeratorActions() {
-        return new ArrayList<DocumentAction>();
     }
 
     private static List<DocumentStatus> getScanCopyDocumentStatuses() {

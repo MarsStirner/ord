@@ -4,15 +4,12 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.*;
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.entity.model.enums.PermissionType;
-import ru.entity.model.user.Permission;
 import ru.entity.model.user.PersonContact;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserDAO {
 
@@ -202,54 +199,6 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         }
     }
 
-    private DetachedCriteria createCriteriaForRoles(String name, Set<Permission> permissions) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Role.class);
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        if (StringUtils.isNotEmpty(name)) {
-            detachedCriteria.add(Restrictions.eq("name", name));
-        }
-
-        if ((permissions != null) && !permissions.isEmpty()) {
-            detachedCriteria.add(Restrictions.eq("permissions", permissions));
-        }
-
-        return detachedCriteria;
-    }
-
-    /**
-     * Находит роли пользователей
-     *
-     * @param name        название роли
-     * @param permissions разрешенные действия
-     * @param offset      номер начального элемента списка
-     * @param count       количество возвращаемых элементов
-     * @param orderBy     поле для сортировки списка
-     * @param asc         указывает направление сортировки. true = по возрастанию
-     * @return коллекция ролей
-     */
-    public List<Role> findRoles(String name, Set<Permission> permissions, int offset, int count, String orderBy, boolean asc) {
-        DetachedCriteria detachedCriteria = createCriteriaForRoles(name, permissions);
-
-        if (StringUtils.isNotEmpty(orderBy)) {
-            detachedCriteria.addOrder(asc ? Order.asc(orderBy) : Order.desc(orderBy));
-        }
-
-        return getHibernateTemplate().findByCriteria(detachedCriteria, offset, count);
-    }
-
-    /**
-     * Считает количество ролей пользователей, зарегистрированных в системе
-     *
-     * @param name        название роли
-     * @param permissions разрешенные действия
-     * @return количество ролей пользователей, зарегистрированных в системе
-     */
-    public long countRoles(String name, Set<Permission> permissions) {
-        DetachedCriteria detachedCriteria = createCriteriaForRoles(name, permissions);
-        return getCountOf(detachedCriteria);
-    }
-
     private DetachedCriteria createCriteriaForUsers(String login, String firstname, String lastname, String middlename, String email, Role role, boolean showDeleted) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
@@ -328,54 +277,6 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
             detachedCriteria.add(Restrictions.or(Restrictions.isNull("deleted"), Restrictions.eq("deleted", false)));
 
         return detachedCriteria;
-    }
-
-    /**
-     * Есть ли у пользователя user право permissionType
-     *
-     * @param user           пользователь
-     * @param permissionType право
-     * @return true - есть; false - доступ запрещен
-     */
-    @Override
-    public boolean hasPermission(User user, PermissionType permissionType) {
-        if ((user != null) && (permissionType != null)) {
-            DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Role.class);
-            detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-            detachedCriteria.createCriteria("users", DetachedCriteria.LEFT_JOIN).add(Restrictions.idEq(user.getId()));
-
-            detachedCriteria.createCriteria("permissions", DetachedCriteria.LEFT_JOIN).add(Restrictions.eq("permissionType", permissionType));
-
-            List<Role> roles = getHibernateTemplate().findByCriteria(detachedCriteria, -1, 1);
-            return ((roles != null) && !roles.isEmpty());
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Находит права(разрешения) в справочнике прав по типу и по названию
-     *
-     * @param name           название
-     * @param permissionType тип права доступа
-     * @return право доступа
-     */
-    @Override
-    public List<Permission> getPermission(String name, PermissionType permissionType) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Permission.class);
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        if ((StringUtils.isNotEmpty(name)) || (permissionType != null)) {
-            if (StringUtils.isNotEmpty(name)) {
-                detachedCriteria.add(Restrictions.eq("name", name));
-            }
-            if ((permissionType != null)) {
-                detachedCriteria.add(Restrictions.eq("permissionType", permissionType));
-            }
-        } else {
-            return null;
-        }
-        return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
 

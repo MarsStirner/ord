@@ -1,95 +1,123 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
-import ru.external.ProcessedData;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.Date;
 
 /**
  * Нумератор
  *
- * @author Alexey Vagizov
+ * @author Alexey Vagizov, Egor Upatov
  */
 @Entity
-@Table(name = "dms_numerators")
-public class Numerator extends IdentifiedEntity implements ProcessedData {
-    private static final long serialVersionUID = -5522881582616193416L;
-
-    /**
-     * Тип документа (Входящий|Исходящий|Внутренний|Обращение граждан)
-     */
-    @JoinColumn(name = "documentTypeKey")
-    private String documentTypeKey;
-
-    /**
-     * Автор документа
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_numerators_authors")
-    private User author;
-
+@Table(name = "rbNumerators")
+public class Numerator extends IdentifiedEntity {
     /**
      * Дата создания документа
      */
+    @Column(name="creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date creationDate;
-
     /**
-     * Индекс нумератора
+     * Автор документа
      */
-    private int numeratorIndex;
-
-    /**
-     * Формат номера
-     */
-    @Column(columnDefinition = "text")
-    private String numberFormat;
-
-    /**
-     * Краткое описание
-     */
-    @Column(columnDefinition = "text")
-    private String shortDescription;
-
-    /**
-     * Текущий статус документа в процессе
-     */
-    @Column(name = "status_id")
-    private int statusId;
-
-    /**
-     * Том дела
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_numerators_by_office_keeping_volume_id")
-    private OfficeKeepingVolume officeKeepingVolume;
-
-    /**
-     * История
-     */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @JoinTable(name = "dms_numerators_history",
-            joinColumns = {@JoinColumn(name = "document_id")},
-            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private Set<HistoryEntry> history;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
     /**
      * Удален ли документ
      */
-    private boolean deleted;
+    @Column(name="deleted")
+    private Boolean deleted;
 
-    @Transient
-    private String WFResultDescription;
+    //TODO справочник типов документов
+    /**
+     * Тип документа (Входящий|Исходящий|Внутренний|Обращение граждан)
+    @ManyToOne(fetch = FetchType.EAGER)
+     @JoinColumn(name = "documentType_id")
+     */
+    @Column(name = "documentType_id")
+    private Integer documentType;
+
+
+    /**
+     * Номенклатура документа (NULL - wildcard)
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="nomenclature_id")
+    private Nomenclature nomenclature;
+
+    /**
+     * Текущее значение счетчика
+     */
+    @Column(name="value")
+    private Integer value;
+
+    /**
+     * Краткое описание
+     */
+    @Column(name = "shortDescription", columnDefinition = "text")
+    private String shortDescription;
+
+    /**
+     * Дата начала действия нумератора
+     */
+    @Column(name="startDate")
+    @Temporal(value = TemporalType.DATE)
+    private Date startDate;
+
+    /**
+     * Дата окончания действия нумератора
+     */
+    @Column(name="endDate")
+    @Temporal(value = TemporalType.DATE)
+    private Date endDate;
+
+    public Numerator() {
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Nomenclature getNomenclature() {
+        return nomenclature;
+    }
+
+    public void setNomenclature(Nomenclature nomenclature) {
+        this.nomenclature = nomenclature;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
+
+    public void setValue(Integer value) {
+        this.value = value;
+    }
 
     public String getShortDescription() {
         return shortDescription;
@@ -99,122 +127,27 @@ public class Numerator extends IdentifiedEntity implements ProcessedData {
         this.shortDescription = shortDescription;
     }
 
-    @Transient
-    public DocumentType getDocumentType() {
-        return DocumentType.Numerator;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    @Transient
-    public DocumentStatus getDocumentStatus() {
-        return DocumentType.getStatus(getDocumentType().getName(), this.statusId);
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    @Transient
-    public void setDocumentStatus(DocumentStatus status) {
-        this.statusId = status.getId();
+    public Date getEndDate() {
+        return endDate;
     }
 
-    @Override
-    public String getBeanName() {
-        return "numerator";
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
+    public Integer getDocumentType() {
+        return documentType;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public String getWFResultDescription() {
-        return this.WFResultDescription;
-    }
-
-    public void setWFResultDescription(String WFResultDescription) {
-        this.WFResultDescription = WFResultDescription;
-    }
-
-    public void setExecutionStringDate(String date) {
-        this.date = date;
-    }
-
-    public String getExecutionStringDate() {
-        return this.date;
-    }
-
-    @Transient
-    private String date;
-
-    @Transient
-    public String getUniqueId() {
-        return getId() == 0 ? "" : "numerator_" + getId();
-    }
-
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
-    public Set<HistoryEntry> getHistory() {
-        return history;
-    }
-
-    @Transient
-    public List<HistoryEntry> getHistoryList() {
-        List<HistoryEntry> result = new ArrayList<HistoryEntry>();
-        if (history != null) {
-            result.addAll(history);
-        }
-        Collections.sort(result);
-        return result;
-    }
-
-
-    public void setOfficeKeepingVolume(OfficeKeepingVolume officeKeepingVolume) {
-        this.officeKeepingVolume = officeKeepingVolume;
-    }
-
-    public OfficeKeepingVolume getOfficeKeepingVolume() {
-        return officeKeepingVolume;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setDocumentTypeKey(String documentTypeKey) {
-        this.documentTypeKey = documentTypeKey;
-    }
-
-    public String getDocumentTypeKey() {
-        return documentTypeKey;
-    }
-
-    public void setNumeratorIndex(int numeratorIndex) {
-        this.numeratorIndex = numeratorIndex;
-    }
-
-    public int getNumeratorIndex() {
-        return numeratorIndex;
-    }
-
-    public void setNumberFormat(String numberFormat) {
-        this.numberFormat = numberFormat;
-    }
-
-    public String getNumberFormat() {
-        return numberFormat;
+    public void setDocumentType(Integer documentType) {
+        this.documentType = documentType;
     }
 }

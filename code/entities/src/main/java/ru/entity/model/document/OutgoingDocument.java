@@ -1,7 +1,6 @@
 package ru.entity.model.document;
 
 import org.hibernate.annotations.*;
-import ru.entity.model.crm.Contact;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -59,12 +58,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date registrationDate;
 
-    /**
-     * Адресаты - контакты
-     */
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_outgoing_documents_contacts")
-    private Set<Contact> recipientPersons;
+
 
 
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
@@ -339,14 +333,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
 
     public Date getRegistrationDate() {
         return this.registrationDate;
-    }
-
-    public void setRecipientPersons(Set<Contact> recipientPersons) {
-        this.recipientPersons = recipientPersons;
-    }
-
-    public Set<Contact> getRecipientPersons() {
-        return recipientPersons;
     }
 
     public void setRecipientContragents(List<Contragent> recipientContragents) {

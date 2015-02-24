@@ -93,7 +93,7 @@ public class SessionManagementBean implements Serializable {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(AUTH_KEY) != null;
     }
 
-    public synchronized void logIn() {
+    public void logIn() {
         if (userName != null && !userName.isEmpty() && password != null && !password.isEmpty()) {
             try {
                 LOGGER.info("Try to login [{}][{}]", userName, password);
@@ -103,8 +103,10 @@ public class SessionManagementBean implements Serializable {
                     LOGGER.debug("By userName[{}] founded User[{}]", userName, loggedUser.getId());
                     //Проверка удаленности\уволенности сотрудника
                     if (loggedUser.isDeleted() || loggedUser.isFired()) {
-                        LOGGER.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" : "FIRED");
-                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_AUTH_DELETED : MSG_AUTH_FIRED);
+                        LOGGER.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" :
+                                "FIRED");
+                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_AUTH_DELETED
+                                : MSG_AUTH_FIRED);
                         loggedUser = null;
                         return;
                     }
@@ -129,7 +131,8 @@ public class SessionManagementBean implements Serializable {
                         loggedUser = dao.save(loggedUser);
                     }
                     //Поиск замещений, где найденный пользователь является заместителем
-                    final List<Substitution> substitutions = getDAO(SubstitutionDaoImpl.class, SUBSTITUTION_DAO).findCurrentDocumentsOnSubstitution(loggedUser, false);
+                    final List<Substitution> substitutions = getDAO(SubstitutionDaoImpl.class, SUBSTITUTION_DAO)
+                            .findCurrentDocumentsOnSubstitution(loggedUser, false);
                     substitutedUsers = new ArrayList<User>(substitutions.size());
                     if (!substitutions.isEmpty()) {
                         LOGGER.debug("Current user is substitution for: {} users", substitutions.size());
@@ -139,9 +142,11 @@ public class SessionManagementBean implements Serializable {
                             }
                             if (substitution.getPerson() != null) {
                                 substitutedUsers.add(substitution.getPerson());
-                                LOGGER.debug("[{}] {}", substitution.getPerson().getId(), substitution.getPerson().getDescription());
+                                LOGGER.debug("[{}] {}", substitution.getPerson().getId(), substitution.getPerson()
+                                        .getDescription());
                             } else {
-                                LOGGER.warn("Substitution[{}] has NULL Person! DATA={}", substitution.getId(), substitution.toString());
+                                LOGGER.warn("Substitution[{}] has NULL Person! DATA={}", substitution.getId(),
+                                        substitution.toString());
                             }
                         }
                     }
@@ -160,9 +165,11 @@ public class SessionManagementBean implements Serializable {
 
                     RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO);
                     reqDocumentsCount = docDao.countAllDocumentsByUser((String) null, loggedUser, false, false);
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser
+                            .getLogin());
 
-                    Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);
+                    Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get
+                            (BACK_URL);
                     if (requestUrl != null) {
                         backUrl = requestUrl.toString();
                         LOGGER.info("back url={}", backUrl);
@@ -183,10 +190,11 @@ public class SessionManagementBean implements Serializable {
 
     /**
      * Установка флагов ролей для группы пользователей
-     * @param userList  группа пользователей
+     *
+     * @param userList группа пользователей
      */
     private void addRoleFlags(List<User> userList) {
-        if(!hasAllRoles()) {
+        if (!hasAllRoles()) {
             for (User user : userList) {
                 if (!isAdministrator) {
                     isAdministrator = user.isAdministrator();
@@ -209,11 +217,11 @@ public class SessionManagementBean implements Serializable {
                 if (!isHr) {
                     isHr = user.isHr();
                 }
-                if(!isFilling){
+                if (!isFilling) {
                     isFilling = user.isFilling();
                 }
                 //Все роли есть - поиск дальше не нужен
-                if(hasAllRoles()){
+                if (hasAllRoles()) {
                     break;
                 }
             }
@@ -222,14 +230,17 @@ public class SessionManagementBean implements Serializable {
 
     /**
      * Выставлены все роли?
+     *
      * @return true - все, false - есть невыставленные роли
      */
     private boolean hasAllRoles() {
-        return isAdministrator && isRecorder && isOfficeManager && isRequestManager && isEmployer && isOuter && isHr && isFilling;
+        return isAdministrator && isRecorder && isOfficeManager && isRequestManager && isEmployer && isOuter && isHr
+                && isFilling;
     }
 
     /**
      * Установка флагов ролей
+     *
      * @param loggedUser пользователь для которого устанавливаются флаги ролей
      */
     private void setRoleFlags(User loggedUser) {
@@ -265,7 +276,7 @@ public class SessionManagementBean implements Serializable {
         if (isHr) {
             LOGGER.debug("HR");
         }
-        if(isFilling){
+        if (isFilling) {
             LOGGER.debug("FILLING");
         }
     }
@@ -280,7 +291,7 @@ public class SessionManagementBean implements Serializable {
         return (T) indexManagement.getContext().getBean(beanName);
     }
 
-    public synchronized <M extends AlfrescoNode> AlfrescoDAO<M> getAlfrescoDAO(Class<M> class_) {
+    public <M extends AlfrescoNode> AlfrescoDAO<M> getAlfrescoDAO(Class<M> class_) {
         ApplicationContext context = indexManagement.getContext();
         AlfrescoDAO alfrescoDao = (AlfrescoDAO) context.getBean("alfrescoDao");
         try {
@@ -293,16 +304,18 @@ public class SessionManagementBean implements Serializable {
         return alfrescoDao;
     }
 
-    public synchronized String logOut() {
+    public String logOut() {
         loggedUser = null;
         userName = null;
         password = null;
 
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        ExternalContext externalContext = facesContext.getExternalContext();
-        externalContext.invalidateSession();
+        if (facesContext != null) {
+            ExternalContext externalContext = facesContext.getExternalContext();
+            externalContext.invalidateSession();
+        }
         LOGGER.info("LOGOUT");
-        return "/index?faces-redirect=true";//
+        return "/index?faces-redirect=true";
     }
 
     @PreDestroy
@@ -319,7 +332,8 @@ public class SessionManagementBean implements Serializable {
             return loggedUser;
         } else {
             LOGGER.warn("GET USER WITHOUT Session");
-            return getDAO(UserDAOHibernate.class, USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser.getPassword());
+            return getDAO(UserDAOHibernate.class, USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser
+                    .getPassword());
         }
     }
 

@@ -487,7 +487,7 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
     public List<PersonContact> getContacts() {return contacts;}
 
     public String getContact(final String type){
-        final StringBuilder sb = new StringBuilder("");
+        final StringBuilder sb = new StringBuilder();
         for(PersonContact contact : contacts){
             if(contact.getType().getCode().equalsIgnoreCase(type)){
                 if(sb.length() != 0){

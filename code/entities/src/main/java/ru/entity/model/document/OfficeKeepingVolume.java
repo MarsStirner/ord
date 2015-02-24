@@ -1,19 +1,8 @@
 package ru.entity.model.document;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.*;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
@@ -21,10 +10,12 @@ import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 import ru.util.ApplicationHelper;
 
+import javax.persistence.*;
+import java.util.*;
+
 /**
- * Дело
+ * Тома дел
  *
- * @author Alexey Vagizov
  */
 @Entity
 @Table(name = "dms_office_keeping_volumes")

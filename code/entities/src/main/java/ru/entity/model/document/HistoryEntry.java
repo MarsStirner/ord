@@ -188,7 +188,7 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getFromStatusName() {
-        return fromStatusId == 0 ? "" : DocumentType.getStatusName(getDocType(), fromStatusId);
+        return fromStatusId == null || fromStatusId == 0 ? "" : DocumentType.getStatusName(getDocType(), fromStatusId);
     }
 
 

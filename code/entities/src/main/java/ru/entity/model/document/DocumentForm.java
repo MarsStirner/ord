@@ -1,21 +1,9 @@
 package ru.entity.model.document;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
 import ru.entity.model.mapped.DictionaryEntity;
-import ru.entity.model.user.Role;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "documents_forms")
@@ -28,11 +16,7 @@ public class DocumentForm extends DictionaryEntity {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof DocumentForm)) {
-            return false;
-        }
-        return getValue().equals(((DocumentForm) obj).getValue());
+        return obj != null && obj instanceof DocumentForm && getValue().equals(((DocumentForm) obj).getValue());
     }
 
     @Override
@@ -56,23 +40,6 @@ public class DocumentForm extends DictionaryEntity {
         return description;
     }
 
-    public Set<Role> getRoleReaders() {
-        return roleReaders;
-    }
-
-    public void setRoleReaders(Set<Role> roleReaders) {
-        this.roleReaders = roleReaders;
-    }
-
-    @Transient
-    public List<Role> getRoleReadersList() {
-        List<Role> result = new ArrayList<Role>();
-        if (roleReaders != null) {
-            result.addAll(roleReaders);
-        }
-        return result;
-    }
-
     /**
      * Категория видов документа
      */
@@ -84,13 +51,14 @@ public class DocumentForm extends DictionaryEntity {
     private String description;
 
 
+    //TODO а вот давай забацай и везде используй
     /**
      * Роли-читатели
-     */
+
     @ManyToMany(cascade = CascadeType.REFRESH)
     @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinTable(name = "dms_documet_forms_role_readers")
+    @JoinTable(name = "mmRolesToDocumentForms")
     private Set<Role> roleReaders;
-
+     */
     private static final long serialVersionUID = 7284023695000048879L;
 }

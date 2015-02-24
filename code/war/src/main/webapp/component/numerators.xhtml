@@ -3,10 +3,10 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -15,133 +15,119 @@
     </ui:define>
 
     <ui:define name="header_top">
-        <div id="viewtitle">Нумераторы по номеру</div>
+        <div id="viewtitle">Справочник нумераторов</div>
     </ui:define>
 
     <ui:define name="header_buttons">
-        <div class="defbuttons">
-            <div class="top">
-                <h:commandLink styleClass="top_link" onclick="return false;">
-                    <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                    Новый нумератор
-                </h:commandLink>
-
-                <div class="sub">
-                    <div class="item">
-                        <h:outputLink value="/component/numerator.xhtml"
-                                      target="_blank">
-                            Входящий
-                            <f:param name="docAction" value="create"/>
-                            <f:param name="docType" value="incoming"/>
-                        </h:outputLink>
-                    </div>
-                    <div class="item">
-                        <h:outputLink value="/component/numerator.xhtml"
-                                      target="_blank">
-                            Исходящий
-                            <f:param name="docAction" value="create"/>
-                            <f:param name="docType" value="outgoing"/>
-                        </h:outputLink>
-                    </div>
-                    <div class="item">
-                        <h:outputLink value="/component/numerator.xhtml"
-                                      target="_blank">
-                            Внутренний
-                            <f:param name="docAction" value="create"/>
-                            <f:param name="docType" value="internal"/>
-                        </h:outputLink>
-                    </div>
-                    <div class="item">
-                        <h:outputLink value="/component/numerator.xhtml"
-                                      target="_blank">
-                            Обращение граждан
-                            <f:param name="docAction" value="create"/>
-                            <f:param name="docType" value="request"/>
-                        </h:outputLink>
-                    </div>
-                </div>
-            </div>
+        <div class="defbutton">
+            <h:outputLink value="/component/numerator.xhtml"  target="_blank">
+                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
+                Новый документ
+                <f:param name="docAction" value="create"/>
+            </h:outputLink>
         </div>
         <div class="defbutton">
             <h:commandLink action="#{numerators.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl main_data_paging"
+                        onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
 
-
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                        style="width:100%;" value="#{numerators.documents}" var="row"
-                                        id="main_data_tbl">
-                            <e5ui:row ondblclick="goToNumerator('#{row.id}');"/>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink
-                                            action="#{numerators.sort('numeratorIndex')}">
-                                        Индекс
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.numeratorIndex}"/> </b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink
-                                            action="#{numerators.sort('numberFormat')}">
-                                        Формат номера
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <b><h:outputText value="#{row.numberFormat}"/> </b>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{numerators.sort('creationDate')}">
-                                        Дата создания
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.creationDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Краткое содержание</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{numerators}"
-                                              style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector
-                                documentListHolder="#{numerators}"
-                                style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
+        <div id="main_table">
+            <div class="wrap_main" id="table_wrap">
+                <div class="inner" id="table_inner">
+                    <p:dataTable id="main_data_tbl" value="#{numerators.documents}" var="row"
+                                 widgetVar="numeratorsTableVar">
+                        <p:column style="display:none;">
+                            <h:outputText value="#{row.id}"/>
+                        </p:column>
+                        <p:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{numerators.sort('creationDate')}">
+                                    Дата создания
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.creationDate}">
+                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{numerators.sort('author.lastName')}">
+                                    Автор
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.author}" converter="PersonConverter"/>
+                        </p:column>
+                        <p:column style="min-width:5em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{numerators.sort('documentType')}">
+                                    Тип документа
+                                    <f:ajax render="main_data_tbl"/>
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.documentType}"/>
+                        </p:column>
+                        <p:column style="min-width:12em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{numerators.sort('nomenclature.code')}">
+                                    Номенклатура
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.nomenclature}" converter="NomenclatureConverter"/>
+                        </p:column>
+                        <p:column style="min-width:12em">
+                            <f:facet name="header">
+                                <h:commandLink action="#{numerators.sort('value')}">
+                                    Текущий номер
+                                </h:commandLink>
+                            </f:facet>
+                            <h:outputText value="#{row.value}"/>
+                        </p:column>
+                    </p:dataTable>
                 </div>
             </div>
-        </e5ui:formPart>
+            <div id="table_paging">
+                <h:panelGroup id="main_data_paging">
+                    <e5ui-comp:tablePager documentListHolder="#{numerators}" style="display:inline;"/>
+                    <e5ui-comp:tablePageSizeSelector
+                            documentListHolder="#{numerators}"
+                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
+                </h:panelGroup>
+            </div>
+            <script type="text/javascript">
+                function addRowHandlers() {
+                    console.log("refresh table row onclick handlers");
+                    var table = document.getElementById(PrimeFaces.widgets.numeratorsTableVar.id);
+                    var tbody = table.getElementsByTagName("tbody")[0];
+                    for (var i = 0; i &lt; tbody.rows.length; i++) {
+                        var currentRow = tbody.rows[i];
+                        var createClickHandler = function (row) {
+                            return function () {
+                                goToNumerator(row.firstChild.textContent);
+                            };
+                        };
+                        currentRow.className = currentRow.className.replace('ui-state-highlight', '');
+                        currentRow.ondblclick = createClickHandler(currentRow);
+                    }
+                }
+                window.onload = addRowHandlers;
+            </script>
+        </div>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false">
+            Пожалуйста, подождите...
+        </p:dialog>
+
 
     </ui:define>
 
