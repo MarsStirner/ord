@@ -1,10 +1,12 @@
 package ru.efive.dms.uifaces.converters;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.DocumentForm;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -15,26 +17,25 @@ import static ru.efive.dms.util.ApplicationDAONames.DOCUMENT_FORM_DAO;
 
 @FacesConverter("DocumentFormConverter")
 public class DocumentFormConverter implements Converter {
+    private static final Logger LOGGER = LoggerFactory.getLogger("CONVERTER");
 
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Object result = null;
         try {
-            SessionManagementBean sessionManagement =
-                    (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
-                            SessionManagementBean.class);
-            List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByValue(value);
-            if (list.size() > 0) {
-                result = list.get(0);
+            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context,
+                    "#{sessionManagement}", SessionManagementBean.class);
+            List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class,
+                    DOCUMENT_FORM_DAO).findByValue(value);
+            if (!list.isEmpty()) {
+                return list.get(0);
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
-                System.out.println("Не найден вид документа");
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CONVERTER_ERROR);
+                LOGGER.error("DOCUMENT_FORM: Не найден вид документа \'{}\'", value);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("DOCUMENT_FORM", e);
         }
 
-        return result;
+        return null;
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {

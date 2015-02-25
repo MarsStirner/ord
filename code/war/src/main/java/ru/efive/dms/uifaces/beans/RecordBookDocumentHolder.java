@@ -1,5 +1,6 @@
 package ru.efive.dms.uifaces.beans;
 
+import org.apache.commons.lang.StringUtils;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.RecordBookDocumentDAOImpl;
@@ -10,7 +11,6 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.RecordBookDocument;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -128,8 +128,8 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
     protected boolean validateHolder() {
         boolean result = true;
         FacesContext context = FacesContext.getCurrentInstance();
-        if (getDocument().getShortDescription() == null || getDocument().getShortDescription().equals("")) {
-            context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Необходимо заполнить Краткое содержание", ""));
+        if (StringUtils.isEmpty(getDocument().getShortDescription())) {
+            context.addMessage(null, MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
 
@@ -157,9 +157,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
                 }
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при вложении файла.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
             e.printStackTrace();
         }
     }

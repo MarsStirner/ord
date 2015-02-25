@@ -13,13 +13,13 @@ import ru.entity.model.enums.RoleType;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
 @Named("officeKeepingFile")
@@ -33,9 +33,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
             sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
         }
         return result;
     }
@@ -90,18 +88,14 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         try {
             OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).update(getDocument());
             if (record == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null,MSG_CANT_SAVE);
             } else {
                 setDocument(record);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -113,18 +107,14 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         try {
             OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).save(getDocument());
             if (record == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 setDocument(record);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return result;

@@ -2,9 +2,9 @@ package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.dao.NomenclatureDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.Nomenclature;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -31,8 +31,7 @@ public class NomenclatureConverter implements Converter {
                 }
 
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CONVERTER_ERROR);
                 System.out.println("Не найдена номенклатура для документа");
             }
         } catch (Exception e) {

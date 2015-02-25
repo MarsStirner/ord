@@ -16,11 +16,12 @@ import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
 
 @Named("out_search_documents")
 @SessionScoped
@@ -165,8 +166,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
             markNeedRefresh();
             FacesContext.getCurrentInstance().getExternalContext().redirect("out_documents_by_conjunction_search.xhtml");
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Невозможно осуществить поиск", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
             e.printStackTrace();
         }
     }
@@ -202,8 +202,7 @@ public class OutgoingDocumentSearchListHolder extends AbstractDocumentListHolder
             markNeedRefresh();
             //FacesContext.getCurrentInstance().getExternalContext().redirect("in_documents_by_conjunction_search.xhtml");
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Невозможно осуществить поиск", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
             e.printStackTrace();
         }
     }

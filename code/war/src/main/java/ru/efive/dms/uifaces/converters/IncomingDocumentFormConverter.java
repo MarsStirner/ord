@@ -2,9 +2,9 @@ package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.DocumentForm;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -26,8 +26,7 @@ public class IncomingDocumentFormConverter implements Converter {
             if (list.size() > 0) {
                 result = list.get(0);
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CONVERTER_ERROR);
                 System.out.println("Не найден вид документа");
             }
         } catch (Exception e) {

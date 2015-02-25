@@ -1,10 +1,12 @@
 package ru.efive.dms.uifaces.converters;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.DeliveryTypeDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.DeliveryType;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -15,25 +17,23 @@ import static ru.efive.dms.util.ApplicationDAONames.DELIVERY_TYPE_DAO;
 
 @FacesConverter("DeliveryTypeConverter")
 public class DeliveryTypeConverter implements Converter {
+    private static final Logger LOGGER = LoggerFactory.getLogger("CONVERTER");
 
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        Object result = null;
-        try {
-            SessionManagementBean sessionManagement =
-                    (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
+         try {
+            SessionManagementBean sessionManagement =  context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
             List<DeliveryType> list = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).findByValue(value);
-            if (list.size() > 0) {
-                result = list.get(0);
+            if (!list.isEmpty()) {
+                return list.get(0);
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
-                System.out.println("Не найден вид документа");
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CONVERTER_ERROR);
+               LOGGER.error("DELIVERY_TYPE: Не найден \'{}\'", value);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("DELIVERY_TYPE", e);
         }
-        return result;
+        return null;
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {

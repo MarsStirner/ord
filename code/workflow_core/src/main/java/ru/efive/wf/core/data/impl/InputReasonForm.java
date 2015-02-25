@@ -1,15 +1,15 @@
 package ru.efive.wf.core.data.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
+import org.apache.commons.lang.StringUtils;
 import ru.efive.wf.core.ActionResult;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.data.LocalBackingBean;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.util.ArrayList;
+import java.util.List;
 
 public class InputReasonForm implements LocalBackingBean {
 
@@ -62,7 +62,7 @@ public class InputReasonForm implements LocalBackingBean {
     public ActionResult initialize() {
         ActionResult result = new ActionResult();
         try {
-            if (actionCommentary == null || actionCommentary.equals("")) {
+            if (StringUtils.isEmpty(actionCommentary)) {
                 result.setProcessed(false);
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Не указан комментарий", ""));
             } else {

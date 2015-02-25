@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
@@ -12,10 +11,11 @@ import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -90,7 +90,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
             return true;
         } catch (Exception e) {
             logger.error("saveDocument ERROR:", e);
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -133,7 +133,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
                 return true;
             } catch (Exception e) {
                 logger.error("saveDocument ERROR:", e);
-                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+                FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
                 return false;
             }
         }
@@ -151,23 +151,23 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         if (document.getStartDate() != null && document.getEndDate() != null) {
             if (document.getStartDate().after(document.getEndDate())) {
                 logger.error("Save cancelled: startDate[{}] is not before endDate[{}]", document.getStartDate(), document.getEndDate());
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ошибка валидации", "Дата начала периода замещения позже чем его дата окончания"));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_DATE_MISMATCH);
                 result = false;
             }
         }
         if (document.getSubstitution() == null) {
             logger.error("Save cancelled: substitution not set");
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ошибка валидации", "Не выбран заместитель"));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_SUBSTITUTOR_NOT_SET);
             result = false;
         }
         if (document.getPerson() == null) {
             logger.error("Save cancelled: person not set");
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ошибка валидации", "Не выбрано замещаемое лицо"));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_PERSON_NOT_SET);
             result = false;
         }
         if (document.getPerson() != null && document.getSubstitution() != null && document.getPerson().equals(document.getSubstitution())) {
             logger.error("Save cancelled: person and substitution is one people");
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("Ошибка валидации", "Замещаемое лицо и заместитель один и тот-же человек."));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_PERSON_DUPLICATE);
             result = false;
         }
         return result;

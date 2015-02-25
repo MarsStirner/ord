@@ -17,12 +17,12 @@ import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 
 @Named("in_search_documents")
@@ -41,8 +41,10 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
     }
 
     protected List<IncomingDocument> getHashDocuments(int fromIndex, int toIndex) {
-        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
-        List<IncomingDocument> result = new ArrayList<IncomingDocument>(this.getHashDocuments().subList(fromIndex, toIndex));
+        toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex
+                + toIndex;
+        List<IncomingDocument> result = new ArrayList<IncomingDocument>(this.getHashDocuments().subList(fromIndex,
+                toIndex));
         return result;
     }
 
@@ -51,9 +53,11 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
         if (needRefresh) {
             try {
                 User user = sessionManagement.getLoggedUser();
-                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user.getLogin(), user.getPassword());
+                //user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(user
+                // .getLogin(), user.getPassword());
                 result = new ArrayList<IncomingDocument>(new HashSet<IncomingDocument>(sessionManagement.
-                        getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filters, filter, user, false, false)));
+                        getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findAllDocumentsByUser
+                        (filters, filter, user, false, false)));
 
                 Collections.sort(result, new Comparator<IncomingDocument>() {
                     public int compare(IncomingDocument o1, IncomingDocument o2) {
@@ -75,11 +79,14 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
                             c2.set(Calendar.SECOND, 0);
                             if (c1.equals(c2)) {
                                 try {
-                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1.getRegistrationNumber()));
-                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                    Integer i1 = Integer.parseInt(ApplicationHelper.getNotNull(o1
+                                            .getRegistrationNumber()));
+                                    Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2
+                                            .getRegistrationNumber()));
                                     result = i1.compareTo(i2);
                                 } catch (NumberFormatException e) {
-                                    result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                    result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo
+                                            (ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 }
                             } else {
                                 result = c1.compareTo(c2);
@@ -90,7 +97,8 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
                                 Integer i2 = Integer.parseInt(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                                 result = i1.compareTo(i2);
                             } catch (NumberFormatException e) {
-                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo(ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
+                                result = ApplicationHelper.getNotNull(o1.getRegistrationNumber()).compareTo
+                                        (ApplicationHelper.getNotNull(o2.getRegistrationNumber()));
                             }
                         } else if (colId.equalsIgnoreCase("deliveryDate")) {
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
@@ -99,9 +107,13 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
                             c2.setTime(ApplicationHelper.getNotNull(o2.getDeliveryDate()));
                             result = c2.compareTo(c1);
                         } else if (colId.equalsIgnoreCase("contragent")) {
-                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getContragent()).getShortName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getContragent()).getShortName()));
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getContragent())
+                                    .getShortName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper
+                                    .getNotNull(o2.getContragent()).getShortName()));
                         } else if (colId.equalsIgnoreCase("form")) {
-                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getForm()).toString()));
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getForm()).toString
+                                    ()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2
+                                    .getForm()).toString()));
                         } else if (colId.equalsIgnoreCase("executionDate")) {
                             Calendar c1 = Calendar.getInstance(ApplicationHelper.getLocale());
                             c1.setTime(ApplicationHelper.getNotNull(o1.getExecutionDate()));
@@ -109,7 +121,9 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
                             c2.setTime(ApplicationHelper.getNotNull(o2.getExecutionDate()));
                             result = c1.compareTo(c2);
                         } else if (colId.equalsIgnoreCase("status_id")) {
-                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2.getDocumentStatus()).getName()));
+                            result = ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o1.getDocumentStatus()
+                            ).getName()).compareTo(ApplicationHelper.getNotNull(ApplicationHelper.getNotNull(o2
+                                    .getDocumentStatus()).getName()));
                         }
 
                         if (getSorting().isAsc()) {
@@ -174,8 +188,7 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
             markNeedRefresh();
             FacesContext.getCurrentInstance().getExternalContext().redirect("in_documents_by_conjunction_search.xhtml");
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Невозможно осуществить поиск", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
             e.printStackTrace();
         }
     }
@@ -215,10 +228,10 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
             this.setOfficeKeepingVolume(null);
 
             markNeedRefresh();
-            //FacesContext.getCurrentInstance().getExternalContext().redirect("in_documents_by_conjunction_search.xhtml");
+            //FacesContext.getCurrentInstance().getExternalContext().redirect("in_documents_by_conjunction_search
+            // .xhtml");
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Невозможно осуществить поиск", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
             e.printStackTrace();
         }
     }
@@ -235,8 +248,7 @@ public class IncomingDocumentSearchListHolder extends AbstractDocumentListHolder
         this.executorsSelectModal = executorsSelectModal;
     }
 
-    public void setRecipientUsersSelectModal(
-            UserListSelectModalBean recipientUsersSelectModal) {
+    public void setRecipientUsersSelectModal(UserListSelectModalBean recipientUsersSelectModal) {
         this.recipientUsersSelectModal = recipientUsersSelectModal;
     }
 

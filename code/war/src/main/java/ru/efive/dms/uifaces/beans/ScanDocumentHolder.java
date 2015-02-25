@@ -12,13 +12,13 @@ import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.SCAN_DAO;
 
 /**
@@ -75,15 +75,11 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
         try {
             result = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, SCAN_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Внутренняя ошибка при удалении.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -150,8 +146,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
 
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
@@ -166,14 +161,12 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
         try {
             ScanCopyDocument scanCopyDocument = sessionManagement.getDAO(ScanCopyDocumentDAOImpl.class, SCAN_DAO).save(getDocument());
             if (scanCopyDocument == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
                 return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             return false;
         }
         return true;
@@ -201,10 +194,7 @@ public class ScanDocumentHolder extends AbstractDocumentHolderBean<ScanCopyDocum
         //in_user = sessionManagement.getDAO(UserDAOHibernate.class,USER_DAO).findByLoginAndPassword(in_user.getLogin(), in_user.getPassword());
         ScanCopyDocument scanCopyDocument = getDocument();
 
-        if (in_user.isAdministrator() || in_user.equals(scanCopyDocument.getAuthor())) {
-            return true;
-        }
+        return in_user.isAdministrator() || in_user.equals(scanCopyDocument.getAuthor());
 
-        return false;
     }
 }

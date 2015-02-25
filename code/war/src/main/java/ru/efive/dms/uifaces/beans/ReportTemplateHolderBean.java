@@ -8,7 +8,6 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.Region;
 import ru.entity.model.document.ReportTemplate;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -17,6 +16,7 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.Date;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
 
 @ManagedBean(name="reportTemplate")
@@ -30,9 +30,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
             sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
         }
         return result;
     }
@@ -75,7 +73,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
             result = true;
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Ошибка при формировании отчета.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_REPORT_CREATION);
             e.printStackTrace();
         }
         return result;
@@ -87,18 +85,14 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
         try {
             ReportTemplate template = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).save(getDocument());
             if (template == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 setDocument(template);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return result;

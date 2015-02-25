@@ -1,5 +1,6 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
+import org.apache.commons.lang.StringUtils;
 import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
 import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
@@ -24,6 +25,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
@@ -47,8 +49,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR, "Невозможно удалить документ", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
                 e.printStackTrace();
             }
             return in_result;
@@ -64,9 +65,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
             sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Невозможно удалить документ. Попробуйте повторить позже.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -95,8 +94,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
         OfficeKeepingVolume document = new OfficeKeepingVolume();
         OfficeKeepingFile file = null;
         String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
-        if (parentId == null || parentId.equals("")) {
-        } else {
+        if (StringUtils.isNotEmpty(parentId)) {
             file = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocumentById(parentId);
             if (file != null) {
                 document.setParentFile(file);
@@ -140,18 +138,14 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
         try {
             OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).update((OfficeKeepingVolume) getDocument());
             if (record == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
                 //setDocument(record);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -159,35 +153,27 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
 
     @Override
     protected boolean saveNewDocument() {
-        boolean result = false;
         try {
             OfficeKeepingVolume document = getDocument();
             OfficeKeepingFile file = document.getParentFile();
             if (file != null) {
-
                 OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).save(document);
-                //OfficeKeepingVolume record=getDocument();
                 if (record == null) {
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                            FacesMessage.SEVERITY_ERROR,
-                            "Невозможно сохранить документ. Попробуйте повторить позже.", ""));
+                    FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
                 } else {
-                    //setDocument(record);
-                    result = true;
+                    return true;
                 }
             } else {
+                //TODO add to MSGHolder
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
                         "Невозможно сохранить документ. Необходимо выбрать корректный документ Номенклатуры дел.", ""));
             }
         } catch (Exception e) {
-            result = false;
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
-                    FacesMessage.SEVERITY_ERROR,
-                    "Ошибка при сохранении документа.", ""));
+            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
-        return result;
+        return false;
     }
 
     @Override

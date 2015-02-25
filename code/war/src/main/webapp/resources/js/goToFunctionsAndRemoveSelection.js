@@ -59,14 +59,7 @@ function goToOfficeKeepingVolume(id) {
         window.open('/component/office/office_keeping_volume.xhtml?docId=' + id,'_blank');
     }
 }
-// К Номенклатурам дел
-function goToOfficeKeepingRecord(id) {
-    if (id != 0) {
-        window.open('/component/office/office_keeping_record.xhtml?docId=' + id,'_blank');
-    }
-}
-//TODO что за вакханалия?
-// К Номенклатурам дел
+// К Делам
 function goToOfficeKeepingFile(id) {
     if (id != 0) {
         window.open('/component/office/office_keeping_file.xhtml?docId=' + id,'_blank');

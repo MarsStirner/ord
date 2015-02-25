@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
 
-import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -24,7 +24,7 @@ public class PersonConverter implements Converter {
                 result = in_user;
                 System.out.println("login: " + in_user.getDescription());
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Внутренняя ошибка.", ""));
+                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CONVERTER_ERROR);
 
                 System.out.println("Не найден пользователь по логину");
             }

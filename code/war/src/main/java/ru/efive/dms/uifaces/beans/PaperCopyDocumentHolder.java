@@ -7,7 +7,6 @@ import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
@@ -17,7 +16,6 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
