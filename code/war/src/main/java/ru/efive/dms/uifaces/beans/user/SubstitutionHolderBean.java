@@ -27,7 +27,7 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 @ConversationScoped
 public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution, Integer> {
 
-    //Именованный логгер (INCOMING_DOCUMENT)
+    //Именованный логгер
     private static final Logger logger = LoggerFactory.getLogger("SUBSTITUTION");
 
     private User selectedPerson = null;
@@ -87,6 +87,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         doc.setDeleted(true);
         try {
             setDocument(sessionManagement.getDAO(SubstitutionDaoImpl.class, ApplicationDAONames.SUBSTITUTION_DAO).save(doc));
+            FacesContext.getCurrentInstance().getExternalContext().redirect("delete_document.xhtml");
             return true;
         } catch (Exception e) {
             logger.error("saveDocument ERROR:", e);
