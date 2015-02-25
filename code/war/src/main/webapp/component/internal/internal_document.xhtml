@@ -604,22 +604,20 @@
                                             </div>
 
                                             <div class="e5ui-modal-bottombuttons">
-                                                <div class="defbutton" style="padding-top: 0;">
-                                                    <h:commandButton value="Группы пользователей"
-                                                                     rendered="#{internal_doc.isUsersDialogSelected()}"
-                                                                     action="#{internal_doc.setGroupsDialogSelected(true)}">
-                                                        <f:ajax
-                                                                render="recipientUnitsSelectModal:ajaxModal"
-                                                                execute="recipientUnitsSelectModal:ajaxModal"/>
-                                                    </h:commandButton>
-                                                    <h:commandButton value="Пользователи"
-                                                                     rendered="#{internal_doc.isGroupsDialogSelected()}"
-                                                                     action="#{internal_doc.setUsersDialogSelected(true)}">
-                                                        <f:ajax
-                                                                render="recipientUnitsSelectModal:ajaxModal"
-                                                                execute="recipientUnitsSelectModal:ajaxModal"/>
-                                                    </h:commandButton>
-                                                </div>
+                                                <h:commandButton value="Группы пользователей"
+                                                                 rendered="#{internal_doc.isUsersDialogSelected()}"
+                                                                 action="#{internal_doc.setGroupsDialogSelected(true)}">
+                                                    <f:ajax
+                                                            render="recipientUnitsSelectModal:ajaxModal"
+                                                            execute="recipientUnitsSelectModal:ajaxModal"/>
+                                                </h:commandButton>
+                                                <h:commandButton value="Пользователи"
+                                                                 rendered="#{internal_doc.isGroupsDialogSelected()}"
+                                                                 action="#{internal_doc.setUsersDialogSelected(true)}">
+                                                    <f:ajax
+                                                            render="recipientUnitsSelectModal:ajaxModal"
+                                                            execute="recipientUnitsSelectModal:ajaxModal"/>
+                                                </h:commandButton>
                                                 <h:button onclick="userListSelectModalVar.clickSave(); return false;"
                                                           value="Выбрать"/>
                                                 <h:button onclick="userListSelectModalVar.clickClose(); return false;"

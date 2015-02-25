@@ -169,7 +169,8 @@
                               rendered="#{in_doc.viewState or (in_doc.editState and not statusId_In_REG_OR_CHECK_OR_ON_EXEC)}"/>
                 <h:outputText value=" № #{in_doc.document.registrationNumber} от "
                               rendered="#{in_doc.editState or in_doc.viewState}"/>
-                <h:outputText value="#{in_doc.document.registrationDate}" rendered="#{in_doc.editState or in_doc.viewState}">
+                <h:outputText value="#{in_doc.document.registrationDate}"
+                              rendered="#{in_doc.editState or in_doc.viewState}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </div>
@@ -701,21 +702,18 @@
                                         </div>
 
                                         <div class="e5ui-modal-bottombuttons">
-                                            <div class="defbutton">
-                                                <h:commandButton value="Группы пользователей"
-                                                                 rendered="#{in_doc.isUsersDialogSelected()}"
-                                                                 action="#{in_doc.setGroupsDialogSelected(true)}">
-                                                    <f:ajax render="recipientUnitsSelectModal:ajaxModal"
-                                                            execute="recipientUnitsSelectModal:ajaxModal"/>
-                                                </h:commandButton>
-                                                <h:commandButton value="Пользователи"
-                                                                 rendered="#{in_doc.isGroupsDialogSelected()}"
-                                                                 action="#{in_doc.setUsersDialogSelected(true)}">
-                                                    <f:ajax render="recipientUnitsSelectModal:ajaxModal"
-                                                            execute="
-							recipientUnitsSelectModal:ajaxModal"/>
-                                                </h:commandButton>
-                                            </div>
+                                            <h:commandButton value="Группы пользователей"
+                                                             rendered="#{in_doc.isUsersDialogSelected()}"
+                                                             action="#{in_doc.setGroupsDialogSelected(true)}">
+                                                <f:ajax render="recipientUnitsSelectModal:ajaxModal"
+                                                        execute="recipientUnitsSelectModal:ajaxModal"/>
+                                            </h:commandButton>
+                                            <h:commandButton value="Пользователи"
+                                                             rendered="#{in_doc.isGroupsDialogSelected()}"
+                                                             action="#{in_doc.setUsersDialogSelected(true)}">
+                                                <f:ajax render="recipientUnitsSelectModal:ajaxModal"
+                                                        execute="recipientUnitsSelectModal:ajaxModal"/>
+                                            </h:commandButton>
                                             <h:button onclick="userListSelectModalVar.clickSave(); return false;"
                                                       value="Выбрать"/>
                                             <h:button onclick="userListSelectModalVar.clickClose(); return false;"
