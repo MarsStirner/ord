@@ -37,13 +37,6 @@
                     <div id="leftMenuTiltle">Документооборот ФНКЦ ДГОИ</div>
                     <div id="leftMenuHolder">
                         <p:menu id="navigationMenu" toggleable="true" widgetVar="navigationMenuVar" style="width:100%;">
-                            <c:if test="#{isAdministrator or isOfficeManager or isRequestManager}">
-                                <p:submenu label="Электронные документы" styleClass="subMenuItem">
-                                    <p:menuitem value="Мои документы" url="/component/scan_documents.xhtml"
-                                                icon="leafIcon"
-                                                styleClass="#{currentView eq '/component/scan_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                                </p:submenu>
-                            </c:if>
                             <p:submenu label="Входящие документы" styleClass="subMenuItem">
                                 <p:menuitem value="Мои проекты" url="/component/personal/personal_in_documents.xhtml"
                                             icon="leafIcon"
@@ -253,7 +246,8 @@
                                                 styleClass="#{currentView eq '/component/admin/positions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                                     <p:menuitem value="Нумератор" url="/component/numerators.xhtml" icon="leafIcon"
                                                 styleClass="#{currentView eq '/component/numerators.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-                                    <p:menuitem value="Номенклатуры дел" url="/component/admin/nomenclatures.xhtml" icon="leafIcon"
+                                    <p:menuitem value="Номенклатуры дел" url="/component/admin/nomenclatures.xhtml"
+                                                icon="leafIcon"
                                                 styleClass="#{currentView eq '/component/admin/nomenclatures.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
                                     <p:menuitem value="О программе" url="/component/version.xhtml" icon="leafIcon"
                                                 styleClass="#{currentView eq '/component/version.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>

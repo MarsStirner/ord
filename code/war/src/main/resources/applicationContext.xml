@@ -84,7 +84,6 @@
                 <value>ru.entity.model.document.OutgoingDocument</value>
                 <value>ru.entity.model.document.RequestDocument</value>
                 <value>ru.entity.model.document.PaperCopyDocument</value>
-                <value>ru.entity.model.document.ScanCopyDocument</value>
                 <value>ru.entity.model.document.OfficeKeepingFile</value>
                 <value>ru.entity.model.document.OfficeKeepingVolume</value>
                 <value>ru.entity.model.document.Task</value>
@@ -168,8 +167,6 @@
     <bean id="incomingDao" class="ru.efive.dms.dao.IncomingDocumentDAOImpl" parent="daoSettings"/>
 
     <bean id="numeratorDao" class="ru.efive.dms.dao.NumeratorDAOImpl" parent="daoSettings"/>
-
-    <bean id="scanDao" class="ru.efive.dms.dao.ScanCopyDocumentDAOImpl" parent="daoSettings"/>
 
     <bean id="internalDao" class="ru.efive.dms.dao.InternalDocumentDAOImpl" parent="daoSettings"/>
 
