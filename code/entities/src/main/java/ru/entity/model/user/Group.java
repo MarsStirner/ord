@@ -91,7 +91,7 @@ public class Group extends DictionaryEntity {
     /**
      * Категория
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoryId")
     private GroupType category;
 
@@ -108,7 +108,7 @@ public class Group extends DictionaryEntity {
     /**
      * Автор документа
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
 
