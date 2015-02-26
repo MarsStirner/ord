@@ -47,7 +47,7 @@ public class Numerator extends IdentifiedEntity {
      * Номенклатура документа (NULL - wildcard)
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="nomenclature_id")
+    @JoinColumn(name="nomenclature_id", nullable = true)
     private Nomenclature nomenclature;
 
     /**

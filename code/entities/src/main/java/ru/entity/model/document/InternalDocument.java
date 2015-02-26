@@ -29,63 +29,174 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     private static final long serialVersionUID = -7971345050896379926L;
 
     /**
-     * Номер входящего
+     * Количество приложений
      */
-    private String registrationNumber;
+    @Column(name = "appendixiesCount", nullable = false)
+    private int appendixiesCount;
 
     /**
-     * Номер ERP
+     * Количество экземпляров
      */
+    @Column(name = "copiesCount", nullable = false)
+    private int copiesCount;
 
-    private String erpNumber;
+    /**
+     * Дата создания документа
+     */
+    @Column(name = "creationDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date creationDate;
+
+    /**
+     * Удален ли документ
+     */
+    @Column(name = "deleted")
+    private boolean deleted;
 
     /**
      * Дата поступления
      */
+    //TODO NULL \ DELETE IT?
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date deliveryDate;
 
-    /**
-     * Инциатор документа (автор)
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "initiator_id")
-    private User author;
-
-    /**
-     * Дата регистрации
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date registrationDate;
 
     /**
      * Срок исполнения
      */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date factDate;
+    //TODO date or timestamp
+    @Column(name = "executionDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date executionDate;
 
     /**
-     * Дата подписания
+     * регистрационный номер документа
      */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date signatureDate;
+    @Column(name = "registrationNumber")
+    private String registrationNumber;
+
+    /**
+     * Количество страниц
+     */
+    @Column(name = "sheetsCount")
+    private int sheetsCount;
+
+    /**
+     * Краткое описание
+     */
+    @Column(name = "shortDescription", columnDefinition = "text")
+    private String shortDescription;
+
+    /**
+     * Текущий статус документа в процессе
+     */
+    @Column(name = "status_id")
+    private int statusId;
 
     /**
      * Контролер
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    //TODO везде NULL, выставить нельзя. Удалять?
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "controller_id")
     private User controller;
 
+    /**
+     * Вид документа
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "form_id")
+    private DocumentForm form;
+
+    /**
+     * Инциатор документа (автор)
+     */
+    //TODO rename column to author_id
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "initiator_id")
+    private User author;
+
+    /**
+     * Ответственный
+     */
+    //TODO это кто такой?
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "responsible_id")
+    private User responsible;
+
+
+    /**
+     * Дата регистрации
+     */
+    //TODO Чем отличается от даты создания?
+    @Column(name = "registrationDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date registrationDate;
+
+    /**
+     * Дата подписания
+     */
+    //TODO DATE WITHOUT TIME?
+    @Column(name = "signatureDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date signatureDate;
 
     /**
      * Подписант
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "signer_id")
     private User signer;
+
+
+    /**
+     * Номер фонда
+     */
+    private int fundNumber;
+
+    /**
+     * Номер стеллажа
+     */
+    private int standNumber;
+
+    /**
+     * Номер полки
+     */
+    private int shelfNumber;
+
+    /**
+     * Номер короба
+     */
+    private int boxNumber;
+    /**
+     * Является ли документ шаблоном
+     */
+    private boolean templateFlag;
+
+    /**
+     * Уровень допуска
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "userAccessLevel_id", nullable = true)
+    private UserAccessLevel userAccessLevel;
+
+
+    /**
+     * Регистрация изменений закрытого периода
+     */
+    private boolean closePeriodRegistrationFlag = false;
+
+
+    /**
+     * Номер ERP
+     */
+    @Column(name = "erpNumber")
+    private String erpNumber;
+
+
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date factDate;
+
 
     /**
      * Адресаты (пользователи)
@@ -106,13 +217,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @LazyCollection(LazyCollectionOption.TRUE)
     private Set<Group> recipientGroups;
 
-
-    /**
-     * Ответственный
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "responsible_id")
-    private User responsible;
 
     /**
      * Пользователи-читатели
@@ -159,66 +263,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @IndexColumn(name = "ID2")
     private List<Role> roleEditors;
 
-    /**
-     * Краткое описание
-     */
-    @Column(columnDefinition = "text")
-    private String shortDescription;
-
-    /**
-     * Дата создания документа
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
-
-    /**
-     * Вид документа
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "form_id")
-    private DocumentForm form;
-
-    /**
-     * Количество экземпляров
-     */
-    private int copiesCount;
-
-    /**
-     * Количество страниц
-     */
-    private int sheetsCount;
-
-    /**
-     * Количество приложений
-     */
-    private int appendixiesCount;
-
-    /**
-     * Номер фонда
-     */
-    private int fundNumber;
-
-    /**
-     * Номер стеллажа
-     */
-    private int standNumber;
-
-    /**
-     * Номер полки
-     */
-    private int shelfNumber;
-
-    /**
-     * Номер короба
-     */
-    private int boxNumber;
-
-
-    /**
-     * Текущий статус документа в процессе
-     */
-    @Column(name = "status_id")
-    private int statusId;
 
     @Transient
     private int grouping = 100;
@@ -226,21 +270,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @Transient
     private String WFResultDescription;
 
-    /**
-     * Уровень допуска
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    private UserAccessLevel userAccessLevel;
-
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
-
-    /**
-     * Является ли документ шаблоном
-     */
-    private boolean templateFlag;
 
     public boolean isClosePeriodRegistrationFlag() {
         return closePeriodRegistrationFlag;
@@ -250,10 +279,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         this.closePeriodRegistrationFlag = closePeriodRegistrationFlag;
     }
 
-    /**
-     * Регистрация изменений закрытого периода
-     */
-    private boolean closePeriodRegistrationFlag = false;
 
     /**
      * История
@@ -610,7 +635,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
 
     //TODO сделать класс-обертку
     /**
-     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
      */
     @Transient
     private String styleClass;
