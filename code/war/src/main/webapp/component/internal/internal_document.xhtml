@@ -157,17 +157,16 @@
         <div id="header_content">
             <div class="name">
                 Внутренний документ
-                <!--Давать выбирать вид документа на основании его статусов "Проект документа\На рассмотрении\Согласование\Зарегистрирован\На исполнении"-->
-                <ui:param name="statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN_OR_ON_EXEC"
-                          value="#{internal_doc.document.documentStatus.id eq 1 or internal_doc.document.documentStatus.id eq 2 or internal_doc.document.documentStatus.id eq 3 or internal_doc.document.documentStatus.id eq 5 or internal_doc.document.documentStatus.id eq 80}"/>
+                <!--Давать выбирать вид документа на основании его статусов "Проект документа"-->
+                <ui:param name="statusId_In_PROJ" value="#{internal_doc.document.documentStatus.id eq 1}"/>
                 <h:selectOneMenu id="form" value="#{internal_doc.document.form}"
                                  converter="InternalDocumentFormConverter"
                                  immediate="true"
-                                 rendered="#{internal_doc.createState or (internal_doc.editState and statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN_OR_ON_EXEC)}">
+                                 rendered="#{internal_doc.createState or (internal_doc.editState and statusId_In_PROJ)}">
                     <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Внутренние документы')}"/>
                 </h:selectOneMenu>
                 <h:outputText value="#{internal_doc.document.form}"
-                              rendered="#{internal_doc.viewState or (internal_doc.editState and not statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN_OR_ON_EXEC)}"/>
+                              rendered="#{internal_doc.viewState or (internal_doc.editState and not statusId_In_PROJ)}"/>
                 <h:outputText value=" № #{internal_doc.document.registrationNumber}"
                               rendered="#{internal_doc.editState or internal_doc.viewState}"/>
             </div>
