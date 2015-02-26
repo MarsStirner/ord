@@ -54,17 +54,8 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     private boolean deleted;
 
     /**
-     * Дата поступления
-     */
-    //TODO NULL \ DELETE IT?
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date deliveryDate;
-
-
-    /**
      * Срок исполнения
      */
-    //TODO date or timestamp
     @Column(name = "executionDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date executionDate;
@@ -94,14 +85,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     private int statusId;
 
     /**
-     * Контролер
-     */
-    //TODO везде NULL, выставить нельзя. Удалять?
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "controller_id")
-    private User controller;
-
-    /**
      * Вид документа
      */
     @ManyToOne(fetch = FetchType.EAGER)
@@ -111,9 +94,8 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Инциатор документа (автор)
      */
-    //TODO rename column to author_id
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "initiator_id")
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     /**
@@ -128,7 +110,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Дата регистрации
      */
-    //TODO Чем отличается от даты создания?
     @Column(name = "registrationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date registrationDate;
@@ -136,15 +117,14 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Дата подписания
      */
-    //TODO DATE WITHOUT TIME?
     @Column(name = "signatureDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
+    @Temporal(value = TemporalType.DATE)
     private Date signatureDate;
 
     /**
      * Подписант
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "signer_id")
     private User signer;
 
@@ -377,14 +357,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         this.signatureDate = signatureDate;
     }
 
-    public User getController() {
-        return controller;
-    }
-
-    public void setController(User controller) {
-        this.controller = controller;
-    }
-
     public User getSigner() {
         return signer;
     }
@@ -413,25 +385,18 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         this.creationDate = creationDate;
     }
 
-    ;
 
     public Date getCreationDate() {
         return creationDate;
     }
 
-    ;
-
     public void setForm(DocumentForm form) {
         this.form = form;
     }
 
-    ;
-
     public DocumentForm getForm() {
         return form;
     }
-
-    ;
 
     public void setCopiesCount(int copiesCount) {
         this.copiesCount = copiesCount;

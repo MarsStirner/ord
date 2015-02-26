@@ -629,10 +629,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
 
 
-    public UserSelectModalBean getControllerSelectModal() {
-        return controllerSelectModal;
-    }
-
     public UserSelectModalBean getSignerSelectModal() {
         return signerSelectModal;
     }
@@ -661,21 +657,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         return roleEditorsPickList;
     }
 
-    private UserSelectModalBean controllerSelectModal = new UserSelectModalBean() {
-        @Override
-        protected void doSave() {
-            getDocument().setController(getUser());
-            super.doSave();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUser(null);
-        }
-    };
 
     private UserSelectModalBean responsibleSelectModal = new UserSelectModalBean() {
         @Override

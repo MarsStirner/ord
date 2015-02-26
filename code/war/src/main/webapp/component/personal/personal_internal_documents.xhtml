@@ -68,11 +68,11 @@
                                 <f:facet name="header">
                                     <h:commandLink
                                             action="#{personal_internal_documents.sort('responsible.lastName,responsible.firstName,responsible.middleName')}">
-                                        Контролер
+                                        Подписант
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                               <h:outputText value="#{row.controller.getDescriptionShort}"/>
+                               <h:outputText value="#{row.signer.getDescriptionShort()}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:7em">
                                 <f:facet name="header">

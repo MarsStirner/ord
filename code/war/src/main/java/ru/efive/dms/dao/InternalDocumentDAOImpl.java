@@ -523,7 +523,6 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
             disjunction.add(Restrictions.eq("author.id", userId));
             disjunction.add(Restrictions.eq("signer.id", userId));
             disjunction.add(Restrictions.eq("responsible.id", userId));
-            disjunction.add(Restrictions.eq("controller.id", userId));
             disjunction.add(Restrictions.eq("recipientUsers.id", userId));
             disjunction.add(Restrictions.eq("readers.id", userId));
             disjunction.add(Restrictions.eq("editors.id", userId));
@@ -628,7 +627,6 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
         detachedCriteria.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("signer", "signer", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("responsible", "responsible", CriteriaSpecification.LEFT_JOIN);
-        detachedCriteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("personEditors", "editors", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("personReaders", "readers", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
@@ -720,7 +718,6 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
             disjunction.add(Restrictions.in("author.id", userIdList));
             disjunction.add(Restrictions.in("signer.id", userIdList));
             disjunction.add(Restrictions.in("responsible.id", userIdList));
-            disjunction.add(Restrictions.in("controller.id", userIdList));
             disjunction.add(Restrictions.in("recipientUsers.id", userIdList));
             disjunction.add(Restrictions.in("readers.id", userIdList));
             disjunction.add(Restrictions.in("editors.id", userIdList));

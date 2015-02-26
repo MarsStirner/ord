@@ -40,11 +40,6 @@ public class PersonalInternalDocumentsListHolder extends AbstractDocumentListHol
                 false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
     }
 
-    @Override
-    public List<InternalDocument> getDocuments() {
-        return super.getDocuments();
-    }
-
     public String getFilter() {
         return filter;
     }

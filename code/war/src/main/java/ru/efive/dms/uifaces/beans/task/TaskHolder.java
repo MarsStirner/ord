@@ -397,7 +397,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                     initiator = out_doc.getController();
                 } else if (key.contains("internal")) {
                     InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
-                    initiator = internal_doc.getController();
+                    initiator = internal_doc.getSigner();
                 } else if (key.contains("request")) {
                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
                     initiator = request_doc.getController();

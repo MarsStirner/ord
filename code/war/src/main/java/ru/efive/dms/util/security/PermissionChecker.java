@@ -318,8 +318,8 @@ public class PermissionChecker {
             return ALL_PERMISSIONS;
         }
         //8) руководитель
-        if (user.equals(document.getController())) {
-            loggerInternalDocument.debug("{}:Permission RWX granted: Controller", document.getId());
+        if (user.equals(document.getSigner())) {
+            loggerInternalDocument.debug("{}:Permission RWX granted: Signer", document.getId());
             return ALL_PERMISSIONS;
         }
 
