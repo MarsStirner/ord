@@ -1709,29 +1709,6 @@ public final class ProcessFactory {
             }
         }
 
-        //2-mail
-        prop = PropertyUtils.getProperty(t, "recipientPersons");
-        Set<User> recipientUsers = (prop == null ? null : (Set<User>) prop);
-        if (recipientUsers != null) {
-            List<String> sendTo = new ArrayList<String>();
-            for (User user : recipientUsers) {
-                if ((user.getEmail() != null) && (!user.getEmail().isEmpty())) {
-                    sendTo.add(user.getEmail());
-                }
-            }
-            if (sendTo.size() > 0) {
-                SendMailActivity mailActivity = new SendMailActivity();
-                String subject = "Вам адресован документ @DocumentNumber";
-                StringBuffer body = new StringBuffer();
-                body.append("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n");
-                MailMessage message = new MailMessage(sendTo, null, subject, body.
-                        append("<a href=\"" + getHost() + "/component/out/out_document.xhtml?docId=").
-                        append(id).append("\" >Ссылка на документ</a>").toString());
-                message.setContentType("text/html");
-                mailActivity.setMessage(message);
-                activites.add(mailActivity);
-            }
-        }
         if (activites.size() > 0) {
             toStatus.setPreStatusActivities(activites);
         }
