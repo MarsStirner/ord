@@ -171,9 +171,9 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня " +
                     "допуска.");
-            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]", new Object[]{document.getId
-                    (), docAccessLevel.getValue(), user.getCurrentUserAccessLevel() != null ? user
-                    .getCurrentUserAccessLevel().getValue() : "null"});
+            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]", document.getId(),
+                    docAccessLevel.getValue(), user.getCurrentUserAccessLevel() != null ? user
+                            .getCurrentUserAccessLevel().getValue() : "null");
             return false;
         }
         return true;
@@ -211,10 +211,12 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             setDocument(document);
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
-            if(isReadPermission()){
+            if (isReadPermission()) {
                 //Простановка факта просмотра записи
-                if(sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser)){
-                    FacesContext.getCurrentInstance().addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
+                if (sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document,
+                        currentUser)) {
+                    FacesContext.getCurrentInstance().addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder
+                            .MSG_VIEW_FACT_REGISTERED);
                 }
                 //Установка идшника для поиска поручений
                 taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());

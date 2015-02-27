@@ -71,18 +71,16 @@
                     <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
                     <p:column style = "width:5em;">
                         <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}">
+                            <p:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}" update="main_data_tbl">
                                 Номер
-                                <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
                         <h:outputText value="#{row.registrationNumber}"/>
                     </p:column>
                     <p:column style="width:5em;">
                         <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('registrationDate')}" title = "Дата регистрации">
+                            <p:commandLink action="#{in_documents.sort('registrationDate')}" title = "Дата регистрации" update="main_data_tbl">
                                 Дата
-                                <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
                         <h:outputText value="#{row.registrationDate}">
@@ -91,9 +89,8 @@
                     </p:column>
                     <p:column style="width:12em;">
                         <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('contragent')}">
+                            <p:commandLink action="#{in_documents.sort('contragent')}" update="main_data_tbl">
                                 Корреспондент
-                                <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
                         <h:outputText value="#{row.contragent.shortName}"/>
@@ -110,18 +107,16 @@
                     </p:column>
                     <p:column style="width:8em;">
                         <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('form')}" title = "Вид документа">
+                            <p:commandLink action="#{in_documents.sort('form')}" title = "Вид документа" update="main_data_tbl">
                                 Вид
-                                <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
                        <h:outputText value="#{row.form}"/>
                     </p:column>
                     <p:column style="width:5em;">
                         <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('executionDate')}" title = "Срок исполнения">
+                            <p:commandLink action="#{in_documents.sort('executionDate')}" title = "Срок исполнения" update="main_data_tbl">
                                 Срок
-                                <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
                         <h:outputText value="#{row.executionDate}">
@@ -130,9 +125,8 @@
                     </p:column>
                     <p:column style="width:10em;">
                         <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('statusId')}">
+                            <p:commandLink action="#{in_documents.sort('statusId')}" update="main_data_tbl">
                                 <span> Статус </span>
-                                <f:ajax render="main_data_tbl"/>
                             </p:commandLink>
                         </f:facet>
                         <h:outputText value="#{row.getDocumentStatus().getName()}"/>

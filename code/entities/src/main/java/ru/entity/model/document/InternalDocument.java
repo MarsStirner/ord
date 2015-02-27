@@ -565,7 +565,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         return agreementTree;
     }
 
-
     public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
         this.userAccessLevel = userAccessLevel;
     }

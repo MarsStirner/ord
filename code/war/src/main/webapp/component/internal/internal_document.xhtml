@@ -256,29 +256,32 @@
                                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                                         </h:outputText>
                                     </td>
-                                    <td class="third"><label> <span class="title">Контроль
-													исполнения: </span>
-                                    </label></td>
-                                    <td class="fourth"><h:outputText
-                                            value="#{internal_doc.document.responsible}"
-                                            converter="PersonConverter" class="wide"/></td>
+                                    <td class="third">
+                                        <label>
+                                            <span class="title">Контроль исполнения: </span>
+                                        </label>
+                                    </td>
+                                    <td class="fourth">
+                                        <h:outputText value="#{internal_doc.document.responsible}"
+                                                      converter="PersonConverter" class="wide"/>
+                                    </td>
                                 </tr>
                                 <tr class="row">
-                                    <td class="first"><label> <span class="title">
-													Адресаты</span>
-                                    </label></td>
+                                    <td class="first">
+                                        <label>
+                                            <span class="title">Адресаты</span>
+                                        </label>
+                                    </td>
                                     <td class="second" colspan="3">
                                         <div class="width"
                                              style="overflow-y: scroll; height: 120px">
-                                            <ui:repeat
-                                                    value="#{internal_doc.document.recipientUsersList}"
+                                            <ui:repeat value="#{internal_doc.document.recipientUsersList}"
                                                     var="element">
                                                 <h:outputText value="#{element}"
                                                               converter="PersonConverter" class="width"/>
                                                 <br/>
                                             </ui:repeat>
-                                            <ui:repeat
-                                                    value="#{internal_doc.document.recipientGroupsList}"
+                                            <ui:repeat value="#{internal_doc.document.recipientGroupsList}"
                                                     var="element">
                                                 <h:outputText value="#{element}" converter="GroupConverter"
                                                               class="width"/>
