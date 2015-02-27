@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "dms_group_types")
+@Table(name = "rbGroupType")
 public class GroupType extends DictionaryEntity {
 
     private static final long serialVersionUID = -4562473719426906910L;
