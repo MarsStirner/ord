@@ -183,7 +183,9 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
      */
     @ManyToMany(cascade = CascadeType.REFRESH)
     @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_internal_documents_recipients")
+    @JoinTable(name = "dms_internal_documents_recipients",
+            joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "recipientUsers_id")})
     private List<User> recipientUsers;
 
     /**
