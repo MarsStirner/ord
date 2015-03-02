@@ -139,9 +139,6 @@ public final class ProcessFactory {
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
-        prop = PropertyUtils.getProperty(t, "controller");
-        if (prop != null)
-            sendTo.add(((User) prop).getEmail());
         if (sendTo.size() > 0) {
             SendMailActivity mailActivity = new SendMailActivity();
             String subject = "Вы назнaчены ответственным по документу @DocumentNumber";
@@ -435,10 +432,6 @@ public final class ProcessFactory {
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
-        prop = PropertyUtils.getProperty(t, "controller");
-        if (prop != null)
-            sendTo.add(((User) prop).getEmail());
-
         if (sendTo.size() > 0) {
             MailMessage message = new MailMessage(sendTo, null, "Новый запрос на согласование",
                     new StringBuilder("Новый запрос на согласование\n\n").
@@ -601,10 +594,6 @@ public final class ProcessFactory {
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
-        prop = PropertyUtils.getProperty(t, "controller");
-        if (prop != null)
-            sendTo.add(((User) prop).getEmail());
-
         if (sendTo.size() > 0) {
             SendMailActivity mailActivity = new SendMailActivity();
             String subject = "Вы назнaчены ответственным по документу @DocumentNumber";
@@ -656,11 +645,6 @@ public final class ProcessFactory {
         prop = PropertyUtils.getProperty(t, "responsible");
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
-
-        prop = PropertyUtils.getProperty(t, "controller");
-        if (prop != null)
-            sendTo.add(((User) prop).getEmail());
-
 
         if (responsibleUser != null && signer != null) {
             if ((responsibleUser.getEmail() != null) && (!responsibleUser.getEmail().isEmpty())) {

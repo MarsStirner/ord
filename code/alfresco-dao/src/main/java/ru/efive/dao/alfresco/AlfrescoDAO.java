@@ -1,11 +1,5 @@
 package ru.efive.dao.alfresco;
 
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.alfresco.webservice.authoring.AuthoringServiceSoapBindingStub;
 import org.alfresco.webservice.authoring.CheckoutResult;
 import org.alfresco.webservice.content.Content;
@@ -13,32 +7,18 @@ import org.alfresco.webservice.content.ContentServiceSoapBindingStub;
 import org.alfresco.webservice.repository.QueryResult;
 import org.alfresco.webservice.repository.RepositoryServiceSoapBindingStub;
 import org.alfresco.webservice.repository.UpdateResult;
-import org.alfresco.webservice.types.CML;
-import org.alfresco.webservice.types.CMLAddAspect;
-import org.alfresco.webservice.types.CMLCreate;
-import org.alfresco.webservice.types.CMLDelete;
-import org.alfresco.webservice.types.CMLUpdate;
-import org.alfresco.webservice.types.ContentFormat;
-import org.alfresco.webservice.types.NamedValue;
-import org.alfresco.webservice.types.Node;
-import org.alfresco.webservice.types.ParentReference;
-import org.alfresco.webservice.types.Predicate;
-import org.alfresco.webservice.types.Query;
-import org.alfresco.webservice.types.Reference;
-import org.alfresco.webservice.types.ResultSet;
-import org.alfresco.webservice.types.ResultSetRow;
-import org.alfresco.webservice.types.Store;
-import org.alfresco.webservice.types.Version;
-import org.alfresco.webservice.types.VersionHistory;
-import org.alfresco.webservice.util.AuthenticationUtils;
-import org.alfresco.webservice.util.Constants;
-import org.alfresco.webservice.util.ContentUtils;
-import org.alfresco.webservice.util.Utils;
-import org.alfresco.webservice.util.WebServiceFactory;
+import org.alfresco.webservice.types.*;
+import org.alfresco.webservice.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.DAO;
 import ru.efive.dao.InitializationException;
+
+import java.io.InputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     Class<T> class_;
@@ -343,7 +323,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 if (destination != null) {
                     destinationId = destination.getUuid();
                 }
-                logger.info("Command = {}; Source = {}; Destination = {}", new Object[]{updateResult.getStatement(), sourceId, destinationId});
+                logger.info("Command = {}; Source = {}; Destination = {}", updateResult.getStatement(), sourceId, destinationId);
                 data.setId(destinationId);
             }
 
@@ -377,7 +357,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                     if (destination != null) {
                         destinationId = destination.getUuid();
                     }
-                   logger.info("Command = {}; Source = {}; Destination = {}", new Object[]{updateResult.getStatement(), sourceId, destinationId});
+                   logger.info("Command = {}; Source = {}; Destination = {}", updateResult.getStatement(), sourceId, destinationId);
                 }
                 result = true;
             } else {
