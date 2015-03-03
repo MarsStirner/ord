@@ -139,6 +139,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Регистрация изменений закрытого периода
      */
+    @Column(name="closePeriodRegistrationFlag")
     private boolean closePeriodRegistrationFlag = false;
 
 
@@ -219,10 +220,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @JoinTable(name = "dms_internal_documents_role_editors")
     @IndexColumn(name = "ID2")
     private List<Role> roleEditors;
-
-
-    @Transient
-    private int grouping = 100;
 
     @Transient
     private String WFResultDescription;
@@ -417,14 +414,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @Override
     public String getBeanName() {
         return "internal_doc";
-    }
-
-    public int getGrouping() {
-        return grouping;
-    }
-
-    public void setGrouping(int grouping) {
-        this.grouping = grouping;
     }
 
     public void setDeleted(boolean deleted) {
