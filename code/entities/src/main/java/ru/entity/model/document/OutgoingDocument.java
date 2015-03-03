@@ -28,69 +28,124 @@ import java.util.*;
 @Table(name = "dms_outgoing_documents")
 public class OutgoingDocument extends IdentifiedEntity implements ProcessedData, AgreementIssue {
     private static final long serialVersionUID = -3273628760848307048L;
+
+    /**
+     * Количество приложений
+     */
+    @Column(name="appendixiesCount")
+    private int appendixiesCount;
+
+    /**
+     * Количество экземпляров
+     */
+    @Column(name="copiesCount")
+    private int copiesCount;
+
     /**
      * Дата создания документа
      */
+    @Column(name="creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date creationDate;
+
+    /**
+     * Автор
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="author_id")
+    private User author;
+
+    /**
+     * Удален ли документ
+     */
+    @Column(name="deleted")
+    private boolean deleted;
+
+    /**
+     * Дата регистрации
+     */
+    @Column(name="registrationDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date registrationDate;
+
+    /**
+     * Номер исходящего
+     */
+    @Column(name = "registrationNumber")
+    private String registrationNumber;
+
+
+    /**
+     * Количество страниц
+     */
+    @Column(name="sheetsCount")
+    private int sheetsCount;
+
+    /**
+     * краткое описание
+     */
+    @Column(name="shortDescription", columnDefinition = "text")
+    private String shortDescription;
+
+    /**
+     * Дата подписания
+     */
+    @Column(name="signatureDate")
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date signatureDate;
+
+    /**
+     * Текущий статус документа в процессе
+     */
+    @Column(name = "status_id")
+    private int statusId;
+
+    /**
+     * Тип доставки
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deliveryType_id", nullable = true)
+    private DeliveryType deliveryType;
+
 
     /**
      * Вид документа
      */
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "form_id", nullable = true)
     private DocumentForm form;
 
     /**
-     * краткое описание
+     * Номенклатура
      */
-    @Column(columnDefinition = "text")
-    private String shortDescription;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "nomenclature_id", nullable = true)
+    private Nomenclature nomenclature;
 
     /**
-     * Номер исходящего
+     * Ссылка на документ основание
      */
-    private String registrationNumber;
+    @Column(name = "reason_document_id")
+    private String reasonDocumentId;
 
     /**
-     * Дата регистрации
+     * Уровень допуска
      */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date registrationDate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="userAccessLevel_id", nullable = true)
+    private UserAccessLevel userAccessLevel;
 
-
+    /**
+     * Номер ERP
+     */
+    @Column(name="erpNumber")
+    private String erpNumber;
 
 
     @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     @JoinTable(name = "dms_outgoing_documents_contragents")
     @IndexColumn(name = "ID")
     private List<Contragent> recipientContragents;
-
-    /**
-     * Дата отсылки
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date sendingDate;
-
-    /**
-     * Тип доставки
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    private DeliveryType deliveryType;
-
-    /**
-     * Количество экземпляров
-     */
-    private int copiesCount;
-
-    /**
-     * Количество страниц
-     */
-    private int sheetsCount;
-
-    /**
-     * Количество приложений
-     */
-    private int appendixiesCount;
 
     /**
      * Исполнитель
@@ -105,40 +160,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_signers", inverseJoinColumns = {@JoinColumn(name = "signer_id")})
     private User controller;
-
-    /**
-     * Дата подписания
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date signatureDate;
-
-
-    /**
-     * Автор
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="author_id")
-    private User author;
-
-    /**
-     * Зарегистрирован ли документ
-     */
-    private boolean registered;
-
-    /**
-     * Номенклатура
-     */
-
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinColumn(name = "nomenclature_id")
-    private Nomenclature nomenclature;
-
-    /**
-     * Входящий документ основание
-     */
-
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    private IncomingDocument causeIncomingDocument;
 
     /**
      * Пользователи-читатели
@@ -184,42 +205,9 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @IndexColumn(name = "ID2")
     private List<Role> roleEditors;
 
-    /**
-     * Текущий статус документа в процессе
-     */
-    @Column(name = "status_id")
-    private int statusId;
-
-    /**
-     * Номер ERP
-     */
-
-    private String erpNumber;
-
-    /**
-     * Ссылка на документ основание
-     */
-    @Column(name = "reason_document_id")
-    private String reasonDocumentId;
-
-    /**
-     * Группировка
-     */
-    @Transient
-    private int grouping = 100;
-
     @Transient
     private String WFResultDescription;
 
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
-
-    /**
-     * Является ли документ шаблоном
-     */
-    private boolean templateFlag;
 
     /**
      * История
@@ -232,11 +220,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @LazyCollection(LazyCollectionOption.EXTRA)
     private Set<HistoryEntry> history;
 
-    /**
-     * Уровень допуска
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    private UserAccessLevel userAccessLevel;
+
 
     /**
      * Дерево согласования
@@ -288,14 +272,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.erpNumber = erpNumber;
     }
 
-    public IncomingDocument getCauseIncomingDocument() {
-        return causeIncomingDocument;
-    }
-
-    public void setCauseIncomingDocument(IncomingDocument causeIncomingDocument) {
-        this.causeIncomingDocument = causeIncomingDocument;
-    }
-
 
     public void setNomenclature(Nomenclature nomenclature) {
         this.nomenclature = nomenclature;
@@ -321,14 +297,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
 
     public List<Contragent> getRecipientContragents() {
         return recipientContragents;
-    }
-
-    public void setSendingDate(Date sendingDate) {
-        this.sendingDate = sendingDate;
-    }
-
-    public Date getSendingDate() {
-        return this.sendingDate;
     }
 
     public void setDeliveryType(DeliveryType deliveryType) {
@@ -403,13 +371,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.shortDescription = shortDescription;
     }
 
-    public void setRegistered(boolean isRegistered) {
-        this.registered = isRegistered;
-    }
-
-    public boolean isRegistered() {
-        return registered;
-    }
 
     @Transient
     public DocumentType getDocumentType() {
@@ -437,14 +398,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
 
     public boolean isDeleted() {
         return deleted;
-    }
-
-    public int getGrouping() {
-        return grouping;
-    }
-
-    public void setGrouping(int grouping) {
-        this.grouping = grouping;
     }
 
     public String getWFResultDescription() {
@@ -539,14 +492,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
 
     public UserAccessLevel getUserAccessLevel() {
         return userAccessLevel;
-    }
-
-    public void setTemplateFlag(boolean templateFlag) {
-        this.templateFlag = templateFlag;
-    }
-
-    public boolean getTemplateFlag() {
-        return templateFlag;
     }
 
     //TODO сделать класс-обертку

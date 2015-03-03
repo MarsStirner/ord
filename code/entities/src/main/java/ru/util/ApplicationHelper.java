@@ -81,7 +81,7 @@ public final class ApplicationHelper {
     public static Date getNotNull(Date param) {
         if (param == null) {
             Calendar calendar = Calendar.getInstance(ru.util.ApplicationHelper.getLocale());
-            calendar.set(0, 0, 0);
+            calendar.set(0, Calendar.JANUARY, 0);
             param = calendar.getTime();
         }
         return param;

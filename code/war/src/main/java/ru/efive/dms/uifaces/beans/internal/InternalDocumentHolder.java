@@ -156,13 +156,13 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     private boolean checkState(final InternalDocument document, final User user) {
         if (document == null) {
             setState(STATE_NOT_FOUND);
-            LOGGER.warn("IncomingDocument NOT FOUND");
+            LOGGER.warn("NOT FOUND");
             return false;
         }
         if (document.isDeleted()) {
             setState(STATE_DELETED);
             setStateComment("Документ удален");
-            LOGGER.warn("IncomingDocument[{}] IS DELETED", document.getId());
+            LOGGER.warn("Document[{}] IS DELETED", document.getId());
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
@@ -171,7 +171,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня " +
                     "допуска.");
-            LOGGER.warn("IncomingDocument[{}] has higher accessLevel[{}] then user[{}]", document.getId(),
+            LOGGER.warn("[{}] has higher accessLevel[{}] then user[{}]", document.getId(),
                     docAccessLevel.getValue(), user.getCurrentUserAccessLevel() != null ? user
                             .getCurrentUserAccessLevel().getValue() : "null");
             return false;

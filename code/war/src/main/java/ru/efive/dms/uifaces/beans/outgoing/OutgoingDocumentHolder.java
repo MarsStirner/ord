@@ -12,7 +12,6 @@ import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.contragent.ContragentListSelectModalBean;
-import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentSelectModal;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
@@ -182,7 +181,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             hibernateTemplate.initialize(document.getController());
             hibernateTemplate.initialize(document.getAuthor());
             hibernateTemplate.initialize(document.getNomenclature());
-            hibernateTemplate.initialize(document.getCauseIncomingDocument());
             hibernateTemplate.initialize(document.getPersonReaders());
             hibernateTemplate.initialize(document.getPersonEditors());
             hibernateTemplate.initialize(document.getAgreementUsers());
@@ -215,13 +213,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         final LocalDateTime created = new LocalDateTime();
         document.setCreationDate(created.toDate());
         document.setAuthor(sessionManagement.getLoggedUser());
-
-        String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
-        if (StringUtils.isNotEmpty(isDocumentTemplate) && "yes".equals(isDocumentTemplate.toLowerCase())) {
-            document.setTemplateFlag(true);
-        } else {
-            document.setTemplateFlag(false);
-        }
 
         DocumentForm form = null;
         List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Исходящие документы", "Письмо");
@@ -747,26 +738,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             getUserList().setFilter("");
             getUserList().markNeedRefresh();
             setUser(null);
-        }
-    };
-
-    public IncomingDocumentSelectModal getCauseIncomingDocumentSelectModal() {
-        return incomingDocumentSelectModal;
-    }
-
-    private IncomingDocumentSelectModal incomingDocumentSelectModal = new IncomingDocumentSelectModal() {
-
-        @Override
-        protected void doSave() {
-            getDocument().setCauseIncomingDocument(getIncomingDocument());
-            super.doSave();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getIncomingDocumentList().setFilter("");
-            getIncomingDocumentList().markNeedRefresh();
         }
     };
 
