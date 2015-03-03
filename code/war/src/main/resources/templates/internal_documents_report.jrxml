@@ -59,10 +59,6 @@ where dms_internal_documents.`id`=$P{docId}]]>
      dms_internal_documents.`registrationDate` AS dms_internal_documents_registrationDate,
      dms_internal_documents.`signatureDate` AS dms_internal_documents_signatureDate,
      dms_internal_documents.`signer_id` AS dms_internal_documents_signer_id,
-     dms_internal_documents.`boxNumber` AS dms_internal_documents_boxNumber,
-     dms_internal_documents.`fundNumber` AS dms_internal_documents_fundNumber,
-     dms_internal_documents.`shelfNumber` AS dms_internal_documents_shelfNumber,
-     dms_internal_documents.`standNumber` AS dms_internal_documents_standNumber,
      dms_system_persons.`id` AS dms_system_persons_id,
      dms_system_persons.`created` AS dms_system_persons_created,
      dms_system_persons.`deleted` AS dms_system_persons_deleted,
@@ -101,10 +97,6 @@ and dms_internal_documents.`deleted` = 0
 	<field name="dms_internal_documents_registrationDate" class="java.sql.Timestamp"/>
 	<field name="dms_internal_documents_signatureDate" class="java.sql.Timestamp"/>
 	<field name="dms_internal_documents_signer_id" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_boxNumber" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_fundNumber" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_shelfNumber" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_standNumber" class="java.lang.Integer"/>
 	<field name="dms_system_persons_id" class="java.lang.Integer"/>
 	<field name="dms_system_persons_created" class="java.sql.Timestamp"/>
 	<field name="dms_system_persons_deleted" class="java.lang.Boolean"/>

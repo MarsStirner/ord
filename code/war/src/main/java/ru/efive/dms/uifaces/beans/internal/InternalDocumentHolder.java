@@ -245,14 +245,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         final LocalDateTime created = new LocalDateTime();
         doc.setCreationDate(created.toDate());
 
-        String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-                .get("isDocumentTemplate");
-        if (StringUtils.isNotEmpty(isDocumentTemplate) && "yes".equals(isDocumentTemplate.toLowerCase())) {
-            doc.setTemplateFlag(true);
-        } else {
-            doc.setTemplateFlag(false);
-        }
-
         DocumentForm form = null;
         List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
                 .findByCategoryAndValue("Внутренние документы", "Служебная записка");
@@ -402,7 +394,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         try {
             if (details.getAttachment() != null) {
                 Attachment attachment = details.getAttachment();
-                //attachment.setFileName(new String(attachment.getFileName().getBytes(), "utf-8"));
                 attachment.setFileName(attachment.getFileName());
                 if (getDocumentId() == null || getDocumentId() == 0) {
                     attachments.add(attachment);

@@ -93,25 +93,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     private int appendixiesCount;
 
     /**
-     * Номер фонда
-     */
-    private int fundNumber;
-
-    /**
-     * Номер стеллажа
-     */
-    private int standNumber;
-
-    /**
-     * Номер полки
-     */
-    private int shelfNumber;
-
-    /**
-     * Номер короба
-     */
-    private int boxNumber;
-    /**
      * Исполнитель
      */
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
@@ -490,42 +471,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         }
         Collections.sort(result);
         return result;
-    }
-
-
-    public void setBoxNumber(int boxNumber) {
-        this.boxNumber = boxNumber;
-    }
-
-    public int getBoxNumber() {
-        return boxNumber;
-    }
-
-
-    public void setShelfNumber(int shelfNumber) {
-        this.shelfNumber = shelfNumber;
-    }
-
-    public int getShelfNumber() {
-        return shelfNumber;
-    }
-
-
-    public void setStandNumber(int standNumber) {
-        this.standNumber = standNumber;
-    }
-
-    public int getStandNumber() {
-        return standNumber;
-    }
-
-
-    public void setFundNumber(int fundNumber) {
-        this.fundNumber = fundNumber;
-    }
-
-    public int getFundNumber() {
-        return fundNumber;
     }
 
     public List<User> getPersonReaders() {

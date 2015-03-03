@@ -169,10 +169,6 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
             this.setCopiesCount(0);
             this.setSheetsCount(0);
             this.setAppendixiesCount(0);
-            this.setFundNumber(0);
-            this.setStandNumber(0);
-            this.setShelfNumber(0);
-            this.setBoxNumber(0);
             this.setStatusId("");
             this.setOfficeKeepingVolume(null);
 
@@ -367,21 +363,6 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
         filters.put("appendixiesCount", appendixiesCount);
     }
 
-    public void setFundNumber(int fundNumber) {
-        filters.put("fundNumber", fundNumber);
-    }
-
-    public void setStandNumber(int standNumber) {
-        filters.put("standNumber", standNumber);
-    }
-
-    public void setShelfNumber(int shelfNumber) {
-        filters.put("shelfNumber", shelfNumber);
-    }
-
-    public void setBoxNumber(int boxNumber) {
-        filters.put("boxNumber", boxNumber);
-    }
 
     public void setStatusId(String statusId) {
         filters.put("statusId", statusId);
@@ -443,21 +424,6 @@ public class InternalDocumentSearchListHolder extends AbstractDocumentListHolder
         return (Integer) filters.get("appendixiesCount");
     }
 
-    public int getFundNumber() {
-        return (Integer) filters.get("fundNumber");
-    }
-
-    public int getStandNumber() {
-        return (Integer) filters.get("standNumber");
-    }
-
-    public int getShelfNumber() {
-        return (Integer) filters.get("shelfNumber");
-    }
-
-    public int getBoxNumber() {
-        return (Integer) filters.get("boxNumber");
-    }
 
     public String getStatusId() {
         return (String) filters.get("statusId");

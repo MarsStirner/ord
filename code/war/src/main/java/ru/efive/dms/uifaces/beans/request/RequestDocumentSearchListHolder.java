@@ -32,7 +32,7 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
     }
 
     public void setNeedRefresh(boolean needRefresh) {
-        if (needRefresh == true) {
+        if (needRefresh) {
             this.markNeedRefresh();
         }
         this.needRefresh = needRefresh;
@@ -40,8 +40,7 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
 
     protected List<RequestDocument> getHashDocuments(int fromIndex, int toIndex) {
         toIndex = (this.getHashDocuments().size() < fromIndex + toIndex) ? this.getHashDocuments().size() : fromIndex + toIndex;
-        List<RequestDocument> result = new ArrayList<RequestDocument>(this.getHashDocuments().subList(fromIndex, toIndex));
-        return result;
+        return new ArrayList<RequestDocument>(this.getHashDocuments().subList(fromIndex, toIndex));
     }
 
     protected List<RequestDocument> getHashDocuments() {
@@ -200,10 +199,6 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
             this.setCopiesCount(0);
             this.setSheetsCount(0);
             this.setAppendixiesCount(0);
-            this.setFundNumber(0);
-            this.setStandNumber(0);
-            this.setShelfNumber(0);
-            this.setBoxNumber(0);
             this.setStatusId("");
 
             markNeedRefresh();
@@ -297,9 +292,6 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
         filters.put("registrationNumber", registrationNumber);
     }
 
-    /*public void setRegistrationDate(Date registrationDate) {
-         filters.put("registrationDate",registrationDate);
-     }*/
     public void setStartRegistrationDate(Date registrationDate) {
         filters.put("startRegistrationDate", registrationDate);
     }
@@ -312,10 +304,6 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
     public void setAuthor(User author) {
         filters.put("author", author);
     }
-
-    /*public void setExecutionDate(Date executionDate) {
-         filters.put("executionDate",executionDate);
-     }*/
 
     public void setStartExecutionDate(Date startExecutionDate) {
         filters.put("startExecutionDate", startExecutionDate);
@@ -381,22 +369,6 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
         filters.put("appendixiesCount", appendixiesCount);
     }
 
-    public void setFundNumber(int fundNumber) {
-        filters.put("fundNumber", fundNumber);
-    }
-
-    public void setStandNumber(int standNumber) {
-        filters.put("standNumber", standNumber);
-    }
-
-    public void setShelfNumber(int shelfNumber) {
-        filters.put("shelfNumber", shelfNumber);
-    }
-
-    public void setBoxNumber(int boxNumber) {
-        filters.put("boxNumber", boxNumber);
-    }
-
     public void setSenderMiddleName(String senderMiddleName) {
         filters.put("senderMiddleName", senderMiddleName);
     }
@@ -455,7 +427,6 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
     }
 
     public User getController() {
-        //if((User) filters.get("controller") !=null){System.out.println("######"+((User) filters.get("controller")).getLastName());}
         return (User) filters.get("controller");
     }
 
@@ -497,22 +468,6 @@ public class RequestDocumentSearchListHolder extends AbstractDocumentListHolderB
 
     public int getAppendixiesCount() {
         return (Integer) filters.get("appendixiesCount");
-    }
-
-    public int getFundNumber() {
-        return (Integer) filters.get("fundNumber");
-    }
-
-    public int getStandNumber() {
-        return (Integer) filters.get("standNumber");
-    }
-
-    public int getShelfNumber() {
-        return (Integer) filters.get("shelfNumber");
-    }
-
-    public int getBoxNumber() {
-        return (Integer) filters.get("boxNumber");
     }
 
     public String getSenderFirstName() {

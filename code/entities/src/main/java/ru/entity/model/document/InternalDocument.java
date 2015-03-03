@@ -57,7 +57,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
      * Срок исполнения
      */
     @Column(name = "executionDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
+    @Temporal(value = TemporalType.DATE)
     private Date executionDate;
 
     /**
@@ -99,9 +99,8 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     private User author;
 
     /**
-     * Ответственный
+     * Ответственный , следит за сроками исполнения документов и пинает, если исполнители не успевают.
      */
-    //TODO это кто такой?
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "responsible_id")
     private User responsible;
@@ -128,30 +127,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @JoinColumn(name = "signer_id")
     private User signer;
 
-
-    /**
-     * Номер фонда
-     */
-    private int fundNumber;
-
-    /**
-     * Номер стеллажа
-     */
-    private int standNumber;
-
-    /**
-     * Номер полки
-     */
-    private int shelfNumber;
-
-    /**
-     * Номер короба
-     */
-    private int boxNumber;
-    /**
-     * Является ли документ шаблоном
-     */
-    private boolean templateFlag;
 
     /**
      * Уровень допуска
@@ -483,38 +458,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         return result;
     }
 
-    public void setBoxNumber(int boxNumber) {
-        this.boxNumber = boxNumber;
-    }
-
-    public int getBoxNumber() {
-        return boxNumber;
-    }
-
-    public void setShelfNumber(int shelfNumber) {
-        this.shelfNumber = shelfNumber;
-    }
-
-    public int getShelfNumber() {
-        return shelfNumber;
-    }
-
-    public void setStandNumber(int standNumber) {
-        this.standNumber = standNumber;
-    }
-
-    public int getStandNumber() {
-        return standNumber;
-    }
-
-    public void setFundNumber(int fundNumber) {
-        this.fundNumber = fundNumber;
-    }
-
-    public int getFundNumber() {
-        return fundNumber;
-    }
-
     public List<User> getPersonReaders() {
         return personReaders;
     }
@@ -571,14 +514,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
 
     public UserAccessLevel getUserAccessLevel() {
         return userAccessLevel;
-    }
-
-    public void setTemplateFlag(boolean templateFlag) {
-        this.templateFlag = templateFlag;
-    }
-
-    public boolean getTemplateFlag() {
-        return templateFlag;
     }
 
     public void setRecipientGroups(Set<Group> recipientGroups) {
