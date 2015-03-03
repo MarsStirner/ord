@@ -165,7 +165,7 @@
                 </h:outputText>
             </div>
             <div class="title">
-                <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
+                <h:outputText value="#{request_doc.document.getDocumentStatus().getName()}"/>
             </div>
             <h:panelGroup rendered="#{request_doc.notFoundState}">
                 <div class="name">
@@ -341,7 +341,7 @@
                     </table>
                 </div>
             </h:panelGroup>
-            <p:tabView id="content_table" widgetVar="incomingDocumentTabViewVar" activeIndex="0" effect="fade"
+            <p:tabView id="content_table" widgetVar="requestDocumentTabViewVar" activeIndex="0" effect="fade"
                        effectDuration="fast">
                 <p:tab title="Реквизиты"
                        rendered="#{request_doc.viewState or request_doc.createState or request_doc.editState}">

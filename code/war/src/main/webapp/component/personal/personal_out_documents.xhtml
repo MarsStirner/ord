@@ -71,7 +71,7 @@
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <h:outputText value="#{row.registered? row.registrationDate: row.creationDate}">
+                                <h:outputText value="#{row.registrationDate != null ? row.registrationDate : row.creationDate}">
                                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                                 </h:outputText>
                             </e5ui:column>
