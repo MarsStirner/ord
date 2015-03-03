@@ -52,7 +52,7 @@
                              title="Поиск"/>
                 <h:commandButton value=" " action="#{in_documents.changePageOffset(0)}"
                                  styleClass="searchbutton">
-                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
+                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
                 </h:commandButton>
                 <h:outputLink target="_blank" value="/component/in/in_document_search_form.xhtml"
                               title="Перейти к форме расширенного поиска"
