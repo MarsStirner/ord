@@ -1,6 +1,6 @@
 package ru.util;
 
-import ru.entity.model.crm.Contragent;
+import org.joda.time.LocalDate;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.user.User;
@@ -70,6 +70,15 @@ public final class ApplicationHelper {
         }
     }
 
+    /**
+     * Получить следующий от заданной даты день
+     * @param date  заданная дата, к которой прибавляется день
+     * @return дата, указывающая на следующий день
+     */
+    public static Date getNextDayDate(final Date date){
+        return new LocalDate(date).plusDays(1).toDate();
+    }
+
 
     public static String getNotNull(String param) {
         if (param == null) {
@@ -107,13 +116,5 @@ public final class ApplicationHelper {
         }
         return param;
     }
-
-    public static Contragent getNotNull(Contragent param) {
-        if (param == null) {
-            param = new Contragent();
-        }
-        return param;
-    }
-
 
 }

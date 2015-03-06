@@ -187,7 +187,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Адресаты
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_incoming_documents_recipients",
             joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
@@ -197,7 +197,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Адресаты (группы)
      */
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "dms_incoming_documents_recipient_groups",
             joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
@@ -207,7 +207,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Пользователи-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_incoming_documents_person_readers")
     @IndexColumn(name = "ID1")
@@ -216,7 +216,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Пользователи-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_incoming_documents_person_editors")
     @IndexColumn(name = "ID1")
@@ -226,7 +226,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Роли-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_incoming_documents_role_readers")
     @IndexColumn(name = "ID2")
@@ -235,7 +235,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Роли-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_incoming_documents_role_editors")
     @IndexColumn(name = "ID2")
@@ -244,7 +244,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Исполнители
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_incoming_documents_executors")
     @IndexColumn(name = "ID3")

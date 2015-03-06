@@ -157,7 +157,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Адресаты (пользователи)
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_internal_documents_recipients",
             joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
@@ -168,7 +168,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
      * Адресаты (группы)
      */
     @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
     @JoinTable(name = "dms_internal_documents_recipient_groups",
             joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
@@ -179,7 +178,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Пользователи-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_internal_documents_person_readers")
     @IndexColumn(name = "ID1")
@@ -188,7 +187,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Пользователи-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_internal_documents_person_editors")
     @IndexColumn(name = "ID1")
@@ -198,7 +197,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Пользователи-согласующие
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_internal_documents_agreementUsers")
     private Set<User> agreementUsers;
@@ -206,7 +205,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Роли-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_internal_documents_role_readers")
     @IndexColumn(name = "ID2")
@@ -215,7 +214,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Роли-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.TRUE)
     @JoinTable(name = "dms_internal_documents_role_editors")
     @IndexColumn(name = "ID2")
@@ -237,8 +236,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * История
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "dms_internal_document_history",
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})

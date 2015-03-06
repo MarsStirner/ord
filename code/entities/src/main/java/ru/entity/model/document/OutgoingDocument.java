@@ -142,7 +142,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     private String erpNumber;
 
 
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "dms_outgoing_documents_contragents")
     @IndexColumn(name = "ID")
     private List<Contragent> recipientContragents;
@@ -150,21 +150,21 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Исполнитель
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_executors")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="executor_id", nullable = true)
     private User executor;
 
     /**
      * Руководитель
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_signers", inverseJoinColumns = {@JoinColumn(name = "signer_id")})
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "controller_id", nullable = true)
     private User controller;
 
     /**
      * Пользователи-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "dms_outgoing_documents_person_readers")
     @IndexColumn(name = "ID1")
@@ -173,7 +173,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Пользователи-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "dms_outgoing_documents_person_editors")
     @IndexColumn(name = "ID1")
@@ -182,7 +182,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Пользователи-согласующие
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "dms_outgoing_documents_agreementUsers")
     private Set<User> agreementUsers;
@@ -190,7 +190,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Роли-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "dms_outgoing_documents_role_readers")
     @IndexColumn(name = "ID2")
@@ -199,7 +199,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Роли-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "dms_outgoing_documents_role_editors")
     @IndexColumn(name = "ID2")
@@ -212,8 +212,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * История
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "dms_outgoing_document_history",
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
