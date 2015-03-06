@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui"
+        >
+<h:head>
+    <h:outputStylesheet library="css" name="style.css"/>
+    <title>
+        <ui:insert name="pageTitle">Документооборот ФНКЦ ДГОИ</ui:insert>
+    </title>
+    <ui:insert name="running_head"/>
+</h:head>
+<h:body id="main_body">
+    <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
+    <c:set var="isAdministrator" value="#{sessionManagement.isAdministrator()}" scope="session"/>
+    <c:set var="isRecorder" value="#{sessionManagement.isRecorder()}" scope="session"/>
+    <c:set var="isOfficeManager" value="#{sessionManagement.isOfficeManager()}" scope="session"/>
+    <c:set var="isRequestManager" value="#{sessionManagement.isRequestManager()}" scope="session"/>
+    <c:set var="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}" scope="session"/>
+    <c:set var="isOuter" value="#{sessionManagement.isOuter()}" scope="session"/>
+    <c:set var="isHr" value="#{sessionManagement.isHr()}" scope="session"/>
+    <c:set var="isFilling" value="#{sessionManagement.isFilling()}" scope="session"/>
+    <h:form>
+        <ui:insert name="header">
+            <div id="form_header">
+                <div class="menu">
+                    <ui:insert name="headerHomeButton">
+                        <div class="defbutton">
+                            <h:graphicImage value="#{resource['images:home.png']}"/>
+                            Вернуться к общему списку
+                        </div>
+                    </ui:insert>
+                    <ui:insert name="headerSearchButton">
+                        <div class="defbutton">
+                            <h:graphicImage value="#{resource['images:button-search.png']}"/>
+                            Найти
+                        </div>
+                    </ui:insert>
+                    <ui:insert name="headerClearButton">
+                        <div class="defbutton">
+                            <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                            Очистить фильтр
+                        </div>
+                    </ui:insert>
+                </div>
+            </div>
+        </ui:insert>
+        <div id="header_content">
+            <div class="name">
+                <div class="searchFormName">
+                    <ui:insert name="searchFormName">
+                        <h:outputText value="Форма расширенного поиска [TYPE] документов"/>
+                    </ui:insert>
+                </div>
+            </div>
+        </div>
+        <p:panel id ="searchParametersPanel" header="Настройки фильтра" toggleable="true" widgetVar="searchParametersPanelVar">
+            <ui:insert name="searchParameters">
+                <h:outputText value="Таблица с настройками фильтра"/>
+            </ui:insert>
+        </p:panel>
+        <h:link id="results"/>
+        <p:panel id ="searchResultsPanel" header="Результаты поиска" toggleable="true" widgetVar="searchResultsPanelVar">
+            <ui:insert name="searchResults">
+                <h:outputText value="Таблица с результатами поиска"/>
+            </ui:insert>
+        </p:panel>
+
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
+
+        <!--Модальные диалоги для выбора сущностей при фильтрации-->
+        <ui:insert name="modalDialogs"/>
+
+    </h:form>
+</h:body>
+</html>

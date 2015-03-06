@@ -16,6 +16,9 @@ import ru.entity.model.user.User;
 
 import java.util.*;
 
+import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.util.ApplicationHelper.getNextDayDate;
+
 public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocument> {
 
     @Override
@@ -75,20 +78,23 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         detachedCriteria.add(Restrictions.ilike("registrationNumber", "%" + in_criteria + "%"));
 
         LocalDate currentDate = new LocalDate();
-        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()));
+        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)",
+                currentDate.getYear() + "%", new StringType()));
 
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
-    public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
+    public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user,
+                                                         boolean showDeleted, boolean showDrafts) {
         DetachedCriteria detachedCriteria = getAccessControlSearchCriteriaByUser(user);
         addDraftsAndDeletedRestrictions(detachedCriteria, showDeleted, showDrafts);
-        System.out.println("subSrart"); //TODO wtf? =)
-        return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria, in_map), filter), -1, 0);
+        return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria,
+                in_map), filter), -1, 0);
 
     }
 
-    public long countAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
+    public long countAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted,
+                                        boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
         return getCountOf(getSearchCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), filter));
@@ -104,31 +110,36 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         return getCountOf(getConjunctionSearchCriteria(in_searchCriteria, in_map));
     }
 
-    public List<IncomingDocument> findAllDocuments(Map<String, Object> in_map, boolean showDeleted, boolean showDrafts, int offset, int count) {
+    public List<IncomingDocument> findAllDocuments(Map<String, Object> in_map, boolean showDeleted, boolean
+            showDrafts, int offset, int count) {
         DetachedCriteria in_searchCriteria = DetachedCriteria.forClass(getPersistentClass());
         in_searchCriteria = setCriteriaAliases(in_searchCriteria);
         in_searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        addDeletedRestriction(in_searchCriteria, showDeleted);
-
-        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset, count);
+        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
+        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset,
+                count);
     }
 
-    public List<IncomingDocument> findAllDocuments(Map<String, Object> in_map, String filter, boolean showDeleted, boolean showDrafts) {
+    public List<IncomingDocument> findAllDocuments(Map<String, Object> in_map, String filter, boolean showDeleted,
+                                                   boolean showDrafts) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria = setCriteriaAliases(detachedCriteria);
         addDraftsAndDeletedRestrictions(detachedCriteria, showDeleted, showDrafts);
-        return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria, in_map), filter), -1, 0);
+        return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria,
+                in_map), filter), -1, 0);
     }
 
-    public long countAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean showDrafts) {
+    public long countAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean
+            showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         in_searchCriteria = setCriteriaAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
         return getCountOf(getConjunctionSearchCriteria(in_searchCriteria, in_map));
     }
 
-    public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
+    public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted,
+                                                         boolean showDrafts, int offset, int count, String orderBy,
+                                                         boolean orderAsc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         in_searchCriteria = setCriteriaAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -140,7 +151,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
                 addOrder(in_searchCriteria, orderBy, orderAsc);
             }
         }
-        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset, count);
+        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset,
+                count);
     }
 
     public long countAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
@@ -150,7 +162,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         return getCountOf(getSearchCriteria(in_searchCriteria, filter));
     }
 
-    public List<IncomingDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
+    public List<IncomingDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean
+            showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         in_searchCriteria = setCriteriaAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -158,7 +171,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
 
-    public List<IncomingDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
+    public List<IncomingDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean
+            showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         in_searchCriteria = setCriteriaAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -184,10 +198,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
     //// Запросы с проверкой на руководителя документа /////////////////////////////////////////////////////////////////
     @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(
-            final String filter,
-            final User user,
-            final boolean showDeleted) {
+    public List<IncomingDocument> findControlledDocumentsByUser(final String filter, final User user, final boolean
+            showDeleted) {
         DetachedCriteria resultCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
         resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         return getHibernateTemplate().findByCriteria(resultCriteria);
@@ -195,14 +207,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
 
     @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(
-            final String filter,
-            final User user,
-            final boolean showDeleted,
-            final int offset,
-            final int count,
-            final String order,
-            final boolean asc) {
+    public List<IncomingDocument> findControlledDocumentsByUser(final String filter, final User user, final boolean
+            showDeleted, final int offset, final int count, final String order, final boolean asc) {
         DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
         addOrder(in_searchCriteria, order, asc);
         in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
@@ -216,16 +222,11 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
     @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(
-            final String filter,
-            final User user,
-            final boolean showDeleted,
-            final Date beforeDate,
-            final int offset,
-            final int count,
-            final String order,
-            final boolean asc) {
-        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate);
+    public List<IncomingDocument> findControlledDocumentsByUser(final String filter, final User user, final boolean
+            showDeleted, final Date beforeDate, final int offset, final int count, final String order, final boolean
+            asc) {
+        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter,
+                beforeDate);
         addOrder(in_searchCriteria, order, asc);
         in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
@@ -242,19 +243,22 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter));
     }
 
-    public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted, final Date beforeDate) {
+    public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted, final
+    Date beforeDate) {
         return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate));
     }
 
     /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не админ)
+     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не
+     * админ)
      *
      * @param user        пользователь, для которого генерируем критерии
      * @param showDeleted включать ли удаленные документы в результат
      * @param filter      поисковый шаблон
      * @return набор критериев для поиска требуемых документов
      */
-    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final String filter) {
+    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final
+    String filter) {
         final DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass());
         resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         setCriteriaAliases(resultCriteria);
@@ -262,21 +266,16 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             resultCriteria.add(Restrictions.eq("controller.id", user.getId()));
         }
         resultCriteria.add(Restrictions.isNotNull("executionDate"));
-        resultCriteria.add(Restrictions.in("statusId",
-                        ImmutableList.of(
-                                DocumentStatus.ON_REGISTRATION.getId(),
-                                DocumentStatus.CHECK_IN_2.getId(),
-                                DocumentStatus.ON_EXECUTION_80.getId()
-                        )
-                )
-        );
+        resultCriteria.add(Restrictions.in("statusId", ImmutableList.of(DocumentStatus.ON_REGISTRATION.getId(),
+                DocumentStatus.CHECK_IN_2.getId(), DocumentStatus.ON_EXECUTION_80.getId())));
         addDeletedRestriction(resultCriteria, showDeleted);
         getSearchCriteria(resultCriteria, filter);
         return resultCriteria;
     }
 
     /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не админ)
+     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не
+     * админ)
      *
      * @param user        пользователь, для которого генерируем критерии
      * @param showDeleted включать ли удаленные документы в результат
@@ -284,12 +283,15 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
      * @param beforeDate  Ограничение по дате, до которой должен быть срок исполнения
      * @return набор критериев для поиска требуемых документов
      */
-    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final String filter, final Date beforeDate) {
-        return getControlledDocumentsByUserCriteria(user, showDeleted, filter).add(Restrictions.lt("executionDate", beforeDate));
+    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final
+    String filter, final Date beforeDate) {
+        return getControlledDocumentsByUserCriteria(user, showDeleted, filter).add(Restrictions.lt("executionDate",
+                beforeDate));
     }
 
     /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -  руководитель (если не админ)
+     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -
+     * руководитель (если не админ)
      *
      * @param userList    список пользователей, для которых генерируем критерии
      * @param showDeleted включать ли удаленные документы в результат
@@ -297,19 +299,23 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
      * @param beforeDate  Ограничение по дате, до которой должен быть срок исполнения
      * @return набор критериев для поиска требуемых документов
      */
-    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted, String filter, Date beforeDate) {
-        return getControlledDocumentsByUserListCriteria(userList, showDeleted, filter).add(Restrictions.lt("executionDate", beforeDate));
+    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted,
+                                                                      String filter, Date beforeDate) {
+        return getControlledDocumentsByUserListCriteria(userList, showDeleted, filter).add(Restrictions.lt
+                ("executionDate", beforeDate));
     }
 
     /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -  руководитель (если не админ)
+     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -
+     * руководитель (если не админ)
      *
      * @param userList    список пользователей, для которых генерируем критерии
      * @param showDeleted включать ли удаленные документы в результат
      * @param filter      поисковый шаблон
      * @return набор критериев для поиска требуемых документов
      */
-    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted, String filter) {
+    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted,
+                                                                      String filter) {
         final DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass());
         resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         setCriteriaAliases(resultCriteria);
@@ -327,14 +333,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             resultCriteria.add(Restrictions.in("controller.id", userIdList));
         }
         resultCriteria.add(Restrictions.isNotNull("executionDate"));
-        resultCriteria.add(Restrictions.in("statusId",
-                        ImmutableList.of(
-                                DocumentStatus.ON_REGISTRATION.getId(),
-                                DocumentStatus.CHECK_IN_2.getId(),
-                                DocumentStatus.ON_EXECUTION_80.getId()
-                        )
-                )
-        );
+        resultCriteria.add(Restrictions.in("statusId", ImmutableList.of(DocumentStatus.ON_REGISTRATION.getId(),
+                DocumentStatus.CHECK_IN_2.getId(), DocumentStatus.ON_EXECUTION_80.getId())));
         addDeletedRestriction(resultCriteria, showDeleted);
         getSearchCriteria(resultCriteria, filter);
         return resultCriteria;
@@ -345,7 +345,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
 
     @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findDraftDocumentsByAuthor(String filter, User user, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
+    public List<IncomingDocument> findDraftDocumentsByAuthor(String filter, User user, boolean showDeleted, int
+            offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         detachedCriteria = setCriteriaAliases(detachedCriteria);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
@@ -405,8 +406,10 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         if (StringUtils.isNotEmpty(filter)) {
             Disjunction disjunction = Restrictions.disjunction();
             disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(deliveryDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(receivedDocumentDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
+            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(deliveryDate, '%d.%m.%Y') like lower(?)", filter
+                    + "%", new StringType()));
+            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(receivedDocumentDate, '%d.%m.%Y') like lower(?)" +
+                    "", filter + "%", new StringType()));
             disjunction.add(Restrictions.ilike("receivedDocumentNumber", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
 
@@ -436,7 +439,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
             String docType = getPersistentClass().getName();
             List<Integer> statusIdList = DocumentType.
-                    getStatusIdListByStrKey((docType.contains(".") ? docType.substring(docType.lastIndexOf(".") + 1) : docType), filter);
+                    getStatusIdListByStrKey((docType.contains(".") ? docType.substring(docType.lastIndexOf(".") + 1)
+                            : docType), filter);
             if (statusIdList.size() > 0) {
                 disjunction.add(Restrictions.in("statusId", statusIdList));
             }
@@ -452,82 +456,75 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
         if (in_map != null && !in_map.isEmpty()) {
             Conjunction conjunction = Restrictions.conjunction();
-            String in_key = "parentNumeratorId";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.isNotNull(in_key));
+
+            if (in_map.containsKey("parentNumeratorId")) {
+                conjunction.add(Restrictions.isNotNull("parentNumeratorId"));
             }
 
-            in_key = "registrationNumber";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(REGISTRATION_NUMBER_KEY)) {
+                conjunction.add(Restrictions.ilike("registrationNumber", in_map.get(REGISTRATION_NUMBER_KEY).toString
+                        (), MatchMode.ANYWHERE));
             }
 
-            in_key = "startRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(START_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("registrationDate", in_map.get(START_REGISTRATION_DATE_KEY)));
             }
 
-            in_key = "endRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(END_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("registrationDate", getNextDayDate((Date) in_map.get
+                        (END_REGISTRATION_DATE_KEY))));
             }
 
-            in_key = "startCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(START_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("creationDate", in_map.get(START_CREATION_DATE_KEY)));
             }
 
-            in_key = "endCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(END_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("creationDate", getNextDayDate((Date) in_map.get
+                        (END_CREATION_DATE_KEY))));
             }
 
-            in_key = "startDeliveryDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(START_DELIVERY_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("deliveryDate", in_map.get(START_DELIVERY_DATE_KEY)));
             }
 
-            in_key = "endDeliveryDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(END_DELIVERY_DATE_KEY)) {
+                conjunction.add(Restrictions.le("deliveryDate", getNextDayDate((Date) in_map.get
+                        (END_DELIVERY_DATE_KEY))));
             }
 
-            in_key = "startReceivedDocumentDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(START_RECEIVED_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("receivedDate", in_map.get(START_RECEIVED_DATE_KEY)));
             }
 
-            in_key = "endReceivedDocumentDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(END_RECEIVED_DATE_KEY)) {
+                conjunction.add(Restrictions.le("receivedDate", getNextDayDate((Date) in_map.get(END_RECEIVED_DATE_KEY))));
             }
 
-            in_key = "receivedDocumentNumber";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(RECEIVED_DOCUMENT_NUMBER_KEY) && StringUtils.isNotEmpty((String) in_map.get
+                    (RECEIVED_DOCUMENT_NUMBER_KEY))) {
+                conjunction.add(Restrictions.ilike("receivedDocumentNumber", in_map.get(RECEIVED_DOCUMENT_NUMBER_KEY)
+                        .toString(), MatchMode.ANYWHERE));
             }
 
-            in_key = "shortDescription";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(SHORT_DESCRIPTION_KEY) && StringUtils.isNotEmpty((String) in_map.get
+                    (SHORT_DESCRIPTION_KEY))) {
+                conjunction.add(Restrictions.ilike("shortDescription", in_map.get(SHORT_DESCRIPTION_KEY).toString(), MatchMode.ANYWHERE));
             }
 
-            in_key = "statusId";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.eq(in_key, Integer.parseInt(in_map.get(in_key).toString())));
+            if (in_map.containsKey(STATUS_KEY) && StringUtils.isNotEmpty((String) in_map.get(STATUS_KEY))) {
+                conjunction.add(Restrictions.eq("statusId", Integer.parseInt(in_map.get(STATUS_KEY).toString())));
             }
 
-            in_key = "controller";
-            if (in_map.containsKey(in_key)) {
-                User controller = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.eq(in_key + ".id", controller.getId()));
+            if (in_map.containsKey(CONTROLLER_KEY)) {
+                User controller = (User) in_map.get(CONTROLLER_KEY);
+                conjunction.add(Restrictions.eq("controller.id", controller.getId()));
             }
 
-            in_key = "recipientUsers";
-            if (in_map.containsKey(in_key)) {
-                List<User> recipients = (List<User>) in_map.get(in_key);
+            if (in_map.containsKey(RECIPIENTS_KEY)) {
+                final List<User> recipients = (List<User>) in_map.get(RECIPIENTS_KEY);
                 if (!recipients.isEmpty()) {
-                    List<Integer> recipientsId = new ArrayList<Integer>();
+                    List<Integer> recipientsId = new ArrayList<Integer>(recipients.size());
                     for (User user : recipients) {
                         recipientsId.add(user.getId());
                     }
@@ -535,17 +532,15 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
                 }
             }
 
-            in_key = "author";
-            if (in_map.containsKey(in_key)) {
-                User author = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.eq(in_key + ".id", author.getId()));
+            if (in_map.containsKey(AUTHOR_KEY)) {
+                User author = (User) in_map.get(AUTHOR_KEY);
+                conjunction.add(Restrictions.eq("author.id", author.getId()));
             }
 
-            in_key = "executors";
-            if (in_map.containsKey(in_key)) {
-                List<User> executors = (List<User>) in_map.get(in_key);
+            if (in_map.containsKey(EXECUTORS_KEY)) {
+                final List<User> executors = (List<User>) in_map.get(EXECUTORS_KEY);
                 if (!executors.isEmpty()) {
-                    List<Integer> executorsId = new ArrayList<Integer>();
+                    List<Integer> executorsId = new ArrayList<Integer>(executors.size());
                     for (User user : executors) {
                         executorsId.add(user.getId());
                     }
@@ -553,41 +548,32 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
                 }
             }
 
-            in_key = "deliveryType";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.eq(in_key + ".id", ((DeliveryType) in_map.get(in_key)).getId()));
+            if (in_map.containsKey(DELIVERY_TYPE_KEY)) {
+                conjunction.add(Restrictions.eq("deliveryType.id", ((DeliveryType) in_map.get(DELIVERY_TYPE_KEY)).getId()));
             }
 
-            in_key = "startExecutionDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(START_EXECUTION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("executionDate", in_map.get(START_EXECUTION_DATE_KEY)));
             }
 
-            in_key = "endExecutionDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), in_map.get(in_key)));
+            if (in_map.containsKey(END_EXECUTION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("executionDate", getNextDayDate((Date) in_map.get
+                        (END_EXECUTION_DATE_KEY))));
             }
 
-            in_key = "form";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.eq(in_key + ".id", ((DocumentForm) in_map.get(in_key)).getId()));
+            if (in_map.containsKey(FORM_KEY)) {
+                conjunction.add(Restrictions.eq("form.id", ((DocumentForm) in_map.get(FORM_KEY)).getId()));
             }
 
-            in_key = "templateFlag";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.eq(in_key, Boolean.parseBoolean(in_map.get(in_key).toString())));
+            if (in_map.containsKey(CONTRAGENT_KEY)) {
+                Contragent contragent = (Contragent) in_map.get(CONTRAGENT_KEY);
+                conjunction.add(Restrictions.eq("contragent.id", contragent.getId()));
             }
 
-            in_key = "contragent";
-            if (in_map.containsKey(in_key)) {
-                Contragent contragent = (Contragent) in_map.get(in_key);
-                conjunction.add(Restrictions.eq(in_key + ".id", contragent.getId()));
-            }
-
-            in_key = "officeKeepingVolume";
-            if (in_map.containsKey(in_key)) {
+            if (in_map.containsKey(OFFICE_KEEPING_VOLUME_KEY)) {
                 DetachedCriteria subCriterion = DetachedCriteria.forClass(PaperCopyDocument.class);
-                subCriterion.add(Restrictions.eq("officeKeepingVolume.id", ((OfficeKeepingVolume) in_map.get(in_key)).getId()));
+                subCriterion.add(Restrictions.eq("officeKeepingVolume.id", ((OfficeKeepingVolume) in_map.get(OFFICE_KEEPING_VOLUME_KEY))
+                        .getId()));
                 subCriterion.add(Restrictions.ilike("parentDocumentId", "incoming_", MatchMode.ANYWHERE));
                 List<PaperCopyDocument> in_results = getHibernateTemplate().findByCriteria(subCriterion);
                 List<Integer> incomingDocumentsId = new ArrayList<Integer>();
@@ -597,9 +583,6 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
                 }
                 conjunction.add(Restrictions.in("id", incomingDocumentsId));
             }
-
-            //TODO: поиск по адресатам
-
             criteria.add(conjunction);
         }
         setCriteriaAliases(criteria);
@@ -608,6 +591,7 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
     protected DetachedCriteria getAccessControlSearchCriteriaByUser(User user) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
+        detachedCriteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         Disjunction disjunction = Restrictions.disjunction();
 
         int userId = user.getId();
@@ -635,7 +619,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             }
             detachedCriteria.add(disjunction);
         }
-        int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
+        int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() :
+                1);
         detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
         return detachedCriteria;
     }
@@ -656,10 +641,13 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
      * @param orderAsc    сортировка по возрастанию?
      * @return список документов, удовлетворяющий всем ограничениям
      */
-    public List<IncomingDocument> findAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, boolean showDrafts, int offset, int pageSize, String orderBy, boolean orderAsc) {
+    public List<IncomingDocument> findAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted,
+                                                             boolean showDrafts, int offset, int pageSize, String
+            orderBy, boolean orderAsc) {
         if (userList.size() == 1) {
             // Если в списке один пользователь - то вызов запроса по одному пользоваетлю
-            return findAllDocumentsByUser(filter, userList.get(0), showDeleted, showDrafts, offset, pageSize, orderBy, orderAsc);
+            return findAllDocumentsByUser(filter, userList.get(0), showDeleted, showDrafts, offset, pageSize,
+                    orderBy, orderAsc);
         }
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
         in_searchCriteria = setCriteriaAliases(in_searchCriteria);
@@ -675,7 +663,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
         in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, pageSize);
+        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset,
+                pageSize);
         if (ids.isEmpty()) {
             return new ArrayList<IncomingDocument>(0);
         }
@@ -685,7 +674,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
 
     /**
-     * Формирование ограничений на список входящих документов для группы пользователей (обычно используется для замещений)
+     * Формирование ограничений на список входящих документов для группы пользователей (обычно используется для
+     * замещений)
      *
      * @param userList
      * @return
@@ -733,17 +723,14 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
             }
             detachedCriteria.add(disjunction);
         }
-        //TODO починить поиском наибольшего в сборе или уточнять
-//        int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
-//        detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
-
         return detachedCriteria;
     }
 
     /**
      * Подсчет количества документов, доступных группе пользователей
      */
-    public long countAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, boolean showDrafts) {
+    public long countAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, boolean
+            showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
         in_searchCriteria = setCriteriaAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -751,8 +738,10 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
     }
 
 
-    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, Date beforeDate, int offset, int pageSize, String orderBy, boolean asc) {
-        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserListCriteria(userList, showDeleted, filter, beforeDate);
+    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean
+            showDeleted, Date beforeDate, int offset, int pageSize, String orderBy, boolean asc) {
+        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserListCriteria(userList, showDeleted, filter,
+                beforeDate);
         addOrder(in_searchCriteria, orderBy, asc);
         in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
@@ -764,7 +753,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, orderBy, asc));
     }
 
-    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, int offset, int pageSize, String orderBy, boolean asc) {
+    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean
+            showDeleted, int offset, int pageSize, String orderBy, boolean asc) {
         DetachedCriteria in_searchCriteria = getControlledDocumentsByUserListCriteria(userList, showDeleted, filter);
         addOrder(in_searchCriteria, orderBy, asc);
         in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
@@ -777,7 +767,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
         return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, orderBy, asc));
     }
 
-    public long countControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, Date beforeDate) {
+    public long countControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, Date
+            beforeDate) {
         return getCountOf(getControlledDocumentsByUserListCriteria(userList, showDeleted, filter, beforeDate));
     }
 
@@ -819,7 +810,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
      * Добавление ограничения на удаленные документы в запрос
      *
      * @param in_searchCriteria запрос, куда будет добалено ограничение
-     * @param showDrafts        false - в запрос будет добавлено ограничение на проверку статуса документа, так чтобы его статус был НЕ "Проект документа"
+     * @param showDrafts        false - в запрос будет добавлено ограничение на проверку статуса документа, так чтобы
+     *                          его статус был НЕ "Проект документа"
      */
     private void addDraftsRestriction(final DetachedCriteria in_searchCriteria, final boolean showDrafts) {
         if (!showDrafts) {
@@ -831,7 +823,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
      * Добавление ограничения на удаленные документы в запрос
      *
      * @param in_searchCriteria запрос, куда будет добалено ограничение
-     * @param showDeleted       true - в запрос будет добавлено ограничение на проверку флага, так чтобы документ не был удален
+     * @param showDeleted       true - в запрос будет добавлено ограничение на проверку флага, так чтобы документ не
+     *                          был удален
      */
     private void addDeletedRestriction(final DetachedCriteria in_searchCriteria, final boolean showDeleted) {
         if (!showDeleted) {
@@ -846,7 +839,8 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
      * @param showDeleted       включать в результат удаленные документы
      * @param showDrafts        включать в результат документы, на прошедшие регистрацию
      */
-    private void addDraftsAndDeletedRestrictions(final DetachedCriteria in_searchCriteria, final boolean showDeleted, boolean showDrafts) {
+    private void addDraftsAndDeletedRestrictions(final DetachedCriteria in_searchCriteria, final boolean showDeleted,
+                                                 boolean showDrafts) {
         addDeletedRestriction(in_searchCriteria, showDeleted);
         addDraftsRestriction(in_searchCriteria, showDrafts);
     }

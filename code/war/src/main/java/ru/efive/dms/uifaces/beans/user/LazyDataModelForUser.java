@@ -43,14 +43,17 @@ public class LazyDataModelForUser extends LazyDataModel<User> implements Selecta
 
     @Override
     public List<User> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        final List<User> result = dao.findUsers(
+        return dao.findUsers(
                 filter,
                 false, false,
                 first, pageSize,
                 sortField, sortOrder == SortOrder.ASCENDING
         );
-        this.setRowCount(((Long) dao.countUsers(filter, false, false)).intValue());
-        return result;
+    }
+
+    @Override
+    public int getRowCount(){
+       return (((Long) dao.countUsers(filter, false, false)).intValue());
     }
 
 }

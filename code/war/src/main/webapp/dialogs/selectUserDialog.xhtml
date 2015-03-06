@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+
+<h:head>
+    <title><h:outputText value="#{personList.title}"/></title>
+</h:head>
+
+<h:body>
+    <h:form id="selectAuthorDialogForm">
+        <p:inputText id="filter" value="#{personList.filter}"/>
+        <p:commandButton value="Поиск">
+            <f:ajax execute="filter" render="selectPersonTable"/>
+        </p:commandButton>
+        <p:dataTable id="selectPersonTable"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{personList.lazyModel}"
+                     var="person_row"
+                     selectionMode="single"
+                     selection="#{personList.selectedUser}"
+                     lazy="true"
+                     widgetVar="selectPersonTableVar"
+                     scrollable="true"
+                     scrollHeight="400"
+                >
+            <p:column headerText="Фамилия">
+                <h:outputText value="#{person_row.lastName}"/>
+            </p:column>
+            <p:column headerText="Имя">
+                <h:outputText value="#{person_row.firstName}"/>
+            </p:column>
+            <p:column headerText="Отчество">
+                <h:outputText value="#{person_row.middleName}"/>
+            </p:column>
+        </p:dataTable>
+        <p:commandButton value="Выбрать" action="#{personList.closeDialog(true)}"/>
+        <p:commandButton value="Отмена" action="#{personList.closeDialog(false)}"/>
+    </h:form>
+</h:body>
+
+</html>
