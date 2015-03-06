@@ -11,7 +11,6 @@ public final class ApplicationDAONames {
     public static final String DEPARTMENT_DAO = "departmentDao";
     public static final String CONTRAGENT_DAO = "contragentDao";
     public static final String GROUP_TYPE_DAO = "groupTypeDao";
-    public static final String SCAN_DAO = "scanDao";
     public static final String DOCUMENT_FORM_DAO = "documentFormDao";
     public static final String USER_ACCESS_LEVEL_DAO = "userAccessLevelDao";
     public static final String PAPER_COPY_DOCUMENT_FORM_DAO = "paperCopyDao";
@@ -25,7 +24,6 @@ public final class ApplicationDAONames {
     public static final String SENDER_TYPE_DAO = "senderTypeDao";
     public static final String REGION_DAO = "regionDao";
     public static final String REPORT_DAO = "reportDao";
-    public static final String OFFICE_KEEPING_RECORD_DAO = "officeKeepingRecordDao";
     public static final String OFFICE_KEEPING_FILE_DAO = "officeKeepingFileDao";
     public static final String OFFICE_KEEPING_VOLUME_DAO = "officeKeepingVolumeDao";
     public static final String RECORD_BOOK_DAO = "recordBookDao";
