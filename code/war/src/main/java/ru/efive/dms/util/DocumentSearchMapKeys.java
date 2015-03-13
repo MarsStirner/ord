@@ -50,6 +50,21 @@ public final class DocumentSearchMapKeys {
     public static final String END_REGISTRATION_DATE_KEY = "endRegistrationDate";
 
     /**
+     * Дата подписания от .. до   (OUTGOING)
+     */
+    public static final String START_SIGNATURE_DATE_KEY = "startSignatureDate";
+    public static final String END_SIGNATURE_DATE_KEY = "endSignatureDate";
+
+    /**
+     * @deprecated  не используется, но возможно нужно
+     * Дата отправки от .. до   (OUTGOING)
+     */
+    @Deprecated
+    public static final String START_SENDING_DATE_KEY = "startSendingDate";
+    @Deprecated
+    public static final String END_SENDING_DATE_KEY = "endSendingDate";
+
+    /**
      * Дата доставки от .. до
      */
     public static final String START_DELIVERY_DATE_KEY = "startDeliveryDate";

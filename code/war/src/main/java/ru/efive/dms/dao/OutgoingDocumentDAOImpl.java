@@ -8,7 +8,6 @@ import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.DocumentForm;
-import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -17,6 +16,9 @@ import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 
 import java.util.*;
+
+import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.util.ApplicationHelper.getNextDayDate;
 
 //import ru.entity.model.document.IncomingDocument;
 
@@ -286,116 +288,83 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
 
     protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
         if ((in_map != null) && (in_map.size() > 0)) {
-            Conjunction conjunction = Restrictions.conjunction();
-            String in_key = "registrationNumber";
-            if (in_map.containsKey(in_key) && !in_map.get(in_key).equals("")) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            final Conjunction conjunction = Restrictions.conjunction();
+            if (in_map.containsKey(REGISTRATION_NUMBER_KEY)) {
+                conjunction.add(Restrictions.ilike("registrationNumber", in_map.get(REGISTRATION_NUMBER_KEY).toString
+                        (), MatchMode.ANYWHERE));
             }
-            in_key = "startCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
-            }
-
-            in_key = "endCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(START_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("registrationDate", in_map.get(START_REGISTRATION_DATE_KEY)));
             }
 
-            in_key = "startRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(END_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("registrationDate", getNextDayDate((Date) in_map.get
+                        (END_REGISTRATION_DATE_KEY))));
             }
 
-            in_key = "endRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(START_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("creationDate", in_map.get(START_CREATION_DATE_KEY)));
             }
 
-            in_key = "startSendingDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(END_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("creationDate", getNextDayDate((Date) in_map.get
+                        (END_CREATION_DATE_KEY))));
             }
 
-            in_key = "endSendingDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(SHORT_DESCRIPTION_KEY) && StringUtils.isNotEmpty((String) in_map.get
+                    (SHORT_DESCRIPTION_KEY))) {
+                conjunction.add(Restrictions.ilike("shortDescription", in_map.get(SHORT_DESCRIPTION_KEY).toString(), MatchMode.ANYWHERE));
             }
 
-            in_key = "shortDescription";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(STATUS_KEY) && StringUtils.isNotEmpty((String) in_map.get(STATUS_KEY))) {
+                conjunction.add(Restrictions.eq("statusId", Integer.parseInt(in_map.get(STATUS_KEY).toString())));
             }
 
-            in_key = "statusId";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.eq(in_key, Integer.parseInt(in_map.get(in_key).toString())));
+            if (in_map.containsKey(CONTROLLER_KEY)) {
+                User controller = (User) in_map.get(CONTROLLER_KEY);
+                conjunction.add(Restrictions.eq("controller.id", controller.getId()));
             }
 
-            in_key = "controller";
-            if (in_map.containsKey(in_key)) {
-                User controller = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", controller.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", controller.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", controller.getFirstName(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(CONTRAGENT_KEY)) {
+                Contragent contragent = (Contragent) in_map.get(CONTRAGENT_KEY);
+                conjunction.add(Restrictions.eq("contragents.id", contragent.getId()));
             }
 
-            in_key = "recipientContragents";
-            if (in_map.containsKey(in_key)) {
-                List<Contragent> recipients = (List<Contragent>) in_map.get(in_key);
-                if (!recipients.isEmpty()) {
-                    List<Integer> recipientsId = new ArrayList<Integer>();
-                    for (Contragent contragent : recipients) {
-                        recipientsId.add(contragent.getId());
+            if (in_map.containsKey(AUTHOR_KEY)) {
+                User author = (User) in_map.get(AUTHOR_KEY);
+                conjunction.add(Restrictions.eq("author.id", author.getId()));
+            }
+
+
+            if (in_map.containsKey(EXECUTORS_KEY)) {
+                final List<User> executors = (List<User>) in_map.get(EXECUTORS_KEY);
+                if (!executors.isEmpty()) {
+                    List<Integer> executorsId = new ArrayList<Integer>(executors.size());
+                    for (User user : executors) {
+                        executorsId.add(user.getId());
                     }
-                    conjunction.add(Restrictions.in("contragents.id", recipientsId));
+                    conjunction.add(Restrictions.in("executor.id", executorsId));
                 }
             }
 
-            in_key = "author";
-            if (in_map.containsKey(in_key)) {
-                User author = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", author.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", author.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", author.getFirstName(), MatchMode.ANYWHERE));
+
+            if (in_map.containsKey(DELIVERY_TYPE_KEY)) {
+                conjunction.add(Restrictions.eq("deliveryType.id", ((DeliveryType) in_map.get(DELIVERY_TYPE_KEY))
+                        .getId()));
             }
 
-            in_key = "executor";
-            if (in_map.containsKey(in_key)) {
-                User executor = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", executor.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", executor.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", executor.getFirstName(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(START_SIGNATURE_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("signatureDate", in_map.get(START_SIGNATURE_DATE_KEY)));
             }
 
-            in_key = "deliveryType";
-            if (in_map.containsKey(in_key)) {
-                criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.ilike(in_key + ".value", ((DeliveryType) in_map.get(in_key)).getValue(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(END_SIGNATURE_DATE_KEY)) {
+                conjunction.add(Restrictions.le("signatureDate", getNextDayDate((Date) in_map.get
+                        (END_SIGNATURE_DATE_KEY))));
             }
 
-            in_key = "startSignatureDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(FORM_KEY)) {
+                conjunction.add(Restrictions.eq("form.id", ((DocumentForm) in_map.get(FORM_KEY)).getId()));
             }
-
-            in_key = "endSignatureDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), in_map.get(in_key)));
-            }
-
-            in_key = "form";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.ilike(in_key + ".value", ((DocumentForm) in_map.get(in_key)).getValue(), MatchMode.ANYWHERE));
-            }
-
-            in_key = "officeKeepingVolume";
-            if (in_map.containsKey(in_key)) {
-                criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.eq(in_key + ".id", ((OfficeKeepingVolume) in_map.get(in_key)).getId()));
-            }
-
-            //TODO: поиск по адресатам
 
             criteria.add(conjunction);
         }

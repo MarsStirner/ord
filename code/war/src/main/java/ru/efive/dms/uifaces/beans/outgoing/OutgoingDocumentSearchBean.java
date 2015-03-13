@@ -1,22 +1,20 @@
-package ru.efive.dms.uifaces.beans.incoming;
+package ru.efive.dms.uifaces.beans.outgoing;
 
 import com.google.common.collect.ImmutableList;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
+import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.OfficeKeepingVolumeDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.DocumentForm;
-import ru.entity.model.document.IncomingDocument;
-import ru.entity.model.document.OfficeKeepingVolume;
+import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.user.User;
 
 import javax.faces.bean.ManagedBean;
@@ -30,12 +28,12 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
-@ManagedBean(name = "incoming_search")
+@ManagedBean(name = "outgoing_search")
 @ViewScoped
-public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<IncomingDocument> {
+public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<OutgoingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Inject
@@ -48,17 +46,18 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
      * @return Список документов, удовлетворяющих поиску
      */
     @Override
-    public List<IncomingDocument> performSearch() {
-        logger.info("INCOMING: Perform Search with map : {}", filters);
+    public List<OutgoingDocument> performSearch() {
+        logger.info("OUTGOING: Perform Search with map : {}", filters);
         try {
-            searchResults = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+            searchResults = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
                     .findAllDocumentsByUser(filters, null, sessionManagement.getLoggedUser(), false, false);
         } catch (Exception e) {
-            logger.error("INCOMING: Error while search", e);
+            logger.error("OUTGOING: Error while search", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
         }
         return searchResults;
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +107,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         }
         logger.info("Choose controller From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
-
     // Выбора контрагента //////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseContragent() {
         final Contragent preselected = getContragent();
@@ -152,48 +150,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         logger.info("Choose executors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
-    // Выбора адресатов /////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseRecipients() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_RECIPIENTS));
-        final List<User> preselected = getRecipients();
-        if (preselected != null && !preselected.isEmpty()) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", null, params);
-    }
-
-    public void onRecipientsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null && !selected.isEmpty()) {
-            setRecipients(selected);
-        } else {
-            filters.remove(RECIPIENTS_KEY);
-        }
-        logger.info("Choose recipients From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
-    }
-
-    // Выбора томов дел /////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseOfficeKeepingVolume() {
-        final OfficeKeepingVolume preselected = getOfficeKeepingVolume();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put
-                    (OfficeKeepingVolumeDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml");
-    }
-
-    public void onOfficeKeepingVolumeChosen(SelectEvent event) {
-        final OfficeKeepingVolume selected = (OfficeKeepingVolume) event.getObject();
-        if (selected != null) {
-            setOfficeKeepingVolume(selected);
-        } else {
-            filters.remove(OFFICE_KEEPING_VOLUME_KEY);
-        }
-        logger.info("Choose officeKeepingVolume From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
-    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Параметры поиска ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -242,15 +198,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (String) filters.get(REGISTRATION_NUMBER_KEY);
     }
 
-    // Номер поступившего
-    public void setReceivedDocumentNumber(final String value) {
-        putNotNullToFilters(RECEIVED_DOCUMENT_NUMBER_KEY, value);
-    }
-
-    public String getReceivedDocumentNumber() {
-        return (String) filters.get(RECEIVED_DOCUMENT_NUMBER_KEY);
-    }
-
     // Дата создания ОТ
     public void setStartCreationDate(Date value) {
         putNotNullToFilters(START_CREATION_DATE_KEY, value);
@@ -287,59 +234,41 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (Date) filters.get(END_REGISTRATION_DATE_KEY);
     }
 
-    // Дата доставки ОТ
-    public void setStartDeliveryDate(Date value) {
-        putNotNullToFilters(START_DELIVERY_DATE_KEY, value);
+    // Дата подписания ОТ
+    public void setStartSignatureDate(Date value) {
+        putNotNullToFilters(START_SIGNATURE_DATE_KEY, value);
     }
 
-    public Date getStartDeliveryDate() {
-        return (Date) filters.get(START_DELIVERY_DATE_KEY);
+    public Date getStartSignatureDate() {
+        return (Date) filters.get(START_SIGNATURE_DATE_KEY);
     }
 
-    // Дата доставки ДО
-    public void setEndDeliveryDate(Date value) {
-        putNotNullToFilters(END_DELIVERY_DATE_KEY, value);
+    // Дата подписания ДО
+    public void setEndSignatureDate(Date value) {
+        putNotNullToFilters(END_SIGNATURE_DATE_KEY, value);
     }
 
-    public Date getEndDeliveryDate() {
-        return (Date) filters.get(END_DELIVERY_DATE_KEY);
+    public Date getEndSignatureDate() {
+        return (Date) filters.get(END_SIGNATURE_DATE_KEY);
     }
-
-    // Срок исполнения ОТ
-    public void setStartExecutionDate(Date value) {
-        putNotNullToFilters(START_EXECUTION_DATE_KEY, value);
-    }
-
-    public Date getStartExecutionDate() {
-        return (Date) filters.get(START_EXECUTION_DATE_KEY);
-    }
-
-    // Срок исполнения ДО
-    public void setEndExecutionDate(Date value) {
-        putNotNullToFilters(END_EXECUTION_DATE_KEY, value);
-    }
-
-    public Date getEndExecutionDate() {
-        return (Date) filters.get(END_EXECUTION_DATE_KEY);
-    }
-
-    // Дата поступившего ОТ
-    public void setStartReceivedDocumentDate(Date value) {
-        putNotNullToFilters(START_RECEIVED_DATE_KEY, value);
-    }
-
-    public Date getStartReceivedDocumentDate() {
-        return (Date) filters.get(START_RECEIVED_DATE_KEY);
-    }
-
-    // дата поступившего ДО
-    public void setEndReceivedDocumentDate(Date value) {
-        putNotNullToFilters(END_RECEIVED_DATE_KEY, value);
-    }
-
-    public Date getEndReceivedDocumentDate() {
-        return (Date) filters.get(END_RECEIVED_DATE_KEY);
-    }
+//
+//    //Дата отправки ОТ
+//    public void setStartSendingDate(Date value) {
+//        putNotNullToFilters(START_SENDING_DATE_KEY, value);
+//    }
+//
+//    public Date getStartSendingDate() {
+//        return (Date) filters.get(START_SENDING_DATE_KEY);
+//    }
+//
+//    //Дата отправки ДО
+//    public void setEndSendingDate(Date value) {
+//        putNotNullToFilters(END_SENDING_DATE_KEY, value);
+//    }
+//
+//    public Date getEndSendingDate() {
+//        return (Date) filters.get(END_SENDING_DATE_KEY);
+//    }
 
     // Тип доставки
     public void setDeliveryType(DeliveryType value) {
@@ -350,7 +279,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (DeliveryType) filters.get(DELIVERY_TYPE_KEY);
     }
 
-    // Контрагент
+    // Контрагент (адресат)
     public void setContragent(Contragent value) {
         putNotNullToFilters(CONTRAGENT_KEY, value);
     }
@@ -368,24 +297,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (List<User>) filters.get(EXECUTORS_KEY);
     }
 
-    // Адресаты
-    public void setRecipients(List<User> value) {
-        putNotNullToFilters(RECIPIENTS_KEY, value);
-    }
-
-    public List<User> getRecipients() {
-        return (List<User>) filters.get(RECIPIENTS_KEY);
-    }
-
-    // том дела
-    public void setOfficeKeepingVolume(OfficeKeepingVolume value) {
-        putNotNullToFilters(OFFICE_KEEPING_VOLUME_KEY, value);
-    }
-
-    public OfficeKeepingVolume getOfficeKeepingVolume() {
-        return (OfficeKeepingVolume) filters.get(OFFICE_KEEPING_VOLUME_KEY);
-    }
-
     // Краткое содержание
     public void setShortDescription(final String value) {
         putNotNullToFilters(SHORT_DESCRIPTION_KEY, value);
@@ -394,4 +305,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public String getShortDescription() {
         return (String) filters.get(SHORT_DESCRIPTION_KEY);
     }
+
+
 }

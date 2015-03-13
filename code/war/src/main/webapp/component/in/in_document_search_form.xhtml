@@ -5,7 +5,6 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:p="http://primefaces.org/ui"
         >
 
@@ -15,19 +14,15 @@
         <h:outputScript library="js" name="primefacesLocale_ru.js"/>
         <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
         <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
-        <h:outputStylesheet library="css" name="datatable.css"/>
-        <h:outputStylesheet library="css" name="modalWindow.css"/>
         <style type="text/css">
             .ui-panelgrid .ui-panelgrid-cell {
                 border-style: dotted none;
                 border-color: lavender;
             }
-
             .ui-widget-content {
                 border: none;
             }
         </style>
-        <e5ui-comp:outputUtilScript/>
     </ui:define>
 
     <!--Кнопки верхнего меню-->
@@ -87,6 +82,18 @@
             </p:row>
             <p:row>
                 <p:column>
+                    <label for="form">
+                        <span class="title">Вид документа:</span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:selectOneMenu id="form" value="#{incoming_search.form}" converter="IncomingDocumentFormConverter">
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Входящие документы')}"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
                     <label>
 				        <span class="title">
                            <p:commandButton value="Автор" actionListener="#{incoming_search.chooseAuthor}">
@@ -111,18 +118,6 @@
                 </p:column>
                 <p:column colspan="3">
                     <h:outputText id="controller" value="#{incoming_search.controller.descriptionShort}" class="wide"/>
-                </p:column>
-            </p:row>
-            <p:row>
-                <p:column>
-                    <label for="form">
-                        <span class="title">Вид документа:</span>
-                    </label>
-                </p:column>
-                <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{incoming_search.form}" converter="IncomingDocumentFormConverter">
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Входящие документы')}"/>
-                    </p:selectOneMenu>
                 </p:column>
             </p:row>
             <p:row>
@@ -365,7 +360,7 @@
     </ui:define>
 
     <ui:define name="searchResults">
-        <p:dataTable id="incomingSearchResults" value="#{incoming_search.searchResults}" var="row_result" widgetVar="documentTableVar" selectionMode="single" rowKey="{row_result.id}">
+        <p:dataTable id="incomingSearchResults" value="#{incoming_search.searchResults}" var="row_result" widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}">
             <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
             <p:column style = "width:5em;">
                 <f:facet name="header">
