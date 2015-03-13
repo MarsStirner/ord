@@ -53,7 +53,7 @@
         <div class="defbutton">
             <h:commandLink action="#{incoming_search.clearFilter}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                <f:ajax render="searchParametersPanel" />
+                <f:ajax render="searchParametersPanel" onevent="function (data) {if(data.status == 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}" />
                 Очистить
             </h:commandLink>
         </div>
@@ -283,31 +283,28 @@
                 <p:column>
                     <label>
                         <span class="title">
-                            <h:outputLink
-                                    onclick="contragentSelectModalVar.clickOpen('contragentSelectModal'); return false;">
-                                Корреспондент
-                            </h:outputLink>
+                             <p:commandButton value="Корреспондент" actionListener="#{incoming_search.chooseContragent}">
+                                 <p:ajax event="dialogReturn" listener="#{incoming_search.onContragentChosen}" update="contragent" />
+                             </p:commandButton>
                         </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="contragent" value="#{incoming_search.contragent}"
-                                  converter="ContragentConverter"/>
+                    <h:outputText id="contragent" value="#{incoming_search.contragent}" converter="ContragentConverter"/>
                 </p:column>
             </p:row>
             <p:row>
                 <p:column>
                     <label>
                         <span class="title">
-                            <h:outputLink title="Исполнители"
-                                          onclick="executorsSelectModalVar.clickOpen('executorsSelectModal'); return false;">
-                                Исполнители
-                            </h:outputLink>
+                            <p:commandButton value="Исполнители" actionListener="#{incoming_search.chooseExecutors}">
+                                <p:ajax event="dialogReturn" listener="#{incoming_search.onExecutorsChosen}" update="executors" />
+                            </p:commandButton>
                         </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <div style="overflow-y: scroll;">
+                    <div style="overflow-y: scroll; max-height: 100px;">
                         <h:panelGroup id="executors">
                             <ui:repeat value="#{incoming_search.executors}" var="row_executor">
                                 <h:outputText value="#{row_executor.descriptionShort}"/>
@@ -321,15 +318,14 @@
                 <p:column>
                     <label>
                         <span class="title">
-                            <h:outputLink title="Адресаты:"
-                                          onclick="userListSelectModalVar.clickOpen('recipientUsersSelectModal'); return false;">
-                                Адресаты
-                            </h:outputLink>
+                             <p:commandButton value="Адресаты" actionListener="#{incoming_search.chooseRecipients}">
+                                 <p:ajax event="dialogReturn" listener="#{incoming_search.onRecipientsChosen}" update="recipients" />
+                             </p:commandButton>
                         </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <div style="overflow-y: scroll;">
+                    <div style="overflow-y: scroll; max-height: 100px;">
                         <h:panelGroup id="recipients">
                             <ui:repeat value="#{incoming_search.recipients}" var="row_recipient">
                                 <h:outputText value="#{row_recipient.descriptionShort}"/>
@@ -343,10 +339,9 @@
                 <p:column>
                     <label>
                         <span class="title">
-                            <h:outputLink title="Том дела"
-                                          onclick="officeKeepingVolumeSelectModalVar.clickOpen('officeKeepingVolumeSelectModal'); return false;">
-                                Том дела
-                            </h:outputLink>
+                            <p:commandButton value="Том дела" actionListener="#{incoming_search.chooseOfficeKeepingVolume}">
+                                <p:ajax event="dialogReturn" listener="#{incoming_search.onOfficeKeepingVolumeChosen}" update="office_keeping_Volume" />
+                            </p:commandButton>
                         </span>
                     </label>
                 </p:column>
@@ -450,10 +445,6 @@
         </script>
     </ui:define>
 
-    <ui:define name="modalDialogs">
-        <!--Модальный диалог выбора автора-->
-
-    </ui:define>
 
 
 </ui:composition>

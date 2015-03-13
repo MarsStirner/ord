@@ -150,7 +150,7 @@
                                 </p:commandLink>
                                 <p:dialog header="Выберите замещаемое лицо" widgetVar="selectPersonDialog"
                                           fitViewport="true" position="top,left" height="550" width="550" modal="true">
-                                    <p:inputText id="filter" value="#{personList.filter}"/>
+                                    <p:inputText id="filter" value="#{userDialog.filter}"/>
                                     <p:commandButton value="Поиск">
                                         <f:ajax execute="filter" render="selectPersonTable"/>
                                     </p:commandButton>
@@ -159,7 +159,7 @@
                                                  paginatorPosition="bottom"
                                                  rows="10"
                                                  rowsPerPageTemplate="10,25,50,100"
-                                                 value="#{personList.lazyModel}"
+                                                 value="#{userDialog.lazyModel}"
                                                  var="person_row"
                                                  selectionMode="single"
                                                  selection="#{substitution.selectedPerson}"
@@ -206,7 +206,7 @@
                                 </p:commandLink>
                                 <p:dialog header="Выберите заместителя" widgetVar="selectSubstitutionDialog"
                                           fitViewport="true" position="top,left" height="550" width="550" modal="true">
-                                    <p:inputText id="substitution_filter" value="#{personList.filter}"/>
+                                    <p:inputText id="substitution_filter" value="#{userDialog.filter}"/>
                                     <p:commandButton value="Поиск">
                                         <f:ajax execute="substitution_filter" render="selectSubstitutionTable"/>
                                     </p:commandButton>
@@ -215,7 +215,7 @@
                                                  paginatorPosition="bottom"
                                                  rows="10"
                                                  rowsPerPageTemplate="10,25,50,100"
-                                                 value="#{personList.lazyModel}"
+                                                 value="#{userDialog.lazyModel}"
                                                  var="sub_row"
                                                  selectionMode="single"
                                                  selection="#{substitution.selectedSubstitution}"

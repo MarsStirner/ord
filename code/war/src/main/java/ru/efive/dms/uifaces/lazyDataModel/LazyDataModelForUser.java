@@ -1,7 +1,6 @@
-package ru.efive.dms.uifaces.beans.user;
+package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.LazyDataModel;
-import org.primefaces.model.SelectableDataModel;
 import org.primefaces.model.SortOrder;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
@@ -15,7 +14,7 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForUser extends LazyDataModel<User> implements SelectableDataModel<User> {
+public class LazyDataModelForUser extends LazyDataModel<User> {
     private UserDAOHibernate dao;
     private String filter;
 
@@ -42,18 +41,14 @@ public class LazyDataModelForUser extends LazyDataModel<User> implements Selecta
     }
 
     @Override
-    public List<User> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        return dao.findUsers(
-                filter,
-                false, false,
-                first, pageSize,
-                sortField, sortOrder == SortOrder.ASCENDING
-        );
+    public List<User> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
+            filters) {
+        return dao.findUsers(filter, false, false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
     }
 
     @Override
-    public int getRowCount(){
-       return (((Long) dao.countUsers(filter, false, false)).intValue());
+    public int getRowCount() {
+        return (((Long) dao.countUsers(filter, false, false)).intValue());
     }
 
 }

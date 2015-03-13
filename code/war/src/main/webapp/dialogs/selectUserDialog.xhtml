@@ -10,12 +10,12 @@
         >
 
 <h:head>
-    <title><h:outputText value="#{personList.title}"/></title>
+    <title><h:outputText value="#{userDialog.title}"/></title>
 </h:head>
 
 <h:body>
-    <h:form id="selectAuthorDialogForm">
-        <p:inputText id="filter" value="#{personList.filter}"/>
+    <h:form id="selectUserDialogForm">
+        <p:inputText id="filter" value="#{userDialog.filter}"/>
         <p:commandButton value="Поиск">
             <f:ajax execute="filter" render="selectPersonTable"/>
         </p:commandButton>
@@ -24,10 +24,10 @@
                      paginatorPosition="bottom"
                      rows="10"
                      rowsPerPageTemplate="10,25,50,100"
-                     value="#{personList.lazyModel}"
+                     value="#{userDialog.lazyModel}"
                      var="person_row"
                      selectionMode="single"
-                     selection="#{personList.selectedUser}"
+                     selection="#{userDialog.selected}"
                      lazy="true"
                      widgetVar="selectPersonTableVar"
                      scrollable="true"
@@ -43,8 +43,8 @@
                 <h:outputText value="#{person_row.middleName}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{personList.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{personList.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{userDialog.closeDialog(true)}"/>
+        <p:commandButton value="Отмена" action="#{userDialog.closeDialog(false)}"/>
     </h:form>
 </h:body>
 

@@ -581,7 +581,15 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
                     String parentId = paper.getParentDocumentId();
                     incomingDocumentsId.add(Integer.parseInt(parentId.substring(9)));
                 }
-                conjunction.add(Restrictions.in("id", incomingDocumentsId));
+                // http://stackoverflow.com/questions/13004142/hibernate-restriction-in-causes-an-error-if-the-list-is-empty
+                //короче: если список пустой - то будет синтаксическая ошибка в сформированном SQL,
+                // поэтому так как в данном месте мы строи конъюнцию(И), то просто добавим невыполнимое условие
+                //TODO дождаться пачта hibernate
+                if(incomingDocumentsId.isEmpty()){
+                    conjunction.add(Restrictions.eq("id", -1));
+                } else {
+                    conjunction.add(Restrictions.in("id", incomingDocumentsId));
+                }
             }
             criteria.add(conjunction);
         }
