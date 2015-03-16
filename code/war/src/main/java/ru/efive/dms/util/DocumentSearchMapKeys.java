@@ -28,6 +28,17 @@ public final class DocumentSearchMapKeys {
     public static final String FORM_KEY = "form";
 
     /**
+     * Вид документа (ЗНАЧЕНИЕ)
+     */
+    public static final String FORM_VALUE_KEY = "formValue";
+
+    /**
+     * Вид документа (КАТЕГОРИЯ)
+     */
+    public static final String FORM_CATEGORY_KEY = "formCategory";
+
+
+    /**
      * регистрационный номер
      */
     public static final String REGISTRATION_NUMBER_KEY = "registrationNumber";
@@ -96,6 +107,11 @@ public final class DocumentSearchMapKeys {
      * Исполнители (LIST<USER>)
      */
     public static final String EXECUTORS_KEY = "executors";
+
+    /**
+     * Ответсвенный исполнитель (USER) (INTERNAL_DOCUMENTS)
+     */
+    public static final String RESPONSIBLE_KEY="responsible";
 
     /**
      * Адресаты (LIST<USER>)

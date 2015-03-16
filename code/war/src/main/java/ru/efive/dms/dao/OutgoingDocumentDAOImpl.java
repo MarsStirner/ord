@@ -286,8 +286,8 @@ public class OutgoingDocumentDAOImpl extends GenericDAOHibernate<OutgoingDocumen
         return criteria;
     }
 
-    protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
-        if ((in_map != null) && (in_map.size() > 0)) {
+    protected DetachedCriteria getConjunctionSearchCriteria(final DetachedCriteria criteria, final Map<String, Object> in_map) {
+        if (in_map != null && !in_map.isEmpty()) {
             final Conjunction conjunction = Restrictions.conjunction();
             if (in_map.containsKey(REGISTRATION_NUMBER_KEY)) {
                 conjunction.add(Restrictions.ilike("registrationNumber", in_map.get(REGISTRATION_NUMBER_KEY).toString

@@ -8,7 +8,6 @@ import org.joda.time.LocalDate;
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.document.InternalDocument;
-import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.enums.RoleType;
@@ -17,6 +16,9 @@ import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 
 import java.util.*;
+
+import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.util.ApplicationHelper.getNextDayDate;
 
 
 public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocument> {
@@ -331,7 +333,8 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
         DetachedCriteria in_searchCriteria = getInitiateCriteriaForPersistentClass();
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
         final LocalDate currentDate = new LocalDate();
-        in_searchCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()));
+        in_searchCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)",
+                currentDate.getYear() + "%", new StringType()));
         return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map));
     }
 
@@ -355,151 +358,99 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
     }
 
     protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
-        if ((in_map != null) && (in_map.size() > 0)) {
-            Conjunction conjunction = Restrictions.conjunction();
-            String in_key = "registrationNumber";
-            if (in_map.get(in_key) != null) {
-                conjunction.add(Restrictions.isNotNull(in_key));
-                if (!in_map.get(in_key).toString().isEmpty())
-                    conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+        if (in_map != null && !in_map.isEmpty()) {
+            final Conjunction conjunction = Restrictions.conjunction();
+            if (in_map.containsKey(REGISTRATION_NUMBER_KEY)) {
+                conjunction.add(Restrictions.ilike("registrationNumber", in_map.get(REGISTRATION_NUMBER_KEY).toString
+                        (), MatchMode.ANYWHERE));
             }
-            in_key = "startRegistrationDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(5)+in_key.substring(6)+", '%d.%m.%Y') >= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(START_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("registrationDate", in_map.get(START_REGISTRATION_DATE_KEY)));
             }
 
-            in_key = "endRegistrationDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(3)+in_key.substring(4)+", '%d.%m.%Y') <= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(END_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("registrationDate", getNextDayDate((Date) in_map.get
+                        (END_REGISTRATION_DATE_KEY))));
             }
 
-            in_key = "startCreationDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(5)+in_key.substring(6)+", '%d.%m.%Y') >= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(START_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("creationDate", in_map.get(START_CREATION_DATE_KEY)));
             }
 
-            in_key = "endCreationDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(3)+in_key.substring(4)+", '%d.%m.%Y') <= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(END_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("creationDate", getNextDayDate((Date) in_map.get
+                        (END_CREATION_DATE_KEY))));
             }
 
-            in_key = "startSignatureDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(5)+in_key.substring(6)+", '%d.%m.%Y') >= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(SHORT_DESCRIPTION_KEY) && StringUtils.isNotEmpty((String) in_map.get
+                    (SHORT_DESCRIPTION_KEY))) {
+                conjunction.add(Restrictions.ilike("shortDescription", in_map.get(SHORT_DESCRIPTION_KEY).toString(), MatchMode.ANYWHERE));
             }
 
-            in_key = "endSignatureDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(3)+in_key.substring(4)+", '%d.%m.%Y') <= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(STATUS_KEY) && StringUtils.isNotEmpty((String) in_map.get(STATUS_KEY))) {
+                conjunction.add(Restrictions.eq("statusId", Integer.parseInt(in_map.get(STATUS_KEY).toString())));
             }
 
-            in_key = "shortDescription";
-            if (in_map.get(in_key) != null && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(CONTROLLER_KEY)) {
+                User controller = (User) in_map.get(CONTROLLER_KEY);
+                //TODO rename field to controller
+                conjunction.add(Restrictions.eq("signer.id", controller.getId()));
             }
 
-            in_key = "closePeriodRegistrationFlag";
-            if (in_map.get(in_key) != null && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.eq(in_key, Boolean.valueOf(in_map.get(in_key).toString())));
+            if (in_map.containsKey(RESPONSIBLE_KEY)) {
+                User responsible = (User) in_map.get(RESPONSIBLE_KEY);
+                conjunction.add(Restrictions.eq("responsible.id", responsible.getId()));
             }
 
-            in_key = "controller";
-            if (in_map.get(in_key) != null) {
-                User controller = (User) in_map.get(in_key);
-                //criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", controller.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", controller.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", controller.getFirstName(), MatchMode.ANYWHERE));
-            }
-
-            in_key = "recipientUsers";
-            if (in_map.get(in_key) != null) {
-                List<User> recipients = (List<User>) in_map.get(in_key);
-                if (recipients.size() != 0) {
-                    List<Integer> recipientsId = new ArrayList<Integer>();
+            if (in_map.containsKey(RECIPIENTS_KEY)) {
+                final List<User> recipients = (List<User>) in_map.get(RECIPIENTS_KEY);
+                if (!recipients.isEmpty()) {
+                    List<Integer> recipientsId = new ArrayList<Integer>(recipients.size());
                     for (User user : recipients) {
                         recipientsId.add(user.getId());
                     }
-                    //criteria.createAlias("recipientUsers", "recipients", CriteriaSpecification.LEFT_JOIN);
                     conjunction.add(Restrictions.in("recipientUsers.id", recipientsId));
                 }
             }
 
-            in_key = "statusId";
-            if (in_map.get(in_key) != null && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.eq(in_key, Integer.parseInt(in_map.get(in_key).toString())));
+            if (in_map.containsKey(AUTHOR_KEY)) {
+                User author = (User) in_map.get(AUTHOR_KEY);
+                conjunction.add(Restrictions.eq("author.id", author.getId()));
             }
 
-            in_key = "author";
-            if (in_map.get(in_key) != null) {
-                User author = (User) in_map.get(in_key);
-                //criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", author.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", author.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", author.getFirstName(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(START_SIGNATURE_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("signatureDate", in_map.get(START_SIGNATURE_DATE_KEY)));
             }
 
-            in_key = "signer";
-            if (in_map.get(in_key) != null) {
-                User author = (User) in_map.get(in_key);
-                //criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", author.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", author.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", author.getFirstName(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(END_SIGNATURE_DATE_KEY)) {
+                conjunction.add(Restrictions.le("signatureDate", getNextDayDate((Date) in_map.get
+                        (END_SIGNATURE_DATE_KEY))));
+            }
+            //TODO fix
+            if (in_map.get("closePeriodRegistrationFlag") != null && in_map.get("closePeriodRegistrationFlag").toString().length() > 0) {
+                conjunction.add(Restrictions.eq("closePeriodRegistrationFlag", Boolean.valueOf(in_map.get("closePeriodRegistrationFlag").toString())));
             }
 
-            in_key = "responsible";
-            if (in_map.get(in_key) != null) {
-                User executor = (User) in_map.get(in_key);
-                //criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", executor.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", executor.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", executor.getFirstName(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(START_EXECUTION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("executionDate", in_map.get(START_EXECUTION_DATE_KEY)));
             }
 
-            in_key = "startExecutionDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(5)+in_key.substring(6)+", '%d.%m.%Y') >= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(END_EXECUTION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("executionDate", getNextDayDate((Date) in_map.get
+                        (END_EXECUTION_DATE_KEY))));
             }
 
-            in_key = "endExecutionDate";
-            if (in_map.get(in_key) != null) {
-                //conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key.charAt(3)+in_key.substring(4)+", '%d.%m.%Y') <= lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), in_map.get(in_key)));
+            if (in_map.containsKey(FORM_KEY)) {
+                conjunction.add(Restrictions.eq("form.id", ((DocumentForm) in_map.get(FORM_KEY)).getId()));
             }
 
-            //if((in_map.get("form")!=null)||(in_map.get("formValue")!=null)||(in_map.get("formCategory")!=null)){
-            //criteria.createAlias("form", "form", CriteriaSpecification.LEFT_JOIN);
-            //}
-            in_key = "form";
-            if (in_map.get(in_key) != null) {
-                conjunction.add(Restrictions.ilike(in_key + ".value", ((DocumentForm) in_map.get(in_key)).getValue(), MatchMode.ANYWHERE));
-            }
-            in_key = "formValue";
-            if (in_map.get(in_key) != null) {
-                conjunction.add(Restrictions.ilike("form.value", in_map.get(in_key).toString(), MatchMode.ANYWHERE));
-            }
-            in_key = "formCategory";
-            if (in_map.get(in_key) != null) {
-                conjunction.add(Restrictions.ilike("form.category", in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(FORM_VALUE_KEY)) {
+                conjunction.add(Restrictions.ilike("form.value", in_map.get(FORM_VALUE_KEY).toString()));
             }
 
-            in_key = "officeKeepingVolume";
-            //if(in_map.get(in_key)!=null && in_map.get(in_key).toString().length()>0){
-            if (in_map.get(in_key) != null) {
-                criteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                conjunction.add(Restrictions.eq(in_key + ".id", ((OfficeKeepingVolume) in_map.get(in_key)).getId()));
+            if (in_map.containsKey(FORM_CATEGORY_KEY)) {
+                conjunction.add(Restrictions.ilike("form.category", in_map.get(FORM_CATEGORY_KEY).toString()));
             }
-
-            //TODO: поиск по адресатам
-
             criteria.add(conjunction);
         }
         return criteria;
@@ -566,19 +517,6 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public InternalDocument findDocumentByNumeratorId(String id) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        detachedCriteria.add(Restrictions.eq("parentNumeratorid", Integer.valueOf(id)));
-        List<InternalDocument> in_results = getHibernateTemplate().findByCriteria(detachedCriteria);
-        if (!in_results.isEmpty()) {
-            return in_results.get(0);
-        } else {
-            return null;
-        }
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Работа с критериями (общая)  ************************************************************************************
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -622,6 +560,7 @@ public class InternalDocumentDAOImpl extends GenericDAOHibernate<InternalDocumen
 
     protected DetachedCriteria getInitiateCriteriaForPersistentClass() {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
+        detachedCriteria.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
         detachedCriteria.createAlias("form", "form", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
         detachedCriteria.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);

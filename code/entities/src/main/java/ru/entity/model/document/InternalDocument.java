@@ -123,6 +123,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Подписант
      */
+    //TODO руководитель ?
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "signer_id")
     private User signer;

@@ -32,6 +32,7 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
 
     public static final String DIALOG_TITLE_VALUE_CONTROLLER = "CONTROLLER_TITLE";
     public static final String DIALOG_TITLE_VALUE_AUTHOR = "AUTHOR_TITLE";
+    public static final String DIALOG_TITLE_VALUE_RESPONSIBLE = "RESPONSIBLE_TITLE";
 
     @EJB(name = "indexManagement")
     private IndexManagementBean indexManagementBean;
@@ -64,6 +65,8 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
                 return "Выберите руководителя";
             } else if (DIALOG_TITLE_VALUE_AUTHOR.equalsIgnoreCase(title)) {
                 return "Выберите автора";
+            } else if(DIALOG_TITLE_VALUE_RESPONSIBLE.equalsIgnoreCase(title)){
+                return "Выберите ответственного исполнителя";
             }
         }
         return "Выберите пользователя";
