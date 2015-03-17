@@ -1,5 +1,6 @@
 package ru.entity.model.document;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.LazyCollection;
@@ -363,14 +364,44 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
 
     @Transient
     public String getSenderDescription() {
-        return senderLastName + " " + (senderFirstName != null && !senderFirstName.equals("") ? senderFirstName + " " : "") +
-                (senderMiddleName != null && !senderMiddleName.equals("") ? senderMiddleName : "");
+        final StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotEmpty(senderLastName)){
+            sb.append(senderLastName);
+        }
+        if(StringUtils.isNotEmpty(senderFirstName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+            sb.append(senderFirstName);
+        }
+        if(StringUtils.isNotEmpty(senderMiddleName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+            sb.append(senderMiddleName);
+        }
+        return sb.toString();
     }
 
     @Transient
     public String getSenderDescriptionShort() {
-        return senderLastName + " " + (senderFirstName != null && !senderFirstName.equals("") ? senderFirstName.substring(0, 1) + ". " : "") +
-                (senderMiddleName != null && !senderMiddleName.equals("") ? senderMiddleName.substring(0, 1) + "." : "");
+        final StringBuilder sb = new StringBuilder();
+        if(StringUtils.isNotEmpty(senderLastName)){
+            sb.append(senderLastName);
+        }
+        if(StringUtils.isNotEmpty(senderFirstName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+            sb.append(senderFirstName.charAt(0)).append('.');
+        }
+        if(StringUtils.isNotEmpty(senderMiddleName)){
+            if(sb.length()!=0){
+                sb.append(' ');
+            }
+            sb.append(senderMiddleName.charAt(0)).append('.');
+        }
+        return sb.toString();
     }
 
     public User getController() {
