@@ -9,6 +9,7 @@
         >
 <h:head>
     <h:outputStylesheet library="css" name="style.css"/>
+    <h:outputStylesheet library="css" name="searchFormStyles.css"/>
     <title>
         <ui:insert name="pageTitle">Документооборот ФНКЦ ДГОИ</ui:insert>
     </title>
@@ -71,7 +72,7 @@
             <script type="text/javascript">
                 $($('div[data-widget="searchParametersPanelVar"]').find('div')[0]).on('click', function (e) {
                     PF('searchParametersPanelVar').toggle();
-                }).find('a').on('click', function () {
+                }).css('cursor', 'pointer').find('a').on('click', function () {
                     return false;
                 });
             </script>
@@ -89,7 +90,7 @@
             <script type="text/javascript">
                 $($('div[data-widget="searchResultsPanelVar"]').find('div')[0]).on('click', function (e) {
                     PF('searchResultsPanelVar').toggle();
-                }).find('a').on('click', function () {
+                }).css('cursor', 'pointer').find('a').on('click', function () {
                     return false;
                 });
             </script>
