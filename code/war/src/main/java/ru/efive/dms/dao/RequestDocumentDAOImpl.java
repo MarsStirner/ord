@@ -4,10 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import ru.efive.sql.dao.GenericDAOHibernate;
-import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
-import ru.entity.model.document.DocumentForm;
-import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -15,8 +12,10 @@ import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.util.ApplicationHelper.getNextDayDate;
 
 public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument> {
 
@@ -25,14 +24,14 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
         return RequestDocument.class;
     }
 
-    public List<RequestDocument> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
-       return findAllDocumentsByUser(in_map, filter, user, showDeleted, showDrafts, -1, -1, null, false);
+    public List<RequestDocument> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean
+            showDeleted, boolean showDrafts) {
+        return findAllDocumentsByUser(in_map, filter, user, showDeleted, showDrafts, -1, -1, null, false);
     }
 
 
-
-
-    public long countAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
+    public long countAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted,
+                                        boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         applyAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -47,13 +46,15 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
         return getCountOf(getConjunctionSearchCriteria(in_searchCriteria, in_map));
     }
 
-    public List<RequestDocument> findAllDocuments(Map<String, Object> in_map, boolean showDeleted, boolean showDrafts, int offset, int count) {
+    public List<RequestDocument> findAllDocuments(Map<String, Object> in_map, boolean showDeleted, boolean
+            showDrafts, int offset, int count) {
         DetachedCriteria in_searchCriteria = DetachedCriteria.forClass(getPersistentClass());
         in_searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
         applyAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
 
-        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset, count);
+        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset,
+                count);
     }
 
     public long countAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
@@ -63,14 +64,16 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
         return getCountOf(getSearchCriteria(in_searchCriteria, filter));
     }
 
-    public List<RequestDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
+    public List<RequestDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean
+            showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         applyAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
         return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter));
     }
 
-    public List<RequestDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
+    public List<RequestDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean
+            showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         applyAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -85,7 +88,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
         return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
     }
 
-    public long countAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean showDrafts) {
+    public long countAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean
+            showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         applyAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -100,13 +104,15 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
 
         detachedCriteria.add(Restrictions.isNotNull("registrationNumber"));
         Calendar calendar = Calendar.getInstance();
-        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", calendar.get(Calendar.YEAR) + "%", new StringType()));
+        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)",
+                calendar.get(Calendar.YEAR) + "%", new StringType()));
 
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
     @SuppressWarnings("unchecked")
-    public List<RequestDocument> findDraftDocumentsByAuthor(String filter, User user, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
+    public List<RequestDocument> findDraftDocumentsByAuthor(String filter, User user, boolean showDeleted, int
+            offset, int count, String orderBy, boolean orderAsc) {
         DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
         applyAliases(detachedCriteria);
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
@@ -151,8 +157,10 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
         if (StringUtils.isNotEmpty(filter)) {
             Disjunction disjunction = Restrictions.disjunction();
             disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(deliveryDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(receivedDocumentDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
+            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(deliveryDate, '%d.%m.%Y') like lower(?)", filter
+                    + "%", new StringType()));
+            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(receivedDocumentDate, '%d.%m.%Y') like lower(?)" +
+                    "", filter + "%", new StringType()));
             disjunction.add(Restrictions.ilike("receivedDocumentNumber", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("senderFirstName", filter, MatchMode.ANYWHERE));
@@ -176,7 +184,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
             disjunction.add(Restrictions.ilike("form.value", filter, MatchMode.ANYWHERE));
 
             String docType = getPersistentClass().getName();
-            List<Integer> statusIdList = DocumentType.getStatusIdListByStrKey((docType.contains(".") ? docType.substring(docType.lastIndexOf(".") + 1) : docType), filter);
+            List<Integer> statusIdList = DocumentType.getStatusIdListByStrKey((docType.contains(".") ? docType
+                    .substring(docType.lastIndexOf(".") + 1) : docType), filter);
             if (statusIdList.size() > 0) {
                 disjunction.add(Restrictions.in("statusId", statusIdList));
             }
@@ -190,74 +199,69 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
 
     protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
         if (in_map != null && !in_map.isEmpty()) {
-            Conjunction conjunction = Restrictions.conjunction();
-            String in_key = "contragent";
-            if (in_map.containsKey(in_key)) {
-                Contragent contragent = (Contragent) in_map.get(in_key);
-                conjunction.add(Restrictions.eq(in_key + ".id", contragent.getId()));
+            final Conjunction conjunction = Restrictions.conjunction();
+            if (in_map.containsKey(REGISTRATION_NUMBER_KEY)) {
+                conjunction.add(Restrictions.ilike("registrationNumber", in_map.get(REGISTRATION_NUMBER_KEY).toString
+                        (), MatchMode.ANYWHERE));
             }
 
-            in_key = "registrationNumber";
-            if (in_map.containsKey(in_key) && !in_map.get(in_key).toString().isEmpty()) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(START_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("registrationDate", in_map.get(START_REGISTRATION_DATE_KEY)));
             }
 
-            SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
-
-            in_key = "startRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(END_REGISTRATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("registrationDate", getNextDayDate((Date) in_map.get
+                        (END_REGISTRATION_DATE_KEY))));
             }
 
-            in_key = "endRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(START_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("creationDate", in_map.get(START_CREATION_DATE_KEY)));
             }
 
-            in_key = "startCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(END_CREATION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("creationDate", getNextDayDate((Date) in_map.get
+                        (END_CREATION_DATE_KEY))));
             }
 
-            in_key = "endCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(START_DELIVERY_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("deliveryDate", in_map.get(START_DELIVERY_DATE_KEY)));
             }
 
-            in_key = "startDeliveryDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
+            if (in_map.containsKey(END_DELIVERY_DATE_KEY)) {
+                conjunction.add(Restrictions.le("deliveryDate", getNextDayDate((Date) in_map.get
+                        (END_DELIVERY_DATE_KEY))));
             }
 
-            in_key = "endDeliveryDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
+            if (in_map.containsKey(SHORT_DESCRIPTION_KEY) && StringUtils.isNotEmpty((String) in_map.get
+                    (SHORT_DESCRIPTION_KEY))) {
+                conjunction.add(Restrictions.ilike("shortDescription", in_map.get(SHORT_DESCRIPTION_KEY).toString(),
+                        MatchMode.ANYWHERE));
             }
 
-            in_key = "shortDescription";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(STATUS_KEY) && StringUtils.isNotEmpty((String) in_map.get(STATUS_KEY))) {
+                conjunction.add(Restrictions.eq("statusId", Integer.parseInt(in_map.get(STATUS_KEY).toString())));
             }
 
-            in_key = "senderFirstName";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+
+            if (in_map.containsKey(SENDER_LAST_NAME_KEY)) {
+                conjunction.add(Restrictions.ilike("senderLastName", in_map.get(SENDER_LAST_NAME_KEY).toString(),
+                        MatchMode.ANYWHERE));
             }
 
-            in_key = "senderLastName";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(SENDER_FIRST_NAME_KEY)) {
+                conjunction.add(Restrictions.ilike("senderFirstName", in_map.get(SENDER_FIRST_NAME_KEY).toString(),
+                        MatchMode.ANYWHERE));
             }
 
-            in_key = "senderMiddleName";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(SENDER_PATR_NAME_KEY)) {
+                conjunction.add(Restrictions.ilike("senderMiddleName", in_map.get(SENDER_PATR_NAME_KEY).toString(),
+                        MatchMode.ANYWHERE));
             }
-            in_key = "recipientUsers";
-            if (in_map.containsKey(in_key)) {
-                List<User> recipients = (List<User>) in_map.get(in_key);
+
+            if (in_map.containsKey(RECIPIENTS_KEY)) {
+                final List<User> recipients = (List<User>) in_map.get(RECIPIENTS_KEY);
                 if (!recipients.isEmpty()) {
-                    List<Integer> recipientsId = new ArrayList<Integer>();
+                    List<Integer> recipientsId = new ArrayList<Integer>(recipients.size());
                     for (User user : recipients) {
                         recipientsId.add(user.getId());
                     }
@@ -265,72 +269,44 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
                 }
             }
 
-            in_key = "author";
-            if (in_map.containsKey(in_key)) {
-                User author = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", author.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", author.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", author.getFirstName(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(AUTHOR_KEY)) {
+                User author = (User) in_map.get(AUTHOR_KEY);
+                conjunction.add(Restrictions.eq("author.id", author.getId()));
             }
 
-            in_key = "executor";
-            if (in_map.containsKey(in_key)) {
-                User executor = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.ilike(in_key + ".lastName", executor.getLastName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".middleName", executor.getMiddleName(), MatchMode.ANYWHERE));
-                conjunction.add(Restrictions.ilike(in_key + ".firstName", executor.getFirstName(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(RESPONSIBLE_KEY)) {
+                User responsible = (User) in_map.get(RESPONSIBLE_KEY);
+                //TODO rename column
+                conjunction.add(Restrictions.eq("executor.id", responsible.getId()));
             }
 
-            in_key = "statusId";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.eq(in_key, Integer.parseInt(in_map.get(in_key).toString())));
-            }
-
-            in_key = "statusesId";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.in("statusId", (ArrayList<Integer>) in_map.get(in_key)));
-            }
-
-            in_key = "deliveryType";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ilike(in_key + ".value", ((DeliveryType) in_map.get(in_key)).getValue(), MatchMode.ANYWHERE));
-            }
-
-            in_key = "startExecutionDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
-            }
-
-            in_key = "executionDate";
-            if (in_map.containsKey(in_key)) {
-                if (in_map.get(in_key).toString().equals("%")) {
-                    conjunction.add(Restrictions.isNotNull(in_key));
-                } else {
-                    conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(" + in_key + ", '%d.%m.%Y') like lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
+            if (in_map.containsKey(STATUS_LIST_KEY)) {
+                final Collection<Integer> statusIdList = (Collection<Integer>) in_map.get(STATUS_LIST_KEY);
+                if(!statusIdList.isEmpty()) {
+                    conjunction.add(Restrictions.in("statusId", statusIdList));
                 }
             }
 
-            in_key = "endExecutionDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), in_map.get(in_key)));
+            if (in_map.containsKey(DELIVERY_TYPE_KEY)) {
+                conjunction.add(Restrictions.eq("deliveryType.id", ((DeliveryType) in_map.get(DELIVERY_TYPE_KEY))
+                        .getId()));
             }
 
-            in_key = "form";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ilike(in_key + ".value", ((DocumentForm) in_map.get(in_key)).getValue(), MatchMode.ANYWHERE));
-            }
-            in_key = "formValue";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ilike("form.value", in_map.get(in_key).toString(), MatchMode.ANYWHERE));
-            }
-            in_key = "formCategory";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ilike("form.category", in_map.get(in_key).toString(), MatchMode.ANYWHERE));
+            if (in_map.containsKey(START_EXECUTION_DATE_KEY)) {
+                conjunction.add(Restrictions.ge("executionDate", in_map.get(START_EXECUTION_DATE_KEY)));
             }
 
-            in_key = "officeKeepingVolume";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.eq(in_key + ".id", ((OfficeKeepingVolume) in_map.get(in_key)).getId()));
+            if (in_map.containsKey(END_EXECUTION_DATE_KEY)) {
+                conjunction.add(Restrictions.le("executionDate", getNextDayDate((Date) in_map.get
+                        (END_EXECUTION_DATE_KEY))));
+            }
+
+            if (in_map.containsKey(FORM_VALUE_KEY)) {
+                conjunction.add(Restrictions.ilike("form.value", in_map.get(FORM_VALUE_KEY).toString()));
+            }
+
+            if (in_map.containsKey(FORM_CATEGORY_KEY)) {
+                conjunction.add(Restrictions.ilike("form.category", in_map.get(FORM_CATEGORY_KEY).toString()));
             }
 
             criteria.add(conjunction);
@@ -407,7 +383,9 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
     }
 
 
-    public List<RequestDocument> findAllDocumentsByUser(Map<String, Object> filters, String filter, User user, boolean showDeleted, boolean showDrafts, int offset, int pageSize, String orderBy, boolean asc) {
+    public List<RequestDocument> findAllDocumentsByUser(Map<String, Object> filters, String filter, User user,
+                                                        boolean showDeleted, boolean showDrafts, int offset, int
+            pageSize, String orderBy, boolean asc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
         applyAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -421,7 +399,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
         }
         in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(in_searchCriteria, filters), filter), offset, pageSize);
+        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria
+                (in_searchCriteria, filters), filter), offset, pageSize);
         if (ids.isEmpty()) {
             return new ArrayList<RequestDocument>(0);
         }
@@ -438,7 +417,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
      * Добавление ограничения на удаленные документы в запрос
      *
      * @param in_searchCriteria запрос, куда будет добалено ограничение
-     * @param showDrafts        false - в запрос будет добавлено ограничение на проверку статуса документа, так чтобы его статус был НЕ "Проект документа"
+     * @param showDrafts        false - в запрос будет добавлено ограничение на проверку статуса документа, так чтобы
+     *                          его статус был НЕ "Проект документа"
      */
     private void addDraftsRestriction(final DetachedCriteria in_searchCriteria, final boolean showDrafts) {
         if (!showDrafts) {
@@ -450,7 +430,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
      * Добавление ограничения на удаленные документы в запрос
      *
      * @param in_searchCriteria запрос, куда будет добалено ограничение
-     * @param showDeleted       true - в запрос будет добавлено ограничение на проверку флага, так чтобы документ не был удален
+     * @param showDeleted       true - в запрос будет добавлено ограничение на проверку флага, так чтобы документ не
+     *                          был удален
      */
     private void addDeletedRestriction(final DetachedCriteria in_searchCriteria, final boolean showDeleted) {
         if (!showDeleted) {
@@ -465,7 +446,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
      * @param showDeleted       включать в результат удаленные документы
      * @param showDrafts        включать в результат документы, на прошедшие регистрацию
      */
-    private void addDraftsAndDeletedRestrictions(final DetachedCriteria in_searchCriteria, final boolean showDeleted, boolean showDrafts) {
+    private void addDraftsAndDeletedRestrictions(final DetachedCriteria in_searchCriteria, final boolean showDeleted,
+                                                 boolean showDrafts) {
         addDeletedRestriction(in_searchCriteria, showDeleted);
         addDraftsRestriction(in_searchCriteria, showDrafts);
     }
@@ -524,7 +506,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
      * @param showDrafts  показывать незарегистрированные документы
      * @return список документов, удовлетворяющих ограничения
      */
-    public long countAllDocumentsByUserList(Map<String, Object> filters, String filter, List<User> userList, boolean showDeleted, boolean showDrafts) {
+    public long countAllDocumentsByUserList(Map<String, Object> filters, String filter, List<User> userList, boolean
+            showDeleted, boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
         applyAliases(in_searchCriteria);
@@ -597,7 +580,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
      * @param asc         направление сортировки
      * @return список документов, удовлетворяющих ограничения
      */
-    public List<RequestDocument> findAllDocumentsByUserList(Map<String, Object> filters, String filter, List<User> userList, boolean showDeleted, boolean showDrafts, int offset, int pageSize, String orderBy, boolean asc) {
+    public List<RequestDocument> findAllDocumentsByUserList(Map<String, Object> filters, String filter, List<User>
+            userList, boolean showDeleted, boolean showDrafts, int offset, int pageSize, String orderBy, boolean asc) {
         DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
         applyAliases(in_searchCriteria);
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
@@ -611,7 +595,8 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
         }
         in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(in_searchCriteria, filters), filter), offset, pageSize);
+        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria
+                (in_searchCriteria, filters), filter), offset, pageSize);
         if (ids.isEmpty()) {
             return new ArrayList<RequestDocument>(0);
         }

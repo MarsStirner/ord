@@ -13,6 +13,11 @@ public final class DocumentSearchMapKeys {
     public static final String STATUS_KEY = "statusId";
 
     /**
+     * Спсиок идентификаторов статусов
+     */
+    public static final String STATUS_LIST_KEY="statuses";
+
+    /**
      * Автор документа
      */
     public static final String AUTHOR_KEY = "author";
@@ -128,5 +133,13 @@ public final class DocumentSearchMapKeys {
      * Том дела
      */
     public static final String OFFICE_KEEPING_VOLUME_KEY = "officeKeepingVolume";
+
+    /**
+     * REQUEST_DOCUMENT specific
+     * Фамилия, Имя , Отчество
+     */
+    public static final String SENDER_FIRST_NAME_KEY = "senderFirstName";
+    public static final String SENDER_LAST_NAME_KEY = "senderLastName";
+    public static final String SENDER_PATR_NAME_KEY = "senderPatrName";
 
 }

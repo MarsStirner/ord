@@ -455,7 +455,7 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
 
     protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
         if (in_map != null && !in_map.isEmpty()) {
-            Conjunction conjunction = Restrictions.conjunction();
+            final Conjunction conjunction = Restrictions.conjunction();
 
             if (in_map.containsKey("parentNumeratorId")) {
                 conjunction.add(Restrictions.isNotNull("parentNumeratorId"));
