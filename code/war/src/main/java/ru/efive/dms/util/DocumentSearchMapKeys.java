@@ -23,6 +23,11 @@ public final class DocumentSearchMapKeys {
     public static final String AUTHOR_KEY = "author";
 
     /**
+     * Авторы документа (LIST<USER>)
+     */
+    public static final String AUTHORS_KEY="authors";
+
+    /**
      * Руководитель документа
      */
     public static final String CONTROLLER_KEY = "controller";

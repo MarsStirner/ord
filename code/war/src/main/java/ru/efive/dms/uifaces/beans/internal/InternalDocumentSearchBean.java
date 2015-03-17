@@ -61,26 +61,26 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseAuthor() {
+    public void chooseAuthors() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
                 .DIALOG_TITLE_VALUE_AUTHOR));
-        final User preselected = getAuthor();
+        final List<User> preselected = getAuthors();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
-    public void onAuthorChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
+    public void onAuthorsChosen(SelectEvent event) {
+        final List<User> selected = (List<User>) event.getObject();
         if (selected != null) {
-            setAuthor(selected);
+            setAuthors(selected);
         } else {
-            filters.remove(AUTHOR_KEY);
+            filters.remove(AUTHORS_KEY);
         }
-        logger.info("Choose author From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
+        logger.info("Choose authors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
@@ -174,12 +174,12 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
     }
 
     // Автор
-    public void setAuthor(final User value) {
-        putNotNullToFilters(AUTHOR_KEY, value);
+    public void setAuthors(final List<User> value) {
+        putNotNullToFilters(AUTHORS_KEY, value);
     }
 
-    public User getAuthor() {
-        return (User) filters.get(AUTHOR_KEY);
+    public List<User> getAuthors() {
+        return (List<User>) filters.get(AUTHORS_KEY);
     }
 
     // Руководитель

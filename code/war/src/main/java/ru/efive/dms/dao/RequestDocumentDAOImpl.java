@@ -274,6 +274,17 @@ public class RequestDocumentDAOImpl extends GenericDAOHibernate<RequestDocument>
                 conjunction.add(Restrictions.eq("author.id", author.getId()));
             }
 
+            if (in_map.containsKey(AUTHORS_KEY)) {
+                final List<User> authors = (List<User>) in_map.get(AUTHORS_KEY);
+                if (!authors.isEmpty()) {
+                    List<Integer> authorsId = new ArrayList<Integer>(authors.size());
+                    for (User user : authors) {
+                        authorsId.add(user.getId());
+                    }
+                    conjunction.add(Restrictions.in("author.id", authorsId));
+                }
+            }
+
             if (in_map.containsKey(RESPONSIBLE_KEY)) {
                 User responsible = (User) in_map.get(RESPONSIBLE_KEY);
                 //TODO rename column

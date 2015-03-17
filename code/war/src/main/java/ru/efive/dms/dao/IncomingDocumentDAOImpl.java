@@ -537,6 +537,17 @@ public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocumen
                 conjunction.add(Restrictions.eq("author.id", author.getId()));
             }
 
+            if (in_map.containsKey(AUTHORS_KEY)) {
+                final List<User> authors = (List<User>) in_map.get(AUTHORS_KEY);
+                if (!authors.isEmpty()) {
+                    List<Integer> authorsId = new ArrayList<Integer>(authors.size());
+                    for (User user : authors) {
+                        authorsId.add(user.getId());
+                    }
+                    conjunction.add(Restrictions.in("author.id", authorsId));
+                }
+            }
+
             if (in_map.containsKey(EXECUTORS_KEY)) {
                 final List<User> executors = (List<User>) in_map.get(EXECUTORS_KEY);
                 if (!executors.isEmpty()) {

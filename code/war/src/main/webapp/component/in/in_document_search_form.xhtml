@@ -19,7 +19,6 @@
                 border-style: dotted none;
                 border-color: lavender;
             }
-
             .ui-widget-content {
                 border: none;
             }
@@ -101,15 +100,22 @@
                 <p:column>
                     <label>
 				        <span class="title">
-                           <p:commandButton value="Автор" actionListener="#{incoming_search.chooseAuthor}">
-                               <p:ajax event="dialogReturn" listener="#{incoming_search.onAuthorChosen}"
-                                       update="author"/>
+                           <p:commandButton value="Авторы" actionListener="#{incoming_search.chooseAuthors}">
+                               <p:ajax event="dialogReturn" listener="#{incoming_search.onAuthorsChosen}"
+                                       update="authors"/>
                            </p:commandButton>
                         </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="author" value="#{incoming_search.author.descriptionShort}" class="wide"/>
+                    <div style="overflow-y: scroll; max-height: 100px;">
+                        <h:panelGroup id="authors">
+                            <ui:repeat value="#{incoming_search.authors}" var="row_author">
+                                <h:outputText value="#{row_author.descriptionShort}"/>
+                                <br/>
+                            </ui:repeat>
+                        </h:panelGroup>
+                    </div>
                 </p:column>
             </p:row>
             <p:row>

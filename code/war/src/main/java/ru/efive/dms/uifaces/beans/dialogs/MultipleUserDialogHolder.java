@@ -33,6 +33,7 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
 
     public static final String DIALOG_TITLE_VALUE_EXECUTORS = "EXECUTORS_TITLE";
     public static final String DIALOG_TITLE_VALUE_RECIPIENTS = "RECIPIENTS_TITLE";
+    public static final String DIALOG_TITLE_VALUE_AUTHOR = "AUTHOR_TITLE";
 
     @EJB(name = "indexManagement")
     private IndexManagementBean indexManagementBean;
@@ -66,6 +67,8 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
                 return "Выберите исполнителей";
             } else if (DIALOG_TITLE_VALUE_RECIPIENTS.equalsIgnoreCase(title)) {
                 return "Выберите адресатов";
+            } else if(DIALOG_TITLE_VALUE_AUTHOR.equalsIgnoreCase(title)){
+                return "Выберите авторов";
             }
         }
         return "Выберите пользователей";
