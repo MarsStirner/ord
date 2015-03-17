@@ -32,14 +32,17 @@
                      widgetVar="selectOfficeKeepingVolumeTableVar"
                      scrollable="true"
                      scrollHeight="400"
+                     sortBy="#{officeKeepingVolume_row.shortDescription}"
+                     sortOrder="ascending"
+                     sortField="shortDescription"
                 >
-            <p:column headerText="Заголовок">
+            <p:column headerText="Заголовок"  sortBy="#{officeKeepingVolume_row.shortDescription}" field="shortDescription">
                 <h:outputText value="#{officeKeepingVolume_row.shortDescription}"/>
             </p:column>
-            <p:column headerText="Статус">
+            <p:column headerText="Статус" sortBy="#{officeKeepingVolume_row.statusId}" field="statusId">
                 <h:outputText value="#{officeKeepingVolume_row.getDocumentStatus().getName()}"/>
             </p:column>
-            <p:column headerText="Срок хранения">
+            <p:column headerText="Срок хранения"  sortBy="#{officeKeepingVolume_row.keepingPeriodReasons}" field="keepingPeriodReasons">
                 <h:outputText value="#{officeKeepingVolume_row.keepingPeriodReasons}"/>
             </p:column>
         </p:dataTable>

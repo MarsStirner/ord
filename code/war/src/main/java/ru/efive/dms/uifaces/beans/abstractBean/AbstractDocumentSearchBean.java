@@ -43,22 +43,26 @@ public abstract class AbstractDocumentSearchBean<T> {
     /**
      * Добавить в фильтры ненелувое значение с ключом
      * @param KEY  ключ
-     * @param value значение (если NULL -> добавления не произойдет)
+     * @param value значение (если NULL -> добавления не произойдет, а вот старое значение удалим)
      */
     protected void putNotNullToFilters(String KEY, Object value) {
         if(value != null){
             filters.put(KEY, value);
+        }  else {
+            filters.remove(KEY);
         }
     }
 
     /**
      * Добавить в фильтры ненелувое значение с ключом
      * @param KEY  ключ
-     * @param value значение (если NULL -> добавления не произойдет)
+     * @param value значение (если NULL -> добавления не произойдет, а вот старое значение удалим)
      */
     protected void putNotNullToFilters(String KEY, String value) {
         if (StringUtils.isNotEmpty(value)) {
             filters.put(KEY, value);
+        }  else {
+            filters.remove(KEY);
         }
     }
 

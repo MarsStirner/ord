@@ -19,6 +19,7 @@
                 border-style: dotted none;
                 border-color: lavender;
             }
+
             .ui-widget-content {
                 border: none;
             }
@@ -38,7 +39,8 @@
         <div class="defbutton">
             <h:commandLink action="#{incoming_search.performSearch}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-search.png']}"/>
-                <f:ajax execute="searchParametersPanel" render="searchResultsPanel" onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); addRowHandlers();  PF('searchResultsPanelVar').expand();}}"/>
+                <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
+                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); addRowHandlers();  PF('searchResultsPanelVar').expand();}}"/>
                 Найти
             </h:commandLink>
         </div>
@@ -48,7 +50,8 @@
         <div class="defbutton">
             <h:commandLink action="#{incoming_search.clearFilter}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                <f:ajax render="searchParametersPanel" onevent="function (data) {if(data.status == 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}" />
+                <f:ajax render="searchParametersPanel"
+                        onevent="function (data) {if(data.status == 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}"/>
                 Очистить
             </h:commandLink>
         </div>
@@ -70,7 +73,7 @@
                 </p:column>
                 <p:column colspan="3">
                     <p:selectOneMenu id="statusId" value="#{incoming_search.status}">
-                        <f:selectItem itemLabel="Любой" itemValue=""/>
+                        <f:selectItem itemLabel="" itemValue=""/>
                         <f:selectItem itemLabel="Зарегистрирован" itemValue="2"/>
                         <f:selectItem itemLabel="На исполнении" itemValue="80"/>
                         <f:selectItem itemLabel="Исполнен" itemValue="90"/>
@@ -87,8 +90,10 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{incoming_search.form}" converter="IncomingDocumentFormConverter">
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Входящие документы')}"/>
+                    <p:selectOneMenu id="form" value="#{incoming_search.form}"
+                                     converter="IncomingDocumentFormConverter">
+                        <f:selectItems
+                                value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Входящие документы')}"/>
                     </p:selectOneMenu>
                 </p:column>
             </p:row>
@@ -97,7 +102,8 @@
                     <label>
 				        <span class="title">
                            <p:commandButton value="Автор" actionListener="#{incoming_search.chooseAuthor}">
-                               <p:ajax event="dialogReturn" listener="#{incoming_search.onAuthorChosen}" update="author" />
+                               <p:ajax event="dialogReturn" listener="#{incoming_search.onAuthorChosen}"
+                                       update="author"/>
                            </p:commandButton>
                         </span>
                     </label>
@@ -111,7 +117,8 @@
                     <label>
                         <span class="title">
                            <p:commandButton value="Руководитель" actionListener="#{incoming_search.chooseController}">
-                               <p:ajax event="dialogReturn" listener="#{incoming_search.onControllerChosen}" update="controller" />
+                               <p:ajax event="dialogReturn" listener="#{incoming_search.onControllerChosen}"
+                                       update="controller"/>
                            </p:commandButton>
                         </span>
                     </label>
@@ -128,14 +135,6 @@
                 </p:column>
                 <p:column>
                     <p:inputText id="registrationNumber" value="#{incoming_search.registrationNumber}"/>
-                </p:column>
-                <p:column>
-                    <label for="receivedDocNumber">
-                        <span class="title">Номер поступившего</span>
-                    </label>
-                </p:column>
-                <p:column>
-                    <p:inputText id="receivedDocNumber" value="#{incoming_search.receivedDocumentNumber}"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -278,14 +277,17 @@
                 <p:column>
                     <label>
                         <span class="title">
-                             <p:commandButton value="Корреспондент" actionListener="#{incoming_search.chooseContragent}">
-                                 <p:ajax event="dialogReturn" listener="#{incoming_search.onContragentChosen}" update="contragent" />
+                             <p:commandButton value="Корреспондент"
+                                              actionListener="#{incoming_search.chooseContragent}">
+                                 <p:ajax event="dialogReturn" listener="#{incoming_search.onContragentChosen}"
+                                         update="contragent"/>
                              </p:commandButton>
                         </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="contragent" value="#{incoming_search.contragent}" converter="ContragentConverter"/>
+                    <h:outputText id="contragent" value="#{incoming_search.contragent}"
+                                  converter="ContragentConverter"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -293,7 +295,8 @@
                     <label>
                         <span class="title">
                             <p:commandButton value="Исполнители" actionListener="#{incoming_search.chooseExecutors}">
-                                <p:ajax event="dialogReturn" listener="#{incoming_search.onExecutorsChosen}" update="executors" />
+                                <p:ajax event="dialogReturn" listener="#{incoming_search.onExecutorsChosen}"
+                                        update="executors"/>
                             </p:commandButton>
                         </span>
                     </label>
@@ -314,7 +317,8 @@
                     <label>
                         <span class="title">
                              <p:commandButton value="Адресаты" actionListener="#{incoming_search.chooseRecipients}">
-                                 <p:ajax event="dialogReturn" listener="#{incoming_search.onRecipientsChosen}" update="recipients" />
+                                 <p:ajax event="dialogReturn" listener="#{incoming_search.onRecipientsChosen}"
+                                         update="recipients"/>
                              </p:commandButton>
                         </span>
                     </label>
@@ -334,8 +338,10 @@
                 <p:column>
                     <label>
                         <span class="title">
-                            <p:commandButton value="Том дела" actionListener="#{incoming_search.chooseOfficeKeepingVolume}">
-                                <p:ajax event="dialogReturn" listener="#{incoming_search.onOfficeKeepingVolumeChosen}" update="office_keeping_Volume" />
+                            <p:commandButton value="Том дела"
+                                             actionListener="#{incoming_search.chooseOfficeKeepingVolume}">
+                                <p:ajax event="dialogReturn" listener="#{incoming_search.onOfficeKeepingVolumeChosen}"
+                                        update="office_keeping_Volume"/>
                             </p:commandButton>
                         </span>
                     </label>
@@ -360,9 +366,11 @@
     </ui:define>
 
     <ui:define name="searchResults">
-        <p:dataTable id="incomingSearchResults" value="#{incoming_search.searchResults}" var="row_result" widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}">
+        <p:dataTable id="incomingSearchResults" value="#{incoming_search.searchResults}" var="row_result"
+                     widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}"
+                     emptyMessage="Записей не найдено">
             <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
-            <p:column style = "width:5em;">
+            <p:column style="width:5em;">
                 <f:facet name="header">
                     Номер
                 </f:facet>
@@ -439,7 +447,6 @@
             window.onload = addRowHandlers;
         </script>
     </ui:define>
-
 
 
 </ui:composition>

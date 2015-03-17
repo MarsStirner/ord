@@ -32,8 +32,11 @@
                      widgetVar="selectPersonTableVar"
                      scrollable="true"
                      scrollHeight="400"
+                     sortBy="#{contragent_row.shortName}"
+                     sortOrder="ascending"
+                     sortField="shortName"
                 >
-            <p:column headerText="Краткое наименование">
+            <p:column headerText="Краткое наименование" sortBy="#{contragent_row.shortName}" field="shortName">
                 <h:outputText value="#{contragent_row.shortName}"/>
             </p:column>
         </p:dataTable>

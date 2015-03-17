@@ -19,6 +19,7 @@
                 border-style: dotted none;
                 border-color: lavender;
             }
+
             .ui-widget-content {
                 border: none;
             }
@@ -72,7 +73,7 @@
                 </p:column>
                 <p:column colspan="3">
                     <p:selectOneMenu id="statusId" value="#{outgoing_search.status}">
-                        <f:selectItem itemLabel="Любой" itemValue=""/>
+                        <f:selectItem itemLabel="" itemValue=""/>
                         <f:selectItem itemLabel="На рассмотрении" itemValue="2"/>
                         <f:selectItem itemLabel="Согласование" itemValue="3"/>
                         <f:selectItem itemLabel="Зарегистрирован" itemValue="80"/>
@@ -91,7 +92,8 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{outgoing_search.form}" converter="OutgoingDocumentFormConverter">
+                    <p:selectOneMenu id="form" value="#{outgoing_search.form}"
+                                     converter="OutgoingDocumentFormConverter">
                         <f:selectItems
                                 value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Исходящие документы')}"/>
                     </p:selectOneMenu>
@@ -116,7 +118,8 @@
                     <label>
                     <span class="title">
                        <p:commandButton value="Руководитель" actionListener="#{outgoing_search.chooseController}">
-                           <p:ajax event="dialogReturn" listener="#{outgoing_search.onControllerChosen}" update="controller"/>
+                           <p:ajax event="dialogReturn" listener="#{outgoing_search.onControllerChosen}"
+                                   update="controller"/>
                        </p:commandButton>
                     </span>
                     </label>
@@ -250,14 +253,17 @@
                 <p:column>
                     <label>
                     <span class="title">
-                         <p:commandButton value="Адресат (контрагент)" actionListener="#{outgoing_search.chooseContragent}">
-                             <p:ajax event="dialogReturn" listener="#{outgoing_search.onContragentChosen}" update="contragent" />
+                         <p:commandButton value="Адресат (контрагент)"
+                                          actionListener="#{outgoing_search.chooseContragent}">
+                             <p:ajax event="dialogReturn" listener="#{outgoing_search.onContragentChosen}"
+                                     update="contragent"/>
                          </p:commandButton>
                     </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="contragent" value="#{outgoing_search.contragent}" converter="ContragentConverter"/>
+                    <h:outputText id="contragent" value="#{outgoing_search.contragent}"
+                                  converter="ContragentConverter"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -265,7 +271,8 @@
                     <label>
                     <span class="title">
                         <p:commandButton value="Исполнители" actionListener="#{outgoing_search.chooseExecutors}">
-                            <p:ajax event="dialogReturn" listener="#{outgoing_search.onExecutorsChosen}" update="executors" />
+                            <p:ajax event="dialogReturn" listener="#{outgoing_search.onExecutorsChosen}"
+                                    update="executors"/>
                         </p:commandButton>
                     </span>
                     </label>
@@ -297,9 +304,11 @@
 
 
     <ui:define name="searchResults">
-        <p:dataTable id="outgoingSearchResults" value="#{outgoing_search.searchResults}" var="row_result" widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}">
+        <p:dataTable id="outgoingSearchResults" value="#{outgoing_search.searchResults}" var="row_result"
+                     widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}"
+                     emptyMessage="Записей не найдено">
             <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
-            <p:column style = "width:5em;">
+            <p:column style="width:5em;">
                 <f:facet name="header">
                     Номер
                 </f:facet>

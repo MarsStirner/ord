@@ -49,6 +49,7 @@
                 </div>
             </div>
         </ui:insert>
+
         <div id="header_content">
             <div class="name">
                 <div class="searchFormName">
@@ -58,17 +59,42 @@
                 </div>
             </div>
         </div>
-        <p:panel id ="searchParametersPanel" header="Настройки фильтра" toggleable="true" widgetVar="searchParametersPanelVar">
+        <p:panel id="searchParametersPanel" header="Настройки фильтра" toggleable="true"
+                 widgetVar="searchParametersPanelVar">
             <ui:insert name="searchParameters">
                 <h:outputText value="Таблица с настройками фильтра"/>
             </ui:insert>
+            <!--
+            Добавить поведение скрытия\отображения панели при клике на ее шапку
+            + прекратить отдельную обработку кнопки +\- так как она срабатывает два раза
+            -->
+            <script type="text/javascript">
+                $($('div[data-widget="searchParametersPanelVar"]').find('div')[0]).on('click', function (e) {
+                    PF('searchParametersPanelVar').toggle();
+                }).find('a').on('click', function () {
+                    return false;
+                });
+            </script>
         </p:panel>
+
         <h:link id="results"/>
-        <p:panel id ="searchResultsPanel" header="Результаты поиска" toggleable="true" widgetVar="searchResultsPanelVar">
+        <p:panel id="searchResultsPanel" header="Результаты поиска" toggleable="true" widgetVar="searchResultsPanelVar">
             <ui:insert name="searchResults">
                 <h:outputText value="Таблица с результатами поиска"/>
             </ui:insert>
+            <!--
+           Добавить поведение скрытия\отображения панели при клике на ее шапку
+           + прекратить отдельную обработку кнопки +\- так как она срабатывает два раза
+           -->
+            <script type="text/javascript">
+                $($('div[data-widget="searchResultsPanelVar"]').find('div')[0]).on('click', function (e) {
+                    PF('searchResultsPanelVar').toggle();
+                }).find('a').on('click', function () {
+                    return false;
+                });
+            </script>
         </p:panel>
+
 
         <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
         <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"

@@ -1,18 +1,19 @@
-package ru.efive.dms.uifaces.beans.internal;
+package ru.efive.dms.uifaces.beans.request;
 
 import com.google.common.collect.ImmutableList;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
+import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.DocumentForm;
-import ru.entity.model.document.InternalDocument;
+import ru.entity.model.document.RequestDocument;
 import ru.entity.model.user.User;
 
 import javax.faces.bean.ManagedBean;
@@ -26,13 +27,12 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
-
-@ManagedBean(name="internal_search")
+@ManagedBean(name = "request_search")
 @ViewScoped
-public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<InternalDocument> {
+public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<RequestDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Inject
@@ -45,13 +45,13 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
      * @return Список документов, удовлетворяющих поиску
      */
     @Override
-    public List<InternalDocument> performSearch() {
-        logger.info("INTERNAL: Perform Search with map : {}", filters);
+    public List<RequestDocument> performSearch() {
+        logger.info("REQUEST: Perform Search with map : {}", filters);
         try {
-            searchResults = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+            searchResults = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
                     .findAllDocumentsByUser(filters, null, sessionManagement.getLoggedUser(), false, false);
         } catch (Exception e) {
-            logger.error("INTERNAL: Error while search", e);
+            logger.error("REQUEST: Error while search", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
         }
         return searchResults;
@@ -83,30 +83,7 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
         logger.info("Choose author From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
 
-    // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseController() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
-                .DIALOG_TITLE_VALUE_CONTROLLER));
-        final User preselected = getController();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
-    }
-
-    public void onControllerChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        if (selected != null) {
-            setController(selected);
-        } else {
-            filters.remove(CONTROLLER_KEY);
-        }
-        logger.info("Choose controller From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
-    }
-
-    // Выбора ответственного исполнителя /////////////////////////////////////////////////////////////////////////////////////////////
+    // Выбора ответственного исполнителя ///////////////////////////////////////////////////////////////////////////////
     public void chooseResponsible() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
         params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
@@ -129,7 +106,7 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
         logger.info("Choose responsible From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
 
-    // Выбора адресатов /////////////////////////////////////////////////////////////////////////////////////////////
+    // Выбора адресатов ////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseRecipients() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
         params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
@@ -152,12 +129,13 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
         logger.info("Choose recipients From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Параметры поиска ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Статус
     public void setStatus(final String value) {
-        putNotNullToFilters(STATUS_KEY, value);
+       putNotNullToFilters(STATUS_KEY, value);
     }
 
     public String getStatus() {
@@ -180,15 +158,6 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
 
     public User getAuthor() {
         return (User) filters.get(AUTHOR_KEY);
-    }
-
-    // Руководитель
-    public void setController(final User value) {
-        putNotNullToFilters(CONTROLLER_KEY, value);
-    }
-
-    public User getController() {
-        return (User) filters.get(CONTROLLER_KEY);
     }
 
     // Регистрационный номер
@@ -254,22 +223,58 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
         return (Date) filters.get(END_EXECUTION_DATE_KEY);
     }
 
-    // Дата подписания ОТ
-    public void setStartSignatureDate(Date value) {
-        putNotNullToFilters(START_SIGNATURE_DATE_KEY, value);
+    // Дата доставки ОТ
+    public void setStartDeliveryDate(Date value) {
+        putNotNullToFilters(START_DELIVERY_DATE_KEY, value);
     }
 
-    public Date getStartSignatureDate() {
-        return (Date) filters.get(START_SIGNATURE_DATE_KEY);
+    public Date getStartDeliveryDate() {
+        return (Date) filters.get(START_DELIVERY_DATE_KEY);
     }
 
-    // Дата подписания ДО
-    public void setEndSignatureDate(Date value) {
-        putNotNullToFilters(END_SIGNATURE_DATE_KEY, value);
+    // Дата доставки ДО
+    public void setEndDeliveryDate(Date value) {
+        putNotNullToFilters(END_DELIVERY_DATE_KEY, value);
     }
 
-    public Date getEndSignatureDate() {
-        return (Date) filters.get(END_SIGNATURE_DATE_KEY);
+    public Date getEndDeliveryDate() {
+        return (Date) filters.get(END_DELIVERY_DATE_KEY);
+    }
+
+    // Тип доставки
+    public void setDeliveryType(DeliveryType value) {
+        putNotNullToFilters(DELIVERY_TYPE_KEY, value);
+    }
+
+    public DeliveryType getDeliveryType() {
+        return (DeliveryType) filters.get(DELIVERY_TYPE_KEY);
+    }
+
+    //Фамилия отправителя
+    public void setSenderLastName(String value){
+        putNotNullToFilters(SENDER_LAST_NAME_KEY, value);
+    }
+
+    public String getSenderLastName(){
+        return (String) filters.get(SENDER_LAST_NAME_KEY);
+    }
+
+    //Имя отправителя
+    public void setSenderFirstName(String value){
+        putNotNullToFilters(SENDER_FIRST_NAME_KEY, value);
+    }
+
+    public String getSenderFirstName(){
+        return (String) filters.get(SENDER_FIRST_NAME_KEY);
+    }
+
+    //Отчество отправителя
+    public void setSenderPatrName(String value){
+        putNotNullToFilters(SENDER_PATR_NAME_KEY, value);
+    }
+
+    public String getSenderPatrName(){
+        return (String) filters.get(SENDER_PATR_NAME_KEY);
     }
 
     // Отвественный исполнитель

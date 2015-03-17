@@ -68,7 +68,7 @@ public class OfficeKeepingVolumeDialogHolder extends AbstractDialog<OfficeKeepin
      */
     @Override
     public String initializeTitle(Map<String, String> requestParameterMap) {
-        return "Выберите корреспондента";
+        return "Выберите том дела";
     }
 
     /**

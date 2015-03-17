@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
+import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
@@ -72,7 +73,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", null, params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onAuthorChosen(SelectEvent event) {
@@ -95,7 +96,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", null, params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onControllerChosen(SelectEvent event) {
@@ -114,7 +115,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml");
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
     }
 
     public void onContragentChosen(SelectEvent event) {
@@ -137,7 +138,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", null, params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onExecutorsChosen(SelectEvent event) {

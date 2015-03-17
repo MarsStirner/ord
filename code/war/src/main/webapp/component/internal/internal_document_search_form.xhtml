@@ -19,6 +19,7 @@
                 border-style: dotted none;
                 border-color: lavender;
             }
+
             .ui-widget-content {
                 border: none;
             }
@@ -72,7 +73,7 @@
                 </p:column>
                 <p:column colspan="3">
                     <p:selectOneMenu id="statusId" value="#{internal_search.status}">
-                        <f:selectItem itemLabel="Любой" itemValue=""/>
+                        <f:selectItem itemLabel="" itemValue=""/>
                         <f:selectItem itemLabel="На рассмотрении" itemValue="2"/>
                         <f:selectItem itemLabel="Согласование" itemValue="3"/>
                         <f:selectItem itemLabel="Зарегистрирован" itemValue="5"/>
@@ -90,7 +91,8 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{internal_search.form}" converter="InternalDocumentFormConverter">
+                    <p:selectOneMenu id="form" value="#{internal_search.form}"
+                                     converter="InternalDocumentFormConverter">
                         <f:selectItems
                                 value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Внутренние документы')}"/>
                     </p:selectOneMenu>
@@ -115,7 +117,8 @@
                     <label>
                     <span class="title">
                        <p:commandButton value="Руководитель" actionListener="#{internal_search.chooseController}">
-                           <p:ajax event="dialogReturn" listener="#{internal_search.onControllerChosen}" update="controller"/>
+                           <p:ajax event="dialogReturn" listener="#{internal_search.onControllerChosen}"
+                                   update="controller"/>
                        </p:commandButton>
                     </span>
                     </label>
@@ -232,14 +235,17 @@
                 <p:column>
                     <label>
                     <span class="title">
-                       <p:commandButton value="Контроль исполнения" actionListener="#{internal_search.chooseResponsible}">
-                           <p:ajax event="dialogReturn" listener="#{internal_search.onResponsibleChosen}" update="responsible"/>
+                       <p:commandButton value="Контроль исполнения"
+                                        actionListener="#{internal_search.chooseResponsible}">
+                           <p:ajax event="dialogReturn" listener="#{internal_search.onResponsibleChosen}"
+                                   update="responsible"/>
                        </p:commandButton>
                     </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="responsible" value="#{internal_search.responsible.descriptionShort}" class="wide"/>
+                    <h:outputText id="responsible" value="#{internal_search.responsible.descriptionShort}"
+                                  class="wide"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -247,7 +253,8 @@
                     <label>
                         <span class="title">
                              <p:commandButton value="Адресаты" actionListener="#{internal_search.chooseRecipients}">
-                                 <p:ajax event="dialogReturn" listener="#{internal_search.onRecipientsChosen}" update="recipients" />
+                                 <p:ajax event="dialogReturn" listener="#{internal_search.onRecipientsChosen}"
+                                         update="recipients"/>
                              </p:commandButton>
                         </span>
                     </label>
@@ -277,75 +284,76 @@
     </ui:define>
 
 
-
     <ui:define name="searchResults">
-    <p:dataTable id="internalSearchResults" value="#{internal_search.searchResults}" var="row_result" widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}">
-        <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
-        <p:column style = "width:5em;">
-            <f:facet name="header">
-                Номер
-            </f:facet>
-            <h:outputText value="#{row_result.registrationNumber}"/>
-        </p:column>
-        <p:column style="width:5em;">
-            <f:facet name="header">
-                Дата подписания
-            </f:facet>
-            <h:outputText value="#{row_result.signatureDate}">
-                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-            </h:outputText>
-        </p:column>
-        <p:column style="width:12em;">
-            <f:facet name="header">
-               Ответственный
-            </f:facet>
-            <h:outputText value="#{row_result.responsible}" converter="PersonConverter"/>
-        </p:column>
-        <p:column style="width:10em;">
-            <f:facet name="header">
-                Руководитель
-            </f:facet>
-            <h:outputText value="#{row_result.signer}" converter="PersonConverter"/>
-        </p:column>
-        <p:column style="width:8em;">
-            <f:facet name="header">
-                Вид
-            </f:facet>
-            <h:outputText value="#{row_result.form}"/>
-        </p:column>
-        <p:column style="width:10em;">
-            <f:facet name="header">
-                Статус
-            </f:facet>
-            <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
-        </p:column>
-        <p:column>
-            <f:facet name="header">
-                Краткое содержание
-            </f:facet>
-            <h:outputText value="#{row_result.shortDescription}"/>
-        </p:column>
-        <p:ajax event="page" onstart="addRowHandlers()"/>
-    </p:dataTable>
-    <script type="text/javascript">
-        function addRowHandlers() {
-            console.log("refresh table row onclick handlers");
-            var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
-            var tbody = table.getElementsByTagName("tbody")[0];
-            for (var i = 0; i &lt; tbody.rows.length; i++) {
-                var currentRow = tbody.rows[i];
-                var createClickHandler = function (row) {
-                    return function () {
-                        goToInternalDocument(row.firstChild.textContent);
+        <p:dataTable id="internalSearchResults" value="#{internal_search.searchResults}" var="row_result"
+                     widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}"
+                     emptyMessage="Записей не найдено">
+            <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
+            <p:column style="width:5em;">
+                <f:facet name="header">
+                    Номер
+                </f:facet>
+                <h:outputText value="#{row_result.registrationNumber}"/>
+            </p:column>
+            <p:column style="width:5em;">
+                <f:facet name="header">
+                    Дата подписания
+                </f:facet>
+                <h:outputText value="#{row_result.signatureDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column style="width:12em;">
+                <f:facet name="header">
+                    Ответственный
+                </f:facet>
+                <h:outputText value="#{row_result.responsible}" converter="PersonConverter"/>
+            </p:column>
+            <p:column style="width:10em;">
+                <f:facet name="header">
+                    Руководитель
+                </f:facet>
+                <h:outputText value="#{row_result.signer}" converter="PersonConverter"/>
+            </p:column>
+            <p:column style="width:8em;">
+                <f:facet name="header">
+                    Вид
+                </f:facet>
+                <h:outputText value="#{row_result.form}"/>
+            </p:column>
+            <p:column style="width:10em;">
+                <f:facet name="header">
+                    Статус
+                </f:facet>
+                <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    Краткое содержание
+                </f:facet>
+                <h:outputText value="#{row_result.shortDescription}"/>
+            </p:column>
+            <p:ajax event="page" onstart="addRowHandlers()"/>
+        </p:dataTable>
+        <script type="text/javascript">
+            function addRowHandlers() {
+                console.log("refresh table row onclick handlers");
+                var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
+                var tbody = table.getElementsByTagName("tbody")[0];
+                for (var i = 0; i &lt; tbody.rows.length; i++) {
+                    var currentRow = tbody.rows[i];
+                    var createClickHandler = function (row) {
+                        return function () {
+                            goToInternalDocument(row.firstChild.textContent);
+                        };
                     };
-                };
-                currentRow.className = currentRow.className.replace('ui-state-highlight', '');
-                currentRow.ondblclick = createClickHandler(currentRow);
+                    currentRow.className = currentRow.className.replace('ui-state-highlight', '');
+                    currentRow.ondblclick = createClickHandler(currentRow);
+                }
             }
-        }
-        window.onload = addRowHandlers;
-    </script>
-</ui:define>
+            window.onload = addRowHandlers;
+        </script>
+    </ui:define>
 
 </ui:composition>
 

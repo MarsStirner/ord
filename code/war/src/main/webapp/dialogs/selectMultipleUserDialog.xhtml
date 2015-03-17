@@ -33,14 +33,17 @@
                      widgetVar="selectPersonTableVar"
                      scrollable="true"
                      scrollHeight="400"
+                     sortBy="#{person_row.lastName}"
+                     sortOrder="ascending"
+                     sortField="lastName"
                 >
-            <p:column headerText="Фамилия">
+            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field = "lastName">
                 <h:outputText value="#{person_row.lastName}"/>
             </p:column>
-            <p:column headerText="Имя">
+            <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
                 <h:outputText value="#{person_row.firstName}"/>
             </p:column>
-            <p:column headerText="Отчество">
+            <p:column headerText="Отчество" sortBy="#{person_row.middleName}" field="middleName">
                 <h:outputText value="#{person_row.middleName}"/>
             </p:column>
         </p:dataTable>

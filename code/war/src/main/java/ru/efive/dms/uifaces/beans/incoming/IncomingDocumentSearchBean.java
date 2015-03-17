@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
-import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.OfficeKeepingVolumeDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.DocumentForm;
@@ -73,7 +70,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", null, params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onAuthorChosen(SelectEvent event) {
@@ -96,7 +93,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", null, params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onControllerChosen(SelectEvent event) {
@@ -116,7 +113,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml");
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
     }
 
     public void onContragentChosen(SelectEvent event) {
@@ -139,7 +136,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", null, params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onExecutorsChosen(SelectEvent event) {
@@ -162,7 +159,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", null, params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onRecipientsChosen(SelectEvent event) {
@@ -182,7 +179,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put
                     (OfficeKeepingVolumeDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml");
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml", AbstractDialog.getViewParams(), null);
     }
 
     public void onOfficeKeepingVolumeChosen(SelectEvent event) {
@@ -241,7 +238,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public String getRegistrationNumber() {
         return (String) filters.get(REGISTRATION_NUMBER_KEY);
     }
-
+    /*  в форме не используется
     // Номер поступившего
     public void setReceivedDocumentNumber(final String value) {
         putNotNullToFilters(RECEIVED_DOCUMENT_NUMBER_KEY, value);
@@ -250,7 +247,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public String getReceivedDocumentNumber() {
         return (String) filters.get(RECEIVED_DOCUMENT_NUMBER_KEY);
     }
-
+    */
     // Дата создания ОТ
     public void setStartCreationDate(Date value) {
         putNotNullToFilters(START_CREATION_DATE_KEY, value);
