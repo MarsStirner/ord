@@ -1,6 +1,7 @@
 package ru.efive.sql.dao.user;
 
 import ru.efive.sql.dao.GenericDAO;
+import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
 
 import java.util.List;
@@ -25,14 +26,6 @@ public interface UserDAO extends GenericDAO<User> {
     public User getByLogin(String login);
 
     /**
-     * Возвращает пользователя по email
-     *
-     * @param email адрес электронной почты
-     * @return пользователь или null, если такового не существует
-     */
-    public User getByEmail(String email);
-
-    /**
      * Находит всех пользователей по маске
      *
      * @param pattern     маска поиска
@@ -54,4 +47,28 @@ public interface UserDAO extends GenericDAO<User> {
      */
     public long countUsers(String pattern, boolean showDeleted, boolean showFired);
 
+
+    /**
+     * Получает список пользователей (SIMPLE_CRITERIA) по поисковому шаблону, с учетом уволенных\удаленных и принадлежащих заданной группе
+     * @param pattern поисковый шаблон
+     * @param showDeleted включать ли в список удаленных
+     * @param showFired включать ли в список уволенных
+     * @param group пользователи должны принадлежать заданной группе
+     * @param offset начиная с какого результата вернуть
+     * @param count сколько записей вернуть
+     * @param orderBy  соритировка по
+     * @param orderAsc порядок сортировки
+     * @return список пользователей удовлетворяющий условиям
+     */
+    public List<User> findUsersByGroup(final String pattern, final boolean showDeleted, final boolean showFired,final Group group, final int
+            offset, final int count, final String orderBy, final boolean orderAsc);
+
+
+    /**
+     * Находит количество пользователей в заданной группе по маске
+     * @param pattern     маска поиска
+     * @param showDeleted включает в выборку удалённых пользователей
+     * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
+     */
+    public long countUsersByGroup(final String pattern, final boolean showDeleted, final boolean showFired, final Group group);
 }

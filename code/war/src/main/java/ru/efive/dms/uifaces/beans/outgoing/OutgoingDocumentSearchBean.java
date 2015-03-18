@@ -89,6 +89,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
         params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
                 .DIALOG_TITLE_VALUE_CONTROLLER));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
         final User preselected = getController();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder

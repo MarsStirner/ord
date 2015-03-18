@@ -4,7 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForUser;
+import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +17,7 @@ import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.Map;
 
+import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
 
 /**
@@ -29,6 +32,7 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";
+    public static final String DIALOG_GROUP_KEY = "DIALOG_GROUP_ALIAS";
 
     public static final String DIALOG_TITLE_VALUE_CONTROLLER = "CONTROLLER_TITLE";
     public static final String DIALOG_TITLE_VALUE_AUTHOR = "AUTHOR_TITLE";
@@ -41,7 +45,7 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
 
     @PostConstruct
     public void init() {
-        logger.info("Initialize new PersonSelectDialog");
+        logger.info("Initialize new UserSelectDialog");
         final UserDAOHibernate userDao = (UserDAOHibernate) indexManagementBean.getContext().getBean(USER_DAO);
         final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestParameterMap();
@@ -49,6 +53,21 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
         lazyModel = new LazyDataModelForUser(userDao);
+        initializeGroup(requestParameterMap);
+    }
+
+    private void initializeGroup(final Map<String, String> requestParameterMap) {
+        final String alias = requestParameterMap.get(DIALOG_GROUP_KEY);
+        if (StringUtils.isNotEmpty(alias)) {
+            logger.info("UserSelectDialog: initialized with group alias=\'{}\'", alias);
+            final Group group = ((GroupDAOHibernate)indexManagementBean.getContext().getBean(GROUP_DAO)).findGroupByAlias(alias);
+            if(group != null){
+                logger.info("UserSelectDialog: initialized with group [{}]", group);
+                lazyModel.setFilterGroup(group);
+            } else {
+                logger.error("UserSelectDialog: group not founded by alias= \'{}\'", alias);
+            }
+        }
     }
 
     /**
@@ -58,7 +77,7 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
      * @return Строка с Заголовком
      */
     @Override
-    public String initializeTitle(Map<String, String> requestParameterMap) {
+    public String initializeTitle(final Map<String, String> requestParameterMap) {
         final String title = requestParameterMap.get(DIALOG_TITLE_GET_PARAM_KEY);
         if (StringUtils.isNotEmpty(title)) {
             if (DIALOG_TITLE_VALUE_CONTROLLER.equalsIgnoreCase(title)) {
