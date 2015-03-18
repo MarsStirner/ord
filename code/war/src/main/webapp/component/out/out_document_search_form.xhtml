@@ -100,14 +100,17 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <div style="overflow-y: scroll; max-height: 100px;">
-                        <h:panelGroup id="authors">
-                            <ui:repeat value="#{outgoing_search.authors}" var="row_author">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="authors" value="#{outgoing_search.authors}" var="row_author" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
                                 <h:outputText value="#{row_author.descriptionShort}"/>
-                                <br/>
-                            </ui:repeat>
-                        </h:panelGroup>
-                    </div>
+                                <p:commandLink action="#{outgoing_search.removeAuthor(row_author)}" ajax="true"
+                                               update="authors" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
                 </p:column>
             </p:row>
             <p:row>
@@ -275,14 +278,17 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <div style="overflow-y: scroll; max-height: 100px;">
-                        <h:panelGroup id="executors">
-                            <ui:repeat value="#{outgoing_search.executors}" var="row_executor">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="executors" value="#{outgoing_search.executors}" var="row_executor" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
                                 <h:outputText value="#{row_executor.descriptionShort}"/>
-                                <br/>
-                            </ui:repeat>
-                        </h:panelGroup>
-                    </div>
+                                <p:commandLink action="#{outgoing_search.removeExecutor(row_executor)}" ajax="true"
+                                               update="executors" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
                 </p:column>
             </p:row>
             <p:row>

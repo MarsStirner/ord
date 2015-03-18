@@ -11,7 +11,6 @@ import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
-import ru.entity.model.document.DocumentForm;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.user.User;
@@ -195,40 +194,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Параметры поиска ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Статус
-    public void setStatus(final String value) {
-        putNotNullToFilters(STATUS_KEY, value);
-    }
 
-    public String getStatus() {
-        return (String) filters.get(STATUS_KEY);
-    }
-
-    //  Вид документа
-    public void setForm(final DocumentForm value) {
-        putNotNullToFilters(FORM_KEY, value);
-    }
-
-    public DocumentForm getForm() {
-        return (DocumentForm) filters.get(FORM_KEY);
-    }
-
-    // Автор
-    public void setAuthors(final List<User> value) {
-        putNotNullToFilters(AUTHORS_KEY, value);
-    }
-
-    public List<User> getAuthors() {
-        return (List<User>) filters.get(AUTHORS_KEY);
-    }
-
-    public void removeAuthor(User author) {
-        final List<User> authors = getAuthors();
-        authors.remove(author);
-        if(authors.isEmpty()){
-            filters.remove(AUTHORS_KEY);
-        }
-    }
 
     // Руководитель
     public void setController(final User value) {
@@ -239,14 +205,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (User) filters.get(CONTROLLER_KEY);
     }
 
-    // Регистрационный номер
-    public void setRegistrationNumber(final String value) {
-        putNotNullToFilters(REGISTRATION_NUMBER_KEY, value);
-    }
-
-    public String getRegistrationNumber() {
-        return (String) filters.get(REGISTRATION_NUMBER_KEY);
-    }
     /*  в форме не используется
     // Номер поступившего
     public void setReceivedDocumentNumber(final String value) {
@@ -257,41 +215,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (String) filters.get(RECEIVED_DOCUMENT_NUMBER_KEY);
     }
     */
-    // Дата создания ОТ
-    public void setStartCreationDate(Date value) {
-        putNotNullToFilters(START_CREATION_DATE_KEY, value);
-    }
-
-    public Date getStartCreationDate() {
-        return (Date) filters.get(START_CREATION_DATE_KEY);
-    }
-
-    // Дата создания ДО
-    public void setEndCreationDate(Date value) {
-        putNotNullToFilters(END_CREATION_DATE_KEY, value);
-    }
-
-    public Date getEndCreationDate() {
-        return (Date) filters.get(END_CREATION_DATE_KEY);
-    }
-
-    // Дата регистрации ОТ
-    public void setStartRegistrationDate(Date value) {
-        putNotNullToFilters(START_REGISTRATION_DATE_KEY, value);
-    }
-
-    public Date getStartRegistrationDate() {
-        return (Date) filters.get(START_REGISTRATION_DATE_KEY);
-    }
-
-    // Дата регистрации ДО
-    public void setEndRegistrationDate(Date value) {
-        putNotNullToFilters(END_REGISTRATION_DATE_KEY, value);
-    }
-
-    public Date getEndRegistrationDate() {
-        return (Date) filters.get(END_REGISTRATION_DATE_KEY);
-    }
 
     // Дата доставки ОТ
     public void setStartDeliveryDate(Date value) {
@@ -407,15 +330,4 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public OfficeKeepingVolume getOfficeKeepingVolume() {
         return (OfficeKeepingVolume) filters.get(OFFICE_KEEPING_VOLUME_KEY);
     }
-
-    // Краткое содержание
-    public void setShortDescription(final String value) {
-        putNotNullToFilters(SHORT_DESCRIPTION_KEY, value);
-    }
-
-    public String getShortDescription() {
-        return (String) filters.get(SHORT_DESCRIPTION_KEY);
-    }
-
-
 }

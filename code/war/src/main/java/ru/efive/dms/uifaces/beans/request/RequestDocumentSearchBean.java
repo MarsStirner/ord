@@ -12,7 +12,6 @@ import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.entity.model.document.DeliveryType;
-import ru.entity.model.document.DocumentForm;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.user.User;
 
@@ -133,77 +132,6 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Параметры поиска ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Статус
-    public void setStatus(final String value) {
-       putNotNullToFilters(STATUS_KEY, value);
-    }
-
-    public String getStatus() {
-        return (String) filters.get(STATUS_KEY);
-    }
-
-    //  Вид документа
-    public void setForm(final DocumentForm value) {
-        putNotNullToFilters(FORM_KEY, value);
-    }
-
-    public DocumentForm getForm() {
-        return (DocumentForm) filters.get(FORM_KEY);
-    }
-
-    // Автор
-    public void setAuthors(final List<User> value) {
-        putNotNullToFilters(AUTHORS_KEY, value);
-    }
-
-    public List<User> getAuthors() {
-        return (List<User>) filters.get(AUTHORS_KEY);
-    }
-
-    // Регистрационный номер
-    public void setRegistrationNumber(final String value) {
-        putNotNullToFilters(REGISTRATION_NUMBER_KEY, value);
-    }
-
-    public String getRegistrationNumber() {
-        return (String) filters.get(REGISTRATION_NUMBER_KEY);
-    }
-
-    // Дата создания ОТ
-    public void setStartCreationDate(Date value) {
-        putNotNullToFilters(START_CREATION_DATE_KEY, value);
-    }
-
-    public Date getStartCreationDate() {
-        return (Date) filters.get(START_CREATION_DATE_KEY);
-    }
-
-    // Дата создания ДО
-    public void setEndCreationDate(Date value) {
-        putNotNullToFilters(END_CREATION_DATE_KEY, value);
-    }
-
-    public Date getEndCreationDate() {
-        return (Date) filters.get(END_CREATION_DATE_KEY);
-    }
-
-    // Дата регистрации ОТ
-    public void setStartRegistrationDate(Date value) {
-        putNotNullToFilters(START_REGISTRATION_DATE_KEY, value);
-    }
-
-    public Date getStartRegistrationDate() {
-        return (Date) filters.get(START_REGISTRATION_DATE_KEY);
-    }
-
-    // Дата регистрации ДО
-    public void setEndRegistrationDate(Date value) {
-        putNotNullToFilters(END_REGISTRATION_DATE_KEY, value);
-    }
-
-    public Date getEndRegistrationDate() {
-        return (Date) filters.get(END_REGISTRATION_DATE_KEY);
-    }
 
     // Срок исполнения ОТ
     public void setStartExecutionDate(Date value) {
@@ -295,13 +223,12 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
         return (List<User>) filters.get(RECIPIENTS_KEY);
     }
 
-    // Краткое содержание
-    public void setShortDescription(final String value) {
-        putNotNullToFilters(SHORT_DESCRIPTION_KEY, value);
-    }
-
-    public String getShortDescription() {
-        return (String) filters.get(SHORT_DESCRIPTION_KEY);
+    public void removeRecipient(User recipient) {
+        final List<User> recipients = getRecipients();
+        recipients.remove(recipient);
+        if(recipients.isEmpty()){
+            filters.remove(RECIPIENTS_KEY);
+        }
     }
 
 }

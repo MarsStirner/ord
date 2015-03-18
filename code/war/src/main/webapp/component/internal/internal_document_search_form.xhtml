@@ -99,14 +99,17 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <div style="overflow-y: scroll; max-height: 100px;">
-                        <h:panelGroup id="authors">
-                            <ui:repeat value="#{internal_search.authors}" var="row_author">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="authors" value="#{internal_search.authors}" var="row_author" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
                                 <h:outputText value="#{row_author.descriptionShort}"/>
-                                <br/>
-                            </ui:repeat>
-                        </h:panelGroup>
-                    </div>
+                                <p:commandLink action="#{internal_search.removeAuthor(row_author)}" ajax="true"
+                                               update="authors" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
                 </p:column>
             </p:row>
             <p:row>
@@ -257,14 +260,17 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <div style="overflow-y: scroll; max-height: 100px;">
-                        <h:panelGroup id="recipients">
-                            <ui:repeat value="#{internal_search.recipients}" var="row_recipient">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="recipients" value="#{internal_search.recipients}" var="row_recipient" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
                                 <h:outputText value="#{row_recipient.descriptionShort}"/>
-                                <br/>
-                            </ui:repeat>
-                        </h:panelGroup>
-                    </div>
+                                <p:commandLink action="#{internal_search.removeRecipient(row_recipient)}" ajax="true"
+                                               update="recipients" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
                 </p:column>
             </p:row>
             <p:row>
