@@ -38,6 +38,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
+    private String removeAuthor;
 
     /**
      * Выполнить поиск с текущим фильтром
@@ -221,6 +222,14 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (List<User>) filters.get(AUTHORS_KEY);
     }
 
+    public void removeAuthor(User author) {
+        final List<User> authors = getAuthors();
+        authors.remove(author);
+        if(authors.isEmpty()){
+            filters.remove(AUTHORS_KEY);
+        }
+    }
+
     // Руководитель
     public void setController(final User value) {
         putNotNullToFilters(CONTROLLER_KEY, value);
@@ -365,6 +374,14 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return (List<User>) filters.get(EXECUTORS_KEY);
     }
 
+    public void removeExecutor(User executor) {
+        final List<User> executors = getExecutors();
+        executors.remove(executor);
+        if(executors.isEmpty()){
+            filters.remove(EXECUTORS_KEY);
+        }
+    }
+
     // Адресаты
     public void setRecipients(List<User> value) {
         putNotNullToFilters(RECIPIENTS_KEY, value);
@@ -372,6 +389,14 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
 
     public List<User> getRecipients() {
         return (List<User>) filters.get(RECIPIENTS_KEY);
+    }
+
+    public void removeRecipient(User recipient) {
+        final List<User> recipients = getRecipients();
+        recipients.remove(recipient);
+        if(recipients.isEmpty()){
+            filters.remove(RECIPIENTS_KEY);
+        }
     }
 
     // том дела
@@ -391,4 +416,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public String getShortDescription() {
         return (String) filters.get(SHORT_DESCRIPTION_KEY);
     }
+
+
 }
