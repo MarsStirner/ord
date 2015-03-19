@@ -23,90 +23,51 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="Signer">
-		<parameter name="docId" class="java.lang.Integer" isForPrompting="false"/>
-		<queryString>
-			<![CDATA[SELECT
-     group_concat(concat(person.`lastName`," ",person.`firstName`," ",person.`middleName`,"")separator " ") AS fio
-FROM
-     `dms_internal_documents` dms_internal_documents INNER JOIN `dms_system_persons` person ON dms_internal_documents.`signer_id` = person.`id`
-where dms_internal_documents.`id`=$P{docId}]]>
-		</queryString>
-		<field name="fio" class="java.lang.String"/>
-	</subDataset>
+	<subDataset name="Manager">
+    	<parameter name="ManagerId" class="java.lang.String" isForPrompting="false"/>
+    		<queryString>
+    			<![CDATA[SELECT
+                CONCAT_WS(' ' , person.lastName, person.firstName, person.middleName) AS 'managerInfo'
+                FROM
+                dms_system_persons person
+                WHERE person.id = $P{ManagerId}]]>
+    	    </queryString>
+    	<field name="managerInfo" class="java.lang.String"/>
+    </subDataset>
 	<parameter name="StartDate" class="java.util.Date"/>
 	<parameter name="EndDate" class="java.util.Date"/>
 	<parameter name="ManagerId" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-     dms_internal_documents.`id` AS dms_internal_documents_id,
-     dms_internal_documents.`appendixiesCount` AS dms_internal_documents_appendixiesCount,
-     dms_internal_documents.`copiesCount` AS dms_internal_documents_copiesCount,
-     dms_internal_documents.`creationDate` AS dms_internal_documents_creationDate,
-     dms_internal_documents.`deleted` AS dms_internal_documents_deleted,
-     dms_internal_documents.`deliveryDate` AS dms_internal_documents_deliveryDate,
-     dms_internal_documents.`executionDate` AS dms_internal_documents_executionDate,
-     dms_internal_documents.`registrationNumber` AS dms_internal_documents_registrationNumber,
-     dms_internal_documents.`sheetsCount` AS dms_internal_documents_sheetsCount,
-     dms_internal_documents.`shortDescription` AS dms_internal_documents_shortDescription,
-     dms_internal_documents.`status_id` AS dms_internal_documents_status_id,
-     dms_internal_documents.`controller_id` AS dms_internal_documents_controller_id,
-     dms_internal_documents.`form_id` AS dms_internal_documents_form_id,
-     dms_internal_documents.`initiator_id` AS dms_internal_documents_initiator_id,
-     dms_internal_documents.`responsible_id` AS dms_internal_documents_responsible_id,
-     dms_internal_documents.`registrationDate` AS dms_internal_documents_registrationDate,
-     dms_internal_documents.`signatureDate` AS dms_internal_documents_signatureDate,
-     dms_internal_documents.`signer_id` AS dms_internal_documents_signer_id,
-     dms_system_persons.`id` AS dms_system_persons_id,
-     dms_system_persons.`created` AS dms_system_persons_created,
-     dms_system_persons.`deleted` AS dms_system_persons_deleted,
-     dms_system_persons.`email` AS dms_system_persons_email,
-     dms_system_persons.`firstName` AS dms_system_persons_firstName,
-     dms_system_persons.`lastName` AS dms_system_persons_lastName,
-     dms_system_persons.`login` AS dms_system_persons_login,
-     dms_system_persons.`middleName` AS dms_system_persons_middleName,
-     dms_system_persons.`unid` AS dms_system_persons_unid,
-     documents_forms.`value` AS documents_forms_value
-FROM
-     `dms_system_persons` dms_system_persons INNER JOIN `dms_internal_documents` dms_internal_documents ON dms_system_persons.`id` = dms_internal_documents.`responsible_id`
-     INNER JOIN `documents_forms` documents_forms ON dms_internal_documents.`form_id` = documents_forms.`id`
-WHERE
-     date(dms_internal_documents.`registrationDate`) >= date($P{StartDate})
-     and date(dms_internal_documents.`registrationDate`) <= date($P{EndDate})
-and dms_internal_documents.`signer_id`=$P{ManagerId}
-and dms_internal_documents.`deleted` = 0
+		<![CDATA[
+		    SELECT
+                documentId AS 'documentId',
+                checkDate AS 'checkDate',
+                documentRegistrationNumber AS 'documentRegistrationNumber',
+                form AS 'form',
+                responsibleInfo AS 'responsibleInfo',
+                documentStatus AS 'documentStatus',
+                documentShortDescription AS 'documentShortDescription',
+                managerId AS 'managerId'
+            FROM report_internal_journal
+            WHERE
+                DATE(checkDate) >= DATE($P{StartDate})
+                AND
+                DATE(checkDate) <= DATE($P{EndDate})
+                AND
+                managerId = $P{ManagerId}
+            ORDER BY checkDate ASC
 ]]>
 	</queryString>
-	<field name="dms_internal_documents_id" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_appendixiesCount" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_copiesCount" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_creationDate" class="java.sql.Timestamp"/>
-	<field name="dms_internal_documents_deleted" class="java.lang.Boolean"/>
-	<field name="dms_internal_documents_deliveryDate" class="java.sql.Timestamp"/>
-	<field name="dms_internal_documents_executionDate" class="java.sql.Timestamp"/>
-	<field name="dms_internal_documents_registrationNumber" class="java.lang.String"/>
-	<field name="dms_internal_documents_sheetsCount" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_shortDescription" class="java.lang.String"/>
-	<field name="dms_internal_documents_status_id" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_controller_id" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_form_id" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_initiator_id" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_responsible_id" class="java.lang.Integer"/>
-	<field name="dms_internal_documents_registrationDate" class="java.sql.Timestamp"/>
-	<field name="dms_internal_documents_signatureDate" class="java.sql.Timestamp"/>
-	<field name="dms_internal_documents_signer_id" class="java.lang.Integer"/>
-	<field name="dms_system_persons_id" class="java.lang.Integer"/>
-	<field name="dms_system_persons_created" class="java.sql.Timestamp"/>
-	<field name="dms_system_persons_deleted" class="java.lang.Boolean"/>
-	<field name="dms_system_persons_email" class="java.lang.String"/>
-	<field name="dms_system_persons_firstName" class="java.lang.String"/>
-	<field name="dms_system_persons_lastName" class="java.lang.String"/>
-	<field name="dms_system_persons_login" class="java.lang.String"/>
-	<field name="dms_system_persons_middleName" class="java.lang.String"/>
-	<field name="dms_system_persons_unid" class="java.lang.String"/>
-	<field name="documents_forms_value" class="java.lang.String"/>
+	<field name="documentId" class="java.lang.Integer"/>
+	<field name="checkDate" class="java.sql.Timestamp"/>
+	<field name="documentRegistrationNumber" class="java.lang.String"/>
+	<field name="form" class="java.lang.String"/>
+	<field name="responsibleInfo" class="java.lang.String"/>
+	<field name="documentStatus" class="java.lang.String"/>
+	<field name="documentShortDescription" class="java.lang.String"/>
+	<field name="managerId" class="java.lang.Integer"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -165,25 +126,25 @@ and dms_internal_documents.`deleted` = 0
 			<componentElement>
 				<reportElement key="table 1" x="570" y="50" width="232" height="20"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Signer">
-						<datasetParameter name="docId">
-							<datasetParameterExpression><![CDATA[$F{dms_internal_documents_id}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="232">
-						<jr:tableFooter height="20" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="232" height="20"/>
-								<textElement>
-									<font fontName="Tahoma" size="12"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{fio}]]></textFieldExpression>
-							</textField>
-						</jr:tableFooter>
-						<jr:detailCell height="0" rowSpan="1"/>
-					</jr:column>
-				</jr:table>
+                    <datasetRun subDataset="Manager" >
+                        <datasetParameter name="ManagerId">
+                            <datasetParameterExpression><![CDATA[$P{ManagerId}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+                    </datasetRun>
+                    <jr:column width="233" >
+                        <jr:tableFooter height="20" rowSpan="1">
+                            <textField>
+                                <reportElement x="0" y="0" width="233" height="20" />
+                                <textElement>
+                                    <font fontName="Tahoma" size="12"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{managerInfo}]]></textFieldExpression>
+                            </textField>
+                        </jr:tableFooter>
+                        <jr:detailCell height="0" rowSpan="1"/>
+                    </jr:column>
+                </jr:table>
 			</componentElement>
 		</band>
 	</title>
@@ -246,7 +207,7 @@ and dms_internal_documents.`deleted` = 0
 					<font fontName="Tahoma" size="9"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_internal_documents_registrationNumber}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentRegistrationNumber}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="122" y="0" width="55" height="20"/>
@@ -254,7 +215,7 @@ and dms_internal_documents.`deleted` = 0
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_internal_documents_registrationDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{checkDate}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="177" y="0" width="107" height="20"/>
@@ -262,7 +223,7 @@ and dms_internal_documents.`deleted` = 0
 					<font fontName="Tahoma" size="9"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{documents_forms_value}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{form}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="284" y="0" width="155" height="20"/>
@@ -270,7 +231,7 @@ and dms_internal_documents.`deleted` = 0
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_system_persons_lastName}+" "+$F{dms_system_persons_firstName}+" "+$F{dms_system_persons_middleName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{responsibleInfo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="549" y="0" width="253" height="20"/>
@@ -278,7 +239,7 @@ and dms_internal_documents.`deleted` = 0
 					<font fontName="Tahoma" size="9"/>
 					<paragraph leftIndent="5" spacingAfter="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_internal_documents_shortDescription}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentShortDescription}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="439" y="0" width="110" height="20"/>
@@ -286,7 +247,7 @@ and dms_internal_documents.`deleted` = 0
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_internal_documents_status_id}.toString().replace( "150" , "На рассмотрении").replace( "100" , "Архив").replace( "90" , "Исполнен").replace( "80" , "На исполнении").replace( "2" ,"На рассмотрении").replace( "1" , "Черновик").replace($F{dms_internal_documents_status_id}.toString(), "Зарегистрирован")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentStatus}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
