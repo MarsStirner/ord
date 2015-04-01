@@ -177,7 +177,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                     FacesContext.getCurrentInstance().addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
                 }
                 taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
-                taskTreeHolder.changePageOffset(0);
+                taskTreeHolder.refresh();
                 updateAttachments();
             }
         } catch (Exception e) {

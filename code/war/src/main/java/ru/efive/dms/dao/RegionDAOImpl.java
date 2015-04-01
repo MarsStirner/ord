@@ -1,15 +1,14 @@
 package ru.efive.dms.dao;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
-
 import ru.efive.sql.dao.DictionaryDAOHibernate;
 import ru.entity.model.document.Region;
+
+import java.util.List;
 
 public class RegionDAOImpl extends DictionaryDAOHibernate<Region> {
 
@@ -49,8 +48,6 @@ public class RegionDAOImpl extends DictionaryDAOHibernate<Region> {
             disjunction.add(Restrictions.ilike("value", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("category", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("description", filter, MatchMode.ANYWHERE));
-            //TODO: поиск по адресатам
-
             criteria.add(disjunction);
         }
         return criteria;

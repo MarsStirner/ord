@@ -6,15 +6,18 @@ import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.*;
+import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForIncomingDocument;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.user.User;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -27,6 +30,7 @@ import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
 @ManagedBean(name = "incoming_search")
@@ -37,7 +41,28 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    private String removeAuthor;
+    boolean searchPerformed = false;
+
+    public boolean validate() {
+        if (filters.isEmpty()) {
+            return true;
+        }
+        boolean result = true;
+        if(!checkDateRange(getStartCreationDate(), getEndCreationDate())){
+            FacesContext.getCurrentInstance().addMessage("creationDate", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Диапозон дат для фильтрации по дате создания документа задан неверно", null));
+            result = false;
+        }
+        if(!checkDateRange(getStartRegistrationDate(), getEndRegistrationDate())){
+            FacesContext.getCurrentInstance().addMessage("registrationDate", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Диапозон дат для фильтрации по дате регистрации документа задан неверно", null));
+            result = false;
+        }
+
+        return result;
+    }
+
+    private boolean checkDateRange(Date startInterval, Date endInterval) {
+        return startInterval == null || endInterval == null || startInterval.before(endInterval) || startInterval.equals(endInterval);
+    }
 
     /**
      * Выполнить поиск с текущим фильтром
@@ -45,17 +70,35 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
      * @return Список документов, удовлетворяющих поиску
      */
     @Override
-    public List<IncomingDocument> performSearch() {
+    public void performSearch() {
         logger.info("INCOMING: Perform Search with map : {}", filters);
-        try {
-            searchResults = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .findAllDocumentsByUser(filters, null, sessionManagement.getLoggedUser(), false, false);
-        } catch (Exception e) {
-            logger.error("INCOMING: Error while search", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
+        if(validate()) {
+            try {
+                final IncomingDocumentDAOImpl dao = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO);
+                final ViewFactDaoImpl viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
+                final LazyDataModelForIncomingDocument lazyDataModelForIncomingDocument = new LazyDataModelForIncomingDocument(
+                        dao,
+                        viewFactDao,
+                        sessionManagement.getAuthData()
+                );
+                lazyDataModelForIncomingDocument.setFilters(filters);
+                setLazyModel(lazyDataModelForIncomingDocument);
+                searchPerformed= true;
+            } catch (Exception e) {
+                logger.error("INCOMING: Error while search", e);
+                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
+            }
         }
-        return searchResults;
     }
+
+    public boolean isSearchPerformed() {
+        return searchPerformed;
+    }
+
+    public void setSearchPerformed(final boolean searchPerformed) {
+        this.searchPerformed = searchPerformed;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +113,8 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog
+                .getViewParams(), params);
     }
 
     public void onAuthorsChosen(SelectEvent event) {
@@ -94,7 +138,8 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog
+                .getViewParams(), params);
     }
 
     public void onControllerChosen(SelectEvent event) {
@@ -114,7 +159,8 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog
+                .getViewParams(), null);
     }
 
     public void onContragentChosen(SelectEvent event) {
@@ -137,7 +183,8 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog
+                .getViewParams(), params);
     }
 
     public void onExecutorsChosen(SelectEvent event) {
@@ -160,7 +207,8 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog
+                .getViewParams(), params);
     }
 
     public void onRecipientsChosen(SelectEvent event) {
@@ -180,7 +228,8 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put
                     (OfficeKeepingVolumeDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml", AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml",
+                AbstractDialog.getViewParams(), null);
     }
 
     public void onOfficeKeepingVolumeChosen(SelectEvent event) {
@@ -301,7 +350,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public void removeExecutor(User executor) {
         final List<User> executors = getExecutors();
         executors.remove(executor);
-        if(executors.isEmpty()){
+        if (executors.isEmpty()) {
             filters.remove(EXECUTORS_KEY);
         }
     }
@@ -318,7 +367,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public void removeRecipient(User recipient) {
         final List<User> recipients = getRecipients();
         recipients.remove(recipient);
-        if(recipients.isEmpty()){
+        if (recipients.isEmpty()) {
             filters.remove(RECIPIENTS_KEY);
         }
     }

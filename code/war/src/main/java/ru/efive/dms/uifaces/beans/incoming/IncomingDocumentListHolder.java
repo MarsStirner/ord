@@ -3,91 +3,36 @@ package ru.efive.dms.uifaces.beans.incoming;
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.uifaces.bean.Pagination;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
+import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForIncomingDocument;
 import ru.entity.model.document.IncomingDocument;
-import ru.entity.model.user.User;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 
-@ManagedBean(name="in_documents")
+@ManagedBean(name = "in_documents")
 @ViewScoped
-public class IncomingDocumentListHolder extends AbstractDocumentListHolderBean<IncomingDocument> {
-    private String filter;
+public class IncomingDocumentListHolder extends AbstractDocumentLazyDataModelBean<IncomingDocument> implements Serializable {
 
-    @Override
-    protected Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 50);
-        //Ранжирование по страницам по-умолчанию  (50 на страницу, начиная с нуля)
-    }
-
-    @Override
-    protected Sorting initSorting() {
-        return new Sorting("registrationDate", false);
-        //Сортировка по-умолчанию (дата регистрации документа)
-    }
-
-    @Override
-    protected int getTotalCount() {
-        if (!sessionManagement.isSubstitution()) {
-            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .countAllDocumentsByUser(filter, sessionManagement.getLoggedUser(), false, false)).intValue();
-        } else {
-            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
-            userList.add(sessionManagement.getLoggedUser());
-            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .countAllDocumentsByUserList(filter, userList, false, false)).intValue();
-        }
-    }
-
-    @Override
-    protected List<IncomingDocument> loadDocuments() {
-        final List<IncomingDocument> resultList;
-        if (!sessionManagement.isSubstitution()) {
-            resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
-                    INCOMING_DOCUMENT_FORM_DAO).findAllDocumentsByUser(filter, sessionManagement.getLoggedUser(),
-                    false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting()
-                            .getColumnId(), getSorting().isAsc());
-        } else {
-            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
-            userList.add(sessionManagement.getLoggedUser());
-            resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
-                    INCOMING_DOCUMENT_FORM_DAO).findAllDocumentsByUserList(filter, userList, false, false,
-                    getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(),
-                    getSorting().isAsc());
-
-        }
-        //Проверка и вытсавленние классов просмотра документов пользователем
-        if (!resultList.isEmpty()) {
-            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnIncomingDocumentList
-                    (resultList, sessionManagement.getLoggedUser());
-        }
-        return resultList;
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-
+    private static final long serialVersionUID = 8535420074467871583L;
+    private IncomingDocumentDAOImpl dao;
+    private ViewFactDaoImpl viewFactDao;
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
 
-    private static final long serialVersionUID = 8535420074467871583L;
-
-
+    @PostConstruct
+    public void init() {
+        dao = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO);
+        viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
+        setLazyModel(new LazyDataModelForIncomingDocument(dao, viewFactDao, sessionManagement.getAuthData()));
+    }
 }

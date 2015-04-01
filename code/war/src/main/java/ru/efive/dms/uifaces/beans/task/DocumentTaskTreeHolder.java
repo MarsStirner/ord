@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
-import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.Task;
 import ru.util.ApplicationHelper;
 
@@ -47,11 +46,10 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     /**
      * Переопределяемый метод для загрузки списка документов, которые будут использоваться при построении дерева
      *
-     * @param pagination
      * @return список документов
      */
     @Override
-    protected List<Task> loadDocuments(Pagination pagination) {
+    protected List<Task> loadDocuments() {
         if (StringUtils.isEmpty(rootDocumentId)) {
             return new ArrayList<Task>(0);
         } else if(rootDocumentId.startsWith("task")){
@@ -109,25 +107,5 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
             }
         }
         return root;
-    }
-
-    /**
-     * Инициализация ранжирования по страницам
-     *
-     * @return Изначальный режим ранжирования
-     */
-    @Override
-    protected Pagination initPagination() {
-        return new Pagination(0, -1, -1); //ALL
-    }
-
-    /**
-     * Получить общее кол-во документов, подходящих запросу
-     *
-     * @return общее кол-во документов
-     */
-    @Override
-    protected int getTotalCount() {
-        return 0;
     }
 }

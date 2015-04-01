@@ -1,37 +1,17 @@
 package ru.efive.dms.uifaces.beans.request;
 
-import com.google.common.collect.ImmutableList;
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
-import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
-import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.entity.model.document.DeliveryType;
-import ru.entity.model.document.RequestDocument;
-import ru.entity.model.user.User;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
 @ManagedBean(name = "request_search")
 @ViewScoped
-public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<RequestDocument> {
+public class RequestDocumentSearchBean { //extends AbstractDocumentSearchBean<RequestDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Inject
@@ -42,7 +22,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
      * Выполнить поиск с текущим фильтром
      *
      * @return Список документов, удовлетворяющих поиску
-     */
+
     @Override
     public List<RequestDocument> performSearch() {
         logger.info("REQUEST: Perform Search with map : {}", filters);
@@ -55,6 +35,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
         }
         return searchResults;
     }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -230,5 +211,5 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
             filters.remove(RECIPIENTS_KEY);
         }
     }
-
+     */
 }

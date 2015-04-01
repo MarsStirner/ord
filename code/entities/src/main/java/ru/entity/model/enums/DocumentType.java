@@ -7,6 +7,7 @@ import java.util.List;
 /**
  * @author Nastya Peshekhonova
  *         TODO: Временное решение, следует перевести это в таблицe базы данных и использовать ее
+ *         TODO как же вы ска меня достали, руки ваши бы из зада переткнуть повыше, на курсы запишитесь хотя-бы, или книжки почитайте
  * @see ru.entity.model.document.Type
  */
 
@@ -84,7 +85,7 @@ public enum DocumentType {
     }
 
 
-    private static List<DocumentStatus> getPaperCopyDocumentStatuses() {
+    public static List<DocumentStatus> getPaperCopyDocumentStatuses() {
         return Arrays.asList(DocumentStatus.PROJECT,
                 DocumentStatus.CHECK_IN_2,
                 DocumentStatus.IN_ARCHIVE_99,
@@ -95,7 +96,7 @@ public enum DocumentType {
                 DocumentStatus.RECIVE);
     }
 
-    private static List<DocumentAction> getPaperCopyDocumentActions() {
+    public static List<DocumentAction> getPaperCopyDocumentActions() {
         return Arrays.asList(DocumentAction.CHECK_IN_1,
                 DocumentAction.IN_ARCHIVE_99,
                 DocumentAction.EXTRACT,
@@ -107,7 +108,7 @@ public enum DocumentType {
                 DocumentAction.CREATE);
     }
 
-    private static List<DocumentStatus> getIncomingDocumentStatuses() {
+    public static List<DocumentStatus> getIncomingDocumentStatuses() {
         return Arrays.asList(DocumentStatus.ON_REGISTRATION,
                 DocumentStatus.CHECK_IN_2,
                 DocumentStatus.ON_EXECUTION_80,
@@ -118,7 +119,7 @@ public enum DocumentType {
                 DocumentStatus.REDIRECT);
     }
 
-    private static List<DocumentAction> getIncomingDocumentActions() {
+    public static List<DocumentAction> getIncomingDocumentActions() {
         return Arrays.asList(DocumentAction.CHECK_IN_1,
                 DocumentAction.REDIRECT_TO_EXECUTION_2,
                 DocumentAction.EXECUTED,
@@ -132,7 +133,7 @@ public enum DocumentType {
                 DocumentAction.CHANGE_ACCESS_LEVEL);
     }
 
-    private static List<DocumentStatus> getInternalDocumentStatuses() {
+    public static List<DocumentStatus> getInternalDocumentStatuses() {
         return Arrays.asList(DocumentStatus.DOC_PROJECT_1,
                 DocumentStatus.ON_CONSIDERATION,
                 DocumentStatus.AGREEMENT_3,
@@ -145,7 +146,7 @@ public enum DocumentType {
                 DocumentStatus.CANCEL_150);
     }
 
-    private static List<DocumentAction> getInternalDocumentActions() {
+    public static List<DocumentAction> getInternalDocumentActions() {
         return Arrays.asList(DocumentAction.REDIRECT_TO_CONSIDERATION_1,
                 DocumentAction.REDIRECT_TO_AGREEMENT,
                 DocumentAction.CHECK_IN_5,
@@ -162,7 +163,7 @@ public enum DocumentType {
                 DocumentAction.CHANGE_ACCESS_LEVEL);
     }
 
-    private static List<DocumentStatus> getOutgoingDocumentStatuses() {
+    public static List<DocumentStatus> getOutgoingDocumentStatuses() {
         return Arrays.asList(DocumentStatus.DOC_PROJECT_1,
                 DocumentStatus.ON_CONSIDERATION,
                 DocumentStatus.AGREEMENT_3,
@@ -171,7 +172,7 @@ public enum DocumentType {
                 DocumentStatus.IN_ARCHIVE_100);
     }
 
-    private static List<DocumentAction> getOutgoingDocumentActions() {
+    public static List<DocumentAction> getOutgoingDocumentActions() {
         return Arrays.asList(DocumentAction.REDIRECT_TO_CONSIDERATION_2,
                 DocumentAction.REDIRECT_TO_AGREEMENT,
                 DocumentAction.CHECK_IN_80,
@@ -184,44 +185,44 @@ public enum DocumentType {
                 DocumentAction.CHANGE_ACCESS_LEVEL);
     }
 
-    private static List<DocumentStatus> getTaskStatuses() {
+    public static List<DocumentStatus> getTaskStatuses() {
         return Arrays.asList(DocumentStatus.DRAFT,
                 DocumentStatus.ON_EXECUTION_2,
                 DocumentStatus.EXECUTED,
                 DocumentStatus.CANCEL_4);
     }
 
-    private static List<DocumentAction> getTaskActions() {
+    public static List<DocumentAction> getTaskActions() {
         return Arrays.asList(DocumentAction.REDIRECT_TO_EXECUTION_1,
                 DocumentAction.EXECUTED,
                 DocumentAction.SHORT_CANCEL,
                 DocumentAction.CREATE);
     }
 
-    private static List<DocumentStatus> getOfficeKeepingFileStatuses() {
+    public static List<DocumentStatus> getOfficeKeepingFileStatuses() {
         return Arrays.asList(DocumentStatus.ACTION_PROJECT,
                 DocumentStatus.REGISTERED);
     }
 
-    private static List<DocumentAction> getOfficeKeepingFileActions() {
+    public static List<DocumentAction> getOfficeKeepingFileActions() {
         return Arrays.asList(DocumentAction.CHECK_IN_1);
     }
 
-    private static List<DocumentStatus> getOfficeKeepingVolumeStatuses() {
+    public static List<DocumentStatus> getOfficeKeepingVolumeStatuses() {
         return Arrays.asList(DocumentStatus.VOLUME_PROJECT,
                 DocumentStatus.OPEN,
                 DocumentStatus.CLOSE,
                 DocumentStatus.EXTRACT);
     }
 
-    private static List<DocumentAction> getOfficeKeepingVolumeActions() {
+    public static List<DocumentAction> getOfficeKeepingVolumeActions() {
         return Arrays.asList(DocumentAction.CHECK_IN_1,
                 DocumentAction.CLOSE,
                 DocumentAction.EXTRACT,
                 DocumentAction.RETURN);
     }
 
-    private static List<DocumentStatus> getRequestDocumentStatuses() {
+    public static List<DocumentStatus> getRequestDocumentStatuses() {
         return Arrays.asList(DocumentStatus.ON_REGISTRATION,
                 DocumentStatus.CHECK_IN_2,
                 DocumentStatus.ON_EXECUTION_80,
@@ -230,7 +231,7 @@ public enum DocumentType {
 
     }
 
-    private static List<DocumentAction> getRequestDocumentActions() {
+    public static List<DocumentAction> getRequestDocumentActions() {
         return Arrays.asList(DocumentAction.CHECK_IN_1,
                 DocumentAction.REDIRECT_TO_EXECUTION_2,
                 DocumentAction.EXECUTE_80,
@@ -241,11 +242,11 @@ public enum DocumentType {
                 DocumentAction.CREATE);
     }
 
-    private static List<DocumentStatus> getScanCopyDocumentStatuses() {
+    public static List<DocumentStatus> getScanCopyDocumentStatuses() {
         return Arrays.asList(DocumentStatus.NEW);
     }
 
-    private static List<DocumentAction> getScanCopyDocumentActions() {
+    public static List<DocumentAction> getScanCopyDocumentActions() {
         return new ArrayList<DocumentAction>();
     }
 }

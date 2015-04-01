@@ -1,39 +1,17 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import com.google.common.collect.ImmutableList;
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
-import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
-import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.entity.model.crm.Contragent;
-import ru.entity.model.document.DeliveryType;
-import ru.entity.model.document.OutgoingDocument;
-import ru.entity.model.user.User;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
 @ManagedBean(name = "outgoing_search")
 @ViewScoped
-public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<OutgoingDocument> {
+public class OutgoingDocumentSearchBean { //extends AbstractDocumentSearchBean<OutgoingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Inject
@@ -44,7 +22,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
      * Выполнить поиск с текущим фильтром
      *
      * @return Список документов, удовлетворяющих поиску
-     */
+
     @Override
     public List<OutgoingDocument> performSearch() {
         logger.info("OUTGOING: Perform Search with map : {}", filters);
@@ -233,4 +211,5 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             filters.remove(EXECUTORS_KEY);
         }
     }
+     */
 }

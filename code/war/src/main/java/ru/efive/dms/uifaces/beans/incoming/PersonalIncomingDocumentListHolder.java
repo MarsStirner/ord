@@ -2,70 +2,32 @@ package ru.efive.dms.uifaces.beans.incoming;
 
 import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.uifaces.bean.Pagination;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
+import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForPersonalDraftsIncomingDocument;
 import ru.entity.model.document.IncomingDocument;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 
 @ManagedBean(name = "personal_in_documents")
 @ViewScoped
-public class PersonalIncomingDocumentListHolder extends AbstractDocumentListHolderBean<IncomingDocument> {
+public class PersonalIncomingDocumentListHolder extends AbstractDocumentLazyDataModelBean<IncomingDocument> implements Serializable {
 
-    @Override
-    protected Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 100);
-    }
-
-    @Override
-    protected Sorting initSorting() {
-        return new Sorting("creationDate", false);
-    }
-
-    @Override
-    protected int getTotalCount() {
-        try {
-            return new Long(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .countDraftDocumentsByAuthor(sessionManagement.getLoggedUser(), false)).intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    @Override
-    protected List<IncomingDocument> loadDocuments() {
-        try {
-            return sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                    .findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(), false, getPagination()
-                            .getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting()
-                            .isAsc());
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ArrayList<IncomingDocument>(0);
-        }
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    private String filter;
-
+    private static final long serialVersionUID = 853542007446781235L;
+    private IncomingDocumentDAOImpl dao;
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
 
-    private static final long serialVersionUID = 8535420074467871583L;
+    @PostConstruct
+    public void init() {
+        dao = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO);
+        setLazyModel(new LazyDataModelForPersonalDraftsIncomingDocument(dao, sessionManagement.getAuthData()));
+    }
 }

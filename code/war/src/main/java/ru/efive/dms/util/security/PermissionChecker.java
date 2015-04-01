@@ -496,8 +496,7 @@ public class PermissionChecker {
         final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
         if (rootDocumentId != null) {
             if (documentKey.contains("incoming")) {
-                //TODO String id method ?!?!?!? WHY??????
-                final IncomingDocument rootDocument = ((IncomingDocumentDAOImpl) indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO)).findDocumentById(rootDocumentId.toString());
+                final IncomingDocument rootDocument = ((IncomingDocumentDAOImpl) indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO)).getItemById(rootDocumentId);
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<incoming[{}]> permissions: {}", rootDocumentId, fromRootDocument);

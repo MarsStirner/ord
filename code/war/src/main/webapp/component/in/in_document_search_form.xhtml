@@ -14,6 +14,7 @@
         <h:outputScript library="js" name="primefacesLocale_ru.js"/>
         <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
         <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
+        <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
     <!--Кнопки верхнего меню-->
@@ -372,67 +373,59 @@
     </ui:define>
 
     <ui:define name="searchResults">
-        <p:dataTable id="incomingSearchResults" value="#{incoming_search.searchResults}" var="row_result"
-                     widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}"
-                     emptyMessage="Записей не найдено">
-            <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
-            <p:column style="width:5em;">
-                <f:facet name="header">
-                    Номер
-                </f:facet>
-                <h:outputText value="#{row_result.registrationNumber}"/>
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{incoming_search.lazyModel}"
+                     var="row"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     rowStyleClass="#{row.styleClass}"
+                     sortBy="#{row.registrationNumber}"
+                     sortField="registrationNumber"
+                     sortOrder="descending"
+                     rendered="#{incoming_search.searchPerformed}"
+                     emptyMessage="Документов не найдено"
+                >
+            <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+                <h:outputText value="#{row.registrationNumber}"/>
             </p:column>
-            <p:column style="width:5em;">
-                <f:facet name="header">
-                    Дата
-                </f:facet>
-                <h:outputText value="#{row_result.registrationDate}">
+            <p:column headerText="Дата" style="width:5em;" sortBy="#{row.registrationDate}" field = "registrationDate">
+                <h:outputText value="#{row.registrationDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:12em;">
-                <f:facet name="header">
-                    Корреспондент
-                </f:facet>
-                <h:outputText value="#{row_result.contragent.shortName}"/>
+            <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}" field = "contragent.shortName">
+                <h:outputText value="#{row.contragent.shortName}"/>
             </p:column>
-            <p:column style="width:10em;">
-                <f:facet name="header">
-                    Исполнитель
-                </f:facet>
-                <ui:repeat value="#{row_result.executors}" var="element">
+            <p:column headerText="Исполнитель" style="width:12em;">
+                <ui:repeat value="#{row.executors}" var="element">
                     <div>
                         <h:outputText value="#{element.getDescriptionShort()}"/>
                     </div>
                 </ui:repeat>
             </p:column>
-            <p:column style="width:8em;">
-                <f:facet name="header">
-                    Вид
-                </f:facet>
-                <h:outputText value="#{row_result.form}"/>
+            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+                <h:outputText value="#{row.form}"/>
             </p:column>
-            <p:column style="width:5em;">
-                <f:facet name="header">
-                    Срок
-                </f:facet>
-                <h:outputText value="#{row_result.executionDate}">
+            <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
+                <h:outputText value="#{row.executionDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:10em;">
-                <f:facet name="header">
-                    <span> Статус </span>
-                </f:facet>
-                <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
+            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
+                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
             </p:column>
-            <p:column>
-                <f:facet name="header">
-                    Краткое содержание
-                </f:facet>
-                <h:outputText value="#{row_result.shortDescription}"/>
+            <p:column headerText="Краткое содержание">
+                <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:ajax event="page" onstart="addRowHandlers()"/>
+            <p:ajax event="page" oncomplete="addRowHandlers()"/>
+            <p:ajax event="sort" oncomplete="addRowHandlers()"/>
         </p:dataTable>
         <script type="text/javascript">
             function addRowHandlers() {
@@ -452,6 +445,7 @@
             }
             window.onload = addRowHandlers;
         </script>
+
     </ui:define>
 
 

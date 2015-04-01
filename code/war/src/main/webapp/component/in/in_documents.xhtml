@@ -3,7 +3,6 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
@@ -21,8 +20,7 @@
 
     <ui:define name="header_buttons">
         <div class="defbutton">
-            <h:outputLink value="/component/in/in_document.xhtml"
-                          target="_blank">
+            <h:outputLink value="/component/in/in_document.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый документ
                 <f:param name="docAction" value="create"/>
@@ -32,7 +30,7 @@
             <h:commandLink action="#{in_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render = "main_data_tbl main_data_paging" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
+                <f:ajax render = "main_data_tbl" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
             </h:commandLink>
         </div>
     </ui:define>
@@ -50,9 +48,9 @@
                 <h:inputText id="filter_string" value="#{in_documents.filter}"
                              style="display:block; float:left; width:60%; margin:2px 10px;"
                              title="Поиск"/>
-                <h:commandButton value=" " action="#{in_documents.changePageOffset(0)}"
+                <h:commandButton value=" " action="#{in_documents.applyFilter()}"
                                  styleClass="searchbutton">
-                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
+                    <f:ajax execute="filter_string" render="main_data_tbl" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
                 </h:commandButton>
                 <h:outputLink target="_blank" value="/component/in/in_document_search_form.xhtml"
                               title="Перейти к форме расширенного поиска"
@@ -62,82 +60,56 @@
             </div>
             <div class="inner" id="table_wrap" style="overflow:auto;">
                 <p:dataTable id="main_data_tbl"
-                             value="#{in_documents.documents}"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             rows="100"
+                             rowsPerPageTemplate="10,25,50,100"
+                             value="#{in_documents.lazyModel}"
                              var="row"
-                             stickyHeader="true"
+                             lazy="true"
+                             widgetVar="documentTableVar"
                              scrollable="true"
+                             scrollHeight="100%"
                              rowStyleClass="#{row.styleClass}"
-                             widgetVar="documentTableVar">
+                             sortBy="#{row.registrationDate}"
+                             sortField="registrationDate"
+                             sortOrder="descending"
+                        >
                     <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
-                    <p:column style = "width:5em;">
-                        <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('registrationDate, registrationNumber')}" update="main_data_tbl">
-                                Номер
-                            </p:commandLink>
-                        </f:facet>
+                    <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
                         <h:outputText value="#{row.registrationNumber}"/>
                     </p:column>
-                    <p:column style="width:5em;">
-                        <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('registrationDate')}" title = "Дата регистрации" update="main_data_tbl">
-                                Дата
-                            </p:commandLink>
-                        </f:facet>
+                    <p:column headerText="Дата" style="width:5em;" sortBy="#{row.registrationDate}" field = "registrationDate">
                         <h:outputText value="#{row.registrationDate}">
                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
-                    <p:column style="width:12em;">
-                        <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('contragent')}" update="main_data_tbl">
-                                Корреспондент
-                            </p:commandLink>
-                        </f:facet>
+                    <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}" field = "contragent.shortName">
                         <h:outputText value="#{row.contragent.shortName}"/>
                     </p:column>
-                    <p:column style="width:10em;">
-                        <f:facet name="header">
-                            Исполнитель
-                        </f:facet>
+                    <p:column headerText="Исполнитель" style="width:12em;">
                         <ui:repeat value="#{row.executors}" var="element">
                             <div>
                                 <h:outputText value="#{element.getDescriptionShort()}"/>
                             </div>
                         </ui:repeat>
                     </p:column>
-                    <p:column style="width:8em;">
-                        <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('form')}" title = "Вид документа" update="main_data_tbl">
-                                Вид
-                            </p:commandLink>
-                        </f:facet>
-                       <h:outputText value="#{row.form}"/>
+                    <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+                        <h:outputText value="#{row.form}"/>
                     </p:column>
-                    <p:column style="width:5em;">
-                        <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('executionDate')}" title = "Срок исполнения" update="main_data_tbl">
-                                Срок
-                            </p:commandLink>
-                        </f:facet>
+                    <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
                         <h:outputText value="#{row.executionDate}">
                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
-                    <p:column style="width:10em;">
-                        <f:facet name="header">
-                            <p:commandLink action="#{in_documents.sort('statusId')}" update="main_data_tbl">
-                                <span> Статус </span>
-                            </p:commandLink>
-                        </f:facet>
+                    <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
                         <h:outputText value="#{row.getDocumentStatus().getName()}"/>
                     </p:column>
-                    <p:column>
-                        <f:facet name="header">
-                            Краткое содержание
-                        </f:facet>
+                    <p:column headerText="Краткое содержание">
                         <h:outputText value="#{row.shortDescription}"/>
                     </p:column>
-                    <p:ajax event="page" onstart="addRowHandlers()"/>
+                    <p:ajax event="page" oncomplete="addRowHandlers()"/>
+                    <p:ajax event="sort" oncomplete="addRowHandlers()"/>
                 </p:dataTable>
                 <script type="text/javascript">
                     function addRowHandlers() {
@@ -157,15 +129,6 @@
                     }
                     window.onload = addRowHandlers;
                 </script>
-            </div>
-            <div id="table_paging">
-                <h:panelGroup id="main_data_paging">
-                    <e5ui-comp:tablePager documentListHolder="#{in_documents}"
-                                          style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector
-                            documentListHolder="#{in_documents}"
-                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </h:panelGroup>
             </div>
         </div>
 

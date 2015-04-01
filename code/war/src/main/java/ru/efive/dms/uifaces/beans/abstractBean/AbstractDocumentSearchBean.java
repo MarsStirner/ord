@@ -2,9 +2,13 @@ package ru.efive.dms.uifaces.beans.abstractBean;
 
 import org.apache.commons.lang.StringUtils;
 import ru.entity.model.document.DocumentForm;
+import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
@@ -14,25 +18,13 @@ import static ru.efive.dms.util.DocumentSearchMapKeys.*;
  * Company: Korus Consulting IT <br>
  * Description: Абстрактный класс для поисковых бинов <br>
  */
-public abstract class AbstractDocumentSearchBean<T> {
+public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> extends AbstractDocumentLazyDataModelBean<T> {
 
     /**
      * Набор фильтров в виде "Ключ"->"Значения"
      */
     protected Map<String, Object> filters = new HashMap<String, Object>();
 
-    /**
-     * Список отобранных документов
-     */
-    protected List<T> searchResults = new ArrayList<T>(0);
-
-    public List<T> getSearchResults() {
-        return searchResults;
-    }
-
-    public void setSearchResults(List<T> searchResults) {
-        this.searchResults = searchResults;
-    }
 
     /**
      * Очистка текущего фильтра
@@ -73,7 +65,7 @@ public abstract class AbstractDocumentSearchBean<T> {
      * Выполнить поиск с текущим фильтром
      * @return  Список документов, удовлетворяющих поиску
      */
-    public abstract List<T> performSearch();
+    public abstract void performSearch();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Параметры поиска *** ОБЩИЕ для всех типов документов *****  /////////////////////////////////////////////////////

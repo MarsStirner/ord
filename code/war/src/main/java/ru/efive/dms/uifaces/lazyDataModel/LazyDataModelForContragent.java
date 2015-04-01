@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import ru.efive.crm.dao.ContragentDAOHibernate;
 import ru.entity.model.crm.Contragent;
@@ -14,25 +13,12 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForContragent extends LazyDataModel<Contragent> {
+public class LazyDataModelForContragent extends AbstractFilterableLazyDataModel<Contragent> {
+
     private ContragentDAOHibernate dao;
-    private String filter;
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    public String getFilter() {
-        return filter;
-    }
 
     public LazyDataModelForContragent(ContragentDAOHibernate daoHibernate) {
         dao = daoHibernate;
-    }
-
-    @Override
-    public Object getRowKey(Contragent item) {
-        return item.getId();
     }
 
     @Override
@@ -43,12 +29,12 @@ public class LazyDataModelForContragent extends LazyDataModel<Contragent> {
     @Override
     public List<Contragent> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
             filters) {
-        return dao.findDocuments(filter, false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.findDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
     }
 
     @Override
     public int getRowCount() {
-        return (((Long) dao.countDocument(filter, false)).intValue());
+        return (((Long) dao.countDocument(getFilter(), false)).intValue());
     }
 
 }

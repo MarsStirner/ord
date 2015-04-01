@@ -221,7 +221,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 //Установка идшника для поиска поручений
                 taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
                 //Поиск поручений
-                taskTreeHolder.changeOffset(0);
+                taskTreeHolder.refresh();
 
                 updateAttachments();
                 try {

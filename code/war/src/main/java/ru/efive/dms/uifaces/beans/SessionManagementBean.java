@@ -9,6 +9,7 @@ import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.AlfrescoNode;
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
+import ru.efive.dms.util.security.AuthorizationData;
 import ru.efive.sql.dao.DictionaryDAO;
 import ru.efive.sql.dao.GenericDAO;
 import ru.efive.sql.dao.user.UserDAO;
@@ -40,7 +41,8 @@ public class SessionManagementBean implements Serializable {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("AUTH");
 
-    private User loggedUser;
+    private AuthorizationData authData;
+
     private long reqDocumentsCount = 0;
 
     private String userName;
@@ -48,13 +50,8 @@ public class SessionManagementBean implements Serializable {
 
     private String backUrl;
 
-    //Замещает ли текущий пользователь кого-либо
-    private boolean isSubstitution;
-    private List<User> substitutedUsers;
 
-    public List<User> getSubstitutedUsers() {
-        return substitutedUsers;
-    }
+
 
     //Назначенные роли
     private boolean isAdministrator = false;
@@ -66,11 +63,14 @@ public class SessionManagementBean implements Serializable {
     private boolean isHr = false;
     private boolean isFilling = false;
 
+    private boolean isSubstitution = false;
+
     @Inject
     @Named("indexManagement")
     private IndexManagementBean indexManagement;
 
     private static final long serialVersionUID = -916300301346029630L;
+
 
 
     public void setUserName(String userName) {
@@ -98,30 +98,25 @@ public class SessionManagementBean implements Serializable {
             try {
                 LOGGER.info("Try to login [{}][{}]", userName, password);
                 UserDAO dao = getDAO(UserDAOHibernate.class, USER_DAO);
-                loggedUser = dao.findByLoginAndPassword(userName, ru.util.ApplicationHelper.getMD5(password));
+                User loggedUser = dao.findByLoginAndPassword(userName, ru.util.ApplicationHelper.getMD5(password));
                 if (loggedUser != null) {
                     LOGGER.debug("By userName[{}] founded User[{}]", userName, loggedUser.getId());
                     //Проверка удаленности\уволенности сотрудника
                     if (loggedUser.isDeleted() || loggedUser.isFired()) {
-                        LOGGER.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" :
-                                "FIRED");
-                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_AUTH_DELETED
-                                : MSG_AUTH_FIRED);
-                        loggedUser = null;
+                        LOGGER.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" : "FIRED");
+                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_AUTH_DELETED : MSG_AUTH_FIRED);
                         return;
                     }
                     //Проверка наличия у пользователя ролей
                     if (loggedUser.getRoles().isEmpty()) {
                         LOGGER.warn("USER[{}] HAS NO ONE ROLE", loggedUser.getId());
                         FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NO_ROLE);
-                        loggedUser = null;
                         return;
                     }
                     // Проверка уровня доступа
                     if (loggedUser.getMaxUserAccessLevel() == null) {
                         LOGGER.warn("USER[{}] HAS NULL MAX_ACCESS_LEVEL", loggedUser.getId());
                         FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NO_MAX_ACCESS_LEVEL);
-                        loggedUser = null;
                         return;
                     }
                     // Выставление текущего уровня допуска
@@ -133,48 +128,23 @@ public class SessionManagementBean implements Serializable {
                     //Поиск замещений, где найденный пользователь является заместителем
                     final List<Substitution> substitutions = getDAO(SubstitutionDaoImpl.class, SUBSTITUTION_DAO)
                             .findCurrentDocumentsOnSubstitution(loggedUser, false);
-                    substitutedUsers = new ArrayList<User>(substitutions.size());
                     if (!substitutions.isEmpty()) {
-                        LOGGER.debug("Current user is substitution for: {} users", substitutions.size());
-                        for (Substitution substitution : substitutions) {
-                            if (LOGGER.isTraceEnabled()) {
-                                LOGGER.trace(substitution.toString());
-                            }
-                            if (substitution.getPerson() != null) {
-                                substitutedUsers.add(substitution.getPerson());
-                                LOGGER.debug("[{}] {}", substitution.getPerson().getId(), substitution.getPerson()
-                                        .getDescription());
-                            } else {
-                                LOGGER.warn("Substitution[{}] has NULL Person! DATA={}", substitution.getId(),
-                                        substitution.toString());
-                            }
-                        }
+                       this.authData = new AuthorizationData(loggedUser, substitutions);
+                    }  else {
+                        this.authData = new AuthorizationData(loggedUser);
                     }
-                    //Высталвение признака замещения
-                    isSubstitution = !substitutedUsers.isEmpty();
-
-                    //Выставление признаков ролей
-                    setRoleFlags(loggedUser);
-                    if (isSubstitution) {
-                        addRoleFlags(substitutedUsers);
-                    }
-                    //В лог флажки ролей
-                    if (LOGGER.isDebugEnabled()) {
-                        printRoleFlags();
-                    }
-
                     RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO);
                     reqDocumentsCount = docDao.countAllDocumentsByUser((String) null, loggedUser, false, false);
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser
-                            .getLogin());
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
 
-                    Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get
-                            (BACK_URL);
+                    Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);
                     if (requestUrl != null) {
                         backUrl = requestUrl.toString();
                         LOGGER.info("back url={}", backUrl);
                     }
-                    LOGGER.info("SUCCESSFUL LOGIN:{}", loggedUser.getId());
+                    setRoleFlags();
+
+                    LOGGER.info("SUCCESSFUL LOGIN:{}\n AUTH_DATA={}", loggedUser.getId(), authData);
                 } else {
                     LOGGER.error("USER[{}] NOT FOUND", userName);
                     FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NOT_FOUND);
@@ -182,104 +152,29 @@ public class SessionManagementBean implements Serializable {
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(AUTH_KEY);
                 FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_ERROR);
-                loggedUser = null;
+                this.authData = null;
                 LOGGER.error("Exception while processing login action:", e);
             }
         }
     }
 
-    /**
-     * Установка флагов ролей для группы пользователей
-     *
-     * @param userList группа пользователей
-     */
-    private void addRoleFlags(List<User> userList) {
-        if (!hasAllRoles()) {
-            for (User user : userList) {
-                if (!isAdministrator) {
-                    isAdministrator = user.isAdministrator();
-                }
-                if (!isRecorder) {
-                    isRecorder = user.isRecorder();
-                }
-                if (!isOfficeManager) {
-                    isOfficeManager = user.isOfficeManager();
-                }
-                if (!isRequestManager) {
-                    isRequestManager = user.isRequestManager();
-                }
-                if (!isEmployer) {
-                    isEmployer = user.isEmployer();
-                }
-                if (!isOuter) {
-                    isOuter = user.isOuter();
-                }
-                if (!isHr) {
-                    isHr = user.isHr();
-                }
-                if (!isFilling) {
-                    isFilling = user.isFilling();
-                }
-                //Все роли есть - поиск дальше не нужен
-                if (hasAllRoles()) {
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
-     * Выставлены все роли?
-     *
-     * @return true - все, false - есть невыставленные роли
-     */
-    private boolean hasAllRoles() {
-        return isAdministrator && isRecorder && isOfficeManager && isRequestManager && isEmployer && isOuter && isHr
-                && isFilling;
-    }
 
     /**
      * Установка флагов ролей
-     *
-     * @param loggedUser пользователь для которого устанавливаются флаги ролей
      */
-    private void setRoleFlags(User loggedUser) {
-        isAdministrator = loggedUser.isAdministrator();
-        isRecorder = loggedUser.isRecorder();
-        isOfficeManager = loggedUser.isOfficeManager();
-        isRequestManager = loggedUser.isRequestManager();
-        isEmployer = loggedUser.isEmployer();
-        isOuter = loggedUser.isOuter();
-        isHr = loggedUser.isHr();
-        isFilling = loggedUser.isFilling();
+    private void setRoleFlags() {
+        isAdministrator = authData.isAdministrator();
+        isRecorder = authData.isRecorder();
+        isOfficeManager = authData.isOfficeManager();
+        isRequestManager = authData.isRequestManager();
+        isEmployer = authData.isEmployer();
+        isOuter = authData.isOuter();
+        isHr = authData.isHr();
+        isFilling = authData.isFilling();
+        isSubstitution = authData.isSubstitution();
     }
 
-    private void printRoleFlags() {
-        if (isAdministrator) {
-            LOGGER.debug("ADMINISTRATOR");
-        }
-        if (isRecorder) {
-            LOGGER.debug("RECORDER");
-        }
-        if (isOfficeManager) {
-            LOGGER.debug("OFFICE_MANAGER");
-        }
-        if (isRequestManager) {
-            LOGGER.debug("REQUEST_MANAGER");
-        }
-        if (isEmployer) {
-            LOGGER.debug("EMPLOYER");
-        }
-        if (isOuter) {
-            LOGGER.debug("OUTER");
-        }
-        if (isHr) {
-            LOGGER.debug("HR");
-        }
-        if (isFilling) {
-            LOGGER.debug("FILLING");
-        }
-    }
+
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public <T extends DictionaryDAO> T getDictionaryDAO(Class<T> persistentClass, String beanName) {
@@ -305,7 +200,7 @@ public class SessionManagementBean implements Serializable {
     }
 
     public String logOut() {
-        loggedUser = null;
+        authData = null;
         userName = null;
         password = null;
 
@@ -324,18 +219,10 @@ public class SessionManagementBean implements Serializable {
     }
 
     public User getLoggedUser() {
-        return loggedUser;
+        return authData.getAuthorized();
     }
 
-    public User getLoggedUser(boolean isFromSessionCached) {
-        if (isFromSessionCached) {
-            return loggedUser;
-        } else {
-            LOGGER.warn("GET USER WITHOUT Session");
-            return getDAO(UserDAOHibernate.class, USER_DAO).findByLoginAndPassword(loggedUser.getLogin(), loggedUser
-                    .getPassword());
-        }
-    }
+
 
     public String getBackUrl() {
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
@@ -352,8 +239,8 @@ public class SessionManagementBean implements Serializable {
 
     public void setCurrentUserAccessLevel(final UserAccessLevel userAccessLevel) {
         try {
-            loggedUser.setCurrentUserAccessLevel(userAccessLevel);
-            loggedUser = getDAO(UserDAOHibernate.class, USER_DAO).save(loggedUser);
+            authData.setCurrentAccessLevel(userAccessLevel);
+            getDAO(UserDAOHibernate.class, USER_DAO).save(authData.getAuthorized());
         } catch (Exception e) {
             LOGGER.error("CANNOT change UserAccessLevel:", e);
         }
@@ -367,65 +254,37 @@ public class SessionManagementBean implements Serializable {
         return isAdministrator;
     }
 
-    public void setAdministrator(boolean isAdministrator) {
-        this.isAdministrator = isAdministrator;
-    }
-
     public boolean isRecorder() {
         return isRecorder;
-    }
-
-    public void setRecorder(boolean isRecorder) {
-        this.isRecorder = isRecorder;
     }
 
     public boolean isOfficeManager() {
         return isOfficeManager;
     }
 
-    public void setOfficeManager(boolean isOfficeManager) {
-        this.isOfficeManager = isOfficeManager;
-    }
 
     public boolean isRequestManager() {
         return isRequestManager;
-    }
-
-    public void setRequestManager(boolean isRequestManager) {
-        this.isRequestManager = isRequestManager;
     }
 
     public boolean isEmployer() {
         return isEmployer;
     }
 
-    public void setEmployer(boolean isEmployer) {
-        this.isEmployer = isEmployer;
-    }
-
     public boolean isOuter() {
         return isOuter;
     }
 
-    public void setOuter(boolean isOuter) {
-        this.isOuter = isOuter;
-    }
 
     public boolean isHr() {
         return isHr;
     }
 
-    public void setHr(boolean isHr) {
-        this.isHr = isHr;
-    }
 
     public boolean isSubstitution() {
         return isSubstitution;
     }
 
-    public void setSubstitution(boolean isSubstitution) {
-        this.isSubstitution = isSubstitution;
-    }
 
     public IndexManagementBean getIndexManagement() {
         return indexManagement;
@@ -437,5 +296,16 @@ public class SessionManagementBean implements Serializable {
 
     public boolean isFilling() {
         return isFilling;
+    }
+
+
+
+    public List<User> getSubstitutedUsers(){
+        return new ArrayList<User>(authData.getSubstitutedUsers());
+    }
+
+
+    public AuthorizationData getAuthData(){
+        return authData;
     }
 }

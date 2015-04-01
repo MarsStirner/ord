@@ -48,6 +48,6 @@ public class SubstitutionListHolderBean implements Serializable{
     }
 
     public void refresh(){
-
+        lazyModel = new LazyDataModelForSubstitution((SubstitutionDaoImpl) indexManagementBean.getContext().getBean(ApplicationDAONames.SUBSTITUTION_DAO));
     }
 }

@@ -996,7 +996,7 @@ public final class WorkflowHelper {
                                 final String id = idInt.toString();
                                 if (key.contains("incoming")) {
                                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
-                                            INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                            INCOMING_DOCUMENT_FORM_DAO).getItemByIdForSimpleView(idInt);
                                     in_number.append(in_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("outgoing")) {
                                     OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
