@@ -770,7 +770,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                         .formatDate(in_doc.getRegistrationDate()));
 
             } else if (key.contains("outgoing")) {
-                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(rootDocumentId.toString());
+                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                        .getItemByIdForSimpleView(rootDocumentId);
                 return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber()
                         .equals("") ? "Черновик исходящего документа от " + ApplicationHelper
                         .formatDate(out_doc.getCreationDate()) : "Исходящий документ № " + out_doc

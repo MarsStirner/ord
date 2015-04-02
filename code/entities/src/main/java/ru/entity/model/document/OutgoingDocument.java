@@ -1,6 +1,6 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.IndexColumn;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -12,10 +12,7 @@ import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
 
-import javax.persistence.CascadeType;
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.*;
 
 
@@ -111,7 +108,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Вид документа
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id", nullable = true)
     private DocumentForm form;
 
@@ -131,7 +128,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Уровень допуска
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="userAccessLevel_id", nullable = true)
     private UserAccessLevel userAccessLevel;
 
@@ -142,10 +139,9 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     private String erpNumber;
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_contragents")
-    @IndexColumn(name = "ID")
-    private List<Contragent> recipientContragents;
+    private Set<Contragent> recipientContragents;
 
     /**
      * Исполнитель
@@ -164,46 +160,45 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Пользователи-читатели
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @JoinTable(name = "dms_outgoing_documents_person_readers")
-    @IndexColumn(name = "ID1")
-    private List<User> personReaders;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_outgoing_documents_person_readers",
+            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personReaders_id")}
+    )
+    private Set<User> personReaders;
 
     /**
      * Пользователи-редакторы
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @JoinTable(name = "dms_outgoing_documents_person_editors")
-    @IndexColumn(name = "ID1")
-    private List<User> personEditors;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_outgoing_documents_person_editors",
+            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")}
+    )
+    private Set<User> personEditors;
 
     /**
      * Пользователи-согласующие
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.EXTRA)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_agreementUsers")
     private Set<User> agreementUsers;
 
     /**
      * Роли-читатели
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.EXTRA)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_role_readers")
     @IndexColumn(name = "ID2")
-    private List<Role> roleReaders;
+    private Set<Role> roleReaders;
 
     /**
      * Роли-редакторы
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.EXTRA)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_role_editors")
     @IndexColumn(name = "ID2")
-    private List<Role> roleEditors;
+    private Set<Role> roleEditors;
 
     @Transient
     private String WFResultDescription;
@@ -212,11 +207,10 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * История
      */
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "dms_outgoing_document_history",
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.EXTRA)
     private Set<HistoryEntry> history;
 
 
@@ -224,12 +218,10 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Дерево согласования
      */
-    @OneToOne
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "dms_outgoing_document_agreement_tree",
             joinColumns = @JoinColumn(name = "document_id"),
             inverseJoinColumns = @JoinColumn(name = "tree_id"))
-    @LazyToOne(LazyToOneOption.PROXY)
     private HumanTaskTree agreementTree;
 
     @Transient
@@ -291,11 +283,11 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     }
 
     public void setRecipientContragents(List<Contragent> recipientContragents) {
-        this.recipientContragents = recipientContragents;
+        this.recipientContragents = new HashSet<Contragent>(recipientContragents);
     }
 
     public List<Contragent> getRecipientContragents() {
-        return recipientContragents;
+        return new ArrayList<Contragent>(recipientContragents);
     }
 
     public void setDeliveryType(DeliveryType deliveryType) {
@@ -426,35 +418,35 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     }
 
     public List<User> getPersonReaders() {
-        return personReaders;
+        return new ArrayList<User>(personReaders);
     }
 
     public void setPersonReaders(List<User> personReaders) {
-        this.personReaders = personReaders;
+        this.personReaders = new HashSet<User>(personReaders);
     }
 
     public List<Role> getRoleReaders() {
-        return roleReaders;
+        return new ArrayList<Role>(roleReaders);
     }
 
     public void setRoleReaders(List<Role> roleReaders) {
-        this.roleReaders = roleReaders;
+        this.roleReaders = new HashSet<Role>(roleReaders);
     }
 
     public void setRoleEditors(List<Role> roleEditors) {
-        this.roleEditors = roleEditors;
+        this.roleEditors = new HashSet<Role>(roleEditors);
     }
 
     public List<Role> getRoleEditors() {
-        return roleEditors;
+        return new ArrayList<Role>(roleEditors);
     }
 
     public void setPersonEditors(List<User> personEditors) {
-        this.personEditors = personEditors;
+        this.personEditors = new HashSet<User>(personEditors);
     }
 
     public List<User> getPersonEditors() {
-        return personEditors;
+        return new ArrayList<User>(personEditors);
     }
 
 

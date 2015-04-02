@@ -83,7 +83,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
      */
     @Override
     public DetachedCriteria getSimplestCriteria() {
-        return DetachedCriteria.forClass(IncomingDocument.class).setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return DetachedCriteria.forClass(IncomingDocument.class, "this").setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
     /**
@@ -364,9 +364,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         }
     }
 
-    /**
-     * Добавление ограничения на удаленные документы в запрос
-     */
+
     @Override
     public Set<Integer> getDraftStatuses() {
         return ImmutableSet.of(DocumentStatus.DOC_PROJECT_1.getId());

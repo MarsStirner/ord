@@ -35,11 +35,7 @@ public class LazyDataModelForSubstitution extends LazyDataModel<Substitution> {
     public List<Substitution> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,
             Object> filters) {
         final List<Substitution> result = dao.getDocuments(false, first, pageSize, sortField, sortOrder);
+        setRowCount(dao.getDocumentsCount(false));
         return result;
-    }
-
-    @Override
-    public int getRowCount() {
-        return  dao.getDocumentsCount(false);
     }
 }

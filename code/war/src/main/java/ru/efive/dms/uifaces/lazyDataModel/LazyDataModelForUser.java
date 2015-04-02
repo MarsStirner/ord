@@ -54,20 +54,14 @@ public class LazyDataModelForUser extends LazyDataModel<User> {
     public List<User> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
             filters) {
         if (filterGroup == null) {
+            setRowCount(((Long) dao.countUsers(filter, false, false)).intValue());
             return dao.findUsers(filter, false, false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
         } else {
+            setRowCount(((Long) dao.countUsersByGroup(filter, false, false, filterGroup)).intValue());
             return dao.findUsersByGroup(filter, false, false, filterGroup, first, pageSize, sortField, sortOrder ==
                     SortOrder.ASCENDING);
         }
     }
 
-    @Override
-    public int getRowCount() {
-        if (filterGroup == null) {
-            return ((Long) dao.countUsers(filter, false, false)).intValue();
-        } else {
-            return ((Long) dao.countUsersByGroup(filter, false, false, filterGroup)).intValue();
-        }
-    }
 
 }

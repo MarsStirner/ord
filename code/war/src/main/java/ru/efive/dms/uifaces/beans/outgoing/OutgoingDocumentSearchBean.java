@@ -1,39 +1,80 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
+import com.google.common.collect.ImmutableList;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
+import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
+import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
+import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
+import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForOutgoingDocument;
+import ru.entity.model.crm.Contragent;
+import ru.entity.model.document.DeliveryType;
+import ru.entity.model.document.OutgoingDocument;
+import ru.entity.model.user.User;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
+import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
 @ManagedBean(name = "outgoing_search")
 @ViewScoped
-public class OutgoingDocumentSearchBean { //extends AbstractDocumentSearchBean<OutgoingDocument> {
+public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<OutgoingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
+    boolean searchPerformed = false;
 
     /**
      * Выполнить поиск с текущим фильтром
      *
      * @return Список документов, удовлетворяющих поиску
-
+     * */
     @Override
-    public List<OutgoingDocument> performSearch() {
+    public void performSearch() {
         logger.info("OUTGOING: Perform Search with map : {}", filters);
         try {
-            searchResults = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
-                    .findAllDocumentsByUser(filters, null, sessionManagement.getLoggedUser(), false, false);
+            final OutgoingDocumentDAOImpl dao = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO);
+            final ViewFactDaoImpl viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
+            final LazyDataModelForOutgoingDocument lazyDataModelForOutgoingDocument = new LazyDataModelForOutgoingDocument(
+                    dao,
+                    viewFactDao,
+                    sessionManagement.getAuthData()
+            );
+            lazyDataModelForOutgoingDocument.setFilters(filters);
+            setLazyModel(lazyDataModelForOutgoingDocument);
+            searchPerformed= true;
         } catch (Exception e) {
             logger.error("OUTGOING: Error while search", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
         }
-        return searchResults;
+    }
+
+    public boolean isSearchPerformed() {
+        return searchPerformed;
+    }
+
+    public void setSearchPerformed(final boolean searchPerformed) {
+        this.searchPerformed = searchPerformed;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,8 +84,10 @@ public class OutgoingDocumentSearchBean { //extends AbstractDocumentSearchBean<O
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseAuthors() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_AUTHOR));
+        params.put(
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(
+                        MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR
+                ));
         final List<User> preselected = getAuthors();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
@@ -89,7 +132,8 @@ public class OutgoingDocumentSearchBean { //extends AbstractDocumentSearchBean<O
     public void chooseContragent() {
         final Contragent preselected = getContragent();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(
+                    ContragentDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
@@ -211,5 +255,5 @@ public class OutgoingDocumentSearchBean { //extends AbstractDocumentSearchBean<O
             filters.remove(EXECUTORS_KEY);
         }
     }
-     */
+
 }

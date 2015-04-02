@@ -276,7 +276,8 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
                         (in_doc.getRegistrationNumber() != null ? in_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1)
                 );
             } else if (key.contains("outgoing")) {
-                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(rootDocumentId.toString());
+                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                        .getItemByIdForSimpleView(rootDocumentId);
                 getDocument().setParentDocument(out_doc);
                 getDocument().setRegistrationNumber(
                         (out_doc.getRegistrationNumber() != null ? out_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1)

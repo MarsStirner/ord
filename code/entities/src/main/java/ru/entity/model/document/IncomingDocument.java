@@ -18,7 +18,7 @@ import java.util.*;
  * Входящий документ
  * По умолчанию все связи - LAZY (используются разные уровни критериев в DAO)
  *
- * @author Alexey Vagizov
+ * @author Alexey Vagizov / Egor Upatov
  */
 @Entity
 @Table(name = "dms_incoming_documents")
@@ -174,7 +174,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     // Связанные сущности
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
     /**
      * История
      */
@@ -216,7 +215,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_incoming_documents_person_editors",
             joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name= "personEditors_id")})
+            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")})
     private Set<User> personEditors;
 
     /**
@@ -233,8 +232,8 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_incoming_documents_role_editors",
-            joinColumns = {@JoinColumn(name="dms_incoming_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name="roleEditors_id")})
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleEditors_id")})
     private Set<Role> roleEditors;
 
     /**
@@ -242,8 +241,8 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_incoming_documents_executors",
-            joinColumns = {@JoinColumn(name="dms_incoming_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name="executors_id")})
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "executors_id")})
     private Set<User> executors;
     /**
      * END OF DATABASE FIELDS *****************************************************************************************
@@ -251,8 +250,11 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
 
     @Transient
     private String WFResultDescription;
+
+
     /**
      * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * TODO сделать класс-обертку
      */
     @Transient
     private String styleClass;
@@ -549,8 +551,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
         this.userAccessLevel = userAccessLevel;
     }
-
-    //TODO сделать класс-обертку
 
     public String getParentNumeratorId() {
         return parentNumeratorId;

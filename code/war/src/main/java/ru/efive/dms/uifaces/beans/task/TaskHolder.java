@@ -479,9 +479,8 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 ));
 
             } else if (key.contains("outgoing")) {
-                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(
-                        rootDocumentId.toString()
-                );
+                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                        .getItemByIdForSimpleView(rootDocumentId);
                 return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber()
                         .equals("") ? "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) : "Исходящий документ № " + out_doc
                         .getRegistrationNumber() + " от " + sdf.format(
@@ -533,8 +532,9 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 );
                 initiator = in_doc.getController();
             } else if (key.contains("outgoing")) {
-                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(
-                        rootDocumentId.toString());
+                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getItemByIdForListView(
+                        rootDocumentId
+                );
                 initiator = out_doc.getController();
             } else if (key.contains("internal")) {
                 InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(
@@ -744,12 +744,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 versionAttachment(fileManagement.getDetails(), attachment, majorVersion);
             }
             versionAppenderModal.save();
-        }        @Override
+        }
+
+        @Override
         protected void doHide() {
             super.doHide();
             attachment = null;
         }
-
 
 
     }
@@ -769,12 +770,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
 
         public List<Revision> getVersionList() {
             return versionList == null ? new ArrayList<Revision>() : versionList;
-        }        @Override
+        }
+
+        @Override
         protected void doShow() {
             super.doShow();
             versionList = fileManagement.getVersionHistory(attachment);
         }
-
 
 
         @Override

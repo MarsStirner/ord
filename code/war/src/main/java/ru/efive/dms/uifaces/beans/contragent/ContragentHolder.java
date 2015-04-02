@@ -65,7 +65,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
                     final List<Contragent> recipients = new ArrayList<Contragent>();
                     recipients.add(contragent);
                     in_map.put("recipientContragents", recipients);
-                    List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
+                    List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getDocumentListByFilters(sessionManagement.getAuthData(), null, in_map, null, true, 0, -1, false, false);
                     hasDocuments = !outgoingDocuments.isEmpty();
                 } else {
                     hasDocuments = true;

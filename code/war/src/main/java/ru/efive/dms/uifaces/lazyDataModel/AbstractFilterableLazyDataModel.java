@@ -20,7 +20,6 @@ public abstract class AbstractFilterableLazyDataModel<T extends IdentifiedEntity
         return filter;
     }
 
-
     @Override
     public Object getRowKey(T item) {
         return item.getId();

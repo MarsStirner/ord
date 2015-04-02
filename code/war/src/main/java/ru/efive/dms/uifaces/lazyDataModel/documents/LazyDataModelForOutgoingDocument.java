@@ -3,25 +3,25 @@ package ru.efive.dms.uifaces.lazyDataModel.documents;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
+import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
 import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
 import ru.efive.dms.util.security.AuthorizationData;
-import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.document.OutgoingDocument;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * Author: Upatov Egor <br>
- * Date: 23.03.2015, 18:30 <br>
+ * Date: 02.04.2015, 13:37 <br>
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForIncomingDocument extends AbstractFilterableLazyDataModel<IncomingDocument> {
-    private static final Logger logger = LoggerFactory.getLogger("LAZY_DM_INCOMING");
+public class LazyDataModelForOutgoingDocument extends AbstractFilterableLazyDataModel<OutgoingDocument> {
+    private static final Logger logger = LoggerFactory.getLogger("LAZY_DM_OUTGOING");
     // DAO доступа к БД
-    private final IncomingDocumentDAOImpl dao;
+    private final OutgoingDocumentDAOImpl dao;
     private final ViewFactDaoImpl viewFactDao;
     //Авторизационные данные пользователя
     private AuthorizationData authData;
@@ -33,14 +33,15 @@ public class LazyDataModelForIncomingDocument extends AbstractFilterableLazyData
      * @param dao      доступ к БД
      * @param authData данные авторизации по которым будет определяться доступ
      */
-    public LazyDataModelForIncomingDocument(final IncomingDocumentDAOImpl dao, final ViewFactDaoImpl viewFactDao, final AuthorizationData authData) {
+    public LazyDataModelForOutgoingDocument(final OutgoingDocumentDAOImpl dao, final ViewFactDaoImpl viewFactDao, final AuthorizationData authData) {
         this.dao = dao;
         this.viewFactDao = viewFactDao;
         this.authData = authData;
     }
 
+
     @Override
-    public List<IncomingDocument> load(
+    public List<OutgoingDocument> load(
             final int first,
             final int pageSize,
             final String sortField,
@@ -49,7 +50,7 @@ public class LazyDataModelForIncomingDocument extends AbstractFilterableLazyData
     ) {
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
-            final List<IncomingDocument> resultList = dao.getDocumentListByFilters(
+            final List<OutgoingDocument> resultList = dao.getDocumentListByFilters(
                     authData,
                     getFilter(),
                     this.filters,
@@ -62,7 +63,7 @@ public class LazyDataModelForIncomingDocument extends AbstractFilterableLazyData
             );
             //Проверка и выставленние классов просмотра документов пользователем
             if (!resultList.isEmpty()) {
-                viewFactDao.applyViewFlagsOnIncomingDocumentList(resultList, authData.getAuthorized());
+                viewFactDao.applyViewFlagsOnOutgoingDocumentList(resultList, authData.getAuthorized());
             }
             setRowCount(dao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
             return resultList;
@@ -73,7 +74,7 @@ public class LazyDataModelForIncomingDocument extends AbstractFilterableLazyData
     }
 
     @Override
-    public IncomingDocument getRowData(String rowKey) {
+    public OutgoingDocument getRowData(String rowKey) {
         final Integer identifier;
         try {
             identifier = Integer.valueOf(rowKey);

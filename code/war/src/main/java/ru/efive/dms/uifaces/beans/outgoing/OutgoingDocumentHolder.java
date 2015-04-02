@@ -1,11 +1,9 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.*;
@@ -166,28 +164,11 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         final User currentUser = sessionManagement.getLoggedUser();
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            final OutgoingDocument document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).get(id);
+            final OutgoingDocument document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getItemById(id);
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
-            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getHibernateTemplate();
-            Session session = hibernateTemplate.getSessionFactory().openSession();
-            session.beginTransaction();
-            session.update(document);
-            session.getTransaction().commit();
-
-            hibernateTemplate.initialize(document.getExecutor());
-            hibernateTemplate.initialize(document.getController());
-            hibernateTemplate.initialize(document.getAuthor());
-            hibernateTemplate.initialize(document.getNomenclature());
-            hibernateTemplate.initialize(document.getPersonReaders());
-            hibernateTemplate.initialize(document.getPersonEditors());
-            hibernateTemplate.initialize(document.getAgreementUsers());
-            hibernateTemplate.initialize(document.getHistory());
-            hibernateTemplate.initialize(document.getRoleEditors());
-            hibernateTemplate.initialize(document.getRoleReaders());
-            session.close();
             setDocument(document);
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement, document);
@@ -351,7 +332,9 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                             .getRegistrationNumber() + " от " + ApplicationHelper.formatDate(in_doc.getRegistrationDate()));
 
                 } else if (documentKey.contains("outgoing")) {
-                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(rootDocumentId.toString());
+                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getItemByIdForSimpleView(
+                            rootDocumentId
+                    );
                     return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
                             "Черновик исходящего документа от " + ApplicationHelper.formatDate(out_doc.getCreationDate()) :
                             "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(out_doc.getRegistrationDate())

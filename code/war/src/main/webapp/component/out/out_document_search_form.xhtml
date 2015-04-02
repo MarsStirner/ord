@@ -307,54 +307,48 @@
 
 
     <ui:define name="searchResults">
-        <p:dataTable id="outgoingSearchResults" value="#{outgoing_search.searchResults}" var="row_result"
-                     widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}"
-                     emptyMessage="Записей не найдено">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{outgoing_search.lazyModel}"
+                     var="row_result"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     rowStyleClass="#{row_result.styleClass}"
+                     sortBy="#{row_result.registrationNumber}"
+                     sortField="registrationNumber"
+                     sortOrder="descending"
+                     rendered="#{outgoing_search.searchPerformed}"
+                     emptyMessage="Документов не найдено"
+                >
             <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
-            <p:column style="width:5em;">
-                <f:facet name="header">
-                    Номер
-                </f:facet>
+            <p:column style="width:5em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field="registrationNumber">
                 <h:outputText value="#{row_result.registrationNumber}"/>
             </p:column>
-            <p:column style="width:5em;">
-                <f:facet name="header">
-                    Дата
-                </f:facet>
+            <p:column style="width:5em;" headerText="Дата" sortBy="#{row_result.registrationDate}" field="registrationDate">
                 <h:outputText value="#{row_result.registrationDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:12em;">
-                <f:facet name="header">
-                    Адресаты
-                </f:facet>
+            <p:column style="width:12em;" headerText="Адресаты">
                 <ui:repeat value="#{row_result.recipientContragents}" var="element">
                     <div><h:outputText value="#{element.fullName}"/></div>
                 </ui:repeat>
             </p:column>
-            <p:column style="width:10em;">
-                <f:facet name="header">
-                    Руководитель
-                </f:facet>
+            <p:column style="width:10em;" headerText="Руководитель" sortBy="#{row_result.controller}" field="controller.lastName">
                 <h:outputText value="#{row_result.controller}" converter="PersonConverter"/>
             </p:column>
-            <p:column style="width:8em;">
-                <f:facet name="header">
-                    Вид
-                </f:facet>
+            <p:column style="width:8em;" headerText="Вид" sortBy="#{row_result.form}" field="form.value">
                 <h:outputText value="#{row_result.form}"/>
             </p:column>
-            <p:column style="width:10em;">
-                <f:facet name="header">
-                    <span> Статус </span>
-                </f:facet>
+            <p:column style="width:10em;" headerText="Статус" sortBy="#{row_result.statusId}" field="statusId">
                 <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
             </p:column>
-            <p:column>
-                <f:facet name="header">
-                    Краткое содержание
-                </f:facet>
+            <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row_result.shortDescription}"/>
             </p:column>
             <p:ajax event="page" onstart="addRowHandlers()"/>
