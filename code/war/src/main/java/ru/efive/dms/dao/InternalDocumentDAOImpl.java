@@ -14,6 +14,7 @@ import ru.entity.model.enums.DocumentType;
 
 import java.util.*;
 
+import static org.hibernate.criterion.CriteriaSpecification.*;
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 import static ru.util.ApplicationHelper.getNextDayDate;
 
@@ -38,7 +39,7 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
         DetachedCriteria in_searchCriteria = getListCriteria();
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
         final LocalDate currentDate = new LocalDate();
-        in_searchCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)",
+        in_searchCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(registrationDate, '%Y') like lower(?)",
                                                           currentDate.getYear() + "%", new StringType()));
         applyFilterMapCriteria(in_searchCriteria, in_map);
         return getHibernateTemplate().findByCriteria(in_searchCriteria);
@@ -55,7 +56,7 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
      */
     @Override
     public DetachedCriteria getSimplestCriteria() {
-        return DetachedCriteria.forClass(InternalDocument.class, "this").setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
+        return DetachedCriteria.forClass(InternalDocument.class, "this").setResultTransformer(DISTINCT_ROOT_ENTITY);
     }
 
     /**
@@ -71,10 +72,10 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
     @Override
     public DetachedCriteria getListCriteria() {
         final DetachedCriteria result = getSimplestCriteria();
-        result.createAlias("author", "author", CriteriaSpecification.INNER_JOIN);
-        result.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("form", "form", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("responsible", "responsible", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("author", "author", INNER_JOIN);
+        result.createAlias("controller", "controller", LEFT_JOIN);
+        result.createAlias("form", "form", LEFT_JOIN);
+        result.createAlias("responsible", "responsible", LEFT_JOIN);
         return result;
     }
 
@@ -86,14 +87,14 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
     @Override
     public DetachedCriteria getFullCriteria() {
         final DetachedCriteria result = getListCriteria();
-        result.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("userAccessLevel", "userAccessLevel", CriteriaSpecification.INNER_JOIN);
-        result.createAlias("history", "history", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("recipientUsers", "recipientUsers", LEFT_JOIN);
+        result.createAlias("personEditors", "personEditors", LEFT_JOIN);
+        result.createAlias("personReaders", "personReaders", LEFT_JOIN);
+        result.createAlias("recipientGroups", "recipientGroups", LEFT_JOIN);
+        result.createAlias("roleReaders", "roleReaders", LEFT_JOIN);
+        result.createAlias("roleEditors", "roleEditors", LEFT_JOIN);
+        result.createAlias("userAccessLevel", "userAccessLevel", INNER_JOIN);
+        result.createAlias("history", "history", LEFT_JOIN);
         return result;
     }
 
@@ -189,22 +190,12 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
             return;
         }
         final Disjunction disjunction = Restrictions.disjunction();
-        disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(creationDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-        disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(executionDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
+        disjunction.add(createDateLikeTextRestriction("signatureDate", filter));
+        disjunction.add(createDateLikeTextRestriction("executionDate", filter));
         disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
-
-        disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
-
         disjunction.add(Restrictions.ilike("responsible.lastName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("responsible.middleName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("responsible.firstName", filter, MatchMode.ANYWHERE));
-
-        disjunction.add(Restrictions.ilike("controller.lastName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("controller.middleName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("controller.firstName", filter, MatchMode.ANYWHERE));
-
         disjunction.add(Restrictions.ilike("form.value", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
 
@@ -238,25 +229,25 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
             disjunction.add(Restrictions.in("controller.id", userIds));
             disjunction.add(Restrictions.in("responsible.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
+            criteria.createAlias("personReaders", "personReaders", LEFT_JOIN);
             disjunction.add(Restrictions.in("personReaders.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
+            criteria.createAlias("personEditors", "personEditors", LEFT_JOIN);
             disjunction.add(Restrictions.in("personEditors.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
+            criteria.createAlias("recipientUsers", "recipientUsers", LEFT_JOIN);
             disjunction.add(Restrictions.in("recipientUsers.id", userIds));
             if (!auth.getRoles().isEmpty()) {
                 //NOTE  Добавляются алиасы с fetch
-                criteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
+                criteria.createAlias("roleReaders", "roleReaders", LEFT_JOIN);
                 disjunction.add(Restrictions.in("roleReaders.id", auth.getRoleIds()));
                 //NOTE  Добавляются алиасы с fetch
-                criteria.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
+                criteria.createAlias("roleEditors", "roleEditors", LEFT_JOIN);
                 disjunction.add(Restrictions.in("roleEditors.id", auth.getRoleIds()));
             }
             if (!auth.getGroups().isEmpty()) {
                 //NOTE  Добавляются алиасы с fetch
-                criteria.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
+                criteria.createAlias("recipientGroups", "recipientGroups", LEFT_JOIN);
                 disjunction.add(Restrictions.in("recipientGroups.id", auth.getGroupIds()));
             }
             criteria.add(disjunction);

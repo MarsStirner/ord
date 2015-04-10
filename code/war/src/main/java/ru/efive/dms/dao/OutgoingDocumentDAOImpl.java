@@ -3,6 +3,7 @@ package ru.efive.dms.dao;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
+import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.util.security.AuthorizationData;
@@ -39,7 +40,11 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
     public List<OutgoingDocument> findRegistratedDocumentsByCriteria(String in_criteria) {
         DetachedCriteria detachedCriteria = getSimplestCriteria().add(Restrictions.ilike("registrationNumber", in_criteria, MatchMode.ANYWHERE));
         final LocalDate currentDate = new LocalDate();
-        detachedCriteria.add(createDateLikeTextRestriction("registrationDate", String.valueOf(currentDate.getYear())));
+        detachedCriteria.add(
+                Restrictions.sqlRestriction(
+                        "DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()
+                )
+        );
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 

@@ -79,14 +79,16 @@
                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Руководитель" style="width:12em;" sortBy="#{row.controller}" field = "controller.lastName">
-                        <h:outputText value="#{row.controller.getDescriptionShort()}"/>
-                    </p:column>
-                    <p:column headerText="Автор" style="width:12em;" sortBy="#{row.author.lastName}" field = "author.lastName">
-                        <h:outputText value="#{row.author.getDescriptionShort()}"/>
+                    <p:column headerText="Ответственный" style="width:12em;" sortBy="#{row.responsible}" field = "responsible.lastName">
+                        <h:outputText value="#{row.responsible.getDescriptionShort()}"/>
                     </p:column>
                     <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
                         <h:outputText value="#{row.form}"/>
+                    </p:column>
+                    <p:column headerText="Срок исполнения" style="width:8em;" sortBy="#{row.executionDate}" field = "executionDate">
+                        <h:outputText value="#{row.executionDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
                     </p:column>
                     <p:column headerText="Краткое содержание">
                         <h:outputText value="#{row.shortDescription}"/>
