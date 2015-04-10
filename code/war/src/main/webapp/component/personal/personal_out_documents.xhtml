@@ -78,13 +78,13 @@
                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
+                    <p:column headerText="Исполнитель" style="width:8em;" sortBy="#{row.executor}" field = "executor.lastName">
+                        <h:outputText value="#{row.executor.getDescriptionShort()}"/>
+                    </p:column>
                     <p:column headerText="Адресаты" style="width:12em;">
                         <ui:repeat value="#{row.recipientContragents}" var="element">
                             <div><h:outputText value="#{element.fullName}"/></div>
                         </ui:repeat>
-                    </p:column>
-                    <p:column headerText="Руководитель" style="width:12em;" sortBy="#{row.controller.lastName}" field = "controller.lastName">
-                        <h:outputText value="#{row.controller.getDescriptionShort()}"/>
                     </p:column>
                     <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
                         <h:outputText value="#{row.form}"/>
