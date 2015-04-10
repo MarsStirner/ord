@@ -2,6 +2,7 @@ package ru.efive.dms.dao;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
+import org.hibernate.type.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.util.security.AuthorizationData;
@@ -383,6 +384,19 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
             logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT List<User>. Non critical, continue...", key, value, e);
         }
     }
+
+    /**
+     * Создать часть критерия, которая будет проверять заданное поле(типа Дата-Время) на соотвтевие поисковому шаблону
+     * @param fieldName  имя поля с типом  (Дата-Время)
+     * @param filter  поисковый шаблон
+     * @return Часть критерия, проверяющая сответвтвие поля поисковому шаблону
+     */
+    public Criterion createDateLikeTextRestriction(final String fieldName, final String filter) {
+        return Restrictions.sqlRestriction(
+                "DATE_FORMAT(".concat(fieldName).concat("registrationDate, '%d.%m.%Y') like lower(?)"), filter + "%", new StringType()
+        );
+    }
+
 
 
 }

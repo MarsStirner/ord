@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
-import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.util.security.AuthorizationData;
@@ -38,11 +37,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
     public List<IncomingDocument> findRegistratedDocumentsByCriteria(String in_criteria) {
         DetachedCriteria detachedCriteria = getSimplestCriteria().add(Restrictions.ilike("registrationNumber", in_criteria, MatchMode.ANYWHERE));
         final LocalDate currentDate = new LocalDate();
-        detachedCriteria.add(
-                Restrictions.sqlRestriction(
-                        "DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()
-                )
-        );
+        detachedCriteria.add(createDateLikeTextRestriction("this.registrationDate", String.valueOf(currentDate.getYear())));
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
@@ -88,14 +83,9 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
 
     /**
      * Получить критерий для отбора Документов и их показа в расширенных списках
-     * Автор - INNER
-     * Руководитель - LEFT
      * Исполнители - LEFT
-     * Тип доставки - LEFT
      * Вид документа - LEFT
      * Корреспондент - LEFT
-     * Адресаты  - LEFT
-     *
      * @return критерий для документов с DISTINCT
      */
     @Override
@@ -104,10 +94,9 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         result.createAlias("author", "author", CriteriaSpecification.INNER_JOIN);
         result.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("form", "form", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("contragent", "contragent", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
         return result;
     }
 
@@ -119,6 +108,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
     @Override
     public DetachedCriteria getFullCriteria() {
         final DetachedCriteria result = getListCriteria();
+        result.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
@@ -192,6 +182,8 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
             } else if (DELIVERY_TYPE_KEY.equals(key)) {
                 try {
                     final DeliveryType deliveryType = (DeliveryType) value;
+                    // Добавляем JOIN в запрос
+                    criteria.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
                     conjunction.add(Restrictions.eq("deliveryType.id", deliveryType.getId()));
                 } catch (ClassCastException e) {
                     logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT DeliveryType. Non critical, continue...", key, value);
@@ -251,17 +243,12 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
     /**
      * Производит поиск заданной строки в (по условию ИЛИ [дизъюнкция]):
      * регистрационном номере,
-     * дате доставки (формат - 'DD.MM.YYYY'),
-     * дате получения (формат - 'DD.MM.YYYY'),
-     * номере поступившего,
+     * дате регистрации (формат - 'DD.MM.YYYY'),
+     * сроке исполнения (формат - 'DD.MM.YYYY'),
      * кратком описании,
-     * ФИО автора,
-     * ФИО руководителя,
      * ФИО исполнителей,
-     * типе доставки,
      * виде документа,
      * названии корреспондента (FULL или SHORT),
-     * ФИО адресатов,
      * наименовании статуса документа
      *
      * @param criteria критерий отбора в который будет добавлено поисковое условие (НЕ менее LIST_CRITERIA)
@@ -275,41 +262,18 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         }
         final Disjunction disjunction = Restrictions.disjunction();
         disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
-        disjunction.add(
-                Restrictions.sqlRestriction(
-                        "DATE_FORMAT(deliveryDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()
-                )
-        );
-        disjunction.add(
-                Restrictions.sqlRestriction(
-                        "DATE_FORMAT(receivedDocumentDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()
-                )
-        );
-        disjunction.add(Restrictions.ilike("receivedDocumentNumber", filter, MatchMode.ANYWHERE));
+        disjunction.add(createDateLikeTextRestriction("registrationDate", filter));
+        disjunction.add(createDateLikeTextRestriction("executionDate", filter));
         disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
-
-        disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
-
-        disjunction.add(Restrictions.ilike("controller.lastName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("controller.middleName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("controller.firstName", filter, MatchMode.ANYWHERE));
 
         disjunction.add(Restrictions.ilike("executors.lastName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("executors.middleName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("executors.firstName", filter, MatchMode.ANYWHERE));
 
-        disjunction.add(Restrictions.ilike("deliveryType.value", filter, MatchMode.ANYWHERE));
-
         disjunction.add(Restrictions.ilike("form.value", filter, MatchMode.ANYWHERE));
 
         disjunction.add(Restrictions.ilike("contragent.fullName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("contragent.shortName", filter, MatchMode.ANYWHERE));
-
-        disjunction.add(Restrictions.ilike("recipientUsers.lastName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("recipientUsers.firstName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("recipientUsers.middleName", filter, MatchMode.ANYWHERE));
 
         //TODO справочник в БД
         final List<DocumentStatus> statuses = DocumentType.getIncomingDocumentStatuses();
@@ -325,6 +289,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         criteria.add(disjunction);
 
     }
+
 
     /**
      * Применить ограничения допуска для документов
