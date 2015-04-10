@@ -62,7 +62,7 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
      */
     public List<Task> getTaskListByRootDocumentId(final String rootId, final boolean showDeleted) {
         logger.debug("Call -> getTaskListByRootDocumentId(\"{}\", {})", rootId, showDeleted);
-        final DetachedCriteria criteria = getSimplestCriteria();
+        final DetachedCriteria criteria = getListCriteria();
         addDeletedRestriction(criteria, showDeleted);
         criteria.add(Restrictions.eq("rootDocumentId", rootId));
         return getHibernateTemplate().findByCriteria(criteria);
@@ -78,7 +78,7 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
     public List<Task> getChildrenTaskByParentId(int parentId, boolean showDeleted) {
         logger.debug("Call -> getChildrenTaskByParentId({}, {})", parentId, showDeleted);
         if (parentId != 0) {
-            final DetachedCriteria criteria = getSimplestCriteria();
+            final DetachedCriteria criteria = getListCriteria();
             addDeletedRestriction(criteria, showDeleted);
             criteria.add(Restrictions.eq("parent.id", parentId));
             //Sorting по дате создания а потом по номеру

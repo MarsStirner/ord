@@ -3,7 +3,6 @@ package ru.efive.dms.dao;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
-import org.hibernate.type.StringType;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.util.security.AuthorizationData;
 import ru.entity.model.document.DeliveryType;
@@ -185,33 +184,13 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
         }
         final Disjunction disjunction = Restrictions.disjunction();
         disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(deliveryDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-        disjunction.add(
-                Restrictions.sqlRestriction(
-                        "DATE_FORMAT(receivedDocumentDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()
-                )
-        );
-        disjunction.add(Restrictions.ilike("receivedDocumentNumber", filter, MatchMode.ANYWHERE));
+        disjunction.add(Restrictions.ilike("executionDate", filter, MatchMode.ANYWHERE));
+        disjunction.add(createDateLikeTextRestriction("deliveryDate", filter));
         disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("senderFirstName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("senderMiddleName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("senderLastName", filter, MatchMode.ANYWHERE));
 
-        disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
-            /*
-            TODO ждем ответа Опарина
-                disjunction.add(Restrictions.ilike("controller.lastName", filter, MatchMode.ANYWHERE));
-                disjunction.add(Restrictions.ilike("controller.middleName", filter, MatchMode.ANYWHERE));
-                disjunction.add(Restrictions.ilike("controller.firstName", filter, MatchMode.ANYWHERE));
-
-        disjunction.add(Restrictions.ilike("responsible.lastName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("responsible.middleName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("responsible.firstName", filter, MatchMode.ANYWHERE));
-
-        disjunction.add(Restrictions.ilike("deliveryType.value", filter, MatchMode.ANYWHERE));
-        */
         disjunction.add(Restrictions.ilike("form.value", filter, MatchMode.ANYWHERE));
 
         //TODO справочник в БД

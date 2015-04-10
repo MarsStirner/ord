@@ -13,7 +13,7 @@
     </ui:define>
 
     <ui:define name="header_top">
-        <div id="viewtitle">Обращения граждан по номеру</div>
+        <div id="viewtitle">Мои проекты обращений граждан</div>
     </ui:define>
 
     <ui:define name="header_buttons">
@@ -75,6 +75,11 @@
                     <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
                     <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field = "creationDate">
                         <h:outputText value="#{row.creationDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Дата поступления" style="width:8em;" sortBy="#{row.deliveryDate}" field = "deliveryDate">
+                        <h:outputText value="#{row.deliveryDate}">
                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>

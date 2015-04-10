@@ -393,7 +393,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
      */
     public Criterion createDateLikeTextRestriction(final String fieldName, final String filter) {
         return Restrictions.sqlRestriction(
-                "DATE_FORMAT(".concat(fieldName).concat("registrationDate, '%d.%m.%Y') like lower(?)"), filter + "%", new StringType()
+                "DATE_FORMAT(".concat(fieldName).concat(", '%d.%m.%Y') like lower(?)"), filter + "%", new StringType()
         );
     }
 
