@@ -42,7 +42,6 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    boolean searchPerformed = false;
 
     /**
      * Выполнить поиск с текущим фильтром
@@ -67,14 +66,6 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             logger.error("OUTGOING: Error while search", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
         }
-    }
-
-    public boolean isSearchPerformed() {
-        return searchPerformed;
-    }
-
-    public void setSearchPerformed(final boolean searchPerformed) {
-        this.searchPerformed = searchPerformed;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

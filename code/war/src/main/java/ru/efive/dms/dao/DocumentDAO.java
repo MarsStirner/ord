@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAOHibernate<T> {
 
-    protected static Logger logger =LoggerFactory.getLogger("DOCUMENT_DAO");
+    protected static Logger logger = LoggerFactory.getLogger("DOCUMENT_DAO");
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,11 +61,12 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Получить документ с FULL_CRITERIA  по его идентификатору
+     *
      * @param id идентификатор документа
      * @return документ, полученный с FULL_CRITERIA
      */
     @SuppressWarnings("unchecked")
-    public T getItemById(Integer id){
+    public T getItemById(Integer id) {
         final List resultList = getHibernateTemplate().findByCriteria(getFullCriteria().add(Restrictions.eq("id", id)));
         if (resultList.isEmpty()) {
             return null;
@@ -76,11 +77,12 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Получить документ с LIST_CRITERIA  по его идентификатору
+     *
      * @param id идентификатор документа
      * @return документ, полученный с LIST_CRITERIA
      */
     @SuppressWarnings("unchecked")
-    public T getItemByIdForListView(Integer id){
+    public T getItemByIdForListView(Integer id) {
         final List resultList = getHibernateTemplate().findByCriteria(getListCriteria().add(Restrictions.eq("id", id)));
         if (resultList.isEmpty()) {
             return null;
@@ -91,11 +93,12 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Получить документ с SIMPLE_CRITERIA  по его идентификатору
+     *
      * @param id идентификатор документа
      * @return документ, полученный с SIMPLE_CRITERIA
      */
     @SuppressWarnings("unchecked")
-    public T getItemByIdForSimpleView(Integer id){
+    public T getItemByIdForSimpleView(Integer id) {
         final List resultList = getHibernateTemplate().findByCriteria(getSimplestCriteria().add(Restrictions.eq("id", id)));
         if (resultList.isEmpty()) {
             return null;
@@ -132,7 +135,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
             final int pageSize,
             final boolean showDeleted,
             final boolean showDrafts
-    ){
+    ) {
         final DetachedCriteria criteria = getFilteringListCriteria(filter, filters);
         applyAccessCriteria(criteria, authData);
         addDraftsAndDeletedRestrictions(criteria, showDeleted, showDrafts);
@@ -144,9 +147,10 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Получить количество документов, удовлетворяющих фильтрам, доступных пользователю
-     * @param authData  авторизационные данные пользователя
-     * @param filter  простой строковый фильтр
-     * @param filters сложный фильтр
+     *
+     * @param authData авторизационные данные пользователя
+     * @param filter   простой строковый фильтр
+     * @param filters  сложный фильтр
      */
     public int countDocumentListByFilters(
             final AuthorizationData authData,
@@ -154,7 +158,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
             final Map<String, Object> filters,
             final boolean showDeleted,
             final boolean showDrafts
-    ){
+    ) {
         final DetachedCriteria criteria = getFilteringListCriteria(filter, filters);
         applyAccessCriteria(criteria, authData);
         addDraftsAndDeletedRestrictions(criteria, showDeleted, showDrafts);
@@ -163,8 +167,9 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Получить персональные документы, находящиеся в проектном статусе
+     *
      * @param authData  авторизационные данные
-     * @param filter  простой строковый фильтр
+     * @param filter    простой строковый фильтр
      * @param sortField поле, по которому будет происходить сортировка результатов
      * @param sortOrder порядок сортировки (TRUE = ASC \ FALSE = DESC)
      * @param first     начальное смещение страницы (ранжирование по страницам)
@@ -192,10 +197,11 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Получить количество персональных документы, находящихся в проектном статусе
-     * @param authData  авторизационные данные пользователя
-     * @param filter  простой строковый фильтр
+     *
+     * @param authData авторизационные данные пользователя
+     * @param filter   простой строковый фильтр
      */
-    public int countPersonalDraftDocumentListByFilters(final AuthorizationData authData, final String filter){
+    public int countPersonalDraftDocumentListByFilters(final AuthorizationData authData, final String filter) {
         final DetachedCriteria criteria = getListCriteria();
         applyFilterCriteria(criteria, filter);
         criteria.add(Restrictions.in("author.id", authData.getUserIds()));
@@ -204,23 +210,19 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
     }
 
 
-
-
     /**
      * Получить список документов с корректными LIMIT
-     * @param criteria изначальный критерий для отбора документов
+     *
+     * @param criteria  изначальный критерий для отбора документов
      * @param sortField поле сортировки
      * @param sortOrder порядок сортировки
-     * @param first  начальное смещение
-     * @param pageSize макс размер бвыбираемого списка
-     * @return  список документов заданного размера
+     * @param first     начальное смещение
+     * @param pageSize  макс размер бвыбираемого списка
+     * @return список документов заданного размера
      */
+    @SuppressWarnings("unchecked")
     public List<T> getCorrectLimitingDocuments(
-            final DetachedCriteria criteria,
-            final String sortField,
-            final boolean sortOrder,
-            final int first,
-            final int pageSize
+            final DetachedCriteria criteria, final String sortField, final boolean sortOrder, final int first, final int pageSize
     ) {
         criteria.setProjection(Projections.distinct(Projections.id()));
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
@@ -242,7 +244,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
      */
     private DetachedCriteria getIDListCriteria(List ids, String orderBy, boolean orderAsc) {
         final DetachedCriteria result = getListCriteria().add(Restrictions.in("id", ids));
-        if(StringUtils.isNotEmpty(orderBy)) {
+        if (StringUtils.isNotEmpty(orderBy)) {
             result.addOrder(orderAsc ? Order.asc(orderBy) : Order.desc(orderBy));
         }
         return result;
@@ -270,13 +272,14 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
      * Применитиь к текущим критериям огарничения сложного фильтра
      *
      * @param criteria текущий критерий, в который будут добавлены условия  (НЕ менее LIST_CRITERIA)
-     * @param filters сложный фильтр (карта)
+     * @param filters  сложный фильтр (карта)
      */
     public abstract void applyFilterMapCriteria(DetachedCriteria criteria, Map<String, Object> filters);
 
     /**
      * Производит поиск заданной строки в (по условию ИЛИ [дизъюнкция]):
      * заданных полях сущности
+     *
      * @param criteria критерий отбора в который будет добавлено поисковое условие (НЕ менее LIST_CRITERIA)
      * @param filter   условие поиска
      */
@@ -286,6 +289,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Общие части работы с критериями
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Добавление ограничения на удаленные документы в запрос
      *
@@ -313,6 +317,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Применить ограничения допуска для документов
+     *
      * @param criteria исходный критерий   (минимум LIST_CRITERIA)
      * @param auth     данные авторизации
      */
@@ -325,7 +330,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
      * @param showDrafts false - в запрос будет добавлено ограничение на проверку статуса документа, так чтобы
      *                   его статус был НЕ "Проект документа"
      */
-    public void addDraftRestriction(final DetachedCriteria criteria, final boolean showDrafts){
+    public void addDraftRestriction(final DetachedCriteria criteria, final boolean showDrafts) {
         if (!showDrafts) {
             criteria.add(Restrictions.not(Restrictions.in("statusId", getDraftStatuses())));
         }
@@ -333,6 +338,7 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
 
     /**
      * Получить список проектных статусов
+     *
      * @return список идентифкаторов проектных статусов
      */
     public abstract Set<Integer> getDraftStatuses();
@@ -377,7 +383,6 @@ public abstract class DocumentDAO<T extends IdentifiedEntity> extends GenericDAO
             logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT List<User>. Non critical, continue...", key, value, e);
         }
     }
-
 
 
 }

@@ -288,55 +288,50 @@
 
 
     <ui:define name="searchResults">
-        <p:dataTable id="internalSearchResults" value="#{internal_search.searchResults}" var="row_result"
-                     widgetVar="documentTableVar" selectionMode="single" rowKey="#{row_result.id}"
-                     emptyMessage="Записей не найдено">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{internal_search.lazyModel}"
+                     var="row_result"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     rowStyleClass="#{row_result.styleClass}"
+                     sortBy="#{row_result.registrationNumber}"
+                     sortField="registrationNumber"
+                     sortOrder="descending"
+                     rendered="#{internal_search.searchPerformed}"
+                     emptyMessage="Документов не найдено"
+                >
             <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
-            <p:column style="width:5em;">
-                <f:facet name="header">
-                    Номер
-                </f:facet>
+            <p:column style="width:9em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field="registrationNumber">
                 <h:outputText value="#{row_result.registrationNumber}"/>
             </p:column>
-            <p:column style="width:5em;">
-                <f:facet name="header">
-                    Дата подписания
-                </f:facet>
+            <p:column style="width:10em;" headerText="Дата подписания" sortBy="#{row_result.signatureDate}" field="signatureDate">
                 <h:outputText value="#{row_result.signatureDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:12em;">
-                <f:facet name="header">
-                    Ответственный
-                </f:facet>
-                <h:outputText value="#{row_result.responsible}" converter="PersonConverter"/>
+            <p:column style="width:12em;" headerText="Ответственный" sortBy="#{row_result.responsible}" field="responsible.lastName" >
+                <h:outputText value="#{row_result.responsible.getDescriptionShort()}"/>
             </p:column>
-            <p:column style="width:10em;">
-                <f:facet name="header">
-                    Руководитель
-                </f:facet>
-                <h:outputText value="#{row_result.signer}" converter="PersonConverter"/>
+            <p:column style="width:10em;" headerText="Руководитель" sortBy="#{row_result.controller}" field="controller.lastName" >
+                <h:outputText value="#{row_result.controller.getDescriptionShort()}"/>
             </p:column>
-            <p:column style="width:8em;">
-                <f:facet name="header">
-                    Вид
-                </f:facet>
+            <p:column style="width:8em;" headerText="Вид" sortBy="#{row_result.form}" field="form.value" >
                 <h:outputText value="#{row_result.form}"/>
             </p:column>
-            <p:column style="width:10em;">
-                <f:facet name="header">
-                    Статус
-                </f:facet>
+            <p:column style="width:10em;" headerText="Статус" sortBy="#{row_result.statusId}" field="statusId" >
                 <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
             </p:column>
-            <p:column>
-                <f:facet name="header">
-                    Краткое содержание
-                </f:facet>
+            <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row_result.shortDescription}"/>
             </p:column>
             <p:ajax event="page" onstart="addRowHandlers()"/>
+            <p:ajax event="sort" oncomplete="addRowHandlers()"/>
         </p:dataTable>
         <script type="text/javascript">
             function addRowHandlers() {

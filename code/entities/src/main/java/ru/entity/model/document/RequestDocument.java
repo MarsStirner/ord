@@ -1,10 +1,6 @@
 package ru.entity.model.document;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -19,7 +15,7 @@ import java.util.*;
 
 
 /**
- * Входящий документ
+ * Обращения граждан
  *
  * @author Alexey Vagizov
  */
@@ -31,198 +27,209 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     /**
      * Номер входящего
      */
+    @Column(name = "registrationNumber", nullable = true)
     private String registrationNumber;
 
     /**
      * Дата регистрации
      */
+    @Column(name = "registrationDate", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date registrationDate;
 
     /**
      * Дата поступления
      */
+    @Column(name = "deliveryDate", nullable = true)
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date deliveryDate;
 
     /**
      * Автор документа
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     /**
      * Срок исполнения
      */
+    @Column(name = "executionDate", nullable = true)
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date executionDate;
 
     /**
      * Руководитель
+     * TODO решить до конца вопрос с руководителем в обращениях граждан
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_request_documents_controllers")
     private User controller;
 
     /**
      * Ответсвтенный исполнитель
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_request_documents_executors")
-    private User executor;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsible_id", nullable = true)
+    private User responsible;
 
     /**
      * Тип отправителя
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "senderType_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "senderType_id", nullable = true)
     private SenderType senderType;
 
     /**
      * Корреспондент
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "contragent_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contragent_id", nullable = true)
     private Contragent contragent;
 
     /**
      * Фамилия
      */
+    @Column(name = "senderLastName")
     private String senderLastName;
 
     /**
      * Имя
      */
+    @Column(name = "senderFirstName")
     private String senderFirstName;
 
     /**
      * Отчество
      */
+    @Column(name = "senderMiddleName")
     private String senderMiddleName;
 
     /**
      * Адресаты
      */
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_request_documents_recipients",
             joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientUsers_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<User> recipientUsers;
+    private Set<User> recipientUsers;
 
     /**
      * Адресаты (группы)
      */
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_request_documents_recipient_groups",
             joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<Group> recipientGroups;
 
     /**
      * Пользователи-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinTable(name = "dms_request_documents_person_readers")
-    @IndexColumn(name = "ID1")
-    private List<User> personReaders;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_request_documents_person_readers",
+            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personReaders_id")})
+    private Set<User> personReaders;
 
     /**
      * Пользователи-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinTable(name = "dms_request_documents_person_editors")
-    @IndexColumn(name = "ID1")
-    private List<User> personEditors;
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_request_documents_person_editors",
+            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")})
+    private Set<User> personEditors;
 
     /**
      * Роли-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinTable(name = "dms_request_documents_role_readers")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleReaders;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_request_documents_role_readers",
+            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleReaders_id")})
+    private Set<Role> roleReaders;
 
     /**
      * Роли-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @JoinTable(name = "dms_request_documents_role_editors")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleEditors;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_request_documents_role_editors",
+            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleEditors_id")})
+    private Set<Role> roleEditors;
+
 
     /**
      * Краткое описание
      */
-    @Column(columnDefinition = "text")
+    @Column(name = "shortDescription", columnDefinition = "text")
     private String shortDescription;
 
     /**
      * Дата создания документа
      */
+    @Column(name="creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date creationDate;
 
     /**
      * Регион
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
 
     /**
      * Вид документа
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id")
     private DocumentForm form;
 
     /**
      * Вид документа
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deliveryType_id")
     private DeliveryType deliveryType;
 
     /**
      * Номер поступившего
      */
+    @Column(name="receivedDocumentNumber")
     private String receivedDocumentNumber;
 
     /**
      * Номер ERP
      */
-
+    @Column(name="erpNumber")
     private String erpNumber;
 
     /**
      * Дата регистрации поступившего документа у корреспондента
      */
+    @Column(name="receivedDocumentDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date receivedDocumentDate;
 
     /**
+     * Количество приложений
+     */
+    @Column(name = "appendixiesCount", nullable = false)
+    private int appendixiesCount = 0;
+
+    /**
      * Количество экземпляров
      */
-    private int copiesCount;
+    @Column(name = "copiesCount", nullable = false)
+    private int copiesCount = 0;
 
     /**
      * Количество страниц
      */
+    @Column(name = "sheetsCount", nullable = false)
     private int sheetsCount;
-
-    /**
-     * Количество приложений
-     */
-    private int appendixiesCount;
 
     /**
      * Текущий статус документа в процессе
@@ -231,15 +238,12 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     private int statusId;
 
     @Transient
-    private int grouping = 100;
-
-    @Transient
     private String WFResultDescription;
 
     /**
      * Номенклатура
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "nomenclature_id")
     private Nomenclature nomenclature;
 
@@ -247,6 +251,7 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     /**
      * Удален ли документ
      */
+    @Column(name = "deleted", nullable = false)
     private boolean deleted;
 
     /**
@@ -257,14 +262,18 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     /**
      * История
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "dms_request_document_history",
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<HistoryEntry> history;
 
+    /**
+     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * TODO класс-обертка
+     */
+    @Transient
+    private String styleClass;
 
     @Transient
     public DocumentType getDocumentType() {
@@ -279,6 +288,11 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     @Transient
     public void setDocumentStatus(DocumentStatus status) {
         this.statusId = status.getId();
+    }
+
+    @Override
+    public String getBeanName() {
+        return "request_doc";
     }
 
     public User getAuthor() {
@@ -314,11 +328,11 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     }
 
     public List<User> getRecipientUsers() {
-        return recipientUsers;
+        return new ArrayList<User>(recipientUsers);
     }
 
     public void setRecipientUsers(List<User> recipientUsers) {
-        this.recipientUsers = recipientUsers;
+        this.recipientUsers = new HashSet<User>(recipientUsers);
     }
 
     public Date getExecutionDate() {
@@ -365,17 +379,17 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     @Transient
     public String getSenderDescription() {
         final StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotEmpty(senderLastName)){
+        if (StringUtils.isNotEmpty(senderLastName)) {
             sb.append(senderLastName);
         }
-        if(StringUtils.isNotEmpty(senderFirstName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(senderFirstName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(senderFirstName);
         }
-        if(StringUtils.isNotEmpty(senderMiddleName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(senderMiddleName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(senderMiddleName);
@@ -386,17 +400,17 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     @Transient
     public String getSenderDescriptionShort() {
         final StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotEmpty(senderLastName)){
+        if (StringUtils.isNotEmpty(senderLastName)) {
             sb.append(senderLastName);
         }
-        if(StringUtils.isNotEmpty(senderFirstName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(senderFirstName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(senderFirstName.charAt(0)).append('.');
         }
-        if(StringUtils.isNotEmpty(senderMiddleName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(senderMiddleName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(senderMiddleName.charAt(0)).append('.');
@@ -412,12 +426,12 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         this.controller = controller;
     }
 
-    public User getExecutor() {
-        return executor;
+    public User getResponsible() {
+        return responsible;
     }
 
-    public void setExecutor(User executor) {
-        this.executor = executor;
+    public void setResponsible(User responsible) {
+        this.responsible = responsible;
     }
 
     public String getShortDescription() {
@@ -428,76 +442,76 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         this.shortDescription = shortDescription;
     }
 
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
-    }
-
     public Nomenclature getNomenclature() {
         return nomenclature;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setNomenclature(Nomenclature nomenclature) {
+        this.nomenclature = nomenclature;
     }
 
     public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setForm(DocumentForm form) {
-        this.form = form;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public DocumentForm getForm() {
         return form;
     }
 
-    public void setDeliveryType(DeliveryType deliveryType) {
-        this.deliveryType = deliveryType;
+    public void setForm(DocumentForm form) {
+        this.form = form;
     }
 
     public DeliveryType getDeliveryType() {
         return deliveryType;
     }
 
-    public void setReceivedDocumentNumber(String receivedDocumentNumber) {
-        this.receivedDocumentNumber = receivedDocumentNumber;
+    public void setDeliveryType(DeliveryType deliveryType) {
+        this.deliveryType = deliveryType;
     }
 
     public String getReceivedDocumentNumber() {
         return receivedDocumentNumber;
     }
 
-    public void setReceivedDocumentDate(Date receivedDocumentDate) {
-        this.receivedDocumentDate = receivedDocumentDate;
+    public void setReceivedDocumentNumber(String receivedDocumentNumber) {
+        this.receivedDocumentNumber = receivedDocumentNumber;
     }
 
     public Date getReceivedDocumentDate() {
         return receivedDocumentDate;
     }
 
-    public void setCopiesCount(int copiesCount) {
-        this.copiesCount = copiesCount;
+    public void setReceivedDocumentDate(Date receivedDocumentDate) {
+        this.receivedDocumentDate = receivedDocumentDate;
     }
 
     public int getCopiesCount() {
         return copiesCount;
     }
 
-    public void setSheetsCount(int sheetsCount) {
-        this.sheetsCount = sheetsCount;
+    public void setCopiesCount(int copiesCount) {
+        this.copiesCount = copiesCount;
     }
 
     public int getSheetsCount() {
         return sheetsCount;
     }
 
-    public void setAppendixiesCount(int appendixiesCount) {
-        this.appendixiesCount = appendixiesCount;
+    public void setSheetsCount(int sheetsCount) {
+        this.sheetsCount = sheetsCount;
     }
 
     public int getAppendixiesCount() {
         return appendixiesCount;
+    }
+
+    public void setAppendixiesCount(int appendixiesCount) {
+        this.appendixiesCount = appendixiesCount;
     }
 
     public int getStatusId() {
@@ -518,26 +532,13 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         return DocumentType.RequestDocument.getName();
     }
 
-    @Override
-    public String getBeanName() {
-        return "request_doc";
-    }
-
-    public int getGrouping() {
-        return grouping;
-    }
-
-    public void setGrouping(int grouping) {
-        this.grouping = grouping;
-    }
-
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
 
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public String getWFResultDescription() {
@@ -548,28 +549,17 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         this.WFResultDescription = WFResultDescription;
     }
 
-    public void setExecutionStringDate(String date) {
-        this.date = date;
-    }
-
-    public String getExecutionStringDate() {
-        return this.date;
-    }
-
-    @Transient
-    private String date;
-
     @Transient
     public String getUniqueId() {
         return getId() == 0 ? "" : "request_" + getId();
     }
 
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
     public Set<HistoryEntry> getHistory() {
         return history;
+    }
+
+    public void setHistory(Set<HistoryEntry> history) {
+        this.history = history;
     }
 
     @Transient
@@ -582,12 +572,12 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         return result;
     }
 
-    public void setRecipientGroups(Set<Group> recipientGroups) {
-        this.recipientGroups = recipientGroups;
-    }
-
     public Set<Group> getRecipientGroups() {
         return recipientGroups;
+    }
+
+    public void setRecipientGroups(Set<Group> recipientGroups) {
+        this.recipientGroups = recipientGroups;
     }
 
     @Transient
@@ -600,76 +590,68 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     }
 
     public List<User> getPersonReaders() {
-        return personReaders;
+        return new ArrayList<User>(personReaders);
     }
 
     public void setPersonReaders(List<User> personReaders) {
-        this.personReaders = personReaders;
+        this.personReaders = new HashSet<User>(personReaders);
     }
 
     public List<Role> getRoleReaders() {
-        return roleReaders;
+        return new ArrayList<Role>(roleReaders);
     }
 
     public void setRoleReaders(List<Role> roleReaders) {
-        this.roleReaders = roleReaders;
-    }
-
-    public void setRoleEditors(List<Role> roleEditors) {
-        this.roleEditors = roleEditors;
+        this.roleReaders = new HashSet<Role>(roleReaders);
     }
 
     public List<Role> getRoleEditors() {
-        return roleEditors;
+        return new ArrayList<Role>(roleEditors);
     }
 
-    public void setPersonEditors(List<User> personEditors) {
-        this.personEditors = personEditors;
+    public void setRoleEditors(List<Role> roleEditors) {
+        this.roleEditors = new HashSet<Role>(roleEditors);
     }
 
     public List<User> getPersonEditors() {
-        return personEditors;
+        return new ArrayList<User>(personEditors);
     }
 
-
-    public void setRegion(Region region) {
-        this.region = region;
+    public void setPersonEditors(List<User> personEditors) {
+        this.personEditors = new HashSet<User>(personEditors);
     }
 
     public Region getRegion() {
         return region;
     }
 
-    public void setContragent(Contragent contragent) {
-        this.contragent = contragent;
+    public void setRegion(Region region) {
+        this.region = region;
     }
 
     public Contragent getContragent() {
         return contragent;
     }
 
-    public void setSenderType(SenderType senderType) {
-        this.senderType = senderType;
+    public void setContragent(Contragent contragent) {
+        this.contragent = contragent;
     }
 
     public SenderType getSenderType() {
         return senderType;
     }
 
-    public void setTemplateFlag(boolean templateFlag) {
-        this.templateFlag = templateFlag;
+    public void setSenderType(SenderType senderType) {
+        this.senderType = senderType;
     }
 
     public boolean getTemplateFlag() {
         return templateFlag;
     }
 
-    //TODO сделать класс-обертку
-    /**
-     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
-     */
-    @Transient
-    private String styleClass;
+    public void setTemplateFlag(boolean templateFlag) {
+        this.templateFlag = templateFlag;
+    }
 
     public String getStyleClass() {
         return styleClass;

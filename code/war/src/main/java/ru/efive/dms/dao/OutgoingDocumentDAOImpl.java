@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
+import org.slf4j.LoggerFactory;
 import ru.efive.dms.util.security.AuthorizationData;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.DeliveryType;
@@ -18,10 +19,13 @@ import java.util.*;
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 import static ru.util.ApplicationHelper.getNextDayDate;
 
-//import ru.entity.model.document.IncomingDocument;
 
 @SuppressWarnings("unchecked")
 public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
+
+    static {
+        logger = LoggerFactory.getLogger("OUTGOING_DAO");
+    }
 
     @Override
     protected Class<OutgoingDocument> getPersistentClass() {
@@ -176,7 +180,7 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
                     logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT Contragent. Non critical, continue...", key, value);
                 }
             } else {
-                logger.warn("FilterMapCriteria: Unknown key \'\' (value =\'{}\')", key, value);
+                logger.warn("FilterMapCriteria: Unknown key \'{}\' (value =\'{}\')", key, value);
             }
         }
         criteria.add(conjunction);

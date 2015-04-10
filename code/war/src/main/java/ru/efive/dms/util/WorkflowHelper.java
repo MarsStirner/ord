@@ -500,7 +500,7 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        if (doc.getSigner() == null) {
+        if (doc.getController() == null) {
             in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (doc.getResponsible() == null) {
@@ -529,7 +529,7 @@ public final class WorkflowHelper {
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     StringBuffer in_number = new StringBuffer();
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
@@ -779,7 +779,7 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        if (doc.getSigner() == null) {
+        if (doc.getController() == null) {
             in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (doc.getResponsible() == null) {
@@ -826,7 +826,7 @@ public final class WorkflowHelper {
                         "#{dictionaryManagement}",
                         DictionaryManagementBean.class
                 );
-                Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
+                Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                 List<Role> in_roles = new ArrayList<Role>();
                 Role in_office;
                 if (in_nomenclature != null) {
@@ -957,7 +957,7 @@ public final class WorkflowHelper {
         boolean result = false;
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
-        if (doc.getSigner() == null) {
+        if (doc.getController() == null) {
             in_result.append("Необходимо указать руководителя;").append(System.getProperty("line.separator"));
         }
         if (doc.getResponsible() == null) {
@@ -979,7 +979,7 @@ public final class WorkflowHelper {
                 );
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
                     List<Role> in_roles = new ArrayList<Role>();
                     in_roles.add(in_administrationRole);
@@ -1047,7 +1047,8 @@ public final class WorkflowHelper {
 
                 if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
-                    String in_count = StringUtils.leftPad(
+                    //TODO
+                    String in_count = "0";/*= StringUtils.leftPad(
                             String.valueOf(
                                     new HashSet<RequestDocument>(
                                             sessionManagement.getDAO(
@@ -1057,6 +1058,7 @@ public final class WorkflowHelper {
                                     ).size() + 1
                             ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                     );
+                    */
                     in_number.append(in_count);
                     document.setRegistrationNumber(in_number.toString());
 
@@ -1141,7 +1143,6 @@ public final class WorkflowHelper {
                     if (StringUtils.isNotEmpty(key)) {
                         in_filters.put("rootDocumentId", key);
                         if (key.contains("_")) {
-                            //TODO лень переписывать поиск документов по строковому идентификатору, когда он является целочисленным = )
                             final Integer idInt = ApplicationHelper.getIdFromUniqueIdString(key);
                             if (idInt != null) {
                                 final String id = idInt.toString();
@@ -1154,18 +1155,14 @@ public final class WorkflowHelper {
                                             .getItemByIdForSimpleView(idInt);
                                     in_number.append(out_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("internal")) {
-                                    InternalDocument internal_doc = sessionManagement.getDAO(
-                                            InternalDocumentDAOImpl.class,
-                                            INTERNAL_DOCUMENT_FORM_DAO
-                                    ).findDocumentById(id);
+                                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                            .getItemByIdForSimpleView(idInt);
                                     in_number.append(internal_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("request")) {
                                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
-                                            .findDocumentById(id);
+                                            .getItemByIdForSimpleView(idInt);
                                     in_number.append(request_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("task")) {
-                                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
-                                    in_number.append("");
                                     in_filters.clear();
                                     in_filters.put("taskDocumentId", "");
                                 }
@@ -1179,9 +1176,7 @@ public final class WorkflowHelper {
 
                     in_count.append(
                             String.valueOf(
-                                    new HashSet<Task>(
-                                            sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)
-                                    ).size() + 1
+                                    sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDocuments(in_filters, false, false) + 1
                             )
                     );
                     in_number.append(in_count);
@@ -1247,13 +1242,7 @@ public final class WorkflowHelper {
                     executorsSet.add(currentExecutor);
                     currentTask.setExecutors(executorsSet);
                     //+2 потому что жизнь-боль и первое поручение еще не сохранено в БД с корректным номером
-                    int numberOffset = (new HashSet<Task>(
-                            sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(
-                                    in_filters,
-                                    false,
-                                    false
-                            )
-                    ).size() + 2);
+                    int numberOffset = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDocuments(in_filters, false, false) +2;
                     currentTask.setTaskNumber(currentTask.getTaskNumber().concat(String.valueOf(numberOffset)));
                     Set<HistoryEntry> history = new HashSet<HistoryEntry>(1);
                     final HistoryEntry entry = new HistoryEntry();

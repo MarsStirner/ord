@@ -25,6 +25,8 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
      */
     protected Map<String, Object> filters = new HashMap<String, Object>();
 
+    protected boolean searchPerformed = false;
+
 
     /**
      * Очистка текущего фильтра
@@ -57,6 +59,14 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         }  else {
             filters.remove(KEY);
         }
+    }
+
+    public boolean isSearchPerformed() {
+        return searchPerformed;
+    }
+
+    public void setSearchPerformed(final boolean searchPerformed) {
+        this.searchPerformed = searchPerformed;
     }
 
 

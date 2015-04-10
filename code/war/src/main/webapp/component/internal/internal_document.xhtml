@@ -241,7 +241,7 @@
                                         </label>
                                     </td>
                                     <td class="forth">
-                                        <h:outputText value="#{internal_doc.document.signer}"
+                                        <h:outputText value="#{internal_doc.document.controller}"
                                                       converter="PersonConverter" class="wide"/>
                                     </td>
                                 </tr>
@@ -275,7 +275,7 @@
                                     <td class="second" colspan="3">
                                         <div class="width"
                                              style="overflow-y: scroll; height: 120px">
-                                            <ui:repeat value="#{internal_doc.document.recipientUsersList}"
+                                            <ui:repeat value="#{internal_doc.document.recipientUsers}"
                                                     var="element">
                                                 <h:outputText value="#{element}"
                                                               converter="PersonConverter" class="width"/>
@@ -339,7 +339,7 @@
                                         </label>
                                         <e5ui-comp:modalWindow id="signerSelectModal"
                                                                modalWindowHolder="#{internal_doc.signerSelectModal}"
-                                                               render="signer" execute="select_table"
+                                                               render="controller" execute="select_table"
                                                                showButtons="false" style="width: 500px;"
                                                                widgetVar="signerSelectModalWidget">
                                             <div id="title">Выбор руководителя</div>
@@ -396,7 +396,7 @@
                                         </e5ui-comp:modalWindow>
                                     </td>
                                     <td class="fourth">
-                                        <h:outputText id="signer" value="#{internal_doc.document.signer}"
+                                        <h:outputText id="controller" value="#{internal_doc.document.controller}"
                                                       converter="PersonConverter" class="wide"/>
                                     </td>
                                 </tr>
@@ -631,7 +631,7 @@
                                         <div style="overflow-y: scroll; height: 120px">
                                             <h:panelGroup id="recipients">
                                                 <label>
-                                                    <ui:repeat value="#{internal_doc.document.recipientUsersList}"
+                                                    <ui:repeat value="#{internal_doc.document.recipientUsers}"
                                                                var="element">
                                                         <h:outputText value="#{element}" converter="PersonConverter"
                                                                       class="width"/>

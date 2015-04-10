@@ -1,6 +1,5 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.IndexColumn;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -29,19 +28,19 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Количество приложений
      */
-    @Column(name="appendixiesCount")
+    @Column(name = "appendixiesCount")
     private int appendixiesCount;
 
     /**
      * Количество экземпляров
      */
-    @Column(name="copiesCount")
+    @Column(name = "copiesCount")
     private int copiesCount;
 
     /**
      * Дата создания документа
      */
-    @Column(name="creationDate")
+    @Column(name = "creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date creationDate;
 
@@ -49,19 +48,19 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
      * Автор
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="author_id")
+    @JoinColumn(name = "author_id")
     private User author;
 
     /**
      * Удален ли документ
      */
-    @Column(name="deleted")
+    @Column(name = "deleted")
     private boolean deleted;
 
     /**
      * Дата регистрации
      */
-    @Column(name="registrationDate")
+    @Column(name = "registrationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date registrationDate;
 
@@ -75,19 +74,19 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Количество страниц
      */
-    @Column(name="sheetsCount")
+    @Column(name = "sheetsCount")
     private int sheetsCount;
 
     /**
      * краткое описание
      */
-    @Column(name="shortDescription", columnDefinition = "text")
+    @Column(name = "shortDescription", columnDefinition = "text")
     private String shortDescription;
 
     /**
      * Дата подписания
      */
-    @Column(name="signatureDate")
+    @Column(name = "signatureDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date signatureDate;
 
@@ -129,25 +128,29 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
      * Уровень допуска
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="userAccessLevel_id", nullable = true)
+    @JoinColumn(name = "userAccessLevel_id", nullable = true)
     private UserAccessLevel userAccessLevel;
 
     /**
      * Номер ERP
      */
-    @Column(name="erpNumber")
+    @Column(name = "erpNumber")
     private String erpNumber;
 
-
+    /**
+     * Адресаты -контрагенты
+     */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_contragents")
+    @JoinTable(name = "dms_outgoing_documents_contragents",
+            joinColumns = {@JoinColumn(name = "dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "recipientContragents_id")})
     private Set<Contragent> recipientContragents;
 
     /**
      * Исполнитель
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="executor_id", nullable = true)
+    @JoinColumn(name = "executor_id", nullable = true)
     private User executor;
 
     /**
@@ -162,9 +165,8 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_person_readers",
-            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "personReaders_id")}
-    )
+            joinColumns = {@JoinColumn(name = "dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personReaders_id")})
     private Set<User> personReaders;
 
     /**
@@ -172,14 +174,15 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_person_editors",
-            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")}
-    )
+            joinColumns = {@JoinColumn(name = "dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")})
     private Set<User> personEditors;
 
     /**
      * Пользователи-согласующие
+     * TODO выпилить или переделать нормально
      */
+    @Deprecated
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_agreementUsers")
     private Set<User> agreementUsers;
@@ -188,16 +191,20 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
      * Роли-читатели
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_role_readers")
-    @IndexColumn(name = "ID2")
+    @JoinTable(name = "dms_outgoing_documents_role_readers",
+            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name="roleReaders_id")}
+    )
     private Set<Role> roleReaders;
 
     /**
      * Роли-редакторы
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_role_editors")
-    @IndexColumn(name = "ID2")
+    @JoinTable(name = "dms_outgoing_documents_role_editors",
+            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name="roleEditors_id")}
+    )
     private Set<Role> roleEditors;
 
     @Transient
@@ -207,52 +214,59 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * История
      */
-    @OneToMany( fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "dms_outgoing_document_history",
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
     private Set<HistoryEntry> history;
 
 
-
     /**
      * Дерево согласования
+     * TODO выпилить или переделать
      */
+    @Deprecated
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "dms_outgoing_document_agreement_tree",
             joinColumns = @JoinColumn(name = "document_id"),
             inverseJoinColumns = @JoinColumn(name = "tree_id"))
     private HumanTaskTree agreementTree;
 
+
+    /**
+     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * TODO сделать класс-обертку
+     */
+    @Transient
+    private String styleClass;
+
     @Transient
     public String getUniqueId() {
         return getId() == 0 ? "" : "outgoing_" + getId();
-
-
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
     }
 
     public Date getCreationDate() {
         return this.creationDate;
     }
 
-    public void setForm(DocumentForm form) {
-        this.form = form;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public DocumentForm getForm() {
         return form;
     }
 
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
+    public void setForm(DocumentForm form) {
+        this.form = form;
     }
 
     public String getRegistrationNumber() {
         return registrationNumber;
+    }
+
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
     }
 
     public String getErpNumber() {
@@ -263,79 +277,76 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.erpNumber = erpNumber;
     }
 
-
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
-    }
-
-
     public Nomenclature getNomenclature() {
         return nomenclature;
     }
 
-
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
+    public void setNomenclature(Nomenclature nomenclature) {
+        this.nomenclature = nomenclature;
     }
 
     public Date getRegistrationDate() {
         return this.registrationDate;
     }
 
-    public void setRecipientContragents(List<Contragent> recipientContragents) {
-        this.recipientContragents = new HashSet<Contragent>(recipientContragents);
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     public List<Contragent> getRecipientContragents() {
         return new ArrayList<Contragent>(recipientContragents);
     }
 
-    public void setDeliveryType(DeliveryType deliveryType) {
-        this.deliveryType = deliveryType;
+    public void setRecipientContragents(List<Contragent> recipientContragents) {
+        this.recipientContragents = new HashSet<Contragent>(recipientContragents);
     }
 
     public DeliveryType getDeliveryType() {
         return deliveryType;
     }
 
-    public void setCopiesCount(int copiesCount) {
-        this.copiesCount = copiesCount;
+    public void setDeliveryType(DeliveryType deliveryType) {
+        this.deliveryType = deliveryType;
     }
 
     public int getCopiesCount() {
         return copiesCount;
     }
 
-    public void setSheetsCount(int sheetsCount) {
-        this.sheetsCount = sheetsCount;
+    public void setCopiesCount(int copiesCount) {
+        this.copiesCount = copiesCount;
     }
 
     public int getSheetsCount() {
         return sheetsCount;
     }
 
-    public void setAppendixiesCount(int appendixiesCount) {
-        this.appendixiesCount = appendixiesCount;
+    public void setSheetsCount(int sheetsCount) {
+        this.sheetsCount = sheetsCount;
     }
 
     public int getAppendixiesCount() {
         return appendixiesCount;
     }
 
-    public void setExecutor(User executor) {
-        this.executor = executor;
+    public void setAppendixiesCount(int appendixiesCount) {
+        this.appendixiesCount = appendixiesCount;
     }
 
     public User getExecutor() {
         return executor;
     }
 
-    public void setController(User controller) {
-        this.controller = controller;
+    public void setExecutor(User executor) {
+        this.executor = executor;
     }
 
     public User getController() {
         return controller;
+    }
+
+    public void setController(User controller) {
+        this.controller = controller;
     }
 
     public Date getSignatureDate() {
@@ -362,7 +373,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.shortDescription = shortDescription;
     }
 
-
     @Transient
     public DocumentType getDocumentType() {
         return DocumentType.OutgoingDocument;
@@ -383,12 +393,12 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         return "out_doc";
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public String getWFResultDescription() {
@@ -399,12 +409,12 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.WFResultDescription = WFResultDescription;
     }
 
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
     public Set<HistoryEntry> getHistory() {
         return history;
+    }
+
+    public void setHistory(Set<HistoryEntry> history) {
+        this.history = history;
     }
 
     @Transient
@@ -433,35 +443,28 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.roleReaders = new HashSet<Role>(roleReaders);
     }
 
-    public void setRoleEditors(List<Role> roleEditors) {
-        this.roleEditors = new HashSet<Role>(roleEditors);
-    }
-
     public List<Role> getRoleEditors() {
         return new ArrayList<Role>(roleEditors);
     }
 
-    public void setPersonEditors(List<User> personEditors) {
-        this.personEditors = new HashSet<User>(personEditors);
+    public void setRoleEditors(List<Role> roleEditors) {
+        this.roleEditors = new HashSet<Role>(roleEditors);
     }
 
     public List<User> getPersonEditors() {
         return new ArrayList<User>(personEditors);
     }
 
-
-    public void setReasonDocumentId(String reasonDocumentId) {
-        this.reasonDocumentId = reasonDocumentId;
+    public void setPersonEditors(List<User> personEditors) {
+        this.personEditors = new HashSet<User>(personEditors);
     }
 
     public String getReasonDocumentId() {
         return reasonDocumentId;
     }
 
-
-    @Override
-    public void setAgreementTree(HumanTaskTree agreementTree) {
-        this.agreementTree = agreementTree;
+    public void setReasonDocumentId(String reasonDocumentId) {
+        this.reasonDocumentId = reasonDocumentId;
     }
 
     @Override
@@ -469,28 +472,26 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         return agreementTree;
     }
 
-    public void setAgreementUsers(Set<User> agreementUsers) {
-        this.agreementUsers = agreementUsers;
+    @Override
+    public void setAgreementTree(HumanTaskTree agreementTree) {
+        this.agreementTree = agreementTree;
     }
 
     public Set<User> getAgreementUsers() {
         return agreementUsers;
     }
 
-    public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
-        this.userAccessLevel = userAccessLevel;
+    public void setAgreementUsers(Set<User> agreementUsers) {
+        this.agreementUsers = agreementUsers;
     }
 
     public UserAccessLevel getUserAccessLevel() {
         return userAccessLevel;
     }
 
-    //TODO сделать класс-обертку
-    /**
-     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
-     */
-    @Transient
-    private String styleClass;
+    public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
+        this.userAccessLevel = userAccessLevel;
+    }
 
     public String getStyleClass() {
         return styleClass;

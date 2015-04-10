@@ -231,7 +231,8 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         doc.setDocumentStatus(DocumentStatus.NEW);
         final String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
         if (StringUtils.isNotEmpty(parentId)) {
-            final Task parentTask = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(parentId);
+            //TODO ClassCastException
+            final Task parentTask = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemByIdForSimpleView(Integer.valueOf(parentId));
             if (parentTask != null) {
                 doc.setParent(parentTask);
             } else {
@@ -251,20 +252,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         );
         if (!forms.isEmpty()) {
             form = forms.get(0);
-            if (form.getDescription().equals("exercise")) {
-                final String exerciseTypeId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("exerciseTypeId");
-                if (StringUtils.isNotEmpty(exerciseTypeId)) {
-                    List<DocumentForm> exerciseTypes = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
-                            .findByCategoryAndValue("Задачи", exerciseTypeId);
-                    DocumentForm exerciseType;
-                    if (!exerciseTypes.isEmpty()) {
-                        exerciseType = exerciseTypes.get(0);
-                        if (exerciseType != null) {
-                            doc.setExerciseType(exerciseType);
-                        }
-                    }
-                }
-            }
         } else {
             forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Поручения");
             if (forms.size() > 0) {
@@ -287,13 +274,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         final User currentUser = sessionManagement.getLoggedUser();
         logger.info("Open TASK[{}] by user[{}]", id, currentUser.getId());
         try {
-            final Task document = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getTask(id);
+            final Task document = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemById(id);
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
             setDocument(document);
-            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            permissions = permissionChecker.getPermissions(sessionManagement.getAuthData(), document);
             if (isReadPermission()) {
                 //Простановка факта просмотра записи
                 if (sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser)) {
@@ -488,25 +475,23 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 ));
 
             } else if (key.contains("internal")) {
-                InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(
-                        rootDocumentId.toString()
-                );
+                InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                        .getItemByIdForSimpleView(rootDocumentId);
                 return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber()
                         .equals("") ? "Черновик внутреннего документа от " + sdf.format(
                         internal_doc.getCreationDate()
                 ) : "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate()));
 
             } else if (key.contains("request")) {
-                RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(
-                        rootDocumentId.toString()
-                );
+                RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+                        .getItemByIdForSimpleView(rootDocumentId);
                 return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber()
                         .equals("") ? "Черновик обращения граждан от " + sdf.format(
                         request_doc.getCreationDate()
                 ) : "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate()));
 
             } else if (key.contains("task")) {
-                Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(rootDocumentId.toString());
+                Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemByIdForSimpleView(rootDocumentId);
                 return (task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ? "Черновик поручения от " + sdf
                         .format(task_doc.getCreationDate()) : "Поручение № " + task_doc.getTaskNumber() + " от " + sdf
                         .format(task_doc.getCreationDate()));
@@ -537,17 +522,15 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 );
                 initiator = out_doc.getController();
             } else if (key.contains("internal")) {
-                InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(
-                        rootDocumentId.toString()
-                );
-                initiator = internal_doc.getSigner();
+                InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                        .getItemByIdForListView(rootDocumentId);
+                initiator = internal_doc.getController();
             } else if (key.contains("request")) {
-                RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(
-                        rootDocumentId.toString()
-                );
+                RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+                        .getItemByIdForListView(rootDocumentId);
                 initiator = request_doc.getController();
             } else if (key.contains("task")) {
-                Task parent_task = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(rootDocumentId.toString());
+                Task parent_task = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemByIdForListView(rootDocumentId);
                 final List<User> users = parent_task.getExecutors();
                 if (users != null && users.size() == 1) {
                     initiator = users.iterator().next();

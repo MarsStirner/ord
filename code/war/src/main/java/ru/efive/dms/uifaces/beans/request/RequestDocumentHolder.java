@@ -163,14 +163,14 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         final User currentUser = sessionManagement.getLoggedUser();
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            final RequestDocument document = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).get(id);
+            final RequestDocument document = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).getItemById(id);
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
             setDocument(document);
             //Проверка прав на открытие
-            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            permissions = permissionChecker.getPermissions(sessionManagement.getAuthData(), document);
             if(isReadPermission()){
                 //Простановка факта просмотра записи
                 if(sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document, currentUser)){
@@ -738,7 +738,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     private UserSelectModalBean executorSelectModal = new UserSelectModalBean() {
         @Override
         protected void doSave() {
-            getDocument().setExecutor(getUser());
+            getDocument().setResponsible(getUser());
             super.doSave();
         }
 

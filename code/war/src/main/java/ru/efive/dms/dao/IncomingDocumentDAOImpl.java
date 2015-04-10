@@ -242,7 +242,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
                     );
                 }
             } else {
-                logger.warn("FilterMapCriteria: Unknown key \'\' (value =\'{}\')", key, value);
+                logger.warn("FilterMapCriteria: Unknown key \'{}\' (value =\'{}\')", key, value);
             }
         }
         criteria.add(conjunction);

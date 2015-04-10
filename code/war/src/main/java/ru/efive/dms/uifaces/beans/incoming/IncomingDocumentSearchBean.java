@@ -41,7 +41,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
-    boolean searchPerformed = false;
 
     public boolean validate() {
         if (filters.isEmpty()) {
@@ -91,13 +90,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         }
     }
 
-    public boolean isSearchPerformed() {
-        return searchPerformed;
-    }
 
-    public void setSearchPerformed(final boolean searchPerformed) {
-        this.searchPerformed = searchPerformed;
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////

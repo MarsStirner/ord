@@ -1,11 +1,9 @@
 package ru.efive.dms.uifaces.beans.internal;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.DocumentFormDAOImpl;
@@ -185,32 +183,14 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
             final InternalDocument document = sessionManagement.getDAO(InternalDocumentDAOImpl.class,
-                    INTERNAL_DOCUMENT_FORM_DAO).get(id);
+                    INTERNAL_DOCUMENT_FORM_DAO).getItemById(id);
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
-            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(InternalDocumentDAOImpl.class,
-                    INTERNAL_DOCUMENT_FORM_DAO).getHibernateTemplate();
-            Session session = hibernateTemplate.getSessionFactory().openSession();
-            session.beginTransaction();
-            session.update(document);
-            session.getTransaction().commit();
-
-            hibernateTemplate.initialize(document.getPersonReaders());
-            hibernateTemplate.initialize(document.getPersonEditors());
-            hibernateTemplate.initialize(document.getHistory());
-            hibernateTemplate.initialize(document.getSigner());
-            hibernateTemplate.initialize(document.getRoleEditors());
-            hibernateTemplate.initialize(document.getRoleReaders());
-
-            hibernateTemplate.initialize(document.getRecipientGroups());
-            hibernateTemplate.initialize(document.getRecipientUsers());
-
-            session.close();
             setDocument(document);
             //Проверка прав на открытие
-            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            permissions = permissionChecker.getPermissions(sessionManagement.getAuthData(), document);
             if (isReadPermission()) {
                 //Простановка факта просмотра записи
                 if (sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).registerViewFact(document,
@@ -481,7 +461,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             int loggedUserId = sessionManagement.getLoggedUser().getId();
             if (getDocument().getAgreementTree() != null && (isViewState() || getDocument().getDocumentStatus().getId
                     () != 1)) {
-                if (loggedUserId == getDocument().getAuthor().getId() || loggedUserId == getDocument().getSigner()
+                if (loggedUserId == getDocument().getAuthor().getId() || loggedUserId == getDocument().getController()
                         .getId()) {
                     return true;
                 }
@@ -670,7 +650,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     private UserSelectModalBean signerSelectModal = new UserSelectModalBean() {
         @Override
         protected void doSave() {
-            getDocument().setSigner(getUser());
+            getDocument().setController(getUser());
             super.doSave();
         }
 
@@ -703,9 +683,9 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         @Override
         protected void doShow() {
             super.doShow();
-            if (getDocument() != null && getDocument().getRecipientUsersList() != null) {
+            if (getDocument() != null && getDocument().getRecipientUsers() != null) {
                 ArrayList<User> tmpList = new ArrayList<User>();
-                tmpList.addAll(getDocument().getRecipientUsersList());
+                tmpList.addAll(getDocument().getRecipientUsers());
                 setUsers(tmpList);
             }
         }

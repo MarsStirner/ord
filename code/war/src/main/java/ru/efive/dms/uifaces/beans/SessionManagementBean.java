@@ -134,7 +134,7 @@ public class SessionManagementBean implements Serializable {
                         this.authData = new AuthorizationData(loggedUser);
                     }
                     RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO);
-                    reqDocumentsCount = docDao.countAllDocumentsByUser((String) null, loggedUser, false, false);
+                    reqDocumentsCount = docDao.countDocumentListByFilters(authData,null, null, false, false);
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
 
                     Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);

@@ -283,15 +283,15 @@ public class PaperCopyDocumentHolder extends AbstractDocumentHolderBean<PaperCop
                         (out_doc.getRegistrationNumber() != null ? out_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1)
                 );
             } else if (key.contains("internal")) {
-                InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(
-                       rootDocumentId.toString()
-                );
+                InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                        .getItemByIdForSimpleView(rootDocumentId);
                 getDocument().setParentDocument(internal_doc);
                 getDocument().setRegistrationNumber(
                         (internal_doc.getRegistrationNumber() != null ? internal_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1)
                 );
             } else if (key.contains("request")) {
-                RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(rootDocumentId.toString());
+                RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+                        .getItemByIdForSimpleView(rootDocumentId);
                 getDocument().setParentDocument(request_doc);
                 getDocument().setRegistrationNumber(
                         (request_doc.getRegistrationNumber() != null ? request_doc.getRegistrationNumber() : "...") + "/" + (paperCopies.size() + 1)

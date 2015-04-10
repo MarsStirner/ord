@@ -1,5 +1,6 @@
 package ru.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.enums.DocumentStatus;
@@ -42,6 +43,9 @@ public final class ApplicationHelper {
     }
 
     public static Integer getIdFromUniqueIdString(String uniqueId) {
+        if(StringUtils.isEmpty(uniqueId)){
+            return null;
+        }
         final Matcher matcher = idPattern.matcher(uniqueId);
         if (matcher.find()) {
             final String subResult = matcher.group(1);

@@ -15,7 +15,7 @@ public final class DocumentSearchMapKeys {
     /**
      * Спсиок идентификаторов статусов
      */
-    public static final String STATUS_LIST_KEY="statuses";
+    public static final String STATUS_LIST_KEY = "statuses";
 
     /**
      * Автор документа
@@ -25,7 +25,7 @@ public final class DocumentSearchMapKeys {
     /**
      * Авторы документа (LIST<USER>)
      */
-    public static final String AUTHORS_KEY="authors";
+    public static final String AUTHORS_KEY = "authors";
 
     /**
      * Руководитель документа
@@ -77,7 +77,7 @@ public final class DocumentSearchMapKeys {
     public static final String END_SIGNATURE_DATE_KEY = "endSignatureDate";
 
     /**
-     * @deprecated  не используется, но возможно нужно
+     * @deprecated не используется, но возможно нужно
      * Дата отправки от .. до   (OUTGOING)
      */
     @Deprecated
@@ -121,12 +121,12 @@ public final class DocumentSearchMapKeys {
     /**
      * Ответсвенный исполнитель (USER) (INTERNAL_DOCUMENTS)
      */
-    public static final String RESPONSIBLE_KEY="responsible";
+    public static final String RESPONSIBLE_KEY = "responsible";
 
     /**
      * Адресаты (LIST<USER>)
      */
-    public static final String RECIPIENTS_KEY ="recipientUsers";
+    public static final String RECIPIENTS_KEY = "recipientUsers";
 
     /**
      * Краткое содержание

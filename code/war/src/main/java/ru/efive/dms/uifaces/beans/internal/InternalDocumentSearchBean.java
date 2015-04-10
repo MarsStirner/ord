@@ -1,18 +1,39 @@
 package ru.efive.dms.uifaces.beans.internal;
 
+import com.google.common.collect.ImmutableList;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.efive.dms.dao.InternalDocumentDAOImpl;
+import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
+import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
+import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
+import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForInternalDocument;
+import ru.entity.model.document.InternalDocument;
+import ru.entity.model.user.User;
 
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
+import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
 @ManagedBean(name="internal_search")
 @ViewScoped
-public class InternalDocumentSearchBean {//extends AbstractDocumentSearchBean<InternalDocument> {
+public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<InternalDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Inject
@@ -23,18 +44,25 @@ public class InternalDocumentSearchBean {//extends AbstractDocumentSearchBean<In
      * Выполнить поиск с текущим фильтром
      *
      * @return Список документов, удовлетворяющих поиску
-
+     */
     @Override
-    public List<InternalDocument> performSearch() {
+    public void performSearch() {
         logger.info("INTERNAL: Perform Search with map : {}", filters);
         try {
-            searchResults = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
-                    .findAllDocumentsByUser(filters, null, sessionManagement.getLoggedUser(), false, false);
+            final InternalDocumentDAOImpl dao = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO);
+            final ViewFactDaoImpl viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
+            final LazyDataModelForInternalDocument lazyDataModel = new LazyDataModelForInternalDocument(
+                    dao,
+                    viewFactDao,
+                    sessionManagement.getAuthData()
+            );
+            lazyDataModel.setFilters(filters);
+            setLazyModel(lazyDataModel);
+            searchPerformed= true;
         } catch (Exception e) {
             logger.error("INTERNAL: Error while search", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
         }
-        return searchResults;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -44,8 +72,10 @@ public class InternalDocumentSearchBean {//extends AbstractDocumentSearchBean<In
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseAuthors() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_AUTHOR));
+        params.put(
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(
+                        MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR
+                ));
         final List<User> preselected = getAuthors();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
@@ -209,5 +239,4 @@ public class InternalDocumentSearchBean {//extends AbstractDocumentSearchBean<In
         }
     }
 
-     */
 }

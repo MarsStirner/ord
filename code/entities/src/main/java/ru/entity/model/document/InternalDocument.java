@@ -1,6 +1,5 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.*;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
@@ -12,10 +11,7 @@ import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
 
-import javax.persistence.CascadeType;
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.*;
 
 /**
@@ -87,22 +83,22 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Вид документа
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "form_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_id", nullable = true)
     private DocumentForm form;
 
     /**
      * Инциатор документа (автор)
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     /**
      * Ответственный , следит за сроками исполнения документов и пинает, если исполнители не успевают.
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "responsible_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "responsible_id", nullable = true)
     private User responsible;
 
 
@@ -121,18 +117,17 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     private Date signatureDate;
 
     /**
-     * Подписант
+     * Руководитель
      */
-    //TODO руководитель ?
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "signer_id")
-    private User signer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "controller_id", nullable = true)
+    private User controller;
 
 
     /**
      * Уровень допуска
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userAccessLevel_id", nullable = true)
     private UserAccessLevel userAccessLevel;
 
@@ -140,7 +135,7 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     /**
      * Регистрация изменений закрытого периода
      */
-    @Column(name="closePeriodRegistrationFlag")
+    @Column(name = "closePeriodRegistrationFlag")
     private boolean closePeriodRegistrationFlag = false;
 
 
@@ -150,80 +145,96 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @Column(name = "erpNumber")
     private String erpNumber;
 
-
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date factDate;
-
-
     /**
      * Адресаты (пользователи)
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_internal_documents_recipients",
             joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientUsers_id")})
-    private List<User> recipientUsers;
+    private Set<User> recipientUsers;
 
     /**
      * Адресаты (группы)
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_internal_documents_recipient_groups",
             joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
-    @LazyCollection(LazyCollectionOption.TRUE)
     private Set<Group> recipientGroups;
 
 
     /**
      * Пользователи-читатели
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_internal_documents_person_readers")
-    @IndexColumn(name = "ID1")
-    private List<User> personReaders;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_internal_documents_person_readers",
+            joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personReaders_id")})
+    private Set<User> personReaders;
 
     /**
      * Пользователи-редакторы
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_internal_documents_person_editors")
-    @IndexColumn(name = "ID1")
-    private List<User> personEditors;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_internal_documents_person_editors",
+            joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")})
+    private Set<User> personEditors;
 
 
     /**
      * Пользователи-согласующие
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_internal_documents_agreementUsers")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_internal_documents_agreementUsers",
+            joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "agreementUsers_id")})
     private Set<User> agreementUsers;
 
     /**
      * Роли-читатели
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_internal_documents_role_readers")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleReaders;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_internal_documents_role_readers",
+            joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleReaders_id")})
+    private Set<Role> roleReaders;
 
     /**
      * Роли-редакторы
      */
-    @ManyToMany
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_internal_documents_role_editors")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleEditors;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_internal_documents_role_editors",
+            joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleEditors_id")})
+    private Set<Role> roleEditors;
 
     @Transient
     private String WFResultDescription;
 
+    /**
+     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * TODO сделать класс-обертку
+     */
+    @Transient
+    private String styleClass;
+    /**
+     * История
+     */
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "dms_internal_document_history",
+            joinColumns = {@JoinColumn(name = "document_id")},
+            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
+    private Set<HistoryEntry> history;
+    /**
+     * Дерево согласования
+     */
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "dms_incoming_document_agreement_tree",
+            joinColumns = {@JoinColumn(name = "document_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tree_id")})
+    private HumanTaskTree agreementTree;
 
     public boolean isClosePeriodRegistrationFlag() {
         return closePeriodRegistrationFlag;
@@ -232,29 +243,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     public void setClosePeriodRegistrationFlag(boolean closePeriodRegistrationFlag) {
         this.closePeriodRegistrationFlag = closePeriodRegistrationFlag;
     }
-
-
-    /**
-     * История
-     */
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "dms_internal_document_history",
-            joinColumns = {@JoinColumn(name = "document_id")},
-            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.TRUE)
-    private Set<HistoryEntry> history;
-
-    /**
-     * Дерево согласования
-     */
-    @OneToOne
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @JoinTable(name = "dms_incoming_document_agreement_tree",
-            joinColumns = @JoinColumn(name = "document_id"),
-            inverseJoinColumns = @JoinColumn(name = "tree_id"))
-    @LazyToOne(LazyToOneOption.FALSE)
-    private HumanTaskTree agreementTree;
-
 
     public String getWFResultDescription() {
         return this.WFResultDescription;
@@ -289,22 +277,12 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     }
 
     public List<User> getRecipientUsers() {
-        return recipientUsers;
+        return new ArrayList<User>(recipientUsers);
     }
 
     public void setRecipientUsers(List<User> recipientUsers) {
-        this.recipientUsers = recipientUsers;
+        this.recipientUsers = new HashSet<User>(recipientUsers);
     }
-
-
-    public List<User> getRecipientUsersList() {
-        List<User> result = new ArrayList<User>();
-        if (recipientUsers != null) {
-            result.addAll(recipientUsers);
-        }
-        return result;
-    }
-
 
     public Date getRegistrationDate() {
         return registrationDate;
@@ -330,12 +308,12 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         this.signatureDate = signatureDate;
     }
 
-    public User getSigner() {
-        return signer;
+    public User getController() {
+        return controller;
     }
 
-    public void setSigner(User signer) {
-        this.signer = signer;
+    public void setController(User controller) {
+        this.controller = controller;
     }
 
     public User getResponsible() {
@@ -354,45 +332,44 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         this.shortDescription = shortDescription;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-
     public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setForm(DocumentForm form) {
-        this.form = form;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public DocumentForm getForm() {
         return form;
     }
 
-    public void setCopiesCount(int copiesCount) {
-        this.copiesCount = copiesCount;
+    public void setForm(DocumentForm form) {
+        this.form = form;
     }
 
     public int getCopiesCount() {
         return copiesCount;
     }
 
-    public void setSheetsCount(int sheetsCount) {
-        this.sheetsCount = sheetsCount;
+    public void setCopiesCount(int copiesCount) {
+        this.copiesCount = copiesCount;
     }
 
     public int getSheetsCount() {
         return sheetsCount;
     }
 
-    public void setAppendixiesCount(int appendixiesCount) {
-        this.appendixiesCount = appendixiesCount;
+    public void setSheetsCount(int sheetsCount) {
+        this.sheetsCount = sheetsCount;
     }
 
     public int getAppendixiesCount() {
         return appendixiesCount;
+    }
+
+    public void setAppendixiesCount(int appendixiesCount) {
+        this.appendixiesCount = appendixiesCount;
     }
 
     @Transient
@@ -415,12 +392,12 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         return "internal_doc";
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     @Transient
@@ -428,12 +405,12 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         return getId() == 0 ? "" : "internal_" + getId();
     }
 
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
     public Set<HistoryEntry> getHistory() {
         return history;
+    }
+
+    public void setHistory(Set<HistoryEntry> history) {
+        this.history = history;
     }
 
     @Transient
@@ -447,48 +424,43 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     }
 
     public List<User> getPersonReaders() {
-        return personReaders;
+        return new ArrayList<User>(personReaders);
     }
 
     public void setPersonReaders(List<User> personReaders) {
-        this.personReaders = personReaders;
+        this.personReaders = new HashSet<User>(personReaders);
     }
 
     public List<Role> getRoleReaders() {
-        return roleReaders;
+        return new ArrayList<Role>(roleReaders);
     }
 
     public void setRoleReaders(List<Role> roleReaders) {
-        this.roleReaders = roleReaders;
-    }
-
-    public void setRoleEditors(List<Role> roleEditors) {
-        this.roleEditors = roleEditors;
+        this.roleReaders = new HashSet<Role>(roleReaders);
     }
 
     public List<Role> getRoleEditors() {
-        return roleEditors;
+        return new ArrayList<Role>(roleEditors);
     }
 
-    public void setPersonEditors(List<User> personEditors) {
-        this.personEditors = personEditors;
+    public void setRoleEditors(List<Role> roleEditors) {
+        this.roleEditors = new HashSet<Role>(roleEditors);
     }
 
     public List<User> getPersonEditors() {
-        return personEditors;
+        return new ArrayList<User>(personEditors);
     }
 
-    public void setAgreementUsers(Set<User> agreementUsers) {
-        this.agreementUsers = agreementUsers;
+    public void setPersonEditors(List<User> personEditors) {
+        this.personEditors = new HashSet<User>(personEditors);
     }
 
     public Set<User> getAgreementUsers() {
         return agreementUsers;
     }
 
-    @Override
-    public void setAgreementTree(HumanTaskTree agreementTree) {
-        this.agreementTree = agreementTree;
+    public void setAgreementUsers(Set<User> agreementUsers) {
+        this.agreementUsers = agreementUsers;
     }
 
     @Override
@@ -496,20 +468,25 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         return agreementTree;
     }
 
-    public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
-        this.userAccessLevel = userAccessLevel;
+    @Override
+    public void setAgreementTree(HumanTaskTree agreementTree) {
+        this.agreementTree = agreementTree;
     }
 
     public UserAccessLevel getUserAccessLevel() {
         return userAccessLevel;
     }
 
-    public void setRecipientGroups(Set<Group> recipientGroups) {
-        this.recipientGroups = recipientGroups;
+    public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
+        this.userAccessLevel = userAccessLevel;
     }
 
     public Set<Group> getRecipientGroups() {
         return recipientGroups;
+    }
+
+    public void setRecipientGroups(Set<Group> recipientGroups) {
+        this.recipientGroups = recipientGroups;
     }
 
     @Transient
@@ -521,13 +498,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         return in_result;
     }
 
-
-    //TODO сделать класс-обертку
-    /**
-     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
-     */
-    @Transient
-    private String styleClass;
 
     public String getStyleClass() {
         return styleClass;

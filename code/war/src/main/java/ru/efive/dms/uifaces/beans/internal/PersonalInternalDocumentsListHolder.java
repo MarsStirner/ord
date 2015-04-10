@@ -2,58 +2,32 @@ package ru.efive.dms.uifaces.beans.internal;
 
 import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.uifaces.bean.Pagination;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
+import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForPersonalDraftsInternalDocument;
 import ru.entity.model.document.InternalDocument;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.List;
+import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
 
 @ManagedBean(name= "personal_internal_documents")
 @ViewScoped
-public class PersonalInternalDocumentsListHolder extends AbstractDocumentListHolderBean<InternalDocument> {
+public class PersonalInternalDocumentsListHolder  extends AbstractDocumentLazyDataModelBean<InternalDocument> implements Serializable {
 
-    @Override
-    protected Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 100);
-    }
-
-    @Override
-    protected Sorting initSorting() {
-        return new Sorting("registrationDate, registrationNumber", false);
-    }
-
-    @Override
-    protected int getTotalCount() {
-        return new Long(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).countDraftDocumentsByAuthor(
-                sessionManagement.getLoggedUser(), false)).intValue();
-    }
-
-    @Override
-    protected List<InternalDocument> loadDocuments() {
-        return sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
-                false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    private String filter;
-
-
+    private static final long serialVersionUID = 853542007446781235L;
+    private InternalDocumentDAOImpl dao;
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
 
-    private static final long serialVersionUID = 8535420074467871583L;
+    @PostConstruct
+    public void init() {
+        dao = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO);
+        setLazyModel(new LazyDataModelForPersonalDraftsInternalDocument(dao, sessionManagement.getAuthData()));
+    }
 }
