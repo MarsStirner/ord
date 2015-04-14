@@ -404,7 +404,7 @@ public class LDAPImportService {
             if (!founded) {
                 LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
             }
-            user.setJobDepartmentString(requestedPositionName);
+            user.setJobPositionString(requestedPositionName);
         }
         if (ldapUser.getJobDepartment() != null && !ldapUser.getJobDepartment().isEmpty()) {
             final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
@@ -424,6 +424,7 @@ public class LDAPImportService {
         user.setLastModified(ldapUser.getLastModified());
         if (ldapUser.getMail() != null && !ldapUser.getMail().isEmpty()) {
             user.addToContacts(new PersonContact(user, EMAIL_CONTACT_TYPE, ldapUser.getMail()));
+            user.setEmail(ldapUser.getMail());
         }
         if (ldapUser.getPhone() != null && !ldapUser.getPhone().isEmpty()) {
             user.addToContacts(new PersonContact(user, PHONE_CONTACT_TYPE, ldapUser.getPhone()));
@@ -460,17 +461,41 @@ public class LDAPImportService {
                         ldapUser.getJobPosition() != null
                                 && !ldapUser.getJobPosition().isEmpty()
                                 && localUser.getJobPosition() != null
-                                && !ldapUser.getJobPosition().equals(localUser.getJobPositionString())
+                                && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())
                         ) {
-                   localUser.setJobPositionString(ldapUser.getJobPosition());
+                    final String requestedPositionName = ldapUser.getJobPosition().trim();
+                    boolean founded = false;
+                    for (Position position : ALL_POSITIONS) {
+                        if (requestedPositionName.equalsIgnoreCase(position.getValue())) {
+                            localUser.setJobPosition(position);
+                            founded = true;
+                            break;
+                        }
+                    }
+                    if (!founded) {
+                        LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
+                    }
+                    localUser.setJobPositionString(ldapUser.getJobPosition());
                 }
                 if (
                         ldapUser.getJobDepartment() != null
                                 && !ldapUser.getJobDepartment().isEmpty()
                                 && localUser.getJobDepartment() != null
-                                && !ldapUser.getJobDepartment().equals(localUser.getJobDepartmentString())
+                                && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())
                         ) {
-                    localUser.setJobDepartmentString(ldapUser.getJobPosition());
+                    final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
+                    boolean founded = false;
+                    for (Department department : ALL_DEPARTMENTS) {
+                        if (requestedDepartmentName.equalsIgnoreCase(department.getValue())) {
+                            localUser.setJobDepartment(department);
+                            founded = true;
+                            break;
+                        }
+                    }
+                    if (!founded) {
+                        LOGGER.error("NOT FOUND JobDepartment [" + requestedDepartmentName + "]");
+                    }
+                    localUser.setJobDepartmentString(ldapUser.getJobDepartment());
                 }
                 localUser.setLastModified(ldapUser.getLastModified());
                 //Поиск и обновление контактных данных
@@ -491,6 +516,7 @@ public class LDAPImportService {
                 }
                 if (!foundedEmail) {
                     localUser.addToContacts(new PersonContact(localUser, EMAIL_CONTACT_TYPE, ldapUser.getMail()));
+                    localUser.setEmail(ldapUser.getMail());
                 }
                 if (!foundedPhone) {
                     localUser.addToContacts(new PersonContact(localUser, PHONE_CONTACT_TYPE, ldapUser.getPhone()));
