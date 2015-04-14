@@ -3,7 +3,6 @@ package ru.efive.dms.dao;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
-import org.hibernate.type.StringType;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.util.security.AuthorizationData;
 import ru.entity.model.document.DocumentForm;
@@ -239,8 +238,8 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
             return;
         }
         final Disjunction disjunction = Restrictions.disjunction();
-        disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(creationDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-        disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(controlDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
+        disjunction.add(createDateLikeTextRestriction("creationDate", filter));
+        disjunction.add(createDateLikeTextRestriction("controlDate", filter));
         disjunction.add(Restrictions.ilike("taskNumber", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("executors.lastName", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("executors.middleName", filter, MatchMode.ANYWHERE));

@@ -4,7 +4,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -73,6 +74,9 @@
                                 <h:outputText value="#{element.getDescriptionShort()}"/>
                             </div>
                         </ui:repeat>
+                    </p:column>
+                    <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field = "form.value" >
+                        <h:outputText value="#{row.form.value}"/>
                     </p:column>
                     <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
                         <h:outputText value="#{row.executionDate}">

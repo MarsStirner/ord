@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<h:head>
+    <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
+    <h:outputStylesheet library="css" name="listView.css"/>
+    <ui:insert name="headContent"/>
+    <ui:insert name="pageTitle">
+        <title>Документооборот ФНКЦ ДГОИ</title>
+    </ui:insert>
+</h:head>
+
+<h:body id="pageBody">
+    <!-- Блок объявления параметров -->
+    <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
+    <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
+    <ui:param name="isRecorder" value="#{sessionManagement.isRecorder()}"/>
+    <ui:param name="isOfficeManager" value="#{sessionManagement.isOfficeManager()}"/>
+    <ui:param name="isRequestManager" value="#{sessionManagement.isRequestManager()}"/>
+    <ui:param name="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
+    <ui:param name="isOuter" value="#{sessionManagement.isOuter()}"/>
+    <ui:param name="isHr" value="#{sessionManagement.isHr()}"/>
+    <ui:param name="isFilling" value="#{sessionManagement.isFilling()}"/>
+    <!-- Блок настройки верстки -->
+    <p:layout fullPage="true" collapseTitle="Скрыть" expandTitle="Показать">
+        <p:layoutUnit position="west" size="15%" header="Документооборот ФНКЦ ДГОИ" collapsible="true" collapseSize="30" effect="drop" gutter="3" style="width:100%; padding:0; margin:0; border:0; border-radius:0;">
+            <!-- Левое меню -->
+            <ui:insert name="leftMenu">
+                <ui:include src="/jsf-template/leftMenu.xhtml"/>
+            </ui:insert>
+        </p:layoutUnit>
+        <!-- Центральный блок с информацией -->
+        <p:layoutUnit position="center" gutter="0" style="padding:0; margin:0; border:0; border-radius:0;">
+            <h:form id="pageForm">
+                <ui:insert name="content">
+                    <p:panel id="contentHeader" style="padding:0; margin:0; height:1.6em; background: linear-gradient(#C8F1D4, #D6F5E0); border:0; border-radius:0;">
+                        <div class="viewtitle">
+                            <ui:insert name="contentLabel"/>
+                        </div>
+                        <p:menuButton value="#{sessionManagement.loggedUser.getDescription()}" style="float:right; width:10em;">
+                            <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
+                        </p:menuButton>
+                        <p:menuButton value="#{sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getValue()}" style="float:right;">
+                            <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
+                        </p:menuButton>
+                    </p:panel>
+                    <p:panel id="contentButtons" style="padding:0; margin:0; height:2em; background: linear-gradient(#C8F1D4, #D6F5E0); border:0; border-radius:0; ">
+                        <ui:insert name="contentButtonsPanel">
+                            contentButtonsPanel
+                        </ui:insert>
+                    </p:panel>
+                    <p:panel id="contentSearchPanel" style="padding:0; margin:0; height:2em; background: linear-gradient(#C8F1D4, #D6F5E0);">
+                        <ui:insert name="contentSearch">
+                            contentSearch
+                        </ui:insert>
+                    </p:panel>
+                    <p:panel id="mainTable" style="padding:0; margin:0; border:0; border-radius:0;">
+                        <div id="tableWrapper">
+                            <ui:insert name="contentTable">
+                                contentTable
+                            </ui:insert>
+                        </div>
+                        <script type="text/javascript">
+                            console.log("Bind resizeFunction to calculate height");
+                            var $window = $(window).on('resize', function(){
+                                var height = $(window).height() - $('#pageForm\\:contentHeader').height() - $('#pageForm\\:contentButtons').height() - $('#pageForm\\:contentSearchPanel').height();
+                                $('#tableWrapper').height(height-9);
+                            }).trigger('resize');
+                        </script>
+                    </p:panel>
+                </ui:insert>
+
+
+            </h:form>
+        </p:layoutUnit>
+    </p:layout>
+
+    <!-- Диалоговое окошко ожидания -->
+    <ui:insert name="waitDialog">
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
+    </ui:insert>
+</h:body>
+
+</html>
