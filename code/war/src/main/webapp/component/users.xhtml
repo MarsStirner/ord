@@ -99,21 +99,21 @@
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('jobDepartment.value')}">
+                                    <h:commandLink action="#{userList.sort('jobDepartmentString')}">
                                         Подразделение
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <h:outputText value="#{row.jobDepartment.value}"/>
+                                <h:outputText value="#{row.jobDepartmentString}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('jobPosition.value')}">
+                                    <h:commandLink action="#{userList.sort('jobPositionString')}">
                                         Должность
                                         <f:ajax render="main_data_tbl"/>
                                     </h:commandLink>
                                 </f:facet>
-                                <h:outputText value="#{row.jobPosition.value}"/>
+                                <h:outputText value="#{row.jobPositionString}"/>
                             </e5ui:column>
                             <e5ui:column style="min-width:10em">
                                 <f:facet name="header">

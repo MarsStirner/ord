@@ -150,12 +150,18 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
     @JoinColumn(name = "jobPosition_id", nullable = true)
     private Position jobPosition;
 
+    @Column(name="jobPosition")
+    private String jobPositionString;
+
     /**
      * подразделение
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jobDepartment_id", nullable = true)
     private Department jobDepartment;
+
+    @Column(name="jobDepartment")
+    private String jobDepartmentString;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="defaultNomeclature_id", nullable = true)
@@ -480,6 +486,22 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
 
     public void setDefaultNomenclature(Nomenclature defaultNomenclature) {
         this.defaultNomenclature = defaultNomenclature;
+    }
+
+    public String getJobPositionString() {
+        return jobPositionString;
+    }
+
+    public void setJobPositionString(final String jobPositionString) {
+        this.jobPositionString = jobPositionString;
+    }
+
+    public String getJobDepartmentString() {
+        return jobDepartmentString;
+    }
+
+    public void setJobDepartmentString(final String jobDepartmentString) {
+        this.jobDepartmentString = jobDepartmentString;
     }
 
     //Collections *****************************

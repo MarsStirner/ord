@@ -404,6 +404,7 @@ public class LDAPImportService {
             if (!founded) {
                 LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
             }
+            user.setJobDepartmentString(requestedPositionName);
         }
         if (ldapUser.getJobDepartment() != null && !ldapUser.getJobDepartment().isEmpty()) {
             final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
@@ -418,6 +419,7 @@ public class LDAPImportService {
             if (!founded) {
                 LOGGER.error("NOT FOUND JobDepartment [" + requestedDepartmentName + "]");
             }
+            user.setJobDepartmentString(requestedDepartmentName);
         }
         user.setLastModified(ldapUser.getLastModified());
         if (ldapUser.getMail() != null && !ldapUser.getMail().isEmpty()) {
@@ -458,39 +460,17 @@ public class LDAPImportService {
                         ldapUser.getJobPosition() != null
                                 && !ldapUser.getJobPosition().isEmpty()
                                 && localUser.getJobPosition() != null
-                                && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())
+                                && !ldapUser.getJobPosition().equals(localUser.getJobPositionString())
                         ) {
-                    final String requestedPositionName = ldapUser.getJobPosition().trim();
-                    boolean founded = false;
-                    for (Position position : ALL_POSITIONS) {
-                        if (requestedPositionName.equalsIgnoreCase(position.getValue())) {
-                            localUser.setJobPosition(position);
-                            founded = true;
-                            break;
-                        }
-                    }
-                    if (!founded) {
-                        LOGGER.error("NOT FOUND JobPosition [" + requestedPositionName + "]");
-                    }
+                   localUser.setJobPositionString(ldapUser.getJobPosition());
                 }
                 if (
                         ldapUser.getJobDepartment() != null
                                 && !ldapUser.getJobDepartment().isEmpty()
                                 && localUser.getJobDepartment() != null
-                                && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())
+                                && !ldapUser.getJobDepartment().equals(localUser.getJobDepartmentString())
                         ) {
-                    final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
-                    boolean founded = false;
-                    for (Department department : ALL_DEPARTMENTS) {
-                        if (requestedDepartmentName.equalsIgnoreCase(department.getValue())) {
-                            localUser.setJobDepartment(department);
-                            founded = true;
-                            break;
-                        }
-                    }
-                    if (!founded) {
-                        LOGGER.error("NOT FOUND JobDepartment [" + requestedDepartmentName + "]");
-                    }
+                    localUser.setJobDepartmentString(ldapUser.getJobPosition());
                 }
                 localUser.setLastModified(ldapUser.getLastModified());
                 //Поиск и обновление контактных данных

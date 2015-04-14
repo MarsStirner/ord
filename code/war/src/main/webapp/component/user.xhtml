@@ -105,13 +105,13 @@
                                     <tr class="row">
                                         <td class="first">Подразделение:</td>
                                         <td>
-                                            <h:outputText value="#{user.document.jobDepartment.value}" class="wide"/>
+                                            <h:outputText value="#{user.document.jobDepartmentString}" class="wide"/>
                                         </td>
                                     </tr>
                                     <tr class="row">
                                         <td class="first">Должность:</td>
                                         <td>
-                                            <h:outputText value="#{user.document.jobPosition.value}" class="wide"/>
+                                            <h:outputText value="#{user.document.jobPositionString}" class="wide"/>
                                         </td>
                                     </tr>
                                     <tr class="row">
@@ -191,25 +191,27 @@
                                             Подразделение
                                         </td>
                                         <td>
-                                            <p:autoComplete
-                                                    id="jobDepartmentPicker"
-                                                    value="#{user.document.jobDepartment}"
-                                                    completeMethod="#{autoCompleteView.completeDepartment}"
-                                                    var="item"
-                                                    itemValue="#{item}"
-                                                    itemLabel="#{item.value}"
-                                                    converter="departmentConverter"
-                                                    forceSelection="true"
-                                                    minQueryLength="2"
-                                                    queryDelay="500"
-                                                    size="100"
-                                                    emptyMessage="Нету элементов"
-                                                    placeHolder="Выберете подразделение"
-                                                    maxResults="10"
-                                                    converterMessage="Не существует такого отделения"
-                                                    />
-                                            <p:watermark for="jobDepartmentPicker"
-                                                         value="Введите первые символы для поиска соответствий в справочнике"/>
+                                            <h:inputText value="#{user.document.jobDepartmentString}" class="wide"/>
+                                            <!--<p:autoComplete-->
+                                                    <!--id="jobDepartmentPicker"-->
+                                                    <!--value="#{user.document.jobDepartment}"-->
+                                                    <!--completeMethod="#{autoCompleteView.completeDepartment}"-->
+                                                    <!--var="item"-->
+                                                    <!--itemValue="#{item}"-->
+                                                    <!--itemLabel="#{item.value}"-->
+                                                    <!--converter="departmentConverter"-->
+                                                    <!--forceSelection="true"-->
+                                                    <!--minQueryLength="2"-->
+                                                    <!--queryDelay="500"-->
+                                                    <!--size="100"-->
+                                                    <!--emptyMessage="Нету элементов"-->
+                                                    <!--placeHolder="Выберете подразделение"-->
+                                                    <!--maxResults="10"-->
+                                                    <!--converterMessage="Не существует такого отделения"-->
+                                                    <!--/>-->
+                                            <!--<p:watermark for="jobDepartmentPicker"-->
+                                                         <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
+
                                         </td>
                                     </tr>
                                     <tr class="row">
@@ -217,24 +219,25 @@
                                             Должность
                                         </td>
                                         <td>
-                                            <p:autoComplete
-                                                    id="jobPositionPicker"
-                                                    value="#{user.document.jobPosition}"
-                                                    completeMethod="#{autoCompleteView.completePosition}"
-                                                    var="item"
-                                                    itemValue="#{item}"
-                                                    itemLabel="#{item.value}"
-                                                    converter="positionConverter"
-                                                    forceSelection="true"
-                                                    minQueryLength="2"
-                                                    queryDelay="500"
-                                                    size="100"
-                                                    emptyMessage="Нету элементов"
-                                                    maxResults="10"
-                                                    converterMessage="Не существует такой должности"
-                                                    />
-                                            <p:watermark for="jobPositionPicker"
-                                                         value="Введите первые символы для поиска соответствий в справочнике"/>
+                                            <!--<p:autoComplete-->
+                                                    <!--id="jobPositionPicker"-->
+                                                    <!--value="#{user.document.jobPosition}"-->
+                                                    <!--completeMethod="#{autoCompleteView.completePosition}"-->
+                                                    <!--var="item"-->
+                                                    <!--itemValue="#{item}"-->
+                                                    <!--itemLabel="#{item.value}"-->
+                                                    <!--converter="positionConverter"-->
+                                                    <!--forceSelection="true"-->
+                                                    <!--minQueryLength="2"-->
+                                                    <!--queryDelay="500"-->
+                                                    <!--size="100"-->
+                                                    <!--emptyMessage="Нету элементов"-->
+                                                    <!--maxResults="10"-->
+                                                    <!--converterMessage="Не существует такой должности"-->
+                                                    <!--/>-->
+                                            <!--<p:watermark for="jobPositionPicker"-->
+                                                         <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
+                                            <h:inputText value="#{user.document.jobPositionString}" class="wide"/>
                                         </td>
                                     </tr>
                                     <tr class="row">
