@@ -12,6 +12,7 @@ import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
 import ru.efive.dms.util.security.AuthorizationData;
 import ru.efive.sql.dao.DictionaryDAO;
 import ru.efive.sql.dao.GenericDAO;
+import ru.efive.sql.dao.user.UserAccessLevelDAO;
 import ru.efive.sql.dao.user.UserDAO;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.Substitution;
@@ -244,6 +245,10 @@ public class SessionManagementBean implements Serializable {
         } catch (Exception e) {
             LOGGER.error("CANNOT change UserAccessLevel:", e);
         }
+    }
+
+    public void setCurrentUserAccessLevel(final String userAccessLevel) {
+         setCurrentUserAccessLevel(getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).get(Integer.valueOf(userAccessLevel)));
     }
 
     public boolean isCanViewRequestDocuments() {

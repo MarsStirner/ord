@@ -6,72 +6,27 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
->
+        >
 
-<ui:composition template="/jsf-template/template.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
-        <h:outputStylesheet library="css" name="viewfact.css"/>
-    </ui:define>
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="header_top">
-        <div id="viewtitle">
-            <h:outputText id="viewTitleText" value="Входящие документы
+    <ui:define name="contentLabel">
+        <h:outputText id="viewTitleText" value="Входящие документы
                 #{in_documents_by_executing_date.showExpiredFlag ? 'с просроченной датой исполнения' : 'по сроку исполнения'}"/>
-            <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" showDelay="1000" hideDelay="500">
-                Просмотр входящих документов, у которых:
-                <br/>1) пользователь является руководителем.
-                <br/>2) Уровень доступа документа ниже или равен ТЕКУЩЕМУ уровню допуска пользователя
-                <br/>3) Дата исполнения указана
-                <br/>4) Документ находится в одном из статусов (На регистрации\ На исполнении\ Зарегистрирован)
-                <br/>5) Документ не удален
-                <br/>6) Если выбран флаг "Просроченные", то дата исполнения должна быть в прошлом
-            </p:tooltip>
-        </div>
+        <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" showDelay="1000" hideDelay="500">
+            Просмотр входящих документов, у которых:
+            <br/>1) пользователь является руководителем.
+            <br/>2) Уровень доступа документа ниже или равен ТЕКУЩЕМУ уровню допуска пользователя
+            <br/>3) Дата исполнения указана
+            <br/>4) Документ находится в одном из статусов (На регистрации\ На исполнении\ Зарегистрирован)
+            <br/>5) Документ не удален
+            <br/>6) Если выбран флаг "Просроченные", то дата исполнения должна быть в прошлом
+        </p:tooltip>
     </ui:define>
 
-    <ui:define name="header_buttons">
-        <div class="defbutton">
-            <h:outputLink value="/component/in/in_document.xhtml" target="_blank">
-                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                Новый документ
-                <f:param name="docAction" value="create"/>
-            </h:outputLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{in_documents_by_executing_date.refresh()}">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                Обновить
-                <f:ajax render="main_data_tbl"/>
-            </h:commandLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{in_documents_by_executing_date.collapseAll()}">
-                <h:graphicImage value="#{resource['images:minus.png']}"/>
-                <f:ajax render="main_data_tbl"/>
-                Свернуть
-            </h:commandLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{in_documents_by_executing_date.expandAll()}">
-                <h:graphicImage value="#{resource['images:plus.png']}"/>
-                <f:ajax render="main_data_tbl"/>
-                Развернуть
-            </h:commandLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{in_documents_by_executing_date.changeExpiredFlag()}">
-                <label>
-                    <h:selectBooleanCheckbox value="#{in_documents_by_executing_date.showExpiredFlag}" readonly="true"/>
-                    Показать только просроченные
-                </label>
-            </h:commandLink>
-        </div>
-    </ui:define>
-
-    <ui:define name="content">
-
+    <ui:define name="headContent">
+        <h:outputStylesheet library="css" name="viewfact.css"/>
         <style type="text/css">
             .year {
                 color: yellow !important;
@@ -91,72 +46,116 @@
                 white-space: normal !important;
             }
         </style>
-        <div id="main_table">
-            <div id="searchbar" class="main_searchbar">
-                <h:inputText id="filter_string" value="#{in_documents_by_executing_date.filter}"
-                             style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                <h:commandButton styleClass="searchbutton" accesskey="13">
-                    <f:ajax execute="filter_string" render="main_data_tbl"/>
-                </h:commandButton>
-            </div>
-            <div class="wrap_main" id="table_wrap">
-                <div class="inner" id="table_inner">
-                    <p:treeTable id="main_data_tbl"
-                                 value="#{in_documents_by_executing_date.root}"
-                                 var="node"
-                                 style="width:100%; overflow-x:hidden;"
-                                 widgetVar="treeTableVar"
-                                 selectionMode="single"
-                                 rowStyleClass="#{node.document.styleClass}"
-                            >
-                        <p:column headerText="Срок исполнения">
-                            <h:outputText value="#{node.header}"/>
-                        </p:column>
-                        <p:column headerText="Номер">
-                            <h:outputText value="#{node.document.registrationNumber}"/>
-                        </p:column>
-                        <p:column headerText="Корреспондент">
-                            <h:outputText value="#{node.document.contragent.shortName}"/>
-                        </p:column>
-                        <p:column headerText="Исполнитель">
-                            <ui:repeat value="#{node.document.executors}" var="executor">
-                                <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
-                            </ui:repeat>
-                        </p:column>
-                        <p:column headerText="Вид">
-                            <h:outputText value="#{node.document.form}"/>
-                        </p:column>
-                        <p:column headerText="Статус">
-                            <h:outputText value="#{node.document.getDocumentStatus().getName()}"/>
-                        </p:column>
-                        <p:column headerText="Краткое содержание">
-                            <h:outputText value="#{node.document.shortDescription}"/>
-                        </p:column>
-                        <p:column style="display:none;">
-                            <input type="hidden" value="#{node.document.id}"/>
-                        </p:column>
-                        <p:ajax event="select" oncomplete="addRowHandlers()"/>
-                    </p:treeTable>
-                </div>
-            </div>
-            <script type="text/javascript">
-                function addRowHandlers() {
-                    console.log("refresh treetable row onclick handlers");
-                    var table_tree = document.getElementById("main_content_form:main_data_tbl");
-                    var rows = table_tree.getElementsByClassName("document");
-                    for (var i = 0; i &lt; rows.length; i++) {
-                        var currentRow = rows[i];
-                        var createClickHandler = function (row) {
-                            return function () {
-                                goToIncomingDocument(row.lastChild.lastChild.value);
-                            };
-                        };
-                        document.getElementById(currentRow.id).className = document.getElementById(currentRow.id).className.replace('ui-state-highlight', '');
-                        currentRow.ondblclick = createClickHandler(currentRow);
-                    }
-                }
-            </script>
+    </ui:define>
+
+    <ui:define name="contentButtonsPanel">
+        <div class="defbutton">
+            <h:outputLink value="/component/in/in_document.xhtml" target="_blank">
+                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
+                Новый документ
+                <f:param name="docAction" value="create"/>
+            </h:outputLink>
         </div>
+        <div class="defbutton">
+            <h:commandLink action="#{in_documents_by_executing_date.refresh()}">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                Обновить
+                <f:ajax render="mainTable"/>
+            </h:commandLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{in_documents_by_executing_date.collapseAll()}">
+                <h:graphicImage value="#{resource['images:minus.png']}"/>
+                <f:ajax render="mainTable"/>
+                Свернуть
+            </h:commandLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{in_documents_by_executing_date.expandAll()}">
+                <h:graphicImage value="#{resource['images:plus.png']}"/>
+                <f:ajax render="mainTable"/>
+                Развернуть
+            </h:commandLink>
+        </div>
+        <div class="defbutton">
+            <h:commandLink action="#{in_documents_by_executing_date.changeExpiredFlag()}">
+                <label>
+                    <h:selectBooleanCheckbox value="#{in_documents_by_executing_date.showExpiredFlag}" readonly="true"/>
+                    Показать только просроченные
+                </label>
+            </h:commandLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="contentSearch">
+        <div id="searchbar" class="main_searchbar">
+            <p:inputText id="filter_string" value="#{in_documents_by_executing_date.filter}"
+                         style="display:block; float:left; width:60%; margin:2px 10px;"
+                         title="Поиск"/>
+            <p:commandButton value=" " styleClass="searchbutton" action="#{in_documents_by_executing_date.refresh()}"
+                             process="@this filter_string" update="mainTable" onsuccess="addRowHandlers();"/>
+            <h:outputLink target="_blank" value="/component/in/in_document_search_form.xhtml"
+                          title="Перейти к форме расширенного поиска"
+                          style="margin: 0 20px;">
+                Расширенный поиск
+            </h:outputLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="contentTable">
+        <p:treeTable id="main_data_tbl"
+                     value="#{in_documents_by_executing_date.root}"
+                     var="node"
+                     style="width:100%; overflow-x:hidden;"
+                     widgetVar="treeTableVar"
+                     selectionMode="single"
+                     rowStyleClass="#{node.document.styleClass}"
+                >
+            <p:column headerText="Срок исполнения">
+                <h:outputText value="#{node.header}"/>
+            </p:column>
+            <p:column headerText="Номер">
+                <h:outputText value="#{node.document.registrationNumber}"/>
+            </p:column>
+            <p:column headerText="Корреспондент">
+                <h:outputText value="#{node.document.contragent.shortName}"/>
+            </p:column>
+            <p:column headerText="Исполнитель">
+                <ui:repeat value="#{node.document.executors}" var="executor">
+                    <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
+                </ui:repeat>
+            </p:column>
+            <p:column headerText="Вид">
+                <h:outputText value="#{node.document.form}"/>
+            </p:column>
+            <p:column headerText="Статус">
+                <h:outputText value="#{node.document.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:column headerText="Краткое содержание">
+                <h:outputText value="#{node.document.shortDescription}"/>
+            </p:column>
+            <p:column style="display:none;">
+                <input type="hidden" value="#{node.document.id}"/>
+            </p:column>
+            <p:ajax event="select" oncomplete="addRowHandlers()"/>
+        </p:treeTable>
+        <script type="text/javascript">
+            function addRowHandlers() {
+                console.log("refresh treetable row onclick handlers");
+                var table_tree = document.getElementById(PrimeFaces.widgets.treeTableVar.id);
+                var rows = table_tree.getElementsByClassName("document");
+                for (var i = 0; i &lt; rows.length; i++) {
+                    var currentRow = rows[i];
+                    var createClickHandler = function (row) {
+                        return function () {
+                            goToIncomingDocument(row.lastChild.lastChild.value);
+                        };
+                    };
+                    document.getElementById(currentRow.id).className = document.getElementById(currentRow.id).className.replace('ui-state-highlight', '');
+                    currentRow.ondblclick = createClickHandler(currentRow);
+                }
+            }
+        </script>
     </ui:define>
 </ui:composition>
 

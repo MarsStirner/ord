@@ -1,5 +1,8 @@
 package ru.efive.dms.uifaces.beans;
 
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.MenuModel;
 import ru.efive.dms.dao.*;
 import ru.efive.sql.dao.RbContragentTypeDAOImpl;
 import ru.efive.sql.dao.user.GroupTypeDAO;
@@ -27,6 +30,25 @@ import static ru.efive.dms.util.ApplicationDAONames.*;
 @Named("dictionaryManagement")
 @SessionScoped
 public class DictionaryManagementBean implements Serializable {
+
+    @Inject
+    @Named("sessionManagement")
+    SessionManagementBean sessionManagement = new SessionManagementBean();
+    private MenuModel accessLevelsMenuModel;
+    private String filter;
+
+    public MenuModel getAccessLevelsMenuModel() {
+        if (accessLevelsMenuModel == null) {
+            accessLevelsMenuModel = new DefaultMenuModel();
+            for (UserAccessLevel current : getUserAccessLevelsLowerOrEqualMaxValue(sessionManagement.getAuthData().getMaxAccessLevel().getLevel())) {
+                final DefaultMenuItem currentItem = new DefaultMenuItem(current.getValue());
+                currentItem.setCommand("#{sessionManagement.setCurrentUserAccessLevel(".concat(String.valueOf(current.getId())).concat(")}"));
+                currentItem.setUpdate("accessMenuButton accessMenu");
+                accessLevelsMenuModel.addElement(currentItem);
+            }
+        }
+        return accessLevelsMenuModel;
+    }
 
     public List<UserAccessLevel> getUserAccessLevels() {
         return sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findDocuments();
@@ -75,17 +97,18 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
-
     public List<Region> getRegions() {
         List<Region> result = new ArrayList<Region>();
         try {
             result = sessionManagement.getDictionaryDAO(RegionDAOImpl.class, REGION_DAO).findDocuments(this.getFilter(), false);
 
-            Collections.sort(result, new Comparator<Region>() {
-                public int compare(Region o1, Region o2) {
-                    return o1.getValue().compareTo(o2.getValue());
-                }
-            });
+            Collections.sort(
+                    result, new Comparator<Region>() {
+                        public int compare(Region o1, Region o2) {
+                            return o1.getValue().compareTo(o2.getValue());
+                        }
+                    }
+            );
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -172,7 +195,7 @@ public class DictionaryManagementBean implements Serializable {
         return result;
     }
 
-    public List<Nomenclature> getNomenclatureWithEmptyValue(){
+    public List<Nomenclature> getNomenclatureWithEmptyValue() {
         List<Nomenclature> result = sessionManagement.getDictionaryDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).findDocuments();
         result.add(0, null);
         return result;
@@ -196,22 +219,15 @@ public class DictionaryManagementBean implements Serializable {
         return sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
     }
 
-    public List<ContragentType> getContragentTypes(){
+    public List<ContragentType> getContragentTypes() {
         return sessionManagement.getDictionaryDAO(RbContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).findDocuments();
-    }
-
-
-    public void setFilter(String filter) {
-        this.filter = filter;
     }
 
     public String getFilter() {
         return filter;
     }
 
-    private String filter;
-
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
+    public void setFilter(String filter) {
+        this.filter = filter;
+    }
 }

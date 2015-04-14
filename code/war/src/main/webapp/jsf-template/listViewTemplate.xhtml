@@ -38,23 +38,22 @@
         <p:layoutUnit position="center" gutter="0" style="padding:0; margin:0; border:0; border-radius:0;">
             <h:form id="pageForm">
                 <ui:insert name="content">
-                    <p:panel id="contentHeader" style="padding:0; margin:0; height:1.6em; background: linear-gradient(#C8F1D4, #D6F5E0); border:0; border-radius:0;">
+                    <p:panel id="contentHeader" style="padding:0; margin:0; height:2em; background: linear-gradient(#C8F1D4, #D6F5E0); border:0; border-radius:0;">
                         <div class="viewtitle">
                             <ui:insert name="contentLabel"/>
                         </div>
                         <p:menuButton value="#{sessionManagement.loggedUser.getDescription()}" style="float:right; width:10em;">
                             <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
                         </p:menuButton>
-                        <p:menuButton value="#{sessionManagement.getLoggedUser().getCurrentUserAccessLevel().getValue()}" style="float:right;">
-                            <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
-                        </p:menuButton>
+                        <p:commandButton id="accessMenuButton" type="button" value="#{sessionManagement.authData.currentAccessLevel}" style="float:right;"/>
+                        <p:menu id = "accessMenu" overlay="true" model="#{dictionaryManagement.accessLevelsMenuModel}" trigger="accessMenuButton" my="left top" at="left bottom"/>
                     </p:panel>
                     <p:panel id="contentButtons" style="padding:0; margin:0; height:2em; background: linear-gradient(#C8F1D4, #D6F5E0); border:0; border-radius:0; ">
                         <ui:insert name="contentButtonsPanel">
                             contentButtonsPanel
                         </ui:insert>
                     </p:panel>
-                    <p:panel id="contentSearchPanel" style="padding:0; margin:0; height:2em; background: linear-gradient(#C8F1D4, #D6F5E0);">
+                    <p:panel id="contentSearchPanel" style="padding:0; margin:0; height:2.5em; background: linear-gradient(#C8F1D4, #D6F5E0);">
                         <ui:insert name="contentSearch">
                             contentSearch
                         </ui:insert>
