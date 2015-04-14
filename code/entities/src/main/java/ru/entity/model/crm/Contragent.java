@@ -1,6 +1,7 @@
 package ru.entity.model.crm;
 
 import ru.entity.model.mapped.IdentifiedEntity;
+import ru.util.Descriptionable;
 
 import javax.persistence.*;
 
@@ -12,7 +13,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "contragents")
-public class Contragent extends IdentifiedEntity {
+public class Contragent extends IdentifiedEntity  implements Descriptionable{
 
     /**
      * Удален ли документ
@@ -79,4 +80,24 @@ public class Contragent extends IdentifiedEntity {
     }
 
     private static final long serialVersionUID = 1123233260758669450L;
+
+    /**
+     * Получить полное описание сущности
+     *
+     * @return строка с полным описанием сущности
+     */
+    @Override
+    public String getDescription() {
+        return getFullName();
+    }
+
+    /**
+     * Получить краткое описание сущности
+     *
+     * @return строка с кратким описанием сущности
+     */
+    @Override
+    public String getDescriptionShort() {
+        return getShortName();
+    }
 }

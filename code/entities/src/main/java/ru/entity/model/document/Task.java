@@ -22,12 +22,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     private static final long serialVersionUID = -1414080814402194966L;
 
     /**
-     * На контроле
-     */
-    @Column(name = "control", nullable = false)
-    private boolean control;
-
-    /**
      * Контрольная дата исполнения
      */
     @Column(name = "controlDate")
@@ -44,7 +38,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * Автор поручения
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
@@ -52,15 +46,15 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * Инициатор
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "initiator_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "initiator_id", nullable = true)
     private User initiator;
 
     /**
      * Контролер
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinColumn(name = "controller_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "controller_id", nullable = true)
     private User controller;
 
     /**
@@ -111,7 +105,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * Исполнитель поручения
      */
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_tasks_executors",
             joinColumns = {@JoinColumn(name = "id")},
             inverseJoinColumns = {@JoinColumn(name = "executor_id")}
@@ -125,16 +119,9 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     private String rootDocumentId;
 
     /**
-     * Вид задачи
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "exerciseType_id")
-    private DocumentForm exerciseType;
-
-    /**
      * Вид документа
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id")
     private DocumentForm form;
 
@@ -147,7 +134,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     /**
      * История
      */
-    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "dms_task_history",
             joinColumns = {@JoinColumn(name = "task_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
@@ -235,14 +222,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     }
 
 
-    public boolean isControl() {
-        return control;
-    }
-
-    public void setControl(boolean control) {
-        this.control = control;
-    }
-
     @Transient
     public DocumentType getDocumentType() {
         return DocumentType.Task;
@@ -329,14 +308,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         return form;
     }
 
-    public void setExerciseType(DocumentForm exerciseType) {
-        this.exerciseType = exerciseType;
-    }
-
-    public DocumentForm getExerciseType() {
-        return exerciseType;
-    }
-
     public void setController(User controller) {
         this.controller = controller;
     }
@@ -353,9 +324,10 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         return initiator;
     }
 
-    //TODO сделать класс-обертку
+
     /**
      *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     *  TODO сделать класс-обертку
      */
     @Transient
     private String styleClass;
@@ -374,7 +346,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         final Task clone = new Task();
         clone.setId(getId());
         clone.setAuthor(author);
-        clone.setControl(control);
         clone.setControlDate(controlDate);
         clone.setController(controller);
         clone.setCreationDate(creationDate);
@@ -383,7 +354,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         clone.setErpNumber(erpNumber);
         clone.setExecutionDate(executionDate);
         clone.setExecutors(executors);
-        clone.setExerciseType(exerciseType);
         clone.setForm(form);
         clone.setHistory(history);
         clone.setInitiator(initiator);

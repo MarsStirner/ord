@@ -17,13 +17,14 @@ public class AuthenticationFilter implements Filter {
         //1 Проверяем требуется ли наличие контроля сессисии (по ходу он не нужен только для страницы логина =))
         if (isSessionControlRequiredForThisResource(request)) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("{} || {}://{}{}{}{}", new Object[]{
-                        request.getMethod(),
-                        request.getScheme(),
-                        request.getServerName(),
-                        ("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443 ? "" : ":" + request.getServerPort()),
-                        request.getRequestURI(),
-                        (request.getQueryString() != null ? "?" + request.getQueryString() : "")});
+                LOGGER.debug("{} || {}://{}{}{}{}",
+                             request.getMethod(),
+                             request.getScheme(),
+                             request.getServerName(),
+                             ("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443 ? "" : ":" + request.getServerPort()),
+                             request.getRequestURI(),
+                             (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+                );
             }
             //Проверяем авторизацию
             if (request.getSession().getAttribute(SessionManagementBean.AUTH_KEY) == null) {

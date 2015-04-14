@@ -56,15 +56,22 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
             boolean hasDocuments;
             final Map<String, Object> in_map = new HashMap<String, Object>();
             in_map.put("contragent", contragent);
-            List<IncomingDocument> incomingDocuments = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
+            //TODO исправить после переписывания
+            List<IncomingDocument> incomingDocuments = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).getDocumentListByFilters(sessionManagement.getAuthData(), null, in_map, null, true, 0, -1, false, false);
             if (incomingDocuments.isEmpty()) {
-                List<RequestDocument> requestDocuments = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
+                List<RequestDocument> requestDocuments = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).getDocumentListByFilters(
+                        sessionManagement.getAuthData(),
+                        null,
+                        in_map,
+                        null,
+                        true,
+                        0, -1, false, false);
                 if (requestDocuments.isEmpty()) {
                     in_map.clear();
                     final List<Contragent> recipients = new ArrayList<Contragent>();
                     recipients.add(contragent);
                     in_map.put("recipientContragents", recipients);
-                    List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findAllDocuments(in_map, false, true, 0, -1);
+                    List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getDocumentListByFilters(sessionManagement.getAuthData(), null, in_map, null, true, 0, -1, false, false);
                     hasDocuments = !outgoingDocuments.isEmpty();
                 } else {
                     hasDocuments = true;

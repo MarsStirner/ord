@@ -5,10 +5,10 @@ import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.uifaces.bean.Pagination;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
+import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForRequestDocument;
+import ru.efive.dms.util.DocumentSearchMapKeys;
 import ru.entity.model.document.RequestDocument;
-import ru.entity.model.user.User;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -23,22 +23,20 @@ import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @ManagedBean(name = "request_documents")
 @ViewScoped
-public class RequestDocumentListHolder extends AbstractDocumentListHolderBean<RequestDocument> {
+public class RequestDocumentListHolder extends AbstractDocumentLazyDataModelBean<RequestDocument> {
 
     private static final Logger logger = LoggerFactory.getLogger("REQUEST_DOCUMENT");
     private Map<String, Object> filters = new HashMap<String, Object>();
-    private String filter;
-
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
+    private RequestDocumentDAOImpl dao;
+    private ViewFactDaoImpl viewFactDao;
 
-    private static final long serialVersionUID = 8535420074467871583L;
-
-    @PostConstruct
     /**
      * При каждом запросе страницы (нового view) инициализировать список фильтров
      */
+    @PostConstruct
     public void initInternalDocumentList() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
             final Map<String, String> parameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -53,8 +51,8 @@ public class RequestDocumentListHolder extends AbstractDocumentListHolderBean<Re
                         final List<String> strings = Arrays.asList(value.substring(1, value.length() - 1).split("\\s*,\\s*"));
                         if (!strings.isEmpty()) {
                             //Для некоторых парметров надо приводить типы
-                            if ("statusesId".equals(entry.getKey())) {
-                                final ArrayList<Integer> ints = new ArrayList<Integer>(strings.size());
+                            if (DocumentSearchMapKeys.STATUS_LIST_KEY.equals(entry.getKey())) {
+                                final Set<Integer> ints = new HashSet<Integer>(strings.size());
                                 for (String string : strings) {
                                     ints.add(Integer.valueOf(string));
                                 }
@@ -69,69 +67,14 @@ public class RequestDocumentListHolder extends AbstractDocumentListHolderBean<Re
                     }
                 }
             }
+
         }
+        dao = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO);
+        viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
+        final LazyDataModelForRequestDocument lazyDataModel = new LazyDataModelForRequestDocument(
+                dao, viewFactDao, sessionManagement.getAuthData()
+        );
+        lazyDataModel.setFilters(filters);
+        setLazyModel(lazyDataModel);
     }
-
-    @Override
-    protected Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 50);
-        //Ранжирование по страницам по-умолчанию  (50 на страницу, начиная с нуля)
-    }
-
-    @Override
-    protected Sorting initSorting() {
-        return new Sorting("registrationDate", false);
-        //Сортировка по-умолчанию (дата регистрации документа)
-    }
-
-    @Override
-    protected int getTotalCount() {
-        if (!sessionManagement.isSubstitution()) {
-            //Без замещения
-            return new Long(
-                    sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
-                            .countAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false)
-            ).intValue();
-        } else {
-            // С замещением
-            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
-            userList.add(sessionManagement.getLoggedUser());
-            return new Long(
-                    sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
-                            .countAllDocumentsByUserList(filters, filter, userList, false, false)
-            ).intValue();
-        }
-    }
-
-
-    @Override
-    protected List<RequestDocument> loadDocuments() {
-        final List<RequestDocument> resultList;
-        if (!sessionManagement.isSubstitution()) {
-            // Без замещения
-            resultList = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
-                    .findAllDocumentsByUser(filters, filter, sessionManagement.getLoggedUser(), false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
-        } else {
-            // С замещением
-            final List<User> userList = new ArrayList<User>(sessionManagement.getSubstitutedUsers());
-            userList.add(sessionManagement.getLoggedUser());
-            resultList = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
-                    .findAllDocumentsByUserList(filters, filter, userList, false, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
-        }
-        //Добавление стилей для прочитанных\новых документов
-        if(!resultList.isEmpty()){
-            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnRequestDocumentList(resultList, sessionManagement.getLoggedUser());
-        }
-        return resultList;
-    }
-
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
 }

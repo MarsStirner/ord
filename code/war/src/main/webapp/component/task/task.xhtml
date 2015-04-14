@@ -149,40 +149,28 @@
         <div id="header_content">
             <h:panelGroup rendered="#{task.createState}">
                 <div class="name">
-                    <h:outputText value="#{task.document.form.description eq 'task' ? 'Новое ' :  'Новая '}"/>
-                    <h:outputText value="#{task.document.form.value.toLowerCase()}"/>
-                    <h:selectOneMenu id="exerciseType"
-                                     value="#{task.document.exerciseType}"
-                                     rendered="#{task.document.form.description.equals('exercise')}"
-                                     converter="DocumentFormConverter" immediate="true">
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Задачи')}"/>
+                    <h:outputText value="Новая"/>
+                    <h:selectOneMenu id="form1" value="#{task.document.form}" converter="DocumentFormConverter" immediate="true">
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Поручения')}"/>
                     </h:selectOneMenu>
                 </div>
                 <div class="title">
                     <h:outputText value="#{task.document.getDocumentStatus().getName()}"/>
                 </div>
             </h:panelGroup>
-            <h:panelGroup rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1)}">
+            <h:panelGroup rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1) and task.viewState}">
                 <div class="name">
-                    <h:outputText value="#{task.document.form.value}"
-                                  rendered="#{task.document.form.description ne 'exercise'}"/>
-                    <h:selectOneMenu id="exerciseType2"
-                                     value="#{task.document.exerciseType}"
-                                     rendered="#{task.document.form.description.equals('exercise')}"
-                                     converter="DocumentFormConverter">
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Задачи')}"/>
+                    <h:selectOneMenu id="form2" value="#{task.document.form}" converter="DocumentFormConverter" immediate="true">
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Поручения')}"/>
                     </h:selectOneMenu>
                 </div>
                 <div class="title">
                     <h:outputText value="#{task.document.getDocumentStatus().getName()}"/>
                 </div>
             </h:panelGroup>
-            <h:panelGroup
-                    rendered="#{task.viewState or (task.editState and task.document.getDocumentStatus().getId() ne 1)}">
+            <h:panelGroup rendered="#{task.viewState or (task.editState and task.document.getDocumentStatus().getId() ne 1)}">
                 <div class="name">
                     <h:outputText value="#{task.document.form.value}"/>
-                    <h:outputText value="#{task.document.exerciseType.value}"
-                                  rendered="#{task.document.form.description.equals('exercise')}"/>
                     : №
                     <h:outputText value="#{task.document.taskNumber}"/>
                     от

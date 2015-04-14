@@ -86,41 +86,36 @@
 	<parameter name="DateFrom" class="java.util.Date"/>
 	<parameter name="DateTo" class="java.util.Date"/>
 	<queryString>
-		<![CDATA[SELECT
-     kladr_regions.`value` AS kladr_regions_value,
-     dms_request_documents.`senderFirstName` AS dms_request_documents_senderFirstName,
-     dms_request_documents.`senderLastName` AS dms_request_documents_senderLastName,
-     dms_request_documents.`senderMiddleName` AS dms_request_documents_senderMiddleName,
-     dms_request_documents.`id` AS dms_request_documents_id,
-     kladr_regions.`category` AS kladr_regions_category,
-     dms_request_documents.`deleted` AS dms_request_documents_deleted
-FROM
-     `kladr_regions` kladr_regions RIGHT OUTER JOIN `dms_request_documents` dms_request_documents ON kladr_regions.`id` = dms_request_documents.`region_id`
-WHERE
-     DATE(dms_request_documents.`registrationDate`) >= $P{DateFrom}
- AND DATE(dms_request_documents.`registrationDate`) <= $P{DateTo}
- AND dms_request_documents.`deleted` = 0
-ORDER BY
-     kladr_regions_value ASC]]>
+		<![CDATA[
+		SELECT
+		    documentId,
+            kladrId,
+            kladrValue,
+            kladrCategory,
+            senderInfo,
+            checkDate
+        FROM report_requests_by_regions
+        WHERE
+            DATE(checkDate) >= DATE($P{DateFrom})
+            AND
+            DATE(checkDate) <= DATE($P{DateTo})
+        ORDER BY kladrValue ASC
+        ]]>
 	</queryString>
-	<field name="kladr_regions_value" class="java.lang.String"/>
-	<field name="dms_request_documents_senderFirstName" class="java.lang.String"/>
-	<field name="dms_request_documents_senderLastName" class="java.lang.String"/>
-	<field name="dms_request_documents_senderMiddleName" class="java.lang.String"/>
-	<field name="dms_request_documents_id" class="java.lang.Integer"/>
-	<field name="kladr_regions_category" class="java.lang.String"/>
-	<field name="dms_request_documents_deleted" class="java.lang.Boolean"/>
-	<variable name="kladr_regions_value_1" class="java.lang.Integer" resetType="Group" resetGroup="Regions" calculation="Count">
-		<variableExpression><![CDATA[$F{kladr_regions_value}]]></variableExpression>
+	<field name="documentId" class="java.lang.Integer"/>
+    <field name="kladrId" class="java.lang.Integer"/>
+	<field name="kladrValue" class="java.lang.String"/>
+	<field name="kladrCategory" class="java.lang.String"/>
+	<field name="senderInfo" class="java.lang.String"/>
+	<field name="checkDate" class="java.sql.Timestamp"/>
+	<variable name="documentsByRegion" class="java.lang.Integer" resetType="Group" resetGroup="Regions" calculation="Count">
+		<variableExpression><![CDATA[$F{documentId}]]></variableExpression>
 	</variable>
-	<variable name="dms_request_documents_id_1" class="java.lang.Integer" resetType="Group" resetGroup="Regions" calculation="Count">
-		<variableExpression><![CDATA[$F{dms_request_documents_id}]]></variableExpression>
-	</variable>
-	<variable name="dms_request_documents_id_2" class="java.lang.Integer" calculation="Count">
-		<variableExpression><![CDATA[$F{dms_request_documents_id}]]></variableExpression>
+	<variable name="totalDocuments" class="java.lang.Integer" calculation="Count">
+		<variableExpression><![CDATA[$F{documentId}]]></variableExpression>
 	</variable>
 	<group name="Regions">
-		<groupExpression><![CDATA[$F{kladr_regions_value}]]></groupExpression>
+		<groupExpression><![CDATA[$F{kladrId}]]></groupExpression>
 		<groupHeader>
 			<band height="20">
 				<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
@@ -130,7 +125,7 @@ ORDER BY
 						<font fontName="Tahoma" isBold="true"/>
 						<paragraph leftIndent="5" spacingBefore="2"/>
 					</textElement>
-					<textFieldExpression><![CDATA[($F{kladr_regions_category}.equals("республика")||$F{kladr_regions_category}.equals("город"))?($F{kladr_regions_category}+" "+$F{kladr_regions_value}):($F{kladr_regions_value}+" "+$F{kladr_regions_category})]]></textFieldExpression>
+					<textFieldExpression><![CDATA[($F{kladrCategory}.equals("республика")||$F{kladrCategory}.equals("город"))?($F{kladrCategory}+" "+$F{kladrValue}):($F{kladrValue}+" "+$F{kladrCategory})]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupHeader>
@@ -142,7 +137,7 @@ ORDER BY
 						<font fontName="Tahoma" isBold="false" isItalic="false" isUnderline="false"/>
 						<paragraph leftIndent="5"/>
 					</textElement>
-					<textFieldExpression><![CDATA["Итого по региону: "+$V{dms_request_documents_id_1}]]></textFieldExpression>
+					<textFieldExpression><![CDATA["Итого по региону: "+$V{documentsByRegion}]]></textFieldExpression>
 				</textField>
 			</band>
 		</groupFooter>
@@ -175,14 +170,14 @@ ORDER BY
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement style="table_TD" x="0" y="0" width="25" height="20"/>
+				<reportElement style="table_TD" x="0" y="0" width="40" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[№]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="25" y="0" width="522" height="20"/>
+				<reportElement style="table_TD" x="40" y="0" width="507" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
@@ -193,7 +188,7 @@ ORDER BY
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="25" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="40" height="20"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -201,12 +196,12 @@ ORDER BY
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="25" y="0" width="522" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="40" y="0" width="507" height="20"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_request_documents_senderLastName}==null?"":$F{dms_request_documents_senderLastName}+" "+$F{dms_request_documents_senderFirstName}+" "+$F{dms_request_documents_senderMiddleName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{senderInfo}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -224,7 +219,7 @@ ORDER BY
 					<font fontName="Tahoma" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Итого: "+$V{dms_request_documents_id_2}]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Итого: "+$V{totalDocuments}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

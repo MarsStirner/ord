@@ -6,7 +6,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+>
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -18,10 +18,8 @@
     <ui:define name="header_top">
         <div id="viewtitle">
             <h:outputText id="viewTitleText" value="Входящие документы
-                #{in_documents_by_executing_date.showExpiredFlag ? 'с просроченной датой исполнения' : 'по сроку исполнения'}"
-                    />
-            <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" showDelay="1000"
-                       hideDelay="500">
+                #{in_documents_by_executing_date.showExpiredFlag ? 'с просроченной датой исполнения' : 'по сроку исполнения'}"/>
+            <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" showDelay="1000" hideDelay="500">
                 Просмотр входящих документов, у которых:
                 <br/>1) пользователь является руководителем.
                 <br/>2) Уровень доступа документа ниже или равен ТЕКУЩЕМУ уровню допуска пользователя
@@ -45,7 +43,7 @@
             <h:commandLink action="#{in_documents_by_executing_date.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="main_data_tbl main_data_paging"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
         <div class="defbutton">
@@ -97,10 +95,8 @@
             <div id="searchbar" class="main_searchbar">
                 <h:inputText id="filter_string" value="#{in_documents_by_executing_date.filter}"
                              style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                <h:commandButton action="#{in_documents_by_executing_date.changePageOffset(0)}"
-                                 styleClass="searchbutton"
-                                 accesskey="13">
-                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
+                <h:commandButton styleClass="searchbutton" accesskey="13">
+                    <f:ajax execute="filter_string" render="main_data_tbl"/>
                 </h:commandButton>
             </div>
             <div class="wrap_main" id="table_wrap">
@@ -127,7 +123,7 @@
                                 <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
                             </ui:repeat>
                         </p:column>
-                        <p:column headerText="Вид документа">
+                        <p:column headerText="Вид">
                             <h:outputText value="#{node.document.form}"/>
                         </p:column>
                         <p:column headerText="Статус">
@@ -142,15 +138,6 @@
                         <p:ajax event="select" oncomplete="addRowHandlers()"/>
                     </p:treeTable>
                 </div>
-            </div>
-            <div id="table_paging">
-                <h:panelGroup id="main_data_paging">
-                    <e5ui-comp:tablePager documentListHolder="#{in_documents_by_executing_date}"
-                                          style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector
-                            documentListHolder="#{in_documents_by_executing_date}"
-                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </h:panelGroup>
             </div>
             <script type="text/javascript">
                 function addRowHandlers() {

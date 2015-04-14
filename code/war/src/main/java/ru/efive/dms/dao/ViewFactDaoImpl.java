@@ -51,8 +51,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
      * @param loggedUser пользователь чьи факты прочтения документов мы проверяем
      */
     public void applyViewFlagsOnIncomingDocumentList(List<IncomingDocument> documents, User loggedUser) {
-        final List<IncomingDocumentViewFact> viewFacts = getIncomingDocumentsViewFacts(loggedUser, getIdList
-                (documents));
+        final List<IncomingDocumentViewFact> viewFacts = getIncomingDocumentsViewFacts(loggedUser, getIdList(documents));
         for (IncomingDocument document : documents) {
             document.setStyleClass(UNVISITED_STYLE_CLASS_NAME);
             for (IncomingDocumentViewFact viewFact : viewFacts) {
@@ -157,8 +156,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         if (viewFact == null) {
             viewFact = new IncomingDocumentViewFact(document, user, new LocalDateTime().toDate());
             getHibernateTemplate().save(viewFact);
-            loggerIncomingDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.",
-                    document.getId(), user.getId());
+            loggerIncomingDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.", document.getId(), user.getId());
             return true;
         } else {
             loggerIncomingDocument.debug("Document[{}] has been viewed by user[{}] at \"{}\"",
@@ -179,8 +177,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         if (viewFact == null) {
             viewFact = new OutgoingDocumentViewFact(document, user, new LocalDateTime().toDate());
             getHibernateTemplate().save(viewFact);
-            loggerOutgoingDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.",
-                    document.getId(), user.getId());
+            loggerOutgoingDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.", document.getId(), user.getId());
             return true;
         } else {
             loggerOutgoingDocument.debug("Document[{}] has been viewed by user[{}] at \"{}\"",
@@ -201,8 +198,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         if (viewFact == null) {
             viewFact = new InternalDocumentViewFact(document, user, new LocalDateTime().toDate());
             getHibernateTemplate().save(viewFact);
-            loggerInternalDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.",
-                    document.getId(), user.getId());
+            loggerInternalDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.", document.getId(), user.getId());
             return true;
         } else {
             loggerInternalDocument.debug("Document[{}] has been viewed by user[{}] at \"{}\"",
@@ -224,8 +220,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         if (viewFact == null) {
             viewFact = new RequestDocumentViewFact(document, user, new LocalDateTime().toDate());
             getHibernateTemplate().save(viewFact);
-            loggerRequestDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.",
-                    document.getId(), user.getId());
+            loggerRequestDocument.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.", document.getId(), user.getId());
             return true;
         } else {
             loggerRequestDocument.debug("Document[{}] has been viewed by user[{}] at \"{}\"",
@@ -247,8 +242,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         if (viewFact == null) {
             viewFact = new TaskDocumentViewFact(document, user, new LocalDateTime().toDate());
             getHibernateTemplate().save(viewFact);
-            loggerTask.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.", document
-                    .getId(), user.getId());
+            loggerTask.debug("Document[{}] is not already viewed by user[{}]. Write new viewFact to DB.", document.getId(), user.getId());
             return true;
         } else {
             loggerTask.debug("Document[{}] has been viewed by user[{}] at \"{}\"",

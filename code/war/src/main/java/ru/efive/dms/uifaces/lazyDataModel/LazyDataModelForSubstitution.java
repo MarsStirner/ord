@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.beans.user;
+package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
@@ -28,13 +28,14 @@ public class LazyDataModelForSubstitution extends LazyDataModel<Substitution> {
 
     @Override
     public Substitution getRowData(String rowKey) {
-       return dao.get(Integer.valueOf(rowKey));
+        return dao.get(Integer.valueOf(rowKey));
     }
 
     @Override
-    public List<Substitution> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,Object> filters) {
+    public List<Substitution> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,
+            Object> filters) {
         final List<Substitution> result = dao.getDocuments(false, first, pageSize, sortField, sortOrder);
-        this.setRowCount(dao.getDocumentsCount(false));
+        setRowCount(dao.getDocumentsCount(false));
         return result;
     }
 }

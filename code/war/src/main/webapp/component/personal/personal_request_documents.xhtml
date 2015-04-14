@@ -1,10 +1,8 @@
 ﻿<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html">
 
@@ -15,7 +13,7 @@
     </ui:define>
 
     <ui:define name="header_top">
-        <div id="viewtitle">Обращения граждан по номеру</div>
+        <div id="viewtitle">Мои проекты обращений граждан</div>
     </ui:define>
 
     <ui:define name="header_buttons">
@@ -30,126 +28,108 @@
             <h:commandLink action="#{personal_request_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
+        <h:outputStylesheet>
+            .ui-column-title, .ui-commandlink{
+                position: relative !important;
+                padding: 0 !important;
+            }
+        </h:outputStylesheet>
 
-
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{personal_request_documents.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                    <h:commandButton value=" " action="#{personal_request_documents.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax execute=":main_content_form:filter_string"
-                                render=":main_content_form:main_data_tbl :main_content_form:main_data_paging"/>
-                    </h:commandButton>
-
-                    <h:outputLink
-                            value="/component/request/request_document_search_form.xhtml"
-                            title="Перейти к форме расширенного поиска"
-                            style="margin: 0 20px;">
-                        Расширенный поиск
-                    </h:outputLink>
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%;"
-                                        value="#{personal_request_documents.documents}" var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToRequestDocument('#{row.id}');"/>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_request_documents.sort('registrationNumber')}">
-                                        Номер
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.registrationNumber}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:5em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_request_documents.sort('deliveryDate')}">
-                                        Дата
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.deliveryDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_request_documents.sort('contragent')}">
-                                        ФИО
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                               <h:outputText value="#{row.senderDescriptionShort}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_request_documents.sort('form')}">
-                                        Вид документа
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.form}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_request_documents.sort('executionDate')}">
-                                        Срок исполнения
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.executionDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_request_documents.sort('status_id')}">
-                                        Статус
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Краткое содержание</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{personal_request_documents}"
-                                              style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{personal_request_documents}"
-                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
-                </div>
+        <div id="main_table">
+            <div id="searchbar" class="main_searchbar">
+                <h:inputText id="filter_string" value="#{personal_request_documents.filter}"
+                             style="display:block; float:left; width:60%; margin:2px 10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" " action="#{personal_request_documents.applyFilter()}"
+                                 styleClass="searchbutton">
+                    <f:ajax execute="filter_string" render="main_data_tbl" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
+                </h:commandButton>
+                <h:outputLink target="_blank" value="/component/request/request_document_search_form.xhtml"
+                              title="Перейти к форме расширенного поиска"
+                              style="margin: 0 20px;">
+                    Расширенный поиск
+                </h:outputLink>
             </div>
-        </e5ui:formPart>
+            <div class="inner" id="table_wrap" style="overflow:auto;">
+                <p:dataTable id="main_data_tbl"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             rows="100"
+                             rowsPerPageTemplate="10,25,50,100"
+                             value="#{personal_request_documents.lazyModel}"
+                             var="row"
+                             lazy="true"
+                             widgetVar="documentTableVar"
+                             scrollable="true"
+                             scrollHeight="100%"
+                             sortBy="#{row.creationDate}"
+                             sortField="creationDate"
+                             sortOrder="descending"
+                        >
+                    <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
+                    <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field = "creationDate">
+                        <h:outputText value="#{row.creationDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Дата поступления" style="width:8em;" sortBy="#{row.deliveryDate}" field = "deliveryDate">
+                        <h:outputText value="#{row.deliveryDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="ФИО отправителя" style="width:12em;" sortBy="#{row.senderLastName}" field = "senderLastName">
+                        <h:outputText value="#{row.getSenderDescription()}"/>
+                    </p:column>
+                    <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+                        <h:outputText value="#{row.form}"/>
+                    </p:column>
+                    <p:column headerText="Срок исполнения" style="width:12em;" sortBy="#{row.executionDate}" field = "executionDate">
+                        <h:outputText value="#{row.executionDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Краткое содержание">
+                        <h:outputText value="#{row.shortDescription}"/>
+                    </p:column>
+                    <p:ajax event="page" oncomplete="addRowHandlers()"/>
+                    <p:ajax event="sort" oncomplete="addRowHandlers()"/>
+                </p:dataTable>
+                <script type="text/javascript">
+                    function addRowHandlers() {
+                        console.log("refresh table row onclick handlers");
+                        var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
+                        var tbody = table.getElementsByTagName("tbody")[0];
+                        for (var i = 0; i &lt; tbody.rows.length; i++) {
+                            var currentRow = tbody.rows[i];
+                            var createClickHandler = function (row) {
+                                return function () {
+                                    goToRequestDocument(row.firstChild.textContent);
+                                };
+                            };
+                            currentRow.className = currentRow.className.replace('ui-state-highlight', '');
+                            currentRow.ondblclick = createClickHandler(currentRow);
+                        }
+                    }
+                    window.onload = addRowHandlers;
+                </script>
+            </div>
+        </div>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 
 </ui:composition>
 
 </html>
+

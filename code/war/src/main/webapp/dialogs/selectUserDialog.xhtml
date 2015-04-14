@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+
+<h:head>
+    <title><h:outputText value="#{userDialog.title}"/></title>
+</h:head>
+
+<h:body>
+    <h:form id="selectUserDialogForm">
+        <p:inputText id="filter" value="#{userDialog.filter}"/>
+        <p:commandButton value="Поиск">
+            <f:ajax execute="filter" render="selectPersonTable"/>
+        </p:commandButton>
+        <p:dataTable id="selectPersonTable"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{userDialog.lazyModel}"
+                     var="person_row"
+                     selectionMode="single"
+                     selection="#{userDialog.selected}"
+                     lazy="true"
+                     widgetVar="selectPersonTableVar"
+                     scrollable="true"
+                     scrollHeight="400"
+                     sortBy="#{person_row.lastName}"
+                     sortOrder="ascending"
+                     sortField="lastName"
+                >
+            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field = "lastName">
+                <h:outputText value="#{person_row.lastName}"/>
+            </p:column>
+            <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
+                <h:outputText value="#{person_row.firstName}"/>
+            </p:column>
+            <p:column headerText="Отчество" sortBy="#{person_row.middleName}" field="middleName">
+                <h:outputText value="#{person_row.middleName}"/>
+            </p:column>
+        </p:dataTable>
+        <p:commandButton value="Выбрать" action="#{userDialog.closeDialog(true)}"/>
+        <p:commandButton value="Отмена" action="#{userDialog.closeDialog(false)}"/>
+    </h:form>
+</h:body>
+
+</html>

@@ -165,7 +165,7 @@
                 </h:outputText>
             </div>
             <div class="title">
-                <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
+                <h:outputText value="#{request_doc.document.getDocumentStatus().getName()}"/>
             </div>
             <h:panelGroup rendered="#{request_doc.notFoundState}">
                 <div class="name">
@@ -232,7 +232,7 @@
                                 </label>
                                 <e5ui-comp:modalWindow id="executorSelectModal"
                                                        modalWindowHolder="#{request_doc.executorSelectModal}"
-                                                       render="executor" execute="select_table"
+                                                       render="responsible" execute="select_table"
                                                        showButtons="false" style="width: 500px;"
                                                        widgetVar="executorSelectModalVar">
                                     <div id="title">Выбор исполнителя</div>
@@ -287,8 +287,7 @@
                                 </e5ui-comp:modalWindow>
                             </td>
                             <td class="fourth" colspan="3">
-                                <h:outputText id="executor" value="#{request_doc.document.executor.descriptionShort}"
-                                              class="wide"/>
+                                <h:outputText id="responsible" value="#{request_doc.document.responsible.descriptionShort}"  class="wide"/>
                             </td>
                         </tr>
                     </table>
@@ -335,13 +334,13 @@
                                 </label>
                             </td>
                             <td class="fourth">
-                                <h:outputText value="#{request_doc.document.executor.descriptionShort}" class="wide"/>
+                                <h:outputText value="#{request_doc.document.responsible.descriptionShort}" class="wide"/>
                             </td>
                         </tr>
                     </table>
                 </div>
             </h:panelGroup>
-            <p:tabView id="content_table" widgetVar="incomingDocumentTabViewVar" activeIndex="0" effect="fade"
+            <p:tabView id="content_table" widgetVar="requestDocumentTabViewVar" activeIndex="0" effect="fade"
                        effectDuration="fast">
                 <p:tab title="Реквизиты"
                        rendered="#{request_doc.viewState or request_doc.createState or request_doc.editState}">

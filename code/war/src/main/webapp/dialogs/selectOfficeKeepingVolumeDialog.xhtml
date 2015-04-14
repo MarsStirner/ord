@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+
+<h:head>
+    <title><h:outputText value="#{officeKeepingVolumeDialog.title}"/></title>
+</h:head>
+
+<h:body>
+    <h:form id="selectOfficeKeepingVolumeDialogForm">
+        <p:inputText id="filter" value="#{officeKeepingVolumeDialog.filter}"/>
+        <p:commandButton value="Поиск">
+            <f:ajax execute="filter" render="selectOfficeKeepingVolumeTable"/>
+        </p:commandButton>
+        <p:dataTable id="selectOfficeKeepingVolumeTable"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{officeKeepingVolumeDialog.lazyModel}"
+                     var="officeKeepingVolume_row"
+                     selectionMode="single"
+                     selection="#{officeKeepingVolumeDialog.selected}"
+                     lazy="true"
+                     widgetVar="selectOfficeKeepingVolumeTableVar"
+                     scrollable="true"
+                     scrollHeight="400"
+                     sortBy="#{officeKeepingVolume_row.shortDescription}"
+                     sortOrder="ascending"
+                     sortField="shortDescription"
+                >
+            <p:column headerText="Заголовок"  sortBy="#{officeKeepingVolume_row.shortDescription}" field="shortDescription">
+                <h:outputText value="#{officeKeepingVolume_row.shortDescription}"/>
+            </p:column>
+            <p:column headerText="Статус" sortBy="#{officeKeepingVolume_row.statusId}" field="statusId">
+                <h:outputText value="#{officeKeepingVolume_row.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:column headerText="Срок хранения"  sortBy="#{officeKeepingVolume_row.keepingPeriodReasons}" field="keepingPeriodReasons">
+                <h:outputText value="#{officeKeepingVolume_row.keepingPeriodReasons}"/>
+            </p:column>
+        </p:dataTable>
+        <p:commandButton value="Выбрать" action="#{officeKeepingVolumeDialog.closeDialog(true)}"/>
+        <p:commandButton value="Отмена" action="#{officeKeepingVolumeDialog.closeDialog(false)}"/>
+    </h:form>
+</h:body>
+
+</html>

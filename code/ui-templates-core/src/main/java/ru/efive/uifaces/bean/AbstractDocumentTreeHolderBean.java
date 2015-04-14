@@ -13,8 +13,6 @@ import java.util.List;
  * Company: Korus Consulting IT <br>
  * Description: Абстрактный бин, в котором есть дерево (Tree) <br>
  */
-//TODO Сортировки настраиваемые
-//TODO Группировка + сортировка переопределяемая
 public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> implements Serializable {
 
     //////////////////////// ABSTRACT METHODS START ///////////////////////////////////////////////////////////////////
@@ -24,7 +22,7 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      *
      * @return список документов
      */
-    protected abstract List<D> loadDocuments(final Pagination pagination);
+    protected abstract List<D> loadDocuments();
 
     /**
      * Переопределяемый метод для построения дерева из списка документов
@@ -34,19 +32,6 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      */
     protected abstract DefaultTreeNode constructTreeFromDocumentList(final List<D> documents);
 
-    /**
-     * Инициализация ранжирования по страницам
-     *
-     * @return Изначальный режим ренжирования
-     */
-    protected abstract Pagination initPagination();
-
-    /**
-     * Получить общее кол-во документов, подходящих запросу
-     *
-     * @return общее кол-во документов
-     */
-    protected abstract int getTotalCount();
 
     ////////////////////// ABSTRACT METHODS END ////////////////////////////////////////////////////////////////////////
 
@@ -75,17 +60,12 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      */
     private static final int MAX_RECURSIVE_DEPTH = 10;
 
-    private Pagination pagination;
-    private String pageToGo;
-    private int pageSizeToSelect;
 
     @PostConstruct
     private void init() {
-        this.pagination = initPagination();
-        this.documents = loadDocuments(pagination);
+        this.documents = loadDocuments();
         this.rootNode = constructTreeFromDocumentList(documents);
         this.initialized = true;
-        adjustUserInputs();
     }
 
 
@@ -98,10 +78,9 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
         if (!initialized) {
             init();
         } else {
-            this.documents = loadDocuments(pagination);
+            this.documents = loadDocuments();
             this.rootNode = constructTreeFromDocumentList(documents);
         }
-        adjustUserInputs();
     }
 
     /**
@@ -168,66 +147,5 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
         return documents;
     }
 
-    private void adjustUserInputs() {
-        pageToGo = String.valueOf(pagination.getPageOffset() + 1);
-        pageSizeToSelect = pagination.getPageSize();
-    }
 
-    /**
-     * Получить текущее ранжирование по страницам
-     *
-     * @return текущее ранжирование по страницам
-     */
-    public Pagination getPagination() {
-        return pagination;
-    }
-
-    public void changePageSize(int pageSize) {
-        pagination = new Pagination(0, getTotalCount(),
-                Math.min(Math.max(Pagination.MIN_PAGE_SIZE, pageSize), Pagination.MAX_PAGE_SIZE));
-        refresh();
-    }
-
-    // 0-based
-    public void changePageOffset(int pageOffset) {
-        pagination = new Pagination(pageOffset * pagination.getPageSize(), getTotalCount(), pagination.getPageSize());
-        refresh();
-    }
-
-    public void changeOffset(int offset) {
-        pagination = new Pagination(offset, getTotalCount(), pagination.getPageSize());
-        refresh();
-    }
-
-    public void goToPage() {
-        try {
-            int page = Integer.parseInt(pageToGo);
-            changePageOffset(page - 1);
-        } catch (NumberFormatException ex) {
-            // Nothing required
-            System.out.println("User enter non-number as page to go parameter (" + ex.getMessage() + ").");
-        }
-    }
-
-    public void selectPageSize() {
-        changePageSize(pageSizeToSelect);
-    }
-
-    public int getPageSizeToSelect() {
-        return pageSizeToSelect;
-    }
-
-    public void setPageSizeToSelect(int pageSizeToSelect) {
-        this.pageSizeToSelect = pageSizeToSelect;
-    }
-
-    // 1-based
-    public String getPageToGo() {
-        return pageToGo;
-    }
-
-    // 1-based
-    public void setPageToGo(String pageToGo) {
-        this.pageToGo = pageToGo;
-    }
 }

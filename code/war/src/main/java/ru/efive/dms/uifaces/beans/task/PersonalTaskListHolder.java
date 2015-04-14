@@ -1,60 +1,32 @@
 package ru.efive.dms.uifaces.beans.task;
 
-import java.util.ArrayList;
-import java.util.List;
+import ru.efive.dms.dao.TaskDAOImpl;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
+import ru.efive.dms.uifaces.lazyDataModel.tasks.LazyDataModelForPersonalDraftsTask;
+import ru.entity.model.document.Task;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.util.ApplicationDAONames;
-import ru.efive.uifaces.bean.Pagination;
-import ru.entity.model.document.Task;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
+import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
 
 @Named("personal_tasks")
 @SessionScoped
-public class PersonalTaskListHolder extends AbstractDocumentListHolderBean<Task> {
+public class PersonalTaskListHolder extends AbstractDocumentLazyDataModelBean<Task> implements Serializable {
 
-    @Override
-    protected Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 100);
-    }
-
-    @Override
-    protected Sorting initSorting() {
-        return new Sorting("registrationDate,taskNumber", false);
-    }
-
-    @Override
-    protected int getTotalCount() {
-        return new Long(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDraftDocumentsByAuthor(
-                sessionManagement.getLoggedUser(), false)).intValue();
-    }
-
-    @Override
-    protected List<Task> loadDocuments() {
-        return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDraftDocumentsByAuthor(filter, sessionManagement.getLoggedUser(),
-                false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
-    }
-
-    public String getFilter() {
-        return filter;
-    }
-
-    public void setFilter(String filter) {
-        this.filter = filter;
-    }
-
-    private String filter;
-
+    private static final long serialVersionUID = 853542007446781235L;
+    private TaskDAOImpl dao;
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
 
-    private static final long serialVersionUID = 8535420074467871583L;
+    @PostConstruct
+    public void init() {
+        dao = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO);
+        setLazyModel(new LazyDataModelForPersonalDraftsTask(dao, sessionManagement.getAuthData()));
+    }
 }

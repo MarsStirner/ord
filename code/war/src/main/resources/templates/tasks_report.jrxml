@@ -23,82 +23,44 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="Table Dataset 1">
-		<parameter name="taskId" class="java.lang.Integer">
-			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-		</parameter>
-		<queryString>
-			<![CDATA[SELECT
-     wf_history.`startDate` AS wf_history_startDate,
-     wf_history.`to_status_id` AS wf_history_to_status_id
-FROM
-     `dms_tasks` dms_tasks
-     LEFT OUTER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
-     inner JOIN `dms_task_history` dms_task_history ON dms_tasks.`id` = dms_task_history.`task_id`
-     inner JOIN `wf_history` wf_history ON dms_task_history.`history_entry_id` = wf_history.`id` and
-     wf_history.`to_status_id` = 3
-where dms_tasks.`id`=$P{taskId}]]>
-		</queryString>
-		<field name="wf_history_startDate" class="java.sql.Timestamp"/>
-		<field name="wf_history_to_status_id" class="java.lang.Integer"/>
-	</subDataset>
 	<parameter name="StartDate" class="java.util.Date"/>
 	<parameter name="EndDate" class="java.util.Date"/>
 	<parameter name="AuthorId" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-     dms_system_persons.`lastName` AS dms_system_persons_lastName,
-     (CASE WHEN wf.to_status_id=3 THEN wf.startDate ELSE null END) AS done_date,
-     dms_tasks.`deleted` AS dms_tasks_deleted,
-     dms_tasks.`executionDate` AS dms_tasks_executionDate,
-     dms_tasks.`taskNumber` as dms_tasks_number,
-     dms_tasks.`creationDate` AS dms_tasks_creationDate,
-     dms_tasks.`shortDescription` AS dms_tasks_shortDescription,
-     dms_system_persons.`middleName` AS dms_system_persons_middleName,
-     dms_system_persons.`firstName` AS dms_system_persons_firstName,
-     dms_tasks_executors.`executor_id` AS dms_tasks_executors_executor_id,
-     dms_tasks_executors.`id` AS dms_tasks_executors_id,
-     dms_system_persons_A.`firstName` AS dms_system_persons_A_firstName_executor,
-     dms_system_persons_A.`lastName` AS dms_system_persons_A_lastName_executor,
-     dms_system_persons_A.`middleName` AS dms_system_persons_A_middleName_executor,
-     dms_tasks.`controlDate` AS dms_tasks_controlDate,
-     dms_tasks.`status_id` AS dms_tasks_status_id,
-dms_tasks.`id` as dms_tasks_id
-FROM
-     `dms_tasks` dms_tasks
-LEFT OUTER join dms_task_history hist on hist.task_id=dms_tasks.id
-LEFT OUTER join wf_history wf on wf.id=hist.history_entry_id and wf.to_status_id=3
-     INNER JOIN `dms_system_persons` dms_system_persons ON dms_tasks.`author_id` = dms_system_persons.`id`
-     LEFT OUTER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
-     RIGHT OUTER JOIN `dms_system_persons` dms_system_persons_A ON dms_tasks_executors.`executor_id` = dms_system_persons_A.`id`
-WHERE
-     DATE(dms_tasks.`creationDate`) >= DATE($P{StartDate})
- AND DATE(dms_tasks.`creationDate`) <= DATE($P{EndDate})
- AND dms_tasks.`deleted` = 0
-and dms_tasks.`author_id` = $P{AuthorId}
-group by dms_tasks.id
-ORDER BY
-     dms_tasks.`controlDate` ASC]]>
+		<![CDATA[
+		SELECT
+            documentId AS 'documentId',
+            documentAuthorId AS 'documentAuthorId',
+            checkDate AS 'checkDate',
+            authorInfo AS 'authorInfo',
+            documentShortDescription AS 'documentShortDescription',
+            documentRegistrationNumber AS 'documentRegistrationNumber',
+            executorInfo AS 'executorInfo',
+            documentStatus AS 'documentStatus',
+            documentControlDate AS 'documentControlDate',
+            documentExecutionDate AS 'documentExecutionDate'
+        FROM report_tasks_journal
+        WHERE
+            DATE(checkDate) >= DATE($P{StartDate})
+            AND
+            DATE(checkDate) <= DATE($P{EndDate})
+            AND
+            documentAuthorId = $P{AuthorId}
+        ORDER BY checkDate ASC
+     ]]>
 	</queryString>
-	<field name="dms_system_persons_lastName" class="java.lang.String"/>
-	<field name="done_date" class="java.sql.Timestamp"/>
-	<field name="dms_tasks_deleted" class="java.lang.Boolean"/>
-	<field name="dms_tasks_executionDate" class="java.sql.Timestamp"/>
-	<field name="dms_tasks_number" class="java.lang.String"/>
-	<field name="dms_tasks_creationDate" class="java.sql.Timestamp"/>
-	<field name="dms_tasks_shortDescription" class="java.lang.String"/>
-	<field name="dms_system_persons_middleName" class="java.lang.String"/>
-	<field name="dms_system_persons_firstName" class="java.lang.String"/>
-	<field name="dms_tasks_executors_executor_id" class="java.lang.Integer"/>
-	<field name="dms_tasks_executors_id" class="java.lang.Integer"/>
-	<field name="dms_system_persons_A_firstName_executor" class="java.lang.String"/>
-	<field name="dms_system_persons_A_lastName_executor" class="java.lang.String"/>
-	<field name="dms_system_persons_A_middleName_executor" class="java.lang.String"/>
-	<field name="dms_tasks_controlDate" class="java.sql.Timestamp"/>
-	<field name="dms_tasks_status_id" class="java.lang.Integer"/>
-	<field name="dms_tasks_id" class="java.lang.Integer"/>
+	<field name="documentId" class="java.lang.Integer"/>
+	<field name="documentAuthorId" class="java.lang.Integer"/>
+	<field name="checkDate" class="java.sql.Timestamp"/>
+	<field name="authorInfo" class="java.lang.String"/>
+	<field name="documentShortDescription" class="java.lang.String"/>
+	<field name="documentRegistrationNumber" class="java.lang.String"/>
+	<field name="executorInfo" class="java.lang.String"/>
+	<field name="documentStatus" class="java.lang.String"/>
+	<field name="documentControlDate" class="java.sql.Timestamp"/>
+	<field name="documentExecutionDate" class="java.sql.Timestamp"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -230,7 +192,7 @@ ORDER BY
 					<font fontName="Tahoma" size="9"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_tasks_shortDescription}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentShortDescription}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" mode="Opaque" x="35" y="0" width="110" height="40"/>
@@ -239,7 +201,7 @@ ORDER BY
 					<font fontName="Tahoma" size="10"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_system_persons_lastName}+' '+$F{dms_system_persons_firstName}+' '+$F{dms_system_persons_middleName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{authorInfo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" mode="Opaque" x="462" y="0" width="110" height="40"/>
@@ -248,7 +210,7 @@ ORDER BY
 					<font fontName="Tahoma" size="10"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_system_persons_A_lastName_executor}+' '+$F{dms_system_persons_A_firstName_executor}+' '+$F{dms_system_persons_A_middleName_executor}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{executorInfo}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" mode="Opaque" x="682" y="0" width="60" height="40"/>
@@ -256,7 +218,7 @@ ORDER BY
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_tasks_controlDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentControlDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="572" y="0" width="110" height="40"/>
@@ -264,7 +226,7 @@ ORDER BY
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_tasks_status_id}.toString().replace( "3" , "Исполнено").replace( "2" ,"На исполнении").replace( "1" , "Черновик").replace($F{dms_tasks_status_id}.toString(), "Черновик")]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentStatus}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" mode="Opaque" x="407" y="0" width="55" height="40"/>
@@ -272,33 +234,16 @@ ORDER BY
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_tasks_number}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentRegistrationNumber}]]></textFieldExpression>
 			</textField>
-			<frame>
-				<reportElement style="table_TD" x="742" y="0" width="60" height="40"/>
-			</frame>
-			<componentElement>
-				<reportElement key="table 1" stretchType="RelativeToTallestObject" x="742" y="0" width="60" height="40" isPrintWhenDetailOverflows="true"/>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
-					<datasetRun subDataset="Table Dataset 1">
-						<datasetParameter name="taskId">
-							<datasetParameterExpression><![CDATA[$F{dms_tasks_id}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="60">
-						<jr:detailCell height="40" rowSpan="1">
-							<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-								<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="60" height="40" isPrintWhenDetailOverflows="true"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font fontName="Tahoma"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{wf_history_startDate}==null?"":new SimpleDateFormat("dd.MM.yyyy").format($F{wf_history_startDate})]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-				</jr:table>
-			</componentElement>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+                <reportElement style="table_TD" stretchType="RelativeToTallestObject" mode="Opaque" x="742" y="0" width="60" height="40"/>
+                    <textElement verticalAlignment="Middle">
+                        <font fontName="Tahoma"/>
+                        <paragraph leftIndent="5"/>
+                    </textElement>
+                <textFieldExpression><![CDATA[$F{documentExecutionDate}]]></textFieldExpression>
+            </textField>
 		</band>
 	</detail>
 	<columnFooter>

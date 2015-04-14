@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.entity.model.document.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
@@ -138,11 +137,6 @@ public class PermissionChecker {
                 break;
             }
         }
-        //11) пользователи, учавствующие в согласованиях
-        if (!result.hasPermission(READ) && ((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(user, document.getUniqueId())) {
-            loggerIncomingDocument.debug("{}:Permission R granted: TASK", document.getId());
-            result.addPermission(READ);
-        }
         loggerIncomingDocument.debug("Total permissions for [{}]: {}", document.getId(), result);
         return result;
     }
@@ -274,11 +268,6 @@ public class PermissionChecker {
         // Отсутствуют
         //10) группы адресаты
         // Отсутствуют
-        //11) пользователи, учавствующие в согласованиях
-        if (!result.hasPermission(READ) && ((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(user, document.getUniqueId())) {
-            loggerOutgoingDocument.debug("{}:Permission R granted: TASK", document.getId());
-            result.addPermission(READ);
-        }
         loggerOutgoingDocument.debug("Total permissions for [{}]: {}", document.getId(), result);
         return result;
     }
@@ -318,7 +307,7 @@ public class PermissionChecker {
             return ALL_PERMISSIONS;
         }
         //8) руководитель
-        if (user.equals(document.getSigner())) {
+        if (user.equals(document.getController())) {
             loggerInternalDocument.debug("{}:Permission RWX granted: Signer", document.getId());
             return ALL_PERMISSIONS;
         }
@@ -372,11 +361,6 @@ public class PermissionChecker {
                 break;
             }
         }
-        //11) пользователи, учавствующие в согласованиях
-        if (!result.hasPermission(READ) && ((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(user, document.getUniqueId())) {
-            loggerInternalDocument.debug("{}:Permission R granted: TASK", document.getId());
-            result.addPermission(READ);
-        }
         loggerInternalDocument.debug("Total permissions for [{}]: {}", document.getId(), result);
         return result;
     }
@@ -422,8 +406,8 @@ public class PermissionChecker {
 
         final Permissions result = new Permissions();
         //3) исполнитель
-        if (user.equals(document.getExecutor())) {
-            loggerIncomingDocument.debug("{}:Permission RX granted: Executor", document.getId());
+        if (user.equals(document.getResponsible())) {
+            loggerIncomingDocument.debug("{}:Permission RX granted: Responsible", document.getId());
             result.addPermission(READ);
             result.addPermission(EXECUTE);
         }
@@ -474,11 +458,6 @@ public class PermissionChecker {
                 break;
             }
         }
-        //11) пользователи, учавствующие в согласованиях
-        if (!result.hasPermission(READ) && ((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(user, document.getUniqueId())) {
-            loggerIncomingDocument.debug("{}:Permission R granted: TASK", document.getId());
-            result.addPermission(READ);
-        }
         loggerIncomingDocument.debug("Total permissions for [{}]: {}", document.getId(), result);
         return result;
     }
@@ -496,8 +475,7 @@ public class PermissionChecker {
         final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
         if (rootDocumentId != null) {
             if (documentKey.contains("incoming")) {
-                //TODO String id method ?!?!?!? WHY??????
-                final IncomingDocument rootDocument = ((IncomingDocumentDAOImpl) indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO)).findDocumentById(rootDocumentId.toString());
+                final IncomingDocument rootDocument = ((IncomingDocumentDAOImpl) indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO)).getItemById(rootDocumentId);
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<incoming[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -507,7 +485,9 @@ public class PermissionChecker {
                     return Permissions.EMPTY_PERMISSIONS;
                 }
             } else if (documentKey.contains("outgoing")) {
-                final OutgoingDocument rootDocument = ((OutgoingDocumentDAOImpl) indexManagementBean.getContext().getBean(OUTGOING_DOCUMENT_FORM_DAO)).get(rootDocumentId);
+                final OutgoingDocument rootDocument = ((OutgoingDocumentDAOImpl) indexManagementBean.getContext().getBean(OUTGOING_DOCUMENT_FORM_DAO)).getItemById(
+                        rootDocumentId
+                );
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<outgoing[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -517,7 +497,9 @@ public class PermissionChecker {
                     return Permissions.EMPTY_PERMISSIONS;
                 }
             } else if (documentKey.contains("internal")) {
-                final InternalDocument rootDocument = ((InternalDocumentDAOImpl) indexManagementBean.getContext().getBean(INTERNAL_DOCUMENT_FORM_DAO)).get(rootDocumentId);
+                final InternalDocument rootDocument = ((InternalDocumentDAOImpl) indexManagementBean.getContext().getBean(INTERNAL_DOCUMENT_FORM_DAO)).getItemById(
+                        rootDocumentId
+                );
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<internal[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -527,7 +509,9 @@ public class PermissionChecker {
                     return Permissions.EMPTY_PERMISSIONS;
                 }
             } else if (documentKey.contains("request")) {
-                final RequestDocument rootDocument = ((RequestDocumentDAOImpl) indexManagementBean.getContext().getBean(REQUEST_DOCUMENT_FORM_DAO)).get(rootDocumentId);
+                final RequestDocument rootDocument = ((RequestDocumentDAOImpl) indexManagementBean.getContext().getBean(REQUEST_DOCUMENT_FORM_DAO)).getItemById(
+                        rootDocumentId
+                );
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<request[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -550,20 +534,20 @@ public class PermissionChecker {
     /**
      * Получения прав текущего авторизованного пользователя (вместе со всей инфой)
      *
-     * @param sessionManagement информация об авторизованном пользователе
+     * @param auth              информация об авторизованном пользователе
      * @param document          входящий документ, на который проверяем права
      * @return суммарный набор прав для текущих данных по авторизации
      */
-    public Permissions getPermissions(SessionManagementBean sessionManagement, IncomingDocument document) {
-        if (sessionManagement.isAdministrator()) {
+    public Permissions getPermissions(AuthorizationData auth, IncomingDocument document) {
+        if (auth.isAdministrator()) {
             loggerIncomingDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
-                    sessionManagement.getLoggedUser().getId(), document.getId()
+                    auth.getAuthorized().getId(), document.getId()
             );
             return ALL_PERMISSIONS;
         }
-        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
-        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
-            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+        final Permissions result = getPermissions(auth.getAuthorized(), document);
+        if (auth.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : auth.getSubstitutedUsers()) {
                 loggerIncomingDocument.debug("Get permissions on substituted user [{}] {}",
                         currentUser.getId(), currentUser.getDescription()
                 );
@@ -576,32 +560,37 @@ public class PermissionChecker {
                 }
             }
         }
+        if(!result.hasPermission(READ)){
+            //11) пользователи, учавствующие в согласованиях
+            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+                loggerIncomingDocument.debug("{}:Permission R granted: TASK", document.getId());
+                result.addPermission(READ);
+            }
+        }
         loggerIncomingDocument.info("Result permissions for user[{}] to document[{}] is {}",
-                new Object[]{
-                        sessionManagement.getLoggedUser().getId(),
-                        document.getId(),
-                        result
-                }
+                                    auth.getAuthorized().getId(),
+                                    document.getId(),
+                                    result
         );
         return result;
     }
 
     /**
      * Получения прав текущего авторизованного пользователя (вместе со всей инфой)
-     * @param sessionManagement информация об авторизованном пользователе
+     * @param auth              информация об авторизованном пользователе
      * @param document          входящий документ, на который проверяем права
      * @return суммарный набор прав для текущих данных по авторизации
      */
-    public Permissions getPermissions(SessionManagementBean sessionManagement, Task document) {
-        if (sessionManagement.isAdministrator()) {
+    public Permissions getPermissions(AuthorizationData auth, Task document) {
+        if (auth.isAdministrator()) {
             loggerTask.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
-                    sessionManagement.getLoggedUser().getId(), document.getId()
+                    auth.getAuthorized().getId(), document.getId()
             );
             return ALL_PERMISSIONS;
         }
-        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
-        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
-            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+        final Permissions result = getPermissions(auth.getAuthorized(), document);
+        if (auth.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : auth.getSubstitutedUsers()) {
                 loggerTask.debug("Get permissions on substituted user [{}] {}",
                         currentUser.getId(), currentUser.getDescription()
                 );
@@ -609,31 +598,32 @@ public class PermissionChecker {
                 loggerTask.debug("Sub permissions: {}", subResult.toString());
                 result.mergePermissions(subResult);
                 if (result.hasAllPermissions()) {
-                    loggerIncomingDocument.debug("Reached ALL permissions on this substitution");
+                    loggerTask.debug("Reached ALL permissions on this substitution");
                     break;
                 }
             }
         }
-        loggerTask.info("Result permissions for user[{}] to document[{}] is {}",
-                new Object[]{
-                        sessionManagement.getLoggedUser().getId(),
-                        document.getId(),
-                        result
-                }
-        );
+        if(!result.hasPermission(READ)){
+            //11) пользователи, учавствующие в согласованиях
+            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+                loggerTask.debug("{}:Permission R granted: TASK", document.getId());
+                result.addPermission(READ);
+            }
+        }
+        loggerTask.info("Result permissions for user[{}] to document[{}] is {}", auth.getAuthorized().getId(), document.getId(), result);
         return result;
     }
 
-    public Permissions getPermissions(SessionManagementBean sessionManagement, OutgoingDocument document) {
-        if (sessionManagement.isAdministrator()) {
+    public Permissions getPermissions(AuthorizationData auth, OutgoingDocument document) {
+        if (auth.isAdministrator()) {
             loggerOutgoingDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
-                    sessionManagement.getLoggedUser().getId(), document.getId()
+                    auth.getAuthorized().getId(), document.getId()
             );
             return ALL_PERMISSIONS;
         }
-        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
-        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
-            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+        final Permissions result = getPermissions(auth.getAuthorized(), document);
+        if (auth.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : auth.getSubstitutedUsers()) {
                 loggerOutgoingDocument.debug("Get permissions on substituted user [{}] {}",
                         currentUser.getId(), currentUser.getDescription()
                 );
@@ -641,31 +631,36 @@ public class PermissionChecker {
                 loggerOutgoingDocument.debug("Sub permissions: {}", subResult.toString());
                 result.mergePermissions(subResult);
                 if (result.hasAllPermissions()) {
-                    loggerIncomingDocument.debug("Reached ALL permissions on this substitution");
+                    loggerOutgoingDocument.debug("Reached ALL permissions on this substitution");
                     break;
                 }
             }
         }
+        if(!result.hasPermission(READ)){
+            //11) пользователи, учавствующие в согласованиях
+            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+                loggerOutgoingDocument.debug("{}:Permission R granted: TASK", document.getId());
+                result.addPermission(READ);
+            }
+        }
         loggerOutgoingDocument.info("Result permissions for user[{}] to document[{}] is {}",
-                new Object[]{
-                        sessionManagement.getLoggedUser().getId(),
-                        document.getId(),
-                        result
-                }
+                                    auth.getAuthorized().getId(),
+                                    document.getId(),
+                                    result
         );
         return result;
     }
 
-    public Permissions getPermissions(SessionManagementBean sessionManagement, InternalDocument document) {
-        if (sessionManagement.isAdministrator()) {
+    public Permissions getPermissions(AuthorizationData auth, InternalDocument document) {
+        if (auth.isAdministrator()) {
             loggerInternalDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
-                    sessionManagement.getLoggedUser().getId(), document.getId()
+                    auth.getAuthorized().getId(), document.getId()
             );
             return ALL_PERMISSIONS;
         }
-        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
-        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
-            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+        final Permissions result = getPermissions(auth.getAuthorized(), document);
+        if (auth.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : auth.getSubstitutedUsers()) {
                 loggerInternalDocument.debug("Get permissions on substituted user [{}] {}",
                         currentUser.getId(), currentUser.getDescription()
                 );
@@ -678,26 +673,31 @@ public class PermissionChecker {
                 }
             }
         }
+        if(!result.hasPermission(READ)){
+            //11) пользователи, учавствующие в согласованиях
+            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+                loggerInternalDocument.debug("{}:Permission R granted: TASK", document.getId());
+                result.addPermission(READ);
+            }
+        }
         loggerInternalDocument.info("Result permissions for user[{}] to document[{}] is {}",
-                new Object[]{
-                        sessionManagement.getLoggedUser().getId(),
-                        document.getId(),
-                        result
-                }
+                                    auth.getAuthorized().getId(),
+                                    document.getId(),
+                                    result
         );
         return result;
     }
 
-    public Permissions getPermissions(SessionManagementBean sessionManagement, RequestDocument document) {
-        if (sessionManagement.isAdministrator()) {
+    public Permissions getPermissions(AuthorizationData auth, RequestDocument document) {
+        if (auth.isAdministrator()) {
             loggerRequestDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
-                    sessionManagement.getLoggedUser().getId(), document.getId()
+                    auth.getAuthorized().getId(), document.getId()
             );
             return ALL_PERMISSIONS;
         }
-        final Permissions result = getPermissions(sessionManagement.getLoggedUser(), document);
-        if (sessionManagement.isSubstitution() && !result.hasAllPermissions()) {
-            for (User currentUser : sessionManagement.getSubstitutedUsers()) {
+        final Permissions result = getPermissions(auth.getAuthorized(), document);
+        if (auth.isSubstitution() && !result.hasAllPermissions()) {
+            for (User currentUser : auth.getSubstitutedUsers()) {
                 loggerRequestDocument.debug("Get permissions on substituted user [{}] {}",
                         currentUser.getId(), currentUser.getDescription()
                 );
@@ -710,12 +710,17 @@ public class PermissionChecker {
                 }
             }
         }
+        if(!result.hasPermission(READ)){
+            //11) пользователи, учавствующие в согласованиях
+            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+                loggerRequestDocument.debug("{}:Permission R granted: TASK", document.getId());
+                result.addPermission(READ);
+            }
+        }
         loggerRequestDocument.info("Result permissions for user[{}] to document[{}] is {}",
-                new Object[]{
-                        sessionManagement.getLoggedUser().getId(),
-                        document.getId(),
-                        result
-                }
+                                   auth.getAuthorized().getId(),
+                                   document.getId(),
+                                   result
         );
         return result;
     }

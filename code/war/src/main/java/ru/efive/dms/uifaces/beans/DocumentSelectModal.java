@@ -1,22 +1,21 @@
 package ru.efive.dms.uifaces.beans;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.faces.context.FacesContext;
-
-import ru.entity.model.document.IncomingDocument;
-import ru.entity.model.document.RequestDocument;
 import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentListHolder;
 import ru.efive.dms.uifaces.beans.request.RequestDocumentListHolder;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.document.IncomingDocument;
+import ru.entity.model.document.RequestDocument;
+
+import javax.faces.context.FacesContext;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DocumentSelectModal extends ModalWindowHolderBean {
     //--------------------------------------------------------------------------------------------------------------
     public IncomingDocumentListHolder getIncomingDocuments() {
         if (incomingDocuments == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            incomingDocuments = (IncomingDocumentListHolder) context.getApplication().evaluateExpressionGet(context, "#{in_documents}", IncomingDocumentListHolder.class);
+            incomingDocuments = context.getApplication().evaluateExpressionGet(context, "#{in_documents}", IncomingDocumentListHolder.class);
         }
         return incomingDocuments;
     }
@@ -33,7 +32,7 @@ public class DocumentSelectModal extends ModalWindowHolderBean {
     public RequestDocumentListHolder getRequestDocuments() {
         if (requestDocuments == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            requestDocuments = (RequestDocumentListHolder) context.getApplication().evaluateExpressionGet(context, "#{request_documents}", RequestDocumentListHolder.class);
+            requestDocuments = context.getApplication().evaluateExpressionGet(context, "#{request_documents}", RequestDocumentListHolder.class);
         }
         return requestDocuments;
     }
@@ -79,11 +78,11 @@ public class DocumentSelectModal extends ModalWindowHolderBean {
 
     public boolean selected(Object object) {
         if (object.getClass().equals(IncomingDocument.class)) {
-            return (this.incomingDocument == null) ? false : this.incomingDocument.equals((IncomingDocument) object);
+            return (this.incomingDocument != null) && this.incomingDocument.equals(object);
         } else if (object.getClass().equals(RequestDocument.class)) {
-            return (this.requestDocument == null) ? false : this.requestDocument.equals((RequestDocument) object);
+            return (this.requestDocument != null) && this.requestDocument.equals(object);
         } else if (object.getClass().equals(String.class)) {
-            return (this.viewType == null) ? false : this.viewType.equals((String) object);
+            return (this.viewType != null) && this.viewType.equals(object);
         } else {
             return false;
         }

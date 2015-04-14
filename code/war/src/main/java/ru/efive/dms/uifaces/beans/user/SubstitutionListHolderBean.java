@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.user;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForSubstitution;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.entity.model.user.Substitution;
 
@@ -47,6 +48,6 @@ public class SubstitutionListHolderBean implements Serializable{
     }
 
     public void refresh(){
-
+        lazyModel = new LazyDataModelForSubstitution((SubstitutionDaoImpl) indexManagementBean.getContext().getBean(ApplicationDAONames.SUBSTITUTION_DAO));
     }
 }

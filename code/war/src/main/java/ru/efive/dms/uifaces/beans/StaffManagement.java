@@ -13,17 +13,6 @@ import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 @RequestScoped
 public class StaffManagement {
 
-    /*	public List<Group> getAllGroupsList(){
-            List<Group> in_result=new ArrayList<Group>();
-            try{
-                in_result=sessionManagement.getDAO(GroupDAOHibernate.class, "groupDao").getAllDocuments();
-            }
-            catch(Exception e){
-                e.printStackTrace();
-            }
-            return in_result;
-        }
-    */
     public Group findGroupByAlias(String name) {
         Group in_result = null;
         try {

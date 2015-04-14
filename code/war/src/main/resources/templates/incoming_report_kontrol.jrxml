@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Отчет Сергеева Входящие" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.0.3.final using JasperReports Library version 6.0.3  -->
+<!-- 2015-03-20T19:09:54 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Отчет Сергеева Входящие" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e0f5c926-f21a-4b5e-bdd0-be011527c439">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="7"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ORD_ADAPTER.xml"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -42,141 +45,134 @@
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
-	</style>	
-	<subDataset name="ExecDate">
-		<parameter name="DocId" class="java.lang.Integer">
-			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-		</parameter>
+	</style>
+	<subDataset name="Manager" uuid="8b627b50-9e59-440c-acf6-8ecfaf8c1b8a">
+		<parameter name="ManagerId" class="java.lang.String" isForPrompting="false"/>
 		<queryString>
-			<![CDATA[SELECT dms_outgoing_documents.registrationNumber
-     , dms_outgoing_documents.registrationDate
-FROM
-  dms_incoming_documents
-LEFT JOIN dms_outgoing_documents
-ON dms_incoming_documents.id = substring(dms_outgoing_documents.reason_document_id, 10,10)
-WHERE
-  dms_incoming_documents.`id` = $P{DocId}]]>
+			<![CDATA[SELECT
+                    CONCAT_WS(' ' , person.lastName, person.firstName, person.middleName) AS 'managerInfo'
+                    FROM
+                    dms_system_persons person
+                    WHERE person.id = $P{ManagerId}]]>
 		</queryString>
-		<field name="registrationNumber" class="java.lang.String"/>
-		<field name="registrationDate" class="java.sql.Timestamp"/>
+		<field name="managerInfo" class="java.lang.String"/>
 	</subDataset>
-	<parameter name="StartDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="EndDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="ManagerId" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<queryString>
+	<parameter name="StartDate" class="java.util.Date"/>
+	<parameter name="EndDate" class="java.util.Date"/>
+	<parameter name="ManagerId" class="java.lang.String"/>
+	<queryString language="SQL">
 		<![CDATA[SELECT
- dms_incoming_documents.`registrationDate` as registrationDate,
-dms_incoming_documents.`id` as dms_incoming_documents_id,
-     dms_incoming_documents.`executionDate` AS dms_incoming_documents_executionDate,
-dms_incoming_documents.`id` as docId,
-     dms_incoming_documents.`receivedDocumentNumber` AS dms_incoming_documents_receivedDocumentNumber,
-     dms_incoming_documents.`receivedDocumentDate` AS dms_incoming_documents_receivedDocumentDate,
-     contragents.`shortName` AS contragents_shortName,
-     dms_incoming_documents.`registrationNumber` AS dms_incoming_documents_registrationNumber,
-     dms_incoming_documents.`shortDescription` AS dms_incoming_documents_shortDescription,
-     dms_incoming_documents.`creationDate` AS dms_incoming_documents_creationDate,
-	 CONCAT_WS(' ', controller.lastName, controller.firstName, controller.middleName ) AS controllerFio,
-      group_concat(distinct concat(person.`lastName`," ",LEFT(person.`firstName`,1),"."," ",LEFT(person.`middleName`,1),".","") separator ", ") AS fio,
-     dms_incoming_documents_executors.`dms_incoming_documents_id` AS dms_incoming_documents_executors_dms_incoming_documents_id,
-     dms_incoming_documents_executors.`executors_id` AS dms_incoming_documents_executors_executors_id,
-     dms_incoming_documents_executors.`ID3` AS dms_incoming_documents_executors_ID3
-FROM
-     `dms_incoming_documents` dms_incoming_documents INNER JOIN `contragents` contragents ON dms_incoming_documents.`contragent_id` = contragents.`id`
-     INNER JOIN `dms_incoming_documents_executors` dms_incoming_documents_executors ON dms_incoming_documents.`id` = dms_incoming_documents_executors.`dms_incoming_documents_id`
-     INNER JOIN `dms_system_persons` person ON dms_incoming_documents_executors.`executors_id` = person.`id`
-     INNER JOIN `dms_incoming_documents_executors` exec ON person.`id` = exec.`executors_id`
-     inner join `dms_system_persons` controller ON dms_incoming_documents.`controller_id` = controller.`id`
-WHERE
-     date(dms_incoming_documents.`registrationDate`) >= date($P{StartDate})
-     and date(dms_incoming_documents.`registrationDate`) <= date($P{EndDate})
-     and dms_incoming_documents.executionDate IS NOT NULL
-     and dms_incoming_documents.`controller_id` = $P{ManagerId}
-     AND dms_incoming_documents.deleted = 0
-GROUP BY
-     dms_incoming_documents.`id`]]>
+ 				documentId,
+ 				documentRegistrationNumber,
+ 				checkDate,
+ 				managerId,
+ 				recipientInfo,
+ 				documentReceivedNumber,
+ 				documentReceivedDate,
+ 				documentShortDescription,
+ 				executorInfo,
+ 				documentExecutionDate,
+ 				executionInfo
+ 			FROM 
+ 				report_incoming_control
+ 			WHERE
+      			DATE(checkDate) >= DATE($P{StartDate})
+     			AND
+     			DATE(checkDate) <= DATE($P{EndDate})
+     			AND
+     			managerId =  $P{ManagerId}]]>
 	</queryString>
-	<field name="registrationDate" class="java.sql.Timestamp"/>
-	<field name="dms_incoming_documents_id" class="java.lang.Integer"/>
-	<field name="dms_incoming_documents_executionDate" class="java.sql.Timestamp"/>
-	<field name="docId" class="java.lang.Integer"/>
-	<field name="dms_incoming_documents_receivedDocumentNumber" class="java.lang.String"/>
-	<field name="dms_incoming_documents_receivedDocumentDate" class="java.sql.Timestamp"/>
-	<field name="contragents_shortName" class="java.lang.String"/>
-	<field name="dms_incoming_documents_registrationNumber" class="java.lang.String"/>
-	<field name="dms_incoming_documents_shortDescription" class="java.lang.String"/>
-	<field name="dms_incoming_documents_creationDate" class="java.sql.Timestamp"/>
-	<field name="fio" class="java.lang.String"/>
-	<field name="controllerFio" class="java.lang.String"/>
-	<field name="dms_incoming_documents_executors_dms_incoming_documents_id" class="java.lang.Integer"/>
-	<field name="dms_incoming_documents_executors_executors_id" class="java.lang.Integer"/>
-	<field name="dms_incoming_documents_executors_ID3" class="java.lang.Integer"/>
+	<field name="documentId" class="java.lang.Integer"/>
+	<field name="documentRegistrationNumber" class="java.lang.String"/>
+	<field name="checkDate" class="java.sql.Timestamp"/>
+	<field name="managerId" class="java.lang.Integer"/>
+	<field name="recipientInfo" class="java.lang.String"/>
+	<field name="documentReceivedNumber" class="java.lang.String"/>
+	<field name="documentReceivedDate" class="java.sql.Timestamp"/>
+	<field name="documentShortDescription" class="java.lang.String"/>
+	<field name="executorInfo" class="java.lang.String"/>
+	<field name="documentExecutionDate" class="java.sql.Timestamp"/>
+	<field name="executionInfo" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch">
+		<band height="80" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="30" width="802" height="20"/>
+				<reportElement x="0" y="30" width="802" height="20" uuid="af6e9585-2f99-42aa-9775-207d6edbf5a3"/>
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="16"/>
 				</textElement>
 				<text><![CDATA[Отчетность по контрольным входящим документам]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="31" y="59" width="50" height="20"/>
+				<reportElement x="31" y="59" width="50" height="20" uuid="66b26f2d-f295-4194-9971-db5ee82bc899"/>
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[c]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="211" y="59" width="52" height="20"/>
+				<reportElement x="211" y="59" width="52" height="20" uuid="f1d3046a-fec6-4fed-9d0c-8ec8af6f6ce8"/>
 				<textElement>
 					<font fontName="Tahoma" size="12" isBold="false"/>
 				</textElement>
 				<text><![CDATA[по]]></text>
 			</staticText>
 			<textField pattern="dd.MM.yyyy">
-				<reportElement x="81" y="59" width="130" height="20"/>
+				<reportElement x="81" y="59" width="130" height="20" uuid="daf887fb-c385-433a-b6b6-bb6d36efb9ab"/>
 				<textElement>
 					<font fontName="Tahoma" size="12" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{StartDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="802" height="30"/>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="30" uuid="83db8911-b3c9-49ff-ad52-0a17128fa0cd"/>
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
 				</textElement>
 				<text><![CDATA[ФГБУ ФНКЦ ДГОИ им. Дмитрия Рогачева Минздрава России]]></text>
 			</staticText>
 			<textField pattern="dd.MM.yyyy">
-				<reportElement x="263" y="59" width="142" height="20"/>
+				<reportElement x="263" y="59" width="142" height="20" uuid="fb7fc791-9769-49a6-bd0d-c0c890c5225e"/>
 				<textElement>
 					<font fontName="Tahoma" size="12" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{EndDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="463" y="59" width="100" height="20"/>
+				<reportElement x="405" y="59" width="75" height="20" uuid="656854a2-c0d8-44ba-aad7-20187626504c"/>
 				<textElement>
-					<font fontName="Tahoma" size="12"/>
+					<font fontName="Tahoma" size="11"/>
 				</textElement>
 				<text><![CDATA[Руководитель:]]></text>
 			</staticText>
-			<textField>
-				<reportElement key="table 1" x="563" y="59" width="239" height="20"/>
+			<componentElement>
+				<reportElement key="table 1" x="480" y="59" width="232" height="20" uuid="7be32c19-2858-4979-b22e-05a8266b6520">
+					<property name="local_mesure_unity" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Manager" uuid="125f83b6-d197-4246-9a0c-414c8d89f2e1">
+						<datasetParameter name="ManagerId">
+							<datasetParameterExpression><![CDATA[$P{ManagerId}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="233" uuid="89f692e3-496c-4008-8fbd-006f0d0584ec">
+						<jr:tableFooter height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="233" height="20" uuid="b8d6dedf-ac3a-47cf-a120-4dea834394a1"/>
 								<textElement>
 									<font fontName="Tahoma" size="12"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{controllerFio}]]></textFieldExpression>
-			</textField>
+								<textFieldExpression><![CDATA[$F{managerInfo}]]></textFieldExpression>
+							</textField>
+						</jr:tableFooter>
+						<jr:detailCell height="0" rowSpan="1"/>
+					</jr:column>
+				</jr:table>
+			</componentElement>
 		</band>
 	</title>
 	<pageHeader>
@@ -185,70 +181,70 @@ GROUP BY
 	<columnHeader>
 		<band height="45" splitType="Stretch">
 			<staticText>
-				<reportElement style="table_TD" x="653" y="0" width="66" height="45"/>
+				<reportElement style="table_TD" x="616" y="0" width="66" height="45" uuid="01c53600-459b-43d1-acfb-03a97f13083e"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[Срок исполения]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="348" y="0" width="66" height="45"/>
+				<reportElement style="table_TD" x="311" y="0" width="66" height="45" uuid="c8330822-6b2a-4c17-813d-1f9e8148ac08"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Дата документа]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="142" y="0" width="121" height="45"/>
+				<reportElement style="table_TD" x="133" y="0" width="121" height="45" uuid="8452762d-a0e3-44cd-95cc-8644325805b4"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Адресант]]></text>
+				<text><![CDATA[Адресат]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="414" y="0" width="149" height="45"/>
+				<reportElement style="table_TD" x="377" y="0" width="149" height="45" uuid="1c61db95-63f3-4849-a832-51df0f0aa0ea"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Содержание документа]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="563" y="0" width="90" height="45"/>
+				<reportElement style="table_TD" x="526" y="0" width="90" height="45" uuid="aba60ba6-8694-489a-b3ca-d134b3e87aab"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Исполнитель]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="0" y="0" width="22" height="45"/>
+				<reportElement style="table_TD" x="0" y="0" width="22" height="45" uuid="0ee0aed6-7f3c-4f89-9de2-a1bb0f6b358b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" isBold="false"/>
 				</textElement>
 				<text><![CDATA[п/п]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="263" y="0" width="85" height="45"/>
+				<reportElement style="table_TD" x="254" y="0" width="57" height="45" uuid="9e3d9255-7772-45e1-bde6-db8b98e8e115"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Номер документа]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="79" y="0" width="63" height="45"/>
+				<reportElement style="table_TD" x="70" y="0" width="63" height="45" uuid="6a4997fb-2c5a-4e61-a42f-222756791262"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
 				<text><![CDATA[Дата поступления]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="719" y="0" width="83" height="45"/>
+				<reportElement style="table_TD" x="682" y="0" width="120" height="45" uuid="de379aaf-162e-4624-b0ae-3c18217a91fb"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<text><![CDATA[Отметка об исполнении (╧ и дата ответа]]></text>
+				<text><![CDATA[Отметка об исполнении и дата ответа]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="22" y="0" width="57" height="45"/>
+				<reportElement style="table_TD" x="22" y="0" width="48" height="45" uuid="370f2879-034f-4369-b6ba-f93d11fc8af7"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10" isBold="false"/>
 				</textElement>
@@ -257,117 +253,84 @@ GROUP BY
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="34" splitType="Stretch">
-			<textField>
-				<reportElement style="table_TD" x="263" y="0" width="85" height="34"/>
+		<band height="49" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="254" y="0" width="57" height="49" uuid="06774223-c592-4c4d-9b8d-537c2bf7f550"/>
 				<box leftPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_incoming_documents_receivedDocumentNumber}==null?"":$F{dms_incoming_documents_receivedDocumentNumber}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentRegistrationNumber}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd.MM.yyyy">
-				<reportElement style="table_TD" x="348" y="0" width="66" height="34"/>
+			<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
+				<reportElement style="table_TD" x="70" y="0" width="63" height="49" uuid="1303e032-1085-4259-95b2-b1ad27f1a194"/>
 				<box leftPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_incoming_documents_receivedDocumentDate}==null?"":$F{dms_incoming_documents_receivedDocumentDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentReceivedDate}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="table_TD" x="142" y="0" width="121" height="34"/>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="133" y="0" width="121" height="49" uuid="4e1e356d-6627-49ab-8795-8decd07f3e36"/>
 				<box leftPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{contragents_shortName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{recipientInfo}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="table_TD" x="414" y="0" width="149" height="34"/>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="377" y="0" width="149" height="49" uuid="beac37c8-5cab-44ea-aed3-8b70b5fb1602"/>
 				<box leftPadding="3"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_incoming_documents_shortDescription}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentShortDescription}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="table_TD" x="563" y="0" width="90" height="34"/>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="526" y="0" width="90" height="49" uuid="7dd837dd-b7d9-4bdf-85e3-cc0e1a9c5270"/>
 				<box leftPadding="3" rightPadding="3"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{fio}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{executorInfo}]]></textFieldExpression>
 			</textField>
-			<componentElement>
-				<reportElement key="table 1" style="table_TD" stretchType="RelativeToTallestObject" x="719" y="0" width="83" height="34" isPrintInFirstWholeBand="true"/>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
-					<datasetRun subDataset="ExecDate">
-						<datasetParameter name="DocId">
-							<datasetParameterExpression><![CDATA[$F{dms_incoming_documents_id}]]></datasetParameterExpression>
-						</datasetParameter>
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="84">
-						<printWhenExpression><![CDATA[1==1]]></printWhenExpression>
-						<jr:columnFooter height="17" rowSpan="1">
-							<textField isBlankWhenNull="true">
-								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="84" height="17">
-									<printWhenExpression><![CDATA[1==1]]></printWhenExpression>
-								</reportElement>
-								<box leftPadding="3"/>
-								<textElement>
-									<font fontName="Tahoma"/>
-								</textElement>
-								<textFieldExpression><![CDATA[]]></textFieldExpression>
-							</textField>
-							<textField pattern="dd.MM.yyyy">
-								<reportElement x="0" y="0" width="84" height="17"/>
-								<textElement textAlignment="Center">
-									<font fontName="Tahoma"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{registrationDate}==null?"":$F{registrationDate}]]></textFieldExpression>
-							</textField>
-						</jr:columnFooter>
-						<jr:detailCell height="17" rowSpan="1">
-							<textField>
-								<reportElement x="0" y="0" width="84" height="17"/>
-								<textElement textAlignment="Center">
-									<font fontName="Tahoma" size="10"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{registrationNumber}==null?"":$F{registrationNumber}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-				</jr:table>
-			</componentElement>
-			<textField pattern="dd.MM.yyyy">
-				<reportElement style="table_TD" x="79" y="0" width="63" height="34"/>
+			<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
+				<reportElement style="table_TD" x="311" y="0" width="66" height="49" uuid="61d2f262-64e8-4146-962f-469e19078e1b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{registrationDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{checkDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement style="table_TD" x="0" y="0" width="22" height="34"/>
+				<reportElement style="table_TD" x="0" y="0" width="22" height="49" uuid="c7be649e-d538-4ffc-bba4-6320853d6761"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd.MM.yyyy">
-				<reportElement style="table_TD" x="653" y="0" width="66" height="34"/>
+			<textField pattern="dd.MM.yyyy" isBlankWhenNull="true">
+				<reportElement style="table_TD" x="616" y="0" width="66" height="49" uuid="65304985-441f-40db-a449-dedbee724a9d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_incoming_documents_executionDate}==null?"":$F{dms_incoming_documents_executionDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentExecutionDate}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement style="table_TD" x="22" y="0" width="57" height="34"/>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="22" y="0" width="48" height="49" uuid="969fb210-99f9-423b-9ea3-954034d3b2eb"/>
 				<box leftPadding="3" rightPadding="0"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dms_incoming_documents_registrationNumber}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{documentReceivedNumber}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="table_TD" x="682" y="0" width="120" height="49" uuid="969fb210-99f9-423b-9ea3-954034d3b2eb"/>
+				<box leftPadding="3" rightPadding="0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{executionInfo}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

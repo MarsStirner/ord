@@ -1,0 +1,40 @@
+.ui-panelgrid .ui-panelgrid-cell {
+    border-style: dotted none !important;
+    border-color: lavender !important;
+}
+
+.ui-widget-content {
+    border: none !important;
+}
+
+.ui-button-text-only .ui-button-text {
+    width: 8em !important;
+}
+
+.ui-selectonemenu {
+    width: 13.5em !important;
+}
+
+.ui-selectonemenu-label {
+    width: 12.5em !important;
+}
+
+.ui-selectonemenu-list-item {
+    white-space: normal !important;
+    width: 13.5em;
+}
+
+.ui-selectonemenu-items-wrapper {
+    overflow-x: hidden !important;
+}
+
+.userListPanel {
+    overflow-y: auto;
+    max-height: 200px;
+}
+
+.userListItem {
+    display:inline-block !important;
+    padding:1px 5px !important;
+    white-space:nowrap;
+}

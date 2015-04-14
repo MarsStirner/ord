@@ -1,854 +1,344 @@
 package ru.efive.dms.dao;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
-import ru.efive.sql.dao.GenericDAOHibernate;
+import org.slf4j.LoggerFactory;
+import ru.efive.dms.util.security.AuthorizationData;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.user.Group;
-import ru.entity.model.user.Role;
-import ru.entity.model.user.User;
 
 import java.util.*;
 
-public class IncomingDocumentDAOImpl extends GenericDAOHibernate<IncomingDocument> {
+import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.util.ApplicationHelper.getNextDayDate;
+
+@SuppressWarnings("unchecked")
+public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
+
+    static {
+        logger = LoggerFactory.getLogger("INCOMING_DAO");
+    }
+
 
     @Override
     protected Class<IncomingDocument> getPersistentClass() {
         return IncomingDocument.class;
     }
 
-    @SuppressWarnings("unchecked")
-    public IncomingDocument findDocumentById(String id) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        detachedCriteria.add(Restrictions.eq("id", Integer.valueOf(id)));
-        List<IncomingDocument> in_results = getHibernateTemplate().findByCriteria(detachedCriteria);
-        if (in_results != null && !in_results.isEmpty()) {
-            return in_results.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public IncomingDocument findDocumentByNumeratorId(String id) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        detachedCriteria.add(Restrictions.eq("parentNumeratorId", Integer.valueOf(id)));
-        List<IncomingDocument> in_results = getHibernateTemplate().findByCriteria(detachedCriteria);
-        if (in_results != null && !in_results.isEmpty()) {
-            return in_results.get(0);
-        } else {
-            return null;
-        }
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findRegistratedDocuments() {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        detachedCriteria.add(Restrictions.isNotNull("registrationNumber"));
-
-        return getHibernateTemplate().findByCriteria(detachedCriteria);
-    }
-
-
-    @SuppressWarnings("unchecked")
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // @Deprecated ПОЛНАЯ АХИНЕЯ
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Deprecated
     public List<IncomingDocument> findRegistratedDocumentsByCriteria(String in_criteria) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        detachedCriteria.add(Restrictions.ilike("registrationNumber", "%" + in_criteria + "%"));
-
-        LocalDate currentDate = new LocalDate();
-        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()));
-
+        DetachedCriteria detachedCriteria = getSimplestCriteria().add(Restrictions.ilike("registrationNumber", in_criteria, MatchMode.ANYWHERE));
+        final LocalDate currentDate = new LocalDate();
+        detachedCriteria.add(
+                Restrictions.sqlRestriction(
+                        "DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()
+                )
+        );
         return getHibernateTemplate().findByCriteria(detachedCriteria);
-    }
-
-    public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria detachedCriteria = getAccessControlSearchCriteriaByUser(user);
-        addDraftsAndDeletedRestrictions(detachedCriteria, showDeleted, showDrafts);
-        System.out.println("subSrart"); //TODO wtf? =)
-        return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria, in_map), filter), -1, 0);
-
-    }
-
-    public long countAllDocumentsByUser(Map<String, Object> in_map, String filter, User user, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        return getCountOf(getSearchCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), filter));
-    }
-
-    public long countAllDocuments(Map<String, Object> in_map, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria in_searchCriteria = DetachedCriteria.forClass(getPersistentClass());
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        in_searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        addDeletedRestriction(in_searchCriteria, showDeleted);
-
-        return getCountOf(getConjunctionSearchCriteria(in_searchCriteria, in_map));
-    }
-
-    public List<IncomingDocument> findAllDocuments(Map<String, Object> in_map, boolean showDeleted, boolean showDrafts, int offset, int count) {
-        DetachedCriteria in_searchCriteria = DetachedCriteria.forClass(getPersistentClass());
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        in_searchCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-
-        addDeletedRestriction(in_searchCriteria, showDeleted);
-
-        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset, count);
-    }
-
-    public List<IncomingDocument> findAllDocuments(Map<String, Object> in_map, String filter, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
-        addDraftsAndDeletedRestrictions(detachedCriteria, showDeleted, showDrafts);
-        return getHibernateTemplate().findByCriteria(getSearchCriteria(getConjunctionSearchCriteria(detachedCriteria, in_map), filter), -1, 0);
-    }
-
-    public long countAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        return getCountOf(getConjunctionSearchCriteria(in_searchCriteria, in_map));
-    }
-
-    public List<IncomingDocument> findAllDocumentsByUser(Map<String, Object> in_map, User user, boolean showDeleted, boolean showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        String[] ords = orderBy == null ? null : orderBy.split(",");
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(in_searchCriteria, ords, orderAsc);
-            } else {
-                addOrder(in_searchCriteria, orderBy, orderAsc);
-            }
-        }
-        return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(in_searchCriteria, in_map), offset, count);
-    }
-
-    public long countAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        return getCountOf(getSearchCriteria(in_searchCriteria, filter));
-    }
-
-    public List<IncomingDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        return getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter));
-    }
-
-
-    public List<IncomingDocument> findAllDocumentsByUser(String filter, User user, boolean showDeleted, boolean showDrafts, int offset, int count, String orderBy, boolean orderAsc) {
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUser(user);
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        String[] ords = orderBy == null ? null : orderBy.split(",");
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(in_searchCriteria, ords, orderAsc);
-            } else {
-                addOrder(in_searchCriteria, orderBy, orderAsc);
-            }
-        }
-
-        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, count);
-        if (ids.isEmpty()) {
-            return new ArrayList<IncomingDocument>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, ords, orderBy, orderAsc));
-    }
-
-
-    //// Запросы с проверкой на руководителя документа /////////////////////////////////////////////////////////////////
-    @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(
-            final String filter,
-            final User user,
-            final boolean showDeleted) {
-        DetachedCriteria resultCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
-        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        return getHibernateTemplate().findByCriteria(resultCriteria);
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(
-            final String filter,
-            final User user,
-            final boolean showDeleted,
-            final int offset,
-            final int count,
-            final String order,
-            final boolean asc) {
-        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter);
-        addOrder(in_searchCriteria, order, asc);
-        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
-        if (ids.isEmpty()) {
-            return new ArrayList<IncomingDocument>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, order, asc));
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findControlledDocumentsByUser(
-            final String filter,
-            final User user,
-            final boolean showDeleted,
-            final Date beforeDate,
-            final int offset,
-            final int count,
-            final String order,
-            final boolean asc) {
-        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate);
-        addOrder(in_searchCriteria, order, asc);
-        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, count);
-        if (ids.isEmpty()) {
-            return new ArrayList<IncomingDocument>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, order, asc));
-
-    }
-
-    public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted) {
-        return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter));
-    }
-
-    public long countControlledDocumentsByUser(final String filter, final User user, final boolean showDeleted, final Date beforeDate) {
-        return getCountOf(getControlledDocumentsByUserCriteria(user, showDeleted, filter, beforeDate));
-    }
-
-    /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не админ)
-     *
-     * @param user        пользователь, для которого генерируем критерии
-     * @param showDeleted включать ли удаленные документы в результат
-     * @param filter      поисковый шаблон
-     * @return набор критериев для поиска требуемых документов
-     */
-    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final String filter) {
-        final DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass());
-        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        setCriteriaAliases(resultCriteria);
-        if (!user.isAdministrator()) {
-            resultCriteria.add(Restrictions.eq("controller.id", user.getId()));
-        }
-        resultCriteria.add(Restrictions.isNotNull("executionDate"));
-        resultCriteria.add(Restrictions.in("statusId",
-                        ImmutableList.of(
-                                DocumentStatus.ON_REGISTRATION.getId(),
-                                DocumentStatus.CHECK_IN_2.getId(),
-                                DocumentStatus.ON_EXECUTION_80.getId()
-                        )
-                )
-        );
-        addDeletedRestriction(resultCriteria, showDeleted);
-        getSearchCriteria(resultCriteria, filter);
-        return resultCriteria;
-    }
-
-    /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых заданный пользователь руководитель (если не админ)
-     *
-     * @param user        пользователь, для которого генерируем критерии
-     * @param showDeleted включать ли удаленные документы в результат
-     * @param filter      поисковый шаблон
-     * @param beforeDate  Ограничение по дате, до которой должен быть срок исполнения
-     * @return набор критериев для поиска требуемых документов
-     */
-    private DetachedCriteria getControlledDocumentsByUserCriteria(final User user, final boolean showDeleted, final String filter, final Date beforeDate) {
-        return getControlledDocumentsByUserCriteria(user, showDeleted, filter).add(Restrictions.lt("executionDate", beforeDate));
-    }
-
-    /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -  руководитель (если не админ)
-     *
-     * @param userList    список пользователей, для которых генерируем критерии
-     * @param showDeleted включать ли удаленные документы в результат
-     * @param filter      поисковый шаблон
-     * @param beforeDate  Ограничение по дате, до которой должен быть срок исполнения
-     * @return набор критериев для поиска требуемых документов
-     */
-    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted, String filter, Date beforeDate) {
-        return getControlledDocumentsByUserListCriteria(userList, showDeleted, filter).add(Restrictions.lt("executionDate", beforeDate));
-    }
-
-    /**
-     * Генерирование критериев для отбора Вхоядщих документов, у которых один из заданных пользователей -  руководитель (если не админ)
-     *
-     * @param userList    список пользователей, для которых генерируем критерии
-     * @param showDeleted включать ли удаленные документы в результат
-     * @param filter      поисковый шаблон
-     * @return набор критериев для поиска требуемых документов
-     */
-    private DetachedCriteria getControlledDocumentsByUserListCriteria(List<User> userList, boolean showDeleted, String filter) {
-        final DetachedCriteria resultCriteria = DetachedCriteria.forClass(getPersistentClass());
-        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        setCriteriaAliases(resultCriteria);
-        boolean isAdministrator = false;
-        final List<Integer> userIdList = new ArrayList<Integer>(userList.size());
-        for (User user : userList) {
-            if (user.isAdministrator()) {
-                isAdministrator = true;
-                break;
-            } else {
-                userIdList.add(user.getId());
-            }
-        }
-        if (!isAdministrator) {
-            resultCriteria.add(Restrictions.in("controller.id", userIdList));
-        }
-        resultCriteria.add(Restrictions.isNotNull("executionDate"));
-        resultCriteria.add(Restrictions.in("statusId",
-                        ImmutableList.of(
-                                DocumentStatus.ON_REGISTRATION.getId(),
-                                DocumentStatus.CHECK_IN_2.getId(),
-                                DocumentStatus.ON_EXECUTION_80.getId()
-                        )
-                )
-        );
-        addDeletedRestriction(resultCriteria, showDeleted);
-        getSearchCriteria(resultCriteria, filter);
-        return resultCriteria;
     }
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Работа со списками документов
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    @SuppressWarnings("unchecked")
-    public List<IncomingDocument> findDraftDocumentsByAuthor(String filter, User user, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        addDeletedRestriction(detachedCriteria, showDeleted);
-        detachedCriteria.add(Restrictions.eq("author.id", user.getId()));
-        detachedCriteria.add(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId()));
-        addOrderWithoutAliases(detachedCriteria, orderBy, orderAsc);
-        return getHibernateTemplate().findByCriteria(getSearchCriteria(detachedCriteria, filter), offset, count);
-    }
-
-    private void addOrderWithoutAliases(final DetachedCriteria criteria, final String orderBy, final boolean asc) {
-        final String[] ords = orderBy.split(",");
-        for (String currentOrder : ords) {
-            criteria.addOrder(asc ? Order.asc(currentOrder) : Order.desc(currentOrder));
+    public List<IncomingDocument> findControlledDocumentsByUser(final String filter, final AuthorizationData authData, final Date controlDate) {
+        final DetachedCriteria criteria = getListCriteria();
+        applyFilterCriteria(criteria, filter);
+        criteria.add(
+                Restrictions.in(
+                        "statusId", ImmutableList.of(
+                                DocumentStatus.ON_REGISTRATION.getId(), DocumentStatus.CHECK_IN_2.getId(), DocumentStatus.ON_EXECUTION_80.getId()
+                        )
+                )
+        );
+        addDeletedRestriction(criteria, true);
+        if (!authData.isAdministrator()) {
+            criteria.add(Restrictions.in("controller.id", authData.getUserIds()));
         }
+        criteria.add(Restrictions.isNotNull("executionDate"));
+        if(controlDate != null){
+           criteria.add(Restrictions.le("executionDate", controlDate));
+        }
+        criteria.addOrder(Order.desc("executionDate"));
+        return getHibernateTemplate().findByCriteria(criteria);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Критерии для различных вариантов отображения документов
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Получить самый простой критерий для отбора документов, без лишних FETCH
+     *
+     * @return критерий для документов с DISTINCT
+     */
+    @Override
+    public DetachedCriteria getSimplestCriteria() {
+        return DetachedCriteria.forClass(IncomingDocument.class, "this").setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
 
     /**
-     * Кол-во документов по автору
-     *
-     * @param user        - идентификатор пользователя
-     * @param showDeleted true - show deleted, false - hide deleted
-     * @return кол-во результатов
+     * Получить критерий для отбора Документов и их показа в расширенных списках
+     * Исполнители - LEFT
+     * Вид документа - LEFT
+     * Корреспондент - LEFT
+     * @return критерий для документов с DISTINCT
      */
-    public long countDraftDocumentsByAuthor(User user, boolean showDeleted) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        detachedCriteria = setCriteriaAliases(detachedCriteria);
-        addDeletedRestriction(detachedCriteria, showDeleted);
-        detachedCriteria.add(Restrictions.eq("author.id", user.getId()));
-        detachedCriteria.add(Restrictions.eq("statusId", DocumentStatus.ON_REGISTRATION.getId()));
-        return getCountOf(detachedCriteria);
+    @Override
+    public DetachedCriteria getListCriteria() {
+        final DetachedCriteria result = getSimplestCriteria();
+        result.createAlias("author", "author", CriteriaSpecification.INNER_JOIN);
+        result.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("form", "form", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("contragent", "contragent", CriteriaSpecification.LEFT_JOIN);
+        return result;
+    }
+
+    /**
+     * Получить критерий для подгрузки из БД всех связанных сущностей
+     *
+     * @return критерий для документов с DISTINCT
+     */
+    @Override
+    public DetachedCriteria getFullCriteria() {
+        final DetachedCriteria result = getListCriteria();
+        result.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("userAccessLevel", "userAccessLevel", CriteriaSpecification.INNER_JOIN);
+        result.createAlias("history", "history", CriteriaSpecification.LEFT_JOIN);
+        return result;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Работа с критериями (общая)
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Применитиь к текущим критериям огарничения сложного фильтра
+     *
+     * @param criteria текущий критерий, в который будут добавлены условия  (НЕ менее LIST_CRITERIA)
+     * @param filters  сложный фильтр (карта)
+     */
+    @Override
+    public void applyFilterMapCriteria(DetachedCriteria criteria, Map<String, Object> filters) {
+        if (filters == null || filters.isEmpty()) {
+            logger.debug("FilterMapCriteria: null or empty. Skip.");
+            return;
+        }
+        final Conjunction conjunction = Restrictions.conjunction();
+        for (Map.Entry<String, Object> entry : filters.entrySet()) {
+            final String key = entry.getKey();
+            final Object value = entry.getValue();
+
+            if (StringUtils.isEmpty(key)) {
+                // Пропустить запись с пустым ключом
+                logger.warn("FilterMapCriteria: empty key for \'{}\'", value);
+            } else if ("parentNumeratorId".equals(key)) {
+                conjunction.add(Restrictions.isNotNull("parentNumeratorId"));
+            } else if (REGISTRATION_NUMBER_KEY.equals(key)) {
+                conjunction.add(Restrictions.ilike("registrationNumber", (String) value, MatchMode.ANYWHERE));
+            } else if (START_REGISTRATION_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.ge("registrationDate", value));
+            } else if (END_REGISTRATION_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.le("registrationDate", getNextDayDate((Date) value)));
+            } else if (START_CREATION_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.ge("creationDate", value));
+            } else if (END_CREATION_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.le("creationDate", getNextDayDate((Date) value)));
+            } else if (START_DELIVERY_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.ge("deliveryDate", value));
+            } else if (END_DELIVERY_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.le("deliveryDate", getNextDayDate((Date) value)));
+            } else if (START_RECEIVED_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.ge("receivedDate", value));
+            } else if (END_RECEIVED_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.le("receivedDate", getNextDayDate((Date) value)));
+            } else if (RECEIVED_DOCUMENT_NUMBER_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
+                conjunction.add(Restrictions.ilike("receivedDocumentNumber", (String) value, MatchMode.ANYWHERE));
+            } else if (SHORT_DESCRIPTION_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
+                conjunction.add(Restrictions.ilike("shortDescription", (String) value, MatchMode.ANYWHERE));
+            } else if (STATUS_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
+                conjunction.add(Restrictions.eq("statusId", Integer.valueOf((String)value)));
+            } else if (CONTROLLER_KEY.equals(key)) {
+                createUserEqRestriction(conjunction, key, "controller.id", value);
+            } else if (RECIPIENTS_KEY.equals(key)) {
+                createUserListInRestriction(conjunction, key, "recipientUsers.id", value);
+            } else if (AUTHOR_KEY.equals(key)) {
+                createUserEqRestriction(conjunction, key, "author.id", value);
+            } else if (AUTHORS_KEY.equals(key)) {
+                createUserListInRestriction(conjunction, key, "author.id", value);
+            } else if (EXECUTORS_KEY.equals(key)) {
+                createUserListInRestriction(conjunction, key, "executors.id", value);
+            } else if (DELIVERY_TYPE_KEY.equals(key)) {
+                try {
+                    final DeliveryType deliveryType = (DeliveryType) value;
+                    // Добавляем JOIN в запрос
+                    criteria.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
+                    conjunction.add(Restrictions.eq("deliveryType.id", deliveryType.getId()));
+                } catch (ClassCastException e) {
+                    logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT DeliveryType. Non critical, continue...", key, value);
+                }
+            } else if (START_EXECUTION_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.ge("executionDate", value));
+            } else if (END_EXECUTION_DATE_KEY.equals(key)) {
+                conjunction.add(Restrictions.le("executionDate", getNextDayDate((Date) value)));
+            } else if (FORM_KEY.equals(key)) {
+                try {
+                    final DocumentForm form = (DocumentForm) value;
+                    conjunction.add(Restrictions.eq("form.id", form.getId()));
+                } catch (ClassCastException e) {
+                    logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT DocumentForm. Non critical, continue...", key, value);
+                }
+            } else if (CONTRAGENT_KEY.equals(key)) {
+                try {
+                    final Contragent contragent = (Contragent) value;
+                    conjunction.add(Restrictions.eq("contragent.id", contragent.getId()));
+                } catch (ClassCastException e) {
+                    logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT Contragent. Non critical, continue...", key, value);
+                }
+            } else if (OFFICE_KEEPING_VOLUME_KEY.equals(key)) {
+                try {
+                    final OfficeKeepingVolume volume = (OfficeKeepingVolume) value;
+                    final DetachedCriteria subCriterion = DetachedCriteria.forClass(PaperCopyDocument.class);
+                    subCriterion.add(Restrictions.eq("officeKeepingVolume.id", volume.getId()));
+                    subCriterion.add(Restrictions.ilike("parentDocumentId", "incoming_", MatchMode.ANYWHERE));
+                    List<PaperCopyDocument> in_results = getHibernateTemplate().findByCriteria(subCriterion);
+                    List<Integer> incomingDocumentsId = new ArrayList<Integer>();
+                    for (PaperCopyDocument paper : in_results) {
+                        String parentId = paper.getParentDocumentId();
+                        incomingDocumentsId.add(Integer.parseInt(parentId.substring(9)));
+                    }
+                    // http://stackoverflow.com/questions/13004142/hibernate-restriction-in-causes-an-error-if-the-list
+                    // -is-empty
+                    //короче: если список пустой - то будет синтаксическая ошибка в сформированном SQL,
+                    // поэтому так как в данном месте мы строи конъюнцию(И), то просто добавим невыполнимое условие
+                    //TODO дождаться пачта hibernate
+                    if (incomingDocumentsId.isEmpty()) {
+                        conjunction.add(Restrictions.eq("id", -1));
+                    } else {
+                        conjunction.add(Restrictions.in("id", incomingDocumentsId));
+                    }
+                } catch (ClassCastException e) {
+                    logger.error(
+                            "Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT OfficeKeepingVolume. Non critical, continue...", key, value
+                    );
+                }
+            } else {
+                logger.warn("FilterMapCriteria: Unknown key \'{}\' (value =\'{}\')", key, value);
+            }
+        }
+        criteria.add(conjunction);
+    }
+
+    /**
+     * Производит поиск заданной строки в (по условию ИЛИ [дизъюнкция]):
+     * регистрационном номере,
+     * дате регистрации (формат - 'DD.MM.YYYY'),
+     * сроке исполнения (формат - 'DD.MM.YYYY'),
+     * кратком описании,
+     * ФИО исполнителей,
+     * виде документа,
+     * названии корреспондента (FULL или SHORT),
+     * наименовании статуса документа
+     *
+     * @param criteria критерий отбора в который будет добавлено поисковое условие (НЕ менее LIST_CRITERIA)
+     * @param filter   условие поиска
+     */
+    @Override
+    public void applyFilterCriteria(final DetachedCriteria criteria, final String filter) {
+        if (StringUtils.isEmpty(filter)) {
+            logger.debug("FilterCriteria: empty or null filter. Skip.");
+            return;
+        }
+        final Disjunction disjunction = Restrictions.disjunction();
+        disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
+        disjunction.add(createDateLikeTextRestriction("registrationDate", filter));
+        disjunction.add(createDateLikeTextRestriction("executionDate", filter));
+        disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
+
+        disjunction.add(Restrictions.ilike("executors.lastName", filter, MatchMode.ANYWHERE));
+        disjunction.add(Restrictions.ilike("executors.middleName", filter, MatchMode.ANYWHERE));
+        disjunction.add(Restrictions.ilike("executors.firstName", filter, MatchMode.ANYWHERE));
+
+        disjunction.add(Restrictions.ilike("form.value", filter, MatchMode.ANYWHERE));
+
+        disjunction.add(Restrictions.ilike("contragent.fullName", filter, MatchMode.ANYWHERE));
+        disjunction.add(Restrictions.ilike("contragent.shortName", filter, MatchMode.ANYWHERE));
+
+        //TODO справочник в БД
+        final List<DocumentStatus> statuses = DocumentType.getIncomingDocumentStatuses();
+        final List<Integer> statusIdList = new ArrayList<Integer>(statuses.size());
+        for (DocumentStatus current : statuses) {
+            if (current.getName().contains(filter)) {
+                statusIdList.add(current.getId());
+            }
+        }
+        if (!statusIdList.isEmpty()) {
+            disjunction.add(Restrictions.in("statusId", statusIdList));
+        }
+        criteria.add(disjunction);
 
     }
 
 
-    private DetachedCriteria setCriteriaAliases(DetachedCriteria criteria) {
-        criteria.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("executors", "executors", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("form", "form", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("contragent", "contragent", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("personReaders", "readers", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("personEditors", "editors", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
-        criteria.createAlias("userAccessLevel", "userAccessLevel", CriteriaSpecification.LEFT_JOIN);
-        return criteria;
+    /**
+     * Применить ограничения допуска для документов
+     * //NOTE  Добавляются алиасы с fetch
+     *
+     * @param criteria исходный критерий   (AUTH_CRITERIA)
+     * @param auth     данные авторизации
+     */
+    public void applyAccessCriteria(DetachedCriteria criteria, AuthorizationData auth) {
+        if (!auth.isAdministrator()) {
+            final Disjunction disjunction = Restrictions.disjunction();
+            final Set<Integer> userIds = auth.getUserIds();
+            disjunction.add(Restrictions.in("author.id", userIds));
+            disjunction.add(Restrictions.in("executors.id", userIds));
+            disjunction.add(Restrictions.in("controller.id", userIds));
+            disjunction.add(Restrictions.in("recipientUsers.id", userIds));
+            //NOTE  Добавляются алиасы с fetch
+            criteria.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
+            disjunction.add(Restrictions.in("personReaders.id", userIds));
+            //NOTE  Добавляются алиасы с fetch
+            criteria.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
+            disjunction.add(Restrictions.in("personEditors.id", userIds));
+            if (!auth.getGroups().isEmpty()) {
+                //NOTE  Добавляются алиасы с fetch
+                criteria.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
+                disjunction.add(Restrictions.in("recipientGroups.id", auth.getGroupIds()));
+            }
+            if (!auth.getRoles().isEmpty()) {
+                //NOTE  Добавляются алиасы с fetch
+                criteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
+                disjunction.add(Restrictions.in("roleReaders.id", auth.getRoleIds()));
+                //NOTE  Добавляются алиасы с fetch
+                criteria.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
+                disjunction.add(Restrictions.in("roleEditors.id", auth.getRoleIds()));
+            }
+            criteria.add(disjunction);
+        }
     }
 
 
     @Override
-    protected DetachedCriteria getSearchCriteria(DetachedCriteria criteria, String filter) {
-        if (StringUtils.isNotEmpty(filter)) {
-            Disjunction disjunction = Restrictions.disjunction();
-            disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(deliveryDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-            disjunction.add(Restrictions.sqlRestriction("DATE_FORMAT(receivedDocumentDate, '%d.%m.%Y') like lower(?)", filter + "%", new StringType()));
-            disjunction.add(Restrictions.ilike("receivedDocumentNumber", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
-
-            disjunction.add(Restrictions.ilike("author.lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("author.middleName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("author.firstName", filter, MatchMode.ANYWHERE));
-
-            disjunction.add(Restrictions.ilike("controller.lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("controller.middleName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("controller.firstName", filter, MatchMode.ANYWHERE));
-
-            disjunction.add(Restrictions.ilike("executors.lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("executors.middleName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("executors.firstName", filter, MatchMode.ANYWHERE));
-
-            disjunction.add(Restrictions.ilike("deliveryType.value", filter, MatchMode.ANYWHERE));
-
-            disjunction.add(Restrictions.ilike("form.value", filter, MatchMode.ANYWHERE));
-
-            disjunction.add(Restrictions.ilike("contragent.fullName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("contragent.shortName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("contragent.fullName", filter, MatchMode.ANYWHERE));
-
-            disjunction.add(Restrictions.ilike("recipientUsers.lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("recipientUsers.firstName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("recipientUsers.middleName", filter, MatchMode.ANYWHERE));
-
-            String docType = getPersistentClass().getName();
-            List<Integer> statusIdList = DocumentType.
-                    getStatusIdListByStrKey((docType.contains(".") ? docType.substring(docType.lastIndexOf(".") + 1) : docType), filter);
-            if (statusIdList.size() > 0) {
-                disjunction.add(Restrictions.in("statusId", statusIdList));
-            }
-
-            criteria.add(disjunction);
-
-
-        }
-        return criteria;
-
+    public Set<Integer> getDraftStatuses() {
+        return ImmutableSet.of(DocumentStatus.DOC_PROJECT_1.getId());
     }
 
-    protected DetachedCriteria getConjunctionSearchCriteria(DetachedCriteria criteria, Map<String, Object> in_map) {
-        if (in_map != null && !in_map.isEmpty()) {
-            Conjunction conjunction = Restrictions.conjunction();
-            String in_key = "parentNumeratorId";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.isNotNull(in_key));
-            }
-
-            in_key = "registrationNumber";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
-            }
-
-            in_key = "startRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
-            }
-
-            in_key = "endRegistrationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
-            }
-
-            in_key = "startCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
-            }
-
-            in_key = "endCreationDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
-            }
-
-            in_key = "startDeliveryDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
-            }
-
-            in_key = "endDeliveryDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
-            }
-
-            in_key = "startReceivedDocumentDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
-            }
-
-            in_key = "endReceivedDocumentDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), new Date(((Date) in_map.get(in_key)).getTime() + 86400000)));
-            }
-
-            in_key = "receivedDocumentNumber";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
-            }
-
-            in_key = "shortDescription";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.ilike(in_key, in_map.get(in_key).toString(), MatchMode.ANYWHERE));
-            }
-
-            in_key = "statusId";
-            if (in_map.containsKey(in_key) && in_map.get(in_key).toString().length() > 0) {
-                conjunction.add(Restrictions.eq(in_key, Integer.parseInt(in_map.get(in_key).toString())));
-            }
-
-            in_key = "controller";
-            if (in_map.containsKey(in_key)) {
-                User controller = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.eq(in_key + ".id", controller.getId()));
-            }
-
-            in_key = "recipientUsers";
-            if (in_map.containsKey(in_key)) {
-                List<User> recipients = (List<User>) in_map.get(in_key);
-                if (!recipients.isEmpty()) {
-                    List<Integer> recipientsId = new ArrayList<Integer>();
-                    for (User user : recipients) {
-                        recipientsId.add(user.getId());
-                    }
-                    conjunction.add(Restrictions.in("recipientUsers.id", recipientsId));
-                }
-            }
-
-            in_key = "author";
-            if (in_map.containsKey(in_key)) {
-                User author = (User) in_map.get(in_key);
-                conjunction.add(Restrictions.eq(in_key + ".id", author.getId()));
-            }
-
-            in_key = "executors";
-            if (in_map.containsKey(in_key)) {
-                List<User> executors = (List<User>) in_map.get(in_key);
-                if (!executors.isEmpty()) {
-                    List<Integer> executorsId = new ArrayList<Integer>();
-                    for (User user : executors) {
-                        executorsId.add(user.getId());
-                    }
-                    conjunction.add(Restrictions.in("executors.id", executorsId));
-                }
-            }
-
-            in_key = "deliveryType";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.eq(in_key + ".id", ((DeliveryType) in_map.get(in_key)).getId()));
-            }
-
-            in_key = "startExecutionDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.ge(in_key.substring(5, 6).toLowerCase() + in_key.substring(6), in_map.get(in_key)));
-            }
-
-            in_key = "endExecutionDate";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.le(in_key.substring(3, 4).toLowerCase() + in_key.substring(4), in_map.get(in_key)));
-            }
-
-            in_key = "form";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.eq(in_key + ".id", ((DocumentForm) in_map.get(in_key)).getId()));
-            }
-
-            in_key = "templateFlag";
-            if (in_map.containsKey(in_key)) {
-                conjunction.add(Restrictions.eq(in_key, Boolean.parseBoolean(in_map.get(in_key).toString())));
-            }
-
-            in_key = "contragent";
-            if (in_map.containsKey(in_key)) {
-                Contragent contragent = (Contragent) in_map.get(in_key);
-                conjunction.add(Restrictions.eq(in_key + ".id", contragent.getId()));
-            }
-
-            in_key = "officeKeepingVolume";
-            if (in_map.containsKey(in_key)) {
-                DetachedCriteria subCriterion = DetachedCriteria.forClass(PaperCopyDocument.class);
-                subCriterion.add(Restrictions.eq("officeKeepingVolume.id", ((OfficeKeepingVolume) in_map.get(in_key)).getId()));
-                subCriterion.add(Restrictions.ilike("parentDocumentId", "incoming_", MatchMode.ANYWHERE));
-                List<PaperCopyDocument> in_results = getHibernateTemplate().findByCriteria(subCriterion);
-                List<Integer> incomingDocumentsId = new ArrayList<Integer>();
-                for (PaperCopyDocument paper : in_results) {
-                    String parentId = paper.getParentDocumentId();
-                    incomingDocumentsId.add(Integer.parseInt(parentId.substring(9)));
-                }
-                conjunction.add(Restrictions.in("id", incomingDocumentsId));
-            }
-
-            //TODO: поиск по адресатам
-
-            criteria.add(conjunction);
-        }
-        setCriteriaAliases(criteria);
-        return criteria;
-    }
-
-    protected DetachedCriteria getAccessControlSearchCriteriaByUser(User user) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        Disjunction disjunction = Restrictions.disjunction();
-
-        int userId = user.getId();
-        if (!user.isAdministrator()) {
-            disjunction.add(Restrictions.eq("author.id", userId));
-            disjunction.add(Restrictions.eq("executors.id", userId));
-            disjunction.add(Restrictions.eq("controller.id", userId));
-            disjunction.add(Restrictions.eq("recipientUsers.id", userId));
-            disjunction.add(Restrictions.eq("readers.id", userId));
-            disjunction.add(Restrictions.eq("editors.id", userId));
-            if (!user.getRoleList().isEmpty()) {
-                List<Integer> rolesId = new ArrayList<Integer>();
-                for (Role role : user.getRoleList()) {
-                    rolesId.add(role.getId());
-                }
-                disjunction.add(Restrictions.in("roleReaders.id", rolesId));
-                disjunction.add(Restrictions.in("roleEditors.id", rolesId));
-            }
-            if (!user.getGroups().isEmpty()) {
-                final List<Integer> recipientGroupsId = new ArrayList<Integer>();
-                for (Group group : user.getGroups()) {
-                    recipientGroupsId.add(group.getId());
-                }
-                disjunction.add(Restrictions.in("recipientGroups.id", recipientGroupsId));
-            }
-            detachedCriteria.add(disjunction);
-        }
-        int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
-        detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
-        return detachedCriteria;
-    }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Работа с группами пользователей (для режима замещения)
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Поиск документов, доступных хотя-бы одному из пользователй в списке
-     *
-     * @param filter      поисковая строка
-     * @param userList    список пользователей
-     * @param showDeleted показывать удаленные документы
-     * @param showDrafts  показывать незарегистрированные документы
-     * @param offset      смещение для разбивки запроса на страницы
-     * @param pageSize    размер страницы
-     * @param orderBy     сортировка
-     * @param orderAsc    сортировка по возрастанию?
-     * @return список документов, удовлетворяющий всем ограничениям
-     */
-    public List<IncomingDocument> findAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, boolean showDrafts, int offset, int pageSize, String orderBy, boolean orderAsc) {
-        if (userList.size() == 1) {
-            // Если в списке один пользователь - то вызов запроса по одному пользоваетлю
-            return findAllDocumentsByUser(filter, userList.get(0), showDeleted, showDrafts, offset, pageSize, orderBy, orderAsc);
-        }
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        String[] ords = orderBy == null ? null : orderBy.split(",");
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(in_searchCriteria, ords, orderAsc);
-            } else {
-                addOrder(in_searchCriteria, orderBy, orderAsc);
-            }
-        }
-
-        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(getSearchCriteria(in_searchCriteria, filter), offset, pageSize);
-        if (ids.isEmpty()) {
-            return new ArrayList<IncomingDocument>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, ords, orderBy, orderAsc));
-    }
-
-
-    /**
-     * Формирование ограничений на список входящих документов для группы пользователей (обычно используется для замещений)
-     *
-     * @param userList
-     * @return
-     */
-    private DetachedCriteria getAccessControlSearchCriteriaByUserList(List<User> userList) {
-        DetachedCriteria detachedCriteria = DetachedCriteria.forClass(getPersistentClass());
-        Disjunction disjunction = Restrictions.disjunction();
-        boolean isAdministrator = false;
-        final List<Integer> userIdList = new ArrayList<Integer>(userList.size());
-        final Set<Integer> roleList = new HashSet<Integer>();
-        final Set<Integer> groupList = new HashSet<Integer>();
-        //Сбор идшников всех пользователей в список и проверка админских прав
-        //Также сбор всех групп и ролей
-        for (User current : userList) {
-            if (current.isAdministrator()) {
-                isAdministrator = true;
-                break;
-            } else {
-                userIdList.add(current.getId());
-                if (!current.getRoles().isEmpty()) {
-                    for (Role currentRole : current.getRoles()) {
-                        roleList.add(currentRole.getId());
-                    }
-                }
-                if (!current.getGroups().isEmpty()) {
-                    for (Group currentGroup : current.getGroups()) {
-                        groupList.add(currentGroup.getId());
-                    }
-                }
-            }
-        }
-        // Ежели админских прав нет, то проверять чтобы хоть один из идшников пользователей был в списках
-        if (!isAdministrator) {
-            disjunction.add(Restrictions.in("author.id", userIdList));
-            disjunction.add(Restrictions.in("executors.id", userIdList));
-            disjunction.add(Restrictions.in("controller.id", userIdList));
-            disjunction.add(Restrictions.in("recipientUsers.id", userIdList));
-            disjunction.add(Restrictions.in("readers.id", userIdList));
-            disjunction.add(Restrictions.in("editors.id", userIdList));
-            disjunction.add(Restrictions.in("roleReaders.id", roleList));
-            disjunction.add(Restrictions.in("roleEditors.id", roleList));
-
-            if (!groupList.isEmpty()) {
-                disjunction.add(Restrictions.in("recipientGroups.id", groupList));
-            }
-            detachedCriteria.add(disjunction);
-        }
-        //TODO починить поиском наибольшего в сборе или уточнять
-//        int accessLevel = ((user.getCurrentUserAccessLevel() != null) ? user.getCurrentUserAccessLevel().getLevel() : 1);
-//        detachedCriteria.add(Restrictions.conjunction().add(Restrictions.le("userAccessLevel.level", accessLevel)));
-
-        return detachedCriteria;
-    }
-
-    /**
-     * Подсчет количества документов, доступных группе пользователей
-     */
-    public long countAllDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, boolean showDrafts) {
-        DetachedCriteria in_searchCriteria = getAccessControlSearchCriteriaByUserList(userList);
-        in_searchCriteria = setCriteriaAliases(in_searchCriteria);
-        addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        return getCountOf(getSearchCriteria(in_searchCriteria, filter));
-    }
-
-
-    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, Date beforeDate, int offset, int pageSize, String orderBy, boolean asc) {
-        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserListCriteria(userList, showDeleted, filter, beforeDate);
-        addOrder(in_searchCriteria, orderBy, asc);
-        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, pageSize);
-        if (ids.isEmpty()) {
-            return new ArrayList<IncomingDocument>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, orderBy, asc));
-    }
-
-    public List<IncomingDocument> findControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, int offset, int pageSize, String orderBy, boolean asc) {
-        DetachedCriteria in_searchCriteria = getControlledDocumentsByUserListCriteria(userList, showDeleted, filter);
-        addOrder(in_searchCriteria, orderBy, asc);
-        in_searchCriteria.setProjection(Projections.distinct(Projections.id()));
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(in_searchCriteria, offset, pageSize);
-        if (ids.isEmpty()) {
-            return new ArrayList<IncomingDocument>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, null, orderBy, asc));
-    }
-
-    public long countControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted, Date beforeDate) {
-        return getCountOf(getControlledDocumentsByUserListCriteria(userList, showDeleted, filter, beforeDate));
-    }
-
-    public long countControlledDocumentsByUserList(String filter, List<User> userList, boolean showDeleted) {
-        return getCountOf(getControlledDocumentsByUserListCriteria(userList, showDeleted, filter));
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Работа с критериями (общая)  ************************************************************************************
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Формирование запроса на поиск документов по списку идентификаторов
-     *
-     * @param ids      список идентифкаторов документов
-     * @param ords     список колонок для сортировки
-     * @param orderBy  колонка для сортировки
-     * @param orderAsc направление сортировки
-     * @return запрос, с ограничениями на идентификаторы документов и сортировки
-     */
-    private DetachedCriteria getIDListCriteria(List ids, String[] ords, String orderBy, boolean orderAsc) {
-        final DetachedCriteria result = DetachedCriteria.forClass(getPersistentClass()).add(Restrictions.in("id", ids));
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(result, ords, orderAsc);
-            } else {
-                addOrder(result, orderBy, orderAsc);
-            }
-        } else {
-            addOrder(result, orderBy, orderAsc);
-        }
-        setCriteriaAliases(result);
-        result.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        return result;
-    }
-
-
-    /**
-     * Добавление ограничения на удаленные документы в запрос
-     *
-     * @param in_searchCriteria запрос, куда будет добалено ограничение
-     * @param showDrafts        false - в запрос будет добавлено ограничение на проверку статуса документа, так чтобы его статус был НЕ "Проект документа"
-     */
-    private void addDraftsRestriction(final DetachedCriteria in_searchCriteria, final boolean showDrafts) {
-        if (!showDrafts) {
-            in_searchCriteria.add(Restrictions.not(Restrictions.eq("statusId", DocumentStatus.DOC_PROJECT_1.getId())));
-        }
-    }
-
-    /**
-     * Добавление ограничения на удаленные документы в запрос
-     *
-     * @param in_searchCriteria запрос, куда будет добалено ограничение
-     * @param showDeleted       true - в запрос будет добавлено ограничение на проверку флага, так чтобы документ не был удален
-     */
-    private void addDeletedRestriction(final DetachedCriteria in_searchCriteria, final boolean showDeleted) {
-        if (!showDeleted) {
-            in_searchCriteria.add(Restrictions.eq("deleted", false));
-        }
-    }
-
-    /**
-     * Добавление ограничений на статус докуменита и флаг удаленя
-     *
-     * @param in_searchCriteria запрос, в который будут добавлены ограничения
-     * @param showDeleted       включать в результат удаленные документы
-     * @param showDrafts        включать в результат документы, на прошедшие регистрацию
-     */
-    private void addDraftsAndDeletedRestrictions(final DetachedCriteria in_searchCriteria, final boolean showDeleted, boolean showDrafts) {
-        addDeletedRestriction(in_searchCriteria, showDeleted);
-        addDraftsRestriction(in_searchCriteria, showDrafts);
-    }
 
 }

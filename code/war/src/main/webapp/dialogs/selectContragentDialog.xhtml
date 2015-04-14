@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+
+<h:head>
+    <title><h:outputText value="#{contragentDialog.title}"/></title>
+</h:head>
+
+<h:body>
+    <h:form id="selectContragentDialogForm">
+        <p:inputText id="filter" value="#{contragentDialog.filter}"/>
+        <p:commandButton value="Поиск">
+            <f:ajax execute="filter" render="selectContragentTable"/>
+        </p:commandButton>
+        <p:dataTable id="selectContragentTable"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{contragentDialog.lazyModel}"
+                     var="contragent_row"
+                     selectionMode="single"
+                     selection="#{contragentDialog.selected}"
+                     lazy="true"
+                     widgetVar="selectPersonTableVar"
+                     scrollable="true"
+                     scrollHeight="400"
+                     sortBy="#{contragent_row.shortName}"
+                     sortOrder="ascending"
+                     sortField="shortName"
+                >
+            <p:column headerText="Краткое наименование" sortBy="#{contragent_row.shortName}" field="shortName">
+                <h:outputText value="#{contragent_row.shortName}"/>
+            </p:column>
+        </p:dataTable>
+        <p:commandButton value="Выбрать" action="#{contragentDialog.closeDialog(true)}"/>
+        <p:commandButton value="Отмена" action="#{contragentDialog.closeDialog(false)}"/>
+    </h:form>
+</h:body>
+
+</html>

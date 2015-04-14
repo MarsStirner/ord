@@ -53,17 +53,6 @@ public final class WorkflowHelper {
                 }
             }
             if (choosenDate != null) {
-                /*List<IActivity> activities = changeDateAction.getPreActionActivities();
-                    for (IActivity activity: activities) {
-                        if (activity instanceof SendMailActivity) {
-                            SendMailActivity sendMailActivity = (SendMailActivity) activity;
-                            MailMessage message = sendMailActivity.getMessage();
-                            List<String> sendTo = new ArrayList<String>();
-                            sendTo.add(selectedUser.getEmail());
-                            message.setSendTo(sendTo);
-                            sendMailActivity.setMessage(message);
-                        }
-                    }*/
                 final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
                 task.setWFResultDescription(String.format(delegateReason, task.getExecutors().get(0).getDescription()));
                 task.setExecutionDate(choosenDate);
@@ -82,7 +71,6 @@ public final class WorkflowHelper {
         boolean result = false;
         try {
             Date currentDate = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-            //List<HumanTask> currentTaskList = delegateAction.getResolver().getCurrentTaskList();
             User selectedUser = null;
             for (EditableProperty property : delegateAction.getProperties()) {
                 if (property.getName().equals(EngineHelper.PROP_DELEGATION_USER)) {
@@ -170,8 +158,16 @@ public final class WorkflowHelper {
 
         if (in_result.toString().equals("")) {
             try {
-                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
+                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{dictionaryManagement}",
+                        DictionaryManagementBean.class
+                );
 
                 if (doc.getRegistrationNumber() == null || doc.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
@@ -179,7 +175,8 @@ public final class WorkflowHelper {
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
+                                .findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
                         in_number.append(in_nomenclature.getCode()).append("-");
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
@@ -189,12 +186,22 @@ public final class WorkflowHelper {
                         in_roles.add(in_office);
                     }
                     doc.setRoleEditors(in_roles);
-                    final String in_count = StringUtils.leftPad(String.valueOf(new HashSet<OutgoingDocument>(sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1), LEFT_PAD_COUNT, LEFT_PAD_CHAR);
+                    final String in_count = StringUtils.leftPad(
+                            String.valueOf(
+                                    new HashSet<OutgoingDocument>(
+                                            sessionManagement.getDAO(
+                                                    OutgoingDocumentDAOImpl.class,
+                                                    OUTGOING_DOCUMENT_FORM_DAO
+                                            ).findRegistratedDocumentsByCriteria(in_number.toString())
+                                    ).size() + 1
+                            ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                    );
                     in_number.append(in_count);
 
                     doc.setRegistrationNumber(in_number.toString());
 
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                            .findAllDocumentsByParentId(doc.getUniqueId());
                     if (paperCopies.size() > 0) {
                         for (PaperCopyDocument paperCopy : paperCopies) {
                             String copyNumber = paperCopy.getRegistrationNumber();
@@ -244,8 +251,13 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuffer in_result = new StringBuffer("");
 
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                context,
+                "#{sessionManagement}",
+                SessionManagementBean.class
+        );
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                .findAllDocumentsByParentId(doc.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
@@ -293,8 +305,14 @@ public final class WorkflowHelper {
 
     public static boolean setPaperCopyParentVolumeUnitsCount(PaperCopyDocument document) {
         FacesContext context = FacesContext.getCurrentInstance();
-        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        OfficeKeepingVolume parentVolume = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocumentById(String.valueOf(document.getOfficeKeepingVolume().getId()));
+        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                context,
+                "#{sessionManagement}",
+                SessionManagementBean.class
+        );
+        OfficeKeepingVolume parentVolume = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocumentById(
+                String.valueOf(document.getOfficeKeepingVolume().getId())
+        );
         if (parentVolume != null) {
             int units = parentVolume.getUnitsCount() + document.getSheetsCount();
             parentVolume.setUnitsCount(units);
@@ -316,8 +334,8 @@ public final class WorkflowHelper {
         if (doc.getContragent() == null) {
             in_result.append("Необходимо выбрать Корреспондента;").append(System.getProperty("line.separator"));
         }
-        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) &&
-                (doc.getRecipientGroups() == null || doc.getRecipientGroups().size() == 0)) {
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) && (doc.getRecipientGroups() == null || doc.getRecipientGroups()
+                .size() == 0)) {
             in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
@@ -327,15 +345,24 @@ public final class WorkflowHelper {
         if (in_result.length() == 0) {
             try {
 
-                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
+                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{dictionaryManagement}",
+                        DictionaryManagementBean.class
+                );
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     final StringBuilder in_number = new StringBuilder();
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
+                                .findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
                         in_number.append(in_nomenclature.getCode()).append("-");
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
@@ -346,11 +373,21 @@ public final class WorkflowHelper {
                     }
                     doc.setRoleEditors(in_roles);
 
-                    in_number.append(StringUtils.leftPad(String.valueOf(new HashSet<IncomingDocument>(sessionManagement.
-                            getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findRegistratedDocumentsByCriteria(in_number.toString())).size() + 1), LEFT_PAD_COUNT, LEFT_PAD_CHAR));
+                    in_number.append(
+                            StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<IncomingDocument>(
+                                                    sessionManagement.
+                                                            getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                                                            .findRegistratedDocumentsByCriteria(in_number.toString())
+                                            ).size() + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            )
+                    );
                     doc.setRegistrationNumber(in_number.toString());
 
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                            .findAllDocumentsByParentId(doc.getUniqueId());
                     if (paperCopies.size() > 0) {
                         for (PaperCopyDocument paperCopy : paperCopies) {
                             String copyNumber = paperCopy.getRegistrationNumber();
@@ -390,13 +427,19 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                context,
+                "#{sessionManagement}",
+                SessionManagementBean.class
+        );
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                .findAllDocumentsByParentId(doc.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
                 if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber).append(" необходимо перевести в один из архивных статусов;");
+                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber)
+                            .append(" необходимо перевести в один из архивных статусов;");
                 }
             }
         }
@@ -427,7 +470,8 @@ public final class WorkflowHelper {
             int limitUnitsCount = parentVolume.getLimitUnitsCount();
             int currentUnitsCount = parentVolume.getUnitsCount();
             if (limitUnitsCount < (currentUnitsCount + doc.getAppendixiesCount() * doc.getSheetsCount() * doc.getCopiesCount())) {
-                in_result.append("Количество листов в выбраном томе дела превышает предельно допустимое.").append(System.getProperty("line.separator"));
+                in_result.append("Количество листов в выбраном томе дела превышает предельно допустимое.")
+                        .append(System.getProperty("line.separator"));
             }
         }
 
@@ -456,14 +500,14 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        if (doc.getSigner() == null) {
+        if (doc.getController() == null) {
             in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (doc.getResponsible() == null) {
             in_result.append("Необходимо выбрать Контроль исполнения;").append(System.getProperty("line.separator"));
         }
-        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) &&
-                (doc.getRecipientGroups() == null || doc.getRecipientGroups().size() == 0)) {
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) && (doc.getRecipientGroups() == null || doc.getRecipientGroups()
+                .size() == 0)) {
             in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
@@ -472,16 +516,25 @@ public final class WorkflowHelper {
 
         if (in_result.toString().equals("")) {
             try {
-                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
+                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{dictionaryManagement}",
+                        DictionaryManagementBean.class
+                );
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     StringBuffer in_number = new StringBuffer();
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     List<Role> in_roles = new ArrayList<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
+                                .findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
                         in_number.append(in_nomenclature.getCode()).append("-");
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
@@ -516,18 +569,32 @@ public final class WorkflowHelper {
 
                         in_filters.put("registrationNumber", in_number);
                         in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1), LEFT_PAD_COUNT, LEFT_PAD_CHAR);
+                        in_count = StringUtils.leftPad(
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(
+                                                        InternalDocumentDAOImpl.class,
+                                                        INTERNAL_DOCUMENT_FORM_DAO
+                                                ).findDocumentsByCriteria(
+                                                        in_filters,
+                                                        true,
+                                                        false
+                                                )
+                                        ).size() + 1
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                        );
                         in_number.append(in_count);
 
                     } else if (in_form.equals("Методическое пособие")) {
                         in_filters.put("registrationNumber", "%");
                         in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                + 1
-                                ),
-                                LEFT_PAD_COUNT,
-                                LEFT_PAD_CHAR
+                        in_count = StringUtils.leftPad(
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                        .findDocumentsByCriteria(in_filters, true, false)
+                                        ).size() + 1
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                         );
                         in_number.append(in_count).append("/Методические пособия/").append(ydf.format(Calendar.getInstance().getTime()));
 
@@ -536,12 +603,12 @@ public final class WorkflowHelper {
                         in_filters.put("registrationNumber", in_number);
                         in_filters.put("form", doc.getForm());
                         in_count = StringUtils.leftPad(
-                                String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
-                                                + 1
-                                ),
-                                LEFT_PAD_COUNT,
-                                LEFT_PAD_CHAR
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                        .findDocumentsByCriteria(in_filters, true, false)
+                                        ).size() + 1
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                         );
                         in_number.append(in_count).append("/Инструкции/").append(ydf.format(Calendar.getInstance().getTime()));
 
@@ -556,9 +623,14 @@ public final class WorkflowHelper {
                         in_filters.put("registrationNumber", in_number);
                         in_filters.put("form", doc.getForm());
                         in_count = StringUtils.leftPad(
-                                String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1),
-                                LEFT_PAD_COUNT,
-                                LEFT_PAD_CHAR
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(
+                                                        InternalDocumentDAOImpl.class,
+                                                        INTERNAL_DOCUMENT_FORM_DAO
+                                                ).findDocumentsByCriteria(in_filters, true, false)
+                                        ).size() + 1
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                         );
                         in_number.append(in_count);
 
@@ -572,13 +644,15 @@ public final class WorkflowHelper {
                         in_number = new StringBuffer();
                         in_filters.put("registrationNumber", "%");
                         in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                        in_count = StringUtils.leftPad(
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                        .findDocumentsByCriteria(in_filters, true, false)
+                                        ).size()
                                                 //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
                                                 + 1
-                                ),
-                                LEFT_PAD_COUNT,
-                                LEFT_PAD_CHAR
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                         );
                         in_number.append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
 
@@ -586,13 +660,15 @@ public final class WorkflowHelper {
                         in_number = new StringBuffer();
                         in_filters.put("registrationNumber", "%");
                         in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(String.valueOf(new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size()
+                        in_count = StringUtils.leftPad(
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                        .findDocumentsByCriteria(in_filters, true, false)
+                                        ).size()
                                                 //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
                                                 + 1
-                                ),
-                                LEFT_PAD_COUNT,
-                                LEFT_PAD_CHAR
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                         );
                         in_number.append("ГП/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
 
@@ -603,12 +679,22 @@ public final class WorkflowHelper {
                         outDateOrder_filters.put("registrationNumber", "%/%");
                         outDateOrder_filters.put("form", doc.getForm());
                         outDateOrder_filters.put("closePeriodRegistrationFlag", "false");
-                        int outDateOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(outDateOrder_filters, true, false)).size();
+                        int outDateOrderCount = new HashSet<InternalDocument>(
+                                sessionManagement.getDAO(
+                                        InternalDocumentDAOImpl.class,
+                                        INTERNAL_DOCUMENT_FORM_DAO
+                                ).findDocumentsByCriteria(outDateOrder_filters, true, false)
+                        ).size();
 
                         in_filters.put("registrationNumber", "%");
                         in_filters.put("form", doc.getForm());
                         in_filters.put("closePeriodRegistrationFlag", "false");
-                        int summaryOrderCount = new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size();
+                        int summaryOrderCount = new HashSet<InternalDocument>(
+                                sessionManagement.getDAO(
+                                        InternalDocumentDAOImpl.class,
+                                        INTERNAL_DOCUMENT_FORM_DAO
+                                ).findDocumentsByCriteria(in_filters, true, false)
+                        ).size();
 
                         in_count = StringUtils.leftPad(String.valueOf(summaryOrderCount - outDateOrderCount + 1), LEFT_PAD_COUNT, LEFT_PAD_CHAR);
                         in_number.append(in_count);
@@ -617,18 +703,29 @@ public final class WorkflowHelper {
                         in_filters.put("registrationNumber", "%");
                         in_filters.put("form", doc.getForm());
                         in_count = StringUtils.leftPad(
-                                String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1),
-                                LEFT_PAD_COUNT,
-                                LEFT_PAD_CHAR
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(
+                                                        InternalDocumentDAOImpl.class,
+                                                        INTERNAL_DOCUMENT_FORM_DAO
+                                                ).findDocumentsByCriteria(in_filters, true, false)
+                                        ).size() + 1
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                         );
                         in_number.append("ПВР/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
                     } else if (in_form.equals("Положение")) {
                         in_number = new StringBuffer();
                         in_filters.put("registrationNumber", "%");
                         in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(String.valueOf(new HashSet<InternalDocument>(sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, true, false)).size() + 1),
-                                LEFT_PAD_COUNT,
-                                LEFT_PAD_CHAR
+                        in_count = StringUtils.leftPad(
+                                String.valueOf(
+                                        new HashSet<InternalDocument>(
+                                                sessionManagement.getDAO(
+                                                        InternalDocumentDAOImpl.class,
+                                                        INTERNAL_DOCUMENT_FORM_DAO
+                                                ).findDocumentsByCriteria(in_filters, true, false)
+                                        ).size() + 1
+                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                         );
                         in_number.append("Положение/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
                     } else {
@@ -638,7 +735,8 @@ public final class WorkflowHelper {
                     }
                     doc.setRegistrationNumber(in_number.toString());
 
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                            .findAllDocumentsByParentId(doc.getUniqueId());
                     if (paperCopies.size() > 0) {
                         for (PaperCopyDocument paperCopy : paperCopies) {
                             String copyNumber = paperCopy.getRegistrationNumber();
@@ -681,14 +779,14 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        if (doc.getSigner() == null) {
+        if (doc.getController() == null) {
             in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));
         }
         if (doc.getResponsible() == null) {
             in_result.append("Необходимо выбрать Ответственного;").append(System.getProperty("line.separator"));
         }
-        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) &&
-                (doc.getRecipientGroups() == null || doc.getRecipientGroups().size() == 0)) {
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) && (doc.getRecipientGroups() == null || doc.getRecipientGroups()
+                .size() == 0)) {
             in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
@@ -707,10 +805,15 @@ public final class WorkflowHelper {
         }
 
 
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
+                context,
+                "#{sessionManagement}",
+                SessionManagementBean.class
+        );
         Map<String, Object> in_filters = new HashMap<String, Object>();
         in_filters.put("registrationNumber", doc.getRegistrationNumber());
-        List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters, false, true);
+        List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                .findDocumentsByCriteria(in_filters, false, true);
         if (copyDocuments.size() != 0) {
             in_result.append("Документ под таким номером уже существует;").append(System.getProperty("line.separator"));
             doc.setRegistrationNumber(null);
@@ -718,12 +821,20 @@ public final class WorkflowHelper {
 
         if (in_result.toString().equals("")) {
             try {
-                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
-                Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
+                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{dictionaryManagement}",
+                        DictionaryManagementBean.class
+                );
+                Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                 List<Role> in_roles = new ArrayList<Role>();
                 Role in_office;
                 if (in_nomenclature != null) {
-                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(
+                            RoleType.valueOf(
+                                    "OFFICE_" + in_nomenclature.getCode()
+                            )
+                    );
                 } else {
                     in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                 }
@@ -732,7 +843,8 @@ public final class WorkflowHelper {
                 }
                 doc.setRoleEditors(in_roles);
 
-                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                        .findAllDocumentsByParentId(doc.getUniqueId());
                 if (paperCopies.size() > 0) {
                     for (PaperCopyDocument paperCopy : paperCopies) {
                         String copyNumber = paperCopy.getRegistrationNumber();
@@ -770,13 +882,19 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
+                context,
+                "#{sessionManagement}",
+                SessionManagementBean.class
+        );
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                .findAllDocumentsByParentId(doc.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
                 if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber).append(" необходимо перевести в один из архивных статусов;");
+                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber)
+                            .append(" необходимо перевести в один из архивных статусов;");
                 }
             }
         }
@@ -802,13 +920,19 @@ public final class WorkflowHelper {
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
 
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(doc.getUniqueId());
+        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
+                context,
+                "#{sessionManagement}",
+                SessionManagementBean.class
+        );
+        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                .findAllDocumentsByParentId(doc.getUniqueId());
         if (paperCopies.size() > 0) {
             for (PaperCopyDocument paperCopy : paperCopies) {
                 String copyNumber = paperCopy.getRegistrationNumber();
                 if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber).append(" необходимо перевести в один из архивных статусов;");
+                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber)
+                            .append(" необходимо перевести в один из архивных статусов;");
                 }
             }
         }
@@ -833,7 +957,7 @@ public final class WorkflowHelper {
         boolean result = false;
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
-        if (doc.getSigner() == null) {
+        if (doc.getController() == null) {
             in_result.append("Необходимо указать руководителя;").append(System.getProperty("line.separator"));
         }
         if (doc.getResponsible() == null) {
@@ -843,18 +967,27 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
 
-                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(context, "#{dictionaryManagement}", DictionaryManagementBean.class);
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
+                DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{dictionaryManagement}",
+                        DictionaryManagementBean.class
+                );
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
-                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getSigner());
+                    Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
                     List<Role> in_roles = new ArrayList<Role>();
                     in_roles.add(in_administrationRole);
 
                     Role in_office;
                     if (in_nomenclature != null) {
-                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                        in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
+                                .findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
                     } else {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                     }
@@ -895,8 +1028,8 @@ public final class WorkflowHelper {
         if ((document.getSenderType().getValue().equals("Юридическое лицо")) && (document.getContragent() == null)) {
             in_result.append("Необходимо указать Корреспондента; \n");
         }
-        if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) &&
-                (document.getRecipientGroups() == null || document.getRecipientGroups().size() == 0)) {
+        if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) && (document.getRecipientGroups() == null || document
+                .getRecipientGroups().size() == 0)) {
             in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
@@ -905,16 +1038,32 @@ public final class WorkflowHelper {
 
         if (in_result.toString().equals("")) {
             try {
-                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
 
 
                 if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
-                    String in_count = StringUtils.leftPad(String.valueOf(new HashSet<RequestDocument>(sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findRegistratedDocuments()).size() + 1), LEFT_PAD_COUNT, LEFT_PAD_CHAR);
+                    //TODO
+                    String in_count = "0";/*= StringUtils.leftPad(
+                            String.valueOf(
+                                    new HashSet<RequestDocument>(
+                                            sessionManagement.getDAO(
+                                                    RequestDocumentDAOImpl.class,
+                                                    REQUEST_DOCUMENT_FORM_DAO
+                                            ).findRegistratedDocuments()
+                                    ).size() + 1
+                            ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                    );
+                    */
                     in_number.append(in_count);
                     document.setRegistrationNumber(in_number.toString());
 
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).findAllDocumentsByParentId(document.getUniqueId());
+                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
+                            .findAllDocumentsByParentId(document.getUniqueId());
                     if (paperCopies.size() > 0) {
                         for (PaperCopyDocument paperCopy : paperCopies) {
                             String copyNumber = paperCopy.getRegistrationNumber();
@@ -979,7 +1128,11 @@ public final class WorkflowHelper {
         //TODO OMG проверяем валидность по комментарию )
         if (in_result.toString().isEmpty()) {
             try {
-                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
                 if (StringUtils.isEmpty(doc.getTaskNumber())) {
                     //Номер не задан
                     StringBuilder in_number = new StringBuilder();
@@ -990,26 +1143,26 @@ public final class WorkflowHelper {
                     if (StringUtils.isNotEmpty(key)) {
                         in_filters.put("rootDocumentId", key);
                         if (key.contains("_")) {
-                            //TODO лень переписывать поиск документов по строковому идентификатору, когда он является целочисленным = )
                             final Integer idInt = ApplicationHelper.getIdFromUniqueIdString(key);
                             if (idInt != null) {
                                 final String id = idInt.toString();
                                 if (key.contains("incoming")) {
-                                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class,
-                                            INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                                            .getItemByIdForSimpleView(idInt);
                                     in_number.append(in_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("outgoing")) {
-                                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                                            .getItemByIdForSimpleView(idInt);
                                     in_number.append(out_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("internal")) {
-                                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                            .getItemByIdForSimpleView(idInt);
                                     in_number.append(internal_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("request")) {
-                                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
+                                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+                                            .getItemByIdForSimpleView(idInt);
                                     in_number.append(request_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("task")) {
-                                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
-                                    in_number.append("");
                                     in_filters.clear();
                                     in_filters.put("taskDocumentId", "");
                                 }
@@ -1021,7 +1174,11 @@ public final class WorkflowHelper {
                         in_filters.put("taskDocumentId", "");
                     }
 
-                    in_count.append(String.valueOf(new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 1));
+                    in_count.append(
+                            String.valueOf(
+                                    sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDocuments(in_filters, false, false) + 1
+                            )
+                    );
                     in_number.append(in_count);
                     doc.setTaskNumber(in_number.toString());
 
@@ -1052,7 +1209,11 @@ public final class WorkflowHelper {
     public static boolean cloneTasks(Task doc) {
         try {
             final FacesContext context = FacesContext.getCurrentInstance();
-            final SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+            final SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                    context,
+                    "#{sessionManagement}",
+                    SessionManagementBean.class
+            );
 
             //TODO когда-нибудь, когда мир станет вновь светлым и ясным, когда прекратятся войны, исчезнет коррупция,
             //TODO ну или что более вероятно когда перепишут эту фабрику действий - то этот жуткий костыль превратится в красивое и элегантное решение
@@ -1081,7 +1242,7 @@ public final class WorkflowHelper {
                     executorsSet.add(currentExecutor);
                     currentTask.setExecutors(executorsSet);
                     //+2 потому что жизнь-боль и первое поручение еще не сохранено в БД с корректным номером
-                    int numberOffset = (new HashSet<Task>(sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findAllDocuments(in_filters, false, false)).size() + 2);
+                    int numberOffset = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDocuments(in_filters, false, false) +2;
                     currentTask.setTaskNumber(currentTask.getTaskNumber().concat(String.valueOf(numberOffset)));
                     Set<HistoryEntry> history = new HashSet<HistoryEntry>(1);
                     final HistoryEntry entry = new HistoryEntry();
@@ -1112,7 +1273,8 @@ public final class WorkflowHelper {
     public static boolean formAgreementTree(AgreementIssue doc, HumanTaskTree template) {
         try {
             SessionManagementBean sessionManagement = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
-                    FacesContext.getCurrentInstance(), "#{sessionManagement}", SessionManagementBean.class);
+                    FacesContext.getCurrentInstance(), "#{sessionManagement}", SessionManagementBean.class
+            );
             Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             User author = sessionManagement.getLoggedUser();
 
@@ -1158,7 +1320,8 @@ public final class WorkflowHelper {
         List<HumanTaskTreeNode> result = new ArrayList<HumanTaskTreeNode>();
         try {
             SessionManagementBean sessionManagement = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
-                    FacesContext.getCurrentInstance(), "#{sessionManagement}", SessionManagementBean.class);
+                    FacesContext.getCurrentInstance(), "#{sessionManagement}", SessionManagementBean.class
+            );
             Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             User author = sessionManagement.getLoggedUser();
 
@@ -1202,8 +1365,13 @@ public final class WorkflowHelper {
 
         if (in_result.toString().equals("")) {
             try {
-                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-                long checkCount = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).countDocumentsByNumber(doc.getFileIndex());
+                SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
+                long checkCount = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO)
+                        .countDocumentsByNumber(doc.getFileIndex());
 
                 if (checkCount > 0) {
                     result = false;
@@ -1239,7 +1407,11 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
                 //FacesContext context=FacesContext.getCurrentInstance();
-                SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+                SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
+                        context,
+                        "#{sessionManagement}",
+                        SessionManagementBean.class
+                );
 
                 if (doc.getVolumeIndex() == null || doc.getVolumeIndex().isEmpty()) {
                     StringBuffer in_number = new StringBuffer();

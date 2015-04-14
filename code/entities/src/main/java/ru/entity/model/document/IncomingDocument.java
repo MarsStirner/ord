@@ -1,8 +1,5 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -19,12 +16,15 @@ import java.util.*;
 
 /**
  * Входящий документ
+ * По умолчанию все связи - LAZY (используются разные уровни критериев в DAO)
  *
- * @author Alexey Vagizov
+ * @author Alexey Vagizov / Egor Upatov
  */
 @Entity
 @Table(name = "dms_incoming_documents")
 public class IncomingDocument extends IdentifiedEntity implements ProcessedData {
+
+    private static final long serialVersionUID = -5522881582616193416L;
 
     /**
      * Количество приложений
@@ -55,7 +55,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Руководитель
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "controller_id")
     private User controller;
 
@@ -126,14 +126,14 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Корреспондент
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contragent_id", nullable = true)
     private Contragent contragent;
 
     /**
      * Вид документа
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id", nullable = false)
     private DocumentForm form;
 
@@ -147,7 +147,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Вид документа
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deliveryType_id", nullable = false)
     private DeliveryType deliveryType;
 
@@ -160,7 +160,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     /**
      * Уровень допуска
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userAccessLevel_id", nullable = false)
     private UserAccessLevel userAccessLevel;
 
@@ -170,92 +170,94 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     @Column(name = "erpNumber")
     private String erpNumber;
 
-    /**
-     * Связанные сущности ********************************************************************************************
-     */
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Связанные сущности
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * История
      */
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "dms_incoming_document_history",
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.TRUE)
     private Set<HistoryEntry> history;
-
     /**
      * Адресаты
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_incoming_documents_recipients",
             joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientUsers_id")})
-    private List<User> recipientUsers;
+    private Set<User> recipientUsers;
 
     /**
      * Адресаты (группы)
      */
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_incoming_documents_recipient_groups",
             joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
             inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
-    @LazyCollection(LazyCollectionOption.TRUE)
     private Set<Group> recipientGroups;
 
     /**
      * Пользователи-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_person_readers")
-    @IndexColumn(name = "ID1")
-    private List<User> personReaders;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_incoming_documents_person_readers",
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personReaders_id")})
+    private Set<User> personReaders;
 
     /**
      * Пользователи-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_person_editors")
-    @IndexColumn(name = "ID1")
-    private List<User> personEditors;
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_incoming_documents_person_editors",
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")})
+    private Set<User> personEditors;
 
     /**
      * Роли-читатели
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_role_readers")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleReaders;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_incoming_documents_role_readers",
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleReaders_id")})
+    private Set<Role> roleReaders;
 
     /**
      * Роли-редакторы
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_role_editors")
-    @IndexColumn(name = "ID2")
-    private List<Role> roleEditors;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_incoming_documents_role_editors",
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleEditors_id")})
+    private Set<Role> roleEditors;
 
     /**
      * Исполнители
      */
-    @ManyToMany(cascade = CascadeType.REFRESH)
-    @LazyCollection(LazyCollectionOption.TRUE)
-    @JoinTable(name = "dms_incoming_documents_executors")
-    @IndexColumn(name = "ID3")
-    private List<User> executors;
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_incoming_documents_executors",
+            joinColumns = {@JoinColumn(name = "dms_incoming_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "executors_id")})
+    private Set<User> executors;
     /**
      * END OF DATABASE FIELDS *****************************************************************************************
      */
 
     @Transient
     private String WFResultDescription;
+
+
+    /**
+     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * TODO сделать класс-обертку
+     */
+    @Transient
+    private String styleClass;
 
     public User getAuthor() {
         return author;
@@ -290,27 +292,27 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     }
 
     public List<User> getRecipientUsers() {
-        return recipientUsers;
+        return new ArrayList<User>(recipientUsers);
     }
 
     public void setRecipientUsers(List<User> recipientUsers) {
-        this.recipientUsers = recipientUsers;
+        this.recipientUsers = new HashSet<User>(recipientUsers);
     }
 
     public List<User> getPersonReaders() {
-        return personReaders;
+        return new ArrayList<User>(personReaders);
     }
 
     public void setPersonReaders(List<User> personReaders) {
-        this.personReaders = personReaders;
+        this.personReaders = new HashSet<User>(personReaders);
     }
 
     public List<Role> getRoleReaders() {
-        return roleReaders;
+        return new ArrayList<Role>(roleReaders);
     }
 
     public void setRoleReaders(List<Role> roleReaders) {
-        this.roleReaders = roleReaders;
+        this.roleReaders = new HashSet<Role>(roleReaders);
     }
 
     public Contragent getContragent() {
@@ -346,11 +348,11 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     }
 
     public List<User> getExecutors() {
-        return executors;
+        return new ArrayList<User>(executors);
     }
 
     public void setExecutors(List<User> executors) {
-        this.executors = executors;
+        this.executors = new HashSet<User>(executors);
     }
 
     public String getShortDescription() {
@@ -361,76 +363,76 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         this.shortDescription = shortDescription;
     }
 
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
-    }
-
     public Nomenclature getNomenclature() {
         return nomenclature;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public void setNomenclature(Nomenclature nomenclature) {
+        this.nomenclature = nomenclature;
     }
 
     public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setForm(DocumentForm form) {
-        this.form = form;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public DocumentForm getForm() {
         return form;
     }
 
-    public void setDeliveryType(DeliveryType deliveryType) {
-        this.deliveryType = deliveryType;
+    public void setForm(DocumentForm form) {
+        this.form = form;
     }
 
     public DeliveryType getDeliveryType() {
         return deliveryType;
     }
 
-    public void setReceivedDocumentNumber(String receivedDocumentNumber) {
-        this.receivedDocumentNumber = receivedDocumentNumber;
+    public void setDeliveryType(DeliveryType deliveryType) {
+        this.deliveryType = deliveryType;
     }
 
     public String getReceivedDocumentNumber() {
         return receivedDocumentNumber;
     }
 
-    public void setReceivedDocumentDate(Date receivedDocumentDate) {
-        this.receivedDocumentDate = receivedDocumentDate;
+    public void setReceivedDocumentNumber(String receivedDocumentNumber) {
+        this.receivedDocumentNumber = receivedDocumentNumber;
     }
 
     public Date getReceivedDocumentDate() {
         return receivedDocumentDate;
     }
 
-    public void setCopiesCount(int copiesCount) {
-        this.copiesCount = copiesCount;
+    public void setReceivedDocumentDate(Date receivedDocumentDate) {
+        this.receivedDocumentDate = receivedDocumentDate;
     }
 
     public int getCopiesCount() {
         return copiesCount;
     }
 
-    public void setSheetsCount(int sheetsCount) {
-        this.sheetsCount = sheetsCount;
+    public void setCopiesCount(int copiesCount) {
+        this.copiesCount = copiesCount;
     }
 
     public int getSheetsCount() {
         return sheetsCount;
     }
 
-    public void setAppendixiesCount(int appendixiesCount) {
-        this.appendixiesCount = appendixiesCount;
+    public void setSheetsCount(int sheetsCount) {
+        this.sheetsCount = sheetsCount;
     }
 
     public int getAppendixiesCount() {
         return appendixiesCount;
+    }
+
+    public void setAppendixiesCount(int appendixiesCount) {
+        this.appendixiesCount = appendixiesCount;
     }
 
     @Transient
@@ -453,12 +455,12 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return "in_doc";
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public boolean isDeleted() {
         return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public String getWFResultDescription() {
@@ -474,12 +476,12 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return getId() == 0 ? "" : "incoming_" + getId();
     }
 
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
     public Set<HistoryEntry> getHistory() {
         return history;
+    }
+
+    public void setHistory(Set<HistoryEntry> history) {
+        this.history = history;
     }
 
     @Transient
@@ -494,6 +496,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
 
     /**
      * Добавление в историю еще одной записи, если история пуста, то она создается
+     *
      * @param historyEntry Запись в истории, которую надо добавить
      * @return статус добавления (true - успех)
      */
@@ -504,65 +507,58 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return this.history.add(historyEntry);
     }
 
-    public void setRecipientGroups(Set<Group> recipientGroups) {
-        this.recipientGroups = recipientGroups;
-    }
-
     public Set<Group> getRecipientGroups() {
         return recipientGroups;
     }
 
+    public void setRecipientGroups(Set<Group> recipientGroups) {
+        this.recipientGroups = recipientGroups;
+    }
+
     /**
      * JSF-specific method cause we cannot iterate on Set (http://sfjsf.blogspot.ru/2006/03/usings-sets-with-uidata.html)
-     * @return    List<Group>
+     *
+     * @return List<Group>
      */
     public List<Group> getRecipientGroupsList() {
-        if(recipientGroups == null || recipientGroups.isEmpty()){
+        if (recipientGroups == null || recipientGroups.isEmpty()) {
             return new ArrayList<Group>(0);
         } else {
             return new ArrayList<Group>(recipientGroups);
         }
     }
 
+    public List<Role> getRoleEditors() {
+        return new ArrayList<Role>(roleEditors);
+    }
 
     public void setRoleEditors(List<Role> roleEditors) {
-        this.roleEditors = roleEditors;
-    }
-
-    public List<Role> getRoleEditors() {
-        return roleEditors;
-    }
-
-    public void setPersonEditors(List<User> personEditors) {
-        this.personEditors = personEditors;
+        this.roleEditors = new HashSet<Role>(roleEditors);
     }
 
     public List<User> getPersonEditors() {
-        return personEditors;
+        return new ArrayList<User>(personEditors);
     }
 
-    public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
-        this.userAccessLevel = userAccessLevel;
+    public void setPersonEditors(List<User> personEditors) {
+        this.personEditors = new HashSet<User>(personEditors);
     }
 
     public UserAccessLevel getUserAccessLevel() {
         return userAccessLevel;
     }
 
-    public void setParentNumeratorId(String parentNumeratorId) {
-        this.parentNumeratorId = parentNumeratorId;
+    public void setUserAccessLevel(UserAccessLevel userAccessLevel) {
+        this.userAccessLevel = userAccessLevel;
     }
 
     public String getParentNumeratorId() {
         return parentNumeratorId;
     }
 
-    //TODO сделать класс-обертку
-    /**
-     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
-     */
-    @Transient
-    private String styleClass;
+    public void setParentNumeratorId(String parentNumeratorId) {
+        this.parentNumeratorId = parentNumeratorId;
+    }
 
     public String getStyleClass() {
         return styleClass;
@@ -571,6 +567,4 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }
-
-    private static final long serialVersionUID = -5522881582616193416L;
 }

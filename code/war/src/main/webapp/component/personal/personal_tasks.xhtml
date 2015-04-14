@@ -3,10 +3,9 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -30,92 +29,92 @@
             <h:commandLink action="#{personal_tasks.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="main_data_tbl main_data_paging"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="content">
-
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{personal_tasks.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                    <h:commandButton value=" " action="#{personal_tasks.changePageOffset(0)}" styleClass="searchbutton">
-                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" value="#{personal_tasks.documents}"
-                                        var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToTask('#{row.id}');"/>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_tasks.sort('task_number')}">
-                                        Номер поручения
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.taskNumber}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Исполнитель</p>
-                                </f:facet>
-                                <ui:repeat value="#{row.executors}" var="executor">
-                                    <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
-                                </ui:repeat>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:7em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{personal_tasks.sort('registration_date')}">
-                                        Срок исполнения
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.controlDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Статус</p>
-                                </f:facet>
-                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Автор</p>
-                                </f:facet>
-                                <h:outputText value="#{row.author.getDescriptionShort()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:12em">
-                                <f:facet name="header">
-                                    <p>Текст поручения</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{personal_tasks}" style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{personal_tasks}"
-                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
-                </div>
+        <div id="main_table">
+            <div id="searchbar" class="main_searchbar">
+                <h:inputText id="filter_string" value="#{personal_tasks.filter}"
+                             style="display:block; float:left; width:60%; margin:2px 10px;"
+                             title="Поиск"/>
+                <h:commandButton value=" " action="#{personal_tasks.applyFilter()}"
+                                 styleClass="searchbutton">
+                    <f:ajax execute="filter_string" render="main_data_tbl" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
+                </h:commandButton>
             </div>
+            <div class="inner" id="table_wrap" style="overflow:auto;">
+                <p:dataTable id="main_data_tbl"
+                             paginator="true"
+                             paginatorPosition="bottom"
+                             rows="100"
+                             rowsPerPageTemplate="10,25,50,100"
+                             value="#{personal_tasks.lazyModel}"
+                             var="row"
+                             lazy="true"
+                             widgetVar="documentTableVar"
+                             scrollable="true"
+                             scrollHeight="100%"
+                             rowStyleClass="#{row.styleClass}"
+                             sortBy="#{row.creationDate}"
+                             sortField="creationDate"
+                             sortOrder="descending"
+                        >
+                    <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
+                    <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field = "creationDate" >
+                        <h:outputText value="#{row.creationDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Исполнитель" style="width:12em;">
+                        <ui:repeat value="#{row.executors}" var="element">
+                            <div>
+                                <h:outputText value="#{element.getDescriptionShort()}"/>
+                            </div>
+                        </ui:repeat>
+                    </p:column>
+                    <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field = "form.value" >
+                        <h:outputText value="#{row.form.value}"/>
+                    </p:column>
+                    <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
+                        <h:outputText value="#{row.executionDate}">
+                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Краткое содержание">
+                        <h:outputText value="#{row.shortDescription}"/>
+                    </p:column>
+                    <p:ajax event="page" oncomplete="addRowHandlers()"/>
+                    <p:ajax event="sort" oncomplete="addRowHandlers()"/>
+                </p:dataTable>
+                <script type="text/javascript">
+                    function addRowHandlers() {
+                        console.log("refresh table row onclick handlers");
+                        var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
+                        var tbody = table.getElementsByTagName("tbody")[0];
+                        for (var i = 0; i &lt; tbody.rows.length; i++) {
+                            var currentRow = tbody.rows[i];
+                            var createClickHandler = function (row) {
+                                return function () {
+                                    goToTask(row.firstChild.textContent);
+                                };
+                            };
+                            currentRow.className = currentRow.className.replace('ui-state-highlight', '');
+                            currentRow.ondblclick = createClickHandler(currentRow);
+                        }
+                    }
+                    window.onload = addRowHandlers;
+                </script>
+            </div>
+        </div>
 
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
 
     </ui:define>
 

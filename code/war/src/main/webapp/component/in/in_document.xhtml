@@ -952,7 +952,7 @@
                                     </p:column>
                                     <p:column headerText="Исполнитель">
                                         <ui:repeat value="#{row_task.executors}" var="executor">
-                                            <h:outputText value="#{executor}" converter="PersonConverter"/> <br/>
+                                            <h:outputText value="#{executor.getDescription()}"/> <br/>
                                         </ui:repeat>
                                     </p:column>
                                     <p:column headerText="Срок исполнения">

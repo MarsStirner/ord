@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+
+<h:head>
+    <title><h:outputText value="#{multipleUserDialog.title}"/></title>
+</h:head>
+
+<h:body>
+    <h:form id="selectMultipleUserDialogForm">
+        <p:inputText id="filter" value="#{multipleUserDialog.filter}"/>
+        <p:commandButton value="Поиск">
+            <f:ajax execute="filter" render="selectPersonTable"/>
+        </p:commandButton>
+        <p:dataTable id="selectPersonTable"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{multipleUserDialog.lazyModel}"
+                     var="person_row"
+                     selectionMode="multiple"
+                     selection="#{multipleUserDialog.selection}"
+                     rowSelectMode="add"
+                     lazy="true"
+                     widgetVar="selectPersonTableVar"
+                     scrollable="true"
+                     scrollHeight="400"
+                     sortBy="#{person_row.lastName}"
+                     sortOrder="ascending"
+                     sortField="lastName"
+                >
+            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field = "lastName">
+                <h:outputText value="#{person_row.lastName}"/>
+            </p:column>
+            <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
+                <h:outputText value="#{person_row.firstName}"/>
+            </p:column>
+            <p:column headerText="Отчество" sortBy="#{person_row.middleName}" field="middleName">
+                <h:outputText value="#{person_row.middleName}"/>
+            </p:column>
+        </p:dataTable>
+        <p:commandButton value="Выбрать" action="#{multipleUserDialog.closeDialog(true)}"/>
+        <p:commandButton value="Отмена" action="#{multipleUserDialog.closeDialog(false)}"/>
+        <h:outputScript>
+            //Override PF selection\unselection with cntrlKey
+            // difference in if(c){this.unselectRow(g,a)} was if(c &amp;amp; f)
+            //TODO check it before update PF version
+            window.onload = function () {
+                PrimeFaces.widgets.selectPersonTableVar.onRowClick = function (e, d, a) {
+                    if ($(e.target).is("td,span:not(.ui-c)")) {
+                        var g = $(d),
+                                c = g.hasClass("ui-state-highlight"),
+                                f = e.metaKey || e.ctrlKey,
+                                b = e.shiftKey;
+
+                        if (c) {
+                            this.unselectRow(g, a)
+                        } else {
+                            if (this.isSingleSelection() || (this.isMultipleSelection() &amp;&amp; e &amp;&amp; !f &amp;&amp; !b &amp;&amp; this.cfg.rowSelectMode === "new")) {
+                                this.unselectAllRows()
+                            }
+                            if (this.isMultipleSelection() &amp;&amp; e &amp;&amp; e.shiftKey) {
+                                this.selectRowsInRange(g)
+                            } else {
+                                this.originRowIndex = g.index();
+                                this.cursorIndex = null;
+                                this.selectRow(g, a)
+                            }
+                        }
+                        if (this.cfg.disabledTextSelection) {
+                            PrimeFaces.clearSelection()
+                        }
+                    }
+                };
+            }
+        </h:outputScript>
+    </h:form>
+</h:body>
+
+</html>

@@ -1,18 +1,15 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.Session;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.contragent.ContragentListSelectModalBean;
-import ru.efive.dms.uifaces.beans.incoming.IncomingDocumentSelectModal;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
@@ -167,32 +164,14 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         final User currentUser = sessionManagement.getLoggedUser();
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            final OutgoingDocument document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).get(id);
+            final OutgoingDocument document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getItemById(id);
             if (!checkState(document, currentUser)) {
                 setDocument(document);
                 return;
             }
-            HibernateTemplate hibernateTemplate = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getHibernateTemplate();
-            Session session = hibernateTemplate.getSessionFactory().openSession();
-            session.beginTransaction();
-            session.update(document);
-            session.getTransaction().commit();
-
-            hibernateTemplate.initialize(document.getExecutor());
-            hibernateTemplate.initialize(document.getController());
-            hibernateTemplate.initialize(document.getAuthor());
-            hibernateTemplate.initialize(document.getNomenclature());
-            hibernateTemplate.initialize(document.getCauseIncomingDocument());
-            hibernateTemplate.initialize(document.getPersonReaders());
-            hibernateTemplate.initialize(document.getPersonEditors());
-            hibernateTemplate.initialize(document.getAgreementUsers());
-            hibernateTemplate.initialize(document.getHistory());
-            hibernateTemplate.initialize(document.getRoleEditors());
-            hibernateTemplate.initialize(document.getRoleReaders());
-            session.close();
             setDocument(document);
             //Проверка прав на открытие
-            permissions = permissionChecker.getPermissions(sessionManagement, document);
+            permissions = permissionChecker.getPermissions(sessionManagement.getAuthData(), document);
             if(isReadPermission()){
                 //Простановка факта просмотра записи
                 if(sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser)){
@@ -215,13 +194,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         final LocalDateTime created = new LocalDateTime();
         document.setCreationDate(created.toDate());
         document.setAuthor(sessionManagement.getLoggedUser());
-
-        String isDocumentTemplate = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("isDocumentTemplate");
-        if (StringUtils.isNotEmpty(isDocumentTemplate) && "yes".equals(isDocumentTemplate.toLowerCase())) {
-            document.setTemplateFlag(true);
-        } else {
-            document.setTemplateFlag(false);
-        }
 
         DocumentForm form = null;
         List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Исходящие документы", "Письмо");
@@ -348,53 +320,51 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         return super.doAfterSave();
     }
 
-    public String getLinkDescriptionByUniqueId(String key) {
-        if (!key.isEmpty()) {
-            int pos = key.indexOf('_');
-            if (pos != -1) {
-                String id = key.substring(pos + 1, key.length());
-                //String in_type=key.substring(0,pos);
-                StringBuffer in_description = new StringBuffer("");
+    public String getLinkDescriptionByUniqueId(String documentKey) {
 
+        if (!documentKey.isEmpty()) {
+            final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
+                if (documentKey.contains("incoming")) {
+                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                            .getItemByIdForSimpleView(rootDocumentId);
+                    return (in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber()
+                            .equals("") ? "Черновик входщяего документа от " + ApplicationHelper
+                            .formatDate(in_doc.getCreationDate()) : "Входящий документ № " + in_doc
+                            .getRegistrationNumber() + " от " + ApplicationHelper.formatDate(in_doc.getRegistrationDate()));
 
-                if (key.contains("incoming")) {
-                    IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                    in_description = new StringBuffer(in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ?
-                            "Черновик входщяего документа от " + ApplicationHelper.formatDate(in_doc.getCreationDate()) :
-                            "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(in_doc.getRegistrationDate())
-                    );
-
-                } else if (key.contains("outgoing")) {
-                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).findDocumentById(id);
-                    in_description = new StringBuffer(out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
+                } else if (documentKey.contains("outgoing")) {
+                    OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                            .getItemByIdForSimpleView(rootDocumentId);
+                    return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ?
                             "Черновик исходящего документа от " + ApplicationHelper.formatDate(out_doc.getCreationDate()) :
                             "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(out_doc.getRegistrationDate())
                     );
 
-                } else if (key.contains("internal")) {
-                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO).findDocumentById(id);
-                    in_description = new StringBuffer(internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
+                } else if (documentKey.contains("internal")) {
+                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                            .getItemByIdForSimpleView(rootDocumentId);
+                    return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ?
                             "Черновик внутреннего документа от " + ApplicationHelper.formatDate(internal_doc.getCreationDate()) :
                             "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(internal_doc.getRegistrationDate())
                     );
 
-                } else if (key.contains("request")) {
-                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).findDocumentById(id);
-                    in_description = new StringBuffer(request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
+                } else if (documentKey.contains("request")) {
+                    RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+                            .getItemByIdForSimpleView(rootDocumentId);
+                     return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ?
                             "Черновик обращения граждан от " + ApplicationHelper.formatDate(request_doc.getCreationDate()) :
                             "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(request_doc.getRegistrationDate())
                     );
 
-                } else if (key.contains("task")) {
-                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).findDocumentById(id);
-                    in_description = new StringBuffer(task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
+                } else if (documentKey.contains("task")) {
+                    Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO)
+                            .getItemByIdForSimpleView(rootDocumentId);
+                    return (task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ?
                             "Черновик поручения от " + ApplicationHelper.formatDate(task_doc.getCreationDate()) :
                             "Поручение № " + task_doc.getTaskNumber() + " от " + ApplicationHelper.formatDate(task_doc.getCreationDate())
                     );
                 }
-                return in_description.toString();
             }
-        }
         return "";
     }
 
@@ -750,26 +720,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
     };
 
-    public IncomingDocumentSelectModal getCauseIncomingDocumentSelectModal() {
-        return incomingDocumentSelectModal;
-    }
-
-    private IncomingDocumentSelectModal incomingDocumentSelectModal = new IncomingDocumentSelectModal() {
-
-        @Override
-        protected void doSave() {
-            getDocument().setCauseIncomingDocument(getIncomingDocument());
-            super.doSave();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getIncomingDocumentList().setFilter("");
-            getIncomingDocumentList().markNeedRefresh();
-        }
-    };
-
     public DocumentSelectModal getReasonDocumentSelectModal() {
         return reasonDocumentSelectModal;
     }
@@ -791,9 +741,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doHide() {
             super.doHide();
             this.getIncomingDocuments().setFilter("");
-            this.getIncomingDocuments().markNeedRefresh();
             this.getRequestDocuments().setFilter("");
-            this.getRequestDocuments().markNeedRefresh();
             this.setViewTypesAlreadySelected(false);
         }
     };

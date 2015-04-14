@@ -5,491 +5,353 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:p="http://primefaces.org/ui"
         >
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/searchFormTemplate.xhtml">
 
-<ui:define name="running_head">
-    <e5ui-comp:userSessionUpdate rendered="true" interval="300"/>
-    <h:outputScript library="js" name="primefacesLocale_ru.js"/>
-    <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
-    <e5ui-comp:outputUtilScript/>
-</ui:define>
+    <ui:define name="running_head">
+        <h:outputScript library="js" name="primefacesLocale_ru.js"/>
+        <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
+        <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
+    </ui:define>
 
-<ui:define name="header">
-    <div id="form_header">
-        <div class="actionbar">
-            <div class="menu">
-                <div class="defbutton">
-                    <h:outputLink value="/component/internal/internal_documents_by_number.xhtml">
-                        <h:graphicImage value="#{resource['images:home.png']}"/>
-                    </h:outputLink>
-                </div>
-                <div class="defbutton">
-                    <h:commandLink action="#{internal_search_documents.search}" styleClass="searchbutton">
-                        <h:graphicImage value="#{resource['images:button-search.png']}"/>
-                        Найти
-                    </h:commandLink>
-                </div>
-                <div class="defbutton">
-                    <h:commandLink action="#{internal_search_documents.clear}" styleClass="searchbutton">
-                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                        Очистить
-                    </h:commandLink>
-                </div>
-            </div>
+    <!--Кнопки верхнего меню-->
+    <ui:define name="headerHomeButton">
+        <div class="defbutton">
+            <h:outputLink value="/component/internal/internal_documents_by_number.xhtml">
+                <h:graphicImage value="#{resource['images:home.png']}"/>
+            </h:outputLink>
         </div>
-    </div>
-</ui:define>
+    </ui:define>
 
-<ui:define name="left_menu"/>
-
-<ui:define name="content">
-<div id="header_content">
-    <h:panelGroup rendered="true">
-        <div class="name">Форма поиска</div>
-    </h:panelGroup>
-</div>
-
-<div class="main_content">
-<e5ui:formPart id="editFormPart">
-
-<h:panelGroup rendered="true">
-<div class="row">
-<table class="form_grid">
-<tr class="row">
-    <td class="first">
-        <label for="statusId">
-            <span class="title">Статус документа: </span>
-        </label>
-    </td>
-    <td class="second" colspan="3">
-        <h:selectOneMenu id="statusId" value="#{internal_search_documents.statusId}">
-            <f:selectItem itemLabel="" itemValue=""/>
-            <f:selectItem itemLabel="На рассмотрении" itemValue="2"/>
-            <f:selectItem itemLabel="Согласование" itemValue="3"/>
-            <f:selectItem itemLabel="Зарегистрирован" itemValue="5"/>
-            <f:selectItem itemLabel="На исполнении" itemValue="80"/>
-            <f:selectItem itemLabel="Исполнен" itemValue="90"/>
-            <f:selectItem itemLabel="В архиве" itemValue="100"/>
-            <f:selectItem itemLabel="Изъят из архива" itemValue="110"/>
-        </h:selectOneMenu>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label>
-            <span class="title">
-                <h:outputLink title="Автор"
-                              onclick="initiatorSelectModalVar.clickOpen('initiatorSelectModal'); return false;">
-                    Автор
-                </h:outputLink>
-            </span>
-        </label>
-        <e5ui-comp:modalWindow id="initiatorSelectModal"
-                               modalWindowHolder="#{internal_search_documents.initiatorSelectModal}"
-                               render="author" execute="select_table"
-                               showButtons="false" style="width: 500px;"
-                               widgetVar="initiatorSelectModalVar">
-            <div id="title">Выбор автора</div>
-            <div id="modal_container" style="margin-top: 0;">
-                <div class="searchbar">
-                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                    <h:inputText id="filter_string"
-                                 value="#{internal_search_documents.initiatorSelectModal.userList.filter}"
-                                 style="display:block; float:left; margin-right:10px;"
-                                 title="Поиск"/>
-                    <h:commandButton value=" "
-                                     action="#{internal_search_documents.initiatorSelectModal.userList.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax
-                                execute="initiatorSelectModal:filter_string"
-                                render="initiatorSelectModal:ajaxModal initiatorSelectModal:initiators_modal_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap" style="height: 300px;">
-                    <div class="inner" style="height: 300px;">
-                        <e5ui:dataTable id="select_table" border="0"
-                                        cellpadding="0" cellspacing="0"
-                                        value="#{internal_search_documents.initiatorSelectModal.userList.documents}"
-                                        var="row" grouping="false" width="100%">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{internal_search_documents.initiatorSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Автор</p>
-                                </f:facet>
-                                <h:outputText value="#{row}" converter="PersonConverter"/>
-                                <h:commandLink id="selectLink" style="display: none;"
-                                               rendered="#{not internal_search_documents.initiatorSelectModal.selected(row)}"
-                                               action="#{internal_search_documents.initiatorSelectModal.select(row)}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div style="clear: both;">
-                    <h:panelGroup id="initiators_modal_paging">
-                        <e5ui-comp:tablePager id="initiators_pager"
-                                              documentListHolder="#{internal_search_documents.initiatorSelectModal.userList}"/>
-                    </h:panelGroup>
-                </div>
-            </div>
-            <div class="e5ui-modal-bottombuttons">
-                <h:button
-                        onclick="initiatorSelectModalVar.clickSave(); return false;"
-                        value="Выбрать"/>
-                <h:button
-                        onclick="initiatorSelectModalVar.clickClose(); return false;"
-                        value="Отмена"/>
-            </div>
-        </e5ui-comp:modalWindow></td>
-    <td class="second" colspan="3">
-        <h:outputText id="author" value="#{internal_search_documents.initiator}" converter="PersonConverter"
-                      class="wide"/></td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label> 
-            <span class="title">
-                <h:outputLink
-                        onclick="signerSelectModalVar.clickOpen('signerSelectModal'); return false;">
-                    Руководитель
-                </h:outputLink>
-			</span>
-        </label>
-        <e5ui-comp:modalWindow id="signerSelectModal"
-                               modalWindowHolder="#{internal_search_documents.signerSelectModal}"
-                               render="signer" execute="select_table"
-                               showButtons="false" style="width: 500px;"
-                               widgetVar="signerSelectModalVar">
-            <div id="title">Выбор руководителя</div>
-            <div id="modal_container" style="margin-top: 0;">
-                <div class="wrap" style="height: 300px;">
-                    <div class="inner" style="height: 300px;">
-                        <e5ui:dataTable id="select_table" border="0"
-                                        cellpadding="0" cellspacing="0"
-                                        value="#{staffManagement.findGroupByAlias('TopManagers').membersListWithEmptyUser}"
-                                        var="row" grouping="false" width="100%">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{internal_search_documents.signerSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Руководитель</p>
-                                </f:facet>
-                                <h:outputText value="#{row}" converter="PersonConverter"/>
-                                <h:commandLink id="selectLink" style="display: none;"
-                                               rendered="#{not internal_search_documents.signerSelectModal.selected(row)}"
-                                               action="#{internal_search_documents.signerSelectModal.select(row)}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-            </div>
-            <div class="e5ui-modal-bottombuttons">
-                <h:button onclick="signerSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                <h:button onclick="signerSelectModalVar.clickClose(); return false;" value="Отмена"/>
-            </div>
-        </e5ui-comp:modalWindow>
-    </td>
-    <td class="second" colspan="3">
-        <h:outputText
-                id="signer"
-                value="#{internal_search_documents.signer}"
-                converter="PersonConverter" class="wide"/>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label for="form">
-            <span class="title">Вид документа: </span>
-        </label>
-    </td>
-    <td class="second" colspan="3">
-        <h:selectOneMenu id="form" value="#{internal_search_documents.form}"
-                         converter="InternalDocumentFormConverter"
-                         style="font-size:10pt;">
-            <f:selectItems
-                    value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Внутренние документы')}"/>
-        </h:selectOneMenu>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label for="registrationNumber">
-            <span class="title">Регистрационный номер</span>
-        </label>
-    </td>
-    <td class="second" colspan="3">
-        <h:inputText id="registrationNumber" value="#{internal_search_documents.registrationNumber}">
-        </h:inputText>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label for="startRegistrationDate">
-            <span class="title">Дата регистрации: от</span>
-        </label>
-    </td>
-    <td class="second">
-        <p:calendar id="startRegistrationDate" value="#{internal_search_documents.startRegistrationDate}" lang="ru"
-                    locale="ru"
-                    widgetVar="startRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-    </td>
-    <td class="first">
-        <label for="endRegistrationDate">
-            <span class="title">до</span>
-        </label>
-    </td>
-    <td class="second">
-        <p:calendar id="endRegistrationDate" value="#{internal_search_documents.endRegistrationDate}" lang="ru"
-                    locale="ru"
-                    widgetVar="endRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label for="startCreationDate">
-            <span class="title">Дата создания: от</span>
-        </label>
-    </td>
-    <td class="second">
-        <p:calendar id="startCreationDate" value="#{internal_search_documents.startCreationDate}" lang="ru"
-                    locale="ru"
-                    widgetVar="startCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-    </td>
-    <td class="first">
-        <label for="endCreationDate">
-            <span class="title">до</span>
-        </label>
-    </td>
-    <td class="second">
-        <p:calendar id="endCreationDate" value="#{internal_search_documents.endCreationDate}" lang="ru"
-                    locale="ru"
-                    widgetVar="endCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label for="startExecutionDate">
-            <span class="title">Срок исполнения: от</span>
-        </label>
-    </td>
-    <td class="second">
-        <p:calendar id="startExecutionDate" value="#{internal_search_documents.startExecutionDate}" lang="ru"
-                    locale="ru"
-                    widgetVar="startExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-    </td>
-    <td class="first">
-        <label for="endExecutionDate">
-            <span class="title">до</span>
-        </label>
-    </td>
-    <td class="second">
-        <p:calendar id="endExecutionDate" value="#{internal_search_documents.endExecutionDate}" lang="ru" locale="ru"
-                    widgetVar="endExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label>
-            <span class="title">
-                <h:outputLink title="Ответственный исполнитель"
-                              onclick="responsibleSelectModalVar.clickOpen('responsibleSelectModal'); return false;">
-                    Ответственный исполнитель
-                </h:outputLink>
-			</span>
-        </label>
-        <e5ui-comp:modalWindow id="responsibleSelectModal"
-                               modalWindowHolder="#{internal_search_documents.responsibleSelectModal}"
-                               render="responsible" execute="select_table"
-                               showButtons="false" style="width: 500px;"
-                               widgetVar="responsibleSelectModalVar">
-            <div id="title">Выбор исполнителя</div>
-            <div id="modal_container" style="margin-top: 0;">
-                <div class="searchbar">
-                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                    <h:inputText id="filter_string"
-                                 value="#{internal_search_documents.responsibleSelectModal.userList.filter}"
-                                 style="display:block; float:left; margin-right:10px;"
-                                 title="Поиск"/>
-                    <h:commandButton value=" "
-                                     action="#{internal_search_documents.responsibleSelectModal.userList.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax
-                                execute="responsibleSelectModal:filter_string"
-                                render="responsibleSelectModal:ajaxModal responsibleSelectModal:responsibles_modal_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap" style="height: 300px;">
-                    <div class="inner" style="height: 300px;">
-                        <e5ui:dataTable id="select_table" border="0"
-                                        cellpadding="0" cellspacing="0"
-                                        value="#{internal_search_documents.responsibleSelectModal.userList.documents}"
-                                        var="row" grouping="false" width="100%">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{internal_search_documents.responsibleSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Ответственный исполнитель</p>
-                                </f:facet>
-                                <h:outputText value="#{row}" converter="PersonConverter"/>
-                                <h:commandLink id="selectLink" style="display: none;"
-                                               rendered="#{not internal_search_documents.responsibleSelectModal.selected(row)}"
-                                               action="#{internal_search_documents.responsibleSelectModal.select(row)}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div style="clear: both;">
-                    <h:panelGroup id="responsibles_modal_paging">
-                        <e5ui-comp:tablePager id="responsibles_pager"
-                                              documentListHolder="#{internal_search_documents.responsibleSelectModal.userList}"/>
-                    </h:panelGroup>
-                </div>
-            </div>
-            <div class="e5ui-modal-bottombuttons">
-                <h:button onclick="responsibleSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                <h:button onclick="responsibleSelectModalVar.clickClose(); return false;" value="Отмена"/>
-            </div>
-        </e5ui-comp:modalWindow>
-    </td>
-    <td class="second" colspan="3">
-        <h:outputText id="responsible" value="#{internal_search_documents.responsible}"
-                      converter="PersonConverter" class="wide"/>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label>
-            <span class="title">
-                <h:outputLink title="Адресаты:"
-                              onclick="userListSelectModalVar.clickOpen('recipientUsersSelectModal'); return false;">
-                    Адресаты
-                </h:outputLink>
-			</span>
-        </label>
-        <e5ui-comp:modalWindow id="recipientUsersSelectModal"
-                               modalWindowHolder="#{internal_search_documents.recipientUsersSelectModal}"
-                               render="recipients" execute="select_table"
-                               showButtons="false" style="width: 500px;"
-                               widgetVar="userListSelectModalVar">
-            <div id="title">Выбор адресатов</div>
-            <div id="modal_container" style="margin-top: 0;">
-                <div class="searchbar">
-                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                    <h:inputText id="filter_string"
-                                 value="#{internal_search_documents.recipientUsersSelectModal.userList.filter}"
-                                 style="display:block; float:left; margin-right:10px;"
-                                 title="Поиск"/>
-                    <h:commandButton value=" "
-                                     action="#{internal_search_documents.recipientUsersSelectModal.userList.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax execute="recipientUsersSelectModal:filter_string"
-                                render="recipientUsersSelectModal:ajaxModal recipientUsersSelectModal:modal_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap" style="height: 300px;">
-                    <div class="inner" style="height: 300px;">
-                        <e5ui:dataTable id="select_table" border="0"
-                                        cellpadding="0" cellspacing="0"
-                                        value="#{internal_search_documents.initiatorSelectModal.userList.documents}"
-                                        var="row"
-                                        grouping="false" width="100%">
-                            <e5ui:row
-                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                    styleClass="#{internal_search_documents.recipientUsersSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Адресаты</p>
-                                </f:facet>
-                                <h:outputText value="#{row}" converter="PersonConverter"/>
-                                <h:commandLink id="selectLink" style="display: none;"
-                                               rendered="#{not internal_search_documents.recipientUsersSelectModal.selected(row)}"
-                                               action="#{internal_search_documents.recipientUsersSelectModal.select(row)}"/>
-                                <h:commandLink id="unselectLink" style="display: none;"
-                                               rendered="#{internal_search_documents.recipientUsersSelectModal.selected(row)}"
-                                               action="#{internal_search_documents.recipientUsersSelectModal.unselect(row)}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div style="clear: both;">
-                    <h:panelGroup id="modal_paging">
-                        <e5ui-comp:tablePager id="pager"
-                                              documentListHolder="#{internal_search_documents.recipientUsersSelectModal.userList}"/>
-                    </h:panelGroup>
-                </div>
-            </div>
-            <div class="e5ui-modal-bottombuttons">
-                <h:button onclick="userListSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                <h:button onclick="userListSelectModalVar.clickClose(); return false;" value="Отмена"/>
-            </div>
-        </e5ui-comp:modalWindow>
-    </td>
-    <td class="second" colspan="3">
-        <div style="overflow-y: scroll; height: 60px">
-            <h:panelGroup id="recipients">
-                <label>
-                    <ui:repeat value="#{internal_search_documents.recipientUsers}" var="element">
-                        <h:outputText value="#{element}" converter="PersonConverter" class="width"/>
-                        <br/>
-                    </ui:repeat>
-                </label>
-            </h:panelGroup>
+    <ui:define name="headerSearchButton">
+        <div class="defbutton">
+            <h:commandLink action="#{internal_search.performSearch}" styleClass="searchbutton">
+                <h:graphicImage value="#{resource['images:button-search.png']}"/>
+                <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
+                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); addRowHandlers();  PF('searchResultsPanelVar').expand();}}"/>
+                Найти
+            </h:commandLink>
         </div>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first">
-        <label for="shortDescription">
-            <span class="title">Краткое содержание</span>
-        </label>
-    </td>
-    <td class="second" colspan="3"><h:inputText
-            id="shortDescription"
-            value="#{internal_search_documents.shortDescription}"
-            class="wide">
-        <!-- <f:ajax render="main_content_form:shortDescription" />-->
-    </h:inputText>
-    </td>
-</tr>
-<tr class="row">
-    <td class="first"></td>
-    <td class="second"></td>
-    <td class="third"></td>
-    <td class="fourth"></td>
-</tr>
-</table>
-</div>
-</h:panelGroup>
+    </ui:define>
 
-</e5ui:formPart>
-</div>
-
-<e5ui-comp:splashScreen id="splash_screen" timeout="0">
-    <f:facet name="timeoutPanel">
-        <div
-                style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-            Пожалуйста, подождите...
+    <ui:define name="headerClearButton">
+        <div class="defbutton">
+            <h:commandLink action="#{internal_search.clearFilter}" styleClass="searchbutton">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                <f:ajax render="searchParametersPanel"
+                        onevent="function (data) {if(data.status == 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}"/>
+                Очистить
+            </h:commandLink>
         </div>
-    </f:facet>
-</e5ui-comp:splashScreen>
-<script>
-    e5ui_splashScreen.startShowOnSubmit('splash_screen',
-            [ 'main_content_form' ]);
-</script>
-</ui:define>
+    </ui:define>
 
-<ui:define name="footer">
-    <h:outputStylesheet library="css" name="datatable.css"/>
-    <h:outputStylesheet library="css" name="modalWindow.css"/>
-</ui:define>
+    <!--Название поисковой формы-->
+    <ui:define name="searchFormName">
+        <div class="name">Форма поиска внутренних документов</div>
+    </ui:define>
+
+    <!--Параметры поиска-->
+    <ui:define name="searchParameters">
+        <p:panelGrid id="searchPanelGrid" style="width:100%">
+            <p:row>
+                <p:column>
+                    <label for="statusId">
+                        <span class="title">Статус документа: </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:selectOneMenu id="statusId" value="#{internal_search.status}">
+                        <f:selectItem itemLabel="" itemValue=""/>
+                        <f:selectItem itemLabel="На рассмотрении" itemValue="2"/>
+                        <f:selectItem itemLabel="Согласование" itemValue="3"/>
+                        <f:selectItem itemLabel="Зарегистрирован" itemValue="5"/>
+                        <f:selectItem itemLabel="На исполнении" itemValue="80"/>
+                        <f:selectItem itemLabel="Исполнен" itemValue="90"/>
+                        <f:selectItem itemLabel="В архиве" itemValue="100"/>
+                        <f:selectItem itemLabel="Изъят из архива" itemValue="110"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="form">
+                        <span class="title">Вид документа:</span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:selectOneMenu id="form" value="#{internal_search.form}"
+                                     converter="InternalDocumentFormConverter">
+                        <f:selectItems
+                                value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Внутренние документы')}"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label>
+                    <span class="title">
+                       <p:commandButton value="Авторы" actionListener="#{internal_search.chooseAuthors}">
+                           <p:ajax event="dialogReturn" listener="#{internal_search.onAuthorsChosen}" update="authors"/>
+                       </p:commandButton>
+                    </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="authors" value="#{internal_search.authors}" var="row_author" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
+                                <h:outputText value="#{row_author.descriptionShort}"/>
+                                <p:commandLink action="#{internal_search.removeAuthor(row_author)}" ajax="true"
+                                               update="authors" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label>
+                    <span class="title">
+                       <p:commandButton value="Руководитель" actionListener="#{internal_search.chooseController}">
+                           <p:ajax event="dialogReturn" listener="#{internal_search.onControllerChosen}"
+                                   update="controller"/>
+                       </p:commandButton>
+                    </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <h:outputText id="controller" value="#{internal_search.controller.descriptionShort}" class="wide"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="registrationNumber">
+                        <span class="title">Регистрационный номер</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:inputText id="registrationNumber" value="#{internal_search.registrationNumber}"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startCreationDate">
+                        <span class="title">Дата создания от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startCreationDate" value="#{internal_search.startCreationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="startCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endCreationDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endCreationDate" value="#{internal_search.endCreationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="endCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startRegistrationDate">
+                        <span class="title">Дата регистрации от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startRegistrationDate"
+                                value="#{internal_search.startRegistrationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="startRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endRegistrationDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endRegistrationDate" value="#{internal_search.endRegistrationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="endRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startExecutionDate">
+                        <span class="title">Срок исполнения от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startExecutionDate" value="#{internal_search.startExecutionDate}" lang="ru"
+                                locale="ru"
+                                widgetVar="startExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endExecutionDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endExecutionDate" value="#{internal_search.endExecutionDate}" lang="ru" locale="ru"
+                                widgetVar="endExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startSignatureDate">
+                        <span class="title">Дата подписания от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startSignatureDate" value="#{internal_search.startSignatureDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="startSignatureDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endSignatureDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endSignatureDate" value="#{internal_search.endSignatureDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="endSignatureDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label>
+                    <span class="title">
+                       <p:commandButton value="Контроль исполнения"
+                                        actionListener="#{internal_search.chooseResponsible}">
+                           <p:ajax event="dialogReturn" listener="#{internal_search.onResponsibleChosen}"
+                                   update="responsible"/>
+                       </p:commandButton>
+                    </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <h:outputText id="responsible" value="#{internal_search.responsible.descriptionShort}"
+                                  class="wide"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label>
+                        <span class="title">
+                             <p:commandButton value="Адресаты" actionListener="#{internal_search.chooseRecipients}">
+                                 <p:ajax event="dialogReturn" listener="#{internal_search.onRecipientsChosen}"
+                                         update="recipients"/>
+                             </p:commandButton>
+                        </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="recipients" value="#{internal_search.recipients}" var="row_recipient" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
+                                <h:outputText value="#{row_recipient.descriptionShort}"/>
+                                <p:commandLink action="#{internal_search.removeRecipient(row_recipient)}" ajax="true"
+                                               update="recipients" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="shortDescription">
+                        <span class="title">Краткое содержание</span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:inputText id="shortDescription" value="#{internal_search.shortDescription}"/>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </ui:define>
+
+
+    <ui:define name="searchResults">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="10"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{internal_search.lazyModel}"
+                     var="row_result"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     rowStyleClass="#{row_result.styleClass}"
+                     sortBy="#{row_result.registrationNumber}"
+                     sortField="registrationNumber"
+                     sortOrder="descending"
+                     rendered="#{internal_search.searchPerformed}"
+                     emptyMessage="Документов не найдено"
+                >
+            <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
+            <p:column style="width:9em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field="registrationNumber">
+                <h:outputText value="#{row_result.registrationNumber}"/>
+            </p:column>
+            <p:column style="width:10em;" headerText="Дата подписания" sortBy="#{row_result.signatureDate}" field="signatureDate">
+                <h:outputText value="#{row_result.signatureDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column style="width:12em;" headerText="Ответственный" sortBy="#{row_result.responsible}" field="responsible.lastName" >
+                <h:outputText value="#{row_result.responsible.getDescriptionShort()}"/>
+            </p:column>
+            <p:column style="width:10em;" headerText="Руководитель" sortBy="#{row_result.controller}" field="controller.lastName" >
+                <h:outputText value="#{row_result.controller.getDescriptionShort()}"/>
+            </p:column>
+            <p:column style="width:8em;" headerText="Вид" sortBy="#{row_result.form}" field="form.value" >
+                <h:outputText value="#{row_result.form}"/>
+            </p:column>
+            <p:column style="width:10em;" headerText="Статус" sortBy="#{row_result.statusId}" field="statusId" >
+                <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:column headerText="Краткое содержание">
+                <h:outputText value="#{row_result.shortDescription}"/>
+            </p:column>
+            <p:ajax event="page" onstart="addRowHandlers()"/>
+            <p:ajax event="sort" oncomplete="addRowHandlers()"/>
+        </p:dataTable>
+        <script type="text/javascript">
+            function addRowHandlers() {
+                console.log("refresh table row onclick handlers");
+                var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
+                var tbody = table.getElementsByTagName("tbody")[0];
+                for (var i = 0; i &lt; tbody.rows.length; i++) {
+                    var currentRow = tbody.rows[i];
+                    var createClickHandler = function (row) {
+                        return function () {
+                            goToInternalDocument(row.firstChild.textContent);
+                        };
+                    };
+                    currentRow.className = currentRow.className.replace('ui-state-highlight', '');
+                    currentRow.ondblclick = createClickHandler(currentRow);
+                }
+            }
+            window.onload = addRowHandlers;
+        </script>
+    </ui:define>
 
 </ui:composition>
 
