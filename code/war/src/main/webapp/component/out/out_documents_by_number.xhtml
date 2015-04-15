@@ -1,24 +1,20 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
+    <ui:define name="headContent">
         <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
-    <ui:define name="header_top">
-        <div id="viewtitle">Исходящие документы по номеру</div>
-    </ui:define>
+    <ui:define name="contentLabel">Исходящие документы по номеру</ui:define>
 
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/out/out_document.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -30,107 +26,71 @@
             <h:commandLink action="#{outDocumentsByNumber.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="main_data_tbl"/>
+                <p:ajax update="mainTable"/>
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
-        <h:outputStylesheet>
-            .ui-column-title, .ui-commandlink{
-                position: relative !important;
-                padding: 0 !important;
-            }
-        </h:outputStylesheet>
-
-        <div id="main_table">
-            <div id="searchbar" class="main_searchbar">
-                <h:inputText id="filter_string" value="#{outDocumentsByNumber.filter}"
-                             style="display:block; float:left; width:60%; margin:2px 10px;"
-                             title="Поиск"/>
-                <h:commandButton value=" " action="#{outDocumentsByNumber.applyFilter()}"
-                                 styleClass="searchbutton">
-                    <f:ajax execute="filter_string" render="main_data_tbl" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
-                </h:commandButton>
-                <h:outputLink target="_blank" value="/component/out/out_document_search_form.xhtml"
-                              title="Перейти к форме расширенного поиска"
-                              style="margin: 0 20px;">
-                    Расширенный поиск
-                </h:outputLink>
-            </div>
-            <div class="inner" id="table_wrap" style="overflow:auto;">
-                <p:dataTable id="main_data_tbl"
-                             paginator="true"
-                             paginatorPosition="bottom"
-                             rows="50"
-                             rowsPerPageTemplate="10,25,50,100"
-                             value="#{outDocumentsByNumber.lazyModel}"
-                             var="row"
-                             lazy="true"
-                             widgetVar="documentTableVar"
-                             scrollable="true"
-                             scrollHeight="100%"
-                             rowStyleClass="#{row.styleClass}"
-                             sortBy="#{row.registrationDate}"
-                             sortField="registrationDate"
-                             sortOrder="descending"
-                        >
-                    <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
-                    <p:column headerText="Дата регистрации" style="width:9em;" sortBy="#{row.registrationDate}" field = "registrationDate">
-                        <h:outputText value="#{row.registrationDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
-                        <h:outputText value="#{row.registrationNumber}"/>
-                    </p:column>
-                    <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
-                        <h:outputText value="#{row.executor.getDescriptionShort()}"/>
-                    </p:column>
-                    <p:column headerText="Адресаты" style="width:12em;">
-                        <ui:repeat value="#{row.recipientContragents}" var="element">
-                            <div><h:outputText value="#{element.fullName}"/></div>
-                        </ui:repeat>
-                    </p:column>
-                    <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                        <h:outputText value="#{row.form}"/>
-                    </p:column>
-
-                    <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
-                        <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                    </p:column>
-                    <p:column headerText="Краткое содержание">
-                        <h:outputText value="#{row.shortDescription}"/>
-                    </p:column>
-                    <p:ajax event="page" oncomplete="addRowHandlers()"/>
-                    <p:ajax event="sort" oncomplete="addRowHandlers()"/>
-                </p:dataTable>
-                <script type="text/javascript">
-                    function addRowHandlers() {
-                        console.log("refresh table row onclick handlers");
-                        var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
-                        var tbody = table.getElementsByTagName("tbody")[0];
-                        for (var i = 0; i &lt; tbody.rows.length; i++) {
-                            var currentRow = tbody.rows[i];
-                            var createClickHandler = function (row) {
-                                return function () {
-                                    goToOutgoingDocument(row.firstChild.textContent);
-                                };
-                            };
-                            currentRow.className = currentRow.className.replace('ui-state-highlight', '');
-                            currentRow.ondblclick = createClickHandler(currentRow);
-                        }
-                    }
-                    window.onload = addRowHandlers;
-                </script>
-            </div>
+    <ui:define name="contentSearch">
+        <div id="searchbar" class="main_searchbar">
+            <p:inputText id="filter_string" value="#{outDocumentsByNumber.filter}"
+                         style="display:block; float:left; width:60%; margin:2px 10px;"
+                         title="Поиск"/>
+            <p:commandButton value=" " action="#{outDocumentsByNumber.applyFilter()}" styleClass="searchbutton"
+                             process="@this filter_string" update="mainTable"/>
+            <h:outputLink target="_blank" value="/component/out/out_document_search_form.xhtml"
+                          title="Перейти к форме расширенного поиска"
+                          style="margin: 0 20px;">
+                Расширенный поиск
+            </h:outputLink>
         </div>
+    </ui:define>
+    <ui:define name="contentTable">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="50"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{outDocumentsByNumber.lazyModel}"
+                     var="row"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     rowStyleClass="#{row.styleClass}"
+                     selectionMode="single"
+                     sortBy="#{row.registrationDate}"
+                     sortField="registrationDate"
+                     sortOrder="descending"
+                >
+            <p:column headerText="Дата регистрации" style="width:9em;" sortBy="#{row.registrationDate}" field = "registrationDate">
+                <h:outputText value="#{row.registrationDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+                <h:outputText value="#{row.registrationNumber}"/>
+            </p:column>
+            <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
+                <h:outputText value="#{row.executor.getDescriptionShort()}"/>
+            </p:column>
+            <p:column headerText="Адресаты" style="width:12em;">
+                <ui:repeat value="#{row.recipientContragents}" var="element">
+                    <h:outputText value="#{element.fullName}"/><br/>
+                </ui:repeat>
+            </p:column>
+            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+                <h:outputText value="#{row.form}"/>
+            </p:column>
 
-        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
-                  showHeader="false" position="center center">
-            Пожалуйста, подождите...
-        </p:dialog>
+            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
+                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:column headerText="Краткое содержание">
+                <h:outputText value="#{row.shortDescription}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToOutgoingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+        </p:dataTable>
 
     </ui:define>
 

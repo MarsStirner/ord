@@ -52,9 +52,7 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     protected List<IncomingDocument> loadDocuments() {
         final List<IncomingDocument> resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                 .findControlledDocumentsByUser(
-                        filter,
-                        sessionManagement.getAuthData(),
-                        showExpiredFlag ? currentDate.toDate() : null
+                        filter, sessionManagement.getAuthData(), showExpiredFlag ? currentDate.toDate() : null
                 );
         if (!resultList.isEmpty()) {
             sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnIncomingDocumentList(
@@ -76,6 +74,7 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
         String lastYear = "";
         String lastMonth = "";
         while (iterator.hasNext()) {
+            boolean samePeriod = true;
             IncomingDocument current = iterator.next();
             String[] date = year_month_day.format(current.getExecutionDate()).split(",");
             if (!lastYear.equals(date[0])) {
@@ -85,8 +84,9 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
                 ), rootElement
                 );
                 lastYear = date[0];
+                samePeriod = false;
             }
-            if (!lastMonth.equals(date[1])) {
+            if (!lastMonth.equals(date[1]) || !samePeriod) {
                 lastMonthNode = new DefaultTreeNode(
                         "month", new IncomingDocumentNode(
                         IncomingDocumentNode.DOC_TYPE.MONTH, dateFormatSymbols.getMonths()[Integer.valueOf(date[1]) - 1]
