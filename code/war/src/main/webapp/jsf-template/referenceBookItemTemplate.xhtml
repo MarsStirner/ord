@@ -57,9 +57,11 @@
         <ui:insert name="content">
             <div id="header_content">
                 <div class="referenceBookName">
-                    <ui:insert name="contentReferenceBookName">
-                        <h:outputText value="Справочник &lt;Имя справочника&gt;"/>
-                    </ui:insert>
+                    <div class="name" style="width:100%">
+                        <ui:insert name="contentReferenceBookName">
+                            <h:outputText value="Справочник &lt;Имя справочника&gt;"/>
+                        </ui:insert>
+                    </div>
                 </div>
                 <div class="referenceBookItemName">
                     <ui:insert name="contentItemName">
