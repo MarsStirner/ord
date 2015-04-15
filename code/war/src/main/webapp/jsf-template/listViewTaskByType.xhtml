@@ -12,8 +12,6 @@
         <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
-    <ui:define name="contentLabel">Поручения по номеру</ui:define>
-
     <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/task/task.xhtml" target="_blank">
@@ -72,10 +70,7 @@
                 <ui:repeat value="#{row.executors}" var="element">
                     <h:outputText value="#{element.getDescriptionShort()}"/><br/>
                 </ui:repeat>
-            </p:column>
-            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                <h:outputText value="#{row.form}"/>
-            </p:column>
+            </p:column>               >
             <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
                 <h:outputText value="#{row.executionDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>

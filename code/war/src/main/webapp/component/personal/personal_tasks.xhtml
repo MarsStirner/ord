@@ -3,21 +3,15 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:h="http://java.sun.com/jsf/html">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
-    </ui:define>
+    <ui:define name="contentLabel">Мои проекты поручений</ui:define>
 
-    <ui:define name="header_top">
-        <div id="viewtitle">Мои поручения</div>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/task/task.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -29,93 +23,63 @@
             <h:commandLink action="#{personal_tasks.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="main_data_tbl"/>
+                <f:ajax render="mainTable"/>
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
-        <div id="main_table">
-            <div id="searchbar" class="main_searchbar">
-                <h:inputText id="filter_string" value="#{personal_tasks.filter}"
-                             style="display:block; float:left; width:60%; margin:2px 10px;"
-                             title="Поиск"/>
-                <h:commandButton value=" " action="#{personal_tasks.applyFilter()}"
-                                 styleClass="searchbutton">
-                    <f:ajax execute="filter_string" render="main_data_tbl" onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
-                </h:commandButton>
-            </div>
-            <div class="inner" id="table_wrap" style="overflow:auto;">
-                <p:dataTable id="main_data_tbl"
-                             paginator="true"
-                             paginatorPosition="bottom"
-                             rows="100"
-                             rowsPerPageTemplate="10,25,50,100"
-                             value="#{personal_tasks.lazyModel}"
-                             var="row"
-                             lazy="true"
-                             widgetVar="documentTableVar"
-                             scrollable="true"
-                             scrollHeight="100%"
-                             rowStyleClass="#{row.styleClass}"
-                             sortBy="#{row.creationDate}"
-                             sortField="creationDate"
-                             sortOrder="descending"
-                        >
-                    <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
-                    <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field = "creationDate" >
-                        <h:outputText value="#{row.creationDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Исполнитель" style="width:12em;">
-                        <ui:repeat value="#{row.executors}" var="element">
-                            <div>
-                                <h:outputText value="#{element.getDescriptionShort()}"/>
-                            </div>
-                        </ui:repeat>
-                    </p:column>
-                    <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field = "form.value" >
-                        <h:outputText value="#{row.form.value}"/>
-                    </p:column>
-                    <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
-                        <h:outputText value="#{row.executionDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Краткое содержание">
-                        <h:outputText value="#{row.shortDescription}"/>
-                    </p:column>
-                    <p:ajax event="page" oncomplete="addRowHandlers()"/>
-                    <p:ajax event="sort" oncomplete="addRowHandlers()"/>
-                </p:dataTable>
-                <script type="text/javascript">
-                    function addRowHandlers() {
-                        console.log("refresh table row onclick handlers");
-                        var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
-                        var tbody = table.getElementsByTagName("tbody")[0];
-                        for (var i = 0; i &lt; tbody.rows.length; i++) {
-                            var currentRow = tbody.rows[i];
-                            var createClickHandler = function (row) {
-                                return function () {
-                                    goToTask(row.firstChild.textContent);
-                                };
-                            };
-                            currentRow.className = currentRow.className.replace('ui-state-highlight', '');
-                            currentRow.ondblclick = createClickHandler(currentRow);
-                        }
-                    }
-                    window.onload = addRowHandlers;
-                </script>
-            </div>
+    <ui:define name="contentSearch">
+        <div id="searchbar" class="main_searchbar">
+            <p:inputText id="filter_string" value="#{personal_tasks.filter}"
+                         style="display:block; float:left; width:60%; margin:2px 10px;"
+                         title="Поиск"/>
+            <p:commandButton value=" " action="#{personal_tasks.applyFilter()}" styleClass="searchbutton"
+                             process="@this filter_string" update="mainTable"/>
         </div>
+    </ui:define>
 
-        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
-                  showHeader="false" position="center center">
-            Пожалуйста, подождите...
-        </p:dialog>
 
+    <ui:define name="contentTable">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="100"
+                     rowsPerPageTemplate="10,25,50,100"
+                     value="#{personal_tasks.lazyModel}"
+                     var="row"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     selectionMode="single"
+                     rowStyleClass="#{row.styleClass}"
+                     sortBy="#{row.creationDate}"
+                     sortField="creationDate"
+                     sortOrder="descending"
+                >
+            <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field = "creationDate" >
+                <h:outputText value="#{row.creationDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Исполнитель" style="width:12em;">
+                <ui:repeat value="#{row.executors}" var="element">
+                    <h:outputText value="#{element.getDescriptionShort()}"/><br/>
+                </ui:repeat>
+            </p:column>
+            <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field = "form.value" >
+                <h:outputText value="#{row.form.value}"/>
+            </p:column>
+            <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
+                <h:outputText value="#{row.executionDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Краткое содержание">
+                <h:outputText value="#{row.shortDescription}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToTask(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+        </p:dataTable>
     </ui:define>
 
 </ui:composition>
