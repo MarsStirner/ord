@@ -31,7 +31,7 @@
             <h:commandLink action="#{incoming_search.performSearch}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-search.png']}"/>
                 <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
-                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); addRowHandlers();  PF('searchResultsPanelVar').expand();}}"/>
+                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse();  PF('searchResultsPanelVar').expand();}}"/>
                 Найти
             </h:commandLink>
         </div>
@@ -384,6 +384,7 @@
                      widgetVar="documentTableVar"
                      scrollable="true"
                      scrollHeight="100%"
+                     selectionMode="single"
                      rowStyleClass="#{row.styleClass}"
                      sortBy="#{row.registrationNumber}"
                      sortField="registrationNumber"
@@ -391,7 +392,6 @@
                      rendered="#{incoming_search.searchPerformed}"
                      emptyMessage="Документов не найдено"
                 >
-            <p:column style="display:none"><h:outputText value="#{row.id}"/></p:column>
             <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
                 <h:outputText value="#{row.registrationNumber}"/>
             </p:column>
@@ -405,9 +405,7 @@
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
                 <ui:repeat value="#{row.executors}" var="element">
-                    <div>
-                        <h:outputText value="#{element.getDescriptionShort()}"/>
-                    </div>
+                        <h:outputText value="#{element.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
@@ -424,30 +422,10 @@
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:ajax event="page" oncomplete="addRowHandlers()"/>
-            <p:ajax event="sort" oncomplete="addRowHandlers()"/>
+            <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
         </p:dataTable>
-        <script type="text/javascript">
-            function addRowHandlers() {
-                console.log("refresh table row onclick handlers");
-                var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
-                var tbody = table.getElementsByTagName("tbody")[0];
-                for (var i = 0; i &lt; tbody.rows.length; i++) {
-                    var currentRow = tbody.rows[i];
-                    var createClickHandler = function (row) {
-                        return function () {
-                            goToIncomingDocument(row.firstChild.textContent);
-                        };
-                    };
-                    currentRow.className = currentRow.className.replace('ui-state-highlight', '');
-                    currentRow.ondblclick = createClickHandler(currentRow);
-                }
-            }
-            window.onload = addRowHandlers;
-        </script>
 
     </ui:define>
-
 
 </ui:composition>
 

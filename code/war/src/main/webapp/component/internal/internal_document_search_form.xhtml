@@ -30,7 +30,7 @@
             <h:commandLink action="#{internal_search.performSearch}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-search.png']}"/>
                 <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
-                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); addRowHandlers();  PF('searchResultsPanelVar').expand();}}"/>
+                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); PF('searchResultsPanelVar').expand();}}"/>
                 Найти
             </h:commandLink>
         </div>
@@ -299,6 +299,7 @@
                      widgetVar="documentTableVar"
                      scrollable="true"
                      scrollHeight="100%"
+                     selectionMode="single"
                      rowStyleClass="#{row_result.styleClass}"
                      sortBy="#{row_result.registrationNumber}"
                      sortField="registrationNumber"
@@ -306,7 +307,6 @@
                      rendered="#{internal_search.searchPerformed}"
                      emptyMessage="Документов не найдено"
                 >
-            <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
             <p:column style="width:9em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field="registrationNumber">
                 <h:outputText value="#{row_result.registrationNumber}"/>
             </p:column>
@@ -330,27 +330,8 @@
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row_result.shortDescription}"/>
             </p:column>
-            <p:ajax event="page" onstart="addRowHandlers()"/>
-            <p:ajax event="sort" oncomplete="addRowHandlers()"/>
+            <p:ajax event="rowSelect" onstart="goToInternalDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
         </p:dataTable>
-        <script type="text/javascript">
-            function addRowHandlers() {
-                console.log("refresh table row onclick handlers");
-                var table = document.getElementById(PrimeFaces.widgets.documentTableVar.id);
-                var tbody = table.getElementsByTagName("tbody")[0];
-                for (var i = 0; i &lt; tbody.rows.length; i++) {
-                    var currentRow = tbody.rows[i];
-                    var createClickHandler = function (row) {
-                        return function () {
-                            goToInternalDocument(row.firstChild.textContent);
-                        };
-                    };
-                    currentRow.className = currentRow.className.replace('ui-state-highlight', '');
-                    currentRow.ondblclick = createClickHandler(currentRow);
-                }
-            }
-            window.onload = addRowHandlers;
-        </script>
     </ui:define>
 
 </ui:composition>
