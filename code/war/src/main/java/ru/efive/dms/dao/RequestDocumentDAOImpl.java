@@ -184,7 +184,7 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
         }
         final Disjunction disjunction = Restrictions.disjunction();
         disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("executionDate", filter, MatchMode.ANYWHERE));
+        disjunction.add(createDateLikeTextRestriction("executionDate", filter));
         disjunction.add(createDateLikeTextRestriction("deliveryDate", filter));
         disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
         disjunction.add(Restrictions.ilike("senderFirstName", filter, MatchMode.ANYWHERE));
