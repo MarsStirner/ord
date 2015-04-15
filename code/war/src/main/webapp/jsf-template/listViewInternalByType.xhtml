@@ -3,13 +3,15 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="contentLabel">Мои проекты внутренних документов</ui:define>
+    <ui:define name="headContent">
+        <h:outputStylesheet library="css" name="viewfact.css"/>
+    </ui:define>
 
     <ui:define name="contentButtonsPanel">
         <div class="defbutton">
@@ -20,7 +22,7 @@
             </h:outputLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{personal_internal_documents.refresh()}">
+            <h:commandLink action="#{internal_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
                 <f:ajax render="mainTable"/>
@@ -30,10 +32,10 @@
 
     <ui:define name="contentSearch">
         <div id="searchbar" class="main_searchbar">
-            <p:inputText id="filter_string" value="#{personal_internal_documents.filter}"
+            <p:inputText id="filter_string" value="#{internal_documents.filter}"
                          style="display:block; float:left; width:60%; margin:2px 10px;"
                          title="Поиск"/>
-            <p:commandButton value=" " action="#{personal_internal_documents.applyFilter()}" styleClass="searchbutton"
+            <p:commandButton value=" " action="#{internal_documents.applyFilter()}" styleClass="searchbutton"
                              process="@this filter_string" update="mainTable"/>
             <h:outputLink target="_blank" value="/component/internal/internal_document_search_form.xhtml"
                           title="Перейти к форме расширенного поиска"
@@ -49,32 +51,36 @@
                      paginatorPosition="bottom"
                      rows="100"
                      rowsPerPageTemplate="10,25,50,100"
-                     value="#{personal_internal_documents.lazyModel}"
+                     value="#{internal_documents.lazyModel}"
                      var="row"
                      lazy="true"
                      widgetVar="documentTableVar"
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     sortBy="#{row.creationDate}"
-                     sortField="creationDate"
+                     rowStyleClass="#{row.styleClass}"
+                     sortBy="#{row.signatureDate}"
+                     sortField="signatureDate"
                      sortOrder="descending"
                 >
-            <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field = "creationDate">
-                <h:outputText value="#{row.creationDate}">
+            <p:column headerText="Дата подписания" style="width:9em;" sortBy="#{row.signatureDate}" field="signatureDate">
+                <h:outputText value="#{row.signatureDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column headerText="Ответственный" style="width:12em;" sortBy="#{row.responsible}" field = "responsible.lastName">
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
+                <h:outputText value="#{row.registrationNumber}"/>
+            </p:column>
+            <p:column headerText="Ответственный" style="width:12em;" sortBy="#{row.responsible}" field="responsible.lastName">
                 <h:outputText value="#{row.responsible.getDescriptionShort()}"/>
             </p:column>
-            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                <h:outputText value="#{row.form}"/>
-            </p:column>
-            <p:column headerText="Срок исполнения" style="width:8em;" sortBy="#{row.executionDate}" field = "executionDate">
+            <p:column headerText="Срок исполнения" style="width:8em;" sortBy="#{row.executionDate}" field="executionDate">
                 <h:outputText value="#{row.executionDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
+            </p:column>
+            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
+                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
             </p:column>
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
@@ -86,4 +92,3 @@
 </ui:composition>
 
 </html>
-
