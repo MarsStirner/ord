@@ -48,11 +48,12 @@
                     value="#{substitutions.lazyModel}"
                     var="substitution_entry"
                     rowKey="#{substitution_entry.id}"
-                    paginator="true" rows="10"
+                    paginator="true"
+                    rows="10"
                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
-                    rowsPerPageTemplate="5,10,15,25,50,100"
-                    paginatorPosition = "bottom"
+                    rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                    paginatorPosition = "#{props['PAGINATOR_POSITION']}"
                     >
                 <p:column headerText="Номер">
                     <h:commandButton onclick="goToSubstitution(#{substitution_entry.id})" value="Перейти к документу"/>

@@ -375,11 +375,11 @@
     <ui:define name="searchResults">
         <p:dataTable id="main_data_tbl"
                      paginator="true"
-                     paginatorPosition="bottom"
                      rows="10"
-                     rowsPerPageTemplate="10,25,50,100"
                      currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
                      paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
                      value="#{incoming_search.lazyModel}"
                      var="row"
                      lazy="true"

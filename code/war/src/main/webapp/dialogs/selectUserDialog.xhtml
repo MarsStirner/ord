@@ -21,11 +21,11 @@
         </p:commandButton>
         <p:dataTable id="selectPersonTable"
                      paginator="true"
-                     paginatorPosition="bottom"
                      rows="10"
-                     rowsPerPageTemplate="10,25,50,100"
                      currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
                      paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
                      value="#{userDialog.lazyModel}"
                      var="person_row"
                      selectionMode="single"
