@@ -3,7 +3,7 @@ package ru.efive.dms.uifaces.beans.dialogs;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForUser;
+import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForUserInDialogs;
 import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.Group;
@@ -41,7 +41,7 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
     @EJB(name = "indexManagement")
     private IndexManagementBean indexManagementBean;
 
-    private LazyDataModelForUser lazyModel;
+    private LazyDataModelForUserInDialogs lazyModel;
 
     @PostConstruct
     public void init() {
@@ -52,7 +52,7 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForUser(userDao);
+        lazyModel = new LazyDataModelForUserInDialogs(userDao);
         initializeGroup(requestParameterMap);
     }
 

@@ -80,7 +80,8 @@ public class SubstitutionDaoImpl extends GenericDAOHibernate<Substitution> {
         final DetachedCriteria criteria = getDistinctCriteria(showDeleted);
         criteria.add(Restrictions.eq("substitution.id", substitution.getId()));
         addCurrentDateRestrictions(criteria);
-        criteria.setFetchMode("person.groups", FetchMode.JOIN);
+        criteria.createAlias("person.groups", "person.groups", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("person.roles", "person.roles", CriteriaSpecification.LEFT_JOIN);
         return getHibernateTemplate().findByCriteria(criteria);
     }
 

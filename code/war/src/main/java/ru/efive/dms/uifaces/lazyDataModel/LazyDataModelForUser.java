@@ -1,9 +1,7 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
 
 import java.util.List;
@@ -15,34 +13,20 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForUser extends LazyDataModel<User> {
+public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> {
     private UserDAOHibernate dao;
-    private String filter;
-    private Group filterGroup;
+    private boolean showFired = false;
 
-    public void setFilter(String filter) {
-        this.filter = filter;
+    public boolean isShowFired() {
+        return showFired;
     }
 
-    public String getFilter() {
-        return filter;
-    }
-
-    public Group getFilterGroup() {
-        return filterGroup;
-    }
-
-    public void setFilterGroup(Group filterGroup) {
-        this.filterGroup = filterGroup;
+    public void setShowFired(final boolean showFired) {
+        this.showFired = showFired;
     }
 
     public LazyDataModelForUser(UserDAOHibernate daoHibernate) {
         dao = daoHibernate;
-    }
-
-    @Override
-    public Object getRowKey(User item) {
-        return item.getId();
     }
 
     @Override
@@ -51,17 +35,15 @@ public class LazyDataModelForUser extends LazyDataModel<User> {
     }
 
     @Override
-    public List<User> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
-            filters) {
-        if (filterGroup == null) {
-            setRowCount(((Long) dao.countUsers(filter, false, false)).intValue());
-            return dao.findUsers(filter, false, false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
-        } else {
-            setRowCount(((Long) dao.countUsersByGroup(filter, false, false, filterGroup)).intValue());
-            return dao.findUsersByGroup(filter, false, false, filterGroup, first, pageSize, sortField, sortOrder ==
-                    SortOrder.ASCENDING);
-        }
+    public List<User> load(
+            int first,
+            int pageSize,
+            String sortField,
+            SortOrder sortOrder,
+            Map<String, Object> filters
+    ) {
+        setRowCount(((Long) dao.countUsers(getFilter(), false, showFired)).intValue());
+        return dao.findUsers(getFilter(), false, showFired, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
     }
-
 
 }

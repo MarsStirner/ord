@@ -5,8 +5,8 @@
     <application>
 
         <resource-bundle>
-            <base-name>ru.efive.dms.uifaces.Messages</base-name>
-            <var>messages</var>
+            <base-name>pageProperties.page</base-name>
+            <var>props</var>
         </resource-bundle>
 
         <action-listener>

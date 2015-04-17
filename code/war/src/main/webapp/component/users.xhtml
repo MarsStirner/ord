@@ -3,25 +3,18 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
+    <ui:define name="contentLabel">
+        <h:outputText id = "userListHeader"
+                      value="#{(users.showFired ? 'Уволенные' : 'Работающие').concat(' пользователи по фамилии')}"/>
     </ui:define>
 
-    <ui:define name="header_top">
-        <span>
-            <h:outputText id = "userListHeader"
-                    value="#{(userList.showFired ? 'Уволенные' : 'Работающие').concat(' пользователи по фамилии')}"/>
-        </span>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/user.xhtml" target="_blank" rendered="#{isAdministrator or isHr}">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -33,128 +26,77 @@
             <h:commandLink action="#{userList.importLDAPUsers()}" rendered="#{isAdministrator or isHr}">
                 <h:graphicImage value="#{resource['images:users.png']}" width="16" height="16"/>
                 Импортировать пользователей из LDAP
-                <f:ajax render="main_data_tbl main_data_paging"/>
+                <f:ajax render="personTable"/>
             </h:commandLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{userList.refresh()}">
+            <h:commandLink action="#{users.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="main_data_tbl main_data_paging"/>
+                <f:ajax render="personTable"/>
             </h:commandLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{userList.changeShowFiredFlag}">
-                <label>
-                    <h:selectBooleanCheckbox id = "firedFlag" value="#{userList.getShowFired()}" readonly="true"/>
-                    Показать только уволенных
-                </label>
-                <f:ajax render="main_data_tbl main_data_paging userListHeader firedFlag"/>
+            <h:commandLink>
+                <p:selectBooleanCheckbox id = "firedFlag" value="#{users.showFired}"/>
+                Показать только уволенных
+                <f:ajax render="personTable userListHeader firedFlag" execute="firedFlag"/>
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{userList.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;"
-                                 title="Поиск"/>
-                    <h:commandButton value=" " action="#{userList.refresh()}" styleClass="searchbutton">
-                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
-                    </h:commandButton>
-
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
-                                        value="#{userList.documents}" var="row" grouping="false">
-                            <e5ui:row ondblclick="goToUser('#{row.id}');"/>
-                            <e5ui:column style="min-width:9em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('lastName')}">
-                                        Фамилия
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getLastName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:9em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('firstName')}">
-                                        Имя
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getFirstName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:9em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('middleName')}">
-                                        Отчество
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getMiddleName()}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('jobDepartmentString')}">
-                                        Подразделение
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.jobDepartmentString}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('jobPositionString')}">
-                                        Должность
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.jobPositionString}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink action="#{userList.sort('email')}">
-                                        Email
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.email}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:10em">
-                                <f:facet name="header">
-                                    <h:commandLink>
-                                        Рабочий телефон
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.getContact('workPhone')}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{userList}" style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{userList}"
-                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
-                </div>
-            </div>
-
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
-
+    <ui:define name="contentSearch">
+        <div id="searchbar" class="main_searchbar">
+            <p:inputText id="filter_string" value="#{users.filter}"
+                         style="display:block; float:left; width:60%; margin:2px 10px;"
+                         title="Поиск"/>
+            <p:commandButton value=" " action="#{users.applyFilter()}" styleClass="searchbutton"
+                             process="@this filter_string" update="personTable"/>
+        </div>
     </ui:define>
-
+    <ui:define name="contentTable">
+        <p:dataTable id="personTable"
+                     paginator="true"
+                     paginatorPosition="bottom"
+                     rows="100"
+                     rowsPerPageTemplate="10,25,50,100"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     value="#{users.lazyModel}"
+                     var="person_row"
+                     selectionMode="single"
+                     lazy="true"
+                     widgetVar="personTableWidget"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     sortBy="#{person_row.lastName}"
+                     sortOrder="ascending"
+                     sortField="lastName"
+                >
+            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field = "lastName">
+                <h:outputText value="#{person_row.lastName}"/>
+            </p:column>
+            <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
+                <h:outputText value="#{person_row.firstName}"/>
+            </p:column>
+            <p:column headerText="Отчество" sortBy="#{person_row.middleName}" field="middleName">
+                <h:outputText value="#{person_row.middleName}"/>
+            </p:column>
+            <p:column headerText="Подразделение" sortBy="#{person_row.jobDepartmentString}" field="jobDepartmentString">
+                <h:outputText value="#{person_row.jobDepartmentString}"/>
+            </p:column>
+            <p:column headerText="Должность" sortBy="#{person_row.jobPositionString}" field="jobPositionString">
+                <h:outputText value="#{person_row.jobPositionString}"/>
+            </p:column>
+            <p:column headerText="Почта" sortBy="#{person_row.email}" field="email">
+                <h:outputText value="#{person_row.email}"/>
+            </p:column>
+            <p:column headerText="Рабочий телефон">
+                <h:outputText value="#{person_row.getContact('workPhone')}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToUser(PrimeFaces.widgets.personTableWidget.selection); return false;"/>
+        </p:dataTable>
+    </ui:define>
 </ui:composition>
 
 </html>

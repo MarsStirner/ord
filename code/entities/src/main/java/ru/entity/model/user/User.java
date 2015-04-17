@@ -101,14 +101,14 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
     /**
      * Максимальный уровень допуска
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maxUserAccessLevel_id")
     private UserAccessLevel maxUserAccessLevel;
 
     /**
      * Текущий уровень допуска
      */
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "currentUserAccessLevel_id")
     private UserAccessLevel currentUserAccessLevel;
 
@@ -117,19 +117,23 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
      * При сохранении пользователя - добавлять\удалять и обновлять записи
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private List<PersonContact> contacts;
+    private Set<PersonContact> contacts;
 
     /**
      * группы
      */
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "members")
-    private Set<Group> groups = new HashSet<Group>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name="groups_dms_system_persons",
+            joinColumns = {@JoinColumn(name="members_id")},
+            inverseJoinColumns = {@JoinColumn(name="groups_id")}
+    )
+    private Set<Group> groups;
 
 
     /**
      * роли
      */
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_system_person_roles",
             joinColumns = {@JoinColumn(name = "person_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
@@ -506,7 +510,7 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
 
     //Collections *****************************
 
-    public List<PersonContact> getContacts() {return contacts;}
+    public List<PersonContact> getContacts() {return new ArrayList<PersonContact>(contacts);}
 
     public String getContact(final String type){
         final StringBuilder sb = new StringBuilder();
@@ -522,19 +526,19 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
     }
 
     public void setContacts(List<PersonContact> contacts) {
-        this.contacts = contacts;
+        this.contacts = new HashSet<PersonContact>(contacts);
     }
 
     public boolean addToContacts(final PersonContact contact) {
         if (contacts == null) {
-            contacts = new ArrayList<PersonContact>(1);
+            contacts = new HashSet<PersonContact>(1);
         }
         return contacts.add(contact);
     }
 
-    public boolean addToContacts(final List<PersonContact> newContacts) {
+    public boolean addToContacts(final Collection<PersonContact> newContacts) {
         if (contacts == null) {
-            contacts = new ArrayList<PersonContact>(newContacts.size());
+            contacts = new HashSet<PersonContact>(newContacts.size());
         }
         return contacts.addAll(newContacts);
     }

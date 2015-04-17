@@ -1,7 +1,6 @@
 package ru.efive.sql.dao.user;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.FetchMode;
 import org.hibernate.criterion.*;
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.entity.model.user.Group;
@@ -24,8 +23,8 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      * Получить самый простой критерий для отбора пользователей, без лишних FETCH
      * @return критерий для пользователей с DISTINCT
      */
-    public DetachedCriteria getSimpliestCriteria(){
-        return DetachedCriteria.forClass(getPersistentClass()).setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
+    public DetachedCriteria getSimplestCriteria(){
+        return DetachedCriteria.forClass(User.class, "this").setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
     }
 
     /**
@@ -33,7 +32,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      * @return критерий для пользователей с DISTINCT, должностью, подразделением, контактами
      */
     public DetachedCriteria getListCriteria(){
-        final DetachedCriteria result = getSimpliestCriteria();
+        final DetachedCriteria result = getSimplestCriteria();
         result.createAlias("jobPosition", "jobPosition", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("jobDepartment", "jobDepartment", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("contacts", "contacts", CriteriaSpecification.LEFT_JOIN);
@@ -46,10 +45,12 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      */
     public DetachedCriteria getEagerCriteria(){
         final DetachedCriteria result = getListCriteria();
-        //EAGER LOADING OF GROUPS
-        result.setFetchMode("groups", FetchMode.JOIN);
-        result.setFetchMode("roles", FetchMode.JOIN);
-        result.setFetchMode("defaultNomenclature", FetchMode.JOIN);
+        //EAGER LOADING OF GROUPS, ROLES, defaultNomenclature, and accessLevels
+        result.createAlias("groups", "groups", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("roles", "roles", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("defaultNomenclature", "defaultNomenclature", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("maxUserAccessLevel", "maxUserAccessLevel", CriteriaSpecification.INNER_JOIN);
+        result.createAlias("currentUserAccessLevel", "currentUserAccessLevel", CriteriaSpecification.LEFT_JOIN);
         return result;
     }
 
@@ -62,23 +63,6 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         return getHibernateTemplate().findByCriteria(getListCriteria());
     }
 
-    /**
-     * Получает список ВСЕХ пользователей без лишних FETCH
-     * @param showDeleted TODO check
-     * @param showFired  TODO check
-     * @return  список всех пользователей с SIMPLE_CRITERIA
-     */
-    public List<User> findAllUsers(boolean showDeleted, boolean showFired) {
-        final DetachedCriteria in_searchCriteria = getSimpliestCriteria();
-        if (showDeleted) {
-            in_searchCriteria.add(Restrictions.eq("deleted", true));
-        }
-        if (showFired) {
-            in_searchCriteria.add(Restrictions.eq("fired", true));
-        }
-
-        return getHibernateTemplate().findByCriteria(in_searchCriteria);
-    }
 
     /**
      * Возвращает пользователя (EAGER_CRITERIA) по логину и паролю.
@@ -105,7 +89,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     }
 
     /**
-     * Возвращает пользователя (SIMPLE_CRITERIA) по логину
+     * Возвращает пользователя (EAGER_CRITERIA) по логину
      *
      * @param login логин
      * @return пользователь или null, если такового не существует
@@ -113,7 +97,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
     @Override
     public User getByLogin(String login) {
         if (StringUtils.isNotEmpty(login)) {
-            DetachedCriteria detachedCriteria = getSimpliestCriteria();
+            DetachedCriteria detachedCriteria = getEagerCriteria();
             detachedCriteria.add(Restrictions.eq("login", login));
             List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria, -1, 1);
             if (!users.isEmpty()) {
@@ -126,176 +110,111 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         }
     }
 
-
-    public List<User> findUsers(final String pattern, boolean showDeleted, boolean showFired) {
-        final DetachedCriteria in_searchCriteria = getListCriteria();
-        addPatternCriteria(in_searchCriteria, pattern);
-        if (showDeleted) {
-            in_searchCriteria.add(Restrictions.eq("deleted", true));
-        }
-
-        if (showFired) {
-            in_searchCriteria.add(Restrictions.eq("fired", true));
-        }
-
-        return getHibernateTemplate().findByCriteria(in_searchCriteria);
-    }
-
-    /**
-     * Обрабатывает поисковый шаблон через ИЛИ (НУЖНА LIST_CRITERIA)
-     * @param searchCriteria критерий отбора
-     * @param pattern поисковый шаблон
-     */
-    private void addPatternCriteria(final DetachedCriteria searchCriteria, final String pattern) {
-        if (StringUtils.isNotEmpty(pattern)) {
-            final String likePattern = pattern.concat("%");
-            final Disjunction disjunction = Restrictions.disjunction();
-            disjunction.add(Restrictions.ilike("lastName", likePattern));
-            disjunction.add(Restrictions.ilike("middleName", likePattern));
-            disjunction.add(Restrictions.ilike("firstName", likePattern));
-            disjunction.add(Restrictions.ilike("email", likePattern));
-            disjunction.add(Restrictions.ilike("contacts.value", likePattern));
-            disjunction.add(Restrictions.ilike("jobPosition.value", likePattern));
-            disjunction.add(Restrictions.ilike("jobDepartment.value", likePattern));
-            searchCriteria.add(disjunction);
-        }
-    }
-
-
-    @Override
-    public List<User> findUsers(final String pattern, final boolean showDeleted, final boolean showFired, final int
-            offset, final int count, final String orderBy, final boolean orderAsc) {
-        final DetachedCriteria detachedCriteria = getListCriteria();
-        addPatternCriteria(detachedCriteria, pattern);
-        if (!showDeleted) {
-            detachedCriteria.add(Restrictions.eq("deleted", false));
-        }
-        if (!showFired) {
-            detachedCriteria.add(Restrictions.eq("fired", false));
-        }
-        detachedCriteria.setProjection(Projections.distinct(Projections.id()));
-        String[] ords = orderBy == null ? null : orderBy.split(",");
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(detachedCriteria, ords, orderAsc);
-            } else {
-                addOrder(detachedCriteria, orderBy, orderAsc);
-            }
-        }
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(detachedCriteria, offset, count);
-        if (ids.isEmpty()) {
-            return new ArrayList<User>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        DetachedCriteria resultCriteria = getListCriteria().add(Restrictions.in("id", ids));
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(resultCriteria, ords, orderAsc);
-            } else {
-                addOrder(resultCriteria, orderBy, orderAsc);
-            }
-        }
-        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        return getHibernateTemplate().findByCriteria(resultCriteria);
-    }
-
-    @Override
-    public long countUsers(final String pattern, final boolean showDeleted, final boolean showFired) {
-        DetachedCriteria detachedCriteria = getListCriteria();
-        addPatternCriteria(detachedCriteria, pattern);
-        if (!showDeleted) {
-            detachedCriteria.add(Restrictions.eq("deleted", false));
-        }
-        if (!showFired) {
-            detachedCriteria.add(Restrictions.eq("fired", false));
-        }
-
-        return getCountOf(detachedCriteria);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public long countFiredUsers(String pattern, boolean showDeleted) {
-        DetachedCriteria detachedCriteria = getListCriteria();
-        detachedCriteria.add(Restrictions.and(Restrictions.isNotNull("fired"), Restrictions.eq("fired", true)));
-        addPatternCriteria(detachedCriteria, pattern);
-        if (showDeleted) {
-            detachedCriteria.add(Restrictions.eq("deleted", true));
-        }
-
-        return getCountOf(detachedCriteria);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public List<User> findFiredUsers(String pattern, boolean showDeleted, int offset, int count, String orderBy,
-                                     boolean orderAsc) {
-        DetachedCriteria detachedCriteria = getListCriteria();
-        addPatternCriteria(detachedCriteria, pattern);
-        if (!showDeleted) {
-            detachedCriteria.add(Restrictions.eq("deleted", false));
-        }
-        detachedCriteria.add(Restrictions.eq("fired", true));
-        detachedCriteria.setProjection(Projections.distinct(Projections.id()));
-        String[] ords = orderBy == null ? null : orderBy.split(",");
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(detachedCriteria, ords, orderAsc);
-            } else {
-                addOrder(detachedCriteria, orderBy, orderAsc);
-            }
-        }
-        //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(detachedCriteria, offset, count);
-        if (ids.isEmpty()) {
-            return new ArrayList<User>(0);
-        }
-        //Ищем только по этим ключам с упорядочиванием
-        DetachedCriteria resultCriteria = getListCriteria().add(Restrictions.in("id", ids));
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(resultCriteria, ords, orderAsc);
-            } else {
-                addOrder(resultCriteria, orderBy, orderAsc);
-            }
-        }
-        resultCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
-        return getHibernateTemplate().findByCriteria(resultCriteria);
-    }
-
-
-    public User getUser(final Integer id) {
+    public User getItemById(final Integer id) {
         final DetachedCriteria detachedCriteria = getEagerCriteria().add(Restrictions.eq("id", id));
         final List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria);
         if (!users.isEmpty()) {
-            final User result = users.iterator().next();
-            //TODO  http://stackoverflow.com/questions/18753245/one-to-many-relationship-gets-duplicate-objects
-            // -whithout-using-distinct-why
-            /**
-             * Want to know why the duplicates are there?
-             * Look at the SQL resultset, Hibernate does not hide these duplicates on the left side of the outer
-             * joined result
-             * but returns all the duplicates of the driving table. If you have 5 orders in the database,
-             * and each order has 3 line items, the resultset will be 15 rows.
-             * The Java result list of these queries will have 15 elements, all of type Order.
-             * Only 5 Order instances will be created by Hibernate,
-             * but duplicates of the SQL resultset are preserved as duplicate references to these 5 instances
-             */
-            //ГОРИ ОНО ВСЕ ОГНЕМ!!!!!!!!!!!!!!!!!!!!!
-            getUserContacts(result);
-            return result;
+            return users.iterator().next();
         }
         return null;
     }
 
-    private void getUserContacts(User user) {
-        final  DetachedCriteria detachedCriteria = getSimpliestCriteria().add(Restrictions.eq("person", user));
-        user.getContacts().clear();
-        user.getContacts().addAll(getHibernateTemplate().findByCriteria(detachedCriteria));
+    /**
+     * Обрабатывает поисковый шаблон через ИЛИ (НУЖНА LIST_CRITERIA)   для диалогов
+     * @param criteria критерий отбора
+     * @param filter поисковый шаблон
+     */
+    public void applyFilterCriteriaForDialogs(final DetachedCriteria criteria, final String filter) {
+        if (StringUtils.isNotEmpty(filter)) {
+            final Disjunction disjunction = Restrictions.disjunction();
+            disjunction.add(Restrictions.ilike("lastName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("middleName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("firstName", filter, MatchMode.ANYWHERE));
+            criteria.add(disjunction);
+        }
+    }
+
+
+    /**
+     * Обрабатывает поисковый шаблон через ИЛИ (НУЖНА LIST_CRITERIA)
+     * @param criteria критерий отбора
+     * @param filter поисковый шаблон
+     */
+    public void applyFilterCriteria(final DetachedCriteria criteria, final String filter){
+        if (StringUtils.isNotEmpty(filter)) {
+            final Disjunction disjunction = Restrictions.disjunction();
+            disjunction.add(Restrictions.ilike("lastName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("middleName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("firstName", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("jobPositionString", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("jobDepartmentString", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("email", filter, MatchMode.ANYWHERE));
+            criteria.add(disjunction);
+        }
+    }
+
+
+    @Override
+    public List<User> findUsers(
+            final String filter,
+            final boolean showDeleted,
+            final boolean showFired,
+            final int first,
+            final int pageSize,
+            final String orderBy,
+            final boolean orderAsc
+    ) {
+        final DetachedCriteria detachedCriteria = getListCriteria();
+        applyFilterCriteria(detachedCriteria, filter);
+        if (!showDeleted) {
+            detachedCriteria.add(Restrictions.eq("deleted", false));
+        }
+        detachedCriteria.add(Restrictions.eq("fired", showFired));
+        addOrder(detachedCriteria, orderBy, orderAsc);
+        return getCorrectLimitingUsers(detachedCriteria, orderBy, orderAsc, first, pageSize);
+    }
+
+    @Override
+    public long countUsers(final String pattern, final boolean showDeleted, final boolean showFired) {
+        final DetachedCriteria detachedCriteria = getListCriteria();
+        applyFilterCriteria(detachedCriteria, pattern);
+        if (!showDeleted) {
+            detachedCriteria.add(Restrictions.eq("deleted", false));
+        }
+        detachedCriteria.add(Restrictions.eq("fired", showFired));
+        return getCountOf(detachedCriteria);
+    }
+
+
+    @Override
+    public List<User> findUsersForDialog(
+            final String filter,
+            final boolean showDeleted,
+            final boolean showFired,
+            final int first,
+            final int pageSize,
+            final String orderBy,
+            final boolean orderAsc
+    ) {
+        final DetachedCriteria detachedCriteria = getListCriteria();
+        applyFilterCriteriaForDialogs(detachedCriteria, filter);
+        if (!showDeleted) {
+            detachedCriteria.add(Restrictions.eq("deleted", false));
+        }
+        detachedCriteria.add(Restrictions.eq("fired", showFired));
+        addOrder(detachedCriteria, orderBy, orderAsc);
+        return getCorrectLimitingUsers(detachedCriteria, orderBy, orderAsc, first, pageSize);
+    }
+
+    @Override
+    public long countUsersForDialog(final String pattern, final boolean showDeleted, final boolean showFired) {
+        final DetachedCriteria detachedCriteria = getListCriteria();
+        applyFilterCriteriaForDialogs(detachedCriteria, pattern);
+        if (!showDeleted) {
+            detachedCriteria.add(Restrictions.eq("deleted", false));
+        }
+        detachedCriteria.add(Restrictions.eq("fired", showFired));
+        return getCountOf(detachedCriteria);
     }
 
     /**
@@ -304,71 +223,94 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
      * @param showDeleted включать ли в список удаленных
      * @param showFired включать ли в список уволенных
      * @param group пользователи должны принадлежать заданной группе
-     * @param offset начиная с какого результата вернуть
-     * @param count сколько записей вернуть
+     * @param first начиная с какого результата вернуть
+     * @param pageSize сколько записей вернуть
      * @param orderBy  соритировка по
      * @param orderAsc порядок сортировки
      * @return список пользователей удовлетворяющий условиям
      */
     @Override
-    public List<User> findUsersByGroup(final String pattern, final boolean showDeleted, final boolean showFired,final Group group, final int
-            offset, final int count, final String orderBy, final boolean orderAsc) {
+    public List<User> findUsersForDialogByGroup(
+            final String pattern,
+            final boolean showDeleted,
+            final boolean showFired,
+            final Group group,
+            final int first,
+            final int pageSize,
+            final String orderBy,
+            final boolean orderAsc
+    ) {
         if(group == null){
             logger.error("Try to findUsersByGroup with NULL group. return findUsers()");
-            return findUsers(pattern, showDeleted, showFired, offset, count, orderBy, orderAsc);
+            return findUsersForDialog(pattern, showDeleted, showFired, first, pageSize, orderBy, orderAsc);
         }
         final DetachedCriteria criteria = getListCriteria();
-        addPatternCriteria(criteria, pattern);
+        applyFilterCriteriaForDialogs(criteria, pattern);
         if (!showDeleted) {
             criteria.add(Restrictions.eq("deleted", false));
         }
-        if (!showFired) {
-            criteria.add(Restrictions.eq("fired", false));
-        }
+        criteria.add(Restrictions.eq("fired", showFired));
+
         criteria.createAlias("groups", "groups", CriteriaSpecification.INNER_JOIN);
         criteria.add(Restrictions.eq("groups.id", group.getId()));
-        criteria.setProjection(Projections.distinct(Projections.id()));
-        String[] ords = orderBy == null ? null : orderBy.split(",");
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(criteria, ords, orderAsc);
-            } else {
-                addOrder(criteria, orderBy, orderAsc);
-            }
+        addOrder(criteria, orderBy, orderAsc);
+        return getCorrectLimitingUsers(criteria, orderBy, orderAsc, first, pageSize);
+    }
+
+    @Override
+    public long countUsersForDialogByGroup(final String pattern, final boolean showDeleted, final boolean showFired, final Group group) {
+        if(group == null){
+            logger.error("Try to countUsersByGroup with NULL group. return countUsers()");
+            return countUsersForDialog(pattern, showDeleted, showFired);
         }
+        final DetachedCriteria criteria = getListCriteria();
+        applyFilterCriteriaForDialogs(criteria, pattern);
+        if (!showDeleted) {
+            criteria.add(Restrictions.eq("deleted", false));
+        }
+        criteria.add(Restrictions.eq("fired", showFired));
+        criteria.createAlias("groups", "groups", CriteriaSpecification.INNER_JOIN);
+        criteria.add(Restrictions.eq("groups.id", group.getId()));
+        return getCountOf(criteria);
+    }
+
+    /**
+     * Получить список документов с корректными LIMIT
+     *
+     * @param criteria  изначальный критерий для отбора документов
+     * @param sortField поле сортировки
+     * @param sortOrder порядок сортировки
+     * @param first     начальное смещение
+     * @param pageSize  макс размер бвыбираемого списка
+     * @return список документов заданного размера
+     */
+    @SuppressWarnings("unchecked")
+    public List<User> getCorrectLimitingUsers(
+            final DetachedCriteria criteria, final String sortField, final boolean sortOrder, final int first, final int pageSize
+    ) {
+        criteria.setProjection(Projections.distinct(Projections.id()));
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
-        List ids = getHibernateTemplate().findByCriteria(criteria, offset, count);
+        final List ids = getHibernateTemplate().findByCriteria(criteria, first, pageSize);
         if (ids.isEmpty()) {
             return new ArrayList<User>(0);
         }
         //Ищем только по этим ключам с упорядочиванием
-        final DetachedCriteria resultCriteria = getListCriteria().add(Restrictions.in("id", ids));
-        if (ords != null) {
-            if (ords.length > 1) {
-                addOrder(resultCriteria, ords, orderAsc);
-            } else {
-                addOrder(resultCriteria, orderBy, orderAsc);
-            }
-        }
-        return getHibernateTemplate().findByCriteria(resultCriteria);
+        return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, sortField, sortOrder));
     }
 
-    @Override
-    public long countUsersByGroup(final String pattern, final boolean showDeleted, final boolean showFired, final Group group) {
-        if(group == null){
-            logger.error("Try to countUsersByGroup with NULL group. return countUsers()");
-            return countUsers(pattern, showDeleted, showFired);
+    /**
+     * Формирование запроса на поиск документов по списку идентификаторов
+     *
+     * @param ids      список идентифкаторов документов
+     * @param orderBy  колонка для сортировки
+     * @param orderAsc направление сортировки
+     * @return запрос, с ограничениями на идентификаторы документов и сортировки
+     */
+    private DetachedCriteria getIDListCriteria(List ids, String orderBy, boolean orderAsc) {
+        final DetachedCriteria result = getListCriteria().add(Restrictions.in("id", ids));
+        if (StringUtils.isNotEmpty(orderBy)) {
+            result.addOrder(orderAsc ? Order.asc(orderBy) : Order.desc(orderBy));
         }
-        final DetachedCriteria criteria = getListCriteria();
-        addPatternCriteria(criteria, pattern);
-        if (!showDeleted) {
-            criteria.add(Restrictions.eq("deleted", false));
-        }
-        if (!showFired) {
-            criteria.add(Restrictions.eq("fired", false));
-        }
-        criteria.createAlias("groups", "groups", CriteriaSpecification.INNER_JOIN);
-        criteria.add(Restrictions.eq("groups.id", group.getId()));
-        return getCountOf(criteria);
+        return result;
     }
 }

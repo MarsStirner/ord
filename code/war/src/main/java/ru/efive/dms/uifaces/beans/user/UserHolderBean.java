@@ -138,7 +138,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getUser(id));
+        setDocument(sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getItemById(id));
     }
 
     @Override
@@ -174,7 +174,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     /**
      * Удаляем незаполненные контактные данные
      *
-     * @param contacts
+     * @param contacts  список контактных данных
      */
     private void removeEmptyContacts(Collection<PersonContact> contacts) {
         final Iterator<PersonContact> contactIterator = contacts.iterator();
@@ -210,7 +210,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
      * @return true- текущий пользователь открыл свою карточку
      */
     public boolean isOwner(){
-        return sessionManagement.getLoggedUser().equals(getDocument());
+        return sessionManagement.getAuthData().getAuthorized().equals(getDocument());
     }
 
     @Inject

@@ -312,6 +312,8 @@
                      paginatorPosition="bottom"
                      rows="10"
                      rowsPerPageTemplate="10,25,50,100"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
                      value="#{outgoing_search.lazyModel}"
                      var="row_result"
                      lazy="true"

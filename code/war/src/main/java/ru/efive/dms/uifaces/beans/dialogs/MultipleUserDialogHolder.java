@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForUser;
+import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForUserInDialogs;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
 
@@ -40,7 +40,7 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
     @EJB(name = "indexManagement")
     private IndexManagementBean indexManagementBean;
 
-    private LazyDataModelForUser lazyModel;
+    private LazyDataModelForUserInDialogs lazyModel;
 
     //TODO fix with class extends after change to JSF 2.2
     private List<User> selection = new ArrayList<User>();
@@ -55,7 +55,7 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForUser(userDao);
+        lazyModel = new LazyDataModelForUserInDialogs(userDao);
     }
 
     /**
