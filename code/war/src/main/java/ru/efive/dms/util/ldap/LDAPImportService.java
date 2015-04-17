@@ -52,7 +52,7 @@ public class LDAPImportService {
     private String filterValue;
     private final int PAGE_SIZE = 100;
     private List<String> skipBaseList;
-    private final static Pattern firedPattern = Pattern.compile("ou\\s?=\\s?fired\\W?", Pattern.CASE_INSENSITIVE);
+    private final static Pattern firedPattern = Pattern.compile(".*ou\\s?=\\s?fired\\W?.*", Pattern.CASE_INSENSITIVE);
 
 
     static {
