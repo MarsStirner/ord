@@ -37,6 +37,8 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
     public static final String DIALOG_TITLE_VALUE_CONTROLLER = "CONTROLLER_TITLE";
     public static final String DIALOG_TITLE_VALUE_AUTHOR = "AUTHOR_TITLE";
     public static final String DIALOG_TITLE_VALUE_RESPONSIBLE = "RESPONSIBLE_TITLE";
+    public static final String DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION = "PERSON_SUBSTITUTION_TITLE";
+    public static final String DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR = "PERSON_SUBSTITUTOR_TITLE";
 
     @EJB(name = "indexManagement")
     private IndexManagementBean indexManagementBean;
@@ -86,6 +88,10 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
                 return "Выберите автора";
             } else if(DIALOG_TITLE_VALUE_RESPONSIBLE.equalsIgnoreCase(title)){
                 return "Выберите ответственного исполнителя";
+            } else if(DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION.equalsIgnoreCase(title)){
+                return "Выберите замещаемого пользователя";
+            } else if(DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR.equalsIgnoreCase(title)){
+                return "Выберите замещающего пользователя";
             }
         }
         return "Выберите пользователя";
@@ -96,8 +102,7 @@ public class UserDialogHolder extends AbstractDialog<User> implements Serializab
      */
     @Override
     public void initializePreSelected() {
-        final User preselected = (User) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get
-                (DIALOG_SESSION_KEY);
+        final User preselected = (User) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
         if (preselected != null) {
             setSelected(preselected);
         }

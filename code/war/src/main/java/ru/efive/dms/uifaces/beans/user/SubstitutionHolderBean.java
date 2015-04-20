@@ -1,9 +1,14 @@
 package ru.efive.dms.uifaces.beans.user;
 
+import com.google.common.collect.ImmutableList;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
+import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
@@ -14,6 +19,9 @@ import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 
@@ -21,7 +29,7 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
  * Author: Upatov Egor <br>
  * Date: 18.11.2014, 18:16 <br>
  * Company: Korus Consulting IT <br>
- * Description: Ьин для отображения замещения<br>
+ * Description: бин для отображения замещения<br>
  */
 @Named("substitution")
 @ConversationScoped
@@ -29,9 +37,6 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     //Именованный логгер
     private static final Logger logger = LoggerFactory.getLogger("SUBSTITUTION");
-
-    private User selectedPerson = null;
-    private User selectedSubstitution = null;
 
     @Override
     public boolean isCanCreate() {
@@ -53,33 +58,50 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         return super.isCanView() && sessionManagement.isFilling();
     }
 
-    public void confirmPersonSelection() {
-        getDocument().setPerson(selectedPerson);
-    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void confirmSubstitutionSelection() {
-        getDocument().setSubstitution(selectedSubstitution);
-    }
-
-    public User getSelectedPerson() {
-        return selectedPerson;
-    }
-
-    public User getSelectedSubstitution() {
-        return selectedSubstitution;
-    }
-
-    public void setSelectedSubstitution(User selection) {
-        if(selection != null) {
-            this.selectedSubstitution = selection;
+    //Выбора замещаемого ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void choosePerson() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION));
+        final User preselected = getDocument().getPerson();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
-    public void setSelectedPerson(User selection) {
-        if (selection != null) {
-            selectedPerson = selection;
-        }
+    public void onPersonChosen(final SelectEvent event) {
+        final User selected = (User) event.getObject();
+        getDocument().setPerson(selected);
+        logger.info("Choose person From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
+
+    //Выбора замещающего ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseSubstitutor() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR));
+        final User preselected = getDocument().getSubstitution();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
+
+    public void onSubstitutorChosen(final SelectEvent event) {
+        final User selected = (User) event.getObject();
+        getDocument().setSubstitution(selected);
+        logger.info("Choose substitutor From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// КОНЕЦ Диалоговые окошки  /////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
     @Override
     protected boolean deleteDocument() {

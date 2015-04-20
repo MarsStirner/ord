@@ -27,7 +27,7 @@
                         </h:outputLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{substitution.edit}" rendered="#{substitution.viewState }">
+                        <h:commandLink action="#{substitution.edit}" rendered="#{substitution.viewState}">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
                         </h:commandLink>
@@ -40,7 +40,7 @@
                         </h:commandLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{substitution.delete()}" rendered="#{substitution.viewState }">
+                        <h:commandLink action="#{substitution.delete()}" rendered="#{substitution.viewState}">
                             <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
                             Удалить
                             <f:param name="docAction" value="delete"/>
@@ -139,57 +139,16 @@
             </tr>
             <tr class="row">
                 <td class="first">
-                    <label for="person">
                         <c:choose>
                             <c:when test="#{substitution.viewState}">
-                                <span class="title">Замещаемое лицо</span>
+                                <label for="person"><span class="title">Замещаемое лицо</span></label>
                             </c:when>
                             <c:when test="#{substitution.editState or substitution.createState}">
-                                <p:commandLink onclick="PF('selectPersonDialog').show()">
-                                    <span class="title">Замещаемое лицо</span>
-                                </p:commandLink>
-                                <p:dialog header="Выберите замещаемое лицо" widgetVar="selectPersonDialog"
-                                          fitViewport="true" position="top,left" height="550" width="550" modal="true">
-                                    <p:inputText id="filter" value="#{userDialog.filter}"/>
-                                    <p:commandButton value="Поиск">
-                                        <f:ajax execute="filter" render="selectPersonTable"/>
-                                    </p:commandButton>
-                                    <p:dataTable id="selectPersonTable"
-                                                 paginator="true"
-                                                 paginatorPosition="bottom"
-                                                 currentPageReportTemplate="Строки {startRecord}-{endRecord}"
-                                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport} {RowsPerPageDropdown}"
-                                                 rows="10"
-                                                 rowsPerPageTemplate="10,25,50,100"
-                                                 value="#{userDialog.lazyModel}"
-                                                 var="person_row"
-                                                 selectionMode="single"
-                                                 selection="#{substitution.selectedPerson}"
-                                                 lazy="true"
-                                                 rowKey="#{person_row.id}"
-                                                 widgetVar="selectPersonTableVar"
-                                                 scrollable="true"
-                                                 scrollHeight="400"
-                                                 style="width:450px"
-                                            >
-                                        <p:column headerText="Фамилия">
-                                            <h:outputText value="#{person_row.lastName}"/>
-                                        </p:column>
-                                        <p:column headerText="Имя">
-                                            <h:outputText value="#{person_row.firstName}"/>
-                                        </p:column>
-                                        <p:column headerText="Отчество">
-                                            <h:outputText value="#{person_row.middleName}"/>
-                                        </p:column>
-                                    </p:dataTable>
-                                    <p:commandButton value="Выбрать" onclick="PF('selectPersonDialog').hide();"
-                                                     update="person" action="#{substitution.confirmPersonSelection}"/>
-                                    <p:commandButton value="Отмена" onclick="PF('selectPersonDialog').hide()"
-                                                     update="person"/>
-                                </p:dialog>
+                                <p:commandButton value="Замещаемое лицо" actionListener="#{substitution.choosePerson}">
+                                    <p:ajax event="dialogReturn" listener="#{substitution.onPersonChosen}" update="person"/>
+                                </p:commandButton>
                             </c:when>
                         </c:choose>
-                    </label>
                 </td>
                 <td class="second">
                     <h:outputText id="person" value="#{substitution.document.person.getDescription()}"/>
@@ -203,56 +162,15 @@
                                 <span class="title">Заместитель</span>
                             </c:when>
                             <c:when test="#{substitution.editState or substitution.createState}">
-                                <p:commandLink onclick="PF('selectSubstitutionDialog').show()">
-                                    <span class="title">Заместитель</span>
-                                </p:commandLink>
-                                <p:dialog header="Выберите заместителя" widgetVar="selectSubstitutionDialog"
-                                          fitViewport="true" position="top,left" height="550" width="550" modal="true">
-                                    <p:inputText id="substitution_filter" value="#{userDialog.filter}"/>
-                                    <p:commandButton value="Поиск">
-                                        <f:ajax execute="substitution_filter" render="selectSubstitutionTable"/>
-                                    </p:commandButton>
-                                    <p:dataTable id="selectSubstitutionTable"
-                                                 paginator="true"
-                                                 paginatorPosition="bottom"
-                                                 rows="10"
-                                                 rowsPerPageTemplate="10,25,50,100"
-                                                 currentPageReportTemplate="Строки {startRecord}-{endRecord}"
-                                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {CurrentPageReport} {RowsPerPageDropdown}"
-                                                 value="#{userDialog.lazyModel}"
-                                                 var="sub_row"
-                                                 selectionMode="single"
-                                                 selection="#{substitution.selectedSubstitution}"
-                                                 lazy="true"
-                                                 rowKey="#{sub_row.id}"
-                                                 widgetVar="selectSubstitutionTableVar"
-                                                 scrollable="true"
-                                                 scrollHeight="400"
-                                                 style="width:450px"
-                                            >
-                                        <p:column headerText="Фамилия">
-                                            <h:outputText value="#{sub_row.lastName}"/>
-                                        </p:column>
-                                        <p:column headerText="Имя">
-                                            <h:outputText value="#{sub_row.firstName}"/>
-                                        </p:column>
-                                        <p:column headerText="Отчество">
-                                            <h:outputText value="#{sub_row.middleName}"/>
-                                        </p:column>
-                                    </p:dataTable>
-                                    <p:commandButton value="Выбрать" onclick="PF('selectSubstitutionDialog').hide();"
-                                                     update="substitution"
-                                                     action="#{substitution.confirmSubstitutionSelection}"/>
-                                    <p:commandButton value="Отмена" onclick="PF('selectSubstitutionDialog').hide()"
-                                                     update="substitution"/>
-                                </p:dialog>
+                                <p:commandButton value="Заместитель" actionListener="#{substitution.chooseSubstitutor}">
+                                    <p:ajax event="dialogReturn" listener="#{substitution.onSubstitutorChosen}" update="substitution"/>
+                                </p:commandButton>
                             </c:when>
                         </c:choose>
                     </label>
                 </td>
                 <td class="second">
-                    <h:outputText id="substitution"
-                                  value="#{substitution.document.substitution.getDescription()}"/>
+                    <h:outputText id="substitution"  value="#{substitution.document.substitution.getDescription()}"/>
                 </td>
             </tr>
             <tr class="row">
@@ -264,8 +182,7 @@
                 <td class="second">
                     <c:choose>
                         <c:when test="#{substitution.viewState}">
-                            <h:outputText id="type" value="#{substitution.document.type}"
-                                          converter="SubstitutionTypeConverter"/>
+                            <h:outputText id="type" value="#{substitution.document.type}" converter="SubstitutionTypeConverter"/>
                         </c:when>
                         <c:when test="#{substitution.editState or substitution.createState}">
                             <p:selectOneMenu value="#{substitution.document.type}" style="width:1000px;">
