@@ -1,22 +1,18 @@
 package ru.efive.dms.uifaces.beans;
 
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.io.Serializable;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-
 
 @Named("versionHolderBean")
-@SessionScoped
+@ApplicationScoped
 public class VersionHolderBean implements Serializable {
 
-    /** Serial UID */
-    private static final long serialVersionUID = 1L;
-    
     private static final String BUILD_PROP_FILE = "/build.properties";
     private static final String VERSION = "application.version";
     private static final String BUILDTIME = "application.build.date";

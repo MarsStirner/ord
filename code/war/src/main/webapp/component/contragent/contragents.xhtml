@@ -3,23 +3,15 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
-    </ui:define>
+    <ui:define name="contentLabel">Контрагенты</ui:define>
 
-    <ui:define name="header_top">
-        <div id="viewtitle">Контрагенты</div>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/contragent/contragent.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -28,66 +20,51 @@
             </h:outputLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{contragentList.refresh()}">
+            <h:commandLink action="#{contragents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                <f:ajax render="main_data_tbl main_data_paging"/>
+                <f:ajax render="main_data_tbl"/>
                 Обновить
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
-
-        <div id="main_table">
-            <div id="searchbar" class="main_searchbar">
-                <h:inputText id="filter_string" value="#{contragentList.filter}"
-                             style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                <h:commandButton value=" " action="#{contragentList.changePageOffset(0)}" styleClass="searchbutton">
-                    <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
-                </h:commandButton>
-            </div>
-            <div class="wrap_main" id="table_wrap">
-                <div class="inner" id="table_inner">
-                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%"
-                                    value="#{contragentList.documents}" var="row" id="main_data_tbl">
-                        <e5ui:row ondblclick="goToContragent('#{row.id}');"/>
-                        <e5ui:column>
-                            <f:facet name="header">
-                                <h:commandLink action="#{contragentList.sort('shortName')}">
-                                    Краткое наименование
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.shortName}"/>
-                        </e5ui:column>
-                        <e5ui:column>
-                            <f:facet name="header">
-                                <h:commandLink action="#{contragentList.sort('nomenclature_id')}">
-                                    Тип контрагента
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.type.value}"/>
-                        </e5ui:column>
-                    </e5ui:dataTable>
-                </div>
-            </div>
-            <div id="table_paging">
-                <h:panelGroup id="main_data_paging">
-                    <e5ui-comp:tablePager documentListHolder="#{contragentList}" style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector documentListHolder="#{contragentList}"
-                                                     style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </h:panelGroup>
-            </div>
+    <ui:define name="contentSearch">
+        <div id="searchbar" class="main_searchbar">
+            <p:inputText id="filter_string" value="#{contragents.filter}"
+                         style="display:block; float:left; width:60%; margin:2px 10px;"
+                         title="Поиск"/>
+            <p:commandButton value=" " action="#{contragents.applyFilter()}" styleClass="searchbutton"
+                             process="@this filter_string" update="mainTable"/>
         </div>
+    </ui:define>
 
-        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
-                  showHeader="false" position="center center">
-            Пожалуйста, подождите...
-        </p:dialog>
-
-
+    <ui:define name="contentTable">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     rows="100"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     value="#{contragents.lazyModel}"
+                     var="contragent_row"
+                     selectionMode="single"
+                     lazy="true"
+                     widgetVar="contragentTableWidget"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     sortBy="#{contragent_row.shortName}"
+                     sortOrder="ascending"
+                     sortField="shortName"
+                >
+            <p:column headerText="Краткое наименование" sortBy="#{contragent_row.shortName}" field="shortName">
+                <h:outputText value="#{contragent_row.shortName}"/>
+            </p:column>
+            <p:column headerText="Тип контрагента" sortBy="#{contragent_row.type.value}" field="type.value">
+                <h:outputText value="#{contragent_row.type.value}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToContragent(PrimeFaces.widgets.contragentTableWidget.selection); return false;"/>
+        </p:dataTable>
     </ui:define>
 
 </ui:composition>

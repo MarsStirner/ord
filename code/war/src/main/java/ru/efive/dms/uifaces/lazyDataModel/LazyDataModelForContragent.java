@@ -29,7 +29,7 @@ public class LazyDataModelForContragent extends AbstractFilterableLazyDataModel<
     @Override
     public List<Contragent> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
             filters) {
-        setRowCount((((Long) dao.countDocument(getFilter(), false)).intValue()));
-        return dao.findDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        setRowCount((int) dao.countItems(getFilter(), false));
+        return dao.findItems(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
     }
 }

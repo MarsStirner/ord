@@ -31,7 +31,7 @@ public abstract class AbstractDocumentLazyDataModelBean<T extends IdentifiedEnti
 
     public void applyFilter(){
         getLazyModel().setFilter(filter);
-    };
+    }
 
     public void refresh(){
        //TODO

@@ -1007,7 +1007,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doHide() {
             super.doHide();
             getContragentList().setFilter("");
-            getContragentList().markNeedRefresh();
             setContragent(null);
         }
 

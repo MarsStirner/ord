@@ -38,6 +38,10 @@ public class PermissionChecker {
     private static final Logger loggerRequestDocument = LoggerFactory.getLogger("REQUEST_DOCUMENT");
     private static final Logger loggerTask = LoggerFactory.getLogger("TASK");
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // По User
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * @param user     пользователь для которого проверяем права
      * @param document входящий документ, на который проверяем права
@@ -530,6 +534,9 @@ public class PermissionChecker {
         }
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // По AuthorizationData
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Получения прав текущего авторизованного пользователя (вместе со всей инфой)
@@ -538,7 +545,7 @@ public class PermissionChecker {
      * @param document          входящий документ, на который проверяем права
      * @return суммарный набор прав для текущих данных по авторизации
      */
-    public Permissions getPermissions(AuthorizationData auth, IncomingDocument document) {
+    public Permissions getPermissions(final AuthorizationData auth, final IncomingDocument document) {
         if (auth.isAdministrator()) {
             loggerIncomingDocument.info("Result permissions for user[{}] to document[{}] is ALL, granted by: AdminRole",
                     auth.getAuthorized().getId(), document.getId()

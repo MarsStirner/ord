@@ -667,7 +667,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         protected void doHide() {
             super.doHide();
             getContragentList().setFilter("");
-            getContragentList().markNeedRefresh();
             setContragent(null);
         }
 

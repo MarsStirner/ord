@@ -657,7 +657,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doHide() {
             super.doHide();
             getContragentList().setFilter("");
-            getContragentList().markNeedRefresh();
             setContragents(null);
         }
     };
