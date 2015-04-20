@@ -42,7 +42,7 @@ public class DictionaryManagementBean implements Serializable {
             accessLevelsMenuModel = new DefaultMenuModel();
             for (UserAccessLevel current : getUserAccessLevelsLowerOrEqualMaxValue(sessionManagement.getAuthData().getMaxAccessLevel().getLevel())) {
                 final DefaultMenuItem currentItem = new DefaultMenuItem(current.getValue());
-                currentItem.setCommand("#{sessionManagement.setCurrentUserAccessLevel(".concat(String.valueOf(current.getId())).concat(")}"));
+                currentItem.setCommand("#{sessionManagement.setCurrentUserAccessLevel(\'".concat(String.valueOf(current.getId())).concat("\')}"));
                 currentItem.setUpdate("accessMenuButton accessMenu");
                 accessLevelsMenuModel.addElement(currentItem);
             }
