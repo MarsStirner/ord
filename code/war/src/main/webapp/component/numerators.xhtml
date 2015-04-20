@@ -1,26 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
-    </ui:define>
+    <ui:define name="contentLabel">Справочник нумераторов</ui:define>
 
-    <ui:define name="header_top">
-        <div id="viewtitle">Справочник нумераторов</div>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
-            <h:outputLink value="/component/numerator.xhtml"  target="_blank">
+            <h:outputLink value="/component/numerator.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый документ
                 <f:param name="docAction" value="create"/>
@@ -30,105 +22,52 @@
             <h:commandLink action="#{numerators.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="main_data_tbl main_data_paging"
-                        onevent="function (data) { if (data.status == 'success') addRowHandlers();}"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
+    <ui:define name="contentSearchPanel"/>
 
-        <div id="main_table">
-            <div class="wrap_main" id="table_wrap">
-                <div class="inner" id="table_inner">
-                    <p:dataTable id="main_data_tbl" value="#{numerators.documents}" var="row"
-                                 widgetVar="numeratorsTableVar">
-                        <p:column style="display:none;">
-                            <h:outputText value="#{row.id}"/>
-                        </p:column>
-                        <p:column style="min-width:5em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{numerators.sort('creationDate')}">
-                                    Дата создания
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.creationDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column style="min-width:5em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{numerators.sort('author.lastName')}">
-                                    Автор
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.author}" converter="PersonConverter"/>
-                        </p:column>
-                        <p:column style="min-width:5em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{numerators.sort('documentType')}">
-                                    Тип документа
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.documentType}"/>
-                        </p:column>
-                        <p:column style="min-width:12em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{numerators.sort('nomenclature.code')}">
-                                    Номенклатура
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.nomenclature}" converter="NomenclatureConverter"/>
-                        </p:column>
-                        <p:column style="min-width:12em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{numerators.sort('value')}">
-                                    Текущий номер
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.value}"/>
-                        </p:column>
-                    </p:dataTable>
-                </div>
-            </div>
-            <div id="table_paging">
-                <h:panelGroup id="main_data_paging">
-                    <e5ui-comp:tablePager documentListHolder="#{numerators}" style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector
-                            documentListHolder="#{numerators}"
-                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </h:panelGroup>
-            </div>
-            <script type="text/javascript">
-                function addRowHandlers() {
-                    console.log("refresh table row onclick handlers");
-                    var table = document.getElementById(PrimeFaces.widgets.numeratorsTableVar.id);
-                    var tbody = table.getElementsByTagName("tbody")[0];
-                    for (var i = 0; i &lt; tbody.rows.length; i++) {
-                        var currentRow = tbody.rows[i];
-                        var createClickHandler = function (row) {
-                            return function () {
-                                goToNumerator(row.firstChild.textContent);
-                            };
-                        };
-                        currentRow.className = currentRow.className.replace('ui-state-highlight', '');
-                        currentRow.ondblclick = createClickHandler(currentRow);
-                    }
-                }
-                window.onload = addRowHandlers;
-            </script>
-        </div>
-
-        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
-                  showHeader="false">
-            Пожалуйста, подождите...
-        </p:dialog>
-
-
+    <ui:define name="contentTable">
+        <p:dataTable
+                id="main_data_tbl"
+                paginator="true"
+                rows="100"
+                currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                value="#{numerators.lazyModel}"
+                var="row"
+                lazy="true"
+                widgetVar="numeratorTableWidget"
+                scrollable="true"
+                scrollHeight="100%"
+                selectionMode="single"
+                sortBy="#{row.creationDate}"
+                sortField="creationDate"
+                sortOrder="descending"
+                >
+            <p:column style="min-width:5em" headerText="Дата создания" sortBy="#{row.creationDate}" field="creationDate">
+                <h:outputText value="#{row.creationDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column style="min-width:5em" headerText="Автор" sortBy="#{row.author}" field="author.lastName">
+                <h:outputText value="#{row.author.description}"/>
+            </p:column>
+            <p:column style="min-width:5em" headerText="Тип документа">
+                <h:outputText value="#{row.documentType}"/>
+            </p:column>
+            <p:column style="min-width:12em" headerText="Номенклатура" sortBy="#{row.nomenclature.code}" field="nomenclature.code">
+                <h:outputText value="#{row.nomenclature.code}"/>
+            </p:column>
+            <p:column style="min-width:12em" headerText="Текущий номер" sortBy="#{row.value}" field="value">
+                <h:outputText value="#{row.value}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToNumerator(PrimeFaces.widgets.numeratorTableWidget.selection); return false;"/>
+        </p:dataTable>
     </ui:define>
 
 </ui:composition>
