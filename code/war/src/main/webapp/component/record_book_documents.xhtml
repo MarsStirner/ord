@@ -33,7 +33,7 @@
             <p:inputText id="filter_string" value="#{record_book_documents.filter}"
                          style="display:block; float:left; width:60%; margin:2px 10px;"
                          title="Поиск"/>
-            <p:commandButton value=" " styleClass="searchbutton" process="@this filter_string" update="mainTable"/>
+            <p:commandButton value=" " action="#{record_book_documents.applyFilter()}" styleClass="searchbutton" process="@this filter_string" update="mainTable"/>
         </div>
     </ui:define>
 
@@ -52,7 +52,6 @@
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     rowStyleClass="#{row.styleClass}"
                      sortBy="#{row.creationDate}"
                      sortField="creationDate"
                      sortOrder="descending"
