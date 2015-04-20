@@ -119,6 +119,15 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         return null;
     }
 
+    public User getItemByIdForListView(final Integer id){
+        final DetachedCriteria detachedCriteria = getListCriteria().add(Restrictions.eq("id", id));
+        final List<User> users = getHibernateTemplate().findByCriteria(detachedCriteria);
+        if (!users.isEmpty()) {
+            return users.iterator().next();
+        }
+        return null;
+    }
+
     /**
      * Обрабатывает поисковый шаблон через ИЛИ (НУЖНА LIST_CRITERIA)   для диалогов
      * @param criteria критерий отбора

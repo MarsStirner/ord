@@ -1,24 +1,16 @@
 ﻿<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
-    </ui:define>
+    <ui:define name="contentLabel">Заметки</ui:define>
 
-    <ui:define name="header_top">
-        <div id="viewtitle">Заметки</div>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/record_book_document.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -30,77 +22,56 @@
             <h:commandLink action="#{record_book_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
 
+    <ui:define name="contentSearch">
+        <div id="searchbar" class="main_searchbar">
+            <p:inputText id="filter_string" value="#{record_book_documents.filter}"
+                         style="display:block; float:left; width:60%; margin:2px 10px;"
+                         title="Поиск"/>
+            <p:commandButton value=" " styleClass="searchbutton" process="@this filter_string" update="mainTable"/>
+        </div>
+    </ui:define>
 
-            <div id="main_table">
-                <div id="searchbar" class="main_searchbar">
-                    <h:inputText id="filter_string" value="#{record_book_documents.filter}"
-                                 style="display:block; float:left; width:60%; margin:2px 10px;" title="Поиск"/>
-                    <h:commandButton value=" " action="#{record_book_documents.changePageOffset(0)}"
-                                     styleClass="searchbutton">
-                        <f:ajax execute="filter_string" render="main_data_tbl main_data_paging"/>
-                    </h:commandButton>
-                </div>
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" style="width:100%;"
-                                        value="#{record_book_documents.documents}" var="row" id="main_data_tbl">
-                            <e5ui:row ondblclick="goToRecordBook('#{row.id}');"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <h:commandLink action="#{record_book_documents.sort('plannedDate')}">
-                                        Планируемая дата
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.plannedDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Краткое содержание</p>
-                                </f:facet>
-                                <h:outputText value="#{row.shortDescription}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <h:commandLink action="#{record_book_documents.sort('creationDate')}">
-                                        Дата создания
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.creationDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                </h:outputText>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{record_book_documents}" style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector documentListHolder="#{record_book_documents}"
-                                                         style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
-                </div>
-            </div>
-
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
-
+    <ui:define name="contentTable">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     rows="100"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     value="#{record_book_documents.lazyModel}"
+                     var="row"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     selectionMode="single"
+                     rowStyleClass="#{row.styleClass}"
+                     sortBy="#{row.creationDate}"
+                     sortField="creationDate"
+                     sortOrder="descending"
+                >
+            <p:column headerText="Дата создания" style="width:6em;" sortBy="#{row.creationDate}" field="creationDate">
+                <h:outputText value="#{row.creationDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Планируемая дата" style="width:10em;" sortBy="#{row.plannedDate}" field="plannedDate">
+                <h:outputText value="#{row.plannedDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Краткое содержание">
+                <h:outputText value="#{row.shortDescription}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToRecordBook(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+        </p:dataTable>
     </ui:define>
 
 </ui:composition>

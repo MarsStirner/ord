@@ -48,7 +48,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).get(id));
+        setDocument(sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).getItemById(id));
         if (getDocument() == null) {
             setState(STATE_NOT_FOUND);
         }
@@ -65,7 +65,6 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
         boolean result = false;
         try {
             Group group = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).update(getDocument());
-
             if (group == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {

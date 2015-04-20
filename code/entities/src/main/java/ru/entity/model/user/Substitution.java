@@ -1,6 +1,6 @@
 package ru.entity.model.user;
 
-import ru.entity.model.mapped.AbstractEntity;
+import ru.entity.model.mapped.IdentifiedEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,10 +16,7 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "Substitutions.getAll", query = "SELECT a FROM Substitution a")
 })
-public class Substitution extends AbstractEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+public class Substitution extends IdentifiedEntity{
 
     @Column(name = "startDate")
     @Temporal(TemporalType.DATE)
@@ -54,14 +51,6 @@ public class Substitution extends AbstractEntity{
         this.type = type;
     }
     //Getters & Setters
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public Date getStartDate() {
         return startDate;
@@ -114,7 +103,7 @@ public class Substitution extends AbstractEntity{
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Substitution[");
-        sb.append("id=").append(id);
+        sb.append("id=").append(getId());
         sb.append(", startDate=").append(startDate);
         sb.append(", endDate=").append(endDate);
         sb.append(", deleted=").append(deleted);

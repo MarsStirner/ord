@@ -1,12 +1,14 @@
 package ru.entity.model.user;
 
 
-import org.hibernate.annotations.Type;
 import ru.entity.model.enums.GroupType;
 import ru.entity.model.mapped.DictionaryEntity;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Группа пользователей
@@ -15,8 +17,39 @@ import java.util.*;
 @Table(name = "groups")
 public class Group extends DictionaryEntity {
 
-    public List<User> getMembersList() {
+    /**
+     * Автор документа
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private User author;
 
+
+    /**
+     * пользователи
+     */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "groups_dms_system_persons",
+            joinColumns = {@JoinColumn(name = "groups_id")},
+            inverseJoinColumns = {@JoinColumn(name = "members_id")})
+     private Set<User> members;
+
+    /**
+     * Категория
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoryId")
+    private GroupType category;
+
+    /**
+     * Алиас
+     */
+    @Column(name="alias")
+    private String alias;
+
+
+
+    public List<User> getMembersList() {
         List<User> result = new ArrayList<User>();
         if (members != null) {
             result.addAll(members);
@@ -25,15 +58,6 @@ public class Group extends DictionaryEntity {
         return result;
     }
 
-    public List<User> getMembersListWithEmptyUser() {
-        List<User> result = getMembersList();
-        User empty = new User();
-        empty.setLastName("");
-        empty.setFirstName("");
-        empty.setMiddleName("");
-        result.add(0, empty);
-        return result;
-    }
 
     public Set<User> getMembers() {
         return members;
@@ -41,15 +65,6 @@ public class Group extends DictionaryEntity {
 
     public void setMembers(Set<User> members) {
         this.members = members;
-    }
-
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public void setCategory(GroupType category) {
@@ -68,7 +83,6 @@ public class Group extends DictionaryEntity {
         return alias;
     }
 
-
     public void setAuthor(User author) {
         this.author = author;
     }
@@ -76,41 +90,6 @@ public class Group extends DictionaryEntity {
     public User getAuthor() {
         return author;
     }
-
-
-    /**
-     * пользователи
-     */
-    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    @JoinTable(name = "groups_dms_system_persons",
-            joinColumns = {@JoinColumn(name = "groups_id")},
-            inverseJoinColumns = {@JoinColumn(name = "members_id")})
-    @Type(type = "java.util.Set")
-    private Set<User> members = new HashSet<User>();
-
-    /**
-     * Категория
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "categoryId")
-    private GroupType category;
-
-    /**
-     * Описание
-     */
-    private String description;
-
-    /**
-     * Алиас
-     */
-    private String alias;
-
-    /**
-     * Автор документа
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private User author;
 
     private static final long serialVersionUID = 6366882739076305392L;
 }

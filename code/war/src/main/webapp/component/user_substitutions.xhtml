@@ -7,15 +7,12 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head"/>
 
-    <ui:define name="header_top">
-        <div id="viewtitle">Список замещений, помощников и и\о</div>
-    </ui:define>
+    <ui:define name="contentLabel">Список замещений, помощников и и\о</ui:define>
 
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/user_substitution.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -24,65 +21,66 @@
             </h:outputLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{substitutions.refresh()}">
+            <h:commandLink>
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="data_table"/>
+                <f:ajax render="mainTable"/>
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
-        <div id="main_table">
-            <div id="searchbar" class="main_searchbar">
-                <h:inputText id="filter_string" value="#{substitutions.filter}"
-                             style="display:block; float:left; width:60%; margin:2px 10px;"
-                             title="Поиск"/>
-                <h:commandButton value=" " action="#{substitutions.refresh()}" styleClass="searchbutton">
-                    <f:ajax execute="filter_string" render="data_table"/>
-                </h:commandButton>
-            </div>
+    <ui:define name="contentSearch">
+        <div id="searchbar" class="main_searchbar">
+            <p:inputText id="filter_string" value="#{substitutions.filter}"
+                         style="display:block; float:left; width:60%; margin:2px 10px;"
+                         title="Поиск"/>
+            <p:commandButton value=" " action="#{substitutions.applyFilter()}" styleClass="searchbutton"
+                             process="@this filter_string" update="mainTable"/>
+        </div>
+    </ui:define>
+
+    <ui:define name="contentTable">
             <p:dataTable
                     id="data_table"
                     lazy="true"
                     value="#{substitutions.lazyModel}"
                     var="substitution_entry"
-                    rowKey="#{substitution_entry.id}"
+                    selectionMode="single"
+                    widgetVar="substitutionTableWidget"
                     paginator="true"
                     rows="10"
                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                    tableStyle="table-layout: auto;"
+                    scrollable="true"
+                    scrollHeight="100%"
+                    sortBy="#{substitution_entry.id}"
+                    sortField="id"
+                    sortOrder="ascending"
                     >
-                <p:column headerText="Номер">
-                    <h:commandButton onclick="goToSubstitution(#{substitution_entry.id})" value="Перейти к документу"/>
-                    <h:outputText value="   #{substitution_entry.id}"/>
+                <p:column headerText="Идентификатор" sortBy="#{substitution_entry.id}" field="id">
+                    <h:outputText value="#{substitution_entry.id}"/>
                 </p:column>
-                <p:column headerText="Дата начала">
+                <p:column headerText="Дата начала" sortBy="#{substitution_entry.startDate}" field="startDate">
                     <h:outputText value="#{substitution_entry.startDate}">
                         <f:convertDateTime pattern="dd.MM.yyyy"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Дата окончания">
+                <p:column headerText="Дата окончания" sortBy="#{substitution_entry.endDate}" field="endDate">
                     <h:outputText value="#{substitution_entry.endDate}">
                         <f:convertDateTime pattern="dd.MM.yyyy"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Замещаемый пользователь">
-                    <h:outputText value="#{substitution_entry.person}" converter="PersonConverter"/>
+                <p:column headerText="Замещаемый пользователь" sortBy="#{substitution_entry.person}" field="person.lastName">
+                    <h:outputText value="#{substitution_entry.person.description}"/>
                 </p:column>
-                <p:column headerText="Заместитель">
-                    <h:outputText value="#{substitution_entry.substitution}" converter="PersonConverter"/>
+                <p:column headerText="Заместитель" sortBy="#{substitution_entry.substitution}" field="substitution.lastName">
+                    <h:outputText value="#{substitution_entry.substitution.description}"/>
                 </p:column>
+                <p:ajax event="rowSelect" onstart="goToSubstitution(PrimeFaces.widgets.substitutionTableWidget.selection); return false;"/>
             </p:dataTable>
-        </div>
-
-        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
-            Пожалуйста, подождите...
-        </p:dialog>
-
     </ui:define>
 
 </ui:composition>

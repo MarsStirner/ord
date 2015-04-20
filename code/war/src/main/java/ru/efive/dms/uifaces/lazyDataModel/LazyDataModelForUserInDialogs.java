@@ -41,7 +41,13 @@ public class LazyDataModelForUserInDialogs extends AbstractFilterableLazyDataMod
 
     @Override
     public User getRowData(String rowKey) {
-        return dao.get(Integer.valueOf(rowKey));
+        final Integer identifier;
+        try {
+            identifier = Integer.valueOf(rowKey);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return dao.getItemByIdForListView(identifier);
     }
 
     @Override

@@ -421,8 +421,7 @@
                                                     <br/>
                                                 </ui:repeat>
                                                 <ui:repeat value="#{in_doc.document.recipientGroupsList}" var="element">
-                                                    [Группа] <h:outputText value="#{element}" converter="GroupConverter"
-                                                                           class="width"/>
+                                                    [Группа] <h:outputText value="#{element.value}"  class="width"/>
                                                     <br/>
                                                 </ui:repeat>
                                             </div>
@@ -678,8 +677,7 @@
                                                                 <f:facet name="header">
                                                                     <p>Адресаты</p>
                                                                 </f:facet>
-                                                                <h:outputText value="#{row}"
-                                                                              converter="GroupConverter"/>
+                                                                <h:outputText value="#{row.value}"/>
                                                                 <h:commandLink id="selectLink" style="display: none;"
                                                                                rendered="#{not in_doc.recipientUnitsSelectModal.selectedGroup(row)}"
                                                                                action="#{in_doc.recipientUnitsSelectModal.selectGroup(row)}"/>
@@ -734,9 +732,7 @@
                                                 <label>
                                                     <ui:repeat value="#{in_doc.document.recipientGroupsList}"
                                                                var="element">
-                                                        [Группа] <h:outputText value="#{element}"
-                                                                               converter="GroupConverter"
-                                                                               class="width"/>
+                                                        [Группа] <h:outputText value="#{element.value}" class="width"/>
                                                         <br/>
                                                     </ui:repeat>
                                                 </label>

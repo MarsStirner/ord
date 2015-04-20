@@ -138,7 +138,7 @@ function goToUser(id) {
         window.open('/component/user.xhtml?docId=' + id, '_blank');
     }
 }
-// TODO
+// К заметкам
 function goToRecordBook(id) {
     if (id != 0) {
         window.open('/component/record_book_document.xhtml?docId=' + id, '_blank');

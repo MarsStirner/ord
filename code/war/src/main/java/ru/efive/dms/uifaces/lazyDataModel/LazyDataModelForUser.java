@@ -31,7 +31,13 @@ public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> 
 
     @Override
     public User getRowData(String rowKey) {
-        return dao.get(Integer.valueOf(rowKey));
+        final Integer identifier;
+        try {
+            identifier = Integer.valueOf(rowKey);               } catch (NumberFormatException e) {
+
+            return null;
+        }
+        return dao.getItemByIdForListView(identifier);
     }
 
     @Override

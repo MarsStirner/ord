@@ -283,8 +283,7 @@
                                             </ui:repeat>
                                             <ui:repeat value="#{internal_doc.document.recipientGroupsList}"
                                                     var="element">
-                                                <h:outputText value="#{element}" converter="GroupConverter"
-                                                              class="width"/>
+                                                <h:outputText value="#{element.value}" class="width"/>
                                                 <br/>
                                             </ui:repeat>
                                         </div>
@@ -581,8 +580,7 @@
                                                                     <f:facet name="header">
                                                                         <p>Адресаты</p>
                                                                     </f:facet>
-                                                                    <h:outputText value="#{row}"
-                                                                                  converter="GroupConverter"/>
+                                                                    <h:outputText value="#{row.value}"/>
                                                                     <h:commandLink id="selectLink"
                                                                                    style="display: none;"
                                                                                    rendered="#{not internal_doc.recipientUnitsSelectModal.selectedGroup(row)}"
@@ -641,8 +639,7 @@
                                                 <label>
                                                     <ui:repeat value="#{internal_doc.document.recipientGroupsList}"
                                                                var="element">
-                                                        <h:outputText value="#{element}" converter="GroupConverter"
-                                                                      class="width"/>
+                                                        <h:outputText value="#{element.value}" class="width"/>
                                                         <br/>
                                                     </ui:repeat>
                                                 </label>

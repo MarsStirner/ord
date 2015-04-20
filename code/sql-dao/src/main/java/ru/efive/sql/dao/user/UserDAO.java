@@ -95,4 +95,6 @@ public interface UserDAO extends GenericDAO<User> {
      * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
      */
     public long countUsersForDialogByGroup(final String pattern, final boolean showDeleted, final boolean showFired, final Group group);
+
+
 }
