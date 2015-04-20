@@ -10,7 +10,7 @@ import ru.entity.model.mapped.IdentifiedEntity;
  * Description: <br>
  */
 public abstract class AbstractFilterableLazyDataModel<T extends IdentifiedEntity> extends LazyDataModel<T> {
-    private String filter;
+    protected String filter;
 
     public void setFilter(String filter) {
         this.filter = filter;
