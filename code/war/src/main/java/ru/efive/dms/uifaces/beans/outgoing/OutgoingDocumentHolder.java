@@ -812,7 +812,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 
@@ -839,7 +838,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 

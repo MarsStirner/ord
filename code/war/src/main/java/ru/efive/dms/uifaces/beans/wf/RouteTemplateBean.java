@@ -282,7 +282,6 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
     };
@@ -299,7 +298,6 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
     };

@@ -239,7 +239,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 
@@ -265,7 +264,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 

@@ -875,7 +875,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 
@@ -902,7 +901,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 

@@ -815,7 +815,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 
@@ -842,7 +841,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         protected void doHide() {
             super.doHide();
             getRoleList().setFilter("");
-            getRoleList().markNeedRefresh();
             setRoles(null);
         }
 

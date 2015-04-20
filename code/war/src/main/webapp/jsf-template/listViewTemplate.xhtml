@@ -48,16 +48,18 @@
                         <p:commandButton id="accessMenuButton" type="button" value="#{sessionManagement.authData.currentAccessLevel}" style="float:right;"/>
                         <p:menu id = "accessMenu" overlay="true" model="#{dictionaryManagement.accessLevelsMenuModel}" trigger="accessMenuButton" my="left top" at="left bottom"/>
                     </p:panel>
-                    <p:panel id="contentButtons" style="padding:0; margin:0; height:2em; background: linear-gradient(#C8F1D4, #D6F5E0); border:0; border-radius:0; ">
+                    <p:panel id="contentButtons" style="padding:0; margin:0; height:2.2em; background: linear-gradient(#C8F1D4, #D6F5E0); border:0; border-radius:0; ">
                         <ui:insert name="contentButtonsPanel">
                             contentButtonsPanel
                         </ui:insert>
                     </p:panel>
-                    <p:panel id="contentSearchPanel" style="padding:0; margin:0; height:2.5em; background: linear-gradient(#C8F1D4, #D6F5E0);">
-                        <ui:insert name="contentSearch">
-                            contentSearch
-                        </ui:insert>
-                    </p:panel>
+                    <ui:insert name="contentSearchPanel">
+                        <p:panel id="contentSearchPanel" style="padding:0; margin:0; height:2.5em; background: linear-gradient(#C8F1D4, #D6F5E0);">
+                            <ui:insert name="contentSearch">
+                              contentSearch
+                            </ui:insert>
+                        </p:panel>
+                    </ui:insert>
                     <p:panel id="mainTable" style="padding:0; margin:0; border:0; border-radius:0;">
                         <div id="tableWrapper">
                             <ui:insert name="contentTable">
@@ -67,7 +69,7 @@
                         <script type="text/javascript">
                             console.log("Bind resizeFunction to calculate height");
                             var $window = $(window).on('resize', function(){
-                                var height = $(window).height() - $('#pageForm\\:contentHeader').height() - $('#pageForm\\:contentButtons').height() - $('#pageForm\\:contentSearchPanel').height();
+                                var height = $(window).height() - $('#pageForm\\:contentHeader').height() - $('#pageForm\\:contentButtons').height() - $('#pageForm\\:contentSearchPanel').height() || 0;
                                 $('#tableWrapper').height(height-9);
                             }).trigger('resize');
                         </script>
