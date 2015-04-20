@@ -1,91 +1,52 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
+    <ui:define name="contentLabel">Шаблоны отчетов</ui:define>
 
-        <h:outputScript>
-            $(document).ready(function() {
-            update_content();
-            });
-        </h:outputScript>
-        <h:outputScript>
-            var resizeTimer = null;
-            $(window).bind('resize', function() {
-            if (resizeTimer) clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(update_content, 100);
-            });
-        </h:outputScript>
-        <h:outputScript>
-            function update_content() {
-            var height = document.body.clientHeight - $("#view_header").height() - $("#footer").height() - $("#table_paging").height()-26;
-            $("#table_wrap").height(height);
-            $("#table_inner").height(height);
-            $("#split").height(document.body.clientHeight);
-            };
-        </h:outputScript>
-    </ui:define>
-
-    <ui:define name="header_top">
-        <span>Шаблоны отчетов</span>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:commandLink action="#{reportTemplateList.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="mainTable"/>
             </h:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
-        <h:outputScript>
-
-        </h:outputScript>
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0" id="main_data_tbl"
-                                        value="#{reportTemplateList.documents}" var="row" grouping="false">
-                            <e5ui:row ondblclick="goToReportTemplate('#{row.id}');"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Отчет</p>
-                                </f:facet>
-                                <h:outputText value="#{row.displayName}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <e5ui-comp:tablePager documentListHolder="#{reportTemplateList}" style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector documentListHolder="#{reportTemplateList}"
-                                                     style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </div>
-            </div>
-        </e5ui:formPart>
-
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
-
+    <ui:define name="contentSearchPanel"/>
+    <ui:define name="contentTable">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     rows="100"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     value="#{reportTemplateList.lazyModel}"
+                     var="row"
+                     lazy="true"
+                     widgetVar="reportTableWidget"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     selectionMode="single"
+                     sortBy="#{row.displayName}"
+                     sortField="displayName"
+                     sortOrder="descending"
+                >
+        <p:column headerText="Наименование" style="width:6em;" sortBy="#{row.displayName}" field="displayName">
+            <h:outputText value="#{row.displayName}"/>
+        </p:column>
+            <p:ajax event="rowSelect" onstart="goToReportTemplate(PrimeFaces.widgets.reportTableWidget.selection); return false;"/>
+        </p:dataTable>
     </ui:define>
+
 
 </ui:composition>
 

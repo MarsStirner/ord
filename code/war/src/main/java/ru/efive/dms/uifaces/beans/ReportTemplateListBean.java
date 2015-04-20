@@ -1,94 +1,29 @@
 package ru.efive.dms.uifaces.beans;
 
 import ru.efive.dms.dao.ReportDAOImpl;
-import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
-import ru.efive.uifaces.bean.Pagination;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
+import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForReportTemplate;
 import ru.entity.model.document.ReportTemplate;
 
-import javax.enterprise.context.SessionScoped;
+import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
 
-@Named("reportTemplateList")
-@SessionScoped
-public class ReportTemplateListBean extends AbstractDocumentListHolderBean<ReportTemplate> {
-
-    @Override
-    public Pagination initPagination() {
-        return new Pagination(0, getTotalCount(), 100);
-    }
-
-    @Override
-    protected Sorting initSorting() {
-        return new Sorting("displayName", true);
-    }
-
-    @Override
-    protected int getTotalCount() {
-        int result = 0;
-        try {
-            result = new Long(sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).countDocument(false)).intValue();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    @Override
-    protected List<ReportTemplate> loadDocuments() {
-        List<ReportTemplate> result = new ArrayList<ReportTemplate>();
-        try {
-            result = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).findDocuments(false,
-                    getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public void composeReportTemplate(ReportTemplate reportTemplate) {
-        reportSetupModal.setReportTemplate(reportTemplate);
-        reportSetupModal.show();
-    }
-
-
-    public class ReportSetupModal extends ModalWindowHolderBean {
-
-        public void setReportTemplate(ReportTemplate reportTemplate) {
-            this.reportTemplate = reportTemplate;
-        }
-
-        public ReportTemplate getReportTemplate() {
-            return reportTemplate;
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            reportTemplate = null;
-        }
-
-        private ReportTemplate reportTemplate;
-
-        private static final long serialVersionUID = 686982749044631899L;
-    }
-
-    public ReportSetupModal getReportSetupModal() {
-        return reportSetupModal;
-    }
-
-
-    private ReportSetupModal reportSetupModal = new ReportSetupModal();
-
+@ManagedBean(name="reportTemplateList")
+@ViewScoped
+public class ReportTemplateListBean extends AbstractDocumentLazyDataModelBean<ReportTemplate>{
     @Inject
     @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
+    private transient SessionManagementBean sessionManagement;
 
+    @PostConstruct
+    public void init() {
+        final ReportDAOImpl dao = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO);
+        setLazyModel(new LazyDataModelForReportTemplate(dao));
+    }
 
-    private static final long serialVersionUID = 1023130636261147049L;
 }
