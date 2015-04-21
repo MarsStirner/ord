@@ -400,7 +400,7 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
         return jobPosition;
     }
 
-    public void setJobPosition(Position jobPosition) {
+    public void setJobPosition(final Position jobPosition) {
         this.jobPosition = jobPosition;
     }
 
@@ -408,7 +408,7 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
         return jobDepartment;
     }
 
-    public void setJobDepartment(Department jobDepartment) {
+    public void setJobDepartment(final Department jobDepartment) {
         this.jobDepartment = jobDepartment;
     }
 
