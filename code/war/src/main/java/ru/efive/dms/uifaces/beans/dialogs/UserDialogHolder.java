@@ -3,7 +3,7 @@ package ru.efive.dms.uifaces.beans.dialogs;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForUserInDialogs;
+import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
 import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.Group;

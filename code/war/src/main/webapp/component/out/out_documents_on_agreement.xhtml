@@ -74,10 +74,8 @@
             <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
                 <h:outputText value="#{row.executor.getDescriptionShort()}"/>
             </p:column>
-            <p:column headerText="Адресаты" style="width:12em;">
-                <ui:repeat value="#{row.recipientContragents}" var="element">
-                    <h:outputText value="#{element.fullName}"/><br/>
-                </ui:repeat>
+            <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.fullName}" field="contragent.fullName">
+                <h:outputText value="#{row.contragent.fullName}"/>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
                 <h:outputText value="#{row.form}"/>

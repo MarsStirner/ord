@@ -138,13 +138,11 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     private String erpNumber;
 
     /**
-     * Адресаты -контрагенты
+     * Адресат -контрагент
      */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_contragents",
-            joinColumns = {@JoinColumn(name = "dms_outgoing_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "recipientContragents_id")})
-    private Set<Contragent> recipientContragents;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="contragent_id")
+    private Contragent contragent;
 
     /**
      * Исполнитель
@@ -293,12 +291,12 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.registrationDate = registrationDate;
     }
 
-    public List<Contragent> getRecipientContragents() {
-        return new ArrayList<Contragent>(recipientContragents);
+    public Contragent getContragent() {
+        return contragent;
     }
 
-    public void setRecipientContragents(List<Contragent> recipientContragents) {
-        this.recipientContragents = new HashSet<Contragent>(recipientContragents);
+    public void setContragent(final Contragent contragent) {
+        this.contragent = contragent;
     }
 
     public DeliveryType getDeliveryType() {

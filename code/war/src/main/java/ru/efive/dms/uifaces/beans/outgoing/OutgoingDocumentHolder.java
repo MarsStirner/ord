@@ -9,7 +9,6 @@ import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
-import ru.efive.dms.uifaces.beans.contragent.ContragentListSelectModalBean;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
@@ -379,7 +378,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             context.addMessage(null, MSG_EXECUTOR_NOT_SET);
             result = false;
         }
-        if (getDocument().getRecipientContragents() == null || getDocument().getRecipientContragents().size() == 0) {
+        if (getDocument().getContragent() == null) {
             context.addMessage(null, MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
@@ -636,30 +635,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     public DeliveryTypeSelectModal getDeliveryTypeSelectModal() {
         return deliveryTypeSelectModal;
     }
-
-    /* =================== */
-
-    // END OF MODAL HOLDERS
-
-
-    public ContragentListSelectModalBean getRecipientContragentsSelectModal() {
-        return recipientContragentsSelectModal;
-    }
-
-    private ContragentListSelectModalBean recipientContragentsSelectModal = new ContragentListSelectModalBean() {
-        @Override
-        protected void doSave() {
-            getDocument().setRecipientContragents(getContragents());
-            super.doSave();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getContragentList().setFilter("");
-            setContragents(null);
-        }
-    };
 
     public UserSelectModalBean getExecutorSelectModal() {
         return executorSelectModal;

@@ -149,7 +149,7 @@ public final class WorkflowHelper {
         if (doc.getExecutor() == null) {
             in_result.append("Необходимо выбрать Ответственного исполнителя;").append(System.getProperty("line.separator"));
         }
-        if (doc.getRecipientContragents() == null || doc.getRecipientContragents().size() == 0) {
+        if (doc.getContragent() == null) {
             in_result.append("Необходимо выбрать Адресата;").append(System.getProperty("line.separator"));
         }
         if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
@@ -334,8 +334,8 @@ public final class WorkflowHelper {
         if (doc.getContragent() == null) {
             in_result.append("Необходимо выбрать Корреспондента;").append(System.getProperty("line.separator"));
         }
-        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) && (doc.getRecipientGroups() == null || doc.getRecipientGroups()
-                .size() == 0)) {
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().isEmpty()) && (doc.getRecipientGroups() == null || doc.getRecipientGroups()
+                .isEmpty())) {
             in_result.append("Необходимо выбрать Адресатов;").append(System.getProperty("line.separator"));
         }
         if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
@@ -358,7 +358,7 @@ public final class WorkflowHelper {
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     final StringBuilder in_number = new StringBuilder();
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                    List<Role> in_roles = new ArrayList<Role>();
+                    Set<Role> in_roles = new HashSet<Role>();
                     Role in_office;
                     if (in_nomenclature != null) {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)

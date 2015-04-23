@@ -27,22 +27,19 @@
                             </h:outputLink>
                         </div>
                         <div class="defbutton">
-                            <h:commandLink action="#{out_doc.edit}"
-                                           rendered="#{out_doc.viewState and out_doc.editPermission}">
+                            <h:commandLink action="#{out_doc.edit}" rendered="#{out_doc.viewState and out_doc.editPermission}">
                                 <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                                 Редактировать
                             </h:commandLink>
                         </div>
                         <div class="defbutton">
-                            <h:commandLink action="#{out_doc.save}"
-                                           rendered="#{out_doc.editState or out_doc.createState}">
+                            <h:commandLink action="#{out_doc.save}" rendered="#{out_doc.editState or out_doc.createState}">
                                 <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
                                 Сохранить
                             </h:commandLink>
                         </div>
                         <div class="defbutton">
-                            <h:commandLink action="#{out_doc.delete()}"
-                                           rendered="#{out_doc.editState and out_doc.document.getDocumentStatus().getId() eq 1}">
+                            <h:commandLink action="#{out_doc.delete()}" rendered="#{out_doc.editState and out_doc.document.getDocumentStatus().getId() eq 1}">
                                 <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
                                 Удалить
                                 <f:param name="docAction" value="delete"/>
@@ -50,9 +47,8 @@
                         </div>
                         <div class="defbutton">
                             <e5ui:formPart id="actions_fp">
-                                <h:commandLink
-                                        onclick="actionsModal.clickOpen('actionsModal'); return false;"
-                                        rendered="#{out_doc.viewState and out_doc.executePermission}">
+                                <h:commandLink rendered="#{out_doc.viewState and out_doc.executePermission}"
+                                        onclick="actionsModal.clickOpen('actionsModal'); return false;">
                                     <h:graphicImage value="#{resource['images:button-do.png']}"/>
                                     Действия
                                 </h:commandLink>
@@ -88,10 +84,8 @@
                                             </div>
                                         </div>
                                     </h:panelGroup>
-                                    <h:panelGroup
-                                            rendered="#{out_doc.processorModal.noActionsAvailable or out_doc.processorModal.failureState or out_doc.processorModal.processedState}">
-                                        <h:outputText value="#{out_doc.processorModal.actionResult}"
-                                                      style="padding-left:10px;"/>
+                                    <h:panelGroup rendered="#{out_doc.processorModal.noActionsAvailable or out_doc.processorModal.failureState or out_doc.processorModal.processedState}">
+                                        <h:outputText value="#{out_doc.processorModal.actionResult}" style="padding-left:10px;"/>
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{out_doc.processorModal.processingState}">
                                         <e5ui:include data="#{out_doc.processorModal.processedActivity.document.form}"/>
@@ -141,9 +135,7 @@
 
                         <div class="role">
                             <div class="top">
-								<span>
-                                    <h:outputText value="#{out_doc.document.getUserAccessLevel().value}"/>
-								</span>
+                                <h:outputText value="#{out_doc.document.getUserAccessLevel().value}"/>
                             </div>
                         </div>
                     </div>
@@ -164,12 +156,10 @@
                 <ui:param name="statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN"
                           value="#{out_doc.document.documentStatus.id eq 1 or out_doc.document.documentStatus.id eq 2 or out_doc.document.documentStatus.id eq 3 or out_doc.document.documentStatus.id eq 80}"/>
                 <h:selectOneMenu id="form" value="#{out_doc.document.form}" converter="OutgoingDocumentFormConverter"
-                                 immediate="true"
-                                 rendered="#{out_doc.createState or (out_doc.editState and statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN)}">
+                                rendered="#{out_doc.createState or (out_doc.editState and statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN)}">
                     <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Исходящие документы')}"/>
                 </h:selectOneMenu>
-                <h:outputText value="#{out_doc.document.form}"
-                              rendered="#{out_doc.viewState or (out_doc.editState and not statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN)}"/>
+                <h:outputText value="#{out_doc.document.form}" rendered="#{out_doc.viewState or (out_doc.editState and not statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN)}"/>
                 <h:outputText value=" № #{out_doc.document.registrationNumber}" rendered="#{out_doc.editState or out_doc.viewState}"/>
             </div>
             <div class="title">
@@ -181,7 +171,7 @@
             <h:panelGroup rendered="#{out_doc.forbiddenState}">
                 <div class="name">
                     В доступе отказано.
-                    <h:outputText value="#{out_doc.stateComment}" lang="ru"/>
+                    <h:outputText value="#{out_doc.stateComment}"/>
                 </div>
             </h:panelGroup>
             <h:panelGroup
@@ -194,28 +184,28 @@
             <div class="row">
                 <table class="form_grid">
                     <tr class="row">
-
                         <td class="first">
                             <label>
                                 <span class="title">Автор:</span>
                             </label>
                         </td>
                         <td class="second" colspan="3">
-                            <h:outputText value="#{out_doc.document.author}" converter="PersonConverter"/>
+                            <h:outputText value="#{out_doc.document.author.getDescription()}"/>
                         </td>
                         <td class="third"/>
                         <td class="forth"/>
                     </tr>
                     <h:panelGroup rendered="#{out_doc.viewState}">
                         <tr class="row">
-                            <td class="first"><label> <span class="title">Документ-основание:</span>
-                            </label></td>
+                            <td class="first">
+                                <label>
+                                    <span class="title">Документ-основание:</span>
+                                </label>
+                            </td>
                             <td class="second" colspan="3">
-                                <h:outputLink style="margin-left:5px;" value="#"
-                                              onclick="goToDocumentByUniqueId('#{out_doc.document.reasonDocumentId}');">
+                                <h:outputLink style="margin-left:5px;" value="#" onclick="goToDocumentByUniqueId('#{out_doc.document.reasonDocumentId}');">
                                     <h:graphicImage value="#{resource['images:link.png']}"/>
-                                    <h:outputText
-                                            value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
+                                    <h:outputText value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
                                 </h:outputLink>
                             </td>
                             <td class="third"/>
@@ -226,11 +216,11 @@
                         <tr class="row">
                             <td class="first">
                                 <label>
-    <span class="title">
-											<h:outputLink title="Документ-основание"
-                                                          onclick="reasonDocumentSelectModalVar.clickOpen('reasonDocumentSelectModal'); return false;">
-                                                Документ-основание
-                                            </h:outputLink>
+                                    <span class="title">
+                                        <h:outputLink title="Документ-основание"
+                                                      onclick="reasonDocumentSelectModalVar.clickOpen('reasonDocumentSelectModal'); return false;">
+                                            Документ-основание
+                                        </h:outputLink>
 									</span>
                                 </label>
                                 <e5ui-comp:modalWindow id="reasonDocumentSelectModal"
@@ -242,206 +232,7 @@
                                     <div id="title">Выбор документа основания</div>
                                     <h:panelGroup id="modal_dialogs_container">
                                         <div id="modal_container" style="margin-top: 0;">
-                                            <h:panelGroup
-                                                    rendered="#{not out_doc.reasonDocumentSelectModal.viewTypesAlreadySelected}">
-                                                <div class="wrap" style="height: 200px;">
-                                                    <div class="inner" style="height: 150px;">
-                                                        <e5ui:dataTable id="view_type_select_table" border="0"
-                                                                        cellpadding="0" cellspacing="0"
-                                                                        value="#{out_doc.reasonDocumentSelectModal.viewsType}"
-                                                                        var="row" grouping="false" width="100%">
-                                                            <e5ui:row
-                                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                                    styleClass="#{out_doc.reasonDocumentSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Представления</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row}"/>
-                                                                <h:commandLink id="selectLink" style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                        </e5ui:dataTable>
-                                                    </div>
-                                                </div>
-                                                <div class="e5ui-modal-bottombuttons">
-                                                    <h:commandButton value="Выбрать"
-                                                                     action="#{out_doc.reasonDocumentSelectModal.setViewTypesAlreadySelected(true)}">
-                                                        <f:ajax execute="reasonDocumentSelectModal:view_type_select_table"
-                                                                render=":main_content_form"/>
-                                                    </h:commandButton>
-                                                    <h:button
-                                                            onclick="reasonDocumentSelectModalVar.clickClose(); return false;"
-                                                            value="Отмена"/>
-
-                                                    <div style="clear: both;"/>
-                                                </div>
-                                            </h:panelGroup>
-                                            <h:panelGroup
-                                                    rendered="#{out_doc.reasonDocumentSelectModal.viewTypesAlreadySelected and out_doc.reasonDocumentSelectModal.viewType.equals('Входящие документы') }">
-                                                <div class="searchbar">
-                                                    <h:inputText id="filter_string"
-                                                                 value="#{out_doc.reasonDocumentSelectModal.incomingDocuments.filter}"
-                                                                 style="display:block; float:left; margin-right:10px;"
-                                                                 title="Поиск"/>
-                                                    <h:commandButton value=" "
-                                                                     action="#{out_doc.reasonDocumentSelectModal.incomingDocuments.changePageOffset(0)}"
-                                                                     styleClass="searchbutton">
-                                                        <f:ajax execute="reasonDocumentSelectModal:filter_string"
-                                                                render="reasonDocumentSelectModal:ajaxModal"/>
-                                                    </h:commandButton>
-                                                </div>
-                                                <div class="wrap" style="height: 500px;">
-                                                    <div class="inner" style="height: 500px;">
-                                                        <e5ui:dataTable id="incoming_document_select_table"
-                                                                        border="0" cellpadding="0" cellspacing="0"
-                                                                        value="#{out_doc.reasonDocumentSelectModal.incomingDocuments.documents}"
-                                                                        var="row" grouping="false" width="100%">
-                                                            <e5ui:row
-                                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                                    styleClass="#{out_doc.reasonDocumentSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Поступивший №</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.receivedDocumentNumber}"/>
-                                                                <h:commandLink id="selectLink" style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>от</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.receivedDocumentDate}">
-                                                                    <f:convertDateTime type="date"
-                                                                                       pattern="dd.MM.yyyy"/>
-                                                                </h:outputText>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Краткое содержание</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.shortDescription}"/>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>№ Входящего</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.registrationNumber}"/>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                        </e5ui:dataTable>
-                                                    </div>
-                                                </div>
-                                                <div class="e5ui-modal-bottombuttons">
-                                                    <div style="clear: both;">
-                                                        <h:panelGroup id="reason_in_doc_modal_paging">
-                                                            <e5ui-comp:tablePager id="reason_in_doc_pager"
-                                                                                  documentListHolder="#{in_documents}"
-                                                                                  style="display:inline;"/>
-                                                        </h:panelGroup>
-                                                    </div>
-                                                    <h:button
-                                                            onclick="reasonDocumentSelectModalVar.clickSave(); return false;"
-                                                            value="Выбрать"/>
-                                                    <h:button
-                                                            onclick="reasonDocumentSelectModalVar.clickClose(); return false;"
-                                                            value="Отмена"/>
-                                                </div>
-                                            </h:panelGroup>
-                                            <h:panelGroup
-                                                    rendered="#{out_doc.reasonDocumentSelectModal.viewTypesAlreadySelected and out_doc.reasonDocumentSelectModal.viewType.equals('Обращения граждан')}">
-                                                <div class="searchbar">
-                                                    <h:inputText id="request_filter_string"
-                                                                 value="#{out_doc.reasonDocumentSelectModal.requestDocuments.filter}"
-                                                                 style="display:block; float:left; margin-right:10px;"
-                                                                 title="Поиск"/>
-                                                    <h:commandButton value=" "
-                                                                     action="#{out_doc.reasonDocumentSelectModal.requestDocuments.changePageOffset(0)}"
-                                                                     styleClass="searchbutton">
-                                                        <f:ajax execute="reasonDocumentSelectModal:request_filter_string"
-                                                                render="reasonDocumentSelectModal:ajaxModal"/>
-                                                    </h:commandButton>
-                                                </div>
-                                                <div class="wrap" style="height: 500px;">
-                                                    <div class="inner" style="height: 500px;">
-                                                        <e5ui:dataTable id="request_document_select_table"
-                                                                        border="0" cellpadding="0" cellspacing="0"
-                                                                        value="#{out_doc.reasonDocumentSelectModal.requestDocuments.documents}"
-                                                                        var="row" grouping="false" width="100%">
-                                                            <e5ui:row
-                                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                                    styleClass="#{out_doc.reasonDocumentSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Поступивший №</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.receivedDocumentNumber}"/>
-                                                                <h:commandLink id="selectLink" style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>от</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.receivedDocumentDate}">
-                                                                    <f:convertDateTime type="date"
-                                                                                       pattern="dd.MM.yyyy"/>
-                                                                </h:outputText>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Краткое содержание</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.shortDescription}"/>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>№ Обращения</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.registrationNumber}"/>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{not out_doc.reasonDocumentSelectModal.selected(row)}"
-                                                                               action="#{out_doc.reasonDocumentSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                        </e5ui:dataTable>
-
-                                                    </div>
-
-                                                </div>
-                                                <div class="e5ui-modal-bottombuttons">
-                                                    <div style="clear: both;">
-                                                        <h:panelGroup id="reason_request_doc_modal_paging">
-                                                            <e5ui-comp:tablePager id="reason_request_doc_pager"
-                                                                                  documentListHolder="#{request_documents}"
-                                                                                  style="display:inline;"/>
-                                                        </h:panelGroup>
-                                                    </div>
-                                                    <h:button
-                                                            onclick="reasonDocumentSelectModalVar.clickSave(); return false;"
-                                                            value="Выбрать"/>
-                                                    <h:button
-                                                            onclick="reasonDocumentSelectModalVar.clickClose(); return false;"
-                                                            value="Отмена"/>
-                                                </div>
-                                            </h:panelGroup>
+                                            TODO
                                         </div>
                                     </h:panelGroup>
                                 </e5ui-comp:modalWindow>
@@ -450,10 +241,9 @@
                                 <h:outputLink id="reason_document" style="margin-left:5px;" value="#"
                                               onclick="goToDocumentByLinkId('#{out_doc.document.reasonDocumentId}');">
                                     <h:graphicImage value="#{resource['images:link.png']}"/>
-                                    <h:outputText
-                                            value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
-                                </h:outputLink
-                                        ></td>
+                                    <h:outputText value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
+                                </h:outputLink>
+                            </td>
                             <td class="third"/>
                             <td class="fourth"/>
                         </tr>
@@ -461,8 +251,7 @@
                 </table>
             </div>
             <p:tabView widgetVar="outgoingDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
-                <p:tab title="Реквизиты"
-                       rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
+                <p:tab title="Реквизиты" rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
                     <h:panelGroup rendered="#{out_doc.viewState}">
                         <div class="row">
                             <table class="form_grid">
@@ -485,8 +274,7 @@
                                         </label>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <h:outputText value="#{out_doc.document.controller}"
-                                                      converter="PersonConverter"/>
+                                        <h:outputText value="#{out_doc.document.controller.getDescription()}"/>
                                     </td>
                                 </tr>
                                 <tr class="row">
@@ -496,7 +284,7 @@
                                         </label>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <h:outputText value="#{out_doc.document.executor}" converter="PersonConverter"/>
+                                        <h:outputText value="#{out_doc.document.executor.getDescription()}"/>
                                     </td>
                                 </tr>
                                 <tr class="row">
@@ -512,20 +300,11 @@
                                 <tr class="row">
                                     <td class="first">
                                         <label>
-                                            <span class="title">Адресаты:</span>
+                                            <span class="title">Адресат:</span>
                                         </label>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <div style="overflow-y: scroll; height: 60px">
-                                            <label>
-                                                <ui:repeat value="#{out_doc.document.recipientContragents}"
-                                                           var="element">
-                                                    <h:outputText value="#{element}" converter="ContragentConverter"
-                                                                  class="width"/>
-                                                    <br/>
-                                                </ui:repeat>
-                                            </label>
-                                        </div>
+                                        <h:outputText value="#{out_doc.document.contragent.fullName}" class="width"/>
                                     </td>
                                 </tr>
                                 <tr class="row">
@@ -695,95 +474,17 @@
                                         </label>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <h:inputText id="shortDescription" value="#{out_doc.document.shortDescription}"
-                                                     class="wide" immediate="true"/>
+                                        <p:inputText id="shortDescription" value="#{out_doc.document.shortDescription}" class="wide"/>
                                     </td>
                                 </tr>
                                 <tr class="row">
                                     <td class="first">
-                                        <label>
-            <span class="title">
-                <h:outputLink title="Адресаты:"
-                              onclick="contragentListSelectModalVar.clickOpen('recipientContragentsSelectModal'); return false;">
-                    Адресаты
-                </h:outputLink>
-			</span>
-                                        </label>
-                                        <e5ui-comp:modalWindow id="recipientContragentsSelectModal"
-                                                               modalWindowHolder="#{out_doc.recipientContragentsSelectModal}"
-                                                               render="recipients"
-                                                               execute="select_table" showButtons="false"
-                                                               style="width: 500px;"
-                                                               widgetVar="contragentListSelectModalVar">
-                                            <div id="title">Выбор адресатов</div>
-                                            <div id="modal_container" style="margin-top: 0;">
-                                                <div class="searchbar">
-                                                    <h:inputText id="filter_string"
-                                                                 value="#{out_doc.recipientContragentsSelectModal.contragentList.filter}"
-                                                                 style="display:block; float:left; margin-right:10px;"
-                                                                 title="Поиск"/>
-                                                    <h:commandButton value=" "
-                                                                     action="#{out_doc.recipientContragentsSelectModal.contragentList.changePageOffset(0)}"
-                                                                     styleClass="searchbutton">
-                                                        <f:ajax execute="recipientContragentsSelectModal:filter_string"
-                                                                render="recipientContragentsSelectModal:ajaxModal recipientContragentsSelectModal:modal_paging"/>
-                                                    </h:commandButton>
-                                                </div>
-                                                <div class="wrap" style="height: 300px;">
-                                                    <div class="inner" style="height: 300px;">
-                                                        <e5ui:dataTable id="select_table" border="0"
-                                                                        cellpadding="0" cellspacing="0"
-                                                                        value="#{out_doc.recipientContragentsSelectModal.contragentList.documents}"
-                                                                        var="row" grouping="false" width="100%">
-                                                            <e5ui:row
-                                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                                    styleClass="#{out_doc.recipientContragentsSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Адресаты</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row}"
-                                                                              converter="ContragentConverter"/>
-                                                                <h:commandLink id="selectLink" style="display: none;"
-                                                                               rendered="#{not out_doc.recipientContragentsSelectModal.selected(row)}"
-                                                                               action="#{out_doc.recipientContragentsSelectModal.select(row)}"/>
-                                                                <h:commandLink id="unselectLink" style="display: none;"
-                                                                               rendered="#{out_doc.recipientContragentsSelectModal.selected(row)}"
-                                                                               action="#{out_doc.recipientContragentsSelectModal.unselect(row)}"/>
-                                                            </e5ui:column>
-                                                        </e5ui:dataTable>
-                                                    </div>
-                                                </div>
-                                                <div style="clear: both;">
-                                                    <h:panelGroup id="modal_paging">
-                                                        <e5ui-comp:tablePager id="pager"
-                                                                              documentListHolder="#{out_doc.recipientContragentsSelectModal.contragentList}"/>
-                                                    </h:panelGroup>
-                                                </div>
-                                            </div>
-                                            <div class="e5ui-modal-bottombuttons">
-                                                <h:button
-                                                        onclick="contragentListSelectModalVar.clickSave(); return false;"
-                                                        value="Выбрать"/>
-                                                <h:button
-                                                        onclick="contragentListSelectModalVar.clickClose(); return false;"
-                                                        value="Отмена"/>
-                                            </div>
-                                        </e5ui-comp:modalWindow>
+                                        <p:commandLink actionListener="#{out_doc.chooseContragent}" ajax="true" value="Адресат">
+                                            <p:ajax event="dialogReturn" listener="#{out_doc.onContragentChosen}" update="contragent"/>
+                                        </p:commandLink>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <h:panelGroup id="recipients">
-                                            <div style="overflow-y: scroll; height: 60px">
-                                                <label>
-                                                    <ui:repeat value="#{out_doc.document.recipientContragents}"
-                                                               var="element">
-                                                        <h:outputText value="#{element}" converter="ContragentConverter"
-                                                                      class="width"/>
-                                                        <br/>
-                                                    </ui:repeat>
-                                                </label>
-                                            </div>
-                                        </h:panelGroup>
+                                        <h:outputText value="#{out_doc.document.contragent.fullName}" class="width"/>
                                     </td>
                                 </tr>
                                 <tr class="row">

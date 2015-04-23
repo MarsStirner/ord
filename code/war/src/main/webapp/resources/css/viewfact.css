@@ -4,5 +4,5 @@
 }
 /*Стиль для непросмотренных документов*/
 .unvisited{
-    font-weight: bold;
+    font-weight: bold !important;
 }

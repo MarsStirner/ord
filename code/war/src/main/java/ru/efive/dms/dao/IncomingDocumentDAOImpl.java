@@ -117,6 +117,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         result.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("recipientGroups.members","recipientGroups.members", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("userAccessLevel", "userAccessLevel", CriteriaSpecification.INNER_JOIN);

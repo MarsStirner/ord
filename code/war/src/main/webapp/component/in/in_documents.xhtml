@@ -26,28 +26,25 @@
             <h:commandLink action="#{in_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="mainTable"/>
+                <f:ajax render="documentTable"/>
             </h:commandLink>
         </div>
     </ui:define>
 
     <ui:define name="contentSearch">
         <div id="searchbar" class="main_searchbar">
-            <p:inputText id="filter_string" value="#{in_documents.filter}"
+            <p:inputText id="filterString" value="#{in_documents.filter}"
                          style="display:block; float:left; width:60%; margin:2px 10px;"
                          title="Поиск"/>
-            <p:commandButton value=" " action="#{in_documents.applyFilter()}" styleClass="searchbutton"
-                             process="@this filter_string" update="mainTable"/>
-            <h:outputLink target="_blank" value="/component/in/in_document_search_form.xhtml"
-                          title="Перейти к форме расширенного поиска"
-                          style="margin: 0 20px;">
+            <p:commandButton value=" " action="#{in_documents.applyFilter()}" styleClass="searchbutton" process="@this filterString" update="documentTable"/>
+            <h:outputLink target="_blank" value="/component/in/in_document_search_form.xhtml" title="Перейти к форме расширенного поиска">
                 Расширенный поиск
             </h:outputLink>
         </div>
     </ui:define>
 
     <ui:define name="contentTable">
-        <p:dataTable id="main_data_tbl"
+        <p:dataTable id="documentTable"
                      paginator="true"
                      rows="100"
                      currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
@@ -57,7 +54,7 @@
                      value="#{in_documents.lazyModel}"
                      var="row"
                      lazy="true"
-                     widgetVar="documentTableVar"
+                     widgetVar="documentTableWidget"
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
@@ -78,8 +75,8 @@
                 <h:outputText value="#{row.contragent.shortName}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
-                <ui:repeat value="#{row.executors}" var="element">
-                        <h:outputText value="#{element.getDescriptionShort()}"/><br/>
+                <ui:repeat value="#{row.executorsList}" var="executor">
+                        <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
@@ -96,7 +93,7 @@
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+            <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>
     </ui:define>
 

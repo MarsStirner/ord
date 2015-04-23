@@ -4,9 +4,9 @@ import org.apache.commons.lang.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
-import ru.efive.sql.dao.user.UserDAOHibernate;
-import ru.entity.model.user.User;
+import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForGroup;
+import ru.efive.sql.dao.user.GroupDAOHibernate;
+import ru.entity.model.user.Group;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -14,11 +14,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
+import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -26,37 +24,33 @@ import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name = "multipleUserDialog")
+@ManagedBean(name = "multipleGroupDialog")
 @ViewScoped
-public class MultipleUserDialogHolder extends AbstractDialog<List<User>> implements Serializable {
+public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> implements Serializable {
 
-    public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON_LIST";
+    public static final String DIALOG_SESSION_KEY = "DIALOG_GROUP_LIST";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";
 
-    public static final String DIALOG_TITLE_VALUE_EXECUTORS = "EXECUTORS_TITLE";
     public static final String DIALOG_TITLE_VALUE_RECIPIENTS = "RECIPIENTS_TITLE";
-    public static final String DIALOG_TITLE_VALUE_AUTHOR = "AUTHOR_TITLE";
-    public static final String DIALOG_TITLE_VALUE_PERSON_READERS = "PERSON_READERS_TITLE";
-    public static final String DIALOG_TITLE_VALUE_PERSON_EDITORS = "PERSON_EDITORS_TITLE";
 
     @EJB(name = "indexManagement")
     private IndexManagementBean indexManagementBean;
 
-    private LazyDataModelForUserInDialogs lazyModel;
+    private LazyDataModelForGroup lazyModel;
 
     //TODO fix with class extends after change to JSF 2.2
-    private List<User> selection = new ArrayList<User>();
+    private List<Group> selection = new ArrayList<Group>();
 
 
     @PostConstruct
     public void init() {
         logger.info("Initialize new MultiplePersonSelectDialog");
-        final UserDAOHibernate userDao = (UserDAOHibernate) indexManagementBean.getContext().getBean(USER_DAO);
+        final GroupDAOHibernate groupDao = (GroupDAOHibernate) indexManagementBean.getContext().getBean(GROUP_DAO);
         final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForUserInDialogs(userDao);
+        lazyModel = new LazyDataModelForGroup(groupDao);
     }
 
     /**
@@ -69,19 +63,11 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
     public String initializeTitle(Map<String, String> requestParameterMap) {
         final String title = requestParameterMap.get(DIALOG_TITLE_GET_PARAM_KEY);
         if (StringUtils.isNotEmpty(title)) {
-            if (DIALOG_TITLE_VALUE_EXECUTORS.equalsIgnoreCase(title)) {
-                return "Выберите исполнителей";
-            } else if (DIALOG_TITLE_VALUE_RECIPIENTS.equalsIgnoreCase(title)) {
-                return "Выберите адресатов";
-            } else if (DIALOG_TITLE_VALUE_AUTHOR.equalsIgnoreCase(title)) {
-                return "Выберите авторов";
-            } else if (DIALOG_TITLE_VALUE_PERSON_READERS.equalsIgnoreCase(title)) {
-                return "Выберите пользователей-читателей";
-            } else if (DIALOG_TITLE_VALUE_PERSON_EDITORS.equalsIgnoreCase(title)) {
-                return "Выберите пользователей-редакторов";
+            if (DIALOG_TITLE_VALUE_RECIPIENTS.equalsIgnoreCase(title)) {
+                return "Выберите группы - адресаты";
             }
         }
-        return "Выберите пользователей";
+        return "Выберите группы";
     }
 
     /**
@@ -91,7 +77,11 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
      */
     @Override
     public void closeDialog(boolean withResult) {
-        RequestContext.getCurrentInstance().closeDialog(withResult ? selection : null);
+        if(selection != null && !selection.isEmpty()){
+            RequestContext.getCurrentInstance().closeDialog(withResult ? new HashSet<Group>(selection) : null);
+        } else {
+            RequestContext.getCurrentInstance().closeDialog(null);
+        }
     }
 
     /**
@@ -99,14 +89,14 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
      */
     @Override
     public void initializePreSelected() {
-        final List<User> personList = (List<User>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
+        final Set<Group> groupSet = (Set<Group>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
-        if (personList != null) {
-            setSelection(personList);
+        if (groupSet != null && !groupSet.isEmpty()) {
+            setSelection(new ArrayList<Group>(groupSet));
         }
     }
 
-    public LazyDataModel<User> getLazyModel() {
+    public LazyDataModel<Group> getLazyModel() {
         return lazyModel;
     }
 
@@ -118,12 +108,12 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> impleme
         lazyModel.setFilter(filter);
     }
 
-    public List<User> getSelection() {
+    public List<Group> getSelection() {
         return selection;
     }
 
 
-    public void setSelection(List<User> selected) {
+    public void setSelection(List<Group> selected) {
         this.selection = selected;
     }
 

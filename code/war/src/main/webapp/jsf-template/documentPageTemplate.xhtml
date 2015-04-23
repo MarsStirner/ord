@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<h:head>
+    <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
+    <ui:insert name="headContent"/>
+    <ui:insert name="pageTitle">
+        <title>Документооборот ФНКЦ ДГОИ</title>
+    </ui:insert>
+</h:head>
+<!--TODO дописать шаблон страницы документа-->
+<h:body id="pageBody">
+    <!-- Блок объявления параметров -->
+    <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
+    <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
+    <ui:param name="isRecorder" value="#{sessionManagement.isRecorder()}"/>
+    <ui:param name="isOfficeManager" value="#{sessionManagement.isOfficeManager()}"/>
+    <ui:param name="isRequestManager" value="#{sessionManagement.isRequestManager()}"/>
+    <ui:param name="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
+    <ui:param name="isOuter" value="#{sessionManagement.isOuter()}"/>
+    <ui:param name="isHr" value="#{sessionManagement.isHr()}"/>
+    <ui:param name="isFilling" value="#{sessionManagement.isFilling()}"/>
+    <p:panel id="TOOLBAR_PNL" widgetVar="toolbarPanelWidget">
+        <ui:insert name="TOOLBAR_BTNS">
+            <ui:insert name="HOME_BTN">
+                <h:outputLink value="/component/in/in_documents.xhtml">
+                    <h:graphicImage value="#{resource['images:home.png']}"/>
+                </h:outputLink>
+            </ui:insert>
+            <ui:insert name="EDIT_BTN">
+                <p:commandLink update="@all">
+                    <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
+                    Редактировать
+                </p:commandLink>
+            </ui:insert>
+            <ui:insert name="CNC_BTN">
+                <p:commandLink update="@all">
+                    <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
+                    Отменить
+                </p:commandLink>
+            </ui:insert>
+            <ui:insert name="SAVE_BTN">
+                <p:commandLink update="@all">
+                    <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                    Сохранить
+                </p:commandLink>
+            </ui:insert>
+            <ui:insert name="ACT_BTN">
+                <p:commandLink update="@all">
+                    <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                    Сохранить
+                </p:commandLink>
+            </ui:insert>
+        </ui:insert>
+    </p:panel>
+</h:body>
+
+</html>

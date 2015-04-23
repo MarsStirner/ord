@@ -42,7 +42,7 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
         final LocalDate currentDate = new LocalDate();
         detachedCriteria.add(
                 Restrictions.sqlRestriction(
-                        "DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()
+                        "DATE_FORMAT(registrationDate, '%Y') like lower(?)", currentDate.getYear() + "%", new StringType()
                 )
         );
         return getHibernateTemplate().findByCriteria(detachedCriteria);
@@ -87,7 +87,7 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
         result.createAlias("controller", "controller", LEFT_JOIN);
         result.createAlias("form", "form", LEFT_JOIN);
         result.createAlias("executor", "executor", LEFT_JOIN);
-        result.createAlias("recipientContragents", "recipientContragents", LEFT_JOIN);
+        result.createAlias("contragent", "contragent", LEFT_JOIN);
         return result;
     }
 
@@ -179,7 +179,7 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
             } else if (CONTRAGENT_KEY.equals(key)) {
                 try {
                     final Contragent contragent = (Contragent) value;
-                    conjunction.add(Restrictions.eq("recipientContragents.id", contragent.getId()));
+                    conjunction.add(Restrictions.eq("contragent.id", contragent.getId()));
                 } catch (ClassCastException e) {
                     logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT Contragent. Non critical, continue...", key, value);
                 }
@@ -211,8 +211,8 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
         }
         final Disjunction disjunction = Restrictions.disjunction();
         disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("recipientContragents.shortName", filter, MatchMode.ANYWHERE));
-        disjunction.add(Restrictions.ilike("recipientContragents.fullName", filter, MatchMode.ANYWHERE));
+        disjunction.add(Restrictions.ilike("contragent.shortName", filter, MatchMode.ANYWHERE));
+        disjunction.add(Restrictions.ilike("contragent.fullName", filter, MatchMode.ANYWHERE));
         disjunction.add(createDateLikeTextRestriction("registrationDate", filter));
         disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
 

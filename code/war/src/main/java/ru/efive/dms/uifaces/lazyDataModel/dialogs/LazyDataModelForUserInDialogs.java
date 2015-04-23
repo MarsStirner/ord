@@ -1,6 +1,7 @@
-package ru.efive.dms.uifaces.lazyDataModel;
+package ru.efive.dms.uifaces.lazyDataModel.dialogs;
 
 import org.primefaces.model.SortOrder;
+import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
 import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;

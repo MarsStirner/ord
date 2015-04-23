@@ -1,6 +1,9 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
@@ -10,12 +13,8 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.contragent.ContragentListHolderBean;
-import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
+import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
-import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.dms.uifaces.beans.user.UserUnitsSelectModalBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.security.PermissionChecker;
@@ -35,12 +34,10 @@ import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.*;
@@ -48,15 +45,13 @@ import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ManagedBean(name = "in_doc")
 @ViewScoped
-public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument, Integer> implements Serializable {
-    private static final long serialVersionUID = 4716264614655470705L;
-
+public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument, Integer> {
     //Именованный логгер (INCOMING_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
-    private boolean isUsersDialogSelected = true;
-    private boolean isGroupsDialogSelected = false;
+
     //TODO ACL
     private Permissions permissions;
+
     private transient String stateComment;
     @Inject
     @Named("sessionManagement")
@@ -64,219 +59,192 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Inject
     @Named("fileManagement")
     private FileManagementBean fileManagement;
-    @ManagedProperty("#{contragentList}")
-    private ContragentListHolderBean contragentList;
     @Inject
     @Named("documentTaskTree")
     private DocumentTaskTreeHolder taskTreeHolder;
     //Для проверки прав доступа
     @EJB
     private PermissionChecker permissionChecker;
+
     private List<Attachment> attachments = new ArrayList<Attachment>();
     private List<byte[]> files = new ArrayList<byte[]>();
-    private ContragentSelectModal contragentSelectModal = new ContragentSelectModal();
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
-    private UserSelectModalBean controllerSelectModal = new UserSelectModalBean() {
-        @Override
-        protected void doSave() {
-            getDocument().setController(getUser());
-            super.doSave();
-        }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUser(null);
-        }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    };
-    private UserListSelectModalBean executorsSelectModal = new UserListSelectModalBean() {
-
-        @Override
-        protected void doSave() {
-            getDocument().setExecutors(getUsers());
-            super.doSave();
+    //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseController() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
+        final User preselected = getDocument().getController();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUsers(null);
-        }
+    public void onControllerChosen(SelectEvent event) {
+        final User selected = (User) event.getObject();
+        getDocument().setController(selected);
+        LOGGER.info("Choose controller From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getExecutors() != null) {
-                ArrayList<User> tmpList = new ArrayList<User>();
-                tmpList.addAll(getDocument().getExecutors());
-                setUsers(tmpList);
-            }
+    //Выбора контрагента ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseContragent() {
+        final Contragent preselected = getDocument().getContragent();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-    };
-    private UserListSelectModalBean recipientUsersSelectModal = new UserListSelectModalBean() {
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
+    }
 
-        @Override
-        protected void doSave() {
-            getDocument().setRecipientUsers(getUsers());
-            super.doSave();
-        }
+    public void onContragentChosen(SelectEvent event) {
+        final Contragent selected = (Contragent) event.getObject();
+        getDocument().setContragent(selected);
+        LOGGER.info("Choose contragent From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUsers(null);
+    // Выбора адресатов-пользователей /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseRecipients() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_RECIPIENTS));
+        final List<User> preselected = getDocument().getRecipientUserList();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getRecipientUsers() != null) {
-                ArrayList<User> tmpList = new ArrayList<User>();
-                tmpList.addAll(getDocument().getRecipientUsers());
-                setUsers(tmpList);
-            }
+    public void onRecipientsChosen(SelectEvent event) {
+        final List<User> selected = (List<User>) event.getObject();
+        if(selected != null && !selected.isEmpty()) {
+            getDocument().setRecipientUsers(new HashSet<User>(selected));
+        } else {
+            getDocument().getRecipientUsers().clear();
         }
-    };
-    private UserUnitsSelectModalBean recipientUnitsSelectModal = new UserUnitsSelectModalBean() {
+        LOGGER.info("Choose recipients From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doSave() {
-            getDocument().setRecipientGroups(new HashSet<Group>(getGroups()));
-            getDocument().setRecipientUsers(getUsers());
-            super.doSave();
+    // Выбора адресатов-групп /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseRecipientGroups() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleGroupDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleGroupDialogHolder.DIALOG_TITLE_VALUE_RECIPIENTS));
+        final Set<Group> preselected = getDocument().getRecipientGroups();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleGroupDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleGroupDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getRecipientGroups() != null) {
-                ArrayList<Group> tmpGroupList = new ArrayList<Group>();
-                tmpGroupList.addAll(getDocument().getRecipientGroups());
-                setGroups(tmpGroupList);
-            }
-            if (getDocument() != null && getDocument().getRecipientUsers() != null) {
-                ArrayList<User> tmpUserList = new ArrayList<User>();
-                tmpUserList.addAll(getDocument().getRecipientUsers());
-                setUsers(tmpUserList);
-            }
-        }
+    public void onRecipientGroupsChosen(SelectEvent event) {
+        final Set<Group> selected = (Set<Group>) event.getObject();
+        getDocument().setRecipientGroups(selected);
+        LOGGER.info("Choose recipientGroups From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            setUsers(null);
-            setGroups(null);
-        }
-    };
-    private UserListSelectModalBean personReadersPickList = new UserListSelectModalBean() {
 
-        @Override
-        protected void doSave() {
-            getDocument().setPersonReaders(getUsers());
-            super.doSave();
+    // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseExecutors() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_EXECUTORS));
+        final List<User> preselected = getDocument().getExecutorsList();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUsers(null);
+    public void onExecutorsChosen(SelectEvent event) {
+        final List<User> selected = (List<User>) event.getObject();
+        if(selected != null && !selected.isEmpty()) {
+            getDocument().setExecutors(new HashSet<User>(selected));
+        }  else {
+            getDocument().getExecutors().clear();
         }
+        LOGGER.info("Choose executors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getPersonReaders() != null) {
-                ArrayList<User> tmpList = new ArrayList<User>(getDocument().getPersonReaders());
-                setUsers(tmpList);
-            }
+    // Выбора пользователей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
+    public void choosePersonReaders() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_PERSON_READERS));
+        final List<User> preselected = getDocument().getPersonReadersList();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-    };
-    private UserListSelectModalBean personEditorsPickList = new UserListSelectModalBean() {
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doSave() {
-            getDocument().setPersonEditors(getUsers());
-            super.doSave();
+    public void onPersonReadersChosen(SelectEvent event) {
+        final List<User> selected = (List<User>) event.getObject();
+        if(selected != null && !selected.isEmpty()) {
+            getDocument().setPersonReaders(new HashSet<User>(selected));
+        } else {
+            getDocument().getPersonReaders().clear();
         }
+        LOGGER.info("Choose personReaders From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUsers(null);
+    // Выбора пользователей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
+    public void choosePersonEditors() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_PERSON_EDITORS));
+        final List<User> preselected = getDocument().getPersonEditorsList();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getPersonEditors() != null) {
-                ArrayList<User> tmpList = new ArrayList<User>();
-                tmpList.addAll(getDocument().getPersonEditors());
-                setUsers(tmpList);
-            }
+    public void onPersonEditorsChosen(SelectEvent event) {
+        final List<User> selected = (List<User>) event.getObject();
+        if(selected != null && !selected.isEmpty()) {
+            getDocument().setPersonEditors(new HashSet<User>(selected));
+        } else {
+            getDocument().getPersonEditors().clear();
         }
-    };
-    private RoleListSelectModalBean roleReadersPickList = new RoleListSelectModalBean() {
+        LOGGER.info("Choose personEditors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doSave() {
-            getDocument().setRoleReaders(getRoles());
-            super.doSave();
+    // Выбора ролей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseRoleReaders() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleRoleDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleRoleDialogHolder.DIALOG_TITLE_VALUE_READERS));
+        final Set<Role> preselected = getDocument().getRoleReaders();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleRoleDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleRoleDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getRoleList().setFilter("");
-            setRoles(null);
-        }
+    public void onRoleReadersChosen(SelectEvent event) {
+        final Set<Role> selected = (Set<Role>) event.getObject();
+        getDocument().setRoleReaders(selected);
+        LOGGER.info("Choose roleReaders From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getRoleReaders() != null) {
-                ArrayList<Role> tmpList = new ArrayList<Role>();
-                tmpList.addAll(getDocument().getRoleReaders());
-                setRoles(tmpList);
-            }
+    // Выбора ролей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseRoleEditors() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleRoleDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleRoleDialogHolder.DIALOG_TITLE_VALUE_EDITORS));
+        final Set<Role> preselected = getDocument().getRoleEditors();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleRoleDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-    };
-    private RoleListSelectModalBean roleEditorsPickList = new RoleListSelectModalBean() {
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleRoleDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
 
-        @Override
-        protected void doSave() {
-            getDocument().setRoleEditors(getRoles());
-            super.doSave();
-        }
+    public void onRoleEditorsChosen(SelectEvent event) {
+        final Set<Role> selected = (Set<Role>) event.getObject();
+        getDocument().setRoleEditors(selected);
+        LOGGER.info("Choose roleEditors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
 
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getRoleList().setFilter("");
-            setRoles(null);
-        }
 
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getRoleEditors() != null) {
-                ArrayList<Role> tmpList = new ArrayList<Role>();
-                tmpList.addAll(getDocument().getRoleEditors());
-                setRoles(tmpList);
-            }
-        }
-    };
     private ProcessorModalBean processorModal = new ProcessorModalBean() {
 
         @Override
@@ -324,16 +292,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     public boolean isExecutePermission() {
         return permissions.hasPermission(EXECUTE);
     }
-
-    public ContragentListHolderBean getContragentList() {
-        return contragentList;
-    }
-
-    public void setContragentList(ContragentListHolderBean contragentList) {
-        this.contragentList = contragentList;
-    }
-
-    // FILES
 
     @Override
     protected boolean deleteDocument() {
@@ -552,8 +510,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         return permissions.hasPermission(WRITE);
     }
 
-    /////////////////// Injected beans
-
     @Override
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
@@ -565,15 +521,13 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     @Override
     public boolean isCanView() {
-        if (!permissions.hasPermission(READ)) {
+        if (permissions==null || !permissions.hasPermission(READ)) {
             setStateComment("Доступ запрещен");
             LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+            return false;
         }
-        return permissions.hasPermission(READ);
+        return true;
     }
-
-
-    // MODAL HOLDERS
 
     @Override
     public String delete() {
@@ -611,8 +565,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         if (user.getCurrentUserAccessLevel() != null && docAccessLevel.getLevel() > user.getCurrentUserAccessLevel().getLevel()) {
             setState(STATE_FORBIDDEN);
             setStateComment("Уровень допуска к документу [" + docAccessLevel.getValue() + "] выше вашего уровня допуска.");
-            LOGGER.warn(
-                    "Document[{}] has higher accessLevel[{}] then user[{}]",
+            LOGGER.warn("Document[{}] has higher accessLevel[{}] then user[{}]",
                     document.getId(),
                     docAccessLevel.getValue(),
                     user.getCurrentUserAccessLevel() != null ? user.getCurrentUserAccessLevel().getValue() : "null"
@@ -701,8 +654,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         }
     }
 
-    /* =================== */
-
     public void updateAttachments() {
         if (getDocumentId() != null && getDocumentId() != 0) {
             attachments = fileManagement.getFilesByParentId("incoming_" + getDocumentId());
@@ -735,9 +686,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             setDocument(sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).save(document));
         }
     }
-    // END OF MODAL HOLDERS
-
-    /* =================== */
 
     public List<String> getRelatedDocumentsUniqueId() {
         List<String> ids = new ArrayList<String>();
@@ -749,7 +697,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 ids.add(out_doc.getUniqueId());
             }
         }
-
         return ids;
     }
 
@@ -833,70 +780,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         versionHistoryModal.show();
     }
 
-    public ContragentSelectModal getContragentSelectModal() {
-        return contragentSelectModal;
-    }
-
-    public UserListSelectModalBean getExecutorsSelectModal() {
-        return executorsSelectModal;
-    }
-
-    public UserSelectModalBean getControllerSelectModal() {
-        return controllerSelectModal;
-    }
-
-    public UserListSelectModalBean getRecipientUsersSelectModal() {
-        return recipientUsersSelectModal;
-    }
-
-    public UserListSelectModalBean getPersonReadersPickList() {
-        return personReadersPickList;
-    }
-
-    public UserListSelectModalBean getPersonEditorsPickList() {
-        return personEditorsPickList;
-    }
-
-    public RoleListSelectModalBean getRoleReadersPickList() {
-        return roleReadersPickList;
-    }
-
-    public RoleListSelectModalBean getRoleEditorsPickList() {
-        return roleEditorsPickList;
-    }
 
     public ProcessorModalBean getProcessorModal() {
         return processorModal;
-    }
-
-    public UserUnitsSelectModalBean getRecipientUnitsSelectModal() {
-        return recipientUnitsSelectModal;
-    }
-
-    public void setRecipientUnitsSelectModal(UserUnitsSelectModalBean recipientUnitsSelectModal) {
-        this.recipientUnitsSelectModal = recipientUnitsSelectModal;
-    }
-
-    public boolean isUsersDialogSelected() {
-        return isUsersDialogSelected;
-    }
-
-    public void setUsersDialogSelected(boolean isUsersDialogSelected) {
-        if (isUsersDialogSelected) {
-            this.isUsersDialogSelected = true;
-            this.isGroupsDialogSelected = false;
-        }
-    }
-
-    public boolean isGroupsDialogSelected() {
-        return isGroupsDialogSelected;
-    }
-
-    public void setGroupsDialogSelected(boolean isGroupsDialogSelected) {
-        if (isGroupsDialogSelected) {
-            this.isGroupsDialogSelected = true;
-            this.isUsersDialogSelected = false;
-        }
     }
 
     public String getStateComment() {
@@ -922,7 +808,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         public boolean isMajorVersion() {
             return majorVersion;
-        }        @Override
+        }
+
+        @Override
         protected void doShow() {
             super.doShow();
             setMajorVersion(false);
@@ -937,14 +825,13 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 versionAttachment(fileManagement.getDetails(), attachment, majorVersion);
             }
             versionAppenderModal.save();
-        }        @Override
+        }
+
+        @Override
         protected void doHide() {
             super.doHide();
             attachment = null;
         }
-
-
-
     }
 
     public class VersionHistoryModal extends ModalWindowHolderBean {
@@ -958,7 +845,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         public void setAttachment(Attachment attachment) {
             this.attachment = attachment;
-        }        @Override
+        }
+
+        @Override
         protected void doShow() {
             super.doShow();
             versionList = fileManagement.getVersionHistory(attachment);
@@ -966,53 +855,13 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
         public List<Revision> getVersionList() {
             return versionList == null ? new ArrayList<Revision>() : versionList;
-        }        @Override
+        }
+
+        @Override
         protected void doHide() {
             super.doHide();
             versionList = null;
             attachment = null;
         }
-
-
-
-
-    }
-
-    public class ContragentSelectModal extends ModalWindowHolderBean {
-
-        private static final long serialVersionUID = -5852388924786285818L;
-        private Contragent contragent;
-
-        public ContragentListHolderBean getContragentList() {
-            return contragentList;
-        }
-
-        public Contragent getContragent() {
-            return contragent;
-        }
-
-        public void setContragent(Contragent contragent) {
-            this.contragent = contragent;
-        }
-
-        public void select(Contragent contragent) {
-            this.contragent = contragent;
-        }
-
-        public boolean selected(Contragent contragent) {
-            return this.contragent != null && this.contragent.getFullName().equals(contragent.getFullName());
-        }        @Override
-        protected void doHide() {
-            super.doHide();
-            getContragentList().setFilter("");
-            setContragent(null);
-        }
-
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setContragent(getContragent());
-        }
-
     }
 }
