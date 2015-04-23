@@ -415,6 +415,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         this.history = history;
     }
 
+
     @Transient
     public List<HistoryEntry> getHistoryList() {
         List<HistoryEntry> result = new ArrayList<HistoryEntry>();
@@ -425,36 +426,67 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
         return result;
     }
 
-    public List<User> getPersonReaders() {
-        return new ArrayList<User>(personReaders);
+
+    public Set<User> getPersonReaders() {
+        return personReaders;
     }
 
-    public void setPersonReaders(List<User> personReaders) {
-        this.personReaders = new HashSet<User>(personReaders);
+    public void setPersonReaders(Set<User> personReaders) {
+        this.personReaders = personReaders;
     }
 
-    public List<Role> getRoleReaders() {
-        return new ArrayList<Role>(roleReaders);
+    public List<User> getPersonReadersList() {
+        if (personReaders != null && !personReaders.isEmpty()) {
+            return new ArrayList<User>(personReaders);
+        }
+        return new ArrayList<User>(0);
     }
 
-    public void setRoleReaders(List<Role> roleReaders) {
-        this.roleReaders = new HashSet<Role>(roleReaders);
+    public Set<Role> getRoleReaders() {
+        return roleReaders;
     }
 
-    public List<Role> getRoleEditors() {
-        return new ArrayList<Role>(roleEditors);
+    public void setRoleReaders(Set<Role> roleReaders) {
+        this.roleReaders = roleReaders;
     }
 
-    public void setRoleEditors(List<Role> roleEditors) {
-        this.roleEditors = new HashSet<Role>(roleEditors);
+    public List<Role> getRoleReadersList(){
+        if (roleReaders != null && !roleReaders.isEmpty()) {
+            return new ArrayList<Role>(roleReaders);
+        }
+        return new ArrayList<Role>(0);
     }
 
-    public List<User> getPersonEditors() {
-        return new ArrayList<User>(personEditors);
+    public Set<Role> getRoleEditors() {
+        return roleEditors;
     }
 
-    public void setPersonEditors(List<User> personEditors) {
-        this.personEditors = new HashSet<User>(personEditors);
+    public void setRoleEditors(Set<Role> roleEditors) {
+        this.roleEditors = roleEditors;
+    }
+
+    public List<Role> getRoleEditorsList() {
+        if (roleEditors == null || roleEditors.isEmpty()) {
+            return new ArrayList<Role>(0);
+        } else {
+            return new ArrayList<Role>(roleEditors);
+        }
+    }
+
+    public Set<User> getPersonEditors() {
+        return personEditors;
+    }
+
+    public void setPersonEditors(Set<User> personEditors) {
+        this.personEditors = personEditors;
+    }
+
+    public List<User> getPersonEditorsList() {
+        if (personEditors == null || personEditors.isEmpty()) {
+            return new ArrayList<User>(0);
+        } else {
+            return new ArrayList<User>(personEditors);
+        }
     }
 
     public String getReasonDocumentId() {

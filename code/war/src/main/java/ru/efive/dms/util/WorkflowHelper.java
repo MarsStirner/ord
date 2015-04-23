@@ -172,7 +172,7 @@ public final class WorkflowHelper {
                 if (doc.getRegistrationNumber() == null || doc.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                    List<Role> in_roles = new ArrayList<Role>();
+                    Set<Role> in_roles = new HashSet<Role>(1);
                     Role in_office;
                     if (in_nomenclature != null) {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
