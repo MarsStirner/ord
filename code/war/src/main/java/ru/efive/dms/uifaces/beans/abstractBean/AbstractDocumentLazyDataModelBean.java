@@ -33,6 +33,7 @@ public abstract class AbstractDocumentLazyDataModelBean<T extends IdentifiedEnti
         getLazyModel().setFilter(filter);
     }
 
+    @Deprecated
     public void refresh(){
        //TODO
     }

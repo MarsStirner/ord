@@ -39,11 +39,14 @@ public class LazyDataModelForPersonalDraftsOutgoingDocument extends AbstractFilt
 
     @Override
     public List<OutgoingDocument> load(
-            final int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
+            int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
     ) {
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
             setRowCount(dao.countPersonalDraftDocumentListByFilters(authData, getFilter()));
+            if(getRowCount() < first){
+                first = 0;
+            }
             return dao.getPersonalDraftDocumentListByFilters(
                     authData, getFilter(), sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize
             );

@@ -29,6 +29,9 @@ public class LazyDataModelForOfficeKeepingVolume extends AbstractFilterableLazyD
     public List<OfficeKeepingVolume> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,
             Object> filters) {
         setRowCount((((Long) dao.countDocument(getFilter(), false)).intValue()));
+        if(getRowCount() < first){
+            first = 0;
+        }
         return dao.findDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
     }
 }

@@ -28,8 +28,11 @@ public class LazyDataModelForSubstitution extends AbstractFilterableLazyDataMode
     @Override
     public List<Substitution> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,
             Object> filters) {
-        final List<Substitution> result = dao.getDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
         setRowCount(dao.getDocumentsCount(getFilter(), false));
+        if(getRowCount() < first){
+            first = 0;
+        }
+        final List<Substitution> result = dao.getDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
         return result;
     }
 }

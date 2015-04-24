@@ -42,10 +42,14 @@ public class LazyDataModelForTask extends AbstractFilterableLazyDataModel<Task> 
 
     @Override
     public List<Task> load(
-            final int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
+           int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
     ) {
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
+            setRowCount(dao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
+            if(getRowCount() < first){
+                first = 0;
+            }
             final List<Task> resultList = dao.getDocumentListByFilters(
                     authData, getFilter(), getFilters(), sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize, false, false
             );
@@ -53,7 +57,6 @@ public class LazyDataModelForTask extends AbstractFilterableLazyDataModel<Task> 
             if (!resultList.isEmpty()) {
                 viewFactDao.applyViewFlagsOnTaskDocumentList(resultList, authData.getAuthorized());
             }
-            setRowCount(dao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
             return resultList;
         } else {
             logger.error("NO AUTH DATA");

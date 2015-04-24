@@ -1,8 +1,6 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
@@ -108,12 +106,10 @@ public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData
     /**
      * История
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "dms_paper_copy_document_history",
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<HistoryEntry> history;
 
     /**

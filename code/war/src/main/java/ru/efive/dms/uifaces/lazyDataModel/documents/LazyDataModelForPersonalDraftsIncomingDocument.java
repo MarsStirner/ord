@@ -50,7 +50,7 @@ public class LazyDataModelForPersonalDraftsIncomingDocument extends AbstractFilt
 
     @Override
     public List<IncomingDocument> load(
-            final int first,
+            int first,
             final int pageSize,
             final String sortField,
             final SortOrder sortOrder,
@@ -59,6 +59,9 @@ public class LazyDataModelForPersonalDraftsIncomingDocument extends AbstractFilt
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
             setRowCount(dao.countPersonalDraftDocumentListByFilters(authData, getFilter()));
+            if(getRowCount() < first){
+                first = 0;
+            }
             return dao.getPersonalDraftDocumentListByFilters(
                     authData,
                     getFilter(),

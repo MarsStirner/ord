@@ -34,6 +34,9 @@ public class LazyDataModelForNomenclature extends AbstractFilterableLazyDataMode
     @Override
     public List<Nomenclature> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
         setRowCount((int) dao.countDocument(filter, false));
+        if(getRowCount() < first){
+            first = 0;
+        }
         return dao.findDocuments(filter, false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
     }
 }

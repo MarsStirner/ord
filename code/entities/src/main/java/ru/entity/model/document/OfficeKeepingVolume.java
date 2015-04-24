@@ -1,8 +1,5 @@
 package ru.entity.model.document;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
@@ -268,12 +265,10 @@ public class OfficeKeepingVolume extends IdentifiedEntity implements ProcessedDa
     /**
      * История
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "dms_office_keeping_volume_history",
             joinColumns = {@JoinColumn(name = "file_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
     private Set<HistoryEntry> history;
 
     @Transient

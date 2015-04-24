@@ -1,14 +1,14 @@
 package ru.entity.model.user;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.mapped.IdentifiedEntity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Роль пользователя системы
@@ -33,10 +33,12 @@ public class Role extends IdentifiedEntity implements Comparable<Role>{
     /**
      * пользователи
      */
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "roles")
-    @Type(type = "java.util.Set")
-    @Fetch(value = FetchMode.SELECT)
-    private Set<User> persons = new HashSet<User>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "dms_system_person_roles",
+            joinColumns = @JoinColumn(name="role_id"),
+            inverseJoinColumns = @JoinColumn(name="person_id")
+    )
+    private Set<User> persons;
 
     /**
      * email
@@ -73,13 +75,12 @@ public class Role extends IdentifiedEntity implements Comparable<Role>{
     }
 
     public List<User> getPersonList() {
-
-        List<User> result = new ArrayList<User>();
-        if (persons != null) {
-            result.addAll(persons);
+        if (persons != null && !persons.isEmpty()) {
+            List<User> result = new ArrayList<User>(persons);
+            Collections.sort(result);
+            return result;
         }
-        Collections.sort(result);
-        return result;
+        return new ArrayList<User>(0);
     }
 
     public Set<User> getPersons() {

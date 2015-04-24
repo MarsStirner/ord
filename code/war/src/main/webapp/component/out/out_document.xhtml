@@ -221,7 +221,7 @@
                             </td>
                             <td class="second" colspan="3">
                                 <h:outputLink id="reason_document" style="margin-left:5px;" value="#"
-                                              onclick="goToDocumentByLinkId('#{out_doc.document.reasonDocumentId}');">
+                                              onclick="goToDocumentByUniqueId('#{out_doc.document.reasonDocumentId}');">
                                     <h:graphicImage value="#{resource['images:link.png']}"/>
                                     <h:outputText value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
                                 </h:outputLink>

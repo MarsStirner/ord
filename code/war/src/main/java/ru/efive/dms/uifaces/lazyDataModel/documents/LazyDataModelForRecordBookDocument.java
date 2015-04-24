@@ -39,14 +39,15 @@ public class LazyDataModelForRecordBookDocument extends AbstractFilterableLazyDa
 
     @Override
     public List<RecordBookDocument> load(
-            final int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
+            int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
     ) {
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
             setRowCount(dao.countDocuments(authData, getFilter()));
-            return dao.findDocuments(
-                    authData, getFilter(), sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize
-            );
+            if(getRowCount() < first){
+                first = 0;
+            }
+            return dao.findDocuments(authData, getFilter(), sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize);
         } else {
             logger.error("NO AUTH DATA");
             return null;

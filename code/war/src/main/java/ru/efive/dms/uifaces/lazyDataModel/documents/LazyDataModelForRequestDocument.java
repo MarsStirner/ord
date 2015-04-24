@@ -42,10 +42,14 @@ public class LazyDataModelForRequestDocument extends AbstractFilterableLazyDataM
 
     @Override
     public List<RequestDocument> load(
-            final int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
+           int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
     ) {
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
+            setRowCount(dao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
+            if(getRowCount() < first){
+                first = 0;
+            }
             final List<RequestDocument> resultList = dao.getDocumentListByFilters(
                     authData, getFilter(), this.filters, sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize, false, false
             );
@@ -53,7 +57,6 @@ public class LazyDataModelForRequestDocument extends AbstractFilterableLazyDataM
             if (!resultList.isEmpty()) {
                 viewFactDao.applyViewFlagsOnRequestDocumentList(resultList, authData.getAuthorized());
             }
-            setRowCount(dao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
             return resultList;
         } else {
             logger.error("NO AUTH DATA");

@@ -49,6 +49,9 @@ public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> 
             Map<String, Object> filters
     ) {
         setRowCount(((Long) dao.countUsers(getFilter(), false, showFired)).intValue());
+        if(getRowCount() < first){
+            first = 0;
+        }
         return dao.findUsers(getFilter(), false, showFired, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
     }
 

@@ -61,12 +61,16 @@ public class LazyDataModelForUserInDialogs extends AbstractFilterableLazyDataMod
     ) {
         if (filterGroup == null) {
             setRowCount(((Long) dao.countUsersForDialog(getFilter(), false, showFired)).intValue());
+            if(getRowCount() < first){
+                first = 0;
+            }
             return dao.findUsersForDialog(getFilter(), false, showFired, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
         } else {
             setRowCount(((Long) dao.countUsersForDialogByGroup(getFilter(), false, showFired, filterGroup)).intValue());
+            if(getRowCount() < first){
+                first = 0;
+            }
             return dao.findUsersForDialogByGroup(getFilter(), false, showFired, filterGroup, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
         }
     }
-
-
 }

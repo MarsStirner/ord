@@ -26,6 +26,9 @@ public class LazyDataModelForRole extends AbstractFilterableLazyDataModel<Role> 
             int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters
     ) {
         setRowCount((int) dao.countRoles());
+        if(getRowCount() < first){
+            first = 0;
+        }
         return dao.findRoles(first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 

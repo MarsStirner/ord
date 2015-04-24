@@ -8,7 +8,7 @@ import java.util.List;
  * @author Nastya Peshekhonova
  *         TODO: Временное решение, следует перевести это в таблицe базы данных и использовать ее
  *         TODO как же вы ска меня достали, руки ваши бы из зада переткнуть повыше, на курсы запишитесь хотя-бы, или книжки почитайте
- * @see ru.entity.model.document.Type
+ *
  */
 
 public enum DocumentType {

@@ -41,7 +41,7 @@ public class LazyDataModelForInternalDocument extends AbstractFilterableLazyData
 
     @Override
     public List<InternalDocument> load(
-            final int first,
+            int first,
             final int pageSize,
             final String sortField,
             final SortOrder sortOrder,
@@ -49,6 +49,10 @@ public class LazyDataModelForInternalDocument extends AbstractFilterableLazyData
     ) {
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
+            setRowCount(dao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
+            if(getRowCount() < first){
+                first = 0;
+            }
             final List<InternalDocument> resultList = dao.getDocumentListByFilters(
                     authData,
                     getFilter(),
@@ -64,7 +68,6 @@ public class LazyDataModelForInternalDocument extends AbstractFilterableLazyData
             if (!resultList.isEmpty()) {
                 viewFactDao.applyViewFlagsOnInternalDocumentList(resultList, authData.getAuthorized());
             }
-            setRowCount(dao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
             return resultList;
         } else {
             logger.error("NO AUTH DATA");
