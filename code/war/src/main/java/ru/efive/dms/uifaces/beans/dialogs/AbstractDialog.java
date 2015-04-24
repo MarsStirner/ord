@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
+import com.google.common.collect.ImmutableMap;
 import org.primefaces.context.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -17,12 +17,7 @@ public abstract class AbstractDialog<T> {
 
     protected static final Logger logger = LoggerFactory.getLogger("DIALOG");
 
-    private static Map<String, Object> viewParams = new HashMap<String, Object>(3);
-    static {
-        viewParams.put("modal", true);
-        viewParams.put("draggable", false);
-        viewParams.put("resizable", false);
-    }
+    private static Map<String, Object> viewParams = ImmutableMap.of("modal", (Object)true, "draggable", false, "resizable", false);
 
     public static Map<String, Object> getViewParams(){
         return viewParams;

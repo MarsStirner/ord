@@ -215,27 +215,9 @@
                     <h:panelGroup rendered="#{out_doc.createState or out_doc.editState}">
                         <tr class="row">
                             <td class="first">
-                                <label>
-                                    <span class="title">
-                                        <h:outputLink title="Документ-основание"
-                                                      onclick="reasonDocumentSelectModalVar.clickOpen('reasonDocumentSelectModal'); return false;">
-                                            Документ-основание
-                                        </h:outputLink>
-									</span>
-                                </label>
-                                <e5ui-comp:modalWindow id="reasonDocumentSelectModal"
-                                                       modalWindowHolder="#{out_doc.reasonDocumentSelectModal}"
-                                                       render="reason_document"
-                                                       execute="modal_container" showButtons="false"
-                                                       style="width:80%; max-width:1250px;"
-                                                       widgetVar="reasonDocumentSelectModalVar">
-                                    <div id="title">Выбор документа основания</div>
-                                    <h:panelGroup id="modal_dialogs_container">
-                                        <div id="modal_container" style="margin-top: 0;">
-                                            TODO
-                                        </div>
-                                    </h:panelGroup>
-                                </e5ui-comp:modalWindow>
+                                <p:commandLink actionListener="#{out_doc.chooseReasonDocument}" ajax="true" value="Документ-основание">
+                                    <p:ajax event="dialogReturn" listener="#{out_doc.onReasonDocumentChosen}" update="reason_document"/>
+                                </p:commandLink>
                             </td>
                             <td class="second" colspan="3">
                                 <h:outputLink id="reason_document" style="margin-left:5px;" value="#"

@@ -130,6 +130,24 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  ////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Выбора документа-основания /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseReasonDocument() {
+        final String preselected = getDocument().getReasonDocumentId();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ReasonDocumentDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        final Map<String, Object> viewParams = new HashMap<String, Object>(AbstractDialog.getViewParams());
+        viewParams.put("width", "\'95%\'");
+        viewParams.put("contentWidth", "\'100%\'");
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectReasonDocumentDialog.xhtml", viewParams, null);
+    }
+
+    public void onReasonDocumentChosen(SelectEvent event) {
+        final String selected = (String) event.getObject();
+        getDocument().setReasonDocumentId(selected);
+        LOGGER.info("Choose reasonDocument From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+
     //Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();

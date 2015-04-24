@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+        >
+
+<h:head>
+    <title><h:outputText value="#{reasonDocumentDialog.title}"/></title>
+</h:head>
+
+<h:body>
+    <div style="height:auto; min-height:550px;">
+        <h:form id="reasonDocumentDialogForm">
+            <p:wizard step="typeChooseTab" showNavBar="false" widgetVar="wiz" showStepStatus="false">
+                <p:tab id="typeChooseTab" title="Выберите тип документа-основания">
+                    <p:panel>
+
+                        <p:commandButton value="Входящие документы" action="#{reasonDocumentDialog.chooseIncoming}" onsuccess="PF('wiz').next();"/>
+                        <p:commandButton value="Обращения граждан" action="#{reasonDocumentDialog.chooseRequest}" onsuccess="PF('wiz').next();"/>
+                        <f:facet name="footer">
+                            <p:commandButton value="Отмена" action="#{reasonDocumentDialog.closeDialog(false)}"/>
+                        </f:facet>
+                    </p:panel>
+
+                </p:tab>
+                <p:tab id="chooseDocument" title="Выберите документ-основание">
+                    <style type="text/css">
+                        .ui-datatable thead th, .ui-datatable tbody td, .ui-datatable tfoot td, .ui-datatable tfoot th {
+                            padding: 3px 6px;
+                            overflow: hidden;
+                            border-width: 1px;
+                            border-style: solid;
+                            font-size: 14px;
+                        }
+                        .ui-paginator.ui-paginator-bottom {
+                            border-top: 0px none;
+                            font-size: smaller;
+                        }
+                        .ui-panel .ui-panel-footer {
+                            border-width: 1px 0 0;
+                            margin: 0.1em 0 0;
+                            padding: 0.3em 0.5em;
+                            text-align: left;
+                        }
+                        .ui-panel .ui-panel-content {
+                            border: 0;
+                            background: none;
+                            padding: 0.1em 0em;
+                        }
+                        .ui-wizard-content {
+                            margin: 1px 0;
+                        }
+                        .ui-panel .ui-panel-titlebar {
+                            padding: 0;
+                        }
+                    </style>
+                    <p:panel id="documentPNL" widgetVar="documentTablePNL">
+                        <f:facet name="header">
+                            <p:inputText id="filterStringIncoming"  rendered="#{reasonDocumentDialog.incoming}" value="#{in_documents.filter}" style="width:80%;" title="Поиск"/>
+                            <p:inputText id="filterStringRequest"  rendered="#{not reasonDocumentDialog.incoming}" value="#{request_documents.filter}" style="width:80%;" title="Поиск"/>
+                            <p:commandButton action="#{in_documents.applyFilter()}"  rendered="#{reasonDocumentDialog.incoming}" value="Найти" process="@this filterStringIncoming" update="incomingDocumentTable"/>
+                            <p:commandButton action="#{request_documents.applyFilter()}"  rendered="#{not reasonDocumentDialog.incoming}" value="Найти" process="@this filterStringRequest" update="requestDocumentTable"/>
+                        </f:facet>
+                        <p:dataTable id="incomingDocumentTable"
+                                     rendered="#{reasonDocumentDialog.incoming}"
+                                     paginator="true"
+                                     rows="100"
+                                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                                     value="#{in_documents.lazyModel}"
+                                     var="row"
+                                     lazy="true"
+                                     widgetVar="INdocumentTableWidget"
+                                     scrollable="true"
+                                     scrollHeight="400"
+                                     selectionMode="single"
+                                     selection="#{reasonDocumentDialog.incomingSelection}"
+                                     sortBy="#{row.registrationDate}"
+                                     sortField="registrationDate"
+                                     sortOrder="descending"
+                                >
+                            <p:column headerText="Дата регистрации" style="width:10.5em;" sortBy="#{row.registrationDate}" field="registrationDate">
+                                <h:outputText value="#{row.registrationDate}">
+                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
+                                <h:outputText value="#{row.registrationNumber}"/>
+                            </p:column>
+                            <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field="form.value">
+                                <h:outputText value="#{row.form}"/>
+                            </p:column>
+                            <p:column headerText="Статус" style="width:8em;" sortBy="#{row.status}" field="statusId">
+                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                            </p:column>
+                            <p:column headerText="Краткое содержание">
+                                <h:outputText value="#{row.shortDescription}"/>
+                            </p:column>
+                        </p:dataTable>
+                        <p:dataTable id="requestDocumentTable"
+                                     rendered="#{not reasonDocumentDialog.incoming}"
+                                     paginator="true"
+                                     rows="100"
+                                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                                     value="#{request_documents.lazyModel}"
+                                     var="row"
+                                     lazy="true"
+                                     widgetVar="REQdocumentTableWidget"
+                                     scrollable="true"
+                                     scrollHeight="400"
+                                     selectionMode="single"
+                                     selection="#{reasonDocumentDialog.requestSelection}"
+                                     sortBy="#{row.registrationDate}"
+                                     sortField="deliveryDate"
+                                     sortOrder="descending"
+                                >
+                            <p:column headerText="Дата поступления" style="width:10.5em;" sortBy="#{row.deliveryDate}" field = "deliveryDate">
+                                <h:outputText value="#{row.deliveryDate}">
+                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+                                <h:outputText value="#{row.registrationNumber}"/>
+                            </p:column>
+                            <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field="form.value">
+                                <h:outputText value="#{row.form}"/>
+                            </p:column>
+                            <p:column headerText="Статус"  style="width:8em;" sortBy="#{row.status}" field="statusId">
+                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                            </p:column>
+                            <p:column headerText="Краткое содержание">
+                                <h:outputText value="#{row.shortDescription}"/>
+                            </p:column>
+                        </p:dataTable>
+                        <f:facet name="footer">
+                            <p:commandButton value="Выбрать" action="#{reasonDocumentDialog.closeDialog(true)}"/>
+                            <p:commandButton value="Отмена" action="#{reasonDocumentDialog.closeDialog(false)}"/>
+                            <p:commandButton value="Назад" onclick="PF('wiz').back();"/>
+                        </f:facet>
+                    </p:panel>
+                </p:tab>
+            </p:wizard>
+
+
+
+        </h:form>
+    </div>
+</h:body>
+
+</html>
