@@ -2,6 +2,7 @@ package ru.efive.dms.dao.ejb;
 
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
+import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
 import ru.efive.sql.dao.GenericDAOHibernate;
 import ru.entity.model.user.Substitution;
@@ -131,7 +132,21 @@ public class SubstitutionDaoImpl extends GenericDAOHibernate<Substitution> {
             disjunction.add(Restrictions.ilike("substitution.lastName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("substitution.firstName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("substitution.middleName", filter, MatchMode.ANYWHERE));
+            disjunction.add(createDateLikeTextRestriction("startDate", filter));
+            disjunction.add(createDateLikeTextRestriction("endDate", filter));
             criteria.add(disjunction);
         }
+    }
+
+    /**
+     * Создать часть критерия, которая будет проверять заданное поле(типа Дата-Время) на соотвтевие поисковому шаблону
+     * @param fieldName  имя поля с типом  (Дата-Время)
+     * @param filter  поисковый шаблон
+     * @return Часть критерия, проверяющая сответвтвие поля поисковому шаблону
+     */
+    public Criterion createDateLikeTextRestriction(final String fieldName, final String filter) {
+        return Restrictions.sqlRestriction(
+                "DATE_FORMAT(".concat(fieldName).concat(", '%d.%m.%Y') like lower(?)"), filter + "%", new StringType()
+        );
     }
 }
