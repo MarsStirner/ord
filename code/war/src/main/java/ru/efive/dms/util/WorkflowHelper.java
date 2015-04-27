@@ -530,7 +530,7 @@ public final class WorkflowHelper {
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     StringBuffer in_number = new StringBuffer();
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                    List<Role> in_roles = new ArrayList<Role>();
+                    Set<Role> in_roles = new HashSet<Role>(1);
                     Role in_office;
                     if (in_nomenclature != null) {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
@@ -827,14 +827,10 @@ public final class WorkflowHelper {
                         DictionaryManagementBean.class
                 );
                 Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                List<Role> in_roles = new ArrayList<Role>();
+                Set<Role> in_roles = new HashSet<Role>(1);
                 Role in_office;
                 if (in_nomenclature != null) {
-                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(
-                            RoleType.valueOf(
-                                    "OFFICE_" + in_nomenclature.getCode()
-                            )
-                    );
+                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
                 } else {
                     in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                 }
@@ -981,7 +977,7 @@ public final class WorkflowHelper {
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
-                    List<Role> in_roles = new ArrayList<Role>();
+                    Set<Role> in_roles = new HashSet<Role>(2);
                     in_roles.add(in_administrationRole);
 
                     Role in_office;

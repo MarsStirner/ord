@@ -631,8 +631,8 @@ public final class ProcessFactory {
         prop = PropertyUtils.getProperty(t, "responsible");
         User responsibleUser = (prop == null ? null : (User) prop);
 
-        prop = PropertyUtils.getProperty(t, "signer");
-        User signer = (prop == null ? null : (User) prop);
+        prop = PropertyUtils.getProperty(t, "controller");
+        User controller = (prop == null ? null : (User) prop);
 
         sendTo = new ArrayList<String>();
 
@@ -646,12 +646,12 @@ public final class ProcessFactory {
         if (prop != null)
             sendTo.add(((User) prop).getEmail());
 
-        if (responsibleUser != null && signer != null) {
+        if (responsibleUser != null && controller != null) {
             if ((responsibleUser.getEmail() != null) && (!responsibleUser.getEmail().isEmpty())) {
                 sendTo.add(responsibleUser.getEmail());
             }
-            if ((signer.getEmail() != null) && (!signer.getEmail().isEmpty())) {
-                sendTo.add(signer.getEmail());
+            if ((controller.getEmail() != null) && (!controller.getEmail().isEmpty())) {
+                sendTo.add(controller.getEmail());
             }
             if (sendTo.size() > 0) {
                 SendMailActivity mailActivity = new SendMailActivity();
@@ -806,7 +806,7 @@ public final class ProcessFactory {
         Set<String> recipients = new HashSet<String>();
 
         properties = PropertyUtils.getProperty(t, "recipientUsers");
-        List<User> recipientUsers = (properties == null ? null : (List<User>) properties);
+        Set<User> recipientUsers = (properties == null ? null : (Set<User>) properties);
 
         if (recipientUsers != null) {
             for (User user : recipientUsers) {

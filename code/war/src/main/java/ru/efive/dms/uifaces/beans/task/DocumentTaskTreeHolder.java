@@ -89,6 +89,8 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
             }
             for (Map.Entry<Integer, DefaultTreeNode> entry : taskMap.entrySet()) {
                 final DefaultTreeNode node = entry.getValue();
+                node.setRowKey(String.valueOf(entry.getKey()));
+                node.setSelectable(true);
                 final Task data = (Task) node.getData();
                 if (data.getParent() != null) {
                     final DefaultTreeNode parentNode = taskMap.get(data.getParent().getId());
