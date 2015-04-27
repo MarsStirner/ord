@@ -1,6 +1,11 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
+import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
@@ -15,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
@@ -22,18 +28,20 @@ import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 @ViewScoped
 public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> implements Serializable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger("GROUP");
+
     @Override
     protected boolean deleteDocument() {
-        boolean result = false;
         try {
             getDocument().setDeleted(true);
             sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).update(getDocument());
             FacesContext.getCurrentInstance().getExternalContext().redirect("deleted_group.xhtml");
-            result = true;
+            return true;
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+            LOGGER.error("Error on delete:", e);
         }
-        return result;
+        return false;
     }
 
     @Override
@@ -62,87 +70,60 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
 
     @Override
     protected boolean saveDocument() {
-        boolean result = false;
         try {
             Group group = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).update(getDocument());
             if (group == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 setDocument(group);
-                result = true;
+                return true;
             }
         } catch (Exception e) {
-            result = false;
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
-            e.printStackTrace();
+            LOGGER.error("Error on save:", e);
         }
-        return result;
+        return false;
     }
 
     @Override
     protected boolean saveNewDocument() {
-        boolean result = false;
         try {
             Group group = sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).save(getDocument());
             if (group == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
             } else {
                 setDocument(group);
-                result = true;
+                return true;
             }
         } catch (Exception e) {
-            result = false;
             FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
-            e.printStackTrace();
+            LOGGER.error("Error on saveNew:", e);
         }
-        return result;
-    }
-
-
-    protected boolean isCurrentUserDocEditor() {
-        //Group group=sessionManagement.getLoggedUser();
-        //User in_doc=getDocument();
-        //Group in_group=sessionManagement.getDAO(GroupDAOHibernate.class,GROUP_DAO).findByLoginAndPassword(user.getLogin(),user.getPassword());
-
-        //if(in_group!=null){
-        //for(Role in_role:in_group.getRoleList()){
-        //if(in_role.getRoleType().name().equals(RoleType.ENTERPRISE_ADMINISTRATION.name())){
-        //return true;
-        //}
-        //}
-        //}
         return false;
     }
 
-    public UserListSelectModalBean getMembersPickList() {
-        return membersPickList;
-    }
-
-    private UserListSelectModalBean membersPickList = new UserListSelectModalBean() {
-
-        @Override
-        protected void doShow() {
-            super.doShow();
-            setUsers(getDocument().getMembersList());
-        }
-
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setMembers(new HashSet<User>(getUsers()));
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            setUsers(null);
-        }
-    };
-
     @Inject
     @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
+    private SessionManagementBean sessionManagement;
+
+    // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseMembers() {
+        final List<User> preselected = getDocument().getMembersList();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), null);
+    }
+
+    public void onMembersChosen(SelectEvent event) {
+        final List<User> selected = (List<User>) event.getObject();
+        if(selected != null && !selected.isEmpty()) {
+            getDocument().setMembers(new HashSet<User>(selected));
+        }  else {
+            getDocument().getMembers().clear();
+        }
+        LOGGER.info("Choose users From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+
 
 }

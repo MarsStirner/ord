@@ -5,8 +5,7 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
     <ui:define name="contentReferenceBookName">Справочник групп</ui:define>
@@ -25,48 +24,45 @@
         <h:panelGroup rendered="#{group.forbiddenState}">
             <div class="name">403 - Действие запрещено</div>
         </h:panelGroup>
-        <h:panelGroup
-                rendered="#{not(group.createState or group.editState or group.viewState or group.notFoundState or group.forbiddenState)}">
+        <h:panelGroup rendered="#{not(group.createState or group.editState or group.viewState or group.notFoundState or group.forbiddenState)}">
             <div class="name">В доступе отказано</div>
         </h:panelGroup>
     </ui:define>
 
     <ui:define name="headerEditButton">
         <div class="defbutton">
-                    <h:commandLink action="#{group.edit}">
-                        <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                        Редактировать
-                    </h:commandLink>
-                </div>
+            <p:commandLink action="#{group.edit}" rendered="#{group.viewState}" update="@all">
+                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
+                Редактировать
+            </p:commandLink>
+        </div>
     </ui:define>
     <ui:define name="headerCancelButton">
-                <div class="defbutton">
-                    <h:commandLink action="#{group.cancel}" rendered="#{group.editState or group.createState}">
-                        <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                        Отменить
-                    </h:commandLink>
-                </div>
-        </ui:define>
+        <div class="defbutton">
+            <p:commandLink action="#{group.cancel}" rendered="#{group.editState or group.createState}" update="@all">
+                <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
+                Отменить
+            </p:commandLink>
+        </div>
+    </ui:define>
     <ui:define name="headerSaveButton">
-                <div class="defbutton">
-                    <h:commandLink action="#{group.save}"
-                                   rendered="#{group.editState or group.createState}">
-                        <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                        Сохранить
-                    </h:commandLink>
-                </div>
-        </ui:define>
+        <div class="defbutton">
+            <p:commandLink action="#{group.save}" rendered="#{group.editState or group.createState}" update="@all">
+                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                Сохранить
+            </p:commandLink>
+        </div>
+    </ui:define>
     <ui:define name="headerDeleteButton">
-                <div class="defbutton">
-                    <h:commandLink action="#{group.delete()}"
-                                   rendered="#{isAdministrator or (group.document.author.id eq sessionManagement.getLoggedUser().id)}">
-                        <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                        Удалить
-                        <f:param name="docAction" value="delete"/>
-                    </h:commandLink>
-                </div>
-</ui:define>
-
+        <div class="defbutton">
+            <p:commandLink action="#{group.delete()}"
+                           rendered="#{isAdministrator or (group.document.author.id eq sessionManagement.getLoggedUser().id)}">
+                <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
+                Удалить
+                <f:param name="docAction" value="delete"/>
+            </p:commandLink>
+        </div>
+    </ui:define>
 
 
     <ui:define name="contentItemInfo">
@@ -75,34 +71,29 @@
                 <table class="form_grid">
                     <tr class="row">
                         <td class="first">Категория:</td>
-                        <td class="second" colspan="3"><h:outputText
-                                value="#{group.document.category}" class="wide"/>
+                        <td class="second" colspan="3">
+                            <h:outputText value="#{group.document.category}" class="wide"/>
                         </td>
                     </tr>
                     <tr class="row">
                         <td class="first">Наименование:</td>
-                        <td class="second" colspan="3"><h:outputText
-                                value="#{group.document.value}" class="wide"/>
+                        <td class="second" colspan="3">
+                            <h:outputText value="#{group.document.value}" class="wide"/>
                         </td>
                     </tr>
                     <tr class="row">
                         <td class="first">Алиас:</td>
-                        <td class="second" colspan="3"><h:outputText
-                                value="#{group.document.alias}" class="wide"/>
+                        <td class="second" colspan="3">
+                            <h:outputText value="#{group.document.alias}" class="wide"/>
                         </td>
                     </tr>
                     <tr class="row">
-                        <td class="first"><label> <span class="title">
-										Пользователи: </span> </label></td>
+                        <td class="first">Пользователи:</td>
                         <td class="second" colspan="3">
-                            <div
-                                    style="overflow-y: scroll; height: 90px">
-                                <label><ui:repeat value="#{group.document.membersList}"
-                                                  var="element">
-                                    <h:outputText value="#{element}" converter="PersonConverter"
-                                                  class="width"/>
-                                    <br/>
-                                </ui:repeat> </label>
+                            <div style="overflow-y: scroll; height: 90px">
+                               <ui:repeat value="#{group.document.membersList}" var="member">
+                                    <h:outputText value="#{member.getDescription()}" class="width"/><br/>
+                                </ui:repeat>
                             </div>
                         </td>
                     </tr>
@@ -120,102 +111,36 @@
                 <table class="form_grid">
                     <tr class="row">
                         <td class="first">Категория:</td>
-                        <td class="second"><h:selectOneMenu id="groupType"
-                                                            value="#{group.document.category}"
-                                                            converter="GroupTypeConverter">
+                        <td class="second">
+                            <p:selectOneMenu id="groupType" value="#{group.document.category}" converter="GroupTypeConverter">
                             <f:selectItems value="#{dictionaryManagement.groupTypes}"/>
-                        </h:selectOneMenu></td>
+                        </p:selectOneMenu>
+                        </td>
                     </tr>
                     <tr class="row">
                         <td class="first">Наименование:</td>
-                        <td class="second"><h:inputText
-                                value="#{group.document.value}" class="wide"/>
+                        <td class="second">
+                            <p:inputText value="#{group.document.value}"/>
                         </td>
                     </tr>
                     <tr class="row">
                         <td class="first">Алиас:</td>
-                        <td class="second"><h:inputText
-                                value="#{group.document.alias}" class="wide"/>
+                        <td class="second">
+                            <p:inputText value="#{group.document.alias}"/>
                         </td>
                     </tr>
                     <tr class="row">
-                        <td class="first"><label> <span class="title">
-										<h:outputLink title="Пользователи:"
-                                                      onclick="membersPickListWidget.clickOpen('membersPickList'); return false;">
-                                            Пользователи:
-                                        </h:outputLink> </span> </label> <e5ui-comp:modalWindow id="membersPickList"
-                                                                                                modalWindowHolder="#{group.membersPickList}"
-                                                                                                render=":main_content_form:members"
-                                                                                                execute="select_table"
-                                                                                                showButtons="false"
-                                                                                                style="width: 500px;"
-                                                                                                widgetVar="membersPickListWidget">
-                            <div id="title">Выбор пользователей</div>
-                            <div id="modal_container" style="margin-top: 0;">
-                                <div class="searchbar">
-                                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                                    <h:inputText id="filter_string"
-                                                 value="#{group.membersPickList.userList.filter}"
-                                                 style="display:block; float:left; margin-right:10px;"
-                                                 title="Поиск"/>
-                                    <h:commandButton value=" "
-                                                     action="#{group.membersPickList.userList.changePageOffset(0)}"
-                                                     styleClass="searchbutton">
-                                        <f:ajax
-                                                execute=":main_content_form:membersPickList:filter_string"
-                                                render=":main_content_form:membersPickList:ajaxModal :main_content_form:membersPickList:modal_paging"/>
-                                    </h:commandButton>
-                                </div>
-                                <div class="wrap" style="height: 300px;">
-                                    <div class="inner" style="height: 300px;">
-                                        <e5ui:dataTable id="select_table" border="0" cellpadding="0"
-                                                        cellspacing="0"
-                                                        value="#{group.membersPickList.userList.documents}" var="row"
-                                                        grouping="false" width="100%">
-                                            <e5ui:row
-                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                    styleClass="#{group.membersPickList.selected(row)? 'grid_row_selected': ''}"/>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>Редакторы</p>
-                                                </f:facet>
-                                                <h:outputText value="#{row}" converter="PersonConverter"/>
-                                                <h:commandLink id="selectLink" style="display: none;"
-                                                               rendered="#{not group.membersPickList.selected(row)}"
-                                                               action="#{group.membersPickList.select(row)}"/>
-                                                <h:commandLink id="unselectLink" style="display: none;"
-                                                               rendered="#{group.membersPickList.selected(row)}"
-                                                               action="#{group.membersPickList.unselect(row)}"/>
-                                            </e5ui:column>
-                                        </e5ui:dataTable>
-                                    </div>
-                                </div>
-                                <div style="clear: both;">
-                                    <h:panelGroup id="modal_paging">
-                                        <e5ui-comp:tablePager id="pager"
-                                                              documentListHolder="#{userList}"/>
-                                    </h:panelGroup>
-                                </div>
-                            </div>
-                            <div class="e5ui-modal-bottombuttons">
-                                <h:button
-                                        onclick="membersPickListWidget.clickSave(); return false;"
-                                        value="Выбрать"/>
-                                <h:button
-                                        onclick="membersPickListWidget.clickClose(); return false;"
-                                        value="Отмена"/>
-                            </div>
-                        </e5ui-comp:modalWindow></td>
+                        <td class="first">
+                            <p:commandLink actionListener="#{group.chooseMembers}" ajax="true" value="Пользователи">
+                                <p:ajax event="dialogReturn" listener="#{group.onMembersChosen}" update="members"/>
+                            </p:commandLink>
+                        </td>
                         <td class="second" colspan="3">
-                            <div
-                                    style="overflow-y: scroll; height: 400px">
+                            <div style="overflow-y: scroll; height: 400px">
                                 <h:panelGroup id="members">
-                                    <label><ui:repeat
-                                            value="#{group.document.membersList}" var="element">
-                                        <h:outputText value="#{element}" converter="PersonConverter"
-                                                      class="width"/>
-                                        <br/>
-                                    </ui:repeat> </label>
+                                   <ui:repeat value="#{group.document.membersList}" var="member">
+                                        <h:outputText value="#{member.getDescription()}"/><br/>
+                                    </ui:repeat>
                                 </h:panelGroup>
                             </div>
                         </td>
@@ -229,7 +154,7 @@
                 </table>
             </div>
         </h:panelGroup>
-</ui:define>
+    </ui:define>
 
 </ui:composition>
 
