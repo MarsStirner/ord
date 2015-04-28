@@ -871,7 +871,7 @@ public final class ProcessFactory {
         Set<String> recipients = new HashSet<String>();
         activites = new ArrayList<IActivity>();
         prop = PropertyUtils.getProperty(t, "recipientUsers");
-        List<User> recipientUsers = (prop == null ? null : (List<User>) prop);
+        Set<User> recipientUsers = (prop == null ? null : (Set<User>) prop);
         if (recipientUsers != null) {
             for (User user : recipientUsers) {
                 if ((user.getEmail() != null) && (!user.getEmail().isEmpty())) {
@@ -938,7 +938,7 @@ public final class ProcessFactory {
 
         sendTo.clear();
         mailActivity = null;
-        prop = PropertyUtils.getProperty(t, "executor");
+        prop = PropertyUtils.getProperty(t, "responsible");
         User responsible = (prop == null ? null : (User) prop);
         if (responsible != null) {
             mailActivity = new SendMailActivity();
@@ -1273,23 +1273,6 @@ public final class ProcessFactory {
                 if (formDescription.equals("resolution")) {
                     subject = "Ваша резолюция " + docNumber + " " + statusName;
                     body = body.append("Резолюция перешла в статус \"").append(statusName).append("\"\n\n");
-                } else if (formDescription.equals("exercise")) {
-                    prop = PropertyUtils.getProperty(t, "exerciseType");
-                    Object exerciseType = (prop == null ? null : (Object) prop);
-
-                    prop = null;
-                    if (form != null) {
-                        prop = PropertyUtils.getProperty(exerciseType, "value");
-                    }
-                    String exerciseTypeValue = (prop == null ? "" : (String) prop).toLowerCase();
-
-                    if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
-                        subject = "Ваше " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                        body = body.append("Ваше ").append(exerciseTypeValue).append(" перешло в статус ").append(statusName).append(" \n\n");
-                    } else {
-                        subject = "Ваша " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                        body = body.append("Ваша ").append(exerciseTypeValue).append(" перешла в статус ").append(statusName).append(" \n\n");
-                    }
                 } else {
                     body = body.append("Поручение перешло в статус ").append(status).append("\n\n");
                 }
@@ -1350,23 +1333,6 @@ public final class ProcessFactory {
                     if (formDescription.equals("resolution")) {
                         subject = "Ваша резолюция " + docNumber + " " + statusName;
                         body = body.append("Резолюция перешла в статус \"").append(statusName).append("\"\n\n");
-                    } else if (formDescription.equals("exercise")) {
-                        prop = PropertyUtils.getProperty(t, "exerciseType");
-                        Object exerciseType = (prop == null ? null : (Object) prop);
-
-                        prop = null;
-                        if (form != null) {
-                            prop = PropertyUtils.getProperty(exerciseType, "value");
-                        }
-                        String exerciseTypeValue = (prop == null ? "" : (String) prop).toLowerCase();
-
-                        if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
-                            subject = "Ваше " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                            body = body.append("Ваше ").append(exerciseTypeValue).append(" перешло в статус ").append(statusName).append(" \n\n");
-                        } else {
-                            subject = "Ваша " + exerciseTypeValue + " " + docNumber + " " + statusName;
-                            body = body.append("Ваша ").append(exerciseTypeValue).append(" перешла в статус ").append(statusName).append(" \n\n");
-                        }
                     } else {
                         body = body.append("Поручение перешло в статус ").append(status).append("\n\n");
                     }
@@ -1431,24 +1397,7 @@ public final class ProcessFactory {
                     if (formDescription.equals("resolution")) {
                         subject = "Поступила новая резолюция @DocumentNumber";
                         body = body.append("К вам поступила новая резолюция на исполнение \n\n");
-                    } else if (formDescription.equals("exercise")) {
-                        prop = PropertyUtils.getProperty(t, "exerciseType");
-                        Object exerciseType = (prop == null ? null : (Object) prop);
-
-                        prop = null;
-                        if (form != null) {
-                            prop = PropertyUtils.getProperty(exerciseType, "value");
-                        }
-                        String exerciseTypeValue = (prop == null ? "" : (String) prop).toLowerCase();
-
-                        if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
-                            subject = "Поступило новое" + exerciseTypeValue + " @DocumentNumber";
-                            body = body.append("К вам поступила новое ").append(exerciseTypeValue).append(" на исполнение \n\n");
-                        } else {
-                            subject = "Поступила новая " + exerciseTypeValue + " @DocumentNumber";
-                            body = body.append("К вам поступила новая").append(exerciseTypeValue).append(" на исполнение \n\n");
-                        }
-                    } else {
+                    }  else {
                         body = body.append("К вам поступило новое поручение на исполнение \n\n");
                     }
 
@@ -1877,7 +1826,7 @@ public final class ProcessFactory {
         //1-mail
         List<String> sendTo = new ArrayList<String>();
         prop = PropertyUtils.getProperty(t, "executors");
-        List<User> executors = (prop == null ? null : (List<User>) prop);
+        Set<User> executors = (prop == null ? null : (Set<User>) prop);
         if (executors != null) {
             for (User user : executors) {
                 if ((user.getEmail() != null) && (!user.getEmail().isEmpty())) {

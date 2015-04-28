@@ -116,7 +116,7 @@
                 <h:outputText value="#{node.document.contragent.shortName}"/>
             </p:column>
             <p:column headerText="Исполнитель">
-                <ui:repeat value="#{node.document.executors}" var="executor">
+                <ui:repeat value="#{node.document.executorsList}" var="executor">
                     <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>

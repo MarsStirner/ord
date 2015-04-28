@@ -238,17 +238,19 @@ public class SessionManagementBean implements Serializable {
         }
     }
 
-    public void setCurrentUserAccessLevel(final UserAccessLevel userAccessLevel) {
-        try {
-            authData.setCurrentAccessLevel(userAccessLevel);
-            getDAO(UserDAOHibernate.class, USER_DAO).save(authData.getAuthorized());
-        } catch (Exception e) {
-            LOGGER.error("CANNOT change UserAccessLevel:", e);
+    public void setCurrentUserAccessLevel(final String id) {
+        final UserAccessLevel userAccessLevel = getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).get(Integer.valueOf(id));
+        if(userAccessLevel != null) {
+            try {
+                authData.setCurrentAccessLevel(userAccessLevel);
+                getDAO(UserDAOHibernate.class, USER_DAO).save(authData.getAuthorized());
+                LOGGER.info("UserAccessLevel changed to {}", userAccessLevel);
+            } catch (Exception e) {
+                LOGGER.error("CANNOT change UserAccessLevel:", e);
+            }
+        } else {
+            LOGGER.error("CANNOT change UserAccessLevel to {}", id);
         }
-    }
-
-    public void setCurrentUserAccessLevel(final String userAccessLevel) {
-         setCurrentUserAccessLevel(getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).get(Integer.valueOf(userAccessLevel)));
     }
 
     public boolean isCanViewRequestDocuments() {
