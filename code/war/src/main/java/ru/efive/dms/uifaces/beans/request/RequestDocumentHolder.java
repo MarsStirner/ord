@@ -538,61 +538,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         versionHistoryModal.show();
     }
 
-
-    public class RegionSelectModal extends ModalWindowHolderBean {
-        /**
-         *
-         */
-        private static final long serialVersionUID = 4875705849883346982L;
-
-        public Region getValue() {
-            return value;
-        }
-
-        public void setValue(Region value) {
-            this.value = value;
-        }
-
-        public boolean selected(Region value) {
-            return this.value != null && this.value.getValue().equals(value.getValue());
-        }
-
-        public void select(Region value) {
-            this.value = value;
-        }
-
-        public void unselect() {
-            this.value = null;
-        }
-
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setRegion(getValue());
-        }
-
-        @Override
-        protected void doShow() {
-            super.doShow();
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            value = null;
-        }
-
-        private Region value;
-
-    }
-
-    public RegionSelectModal getRegionSelectModal() {
-        return regionSelectModal;
-    }
-
-
-
-    private RegionSelectModal regionSelectModal = new RegionSelectModal();
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
 
@@ -689,6 +634,21 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         final Contragent selected = (Contragent) event.getObject();
         getDocument().setContragent(selected);
         LOGGER.info("Choose contragent From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+
+    //Выбора Региона ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseRegion() {
+        final Region preselected = getDocument().getRegion();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(RegionDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectRegionDialog.xhtml", AbstractDialog.getViewParams(), null);
+    }
+
+    public void onRegionChosen(SelectEvent event) {
+        final Region selected = (Region) event.getObject();
+        getDocument().setRegion(selected);
+        LOGGER.info("Choose region From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора адресатов-пользователей /////////////////////////////////////////////////////////////////////////////////////////////

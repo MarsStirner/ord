@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -410,7 +409,7 @@
                                     </td>
                                     <td class="second">
                                         <p:selectOneMenu id="deliveryType" value="#{request_doc.document.deliveryType}"
-                                                         converter="DeliveryTypeConverter" style="font-size:10pt;">
+                                                         converter="DeliveryTypeConverter"  style="width:15em;">
                                             <f:selectItems value="#{dictionaryManagement.deliveryTypes}"/>
                                         </p:selectOneMenu>
                                     </td>
@@ -425,7 +424,7 @@
                                     </td>
                                     <td class="second">
                                         <p:selectOneMenu id="senderType" value="#{request_doc.document.senderType}"
-                                                         converter="SenderTypeConverter" style="font-size:10pt;">
+                                                         converter="SenderTypeConverter"  style="width:15em;">
                                             <f:selectItems value="#{dictionaryManagement.senderTypes}"/>
                                             <f:ajax execute="senderType" render="content_table"/>
                                         </p:selectOneMenu>
@@ -435,74 +434,9 @@
                                 </tr>
                                 <tr class="row">
                                     <td class="first">
-                                        <label>
-            <span class="title">
-                <h:outputLink title="Регион"
-                              onclick="regionSelectModalVar.clickOpen('regionSelectModal'); return false;">
-                    Регион
-                </h:outputLink>
-            </span>
-                                        </label>
-                                        <e5ui-comp:modalWindow id="regionSelectModal"
-                                                               modalWindowHolder="#{request_doc.regionSelectModal}"
-                                                               render="region" execute="select_table"
-                                                               showButtons="false" style="width: 500px;"
-                                                               widgetVar="regionSelectModalVar">
-                                            <div id="title">Выбор региона</div>
-                                            <div id="modal_container" style="margin-top: 0;">
-                                                <div class="searchbar">
-                                                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                                                    <h:inputText id="filter_string"
-                                                                 value="#{dictionaryManagement.filter}"
-                                                                 style="display:block; float:left; margin-right:10px;"
-                                                                 title="Поиск"/>
-                                                    <h:commandButton value=" " action="null" styleClass="searchbutton">
-                                                        <f:ajax execute="regionSelectModal:filter_string"
-                                                                render="regionSelectModal:ajaxModal"/>
-                                                    </h:commandButton>
-                                                </div>
-                                                <div class="wrap" style="height: 300px;">
-                                                    <div class="inner" style="height: 300px;">
-                                                        <e5ui:dataTable id="select_table" border="0"
-                                                                        cellpadding="0" cellspacing="0"
-                                                                        value="#{dictionaryManagement.regions}"
-                                                                        var="row"
-                                                                        grouping="false" width="100%">
-                                                            <e5ui:row
-                                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                                    styleClass="#{request_doc.regionSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Регион</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.value}"/>
-                                                                <h:commandLink id="selectLink" style="display: none;"
-                                                                               rendered="#{not request_doc.regionSelectModal.selected(row)}"
-                                                                               action="#{request_doc.regionSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Категория</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.category}"/>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{not request_doc.regionSelectModal.selected(row)}"
-                                                                               action="#{request_doc.regionSelectModal.select(row)}"/>
-                                                                <h:commandLink style="display: none;"
-                                                                               rendered="#{request_doc.regionSelectModal.selected(row)}"
-                                                                               action="#{request_doc.regionSelectModal.unselect()}"/>
-                                                            </e5ui:column>
-                                                        </e5ui:dataTable>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="e5ui-modal-bottombuttons">
-                                                <h:button onclick="regionSelectModalVar.clickSave(); return false;"
-                                                          value="Выбрать"/>
-                                                <h:button onclick="regionSelectModalVar.clickClose(); return false;"
-                                                          value="Отмена"/>
-                                            </div>
-                                        </e5ui-comp:modalWindow>
+                                        <p:commandLink actionListener="#{request_doc.chooseRegion}" ajax="true" value="Регион">
+                                            <p:ajax event="dialogReturn" listener="#{request_doc.onRegionChosen}" update="region"/>
+                                        </p:commandLink>
                                     </td>
                                     <td class="second">
                                         <h:outputText id="region" value="#{request_doc.document.region}" converter="RegionConverter"/>
@@ -650,19 +584,6 @@
                             </div>
                         </div>
                         <h:panelGroup>
-                            <style type="text/css">
-                                /* Иконка раворачивания элемента */
-                                .ui-icon-triangle-1-e {
-                                    background-image: url('#{resource["images:plus.png"]}') !important;
-                                    background-position: 0 0;
-                                }
-
-                                /* Иконка сворачивания элемента */
-                                .ui-icon-triangle-1-s {
-                                    background-image: url('#{resource["images:minus.png"]}') !important;
-                                    background-position: 0 0;
-                                }
-                            </style>
                             <div style="height: 250px; width: 100%; margin: 0;">
                                 <p:treeTable id="task_table"
                                              value="#{request_doc.taskTreeHolder.root}"
@@ -683,7 +604,7 @@
                                         <h:outputText value="#{row_task.author.getDescription()}"/>
                                     </p:column>
                                     <p:column headerText="Исполнитель">
-                                        <ui:repeat value="#{row_task.executors}" var="executor">
+                                        <ui:repeat value="#{row_task.executorsList}" var="executor">
                                             <h:outputText value="#{executor.getDescription()}"/><br/>
                                         </ui:repeat>
                                     </p:column>

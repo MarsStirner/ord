@@ -439,19 +439,6 @@
                             </div>
                         </div>
                         <h:panelGroup>
-                            <style type="text/css">
-                                /* Иконка раворачивания элемента */
-                                .ui-icon-triangle-1-e {
-                                    background-image: url('#{resource["images:plus.png"]}') !important;
-                                    background-position: 0 0;
-                                }
-
-                                /* Иконка сворачивания элемента */
-                                .ui-icon-triangle-1-s {
-                                    background-image: url('#{resource["images:minus.png"]}') !important;
-                                    background-position: 0 0;
-                                }
-                            </style>
                             <div style="height: 250px; width: 100%; margin: 0;">
                                 <p:treeTable id="task_table"
                                              value="#{internal_doc.taskTreeHolder.root}"
@@ -472,9 +459,8 @@
                                         <h:outputText value="#{row_task.author.getDescription()}"/>
                                     </p:column>
                                     <p:column headerText="Исполнитель">
-                                        <ui:repeat value="#{row_task.executors}" var="executor">
-                                            <h:outputText value="#{executor}" converter="PersonConverter"/>
-                                            <br/>
+                                        <ui:repeat value="#{row_task.executorsList}" var="executor">
+                                            <h:outputText value="#{executor.getDescription()}"/><br/>
                                         </ui:repeat>
                                     </p:column>
                                     <p:column headerText="Срок исполнения">

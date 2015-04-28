@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<h:head>
+    <title><h:outputText value="#{regionDialog.title}"/></title>
+</h:head>
+
+<h:body>
+    <h:form id="selectUserDialogForm">
+        <p:inputText id="filter" value="#{regionDialog.filter}"/>
+        <p:commandButton value="Поиск" process="filter @this" update="selectRegionTable"/>
+        <p:dataTable id="selectRegionTable"
+                     paginator="true"
+                     rows="50"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     value="#{regionDialog.lazyModel}"
+                     var="region_row"
+                     selectionMode="single"
+                     selection="#{regionDialog.selected}"
+                     lazy="true"
+                     widgetVar="selectPersonTableVar"
+                     scrollable="true"
+                     scrollHeight="400"
+                     sortBy="#{region_row.value}"
+                     sortOrder="ascending"
+                     sortField="value"
+                >
+            <p:column headerText="Регион" sortBy="#{region_row.value}" field = "value">
+                <h:outputText value="#{region_row.value}"/>
+            </p:column>
+            <p:column headerText="Категория" sortBy="#{region_row.category}" field="category">
+                <h:outputText value="#{region_row.category}"/>
+            </p:column>
+        </p:dataTable>
+        <p:commandButton value="Выбрать" action="#{regionDialog.closeDialog(true)}"/>
+        <p:commandButton value="Отмена" action="#{regionDialog.closeDialog(false)}"/>
+    </h:form>
+</h:body>
+
+</html>

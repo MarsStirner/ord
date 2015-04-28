@@ -9,6 +9,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "kladr_regions")
 public class Region extends DictionaryEntity {
+    //TODO comparable
     private static final long serialVersionUID = -8907114855845335033L;
 
     @Override

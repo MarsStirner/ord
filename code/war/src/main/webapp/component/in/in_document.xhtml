@@ -605,8 +605,8 @@
                                         <h:outputText value="#{row_task.author.getDescription()}"/>
                                     </p:column>
                                     <p:column headerText="Исполнитель">
-                                        <ui:repeat value="#{row_task.executors}" var="executor">
-                                            <h:outputText value="#{executor.getDescription()}"/> <br/>
+                                        <ui:repeat value="#{row_task.executorsList}" var="executor">
+                                            <h:outputText value="#{executor.getDescription()}"/><br/>
                                         </ui:repeat>
                                     </p:column>
                                     <p:column headerText="Срок исполнения">

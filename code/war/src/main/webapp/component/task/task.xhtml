@@ -138,7 +138,7 @@
             <h:panelGroup rendered="#{task.createState}">
                 <div class="name">
                     <h:outputText value="Новая"/>
-                    <p:selectOneMenu id="form1" value="#{task.document.form}" converter="DocumentFormConverter">
+                    <p:selectOneMenu id="form1" value="#{task.document.form}" converter="DocumentFormConverter"  style="width:15em;">
                         <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Поручения')}"/>
                     </p:selectOneMenu>
                 </div>
@@ -148,7 +148,7 @@
             </h:panelGroup>
             <h:panelGroup rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1) and task.viewState}">
                 <div class="name">
-                    <p:selectOneMenu id="form2" value="#{task.document.form}" converter="DocumentFormConverter">
+                    <p:selectOneMenu id="form2" value="#{task.document.form}" converter="DocumentFormConverter"  style="width:15em;" >
                         <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Поручения')}"/>
                     </p:selectOneMenu>
                 </div>
@@ -417,19 +417,6 @@
                                 </div>
                             </div>
                             <h:panelGroup>
-                                <style type="text/css">
-                                    /* Иконка раворачивания элемента */
-                                    .ui-icon-triangle-1-e {
-                                        background-image: url('#{resource["images:plus.png"]}') !important;
-                                        background-position: 0 0;
-                                    }
-
-                                    /* Иконка сворачивания элемента */
-                                    .ui-icon-triangle-1-s {
-                                        background-image: url('#{resource["images:minus.png"]}') !important;
-                                        background-position: 0 0;
-                                    }
-                                </style>
                                 <div style="height: 250px; width: 100%; margin: 0;">
                                     <p:treeTable id="task_table"
                                                  value="#{task.taskTreeHolder.root}"
@@ -450,8 +437,8 @@
                                             <h:outputText value="#{row_task.author.getDescription()}"/>
                                         </p:column>
                                         <p:column headerText="Исполнитель">
-                                            <ui:repeat value="#{row_task.executors}" var="executor">
-                                                <h:outputText value="#{executor}" converter="PersonConverter"/> <br/>
+                                            <ui:repeat value="#{row_task.executorsList}" var="executor">
+                                                <h:outputText value="#{executor.getDescription()}"/> <br/>
                                             </ui:repeat>
                                         </p:column>
                                         <p:column headerText="Срок исполнения">
