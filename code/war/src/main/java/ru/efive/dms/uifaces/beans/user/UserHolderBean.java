@@ -13,7 +13,8 @@ import ru.entity.model.user.RbContactInfoType;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
-import javax.enterprise.context.ConversationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,10 +24,19 @@ import java.util.*;
 import static ru.efive.dms.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
 
-@Named("user")
-@ConversationScoped
+@ManagedBean(name="user")
+@ViewScoped
 public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("USER");
+    private List<PersonContact> contactList;
+
+    public List<PersonContact> getContactList() {
+        return contactList;
+    }
+
+    public void setContactList(final List<PersonContact> contactList) {
+        this.contactList = contactList;
+    }
 
     @Override
     public boolean isCanCreate() {
@@ -94,7 +104,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
      * @return успешность удаления
      */
     public boolean deleteContact(final PersonContact contact) {
-        return getDocument().getContacts().remove(contact);
+        return getContactList().remove(contact);
 
     }
 
@@ -109,7 +119,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         final List<RbContactInfoType> typeList = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
         if (!typeList.isEmpty()) {
             newContact.setType(typeList.get(0));
-            return getDocument().addToContacts(newContact);
+            return getContactList().add(newContact);
         }
         return false;
     }
@@ -139,6 +149,10 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     @Override
     protected void initDocument(Integer id) {
         setDocument(sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getItemById(id));
+        final Set<PersonContact> contacts = getDocument().getContacts();
+        if(contacts!=null && !contacts.isEmpty() ) {
+            contactList = new ArrayList<PersonContact>(contacts);
+        }
     }
 
     @Override
@@ -148,6 +162,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         user.setDeleted(false);
         user.setFired(false);
         setDocument(user);
+        contactList = new ArrayList<PersonContact>(5);
     }
 
     @Override
@@ -155,7 +170,9 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         boolean result = false;
         try {
             //Удаляем пустые контактные данные, введенные пользователем
-            removeEmptyContacts(getDocument().getContacts());
+            removeEmptyContacts(contactList);
+            getDocument().getContacts().clear();
+            getDocument().getContacts().addAll(new HashSet<PersonContact>(contactList));
             User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).update(getDocument());
             if (user == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
@@ -190,6 +207,10 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
+            //Удаляем пустые контактные данные, введенные пользователем
+            removeEmptyContacts(contactList);
+            getDocument().getContacts().clear();
+            getDocument().getContacts().addAll(new HashSet<PersonContact>(contactList));
             User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(getDocument());
             if (user == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);

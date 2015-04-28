@@ -1,8 +1,8 @@
 package ru.entity.model.user;
 
 
-
 import ru.entity.model.mapped.IdentifiedEntity;
+
 import javax.persistence.*;
 
 /**
@@ -58,5 +58,38 @@ public class PersonContact extends IdentifiedEntity {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final PersonContact that = (PersonContact) o;
+
+        if (!person.equals(that.person)) {
+            return false;
+        }
+        if (!type.equals(that.type)) {
+            return false;
+        }
+        return !(value != null ? !value.equals(that.value) : that.value != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + person.hashCode();
+        result = 31 * result + type.hashCode();
+        result = 31 * result + (value != null ? value.hashCode() : 0);
+        return result;
     }
 }

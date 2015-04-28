@@ -9,9 +9,6 @@
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/template.xhtml">
-    <ui:define name="running_head">
-        <!-- #{user.document.id}  -->
-    </ui:define>
     <ui:define name="header">
         <div id="form_header">
             <div class="actionbar">
@@ -40,8 +37,7 @@
                         </h:commandLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{user.changeFired}"
-                                       rendered="#{user.viewState and (isAdministrator or isHr)}">
+                        <h:commandLink action="#{user.changeFired}" rendered="#{user.viewState and (isAdministrator or isHr)}">
                             <h:graphicImage
                                     value="#{user.document.fired ? resource['images:button-accept.png'] : resource['images:button-reject.png']}"/>
                             <h:outputText value="#{user.document.fired ? 'Восстановить' : 'Уволить'}"/>
@@ -133,7 +129,7 @@
                                         <td colspan="2">
                                             <div id="main_table" style="width:100%">
                                                 <p:dataTable id="view_contacts_tbl"
-                                                             value="#{user.document.contacts}"
+                                                             value="#{user.contactList}"
                                                              var="contact"
                                                              width="100%">
                                                     <p:column headerText="Тип">
@@ -262,7 +258,7 @@
                                         <td colspan="2">
                                             <div id="main_table" style="width:100%">
                                                 <p:dataTable id="edit_contacts_tbl"
-                                                             value="#{user.document.contacts}" var="contact"
+                                                             value="#{user.contactList}" var="contact"
                                                              width="100%">
                                                     <p:column headerText="Тип">
                                                         <h:selectOneMenu

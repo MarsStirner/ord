@@ -510,7 +510,7 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
 
     //Collections *****************************
 
-    public List<PersonContact> getContacts() {return new ArrayList<PersonContact>(contacts);}
+    public Set<PersonContact> getContacts() {return contacts;}
 
     public String getContact(final String type){
         final StringBuilder sb = new StringBuilder();
@@ -525,8 +525,8 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
         return sb.toString();
     }
 
-    public void setContacts(List<PersonContact> contacts) {
-        this.contacts = new HashSet<PersonContact>(contacts);
+    public void setContacts(Set<PersonContact> contacts) {
+        this.contacts = contacts;
     }
 
     public boolean addToContacts(final PersonContact contact) {
