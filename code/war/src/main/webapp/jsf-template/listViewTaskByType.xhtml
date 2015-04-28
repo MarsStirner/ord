@@ -25,7 +25,7 @@
             <h:commandLink action="#{tasks.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="mainTable"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
     </ui:define>
@@ -36,7 +36,7 @@
                          style="display:block; float:left; width:60%; margin:2px 10px;"
                          title="Поиск"/>
             <p:commandButton value=" " action="#{tasks.applyFilter()}" styleClass="searchbutton"
-                             process="@this filter_string" update="mainTable"/>
+                             process="@this filter_string" update="main_data_tbl"/>
         </div>
     </ui:define>
 
@@ -69,7 +69,7 @@
                 <h:outputText value="#{row.taskNumber}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
-                <ui:repeat value="#{row.executors}" var="element">
+                <ui:repeat value="#{row.executorsList}" var="element">
                     <h:outputText value="#{element.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>               >

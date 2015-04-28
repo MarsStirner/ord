@@ -1155,7 +1155,7 @@ public final class ProcessFactory {
         User author = (prop == null ? null : (User) prop);
 
         prop = PropertyUtils.getProperty(t, "executors");
-        List<User> executors = prop == null ? null : (List<User>) prop;
+        Set<User> executors = prop == null ? null : (Set<User>) prop;
 
         prop = PropertyUtils.getProperty(t, "form");
         Object form = (prop == null ? null : (Object) prop);

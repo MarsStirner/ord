@@ -201,12 +201,16 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
         this.author = author;
     }
 
-    public List<User> getExecutors() {
+    public List<User> getExecutorsList() {
         if(executors != null) {
             return new ArrayList<User>(executors);
         } else {
             return new ArrayList<User>(0);
         }
+    }
+
+    public Set<User> getExecutors(){
+        return executors;
     }
 
     public void setExecutors(Set<User> executors) {

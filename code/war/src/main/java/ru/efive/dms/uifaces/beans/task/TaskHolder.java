@@ -1,7 +1,10 @@
 package ru.efive.dms.uifaces.beans.task;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
@@ -11,8 +14,9 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
-import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
+import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
+import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
+import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
@@ -47,70 +51,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     private Permissions permissions;
     private List<Attachment> attachments = new ArrayList<Attachment>();
     private List<byte[]> files = new ArrayList<byte[]>();
-    private UserSelectModalBean initiatorSelectModal = new UserSelectModalBean() {
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setInitiator(getUser());
-        }
 
-        @Override
-        protected void doShow() {
-            this.setUser(getDocument().getInitiator());
-            super.doShow();
-        }
-
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            this.setUser(null);
-        }
-    };
-    private UserSelectModalBean controllerSelectModal = new UserSelectModalBean() {
-        @Override
-        protected void doShow() {
-            this.setUser(getDocument().getController());
-            super.doShow();
-        }
-
-        @Override
-        protected void doSave() {
-            super.doSave();
-            getDocument().setController(getUser());
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            getUserList().setFilter("");
-            getUserList().markNeedRefresh();
-            this.setUser(null);
-        }
-    };
-    private UserListSelectModalBean executorsSelectModal = new UserListSelectModalBean() {
-        @Override
-        protected void doSave() {
-            getDocument().setExecutors(new HashSet<User>(getUsers()));
-            super.doSave();
-        }
-
-        @Override
-        protected void doShow() {
-            super.doShow();
-            if (getDocument() != null && getDocument().getExecutors() != null) {
-                setUsers(new ArrayList<User>(getDocument().getExecutors()));
-            }
-        }
-
-        @Override
-        protected void doHide() {
-            super.doHide();
-            setUsers(null);
-        }
-    };
     private VersionAppenderModal versionAppenderModal = new VersionAppenderModal();
     private VersionHistoryModal versionHistoryModal = new VersionHistoryModal();
     private transient String stateComment;
@@ -501,10 +442,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return "";
     }
 
-    // MODAL HOLDERS
-
-    // END OF MODAL HOLDERS
-
     protected void initDefaultInitiator() {
         Task task = getDocument();
         User initiator = null;
@@ -531,18 +468,14 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 initiator = request_doc.getController();
             } else if (key.contains("task")) {
                 Task parent_task = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemByIdForListView(rootDocumentId);
-                final List<User> users = parent_task.getExecutors();
+                final Set<User> users = parent_task.getExecutors();
                 if (users != null && users.size() == 1) {
                     initiator = users.iterator().next();
                 } else {
-                    logger.error(
-                            "TASK[{}] can not set initiator cause: {}",
-                            task.getId(),
-                            users == null ? "executors is null" : "too much executors. size =" + users.size()
+                    logger.error("TASK[{}] can not set initiator cause: {}", task.getId(), users == null ? "executors is null" : "too much executors. size =" + users.size()
                     );
                 }
             }
-
             if (initiator != null) {
                 task.setInitiator(initiator);
             } else {
@@ -659,22 +592,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         versionHistoryModal.show();
     }
 
-    public UserSelectModalBean getInitiatorSelectModal() {
-        return initiatorSelectModal;
-    }
-
-    public UserSelectModalBean getControllerSelectModal() {
-        return controllerSelectModal;
-    }
-
-    public UserListSelectModalBean getExecutorsSelectModal() {
-        return executorsSelectModal;
-    }
-
-    public void setExecutorsSelectModal(UserListSelectModalBean executorsSelectModal) {
-        this.executorsSelectModal = executorsSelectModal;
-    }
-
     public ProcessorModalBean getProcessorModal() {
         return processorModal;
     }
@@ -768,7 +685,63 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             versionList = null;
             attachment = null;
         }
-
-
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Выбора инициатора ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseInitiator() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
+        final User preselected = getDocument().getInitiator();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
+
+    public void onInitiatorChosen(SelectEvent event) {
+        final User selected = (User) event.getObject();
+        getDocument().setInitiator(selected);
+        logger.info("Choose initiator From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+
+    //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseController() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_RESPONSIBLE));
+        final User preselected = getDocument().getController();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
+
+    public void onControllerChosen(SelectEvent event) {
+        final User selected = (User) event.getObject();
+        getDocument().setController(selected);
+        logger.info("Choose controller From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+    // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseExecutors() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_EXECUTORS));
+        final List<User> preselected = getDocument().getExecutorsList();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
+
+    public void onExecutorsChosen(SelectEvent event) {
+        final List<User> selected = (List<User>) event.getObject();
+        if(selected != null && !selected.isEmpty()) {
+            getDocument().setExecutors(new HashSet<User>(selected));
+        }  else {
+            getDocument().getExecutors().clear();
+        }
+        logger.info("Choose executors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+
 }

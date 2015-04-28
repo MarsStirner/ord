@@ -71,7 +71,7 @@
                 <h:outputText value="#{row.contragent.shortName}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
-                <ui:repeat value="#{row.executors}" var="element">
+                <ui:repeat value="#{row.executorsList}" var="element">
                         <h:outputText value="#{element.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>
