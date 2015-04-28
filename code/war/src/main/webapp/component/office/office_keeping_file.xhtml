@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -23,30 +22,26 @@
         <div class="actionbar">
             <div class="menu">
                 <div class="defbutton">
-                    <h:commandLink action="#{officeKeepingFile.edit}"
-                                   rendered="#{officeKeepingFile.viewState}">
+                    <h:commandLink action="#{officeKeepingFile.edit}" rendered="#{officeKeepingFile.viewState}">
                         <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                         Редактировать
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
-                    <h:commandLink action="#{officeKeepingFile.cancel}"
-                                   rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
+                    <h:commandLink action="#{officeKeepingFile.cancel}" rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
                         <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
                         Отменить
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
-                    <h:commandLink action="#{officeKeepingFile.save}"
-                                   rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
+                    <h:commandLink action="#{officeKeepingFile.save}" rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
                         <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
                         Сохранить
                     </h:commandLink>
                 </div>
                 <div class="defbutton">
                     <e5ui:formPart id="actions_fp">
-                        <h:commandLink
-                                onclick="actionsModal.clickOpen('actionsModal'); return false;">
+                        <h:commandLink onclick="actionsModal.clickOpen('actionsModal'); return false;">
                             <h:graphicImage value="#{resource['images:button-do.png']}"/>
                             Действия
                         </h:commandLink>
@@ -54,12 +49,10 @@
                                                modalWindowHolder="#{officeKeepingFile.processorModal}"
                                                render="main_content_form:" execute="@this" showButtons="false"
                                                widgetVar="actionsModal">
-                            <h:panelGroup
-                                    rendered="#{not(officeKeepingFile.processorModal.processingState)}">
+                            <h:panelGroup rendered="#{not(officeKeepingFile.processorModal.processingState)}">
                                 <div id="title">Действия</div>
                             </h:panelGroup>
-                            <h:panelGroup
-                                    rendered="#{officeKeepingFile.processorModal.actionsAvailable}">
+                            <h:panelGroup rendered="#{officeKeepingFile.processorModal.actionsAvailable}">
                                 <div class="wrap"
                                      style="height: 90px; background-color: #fff; clear: both;">
                                     <div class="inner" style="height: 90px;">
@@ -83,15 +76,11 @@
                                     </div>
                                 </div>
                             </h:panelGroup>
-                            <h:panelGroup
-                                    rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}">
-                                <h:outputText style="padding-left:10px;"
-                                              value="#{officeKeepingFile.processorModal.actionResult}"/>
+                            <h:panelGroup rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}">
+                                <h:outputText style="padding-left:10px;" value="#{officeKeepingFile.processorModal.actionResult}"/>
                             </h:panelGroup>
-                            <h:panelGroup
-                                    rendered="#{officeKeepingFile.processorModal.processingState}">
-                                <e5ui:include
-                                        data="#{officeKeepingFile.processorModal.processedActivity.document.form}"/>
+                            <h:panelGroup rendered="#{officeKeepingFile.processorModal.processingState}">
+                                <e5ui:include data="#{officeKeepingFile.processorModal.processedActivity.document.form}"/>
                             </h:panelGroup>
 
                             <div class="e5ui-modal-bottombuttons">
@@ -120,20 +109,18 @@
 
 <ui:define name="content">
 <div id="header_content">
-    <h:panelGroup
-            rendered="#{officeKeepingFile.createState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() eq 1)}">
+    <h:panelGroup rendered="#{officeKeepingFile.createState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() eq 1)}">
         <e5ui:formPart id="editHeaderPart">
             <div class="name">
                 Номенклатура дела №
-                <h:inputText value="#{officeKeepingFile.document.fileIndex}" immediate="true"/>
+                <p:inputText value="#{officeKeepingFile.document.fileIndex}"/>
             </div>
             <div class="title">
                 <h:outputText value="#{officeKeepingFile.document.getDocumentStatus().getName()}"/>
             </div>
         </e5ui:formPart>
     </h:panelGroup>
-    <h:panelGroup
-            rendered="#{officeKeepingFile.viewState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() ge 1)}">
+    <h:panelGroup rendered="#{officeKeepingFile.viewState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() ge 1)}">
         <div class="name">
             <div>
                 Номенклатура дел №
@@ -189,21 +176,19 @@
                 <tr class="row">
                     <td class="first">Заголовок:</td>
                     <td>
-                        <h:inputText value="#{officeKeepingFile.document.shortDescription}" class="wide"
-                                     immediate="true"/>
+                        <p:inputText value="#{officeKeepingFile.document.shortDescription}" styleClass="wide"/>
                     </td>
                 </tr>
                 <tr class="row">
-                    <td class="first">Срок хранения и № статей по перечню::</td>
+                    <td class="first">Срок хранения и № статей по перечню:</td>
                     <td>
-                        <h:inputText value="#{officeKeepingFile.document.keepingPeriodReasons}" class="wide"
-                                     immediate="true"/>
+                        <p:inputText value="#{officeKeepingFile.document.keepingPeriodReasons}" styleClass="wide"/>
                     </td>
                 </tr>
                 <tr class="row">
                     <td class="first">Примечания:</td>
                     <td>
-                        <h:inputText value="#{officeKeepingFile.document.comments}" class="wide" immediate="true"/>
+                        <p:inputText value="#{officeKeepingFile.document.comments}" styleClass="wide"/>
                     </td>
                 </tr>
             </table>
@@ -286,9 +271,9 @@
                             <span class="title">Фонд</span>
                         </label>
                     </td>
-                    <td class="second"><h:outputText
-                            value="#{officeKeepingFile.document.fundNumber}"
-                            class="short"/></td>
+                    <td class="second">
+                        <h:outputText value="#{officeKeepingFile.document.fundNumber}" class="short"/>
+                    </td>
                     <td class="third"/>
                     <td class="fourth"/>
                 </tr>
@@ -341,7 +326,7 @@
                         </label>
                     </td>
                     <td class="second">
-                        <h:inputText value="#{officeKeepingFile.document.fundNumber}" id="fundNumber" class="short"/>
+                        <p:inputText value="#{officeKeepingFile.document.fundNumber}" id="fundNumber" styleClass="short"/>
                     </td>
                     <td class="third"/>
                     <td class="fourth"/>
@@ -353,7 +338,7 @@
                         </label>
                     </td>
                     <td class="second">
-                        <h:inputText value="#{officeKeepingFile.document.standNumber}" id="standNumber" class="short"/>
+                        <p:inputText value="#{officeKeepingFile.document.standNumber}" id="standNumber" styleClass="short"/>
                     </td>
                     <td class="third"/>
                     <td class="fourth"/>
@@ -365,7 +350,7 @@
                         </label>
                     </td>
                     <td class="second">
-                        <h:inputText value="#{officeKeepingFile.document.shelfNumber}" id="shelfNumber" class="short"/>
+                        <p:inputText value="#{officeKeepingFile.document.shelfNumber}" id="shelfNumber" styleClass="short"/>
                     </td>
                     <td class="third"/>
                     <td class="fourth"/>
@@ -377,7 +362,7 @@
                         </label>
                     </td>
                     <td class="second">
-                        <h:inputText value="#{officeKeepingFile.document.boxNumber}" id="boxNumber" class="short"/>
+                        <p:inputText value="#{officeKeepingFile.document.boxNumber}" id="boxNumber" styleClass="short"/>
                     </td>
                     <td class="third"/>
                     <td class="fourth"/>
@@ -386,11 +371,9 @@
         </div>
     </h:panelGroup>
 </p:tab>
-<p:tab title="История"
-       rendered="#{officeKeepingFile.viewState or officeKeepingFile.createState or officeKeepingFile.editState}">
+<p:tab title="История" rendered="#{officeKeepingFile.viewState or officeKeepingFile.createState or officeKeepingFile.editState}">
     <div style="width: 100%; margin: 0;">
-        <p:dataTable id="history_list" value="#{officeKeepingFile.document.historyList}"
-                     var="history_entry" grouping="false">
+        <p:dataTable id="history_list" value="#{officeKeepingFile.document.historyList}" var="history_entry" grouping="false">
             <p:column headerText="Дата">
                 <h:outputText value="#{history_entry.startDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
@@ -417,11 +400,6 @@
 </ui:define>
 
 <ui:define name="footer">
-    <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
-              showHeader="false" position="center center">
-        Пожалуйста, подождите...
-    </p:dialog>
     <h:outputStylesheet library="css" name="datatable.css"/>
     <h:outputStylesheet library="css" name="modalWindow.css"/>
 </ui:define>

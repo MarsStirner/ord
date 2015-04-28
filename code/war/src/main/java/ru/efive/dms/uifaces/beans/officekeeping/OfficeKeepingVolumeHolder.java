@@ -92,27 +92,26 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
     @Override
     protected void initNewDocument() {
         OfficeKeepingVolume document = new OfficeKeepingVolume();
-        OfficeKeepingFile file = null;
+
         String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
         if (StringUtils.isNotEmpty(parentId)) {
-            file = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocumentById(parentId);
+            final Integer parentIdentifier = Integer.valueOf(parentId);
+            final OfficeKeepingFile file = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO)
+                    .findDocumentById(parentIdentifier);
             if (file != null) {
                 document.setParentFile(file);
+                document.setShortDescription(file.getShortDescription());
+                document.setComments(file.getComments());
+                document.setKeepingPeriodReasons(file.getKeepingPeriodReasons());
+                document.setFundNumber(file.getFundNumber());
+                document.setBoxNumber(file.getBoxNumber());
+                document.setShelfNumber(file.getShelfNumber());
+                document.setStandNumber(file.getStandNumber());
+                document.setLimitUnitsCount(250);
             }
         }
         document.setDocumentStatus(DocumentStatus.NEW);
         Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-
-        if (file != null) {
-            document.setShortDescription(file.getShortDescription());
-            document.setComments(file.getComments());
-            document.setKeepingPeriodReasons(file.getKeepingPeriodReasons());
-            document.setFundNumber(file.getFundNumber());
-            document.setBoxNumber(file.getBoxNumber());
-            document.setShelfNumber(file.getShelfNumber());
-            document.setStandNumber(file.getStandNumber());
-            document.setLimitUnitsCount(250);
-        }
 
         HistoryEntry historyEntry = new HistoryEntry();
         historyEntry.setCreated(created);

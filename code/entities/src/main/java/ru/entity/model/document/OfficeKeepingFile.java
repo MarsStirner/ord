@@ -244,7 +244,7 @@ public class OfficeKeepingFile extends IdentifiedEntity implements ProcessedData
     //@Cascade({ org.hibernate.annotations.CascadeType.ALL })
     //@JoinTable(name="dms_office_keeping_volumes_by_files")
     //@LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "parentFile")
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "parentFile")
     private Set<OfficeKeepingVolume> volumes;
 
     /**

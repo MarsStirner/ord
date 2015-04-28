@@ -50,7 +50,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
 
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).get(id));
+        setDocument(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocumentById(id));
         if (getDocument() == null) {
             setState(STATE_NOT_FOUND);
         }

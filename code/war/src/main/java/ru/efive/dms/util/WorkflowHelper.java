@@ -1079,9 +1079,8 @@ public final class WorkflowHelper {
 
                     Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
                     document.setRegistrationDate(calendar.getTime());
-                    List<Role> in_roles = new ArrayList<Role>();
-                    Role in_office;
-                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.REQUEST_MANAGER);
+                    Set<Role> in_roles = new HashSet<Role>();
+                    Role in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.REQUEST_MANAGER);
                     in_roles.add(in_office);
 
                     document.setRoleEditors(in_roles);
