@@ -327,14 +327,6 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         this.registrationDate = registrationDate;
     }
 
-    public List<User> getRecipientUsers() {
-        return new ArrayList<User>(recipientUsers);
-    }
-
-    public void setRecipientUsers(List<User> recipientUsers) {
-        this.recipientUsers = new HashSet<User>(recipientUsers);
-    }
-
     public Date getExecutionDate() {
         return executionDate;
     }
@@ -589,36 +581,81 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         return in_result;
     }
 
-    public List<User> getPersonReaders() {
-        return new ArrayList<User>(personReaders);
+    public Set<User> getRecipientUsers() {
+        return recipientUsers;
     }
 
-    public void setPersonReaders(List<User> personReaders) {
-        this.personReaders = new HashSet<User>(personReaders);
+    public void setRecipientUsers(Set<User> recipientUsers) {
+        this.recipientUsers = recipientUsers;
     }
 
-    public List<Role> getRoleReaders() {
-        return new ArrayList<Role>(roleReaders);
+    public List<User> getRecipientUserList() {
+        if (recipientUsers != null && !recipientUsers.isEmpty()) {
+            return new ArrayList<User>(recipientUsers);
+        }
+        return new ArrayList<User>(0);
     }
 
-    public void setRoleReaders(List<Role> roleReaders) {
-        this.roleReaders = new HashSet<Role>(roleReaders);
+    public Set<User> getPersonReaders() {
+        return personReaders;
     }
 
-    public List<Role> getRoleEditors() {
-        return new ArrayList<Role>(roleEditors);
+    public void setPersonReaders(Set<User> personReaders) {
+        this.personReaders = personReaders;
     }
 
-    public void setRoleEditors(List<Role> roleEditors) {
-        this.roleEditors = new HashSet<Role>(roleEditors);
+    public List<User> getPersonReadersList() {
+        if (personReaders != null && !personReaders.isEmpty()) {
+            return new ArrayList<User>(personReaders);
+        }
+        return new ArrayList<User>(0);
     }
 
-    public List<User> getPersonEditors() {
-        return new ArrayList<User>(personEditors);
+    public Set<Role> getRoleReaders() {
+        return roleReaders;
     }
 
-    public void setPersonEditors(List<User> personEditors) {
-        this.personEditors = new HashSet<User>(personEditors);
+    public void setRoleReaders(Set<Role> roleReaders) {
+        this.roleReaders = roleReaders;
+    }
+
+    public List<Role> getRoleReadersList(){
+        if (roleReaders != null && !roleReaders.isEmpty()) {
+            return new ArrayList<Role>(roleReaders);
+        }
+        return new ArrayList<Role>(0);
+    }
+
+    public Set<Role> getRoleEditors() {
+        return roleEditors;
+    }
+
+    public void setRoleEditors(Set<Role> roleEditors) {
+        this.roleEditors = roleEditors;
+    }
+
+    public List<Role> getRoleEditorsList() {
+        if (roleEditors == null || roleEditors.isEmpty()) {
+            return new ArrayList<Role>(0);
+        } else {
+            return new ArrayList<Role>(roleEditors);
+        }
+    }
+
+    public Set<User> getPersonEditors() {
+        return personEditors;
+    }
+
+    public void setPersonEditors(Set<User> personEditors) {
+        this.personEditors = personEditors;
+    }
+
+    public List<User> getPersonEditorsList() {
+        if (personEditors == null || personEditors.isEmpty()) {
+            return new ArrayList<User>(0);
+        } else {
+            return new ArrayList<User>(personEditors);
+        }
     }
 
     public Region getRegion() {
