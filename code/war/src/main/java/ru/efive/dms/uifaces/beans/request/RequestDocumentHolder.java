@@ -13,7 +13,6 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.uifaces.beans.contragent.ContragentListHolderBean;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
@@ -33,7 +32,6 @@ import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -102,17 +100,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     @Inject
     @Named("fileManagement")
     private transient FileManagementBean fileManagement;
-
-    @ManagedProperty("#{contragentList}")
-    private transient ContragentListHolderBean contragentList;
-
-    public ContragentListHolderBean getContragentList() {
-        return contragentList;
-    }
-
-    public void setContragentList(ContragentListHolderBean contragentList) {
-        this.contragentList = contragentList;
-    }
 
     @Inject
     @Named("documentTaskTree")

@@ -34,7 +34,7 @@
                          style="display:block; float:left; width:60%; margin:2px 10px;"
                          title="Поиск"/>
             <p:commandButton value=" " action="#{personal_request_documents.applyFilter()}" styleClass="searchbutton"
-                             process="@this filter_string" update="mainTable"/>
+                             process="@this filter_string" update="main_data_tbl"/>
             <h:outputLink target="_blank" value="/component/request/request_document_search_form.xhtml"
                           title="Перейти к форме расширенного поиска"
                           style="margin: 0 20px;">

@@ -74,6 +74,7 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
         result.createAlias("contragent", "contragent", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("recipientGroups.members", "recipientGroups.members", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);

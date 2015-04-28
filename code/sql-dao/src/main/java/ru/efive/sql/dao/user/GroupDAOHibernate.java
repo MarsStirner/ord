@@ -30,7 +30,9 @@ public class GroupDAOHibernate extends GenericDAOHibernate<Group> {
      * @return критерий для групп
      */
     public DetachedCriteria getListCriteria() {
-        return getSimplestCriteria();
+        final DetachedCriteria result = getSimplestCriteria();
+        result.createAlias("members", "members", CriteriaSpecification.LEFT_JOIN);
+        return result;
     }
 
     /**
@@ -42,7 +44,6 @@ public class GroupDAOHibernate extends GenericDAOHibernate<Group> {
         final DetachedCriteria result = getListCriteria();
         //EAGER LOADING OF GROUPS, ROLES, defaultNomenclature, and accessLevels
         result.createAlias("author", "author", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("members", "members", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("category", "category", CriteriaSpecification.LEFT_JOIN);
         return result;
     }

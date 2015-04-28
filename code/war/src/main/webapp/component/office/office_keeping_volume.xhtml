@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite" xmlns:p="http://primefaces.org/ui">
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -331,29 +331,25 @@
                 <tr class="row">
                     <td class="first">Заголовок:</td>
                     <td>
-                        <h:inputText value="#{officeKeepingVolume.document.shortDescription}" class="wide"
-                                     immediate="true"/>
+                        <p:inputText value="#{officeKeepingVolume.document.shortDescription}"/>
                     </td>
                 </tr>
                 <tr class="row">
-                    <td class="first">Срок хранения и № статей по перечню::</td>
+                    <td class="first">Срок хранения и № статей по перечню:</td>
                     <td>
-                        <h:inputText value="#{officeKeepingVolume.document.keepingPeriodReasons}"
-                                     class="wide" immediate="true"/>
+                        <p:inputText value="#{officeKeepingVolume.document.keepingPeriodReasons}"/>
                     </td>
                 </tr>
                 <tr class="row">
                     <td class="first">Примечания:</td>
                     <td>
-                        <h:inputText value="#{officeKeepingVolume.document.comments}"
-                                     class="wide" immediate="true"/>
+                        <p:inputText value="#{officeKeepingVolume.document.comments}"/>
                     </td>
                 </tr>
                 <tr class="row">
                     <td class="first">Лимит количества ед. хранения:</td>
                     <td>
-                        <h:inputText value="#{officeKeepingVolume.document.limitUnitsCount}"
-                                     class="wide" immediate="true"/>
+                        <p:inputText value="#{officeKeepingVolume.document.limitUnitsCount}"/>
                     </td>
                 </tr>
                 <tr class="row">
@@ -535,8 +531,7 @@
 </p:tab>
 <p:tab title="История">
     <div style="width: 100%; margin: 0;">
-        <p:dataTable id="history_list" value="#{officeKeepingVolume.document.historyList}"
-                     var="history_entry" grouping="false">
+        <p:dataTable id="history_list" value="#{officeKeepingVolume.document.historyList}" var="history_entry" grouping="false">
             <p:column headerText="Дата">
                 <h:outputText value="#{history_entry.startDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>

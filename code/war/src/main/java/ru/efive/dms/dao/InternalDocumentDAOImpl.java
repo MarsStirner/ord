@@ -91,6 +91,7 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
         result.createAlias("personEditors", "personEditors", LEFT_JOIN);
         result.createAlias("personReaders", "personReaders", LEFT_JOIN);
         result.createAlias("recipientGroups", "recipientGroups", LEFT_JOIN);
+        result.createAlias("recipientGroups.members", "recipientGroups.members", LEFT_JOIN);
         result.createAlias("roleReaders", "roleReaders", LEFT_JOIN);
         result.createAlias("roleEditors", "roleEditors", LEFT_JOIN);
         result.createAlias("userAccessLevel", "userAccessLevel", INNER_JOIN);

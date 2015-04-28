@@ -21,7 +21,7 @@
             <h:commandLink action="#{personal_out_documents.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="mainTable"/>
+                <f:ajax render="main_data_tbl"/>
             </h:commandLink>
         </div>
     </ui:define>
@@ -32,7 +32,7 @@
                          style="display:block; float:left; width:60%; margin:2px 10px;"
                          title="Поиск"/>
             <p:commandButton value=" " action="#{personal_out_documents.applyFilter()}" styleClass="searchbutton"
-                             process="@this filter_string" update="mainTable"/>
+                             process="@this filter_string" update="main_data_tbl"/>
             <h:outputLink target="_blank" value="/component/out/out_document_search_form.xhtml"
                           title="Перейти к форме расширенного поиска"
                           style="margin: 0 20px;">
