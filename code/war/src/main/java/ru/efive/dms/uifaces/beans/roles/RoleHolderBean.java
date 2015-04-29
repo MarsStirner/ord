@@ -7,7 +7,8 @@ import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
 
-import javax.enterprise.context.ConversationScoped;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -19,8 +20,8 @@ import java.util.List;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
 
-@Named("role")
-@ConversationScoped
+@ManagedBean(name="role")
+@ViewScoped
 public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> implements Serializable {
 
     @Override

@@ -1,42 +1,35 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite">
-
+      xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/jsf-template/template.xhtml">
 
-    <ui:define name="running_head">
-        <!-- #{role.document.id}  -->
-        <e5ui-comp:userSessionUpdate interval="300"/>
-    </ui:define>
-
-    <ui:define name="left_menu"></ui:define>
+    <ui:define name="left_menu"/>
 
     <ui:define name="header">
         <div id="form_header">
             <div class="actionbar">
                 <div class="menu">
                     <div class="defbutton">
-                        <h:commandLink action="#{role.edit}" rendered="#{role.viewState}">
+                        <p:commandLink action="#{role.edit}" rendered="#{role.viewState}" update="@all">
                             <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                             Редактировать
-                        </h:commandLink>
+                        </p:commandLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{role.cancel}" rendered="#{role.editState or role.createState}">
+                        <p:commandLink action="#{role.cancel}" rendered="#{role.editState or role.createState}" update="@all">
                             <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
                             Отменить
-                        </h:commandLink>
+                        </p:commandLink>
                     </div>
                     <div class="defbutton">
-                        <h:commandLink action="#{role.save}" rendered="#{role.editState or role.createState}">
+                        <p:commandLink action="#{role.save}" rendered="#{role.editState or role.createState}" update="@all">
                             <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
                             Сохранить
-                        </h:commandLink>
+                        </p:commandLink>
                     </div>
                 </div>
             </div>
@@ -61,8 +54,7 @@
             <h:panelGroup rendered="#{role.forbiddenState}">
                 <div class="name">403 - Действие запрещено</div>
             </h:panelGroup>
-            <h:panelGroup
-                    rendered="#{not(role.createState or role.editState or role.viewState or role.notFoundState or role.forbiddenState)}">
+            <h:panelGroup rendered="#{not(role.createState or role.editState or role.viewState or role.notFoundState or role.forbiddenState)}">
                 <div class="name">В доступе отказано</div>
             </h:panelGroup>
         </div>
@@ -87,36 +79,22 @@
                     <table class="form_grid">
                         <tr class="row">
                             <td class="first">Название:</td>
-                            <td><h:inputText value="#{role.document.name}" class="wide"/></td>
+                            <td><p:inputText value="#{role.document.name}"/></td>
                         </tr>
                         <tr class="row">
                             <td class="first">Тип роли:</td>
                             <td>
-                                <h:selectOneMenu id="roleType" value="#{role.document.roleType}">
+                                <p:selectOneMenu id="roleType" value="#{role.document.roleType}" style="width:15em;">
                                     <f:selectItems value="#{role.types}"/>
-                                </h:selectOneMenu>
+                                </p:selectOneMenu>
                             </td>
                         </tr>
                     </table>
                 </div>
             </h:panelGroup>
         </div>
-
     </ui:define>
-
-    <ui:define name="footer">
-        <e5ui-comp:splashScreen id="splash_screen" timeout="0">
-            <f:facet name="timeoutPanel">
-                <div style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:splashScreen>
-        <script>e5ui_splashScreen.startShowOnSubmit('splash_screen', ['main_content_form']);</script>
-        <h:outputStylesheet library="css" name="datatable.css"/>
-        <h:outputStylesheet library="css" name="modalWindow.css"/>
-    </ui:define>
-
+    <ui:define name="footer"/>
 </ui:composition>
 
 </html>

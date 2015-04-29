@@ -1,76 +1,62 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:p="http://primefaces.org/ui"
         >
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
-    <ui:define name="running_head">
-        <e5ui-comp:outputUtilScript/>
-        <h:outputStylesheet library="css" name="datatable.css"/>
-    </ui:define>
     <ui:define name="headerEditButton">
         <div class="defbutton">
-            <h:commandLink action="#{contragentType.edit}" rendered="#{contragentType.viewState}">
+            <p:commandLink action="#{contragentType.edit}" rendered="#{contragentType.viewState}" update="@all">
                 <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
                 Редактировать
-            </h:commandLink>
+            </p:commandLink>
         </div>
     </ui:define>
     <ui:define name="headerSaveButton">
         <div class="defbutton">
-            <h:commandLink action="#{contragentType.save}"
-                           rendered="#{contragentType.editState or contragentType.createState}">
+            <p:commandLink action="#{contragentType.save}" rendered="#{contragentType.editState or contragentType.createState}" update="@all">
                 <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
                 Сохранить
-            </h:commandLink>
+            </p:commandLink>
         </div>
     </ui:define>
     <ui:define name="headerCancelButton">
         <div class="defbutton">
-            <h:commandLink action="#{contragentType.cancel}"
-                           rendered="#{contragentType.editState or contragentType.createState}">
+            <p:commandLink action="#{contragentType.cancel}" rendered="#{contragentType.editState or contragentType.createState}" update="@all">
                 <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
                 Отменить
-            </h:commandLink>
+            </p:commandLink>
         </div>
     </ui:define>
     <ui:define name="headerDeleteButton">
         <div class="defbutton">
-            <h:commandLink action="#{contragentType.delete()}"
-                           rendered="#{(isAdministrator or isOfficeManager or isRequestManager) and contragentType.viewState}">
+            <p:commandLink action="#{contragentType.delete()}"
+                           rendered="#{(isAdministrator or isOfficeManager or isRequestManager) and contragentType.viewState}" update="@all">
                 <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
                 Удалить
                 <f:param name="docAction" value="delete"/>
-            </h:commandLink>
+            </p:commandLink>
         </div>
     </ui:define>
     <ui:define name="contentReferenceBookName">Справочник Типов Контрагентов</ui:define>
 
     <ui:define name="contentItemName">
-        <h:panelGroup rendered="#{contragentType.createState}">
-            <div class="name">Новый тип контрагентов</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{contragentType.editState or contragentType.viewState}">
-            <div class="name">
+        <div class="name">
+            <h:panelGroup rendered="#{contragentType.createState}">Новый тип контрагентов</h:panelGroup>
+            <h:panelGroup rendered="#{contragentType.editState or contragentType.viewState}">
                 <h:outputText value="#{contragentType.document.value}"/>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{contragentType.notFoundState}">
-            <div class="name">404 - Контрагент не найден</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{contragentType.forbiddenState}">
-            <div class="name">403 - Действие запрещено</div>
-        </h:panelGroup>
-        <h:panelGroup
-                rendered="#{not(contragentType.createState or contragentType.editState or contragentType.viewState or contragentType.notFoundState or contragentType.forbiddenState)}">
-            <div class="name">В доступе отказано</div>
-        </h:panelGroup>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{contragentType.notFoundState}">404 - Контрагент не найден</h:panelGroup>
+            <h:panelGroup rendered="#{contragentType.forbiddenState}">403 - Действие запрещено</h:panelGroup>
+            <h:panelGroup
+                    rendered="#{not(contragentType.createState or contragentType.editState or contragentType.viewState or contragentType.notFoundState or contragentType.forbiddenState)}">
+                В доступе отказано
+            </h:panelGroup>
+        </div>
     </ui:define>
 
     <ui:define name="contentItemInfo">
@@ -106,26 +92,18 @@
                 <table class="form_grid">
                     <tr class="row">
                         <td class="first">
-                            <label>
-                                <span class="title">Наименование:</span>
-                            </label>
+                            <span class="title">Наименование:</span>
                         </td>
                         <td>
-                            <label>
-                                <h:inputText style="width:90%" value="#{contragentType.document.value}"/>
-                            </label>
+                            <p:inputText style="width:90%" value="#{contragentType.document.value}"/>
                         </td>
                     </tr>
                     <tr class="row">
                         <td class="first">
-                            <label>
-                                <span class="title">Код:</span>
-                            </label>
+                            <span class="title">Код:</span>
                         </td>
                         <td>
-                            <label>
-                                <h:inputText style="width:90%" value="#{contragentType.document.code}"/>
-                            </label>
+                            <p:inputText style="width:90%" value="#{contragentType.document.code}"/>
                         </td>
                     </tr>
                 </table>
@@ -134,18 +112,17 @@
         <ui:remove>
             <!--Спсиок не нужен. пока-что....-->
             <!--<h:panelGroup rendered="#{contragentType.editState or contragentType.viewState}">-->
-                <!--<c:choose>-->
-                    <!--<c:when test="#{contragentType.contragentList.isEmpty()}">-->
-                        <!--<h:outputText value="Контрагентов с таким типом не найдено"/>-->
-                    <!--</c:when>-->
-                    <!--<c:otherwise>-->
-                        <!--<h:outputText value="Контрагентов с таким типом: #{contragentType.contragentList.size()}"/>-->
-                        <!--<ui:repeat value="#{contragentType.contragentList}" var="contragent_row">-->
-                            <!--<div><h:outputText value="#{contragent_row.shortName}"/></div>-->
-                        <!--</ui:repeat>-->
-                    <!--</c:otherwise>-->
-                <!--</c:choose>-->
-
+            <!--<c:choose>-->
+            <!--<c:when test="#{contragentType.contragentList.isEmpty()}">-->
+            <!--<h:outputText value="Контрагентов с таким типом не найдено"/>-->
+            <!--</c:when>-->
+            <!--<c:otherwise>-->
+            <!--<h:outputText value="Контрагентов с таким типом: #{contragentType.contragentList.size()}"/>-->
+            <!--<ui:repeat value="#{contragentType.contragentList}" var="contragent_row">-->
+            <!--<div><h:outputText value="#{contragent_row.shortName}"/></div>-->
+            <!--</ui:repeat>-->
+            <!--</c:otherwise>-->
+            <!--</c:choose>-->
             <!--</h:panelGroup>-->
         </ui:remove>
     </ui:define>
