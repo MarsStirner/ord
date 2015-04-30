@@ -126,26 +126,22 @@
     <h:panelGroup rendered="#{officeKeepingVolume.createState}">
         <div class="name">
             Новый том для дела №
-            <h:outputText
-                    value="#{officeKeepingVolume.document.parentFile.fileIndex}"/>
+            <h:outputText value="#{officeKeepingVolume.document.parentFile.fileIndex}"/>
             (
-            <h:outputText
-                    value="#{officeKeepingVolume.document.parentFile.shortDescription}"/>
+            <h:outputText value="#{officeKeepingVolume.document.parentFile.shortDescription}"/>
             )
         </div>
         <div class="title">
             <h:outputText value="#{officeKeepingVolume.document.getDocumentStatus().getName()}"/>
         </div>
     </h:panelGroup>
-    <h:panelGroup
-            rendered="#{officeKeepingVolume.editState or officeKeepingVolume.viewState}">
+    <h:panelGroup rendered="#{officeKeepingVolume.editState or officeKeepingVolume.viewState}">
         <div class="name">
             <div>
                 Том №
                 <h:outputText value="#{officeKeepingVolume.document.volumeIndex}"/>
                 находится в деле
-                <h:outputLink style="margin-left:5px;" value="#"
-                              onclick="goToOfficeKeepingVolume('#{officeKeepingVolume.document.parentFile.id}');">
+                <h:outputLink style="margin-left:5px;" onclick="goToOfficeKeepingFile('#{officeKeepingVolume.document.parentFile.id}'); return false;">
                     <h:outputText value="#{officeKeepingVolume.document.parentFile.fileIndex}"/>
                 </h:outputLink>
                 (
@@ -163,7 +159,6 @@
     <h:panelGroup rendered="#{officeKeepingVolume.forbiddenState}">
         <div class="name">403 - Действие запрещено</div>
     </h:panelGroup>
-
     <h:panelGroup
             rendered="#{not(officeKeepingVolume.createState or officeKeepingVolume.editState or officeKeepingVolume.viewState or officeKeepingVolume.notFoundState or officeKeepingVolume.forbiddenState)}">
         <div class="name">В доступе отказано</div>
@@ -172,8 +167,7 @@
 </div>
 
 <div class="main_content">
-<h:panelGroup
-        rendered="#{(officeKeepingVolume.editState and (officeKeepingVolume.document.getDocumentStatus().getId() eq 10))}">
+<h:panelGroup rendered="#{(officeKeepingVolume.editState and (officeKeepingVolume.document.getDocumentStatus().getId() eq 10))}">
     <div class="row">
         <table class="form_grid">
             <tr class="row">
@@ -270,8 +264,7 @@
                     </label>
                 </td>
                 <td class="fourth">
-                    <h:outputText value="#{officeKeepingVolume.document.collector}" converter="PersonConverter"
-                                  class="wide"/>
+                    <h:outputText value="#{officeKeepingVolume.document.collector.getDescription()}" class="wide"/>
                 </td>
                 <td class="first">
                     <label>

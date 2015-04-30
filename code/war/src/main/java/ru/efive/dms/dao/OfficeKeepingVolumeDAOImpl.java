@@ -1,19 +1,14 @@
 package ru.efive.dms.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.criterion.Conjunction;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Restrictions;
-
+import org.hibernate.criterion.*;
 import ru.efive.sql.dao.GenericDAOHibernate;
+import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.user.User;
-import ru.entity.model.document.OfficeKeepingVolume;
+
+import java.util.List;
+import java.util.Map;
 
 public class OfficeKeepingVolumeDAOImpl extends GenericDAOHibernate<OfficeKeepingVolume> {
 
@@ -73,7 +68,7 @@ public class OfficeKeepingVolumeDAOImpl extends GenericDAOHibernate<OfficeKeepin
         detachedCriteria.setResultTransformer(DetachedCriteria.DISTINCT_ROOT_ENTITY);
 
         if (!showDeleted) {
-            detachedCriteria.add(Restrictions.eq("deleted", showDeleted));
+            detachedCriteria.add(Restrictions.eq("deleted", false));
         }
         return getHibernateTemplate().findByCriteria(getConjunctionSearchCriteria(getSearchCriteria(detachedCriteria, filter), filters), -1, 0);
     }
@@ -148,19 +143,6 @@ public class OfficeKeepingVolumeDAOImpl extends GenericDAOHibernate<OfficeKeepin
                 conjunction.add(Restrictions.ilike(in_key + ".middleName", author.getMiddleName(), MatchMode.ANYWHERE));
                 conjunction.add(Restrictions.ilike(in_key + ".firstName", author.getFirstName(), MatchMode.ANYWHERE));
             }
-
-            /*in_key="deliveryType";
-               //if(in_map.get(in_key)!=null && in_map.get(in_key).toString().length()>0){
-               if(in_map.get(in_key)!=null){
-                   //detachedCriteria.createAlias(in_key, in_key, CriteriaSpecification.LEFT_JOIN);
-                   conjunction.add(Restrictions.eq(in_key+".value", ((DeliveryType)in_map.get(in_key)).getValue()));
-               }*/
-
-            /*in_key="executionDate";
-               if(in_map.get(in_key)!=null){
-                   conjunction.add(Restrictions.sqlRestriction("DATE_FORMAT("+in_key+", '%d.%m.%Y') like lower(?)", format.format(in_map.get(in_key)) + "%", new StringType()));
-               }*/
-
 
             criteria.add(conjunction);
         }

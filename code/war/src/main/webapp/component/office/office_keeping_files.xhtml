@@ -1,24 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="forms.js" target="head"/>
-    </ui:define>
+    <ui:define name="contentLabel">Номенклатуры дел</ui:define>
 
-    <ui:define name="header_top">
-        <span>Номенклатуры дел</span>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:outputLink value="/component/office/office_keeping_file.xhtml" target="_blank">
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
@@ -27,69 +19,48 @@
             </h:outputLink>
         </div>
         <div class="defbutton">
-            <h:commandLink action="#{officeKeepingFiles.refresh()}">
+            <p:commandLink action="#{officeKeepingFiles.refresh()}" update="documentTable">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <f:ajax render="main_data_tbl main_data_paging"/>
-            </h:commandLink>
+            </p:commandLink>
         </div>
     </ui:define>
 
-    <ui:define name="content">
-        <div id="main_table">
-            <div class="wrap_main" id="table_wrap">
-                <div class="inner" id="table_inner">
-                    <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                    id="main_data_tbl" value="#{officeKeepingFiles.documents}"
-                                    var="row" grouping="false">
-                        <e5ui:row ondblclick="goToOfficeKeepingFile('#{row.id}');"/>
-                        <e5ui:column style="min-width:7em">
-                            <f:facet name="header">
-                                <h:commandLink action="#{officeKeepingFiles.sort('name')}">
-                                    Индекс
-                                    <f:ajax render="main_data_tbl"/>
-                                </h:commandLink>
-                            </f:facet>
-                            <h:outputText value="#{row.fileIndex}"/>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:15em">
-                            <f:facet name="header">
-                                <p>Заголовок</p>
-                            </f:facet>
-                            <h:outputText value="#{row.shortDescription}"/>
-                        </e5ui:column>
-                        <e5ui:column style="min-width:8em">
-                            <f:facet name="header">
-                                <p>Срок хранения</p>
-                            </f:facet>
-                            <h:outputText value="#{row.keepingPeriodReasons}"/>
-                        </e5ui:column>
-                        <e5ui:column>
-                            <f:facet name="header">
-                                <p>Статус</p>
-                            </f:facet>
-                            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                        </e5ui:column>
-                    </e5ui:dataTable>
-                </div>
-            </div>
-            <div id="table_paging">
-                <h:panelGroup id="main_data_paging">
-                    <e5ui-comp:tablePager documentListHolder="#{officeKeepingFiles}"
-                                          style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector
-                            documentListHolder="#{officeKeepingFiles}"
-                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </h:panelGroup>
-            </div>
-        </div>
+    <ui:define name="contentSearchPanel"/>
 
-        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
-        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
-                  showHeader="false" position="center center">
-            Пожалуйста, подождите...
-        </p:dialog>
-
+    <ui:define name="contentTable">
+        <p:dataTable id="documentTable"
+                     paginator="true"
+                     rows="100"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     value="#{officeKeepingFiles.lazyModel}"
+                     var="row"
+                     lazy="true"
+                     widgetVar="documentTableWidget"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     selectionMode="single"
+                     sortBy="#{row.fileIndex}"
+                     sortField="fileIndex"
+                     sortOrder="descending"
+                >
+            <p:column headerText="Индекс" style="width:6em;" sortBy="#{row.fileIndex}" field="fileIndex">
+                <h:outputText value="#{row.fileIndex}"/>
+            </p:column>
+            <p:column headerText="Заголовок" sortBy="#{row.shortDescription}" field="shortDescription">
+                <h:outputText value="#{row.shortDescription}"/>
+            </p:column>
+            <p:column headerText="Срок хранения" style="width:12em;" sortBy="#{row.keepingPeriodReasons}" field="keepingPeriodReasons">
+                <h:outputText value="#{row.keepingPeriodReasons}"/>
+            </p:column>
+            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
+                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToOfficeKeepingFile(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
+        </p:dataTable>
     </ui:define>
 
 </ui:composition>

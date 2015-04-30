@@ -120,61 +120,11 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         return result;
     }
 
-    @Override
-    protected String doAfterCreate() {
-        officeKeepingFiles.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        officeKeepingFiles.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        officeKeepingFiles.markNeedRefresh();
-        return super.doAfterSave();
-    }
-
     public List<RoleType> getTypes() {
         List<RoleType> result = new ArrayList<RoleType>();
-        for (RoleType type : RoleType.values()) {
-            result.add(type);
-        }
+        Collections.addAll(result, RoleType.values());
         return result;
     }
-
-
-    public String getLocationTabHeader() {
-        return "<span><span></span></span>";
-    }
-
-    public boolean isLocationTabSelected() {
-        return isLocationTabSelected;
-    }
-
-    public void setLocationTabSelected(boolean isLocationTabSelected) {
-        this.isLocationTabSelected = isLocationTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isVolumesTabSelected = false;
-    private boolean isLocationTabSelected = false;
-    private boolean isHistoryTabSelected = false;
 
     public ProcessorModalBean getProcessorModal() {
         return processorModal;
@@ -217,9 +167,6 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     @Inject
     @Named("sessionManagement")
     SessionManagementBean sessionManagement = new SessionManagementBean();
-    @Inject
-    @Named("officeKeepingFiles")
-    OfficeKeepingFilesHolderBean officeKeepingFiles = new OfficeKeepingFilesHolderBean();
 
     private static final long serialVersionUID = 5947443099767481905L;
 }
