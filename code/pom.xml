@@ -67,15 +67,15 @@
 
     <properties>
         <!-- Sources -->
-        <version.jdk>1.6</version.jdk>
+        <version.jdk>1.7</version.jdk>
         <source.encoding>UTF-8</source.encoding>
 
         <!-- Target -->
-        <version.app.ear>6</version.app.ear>
-        <version.jdk.target>1.6</version.jdk.target>
+        <version.app.ear>7</version.app.ear>
+        <version.jdk.target>1.7</version.jdk.target>
 
         <!-- Components -->
-        <version.javaee-api>6.0</version.javaee-api>
+        <version.javaee-api>7.0</version.javaee-api>
 
         <!-- Test Environment -->
         <version.junit>4.8.2</version.junit>
@@ -86,7 +86,7 @@
         <version.mvn.plugin.javadoc>2.8</version.mvn.plugin.javadoc>
         <version.mvn.plugin.site>3.0-beta-3</version.mvn.plugin.site>
         <version.mvn.plugin.surefire-report>2.8.1</version.mvn.plugin.surefire-report>
-        <version.mvn.plugin.ear>2.5</version.mvn.plugin.ear>
+        <version.mvn.plugin.ear>2.8</version.mvn.plugin.ear>
         <version.mvn.plugin.war>2.1.1</version.mvn.plugin.war>
 
         <!-- Mojo maven plugins version -->
@@ -99,6 +99,7 @@
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
                 <version>${version.javaee-api}</version>
+                <type>jar</type>
                 <scope>provided</scope>
             </dependency>
 
@@ -192,7 +193,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-ear-plugin</artifactId>
-                    <version>${version.mvn.plugin.ear}</version>
+                    <version>2.8</version>
                 </plugin>
             </plugins>
         </pluginManagement>
