@@ -71,7 +71,7 @@
         <source.encoding>UTF-8</source.encoding>
 
         <!-- Target -->
-        <version.app.ear>7</version.app.ear>
+        <version.app.ear>6</version.app.ear>
         <version.jdk.target>1.7</version.jdk.target>
 
         <!-- Components -->

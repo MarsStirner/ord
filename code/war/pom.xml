@@ -21,8 +21,8 @@
 
         <dependency>
             <groupId>javax.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>2.1</version>
+            <artifactId>javax.faces-api</artifactId>
+            <version>2.2</version>
             <scope>provided</scope>
         </dependency>
 
@@ -78,7 +78,6 @@
             <groupId>ru.efive.ui-templates</groupId>
             <artifactId>ui-templates-core</artifactId>
             <version>${project.version}</version>
-            <!-- <scope>provided</scope> -->
         </dependency>
 
         <dependency>
@@ -174,11 +173,6 @@
             <artifactId>batik-bridge</artifactId>
             <version>1.7</version>
         </dependency>
-<!--         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.7</version>
-        </dependency> -->
 
         <dependency>
             <groupId>ru.efive.fonts</groupId>

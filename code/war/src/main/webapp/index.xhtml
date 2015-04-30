@@ -3,7 +3,8 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
 
 <h:head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -16,11 +17,9 @@
         <div id="first">
             <div class="head">
                 <h:graphicImage value="/resources/images/logo.png"/><br/>
-
                 <h2>
                     ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России
                 </h2>
-
                 <h1>Организационно-распорядительный документооборот</h1>
             </div>
 
@@ -28,17 +27,16 @@
                 <div class="main_content">
                     <h:panelGroup rendered="#{not(sessionManagement.loggedIn)}">
                         <h2>Вход в систему</h2>
-
                         <div>Логин</div>
                         <div>
-                            <h:inputText value="#{sessionManagement.userName}" styleClass="inp"/>
+                            <p:inputText value="#{sessionManagement.userName}" styleClass="inp"/>
                         </div>
                         <div>Пароль</div>
                         <div>
-                            <h:inputSecret value="#{sessionManagement.password}" styleClass="inp"/>
+                            <p:password value="#{sessionManagement.password}" styleClass="inp"/>
                         </div>
                         <div>
-                            <h:commandButton styleClass="but" type="submit" action="#{sessionManagement.logIn}" value="Войти"/>
+                            <p:commandButton type="submit" action="#{sessionManagement.logIn}" value="Войти" ajax="false" styleClass="but"/>
                         </div>
                     </h:panelGroup>
                     <c:if test="#{sessionManagement.loggedIn}">
@@ -46,10 +44,8 @@
                             location.href = "#{sessionManagement.backUrl}";
                         </h:outputScript>
                     </c:if>
-
                     <div>
-                        <h:messages errorClass="e5ui-error" layout="table" globalOnly="true" showSummary="true"
-                                    showDetail="false"/>
+                        <p:messages showSummary="true"  showDetail="false"/>
                     </div>
                 </div>
             </h:form>
