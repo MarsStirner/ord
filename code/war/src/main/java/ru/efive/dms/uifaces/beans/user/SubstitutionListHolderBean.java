@@ -9,8 +9,8 @@ import ru.entity.model.user.Substitution;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 /**
  * Author: Upatov Egor <br>
@@ -18,7 +18,7 @@ import javax.faces.view.ViewScoped;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name="substitutions")
+@Named("substitutions")
 @ViewScoped
 public class SubstitutionListHolderBean extends AbstractDocumentLazyDataModelBean<Substitution>{
 

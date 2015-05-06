@@ -10,14 +10,14 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import java.io.Serializable;
+import javax.inject.Named;
 import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.REGION_DAO;
 
 @Named("regionDialog")
 @ViewScoped
-public class RegionDialogHolder extends AbstractDialog<Region> implements Serializable {
+public class RegionDialogHolder extends AbstractDialog<Region> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_REGION";
 

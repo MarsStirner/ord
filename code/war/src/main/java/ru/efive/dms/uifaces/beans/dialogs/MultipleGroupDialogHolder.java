@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import java.io.Serializable;
+import javax.inject.Named;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
@@ -25,7 +25,7 @@ import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
  */
 @Named("multipleGroupDialog")
 @ViewScoped
-public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> implements Serializable {
+public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_GROUP_LIST";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";

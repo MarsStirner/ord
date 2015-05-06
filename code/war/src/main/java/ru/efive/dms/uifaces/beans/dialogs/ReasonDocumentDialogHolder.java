@@ -13,6 +13,8 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
@@ -25,7 +27,7 @@ import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
  */
 @Named("reasonDocumentDialog")
 @ViewScoped
-public class ReasonDocumentDialogHolder {
+public class ReasonDocumentDialogHolder implements Serializable {
 
     @EJB(name = "indexManagement")
     private IndexManagementBean indexManagementBean;

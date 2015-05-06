@@ -7,14 +7,13 @@ import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForOfficeKeepingFile;
 import ru.entity.model.document.OfficeKeepingFile;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
-@ManagedBean(name="officeKeepingFiles")
+@Named("officeKeepingFiles")
 @ViewScoped
 public class OfficeKeepingFilesHolderBean extends AbstractDocumentLazyDataModelBean<OfficeKeepingFile>{
 

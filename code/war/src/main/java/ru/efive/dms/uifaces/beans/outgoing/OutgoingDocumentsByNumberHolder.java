@@ -9,7 +9,6 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForOutgoingDocu
 import ru.entity.model.document.OutgoingDocument;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -18,7 +17,7 @@ import java.io.Serializable;
 import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
-@ManagedBean(name="outDocumentsByNumber")
+@Named("outDocumentsByNumber")
 @ViewScoped
 public class OutgoingDocumentsByNumberHolder  extends AbstractDocumentLazyDataModelBean<OutgoingDocument> implements Serializable {
 

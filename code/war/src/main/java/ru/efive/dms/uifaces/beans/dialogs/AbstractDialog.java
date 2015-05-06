@@ -5,6 +5,7 @@ import org.primefaces.context.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public abstract class AbstractDialog<T> {
+public abstract class AbstractDialog<T> implements Serializable {
 
     protected static final Logger logger = LoggerFactory.getLogger("DIALOG");
 

@@ -7,7 +7,6 @@ import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -20,7 +19,7 @@ import java.util.List;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
 
-@ManagedBean(name="role")
+@Named("role")
 @ViewScoped
 public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> implements Serializable {
 

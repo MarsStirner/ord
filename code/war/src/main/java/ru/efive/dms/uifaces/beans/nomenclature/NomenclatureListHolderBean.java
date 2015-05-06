@@ -14,14 +14,13 @@ import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForNomenclature;
 import ru.entity.model.document.Nomenclature;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static ru.efive.dms.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
 
-@ManagedBean(name="nomenclatureList")
+@Named("nomenclatureList")
 @ViewScoped
 public class NomenclatureListHolderBean extends AbstractDocumentLazyDataModelBean<Nomenclature>{
     private NomenclatureDAOImpl dao;

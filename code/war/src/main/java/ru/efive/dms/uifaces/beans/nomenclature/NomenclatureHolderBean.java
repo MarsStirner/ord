@@ -8,7 +8,6 @@ import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.document.Nomenclature;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,7 +20,7 @@ import static ru.efive.dms.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name="nomenclature")
+@Named("nomenclature")
 @ViewScoped
 public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclature, Integer> {
 

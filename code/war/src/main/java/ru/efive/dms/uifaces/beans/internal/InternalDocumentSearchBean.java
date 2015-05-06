@@ -16,7 +16,6 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForInternalDocu
 import ru.entity.model.document.InternalDocument;
 import ru.entity.model.user.User;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -31,7 +30,7 @@ import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
-@ManagedBean(name="internal_search")
+@Named("internal_search")
 @ViewScoped
 public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<InternalDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");

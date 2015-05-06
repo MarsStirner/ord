@@ -7,7 +7,6 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForPersonalDraf
 import ru.entity.model.document.InternalDocument;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -15,7 +14,7 @@ import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
 
-@ManagedBean(name= "personal_internal_documents")
+@Named("personal_internal_documents")
 @ViewScoped
 public class PersonalInternalDocumentsListHolder  extends AbstractDocumentLazyDataModelBean<InternalDocument> implements Serializable {
 

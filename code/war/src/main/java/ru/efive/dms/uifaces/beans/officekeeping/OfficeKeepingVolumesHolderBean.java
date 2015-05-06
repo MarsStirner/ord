@@ -8,7 +8,6 @@ import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForOfficeKeepingVolume;
 import ru.entity.model.document.OfficeKeepingVolume;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,7 +16,7 @@ import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
-@ManagedBean(name="officeKeepingVolumes")
+@Named("officeKeepingVolumes")
 @ViewScoped
 public class OfficeKeepingVolumesHolderBean extends AbstractDocumentLazyDataModelBean<OfficeKeepingVolume> {
 

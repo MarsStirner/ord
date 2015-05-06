@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import java.io.Serializable;
+import javax.inject.Named;
 import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
@@ -27,7 +27,7 @@ import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
  */
 @Named("userDialog")
 @ViewScoped
-public class UserDialogHolder extends AbstractDialog<User> implements Serializable {
+public class UserDialogHolder extends AbstractDialog<User> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";

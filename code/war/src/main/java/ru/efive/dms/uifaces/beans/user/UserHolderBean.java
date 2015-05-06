@@ -13,7 +13,6 @@ import ru.entity.model.user.RbContactInfoType;
 import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
-import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -24,7 +23,7 @@ import java.util.*;
 import static ru.efive.dms.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
 
-@ManagedBean(name="user")
+@Named("user")
 @ViewScoped
 public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("USER");

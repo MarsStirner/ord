@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import java.io.Serializable;
+import javax.inject.Named;
 import java.util.*;
 
 import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
@@ -25,7 +25,7 @@ import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
  */
 @Named("multipleRoleDialog")
 @ViewScoped
-public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> implements Serializable {
+public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_ROLE_LIST";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";

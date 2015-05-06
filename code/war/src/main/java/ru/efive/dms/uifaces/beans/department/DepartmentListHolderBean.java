@@ -7,7 +7,6 @@ import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.Department;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -21,7 +20,7 @@ import static ru.efive.dms.util.ApplicationDAONames.DEPARTMENT_DAO;
  * Company: Korus Consulting IT <br>
  * Description: Бин для получения списка подразделений (ApplicationScope) <br>
  */
-@ManagedBean(name="departmentList")
+@Named("departmentList")
 @ViewScoped
 public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Department> {
 

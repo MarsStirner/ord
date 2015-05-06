@@ -336,10 +336,8 @@
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:12em;" headerText="Адресаты">
-                <ui:repeat value="#{row_result.recipientContragents}" var="element">
-                    <h:outputText value="#{element.fullName}"/><br/>
-                </ui:repeat>
+            <p:column style="width:12em;" headerText="Адресаты" sortBy="#{row_result.contragent}" field="contragent.fullName">
+                    <h:outputText value="#{row_result.contragent.fullName}"/>
             </p:column>
             <p:column style="width:10em;" headerText="Руководитель" sortBy="#{row_result.controller}" field="controller.lastName">
                 <h:outputText value="#{row_result.controller}" converter="PersonConverter"/>

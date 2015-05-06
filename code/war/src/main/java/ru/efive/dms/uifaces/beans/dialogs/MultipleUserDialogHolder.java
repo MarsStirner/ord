@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import java.io.Serializable;
+import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +27,7 @@ import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
  */
 @Named("multipleUserDialog")
 @ViewScoped
-public class MultipleUserDialogHolder extends AbstractDialog<List<User>> implements Serializable {
+public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON_LIST";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";

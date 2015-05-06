@@ -31,7 +31,6 @@ import ru.entity.model.user.User;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -42,7 +41,7 @@ import java.util.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
-@ManagedBean(name="request_doc")
+@Named("request_doc")
 @ViewScoped
 public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDocument, Integer> implements Serializable {
 

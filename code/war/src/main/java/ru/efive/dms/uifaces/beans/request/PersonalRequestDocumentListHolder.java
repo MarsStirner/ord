@@ -7,7 +7,6 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForPersonalDraf
 import ru.entity.model.document.RequestDocument;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -15,7 +14,7 @@ import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
 
-@ManagedBean(name="personal_request_documents")
+@Named("personal_request_documents")
 @ViewScoped
 public class PersonalRequestDocumentListHolder extends AbstractDocumentLazyDataModelBean<RequestDocument> implements Serializable {
 

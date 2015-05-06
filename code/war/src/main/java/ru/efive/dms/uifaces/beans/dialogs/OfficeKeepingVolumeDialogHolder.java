@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import java.io.Serializable;
+import javax.inject.Named;
 import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
@@ -24,7 +24,7 @@ import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
  */
 @Named("officeKeepingVolumeDialog")
 @ViewScoped
-public class OfficeKeepingVolumeDialogHolder extends AbstractDialog<OfficeKeepingVolume> implements Serializable {
+public class OfficeKeepingVolumeDialogHolder extends AbstractDialog<OfficeKeepingVolume> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_OFFICE_KEEPING_VOLUME";
 

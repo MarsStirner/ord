@@ -11,7 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
-import java.io.Serializable;
+import javax.inject.Named;
 import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
@@ -24,7 +24,7 @@ import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
  */
 @Named("contragentDialog")
 @ViewScoped
-public class ContragentDialogHolder extends AbstractDialog<Contragent> implements Serializable {
+public class ContragentDialogHolder extends AbstractDialog<Contragent> {
 
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_CONTRAGENT";
