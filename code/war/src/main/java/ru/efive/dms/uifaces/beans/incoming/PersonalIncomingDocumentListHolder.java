@@ -7,15 +7,14 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForPersonalDraf
 import ru.entity.model.document.IncomingDocument;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 
-@ManagedBean(name = "personal_in_documents")
+@Named("personal_in_documents")
 @ViewScoped
 public class PersonalIncomingDocumentListHolder extends AbstractDocumentLazyDataModelBean<IncomingDocument> implements Serializable {
 

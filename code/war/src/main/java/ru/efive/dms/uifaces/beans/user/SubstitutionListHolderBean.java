@@ -10,7 +10,7 @@ import ru.entity.model.user.Substitution;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 
 /**
  * Author: Upatov Egor <br>

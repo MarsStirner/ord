@@ -7,14 +7,13 @@ import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForContragent;
 import ru.entity.model.crm.Contragent;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
 
-@ManagedBean(name = "contragents")
+@Named("contragents")
 @ViewScoped
 public class ContragentListHolderBean extends AbstractDocumentLazyDataModelBean<Contragent>{
 

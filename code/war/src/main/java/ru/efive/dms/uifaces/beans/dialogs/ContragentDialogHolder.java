@@ -9,9 +9,8 @@ import ru.entity.model.crm.Contragent;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
  * Company: Korus Consulting IT <br>
  * Description: Бин, который обслуживает диалоги по выбору контраегентов<br>
  */
-@ManagedBean(name = "contragentDialog")
+@Named("contragentDialog")
 @ViewScoped
 public class ContragentDialogHolder extends AbstractDialog<Contragent> implements Serializable {
 

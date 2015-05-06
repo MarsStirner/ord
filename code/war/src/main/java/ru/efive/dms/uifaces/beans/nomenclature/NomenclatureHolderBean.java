@@ -9,7 +9,7 @@ import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.document.Nomenclature;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 

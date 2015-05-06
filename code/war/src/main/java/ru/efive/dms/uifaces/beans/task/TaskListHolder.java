@@ -10,9 +10,8 @@ import ru.efive.dms.uifaces.lazyDataModel.tasks.LazyDataModelForTask;
 import ru.entity.model.document.Task;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
@@ -21,7 +20,7 @@ import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 import static ru.efive.dms.util.DocumentSearchMapKeys.STATUS_LIST_KEY;
 
-@ManagedBean(name = "tasks")
+@Named("tasks")
 @ViewScoped
 public class TaskListHolder extends AbstractDocumentLazyDataModelBean<Task> {
 

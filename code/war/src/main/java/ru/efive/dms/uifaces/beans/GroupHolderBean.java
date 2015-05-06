@@ -13,9 +13,8 @@ import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -24,7 +23,7 @@ import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
-@ManagedBean(name="group")
+@Named("group")
 @ViewScoped
 public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> implements Serializable {
 

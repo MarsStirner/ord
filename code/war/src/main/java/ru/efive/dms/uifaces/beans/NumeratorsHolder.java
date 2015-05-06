@@ -6,14 +6,13 @@ import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForNumerator;
 import ru.entity.model.document.Numerator;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static ru.efive.dms.util.ApplicationDAONames.NUMERATOR_DAO;
 
-@ManagedBean(name="numerators")
+@Named("numerators")
 @ViewScoped
 public class NumeratorsHolder extends AbstractDocumentLazyDataModelBean<Numerator>{
     @Inject

@@ -8,8 +8,7 @@ import ru.efive.sql.dao.RbContragentTypeDAOImpl;
 import ru.entity.model.crm.ContragentType;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -19,7 +18,7 @@ import javax.inject.Named;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name = "contragentTypeList")
+@Named("contragentTypeList")
 @ViewScoped
 public class ContragentTypeListHolderBean extends AbstractDocumentLazyDataModelBean<ContragentType>{
     private RbContragentTypeDAOImpl dao;

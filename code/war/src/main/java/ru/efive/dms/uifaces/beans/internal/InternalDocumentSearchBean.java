@@ -17,8 +17,8 @@ import ru.entity.model.document.InternalDocument;
 import ru.entity.model.user.User;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Date;

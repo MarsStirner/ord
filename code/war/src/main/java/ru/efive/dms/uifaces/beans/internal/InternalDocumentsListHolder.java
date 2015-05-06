@@ -10,9 +10,8 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForInternalDocu
 import ru.entity.model.document.InternalDocument;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -22,7 +21,7 @@ import java.util.Map;
 import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
-@ManagedBean(name = "internal_documents")
+@Named("internal_documents")
 @ViewScoped
 public class InternalDocumentsListHolder extends AbstractDocumentLazyDataModelBean<InternalDocument> implements Serializable{
 

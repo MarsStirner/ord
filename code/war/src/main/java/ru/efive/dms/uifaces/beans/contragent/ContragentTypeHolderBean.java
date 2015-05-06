@@ -17,9 +17,8 @@ import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.crm.Contragent;
 import ru.entity.model.crm.ContragentType;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
@@ -30,13 +29,11 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.RB_CONTRAGENT_TYPE_DAO;
 
-@ManagedBean(name = "contragentType")
+@Named("contragentType")
 @ViewScoped
 public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<ContragentType, Integer> implements Serializable{
 
     private static final Logger logger = LoggerFactory.getLogger("RB_CONTRAGENT_TYPE");
-
-    //private List<Contragent> contragentList;
 
     @Inject
     @Named("sessionManagement")
@@ -76,7 +73,6 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
         final ContragentType document = new ContragentType();
         document.setDeleted(false);
         setDocument(document);
-        //this.contragentList = new ArrayList<Contragent>(0);
     }
 
     @Override
@@ -87,7 +83,6 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
                 setState(STATE_NOT_FOUND);
             } else {
                 setDocument(document);
-                //contragentList = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).getByType(document);
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
@@ -132,13 +127,4 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
     protected FromStringConverter<Integer> getIdConverter() {
         return FromStringConverter.INTEGER_CONVERTER;
     }
-
-
-//    public List<Contragent> getContragentList() {
-//        return contragentList;
-//    }
-//
-//    public void setContragentList(List<Contragent> contragentList) {
-//        this.contragentList = contragentList;
-//    }
 }

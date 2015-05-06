@@ -6,14 +6,13 @@ import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.entity.model.user.Group;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
 
-@ManagedBean(name="groups")
+@Named("groups")
 @ViewScoped
 public class GroupsHolderBean extends AbstractDocumentLazyDataModelBean<Group> {
 

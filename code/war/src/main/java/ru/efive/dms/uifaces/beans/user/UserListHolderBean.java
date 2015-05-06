@@ -9,13 +9,12 @@ import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.User;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 
-@ManagedBean(name = "userList")
+@Named("userList")
 @ViewScoped
 public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
 

@@ -18,9 +18,8 @@ import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.user.User;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Date;
@@ -33,7 +32,7 @@ import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 import static ru.efive.dms.util.DocumentSearchMapKeys.*;
 
-@ManagedBean(name = "incoming_search")
+@Named("incoming_search")
 @ViewScoped
 public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<IncomingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");

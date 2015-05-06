@@ -11,9 +11,8 @@ import ru.efive.dms.util.DocumentSearchMapKeys;
 import ru.entity.model.document.RequestDocument;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
@@ -21,7 +20,7 @@ import java.util.*;
 import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
-@ManagedBean(name = "request_documents")
+@Named("request_documents")
 @ViewScoped
 public class RequestDocumentListHolder extends AbstractDocumentLazyDataModelBean<RequestDocument> {
 

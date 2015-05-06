@@ -11,9 +11,8 @@ import ru.util.ApplicationHelper;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
@@ -24,7 +23,7 @@ import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name = "reasonDocumentDialog")
+@Named("reasonDocumentDialog")
 @ViewScoped
 public class ReasonDocumentDialogHolder {
 

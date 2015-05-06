@@ -9,9 +9,8 @@ import ru.entity.model.document.OfficeKeepingVolume;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -23,7 +22,7 @@ import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name = "officeKeepingVolumeDialog")
+@Named("officeKeepingVolumeDialog")
 @ViewScoped
 public class OfficeKeepingVolumeDialogHolder extends AbstractDialog<OfficeKeepingVolume> implements Serializable {
 

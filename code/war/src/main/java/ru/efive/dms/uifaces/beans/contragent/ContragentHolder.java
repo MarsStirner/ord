@@ -14,9 +14,8 @@ import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.document.RequestDocument;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -28,7 +27,7 @@ import java.util.Map;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 
-@ManagedBean(name="contragent")
+@Named("contragent")
 @ViewScoped
 public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Integer> implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger("CONTRAGENT");

@@ -8,15 +8,14 @@ import ru.entity.model.document.Region;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.Map;
 
 import static ru.efive.dms.util.ApplicationDAONames.REGION_DAO;
 
-@ManagedBean(name = "regionDialog")
+@Named("regionDialog")
 @ViewScoped
 public class RegionDialogHolder extends AbstractDialog<Region> implements Serializable {
 

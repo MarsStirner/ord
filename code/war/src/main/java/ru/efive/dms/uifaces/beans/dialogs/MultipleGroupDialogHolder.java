@@ -10,9 +10,8 @@ import ru.entity.model.user.Group;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.*;
 
@@ -24,7 +23,7 @@ import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name = "multipleGroupDialog")
+@Named("multipleGroupDialog")
 @ViewScoped
 public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> implements Serializable {
 

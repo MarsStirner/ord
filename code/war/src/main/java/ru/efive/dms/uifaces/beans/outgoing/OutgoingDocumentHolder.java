@@ -30,9 +30,8 @@ import ru.entity.model.user.UserAccessLevel;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -42,7 +41,7 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
-@ManagedBean(name = "out_doc")
+@Named("out_doc")
 @ViewScoped
 public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingDocument, Integer> implements Serializable {
 

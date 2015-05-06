@@ -8,8 +8,7 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForIncomingDocu
 import ru.entity.model.document.IncomingDocument;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -18,7 +17,7 @@ import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 
-@ManagedBean(name = "in_documents")
+@Named("in_documents")
 @ViewScoped
 public class IncomingDocumentListHolder extends AbstractDocumentLazyDataModelBean<IncomingDocument> implements Serializable {
 

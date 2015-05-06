@@ -8,9 +8,8 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.Region;
 import ru.entity.model.document.ReportTemplate;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -19,7 +18,7 @@ import java.util.Date;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
 
-@ManagedBean(name="reportTemplate")
+@Named("reportTemplate")
 @ViewScoped
 public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate, Integer> implements Serializable {
 

@@ -6,14 +6,13 @@ import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForReportTemplate;
 import ru.entity.model.document.ReportTemplate;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
 
-@ManagedBean(name="reportTemplateList")
+@Named("reportTemplateList")
 @ViewScoped
 public class ReportTemplateListBean extends AbstractDocumentLazyDataModelBean<ReportTemplate>{
     @Inject

@@ -8,9 +8,8 @@ import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.document.Numerator;
 import ru.util.ApplicationHelper;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -20,7 +19,7 @@ import java.util.Date;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.ApplicationDAONames.NUMERATOR_DAO;
 
-@ManagedBean(name = "numerator")
+@Named("numerator")
 @ViewScoped
 public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integer> implements Serializable {
     private static final long serialVersionUID = 4716264614655470705L;

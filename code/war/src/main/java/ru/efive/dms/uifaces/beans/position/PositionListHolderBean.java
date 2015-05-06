@@ -7,8 +7,7 @@ import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.Position;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
@@ -21,7 +20,7 @@ import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
  * Company: Korus Consulting IT <br>
  * Description: Бин для получения списка должностей (ApplicationScope) <br>
  */
-@ManagedBean(name = "positionList")
+@Named("positionList")
 @ViewScoped
 public class PositionListHolderBean extends AbstractDocumentListHolderBean<Position> {
 

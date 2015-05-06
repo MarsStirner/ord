@@ -2,6 +2,7 @@ package ru.entity.model.enums;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -19,8 +20,7 @@ public enum DocumentType {
     Task("Task", getTaskStatuses(), getTaskActions()),
     OfficeKeepingFile("OfficeKeepingFile", getOfficeKeepingFileStatuses(), getOfficeKeepingFileActions()),
     OfficeKeepingVolume("OfficeKeepingVolume", getOfficeKeepingVolumeStatuses(), getOfficeKeepingVolumeActions()),
-    RequestDocument("RequestDocument", getRequestDocumentStatuses(), getRequestDocumentActions()),
-    ScanCopyDocument("ScanCopyDocument", getScanCopyDocumentStatuses(), getScanCopyDocumentActions());
+    RequestDocument("RequestDocument", getRequestDocumentStatuses(), getRequestDocumentActions());
 
     private final String name;
     private final List<DocumentStatus> statuses;
@@ -72,7 +72,7 @@ public enum DocumentType {
         return "";
     }
 
-    public synchronized static List<Integer> getStatusIdListByStrKey(String documentName, String strKey) {
+    public static List<Integer> getStatusIdListByStrKey(String documentName, String strKey) {
         DocumentType documentType = valueOf(documentName);
         List<Integer> result = new ArrayList<Integer>();
         strKey = strKey.toLowerCase();
@@ -205,7 +205,7 @@ public enum DocumentType {
     }
 
     public static List<DocumentAction> getOfficeKeepingFileActions() {
-        return Arrays.asList(DocumentAction.CHECK_IN_1);
+        return Collections.singletonList(DocumentAction.CHECK_IN_1);
     }
 
     public static List<DocumentStatus> getOfficeKeepingVolumeStatuses() {
@@ -240,13 +240,5 @@ public enum DocumentType {
                 DocumentAction.RETURN_TO_ARCHIVE,
                 DocumentAction.REDIRECT_IN_OTHER_ARCHIVE_135,
                 DocumentAction.CREATE);
-    }
-
-    public static List<DocumentStatus> getScanCopyDocumentStatuses() {
-        return Arrays.asList(DocumentStatus.NEW);
-    }
-
-    public static List<DocumentAction> getScanCopyDocumentActions() {
-        return new ArrayList<DocumentAction>();
     }
 }

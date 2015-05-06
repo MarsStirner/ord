@@ -8,8 +8,7 @@ import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -19,7 +18,7 @@ import javax.inject.Named;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name = "users")
+@Named("users")
 @ViewScoped
 public class UserListHolder  extends AbstractDocumentLazyDataModelBean<User> {
 

@@ -8,8 +8,8 @@ import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
 
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;

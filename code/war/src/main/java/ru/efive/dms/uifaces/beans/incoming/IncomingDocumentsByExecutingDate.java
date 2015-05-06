@@ -9,8 +9,7 @@ import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.IncomingDocument;
 import ru.util.ApplicationHelper;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.DateFormatSymbols;
@@ -21,7 +20,7 @@ import java.util.List;
 import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
 import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
 
-@ManagedBean(name = "in_documents_by_executing_date")
+@Named("in_documents_by_executing_date")
 @ViewScoped
 public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolderBean<IncomingDocument> {
 

@@ -7,8 +7,7 @@ import ru.efive.sql.dao.user.RoleDAOHibernate;
 import ru.entity.model.user.Role;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
@@ -16,7 +15,7 @@ import java.util.List;
 
 import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
 
-@ManagedBean(name = "roleList")
+@Named("roleList")
 @ViewScoped
 public class RoleListHolderBean extends AbstractDocumentLazyDataModelBean<Role> {
     @Inject

@@ -10,9 +10,8 @@ import ru.entity.model.user.User;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@ManagedBean(name = "multipleUserDialog")
+@Named("multipleUserDialog")
 @ViewScoped
 public class MultipleUserDialogHolder extends AbstractDialog<List<User>> implements Serializable {
 

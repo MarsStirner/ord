@@ -33,9 +33,8 @@ import ru.entity.model.user.UserAccessLevel;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
@@ -43,7 +42,7 @@ import java.util.*;
 import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
-@ManagedBean(name = "in_doc")
+@Named("in_doc")
 @ViewScoped
 public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument, Integer> {
     //Именованный логгер (INCOMING_DOCUMENT)
