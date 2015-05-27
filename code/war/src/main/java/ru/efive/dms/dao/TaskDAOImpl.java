@@ -272,10 +272,10 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
         if (!auth.isAdministrator()) {
             final Disjunction disjunction = Restrictions.disjunction();
             final Set<Integer> userIds = auth.getUserIds();
-            disjunction.add(Restrictions.eq("author.id", userIds));
-            disjunction.add(Restrictions.eq("executors.id", userIds));
-            disjunction.add(Restrictions.eq("initiator.id", userIds));
-            disjunction.add(Restrictions.eq("controller.id", userIds));
+            disjunction.add(Restrictions.in("author.id", userIds));
+            disjunction.add(Restrictions.in("executors.id", userIds));
+            disjunction.add(Restrictions.in("initiator.id", userIds));
+            disjunction.add(Restrictions.in("controller.id", userIds));
             criteria.add(disjunction);
         }
     }

@@ -227,8 +227,8 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
             criteria.createAlias("controller", "controller", CriteriaSpecification.LEFT_JOIN);
             disjunction.add(Restrictions.in("controller.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("recipients", "recipients", CriteriaSpecification.LEFT_JOIN);
-            disjunction.add(Restrictions.in("recipients.id", userIds));
+            criteria.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
+            disjunction.add(Restrictions.in("recipientUsers.id", userIds));
             //NOTE  Добавляются алиасы с fetch
             criteria.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
             disjunction.add(Restrictions.in("personReaders.id", userIds));
