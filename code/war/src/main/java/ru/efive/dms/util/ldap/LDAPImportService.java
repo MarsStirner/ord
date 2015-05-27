@@ -457,12 +457,7 @@ public class LDAPImportService {
                 localUser.setFirstName(ldapUser.getFirstName());
                 localUser.setLastName(ldapUser.getLastName());
                 localUser.setMiddleName(ldapUser.getPatrName());
-                if (
-                        ldapUser.getJobPosition() != null
-                                && !ldapUser.getJobPosition().isEmpty()
-                                && localUser.getJobPosition() != null
-                                && !ldapUser.getJobPosition().equals(localUser.getJobPosition().getValue())
-                        ) {
+                if (ldapUser.getJobPosition() != null && !ldapUser.getJobPosition().isEmpty()) {
                     final String requestedPositionName = ldapUser.getJobPosition().trim();
                     boolean founded = false;
                     for (Position position : ALL_POSITIONS) {
@@ -477,12 +472,7 @@ public class LDAPImportService {
                     }
                     localUser.setJobPositionString(ldapUser.getJobPosition());
                 }
-                if (
-                        ldapUser.getJobDepartment() != null
-                                && !ldapUser.getJobDepartment().isEmpty()
-                                && localUser.getJobDepartment() != null
-                                && !ldapUser.getJobDepartment().equals(localUser.getJobDepartment().getValue())
-                        ) {
+                if (ldapUser.getJobDepartment() != null && !ldapUser.getJobDepartment().isEmpty()) {
                     final String requestedDepartmentName = ldapUser.getJobDepartment().trim();
                     boolean founded = false;
                     for (Department department : ALL_DEPARTMENTS) {
