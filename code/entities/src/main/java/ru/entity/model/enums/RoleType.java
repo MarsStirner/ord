@@ -39,5 +39,11 @@ public enum RoleType {
 
     OFFICE_08,
 
+    OFFICE_10,
+
+    //TODO хардкод!!! РП - русскими буквами
+    OFFICE_03РП,
+
+
     FILLING
 }
