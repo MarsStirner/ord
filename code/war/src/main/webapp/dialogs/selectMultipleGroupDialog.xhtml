@@ -25,7 +25,7 @@
                      value="#{multipleGroupDialog.lazyModel}"
                      var="group_row"
                      selectionMode="multiple"
-                     selection="#{multipleGroupDialog.selection}"
+                     selection="#{multipleGroupDialog.selected}"
                      rowSelectMode="add"
                      lazy="true"
                      widgetVar="selectGroupTableVar"
@@ -39,8 +39,8 @@
                 <h:outputText value="#{group_row.value}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{multipleGroupDialog.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{multipleGroupDialog.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{multipleGroupDialog.confirmSelection}"/>
+        <p:commandButton value="Отмена" action="#{multipleGroupDialog.closeDialog}"/>
         <h:outputScript>
             //Override PF selection\unselection with cntrlKey
             // difference in if(c){this.unselectRow(g,a)} was if(c &amp;amp; f)

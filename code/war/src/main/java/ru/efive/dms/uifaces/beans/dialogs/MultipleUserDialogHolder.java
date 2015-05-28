@@ -1,7 +1,6 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
 import org.apache.commons.lang.StringUtils;
-import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
@@ -13,7 +12,6 @@ import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Named;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +41,6 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
 
     private LazyDataModelForUserInDialogs lazyModel;
 
-    //TODO fix with class extends after change to JSF 2.2
-    private List<User> selection = new ArrayList<User>();
 
 
     @PostConstruct
@@ -84,16 +80,6 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
     }
 
     /**
-     * Закрыть диалог с результатом
-     *
-     * @param withResult флаг указывающий передавать ли результат работы диалога
-     */
-    @Override
-    public void closeDialog(boolean withResult) {
-        RequestContext.getCurrentInstance().closeDialog(withResult ? selection : null);
-    }
-
-    /**
      * Выбрать заранее заднный список пользователей по ключу сессии
      */
     @Override
@@ -101,7 +87,7 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
         final List<User> personList = (List<User>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
         if (personList != null) {
-            setSelection(personList);
+            setSelected(personList);
         }
     }
 
@@ -117,14 +103,6 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
         lazyModel.setFilter(filter);
     }
 
-    public List<User> getSelection() {
-        return selection;
-    }
-
-
-    public void setSelection(List<User> selected) {
-        this.selection = selected;
-    }
 
 
 }

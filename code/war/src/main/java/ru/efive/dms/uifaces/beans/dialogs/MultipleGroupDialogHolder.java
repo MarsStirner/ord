@@ -25,7 +25,7 @@ import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
  */
 @Named("multipleGroupDialog")
 @ViewScoped
-public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> {
+public class MultipleGroupDialogHolder extends AbstractDialog<List<Group>> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_GROUP_LIST";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";
@@ -36,9 +36,6 @@ public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> {
     private IndexManagementBean indexManagementBean;
 
     private LazyDataModelForGroup lazyModel;
-
-    //TODO fix with class extends after change to JSF 2.2
-    private List<Group> selection = new ArrayList<Group>();
 
 
     @PostConstruct
@@ -71,16 +68,17 @@ public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> {
 
     /**
      * Закрыть диалог с результатом
-     *
-     * @param withResult флаг указывающий передавать ли результат работы диалога
      */
     @Override
-    public void closeDialog(boolean withResult) {
-        if(selection != null && !selection.isEmpty()){
-            RequestContext.getCurrentInstance().closeDialog(withResult ? new HashSet<Group>(selection) : null);
+    public void confirmSelection() {
+        final DialogResult result;
+        if(selected != null && !selected.isEmpty()) {
+           result= new DialogResult(Button.CONFIRM, new HashSet<Group>(selected));
         } else {
-            RequestContext.getCurrentInstance().closeDialog(null);
+            result = new DialogResult(Button.CONFIRM, null);
         }
+        logger.debug("DIALOG_BTN_CONFIRM:  {}", result);
+        RequestContext.getCurrentInstance().closeDialog(result);
     }
 
     /**
@@ -91,7 +89,7 @@ public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> {
         final Set<Group> groupSet = (Set<Group>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
         if (groupSet != null && !groupSet.isEmpty()) {
-            setSelection(new ArrayList<Group>(groupSet));
+            setSelected(new ArrayList<Group>(groupSet));
         }
     }
 
@@ -105,15 +103,6 @@ public class MultipleGroupDialogHolder extends AbstractDialog<Set<Group>> {
 
     public void setFilter(String filter) {
         lazyModel.setFilter(filter);
-    }
-
-    public List<Group> getSelection() {
-        return selection;
-    }
-
-
-    public void setSelection(List<Group> selected) {
-        this.selection = selected;
     }
 
 

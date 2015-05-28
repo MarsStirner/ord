@@ -29,7 +29,7 @@
                      value="#{multipleUserDialog.lazyModel}"
                      var="person_row"
                      selectionMode="multiple"
-                     selection="#{multipleUserDialog.selection}"
+                     selection="#{multipleUserDialog.selected}"
                      rowSelectMode="add"
                      lazy="true"
                      widgetVar="selectPersonTableVar"
@@ -49,8 +49,8 @@
                 <h:outputText value="#{person_row.middleName}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{multipleUserDialog.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{multipleUserDialog.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{multipleUserDialog.confirmSelection}"/>
+        <p:commandButton value="Отмена" action="#{multipleUserDialog.closeDialog}"/>
         <h:outputScript>
             //Override PF selection\unselection with cntrlKey
             // difference in if(c){this.unselectRow(g,a)} was if(c &amp;amp; f)

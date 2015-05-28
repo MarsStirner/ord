@@ -39,8 +39,8 @@
                 <h:outputText value="#{region_row.category}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{regionDialog.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{regionDialog.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{regionDialog.confirmSelection}"/>
+        <p:commandButton value="Отмена" action="#{regionDialog.closeDialog}"/>
     </h:form>
 </h:body>
 

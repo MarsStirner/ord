@@ -48,8 +48,8 @@
                 <h:outputText value="#{officeKeepingVolume_row.keepingPeriodReasons}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{officeKeepingVolumeDialog.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{officeKeepingVolumeDialog.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{officeKeepingVolumeDialog.confirmSelection}"/>
+        <p:commandButton value="Отмена" action="#{officeKeepingVolumeDialog.closeDialog}"/>
     </h:form>
 </h:body>
 

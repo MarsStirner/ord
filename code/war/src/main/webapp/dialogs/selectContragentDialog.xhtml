@@ -42,8 +42,8 @@
                 <h:outputText value="#{contragent_row.shortName}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{contragentDialog.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{contragentDialog.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{contragentDialog.confirmSelection}"/>
+        <p:commandButton value="Отмена" action="#{contragentDialog.closeDialog}"/>
     </h:form>
 </h:body>
 

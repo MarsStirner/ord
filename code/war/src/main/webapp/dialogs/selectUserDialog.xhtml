@@ -45,8 +45,8 @@
                 <h:outputText value="#{person_row.middleName}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{userDialog.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{userDialog.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{userDialog.confirmSelection}"/>
+        <p:commandButton value="Отмена" action="#{userDialog.closeDialog}"/>
     </h:form>
 </h:body>
 

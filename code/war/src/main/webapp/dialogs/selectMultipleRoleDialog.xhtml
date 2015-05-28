@@ -20,7 +20,7 @@
                      value="#{multipleRoleDialog.lazyModel}"
                      var="role_row"
                      selectionMode="multiple"
-                     selection="#{multipleRoleDialog.selection}"
+                     selection="#{multipleRoleDialog.selected}"
                      rowSelectMode="add"
                      lazy="true"
                      widgetVar="selectRoleTableVar"
@@ -34,8 +34,8 @@
                 <h:outputText value="#{role_row.name}"/>
             </p:column>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{multipleRoleDialog.closeDialog(true)}"/>
-        <p:commandButton value="Отмена" action="#{multipleRoleDialog.closeDialog(false)}"/>
+        <p:commandButton value="Выбрать" action="#{multipleRoleDialog.confirmSelection}"/>
+        <p:commandButton value="Отмена" action="#{multipleRoleDialog.closeDialog}"/>
         <h:outputScript>
             //Override PF selection\unselection with cntrlKey
             // difference in if(c){this.unselectRow(g,a)} was if(c &amp;amp; f)

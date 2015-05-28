@@ -38,9 +38,6 @@ public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
 
     private LazyDataModelForRole lazyModel;
 
-    //TODO fix with class extends after change to JSF 2.2
-    private List<Role> selection = new ArrayList<Role>();
-
 
     @PostConstruct
     public void init() {
@@ -72,19 +69,6 @@ public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
         return "Выберите роли";
     }
 
-    /**
-     * Закрыть диалог с результатом
-     *
-     * @param withResult флаг указывающий передавать ли результат работы диалога
-     */
-    @Override
-    public void closeDialog(boolean withResult) {
-        if(selection != null && !selection.isEmpty()){
-            RequestContext.getCurrentInstance().closeDialog(withResult ? new HashSet<Role>(selection): null);
-        } else {
-            RequestContext.getCurrentInstance().closeDialog(null);
-        }
-    }
 
     /**
      * Выбрать заранее заднный список пользователей по ключу сессии
@@ -94,8 +78,23 @@ public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
         final Set<Role> preselected = (Set<Role>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
         if (preselected != null && !preselected.isEmpty()) {
-            setSelection(new ArrayList<Role>(preselected));
+            setSelected(new ArrayList<Role>(preselected));
         }
+    }
+
+    /**
+     * Закрыть диалог с результатом
+     */
+    @Override
+    public void confirmSelection() {
+        final DialogResult result;
+        if(selected != null && !selected.isEmpty()) {
+            result= new DialogResult(Button.CONFIRM, new HashSet<Role>(selected));
+        } else {
+            result = new DialogResult(Button.CONFIRM, null);
+        }
+        logger.debug("DIALOG_BTN_CONFIRM:  {}", result);
+        RequestContext.getCurrentInstance().closeDialog(result);
     }
 
     public LazyDataModel<Role> getLazyModel() {
@@ -109,15 +108,5 @@ public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
     public void setFilter(String filter) {
         lazyModel.setFilter(filter);
     }
-
-    public List<Role> getSelection() {
-        return selection;
-    }
-
-
-    public void setSelection(List<Role> selected) {
-        this.selection = selected;
-    }
-
 
 }
