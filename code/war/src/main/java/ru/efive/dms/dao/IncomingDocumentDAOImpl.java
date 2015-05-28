@@ -166,9 +166,9 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
             } else if (END_DELIVERY_DATE_KEY.equals(key)) {
                 conjunction.add(Restrictions.le("deliveryDate", getNextDayDate((Date) value)));
             } else if (START_RECEIVED_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.ge("receivedDate", value));
+                conjunction.add(Restrictions.ge("receivedDocumentDate", value));
             } else if (END_RECEIVED_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.le("receivedDate", getNextDayDate((Date) value)));
+                conjunction.add(Restrictions.le("receivedDocumentDate", getNextDayDate((Date) value)));
             } else if (RECEIVED_DOCUMENT_NUMBER_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
                 conjunction.add(Restrictions.ilike("receivedDocumentNumber", (String) value, MatchMode.ANYWHERE));
             } else if (SHORT_DESCRIPTION_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
