@@ -702,9 +702,12 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     }
 
     public void onInitiatorChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setInitiator(selected);
-        logger.info("Choose initiator From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose initiator: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setInitiator(selected);
+        }
     }
 
     //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -719,9 +722,12 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     }
 
     public void onControllerChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setController(selected);
-        logger.info("Choose controller From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose controller: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setController(selected);
+        }
     }
     // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseExecutors() {
@@ -735,13 +741,16 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     }
 
     public void onExecutorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if(selected != null && !selected.isEmpty()) {
-            getDocument().setExecutors(new HashSet<User>(selected));
-        }  else {
-            getDocument().getExecutors().clear();
-        }
-        logger.info("Choose executors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose executors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final List<User> selected = (List<User>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setExecutors(new HashSet<User>(selected));
+            } else {
+                getDocument().getExecutors().clear();
+            }
+        };
     }
 
 }

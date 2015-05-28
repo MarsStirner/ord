@@ -115,13 +115,16 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
     }
 
     public void onMembersChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if(selected != null && !selected.isEmpty()) {
-            getDocument().setMembers(new HashSet<User>(selected));
-        }  else {
-            getDocument().getMembers().clear();
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose members  : {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) event.getObject();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setMembers(new HashSet<User>(selected));
+            }  else {
+                getDocument().getMembers().clear();
+            }
         }
-        LOGGER.info("Choose users From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
 

@@ -75,9 +75,12 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     }
 
     public void onPersonChosen(final SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setPerson(selected);
-        logger.info("Choose person From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose person: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setPerson(selected);
+        }
     }
 
     //Выбора замещающего ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,9 +96,12 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     }
 
     public void onSubstitutorChosen(final SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setSubstitution(selected);
-        logger.info("Choose substitutor From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose substitution: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setSubstitution(selected);
+        }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///// КОНЕЦ Диалоговые окошки  /////////////////////////////////////////////////////////////////////////////////////
