@@ -160,9 +160,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void onControllerChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setController(selected);
-        LOGGER.info("Choose controller From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose controller: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setController(selected);
+        }
     }
 
     //Выбора контрагента //////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,9 +178,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void onContragentChosen(SelectEvent event) {
-        final Contragent selected = (Contragent) event.getObject();
-        getDocument().setContragent(selected);
-        LOGGER.info("Choose contragent From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose contragent: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final Contragent selected = (Contragent) result.getResult();
+            getDocument().setContragent(selected);
+        }
     }
 
     //Выбора исполнителя /////////////////////////////////////////////////////////////////////////////////////////////
@@ -192,9 +198,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void onExecutorChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setExecutor(selected);
-        LOGGER.info("Choose executor From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose executor: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setExecutor(selected);
+        }
     }
 
     // Выбора пользователей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
@@ -209,13 +218,16 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void onPersonReadersChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if(selected != null && !selected.isEmpty()) {
-            getDocument().setPersonReaders(new HashSet<User>(selected));
-        } else {
-            getDocument().getPersonReaders().clear();
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose personReaders: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final List<User> selected = (List<User>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setPersonReaders(new HashSet<User>(selected));
+            } else {
+                getDocument().getPersonReaders().clear();
+            }
         }
-        LOGGER.info("Choose personReaders From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора пользователей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
@@ -230,13 +242,16 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void onPersonEditorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if(selected != null && !selected.isEmpty()) {
-            getDocument().setPersonEditors(new HashSet<User>(selected));
-        } else {
-            getDocument().getPersonEditors().clear();
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose personEditors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final List<User> selected = (List<User>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setPersonEditors(new HashSet<User>(selected));
+            } else {
+                getDocument().getPersonEditors().clear();
+            }
         }
-        LOGGER.info("Choose personEditors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора ролей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
@@ -251,9 +266,16 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void onRoleReadersChosen(SelectEvent event) {
-        final Set<Role> selected = (Set<Role>) event.getObject();
-        getDocument().setRoleReaders(selected);
-        LOGGER.info("Choose roleReaders From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose roleReaders: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final Set<Role> selected = (Set<Role>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setRoleReaders(selected);
+            } else {
+                getDocument().getRoleReaders().clear();
+            }
+        }
     }
 
     // Выбора ролей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,9 +290,16 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void onRoleEditorsChosen(SelectEvent event) {
-        final Set<Role> selected = (Set<Role>) event.getObject();
-        getDocument().setRoleEditors(selected);
-        LOGGER.info("Choose roleEditors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose roleEditors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final Set<Role> selected = (Set<Role>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setRoleEditors(selected);
+            } else {
+                getDocument().getRoleEditors().clear();
+            }
+        }
     }
 
 

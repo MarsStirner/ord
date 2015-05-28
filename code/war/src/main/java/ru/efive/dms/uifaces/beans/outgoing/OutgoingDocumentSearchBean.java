@@ -71,30 +71,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseAuthors() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(
-                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(
-                        MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR
-                ));
-        final List<User> preselected = getAuthors();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
-    }
 
-    public void onAuthorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null) {
-            setAuthors(selected);
-        } else {
-            filters.remove(AUTHORS_KEY);
-        }
-        logger.info("Choose authors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
-    }
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
@@ -110,13 +87,16 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     }
 
     public void onControllerChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        if (selected != null) {
-            setController(selected);
-        } else {
-            filters.remove(CONTROLLER_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose controller: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final User selected = (User) result.getResult();
+            if (selected != null) {
+                setController(selected);
+            } else {
+                filters.remove(CONTROLLER_KEY);
+            }
         }
-        logger.info("Choose controller From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
     // Выбора контрагента //////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseContragent() {
@@ -130,13 +110,16 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     }
 
     public void onContragentChosen(SelectEvent event) {
-        final Contragent selected = (Contragent) event.getObject();
-        if (selected != null) {
-            setContragent(selected);
-        } else {
-            filters.remove(CONTRAGENT_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose contragent: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final Contragent selected = (Contragent) result.getResult();
+            if (selected != null) {
+                setContragent(selected);
+            } else {
+                filters.remove(CONTRAGENT_KEY);
+            }
         }
-        logger.info("Choose contragent From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
 
     // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,13 +136,16 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     }
 
     public void onExecutorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null && !selected.isEmpty()) {
-            setExecutors(selected);
-        } else {
-            filters.remove(EXECUTORS_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose executors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) result.getResult();
+            if (selected != null && !selected.isEmpty()) {
+                setExecutors(selected);
+            } else {
+                filters.remove(EXECUTORS_KEY);
+            }
         }
-        logger.info("Choose executors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

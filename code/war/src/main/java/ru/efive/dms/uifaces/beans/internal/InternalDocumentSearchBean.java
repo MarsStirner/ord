@@ -69,52 +69,31 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseAuthors() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(
-                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(
-                        MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR
-                ));
-        final List<User> preselected = getAuthors();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
-    }
-
-    public void onAuthorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null) {
-            setAuthors(selected);
-        } else {
-            filters.remove(AUTHORS_KEY);
-        }
-        logger.info("Choose authors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
-    }
+    //@Inherit
 
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
-                .DIALOG_TITLE_VALUE_CONTROLLER));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
         params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
         final User preselected = getController();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onControllerChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        if (selected != null) {
-            setController(selected);
-        } else {
-            filters.remove(CONTROLLER_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose controller: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final User selected = (User) result.getResult();
+            if (selected != null) {
+                setController(selected);
+            } else {
+                filters.remove(CONTROLLER_KEY);
+            }
         }
-        logger.info("Choose controller From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
 
     // Выбора ответственного исполнителя /////////////////////////////////////////////////////////////////////////////////////////////
@@ -131,36 +110,40 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
     }
 
     public void onResponsibleChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        if (selected != null) {
-            setResponsible(selected);
-        } else {
-            filters.remove(RESPONSIBLE_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose responsible: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final User selected = (User) result.getResult();
+            if (selected != null) {
+                setResponsible(selected);
+            } else {
+                filters.remove(RESPONSIBLE_KEY);
+            }
         }
-        logger.info("Choose responsible From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
 
     // Выбора адресатов /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseRecipients() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_RECIPIENTS));
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_RECIPIENTS));
         final List<User> preselected = getRecipients();
         if (preselected != null && !preselected.isEmpty()) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onRecipientsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null && !selected.isEmpty()) {
-            setRecipients(selected);
-        } else {
-            filters.remove(RECIPIENTS_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose recipients: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) result.getResult();
+            if (selected != null && !selected.isEmpty()) {
+                setRecipients(selected);
+            } else {
+                filters.remove(RECIPIENTS_KEY);
+            }
         }
-        logger.info("Choose recipients From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

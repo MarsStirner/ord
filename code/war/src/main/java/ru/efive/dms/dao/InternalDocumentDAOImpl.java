@@ -87,7 +87,6 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
     @Override
     public DetachedCriteria getFullCriteria() {
         final DetachedCriteria result = getListCriteria();
-        result.createAlias("recipientUsers", "recipientUsers", LEFT_JOIN);
         result.createAlias("personEditors", "personEditors", LEFT_JOIN);
         result.createAlias("personReaders", "personReaders", LEFT_JOIN);
         result.createAlias("recipientGroups", "recipientGroups", LEFT_JOIN);
@@ -223,21 +222,23 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
      */
     @Override
     public void applyAccessCriteria(final DetachedCriteria criteria, final AuthorizationData auth) {
+        //NOTE  Добавляются алиасы с fetch
+        criteria.createAlias("recipientUsers", "recipientUsers", LEFT_JOIN);
+        criteria.createAlias("recipientGroups", "recipientGroups", LEFT_JOIN);
+
         if (!auth.isAdministrator()) {
             final Disjunction disjunction = Restrictions.disjunction();
             final Set<Integer> userIds = auth.getUserIds();
             disjunction.add(Restrictions.in("author.id", userIds));
             disjunction.add(Restrictions.in("controller.id", userIds));
             disjunction.add(Restrictions.in("responsible.id", userIds));
+            disjunction.add(Restrictions.in("recipientUsers.id", userIds));
             //NOTE  Добавляются алиасы с fetch
             criteria.createAlias("personReaders", "personReaders", LEFT_JOIN);
             disjunction.add(Restrictions.in("personReaders.id", userIds));
             //NOTE  Добавляются алиасы с fetch
             criteria.createAlias("personEditors", "personEditors", LEFT_JOIN);
             disjunction.add(Restrictions.in("personEditors.id", userIds));
-            //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("recipientUsers", "recipientUsers", LEFT_JOIN);
-            disjunction.add(Restrictions.in("recipientUsers.id", userIds));
             if (!auth.getRoles().isEmpty()) {
                 //NOTE  Добавляются алиасы с fetch
                 criteria.createAlias("roleReaders", "roleReaders", LEFT_JOIN);
@@ -247,8 +248,6 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
                 disjunction.add(Restrictions.in("roleEditors.id", auth.getRoleIds()));
             }
             if (!auth.getGroups().isEmpty()) {
-                //NOTE  Добавляются алиасы с fetch
-                criteria.createAlias("recipientGroups", "recipientGroups", LEFT_JOIN);
                 disjunction.add(Restrictions.in("recipientGroups.id", auth.getGroupIds()));
             }
             criteria.add(disjunction);

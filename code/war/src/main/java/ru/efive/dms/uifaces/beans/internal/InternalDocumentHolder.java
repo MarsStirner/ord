@@ -666,9 +666,12 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onControllerChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setController(selected);
-        LOGGER.info("Choose controller From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose controller: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setController(selected);
+        }
     }
 
     //Выбора исполнителя /////////////////////////////////////////////////////////////////////////////////////////////
@@ -683,9 +686,12 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onResponsibleChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        getDocument().setResponsible(selected);
-        LOGGER.info("Choose responsible/executor From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose responsible: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final User selected = (User) result.getResult();
+            getDocument().setResponsible(selected);
+        }
     }
 
     // Выбора адресатов-пользователей /////////////////////////////////////////////////////////////////////////////////////////////
@@ -700,13 +706,16 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onRecipientsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if(selected != null && !selected.isEmpty()) {
-            getDocument().setRecipientUsers(new HashSet<User>(selected));
-        } else {
-            getDocument().getRecipientUsers().clear();
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose recipients: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final List<User> selected = (List<User>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setRecipientUsers(new HashSet<User>(selected));
+            } else {
+                getDocument().getRecipientUsers().clear();
+            }
         }
-        LOGGER.info("Choose recipients From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора адресатов-групп /////////////////////////////////////////////////////////////////////////////////////////////
@@ -721,9 +730,16 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onRecipientGroupsChosen(SelectEvent event) {
-        final Set<Group> selected = (Set<Group>) event.getObject();
-        getDocument().setRecipientGroups(selected);
-        LOGGER.info("Choose recipientGroups From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose recipientGroups: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final Set<Group> selected = (Set<Group>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setRecipientGroups(selected);
+            } else {
+                getDocument().getRecipientGroups().clear();
+            }
+        }
     }
 
     // Выбора пользователей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
@@ -738,13 +754,16 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onPersonReadersChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if(selected != null && !selected.isEmpty()) {
-            getDocument().setPersonReaders(new HashSet<User>(selected));
-        } else {
-            getDocument().getPersonReaders().clear();
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose personReaders: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final List<User> selected = (List<User>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setPersonReaders(new HashSet<User>(selected));
+            } else {
+                getDocument().getPersonReaders().clear();
+            }
         }
-        LOGGER.info("Choose personReaders From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора пользователей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
@@ -759,13 +778,16 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onPersonEditorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if(selected != null && !selected.isEmpty()) {
-            getDocument().setPersonEditors(new HashSet<User>(selected));
-        } else {
-            getDocument().getPersonEditors().clear();
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose personEditors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final List<User> selected = (List<User>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setPersonEditors(new HashSet<User>(selected));
+            } else {
+                getDocument().getPersonEditors().clear();
+            }
         }
-        LOGGER.info("Choose personEditors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора ролей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
@@ -780,9 +802,16 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onRoleReadersChosen(SelectEvent event) {
-        final Set<Role> selected = (Set<Role>) event.getObject();
-        getDocument().setRoleReaders(selected);
-        LOGGER.info("Choose roleReaders From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose roleReaders: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final Set<Role> selected = (Set<Role>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setRoleReaders(selected);
+            } else {
+                getDocument().getRoleReaders().clear();
+            }
+        }
     }
 
     // Выбора ролей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
@@ -797,14 +826,16 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void onRoleEditorsChosen(SelectEvent event) {
-        final Set<Role> selected = (Set<Role>) event.getObject();
-        getDocument().setRoleEditors(selected);
-        LOGGER.info("Choose roleEditors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Choose roleEditors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+            final Set<Role> selected = (Set<Role>) result.getResult();
+            if(selected != null && !selected.isEmpty()) {
+                getDocument().setRoleEditors(selected);
+            } else {
+                getDocument().getRoleEditors().clear();
+            }
+        }
     }
-
-
-
-
-
 
 }

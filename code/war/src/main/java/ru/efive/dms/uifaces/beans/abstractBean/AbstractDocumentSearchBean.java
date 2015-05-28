@@ -1,10 +1,17 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
+import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
+import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
+import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.entity.model.document.DocumentForm;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
 
+import javax.faces.context.FacesContext;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +83,32 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
      * @return  Список документов, удовлетворяющих поиску
      */
     public abstract void performSearch();
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseAuthors() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR));
+        final List<User> preselected = getAuthors();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+    }
+
+    public void onAuthorsChosen(SelectEvent event) {
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) result.getResult();
+            if (selected != null) {
+                setAuthors(selected);
+            } else {
+                filters.remove(AUTHORS_KEY);
+            }
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Параметры поиска *** ОБЩИЕ для всех типов документов *****  /////////////////////////////////////////////////////

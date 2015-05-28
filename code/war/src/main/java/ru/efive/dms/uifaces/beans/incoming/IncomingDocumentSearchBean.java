@@ -96,28 +96,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseAuthors() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR));
-        final List<User> preselected = getAuthors();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
-    }
-
-    public void onAuthorsChosen(SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        logger.info("Choose authors: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final List<User> selected = (List<User>) result.getResult();
-            if (selected != null) {
-                setAuthors(selected);
-            } else {
-                filters.remove(AUTHORS_KEY);
-            }
-        }
-    }
+    //@Inherit
 
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
