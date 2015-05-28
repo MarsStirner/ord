@@ -98,140 +98,142 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseAuthors() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_AUTHOR));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR));
         final List<User> preselected = getAuthors();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog
-                .getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onAuthorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null) {
-            setAuthors(selected);
-        } else {
-            filters.remove(AUTHORS_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose authors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) result.getResult();
+            if (selected != null) {
+                setAuthors(selected);
+            } else {
+                filters.remove(AUTHORS_KEY);
+            }
         }
-        logger.info("Choose authors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
-                .DIALOG_TITLE_VALUE_CONTROLLER));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
         params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
         final User preselected = getController();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog
-                .getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onControllerChosen(SelectEvent event) {
-        final User selected = (User) event.getObject();
-        if (selected != null) {
-            setController(selected);
-        } else {
-            filters.remove(CONTROLLER_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose controller: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final User selected = (User) result.getResult();
+            if (selected != null) {
+                setController(selected);
+            } else {
+                filters.remove(CONTROLLER_KEY);
+            }
         }
-        logger.info("Choose controller From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
 
     // Выбора контрагента //////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseContragent() {
         final Contragent preselected = getContragent();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog
-                .getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
     }
 
     public void onContragentChosen(SelectEvent event) {
-        final Contragent selected = (Contragent) event.getObject();
-        if (selected != null) {
-            setContragent(selected);
-        } else {
-            filters.remove(CONTRAGENT_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose contragent: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final Contragent selected = (Contragent) result.getResult();
+            if (selected != null) {
+                setContragent(selected);
+            } else {
+                filters.remove(CONTRAGENT_KEY);
+            }
         }
-        logger.info("Choose contragent From Dialog \'{}\'", selected != null ? selected.getDescription() : "#NOTSET");
     }
 
     // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseExecutors() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_EXECUTORS));
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_EXECUTORS));
         final List<User> preselected = getExecutors();
         if (preselected != null && !preselected.isEmpty()) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog
-                .getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onExecutorsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null && !selected.isEmpty()) {
-            setExecutors(selected);
-        } else {
-            filters.remove(EXECUTORS_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose executors: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) result.getResult();
+            if (selected != null && !selected.isEmpty()) {
+                setExecutors(selected);
+            } else {
+                filters.remove(EXECUTORS_KEY);
+            }
         }
-        logger.info("Choose executors From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора адресатов /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseRecipients() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_RECIPIENTS));
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_RECIPIENTS));
         final List<User> preselected = getRecipients();
         if (preselected != null && !preselected.isEmpty()) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog
-                .getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
     }
 
     public void onRecipientsChosen(SelectEvent event) {
-        final List<User> selected = (List<User>) event.getObject();
-        if (selected != null && !selected.isEmpty()) {
-            setRecipients(selected);
-        } else {
-            filters.remove(RECIPIENTS_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose recipients: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) result.getResult();
+            if (selected != null && !selected.isEmpty()) {
+                setRecipients(selected);
+            } else {
+                filters.remove(RECIPIENTS_KEY);
+            }
         }
-        logger.info("Choose recipients From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
     // Выбора томов дел /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseOfficeKeepingVolume() {
         final OfficeKeepingVolume preselected = getOfficeKeepingVolume();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put
-                    (OfficeKeepingVolumeDialogHolder.DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(OfficeKeepingVolumeDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml",
-                AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml", AbstractDialog.getViewParams(), null);
     }
 
     public void onOfficeKeepingVolumeChosen(SelectEvent event) {
-        final OfficeKeepingVolume selected = (OfficeKeepingVolume) event.getObject();
-        if (selected != null) {
-            setOfficeKeepingVolume(selected);
-        } else {
-            filters.remove(OFFICE_KEEPING_VOLUME_KEY);
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose officeKeepingVolume: {}", result);
+        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final OfficeKeepingVolume selected = (OfficeKeepingVolume) result.getResult();
+            if (selected != null) {
+                setOfficeKeepingVolume(selected);
+            } else {
+                filters.remove(OFFICE_KEEPING_VOLUME_KEY);
+            }
         }
-        logger.info("Choose officeKeepingVolume From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Параметры поиска ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -246,17 +248,6 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     public User getController() {
         return (User) filters.get(CONTROLLER_KEY);
     }
-
-    /*  в форме не используется
-    // Номер поступившего
-    public void setReceivedDocumentNumber(final String value) {
-        putNotNullToFilters(RECEIVED_DOCUMENT_NUMBER_KEY, value);
-    }
-
-    public String getReceivedDocumentNumber() {
-        return (String) filters.get(RECEIVED_DOCUMENT_NUMBER_KEY);
-    }
-    */
 
     // Дата доставки ОТ
     public void setStartDeliveryDate(Date value) {
