@@ -1,25 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
-    <ui:define name="running_head">
+    <ui:define name="contentLabel">Шаблоны маршрутов согласования</ui:define>
 
-        <h:outputScript library="js" name="forms.js" target="head"/>
-    </ui:define>
-
-    <ui:define name="header_top">
-        <span>Шаблоны маршрутов согласования</span>
-    </ui:define>
-
-    <ui:define name="header_buttons">
+    <ui:define name="contentButtonsPanel">
         <div class="defbutton">
             <h:panelGroup rendered="#{isAdministrator or isOfficeManager}">
                 <h:outputLink value="/component/admin/route_template.xhtml" target="_blank">
@@ -33,52 +23,33 @@
             <h:commandLink action="#{routeTemplates.refresh()}">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 Обновить
-                <e5ui:formPartTarget formPart="main_table_part"/>
+                <f:ajax render="documentTable"/>
             </h:commandLink>
         </div>
     </ui:define>
+    <ui:define name="contentSearchPanel"/>
+    <ui:define name="contentTable">
+        <p:dataTable id="documentTable"
+                     paginator="true"
+                     rows="100"
+                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
+                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
+                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
+                     paginatorPosition="#{props['PAGINATOR_POSITION']}"
+                     value="#{routeTemplates.documents}"
+                     var="row"
+                     widgetVar="documentTableWidget"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     selectionMode="single"
+                     rowKey="#{row.id}"
+                >
+            <p:column headerText="Название">
+                <h:outputText value="#{row.name}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToRouteTemplate(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
+        </p:dataTable>
 
-    <ui:define name="content">
-
-        <e5ui:formPart id="main_table_part">
-            <div id="main_table">
-                <div class="wrap_main" id="table_wrap">
-                    <div class="inner" id="table_inner">
-                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                        id="main_data_tbl" value="#{routeTemplates.documents}" var="row"
-                                        grouping="false">
-                            <e5ui:row ondblclick="goToRouteTemplate('#{row.id}');"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <h:commandLink action="#{routeTemplates.sort('name')}">
-                                        Название
-                                        <f:ajax render="main_data_tbl"/>
-                                    </h:commandLink>
-                                </f:facet>
-                                <h:outputText value="#{row.name}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <h:panelGroup id="main_data_paging">
-                        <e5ui-comp:tablePager documentListHolder="#{routeTemplates}" style="display:inline;"/>
-                        <e5ui-comp:tablePageSizeSelector
-                                documentListHolder="#{routeTemplates}"
-                                style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                    </h:panelGroup>
-                </div>
-            </div>
-        </e5ui:formPart>
-
-        <e5ui-comp:ajaxStatusGlobal timeout="300">
-            <f:facet name="waitPanel">
-                <div
-                        style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                    Пожалуйста, подождите...
-                </div>
-            </f:facet>
-        </e5ui-comp:ajaxStatusGlobal>
 
     </ui:define>
 
