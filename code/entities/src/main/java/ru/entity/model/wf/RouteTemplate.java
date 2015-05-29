@@ -1,22 +1,14 @@
 package ru.entity.model.wf;
 
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
 import ru.entity.model.mapped.Document;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -43,35 +35,71 @@ public class RouteTemplate extends Document {
     }
 
     public List<User> getReaders() {
-        return readers;
+        if(readers != null && !readers.isEmpty()) {
+            return new ArrayList<>(readers);
+        } else {
+            return new ArrayList<>(0);
+        }
     }
 
     public void setReaders(List<User> readers) {
-        this.readers = readers;
+        if(this.readers != null) {
+            this.readers.clear();
+            this.readers.addAll(readers);
+        }       else{
+            this.readers = new HashSet<>(readers);
+        }
     }
 
     public List<Role> getReaderRoles() {
-        return readerRoles;
+        if(readerRoles != null && !readerRoles.isEmpty()) {
+            return new ArrayList<>(readerRoles);
+        } else {
+            return new ArrayList<>(0);
+        }
     }
 
     public void setReaderRoles(List<Role> readerRoles) {
-        this.readerRoles = readerRoles;
+        if(this.readerRoles != null) {
+            this.readerRoles.clear();
+            this.readerRoles.addAll(readerRoles);
+        }       else{
+            this.readerRoles = new HashSet<>(readerRoles);
+        }
     }
 
     public List<User> getEditors() {
-        return editors;
+        if(editors != null && !editors.isEmpty()) {
+            return new ArrayList<>(editors);
+        } else {
+            return new ArrayList<>(0);
+        }
     }
 
     public void setEditors(List<User> editors) {
-        this.editors = editors;
+        if(this.editors != null) {
+            this.editors.clear();
+            this.editors.addAll(editors);
+        }       else{
+            this.editors = new HashSet<>(editors);
+        }
     }
 
     public List<Role> getEditorRoles() {
-        return editorRoles;
+        if(editorRoles != null && !editorRoles.isEmpty()) {
+            return new ArrayList<>(editorRoles);
+        } else {
+            return new ArrayList<>(0);
+        }
     }
 
     public void setEditorRoles(List<Role> editorRoles) {
-        this.editorRoles = editorRoles;
+        if(this.editorRoles != null) {
+            this.editorRoles.clear();
+            this.editorRoles.addAll(editorRoles);
+        }       else{
+            this.editorRoles = new HashSet<>(editorRoles);
+        }
     }
 
 
@@ -80,41 +108,33 @@ public class RouteTemplate extends Document {
     /**
      * Дерево согласования
      */
-    @OneToOne(fetch = FetchType.EAGER)
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private HumanTaskTree taskTree;
 
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "wf_route_template_readers",
             joinColumns = {@JoinColumn(name = "template_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<User> readers;
+    private Set<User> readers;
 
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "wf_route_template_reader_roles",
             joinColumns = {@JoinColumn(name = "template_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Role> readerRoles;
 
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    private Set<Role> readerRoles;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "wf_route_template_editors",
             joinColumns = {@JoinColumn(name = "template_id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<User> editors;
+    private Set<User> editors;
 
-    @ManyToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "wf_route_template_editor_roles",
             joinColumns = {@JoinColumn(name = "template_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Role> editorRoles;
+    private Set<Role> editorRoles;
 
 
     private static final long serialVersionUID = 9039334783680513371L;

@@ -1,24 +1,11 @@
 package ru.entity.model.wf;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
 import ru.entity.model.mapped.Document;
+
+import javax.persistence.*;
+import java.util.*;
 
 /**
  * Шаблон дерева задач на согласование
@@ -27,23 +14,47 @@ import ru.entity.model.mapped.Document;
 @Table(name = "wf_task_trees")
 public class HumanTaskTree extends Document {
 
-    public void setRootNodes(List<HumanTaskTreeNode> rootNodes) {
-        this.rootNodes = rootNodes;
-    }
+    private static final Logger logger = LoggerFactory.getLogger("HUMAN_TASK");
+    private static final long serialVersionUID = 29608759242909653L;
+    /**
+     * Вершины дерева согласования 1 уровня
+     */
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "wf_task_tree_root_nodes",
+            joinColumns = {@JoinColumn(name = "tree_id")},
+            inverseJoinColumns = {@JoinColumn(name = "node_id")})
+    private Set<HumanTaskTreeNode> rootNodes;
+    @Transient
+    private List<HumanTaskTreeNode> humanTaskTree;
 
     public List<HumanTaskTreeNode> getRootNodes() {
-        return rootNodes;
+        if(rootNodes != null) {
+            return new ArrayList<>(rootNodes);
+        } else {
+            return new ArrayList<>(0);
+        }
+    }
+
+    public void setRootNodes(List<HumanTaskTreeNode> rootNodes) {
+        if (this.rootNodes != null) {
+            this.rootNodes.clear();
+            this.rootNodes.addAll(rootNodes);
+        } else {
+            this.rootNodes = new HashSet<>(rootNodes);
+        }
     }
 
     public List<HumanTaskTreeNode> getRootNodeList() {
         List<HumanTaskTreeNode> result = new ArrayList<HumanTaskTreeNode>();
         result.addAll(rootNodes);
-        Collections.sort(result, new Comparator<HumanTaskTreeNode>() {
-            @Override
-            public int compare(HumanTaskTreeNode o1, HumanTaskTreeNode o2) {
-                return o1.getId() - o2.getId();
-            }
-        });
+        Collections.sort(
+                result, new Comparator<HumanTaskTreeNode>() {
+                    @Override
+                    public int compare(HumanTaskTreeNode o1, HumanTaskTreeNode o2) {
+                        return o1.getId() - o2.getId();
+                    }
+                }
+        );
         return result;
     }
 
@@ -78,7 +89,7 @@ public class HumanTaskTree extends Document {
 
     public void addRootNode(HumanTaskTreeNode node) {
         if (rootNodes == null) {
-            rootNodes = new ArrayList<HumanTaskTreeNode>();
+            rootNodes = new HashSet<HumanTaskTreeNode>();
         }
         rootNodes.add(node);
     }
@@ -106,24 +117,4 @@ public class HumanTaskTree extends Document {
         }
         return result;
     }
-
-
-    /**
-     * Вершины дерева согласования 1 уровня
-     */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
-    @JoinTable(name = "wf_task_tree_root_nodes",
-            joinColumns = {@JoinColumn(name = "tree_id")},
-            inverseJoinColumns = {@JoinColumn(name = "node_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<HumanTaskTreeNode> rootNodes;
-
-    @Transient
-    private List<HumanTaskTreeNode> humanTaskTree;
-
-
-    private static final Logger logger = LoggerFactory.getLogger("HUMAN_TASK");
-
-    private static final long serialVersionUID = 29608759242909653L;
 }

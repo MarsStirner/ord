@@ -1,25 +1,9 @@
 package ru.entity.model.wf;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
-
 import ru.entity.model.mapped.Document;
+
+import javax.persistence.*;
+import java.util.*;
 
 /**
  * Вершина дерева согласования (шаг процесса согласования)
@@ -66,11 +50,20 @@ public class HumanTaskTreeNode extends Document {
     }
 
     public void setTasks(List<HumanTask> tasks) {
-        this.tasks = tasks;
+        if(this.tasks != null) {
+            this.tasks.clear();
+            this.tasks.addAll(tasks);
+        }       else{
+            this.tasks = new HashSet<>(tasks);
+        }
     }
 
     public List<HumanTask> getTasks() {
-        return tasks;
+       if(tasks != null && !tasks.isEmpty()){
+           return  new ArrayList<>(tasks);
+       }           else {
+           return new ArrayList<>(0);
+       }
     }
 
     public List<HumanTask> getTaskList() {
@@ -93,7 +86,7 @@ public class HumanTaskTreeNode extends Document {
 
     public void addTask(HumanTask task) {
         if (tasks == null) {
-            tasks = new ArrayList<HumanTask>();
+            tasks = new HashSet<>();
         }
         tasks.add(task);
     }
@@ -126,24 +119,20 @@ public class HumanTaskTreeNode extends Document {
     /**
      * Вершины дерева согласования - потомки
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "wf_task_tree_child_nodes",
             joinColumns = {@JoinColumn(name = "node_id")},
             inverseJoinColumns = {@JoinColumn(name = "child_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
     private List<HumanTaskTreeNode> childNodes;
 
     /**
      * Задачи на согласование
      */
-    @OneToMany
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "wf_task_tree_node_tasks",
             joinColumns = {@JoinColumn(name = "node_id")},
             inverseJoinColumns = {@JoinColumn(name = "task_id")})
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<HumanTask> tasks;
+    private Set<HumanTask> tasks;
 
     /**
      * Позиция вершины в дереве
