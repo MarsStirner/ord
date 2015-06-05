@@ -20,7 +20,7 @@ public final class ApplicationDAONames {
     public static final String REQUEST_DOCUMENT_FORM_DAO = "requestDao";
     public static final String INTERNAL_DOCUMENT_FORM_DAO = "internalDao";
     public static final String TASK_DAO = "taskDao";
-    public static final String DELIVERY_TYPE_DAO = "deliveryTypeDao";
+
     public static final String SENDER_TYPE_DAO = "senderTypeDao";
     public static final String REGION_DAO = "regionDao";
     public static final String REPORT_DAO = "reportDao";
@@ -35,4 +35,5 @@ public final class ApplicationDAONames {
      * ReferenceBook's
      */
     public static final String RB_DOCUMENT_TYPE_DAO = "documentTypeDao";
+    public static final String RB_DELIVERY_TYPE_DAO = "deliveryTypeDao";
 }

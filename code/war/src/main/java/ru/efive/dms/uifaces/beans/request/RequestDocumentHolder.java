@@ -228,12 +228,12 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             }
         }
 
-        final DeliveryType deliveryType = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO)
+        final DeliveryType deliveryType = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, RB_DELIVERY_TYPE_DAO)
                 .getByCode(DeliveryType.RB_CODE_EMAIL);
         if (deliveryType != null) {
            doc.setDeliveryType(deliveryType);
         } else {
-            final List<DeliveryType> deliveryTypes = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).getItems();
+            final List<DeliveryType> deliveryTypes = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, RB_DELIVERY_TYPE_DAO).getItems();
             if (deliveryTypes != null && !deliveryTypes.isEmpty()) {
                 doc.setDeliveryType(deliveryTypes.get(0));
             }

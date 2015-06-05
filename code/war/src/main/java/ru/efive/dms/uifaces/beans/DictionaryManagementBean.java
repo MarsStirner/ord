@@ -95,22 +95,10 @@ public class DictionaryManagementBean implements Serializable {
 
 
     public List<DeliveryType> getDeliveryTypes() {
-        List<DeliveryType> result = new ArrayList<DeliveryType>();
-        try {
-            result = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).findDocuments();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
+       return sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, RB_DELIVERY_TYPE_DAO).getItems();
     }
 
-    public List<DeliveryType> getDeliveryTypesWithEmptyValue() {
-        List<DeliveryType> result = getDeliveryTypes();
-        DeliveryType empty = new DeliveryType();
-        empty.setValue("");
-        result.add(0, empty);
-        return result;
-    }
+
 
     public List<GroupType> getGroupTypes() {
         List<GroupType> result = new ArrayList<GroupType>();

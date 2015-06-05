@@ -61,7 +61,9 @@ public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclat
 
     @Override
     protected void initDocument(Integer documentId) {
-        setDocument(sessionManagementBean.getDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).get(documentId));
+        if(documentId != null) {
+            setDocument(sessionManagementBean.getDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).get(documentId));
+        }
     }
 
     @Override

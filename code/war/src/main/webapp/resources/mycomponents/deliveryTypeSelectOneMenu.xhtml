@@ -1,0 +1,20 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:composite="http://java.sun.com/jsf/composite"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <composite:interface>
+        <composite:attribute name="id"/>
+        <composite:attribute name="value"/>
+        <composite:attribute name="style" required="false" type="java.lang.String" shortDescription="inline style for element"/>
+    </composite:interface>
+
+    <composite:implementation>
+        <p:selectOneMenu id="#{cc.attrs.id}" value="#{cc.attrs.value}" converter="#{DeliveryTypeConverter}" style="#{cc.attrs.style}">
+            <f:selectItem itemLabel="" noSelectionOption="true"/>
+            <f:selectItems value="#{dictionaryManagement.getDeliveryTypes()}"/>
+        </p:selectOneMenu>
+    </composite:implementation>
+
+</ui:component>

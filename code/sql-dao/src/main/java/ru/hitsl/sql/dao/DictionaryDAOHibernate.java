@@ -105,7 +105,9 @@ public class DictionaryDAOHibernate<T extends DictionaryEntity> extends GenericD
         final DetachedCriteria criteria = getCriteria();
         applyFilterCriteria(criteria, filter);
         addUndeletedRestriction(criteria);
-        criteria.addOrder(orderAsc ? Order.asc(orderBy) : Order.desc(orderBy));
+        if(StringUtils.isNotEmpty(orderBy)){
+            criteria.addOrder(orderAsc ? Order.asc(orderBy) : Order.desc(orderBy));
+        }
         return getHibernateTemplate().findByCriteria(criteria, first, count);
     }
 

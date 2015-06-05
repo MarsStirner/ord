@@ -409,10 +409,7 @@
                                         </label>
                                     </td>
                                     <td class="second">
-                                        <p:selectOneMenu id="deliveryType" value="#{request_doc.document.deliveryType}"
-                                                         converter="DeliveryTypeConverter"  style="width:15em;">
-                                            <f:selectItems value="#{dictionaryManagement.deliveryTypes}"/>
-                                        </p:selectOneMenu>
+                                       <my:deliveryTypeSelectOneMenu id="deliveryType" value="#{request_doc.document.deliveryType}" style="width:15em;"/>
                                     </td>
                                     <td class="third"/>
                                     <td class="fourth"/>

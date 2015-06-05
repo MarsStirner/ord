@@ -6,6 +6,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
         >
 
 <ui:composition template="/jsf-template/searchFormTemplate.xhtml">
@@ -268,10 +269,8 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="deliveryType" value="#{incoming_search.deliveryType}"
-                                     converter="DeliveryTypeConverter">
-                        <f:selectItems value="#{dictionaryManagement.deliveryTypesWithEmptyValue}"/>
-                    </p:selectOneMenu>
+                    <my:deliveryTypeSelectOneMenu id="deliveryType" value="#{incoming_search.deliveryType}"/>
+
                 </p:column>
             </p:row>
             <p:row>
