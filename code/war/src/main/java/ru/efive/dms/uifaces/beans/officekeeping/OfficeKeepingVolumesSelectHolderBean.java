@@ -1,18 +1,18 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.enums.DocumentStatus;
+import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @Named("officeKeepingVolumesSelect")
 @SessionScoped

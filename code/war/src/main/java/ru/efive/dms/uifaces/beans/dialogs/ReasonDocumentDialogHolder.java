@@ -2,11 +2,11 @@ package ru.efive.dms.uifaces.beans.dialogs;
 
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.context.RequestContext;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.RequestDocument;
+import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
+import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
 import ru.util.ApplicationHelper;
 
 import javax.annotation.PostConstruct;
@@ -16,8 +16,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.io.Serializable;
 
-import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
 
 /**
  * Author: Upatov Egor <br>

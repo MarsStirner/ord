@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface ProcessUser extends Serializable{
 
-    public int getId();
+    public Integer getId();
 
     public String getEmail();
 

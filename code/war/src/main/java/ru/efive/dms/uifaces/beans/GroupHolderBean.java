@@ -7,11 +7,11 @@ import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.GroupDAOHibernate;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -21,7 +21,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
 
 @Named("group")
 @ViewScoped

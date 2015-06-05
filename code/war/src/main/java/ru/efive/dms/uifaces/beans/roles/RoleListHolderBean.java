@@ -3,8 +3,8 @@ package ru.efive.dms.uifaces.beans.roles;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForRole;
-import ru.efive.sql.dao.user.RoleDAOHibernate;
 import ru.entity.model.user.Role;
+import ru.hitsl.sql.dao.user.RoleDAOHibernate;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -13,7 +13,7 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
 
 @Named("roleList")
 @ViewScoped

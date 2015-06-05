@@ -5,15 +5,15 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.SubstitutionDaoImpl;
+import ru.hitsl.sql.dao.util.ApplicationDAONames;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;

@@ -262,8 +262,7 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="contragent" value="#{outgoing_search.contragent}"
-                                  converter="ContragentConverter"/>
+                    <h:outputText id="contragent" value="#{outgoing_search.contragent.value}"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -336,8 +335,8 @@
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:12em;" headerText="Адресаты" sortBy="#{row_result.contragent}" field="contragent.fullName">
-                    <h:outputText value="#{row_result.contragent.fullName}"/>
+            <p:column style="width:12em;" headerText="Адресаты" sortBy="#{row_result.contragent}" field="contragent.value">
+                    <h:outputText value="#{row_result.contragent.value}"/>
             </p:column>
             <p:column style="width:10em;" headerText="Руководитель" sortBy="#{row_result.controller}" field="controller.lastName">
                 <h:outputText value="#{row_result.controller}" converter="PersonConverter"/>

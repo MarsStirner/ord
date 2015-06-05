@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
 import ru.entity.model.user.Substitution;
+import ru.hitsl.sql.dao.SubstitutionDaoImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -28,10 +28,10 @@ public class LazyDataModelForSubstitution extends AbstractFilterableLazyDataMode
     @Override
     public List<Substitution> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,
             Object> filters) {
-        setRowCount(dao.getDocumentsCount(getFilter(), false));
+        setRowCount(dao.getDocumentsCount(filter, false));
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.getDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.getDocuments(filter, false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

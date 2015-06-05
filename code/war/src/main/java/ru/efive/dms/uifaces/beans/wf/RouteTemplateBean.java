@@ -21,7 +21,7 @@ import javax.inject.Named;
 import java.util.Calendar;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.ENGINE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.ENGINE_DAO;
 
 @Named("routeTemplate")
 @ConversationScoped

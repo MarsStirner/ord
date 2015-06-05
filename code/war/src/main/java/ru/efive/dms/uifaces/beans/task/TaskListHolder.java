@@ -2,12 +2,12 @@ package ru.efive.dms.uifaces.beans.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.TaskDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.tasks.LazyDataModelForTask;
 import ru.entity.model.document.Task;
+import ru.hitsl.sql.dao.TaskDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -16,9 +16,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
-import static ru.efive.dms.util.DocumentSearchMapKeys.STATUS_LIST_KEY;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.TASK_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.STATUS_LIST_KEY;
 
 @Named("tasks")
 @ViewScoped

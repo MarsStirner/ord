@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
@@ -16,20 +15,24 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
-import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.referenceBook.Contragent;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
+import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.user.UserAccessLevel;
+import ru.hitsl.sql.dao.*;
+import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
+import ru.hitsl.sql.dao.util.ApplicationDAONames;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
@@ -39,8 +42,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("in_doc")
 @ViewScoped
@@ -78,7 +81,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
         params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
         final User preselected = getDocument().getController();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -317,6 +320,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 setActionResult(in_result);
             }
         }
+
+
     };
 
     public boolean isReadPermission() {
@@ -368,22 +373,16 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             doc.setParentNumeratorId(parentNumeratorId);
             //Numerator parentNumerator=sessionManagement.getDAO(NumeratorDAOImpl.class,NUMERATOR_DAO).findDocumentById(parentNumeratorId);
         }
-        DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue(
-                "Входящие документы",
-                "Письмо"
-        );
-        if (list.size() > 0) {
-            form = list.get(0);
-
-        } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Входящие документы");
-            if (list.size() > 0) {
-                form = list.get(0);
-            }
-        }
-        if (form != null) {
+        final DocumentForm form  = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).getByCode(DocumentForm.RB_CODE_INCOMING_LETTER);
+        if(form != null) {
             doc.setForm(form);
+        }
+        else {
+            final List<DocumentForm> formList = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                    .findByDocumentTypeCode(DocumentType.RB_CODE_INCOMING);
+            if (!formList.isEmpty()) {
+                doc.setForm(formList.get(0));
+            }
         }
         doc.setUserAccessLevel(sessionManagement.getLoggedUser().getCurrentUserAccessLevel());
 

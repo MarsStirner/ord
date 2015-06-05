@@ -8,7 +8,8 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my = "http://xmlns.jcp.org/jsf/composite/mycomponents">
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -61,27 +62,20 @@
                                         <div id="title">Действия</div>
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{in_doc.processorModal.actionsAvailable}">
-                                        <div class="wrap" style="height: 120px; background-color: #fff; clear: both;">
-                                            <div class="inner" style="height: 120px;">
-                                                <e5ui:dataTable id="action_select_table" border="0"
-                                                                cellpadding="0" cellspacing="0"
-                                                                value="#{in_doc.processorModal.availableActions}"
-                                                                var="row"
-                                                                grouping="false" width="100%">
-                                                    <e5ui:row
-                                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                            styleClass="#{in_doc.processorModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                    <e5ui:column>
-                                                        <f:facet name="header">
-                                                            <p>Доступные действия</p>
-                                                        </f:facet>
-                                                        <h:outputText value="#{row.action.name}"/>
-                                                        <p:commandLink id="selectLink" style="display: none;"
-                                                                       rendered="#{not in_doc.processorModal.selected(row)}"
-                                                                       action="#{in_doc.processorModal.select(row)}" update="@form"/>
-                                                    </e5ui:column>
-                                                </e5ui:dataTable>
-                                            </div>
+                                        <div class="inner" style="height: 120px;">
+                                            <p:dataTable id="action_select_table"
+                                                         border="0"
+                                                         cellpadding="0" cellspacing="0"
+                                                         value="#{in_doc.processorModal.availableActions}"
+                                                         var="row"
+                                                         width="100%"
+                                                         rowKey="#{row.action.name}"
+                                                         selectionMode="single"
+                                                         selection="#{in_doc.processorModal.selectedAction}">
+                                                <p:column headerText="Доступные действия">
+                                                    <h:outputText value="#{row.action.name}"/>
+                                                </p:column>
+                                            </p:dataTable>
                                         </div>
                                     </h:panelGroup>
                                     <h:panelGroup rendered="#{in_doc.processorModal.noActionsAvailable or in_doc.processorModal.failureState or in_doc.processorModal.processedState}">
@@ -151,7 +145,7 @@
 
                 <p:selectOneMenu id="form" value="#{in_doc.document.form}" converter="IncomingDocumentFormConverter"
                                  rendered="#{in_doc.createState or (in_doc.editState and statusId_In_REG_OR_CHECK_OR_ON_EXEC)}">
-                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Входящие документы')}"/>
+                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('INCOMING')}"/>
                 </p:selectOneMenu>
                 <h:outputText value="#{in_doc.document.form.value}" rendered="#{in_doc.viewState or (in_doc.editState and not statusId_In_REG_OR_CHECK_OR_ON_EXEC)}"/>
                 <h:outputText value=" № #{in_doc.document.registrationNumber} от " rendered="#{in_doc.editState or in_doc.viewState}"/>
@@ -340,7 +334,7 @@
                                             </label>
                                         </td>
                                         <td class="second">
-                                            <h:outputText value="#{in_doc.document.contragent.fullName}"/>
+                                            <h:outputText value="#{in_doc.document.contragent.value}"/>
                                         </td>
                                         <td class="third"/>
                                         <td class="fourth"/>
@@ -452,7 +446,7 @@
                                         </p:commandLink>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <h:outputText id="contragent" value="#{in_doc.document.contragent.fullName}" class="wide"/>
+                                        <h:outputText id="contragent" value="#{in_doc.document.contragent.value}" class="wide"/>
                                     </td>
                                 </tr>
                                 <tr class="row">
@@ -464,9 +458,9 @@
                                     <td class="second" colspan="3">
                                         <div style="overflow-y: scroll; height: 120px">
                                             <h:panelGroup id="recipientUsers">
-                                                    <ui:repeat value="#{in_doc.document.recipientUserList}" var="recipientUser">
-                                                        <h:outputText value="#{recipientUser.getDescription()}" class="width"/><br/>
-                                                    </ui:repeat>
+                                                <ui:repeat value="#{in_doc.document.recipientUserList}" var="recipientUser">
+                                                    <h:outputText value="#{recipientUser.getDescription()}" class="width"/><br/>
+                                                </ui:repeat>
                                             </h:panelGroup>
                                         </div>
                                     </td>
@@ -546,7 +540,7 @@
                                             Новая резолюция
                                             <f:param name="docAction" value="create"/>
                                             <f:param name="rootDocumentId" value="#{in_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="resolution"/>
+                                            <f:param name="formId" value="TASK_RESOLUTION"/>
                                         </h:outputLink>
                                     </div>
                                 </h:panelGroup>
@@ -557,7 +551,7 @@
                                             Новое поручение
                                             <f:param name="docAction" value="create"/>
                                             <f:param name="rootDocumentId" value="#{in_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="task"/>
+                                            <f:param name="formId" value="TASK_ASSIGMENT"/>
                                         </h:outputLink>
                                     </div>
                                 </h:panelGroup>
@@ -718,7 +712,8 @@
                                     </td>
                                     <td class="second" colspan="3">
                                         <p:selectOneMenu id="accessLevel" value="#{in_doc.document.userAccessLevel}" style="width:15em;" converter="UserAccessLevelConverter">
-                                            <f:selectItems value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.getLoggedUser().getCurrentUserAccessLevel().level)}"/>
+                                            <f:selectItems var ="level" value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.getLoggedUser().getCurrentUserAccessLevel().level)}"
+                                                           itemLabel="#{level.value}"/>
                                         </p:selectOneMenu>
                                     </td>
                                 </tr>
@@ -834,7 +829,7 @@
                                             <table class="form_grid">
                                                 <tr class="row">
                                                     <td class="first">
-                                                       Читатели:
+                                                        Читатели:
                                                     </td>
                                                     <td class="second" colspan="3">
                                                         <div style="overflow-y: scroll; height: 90px">
@@ -851,7 +846,7 @@
                                                     <td class="second" colspan="3">
                                                         <div style="overflow-y: scroll; height: 90px">
                                                             <ui:repeat value="#{in_doc.document.personEditorsList}" var="personEditor">
-                                                                    <h:outputText value="#{personEditor.getDescription()}" class="width"/><br/>
+                                                                <h:outputText value="#{personEditor.getDescription()}" class="width"/><br/>
                                                             </ui:repeat>
                                                         </div>
                                                     </td>
@@ -898,25 +893,7 @@
                     </h:panelGroup>
                 </p:tab>
                 <p:tab title="История" rendered="#{in_doc.viewState or in_doc.createState or (in_doc.editState and in_doc.editPermission)}">
-                    <p:dataTable id="history_list" value="#{in_doc.document.historyList}" var="history_entry" style="width:100%;">
-                        <p:column headerText="Дата">
-                            <h:outputText value="#{history_entry.startDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
-                            </h:outputText>
-                        </p:column>
-                        <p:column headerText="Статус">
-                            <h:outputText value="#{history_entry.fromStatusName}"/>
-                        </p:column>
-                        <p:column headerText="Действие">
-                            <h:outputText value="#{history_entry.actionName}"/>
-                        </p:column>
-                        <p:column headerText="Автор">
-                            <h:outputText value="#{history_entry.owner.descriptionShort}"/>
-                        </p:column>
-                        <p:column headerText="Комментарий">
-                            <h:outputText value="#{history_entry.commentary}"/>
-                        </p:column>
-                    </p:dataTable>
+                    <my:historyTable id ="historyTable" value ="#{in_doc.document.historyList}"/>
                 </p:tab>
             </p:tabView>
         </div>

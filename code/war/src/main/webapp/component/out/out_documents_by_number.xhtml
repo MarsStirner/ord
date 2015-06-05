@@ -76,11 +76,11 @@
             <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
                 <h:outputText value="#{row.executor.getDescriptionShort()}"/>
             </p:column>
-            <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.fullName}" field="contragent.fullName">
-                <h:outputText value="#{row.contragent.fullName}"/>
+            <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.value}" field="contragent.value">
+                <h:outputText value="#{row.contragent.value}"/>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                <h:outputText value="#{row.form}"/>
+                <h:outputText value="#{row.form.value}"/>
             </p:column>
 
             <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">

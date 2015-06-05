@@ -3,10 +3,10 @@ package ru.efive.dms.uifaces.lazyDataModel.documents;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
-import ru.efive.dms.util.security.AuthorizationData;
 import ru.entity.model.document.IncomingDocument;
+import ru.external.AuthorizationData;
+import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
 
 import java.util.List;
 import java.util.Map;

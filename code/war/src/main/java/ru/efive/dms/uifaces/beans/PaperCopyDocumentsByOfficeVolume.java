@@ -1,16 +1,16 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.PaperCopyDocument;
+import ru.hitsl.sql.dao.PaperCopyDocumentDAOImpl;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.PAPER_COPY_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.PAPER_COPY_DOCUMENT_FORM_DAO;
 
 @Named("paperCopyDocumentsByOfficeVolume")
 @ConversationScoped

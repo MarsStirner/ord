@@ -2,8 +2,8 @@ package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.entity.model.user.UserAccessLevel;
+import ru.entity.model.referenceBook.UserAccessLevel;
+import ru.hitsl.sql.dao.referenceBook.UserAccessLevelDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,7 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.USER_ACCESS_LEVEL_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_ACCESS_LEVEL_DAO;
 
 @FacesConverter("UserAccessLevelConverter")
 public class UserAccessLevelConverter implements Converter {
@@ -21,8 +21,8 @@ public class UserAccessLevelConverter implements Converter {
         try {
             SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context,
                     "#{sessionManagement}", SessionManagementBean.class);
-            List<UserAccessLevel> list = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class,
-                    USER_ACCESS_LEVEL_DAO).findByValue(value);
+            List<UserAccessLevel> list = sessionManagement.getDictionaryDAO(UserAccessLevelDAOImpl.class,
+                    USER_ACCESS_LEVEL_DAO).getByValue(value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

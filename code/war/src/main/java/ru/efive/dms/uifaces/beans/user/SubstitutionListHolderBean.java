@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForSubstitution;
-import ru.efive.dms.util.ApplicationDAONames;
 import ru.entity.model.user.Substitution;
+import ru.hitsl.sql.dao.SubstitutionDaoImpl;
+import ru.hitsl.sql.dao.util.ApplicationDAONames;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;

@@ -7,8 +7,8 @@ import org.primefaces.event.SelectEvent;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.entity.model.document.DocumentForm;
 import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
 
 import javax.faces.context.FacesContext;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
 /**
  * Author: Upatov Egor <br>

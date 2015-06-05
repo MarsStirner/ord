@@ -4,45 +4,43 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 
 /**
  * Сущность, имеющая идентификатор
  */
 @MappedSuperclass
-public class IdentifiedEntity extends AbstractEntity {
+public abstract class IdentifiedEntity implements Serializable {
 
-    public int getId() {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Integer id;
+
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        return result;
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
-        if (obj == null)
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
-        if (getClass() != obj.getClass())
-            return false;
-        IdentifiedEntity other = (IdentifiedEntity) obj;
-        return getId() == other.getId();
+        }
+        final IdentifiedEntity that = (IdentifiedEntity) o;
+        return !(id != null ? !id.equals(that.id) : that.id != null);
     }
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
 
     private static final long serialVersionUID = -5373498855516075305L;
 }

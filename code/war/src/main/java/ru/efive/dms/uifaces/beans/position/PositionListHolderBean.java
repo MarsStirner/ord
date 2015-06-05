@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.beans.position;
 
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.sql.dao.user.PositionDAO;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
-import ru.entity.model.user.Position;
+import ru.entity.model.referenceBook.Position;
+import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -25,14 +25,14 @@ import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
 public class PositionListHolderBean extends AbstractDocumentListHolderBean<Position> {
 
     private String filter;
-    private static PositionDAO dao;
+    private static PositionDAOImpl dao;
     @Inject
     @Named("indexManagement")
     private IndexManagementBean indexManagement;
 
     @PostConstruct
     public void init() {
-        dao = indexManagement.getContext().getBean(POSITION_DAO, PositionDAO.class);
+        dao = indexManagement.getContext().getBean(POSITION_DAO, PositionDAOImpl.class);
     }
 
 

@@ -2,17 +2,17 @@ package ru.efive.dms.uifaces.beans.contragent;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.crm.dao.ContragentDAOHibernate;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
-import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.document.RequestDocument;
+import ru.entity.model.referenceBook.Contragent;
+import ru.hitsl.sql.dao.ContragentDAOHibernate;
+import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
+import ru.hitsl.sql.dao.OutgoingDocumentDAOImpl;
+import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("contragent")
 @ViewScoped

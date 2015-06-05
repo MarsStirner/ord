@@ -76,7 +76,7 @@
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
-                <h:outputText value="#{row.form}"/>
+                <h:outputText value="#{row.form.value}"/>
             </p:column>
             <p:column headerText="Срок" style="width:6em;" sortBy="#{row.executionDate}" field="executionDate">
                 <h:outputText value="#{row.executionDate}">

@@ -2,10 +2,10 @@ package ru.efive.dms.uifaces.beans;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.NumeratorDAOImpl;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.document.Numerator;
+import ru.hitsl.sql.dao.NumeratorDAOImpl;
 import ru.util.ApplicationHelper;
 
 import javax.faces.context.FacesContext;
@@ -17,7 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.NUMERATOR_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.NUMERATOR_DAO;
 
 @Named("numerator")
 @ViewScoped
@@ -60,7 +60,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
             final Numerator document = getDocument();
             document.setDeleted(true);
             setDocument(sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).merge(document));
-            if (!getDocument().getDeleted()) {
+            if (!getDocument().isDeleted()) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
             return true;

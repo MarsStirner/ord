@@ -2,17 +2,17 @@ package ru.efive.dms.uifaces.beans.nomenclature;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.NomenclatureDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
-import ru.entity.model.document.Nomenclature;
+import ru.entity.model.referenceBook.Nomenclature;
+import ru.hitsl.sql.dao.referenceBook.NomenclatureDAOImpl;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static ru.efive.dms.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
 
 /**
  * Author: Upatov Egor <br>

@@ -3,21 +3,22 @@ package ru.efive.dms.util.security;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.entity.model.document.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
+import ru.external.AuthorizationData;
+import ru.hitsl.sql.dao.*;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.ALL_PERMISSIONS;
 import static ru.efive.dms.util.security.Permissions.Permission.EXECUTE;
 import static ru.efive.dms.util.security.Permissions.Permission.READ;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 /**
  * Author: Upatov Egor <br>

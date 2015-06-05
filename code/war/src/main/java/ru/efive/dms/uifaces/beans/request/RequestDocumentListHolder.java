@@ -2,13 +2,13 @@ package ru.efive.dms.uifaces.beans.request;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForRequestDocument;
-import ru.efive.dms.util.DocumentSearchMapKeys;
 import ru.entity.model.document.RequestDocument;
+import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
+import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -17,8 +17,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @Named("request_documents")
 @ViewScoped

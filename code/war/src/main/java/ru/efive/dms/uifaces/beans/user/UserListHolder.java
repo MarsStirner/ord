@@ -3,9 +3,9 @@ package ru.efive.dms.uifaces.beans.user;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForUser;
-import ru.efive.dms.util.ApplicationDAONames;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.util.ApplicationDAONames;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;

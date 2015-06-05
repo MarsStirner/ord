@@ -3,10 +3,18 @@ package ru.efive.dms.util.ldap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.dao.user.*;
-import ru.entity.model.user.*;
+import ru.entity.model.referenceBook.ContactInfoType;
+import ru.entity.model.referenceBook.Department;
+import ru.entity.model.referenceBook.Position;
+import ru.entity.model.referenceBook.UserAccessLevel;
+import ru.entity.model.user.PersonContact;
+import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.referenceBook.ContactInfoTypeDAOImpl;
+import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
+import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
+import ru.hitsl.sql.dao.referenceBook.UserAccessLevelDAOImpl;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 import ru.util.ApplicationHelper;
-import ru.util.StoredCodes;
 
 import javax.faces.context.FacesContext;
 import javax.naming.CommunicationException;
@@ -24,7 +32,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 public class LDAPImportService {
     //Именованный логгер (LDAP)
@@ -37,9 +45,9 @@ public class LDAPImportService {
     //Присваемый по-умолчанию уровень допуска
     private static UserAccessLevel USER_ACCESS_LEVEL_FOR_PUBLIC_USE;
     //Перечень типов контактной информации
-    private static RbContactInfoType EMAIL_CONTACT_TYPE = null;
-    private static RbContactInfoType PHONE_CONTACT_TYPE = null;
-    private static RbContactInfoType MOBILE_CONTACT_TYPE = null;
+    private static ContactInfoType EMAIL_CONTACT_TYPE = null;
+    private static ContactInfoType PHONE_CONTACT_TYPE = null;
+    private static ContactInfoType MOBILE_CONTACT_TYPE = null;
     //Перечень должностей
     private List<Position> ALL_POSITIONS;
     //Перечень подразделений
@@ -145,13 +153,13 @@ public class LDAPImportService {
             return false;
         }
 
-        final List<RbContactInfoType> contactTypes = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
-        for (RbContactInfoType contactType : contactTypes) {
-            if (StoredCodes.ContactInfoType.EMAIL.equals(contactType.getCode())) {
+        final List<ContactInfoType> contactTypes = sessionManagement.getDictionaryDAO(ContactInfoTypeDAOImpl.class, RB_CONTACT_TYPE_DAO).findDocuments();
+        for (ContactInfoType contactType : contactTypes) {
+            if (ContactInfoType.RB_CODE_EMAIL.equals(contactType.getCode())) {
                 EMAIL_CONTACT_TYPE = contactType;
-            } else if (StoredCodes.ContactInfoType.PHONE.equals(contactType.getCode())) {
+            } else if (ContactInfoType.RB_CODE_PHONE.equals(contactType.getCode())) {
                 PHONE_CONTACT_TYPE = contactType;
-            } else if (StoredCodes.ContactInfoType.MOBILE_PHONE.equals(contactType.getCode())) {
+            } else if (ContactInfoType.RB_CODE_MOBILE_PHONE.equals(contactType.getCode())) {
                 MOBILE_CONTACT_TYPE = contactType;
             }
         }
@@ -168,11 +176,11 @@ public class LDAPImportService {
             LOGGER.error("NOT FOUNDED MOBILE_CONTACT_TYPE, UPLOAD NOT Started");
             return false;
         }
-        ALL_POSITIONS = sessionManagement.getDictionaryDAO(PositionDAO.class, POSITION_DAO).findDocuments();
+        ALL_POSITIONS = sessionManagement.getDictionaryDAO(PositionDAOImpl.class, POSITION_DAO).findDocuments();
         if (ALL_POSITIONS == null || ALL_POSITIONS.isEmpty()) {
             LOGGER.warn("NO JOB_POSITIONS founded");
         }
-        ALL_DEPARTMENTS = sessionManagement.getDictionaryDAO(DepartmentDAO.class, DEPARTMENT_DAO).findDocuments();
+        ALL_DEPARTMENTS = sessionManagement.getDictionaryDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO).findDocuments();
         if (ALL_DEPARTMENTS == null || ALL_DEPARTMENTS.isEmpty()) {
             LOGGER.warn("NO JOB_DEPARTMENTS founded");
         }
@@ -182,7 +190,7 @@ public class LDAPImportService {
     }
 
     private UserAccessLevel preLoadUserAccessLevel(SessionManagementBean sessionManagement) {
-        final List<UserAccessLevel> userAccessLevels = sessionManagement.getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).findDocuments();
+        final List<UserAccessLevel> userAccessLevels = sessionManagement.getDictionaryDAO(UserAccessLevelDAOImpl.class, USER_ACCESS_LEVEL_DAO).findDocuments();
         for (UserAccessLevel current : userAccessLevels) {
             if (current.getLevel() == 1) {
                 return USER_ACCESS_LEVEL_FOR_PUBLIC_USE = current;

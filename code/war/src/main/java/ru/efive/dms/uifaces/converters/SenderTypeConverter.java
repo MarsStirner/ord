@@ -2,10 +2,10 @@ package ru.efive.dms.uifaces.converters;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.SenderTypeDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.entity.model.document.SenderType;
+import ru.entity.model.referenceBook.SenderType;
+import ru.hitsl.sql.dao.referenceBook.SenderTypeDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -13,7 +13,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.SENDER_TYPE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.SENDER_TYPE_DAO;
 
 @FacesConverter("SenderTypeConverter")
 public class SenderTypeConverter implements Converter {
@@ -23,8 +23,7 @@ public class SenderTypeConverter implements Converter {
         try {
             SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context,
                     "#{sessionManagement}", SessionManagementBean.class);
-            List<SenderType> list = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO)
-                    .findByValue(value);
+            List<SenderType> list = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO).getByValue(value);
             if (!list.isEmpty()) {
                 return list.get(0);
             } else {

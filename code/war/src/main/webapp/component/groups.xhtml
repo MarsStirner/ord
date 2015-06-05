@@ -59,8 +59,8 @@
             <p:column headerText="Наименование" sortBy="#{row.value}" field="value">
                 <h:outputText value="#{row.value}"/>
             </p:column>
-            <p:column headerText="Алиас" sortBy="#{row.alias}" field="alias">
-                <h:outputText value="#{row.alias}"/>
+            <p:column headerText="Код" sortBy="#{row.code}" field="code">
+                <h:outputText value="#{row.code}"/>
             </p:column>
             <p:ajax event="rowSelect" onstart="goToGroup(PrimeFaces.widgets.groupTableWidget.selection); return false;"/>
         </p:dataTable>

@@ -1,10 +1,10 @@
 package ru.entity.model.document;
 
 import org.apache.commons.lang.StringUtils;
-import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
@@ -21,7 +21,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_request_documents")
-public class RequestDocument extends IdentifiedEntity implements ProcessedData {
+public class RequestDocument extends DeletableEntity implements ProcessedData {
     private static final long serialVersionUID = -5522881582616193416L;
 
     /**
@@ -247,12 +247,6 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
     @JoinColumn(name = "nomenclature_id")
     private Nomenclature nomenclature;
 
-
-    /**
-     * Удален ли документ
-     */
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted;
 
     /**
      * Является ли документ шаблоном
@@ -524,15 +518,6 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
         return DocumentType.RequestDocument.getName();
     }
 
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public String getWFResultDescription() {
         return this.WFResultDescription;
     }
@@ -543,7 +528,7 @@ public class RequestDocument extends IdentifiedEntity implements ProcessedData {
 
     @Transient
     public String getUniqueId() {
-        return getId() == 0 ? "" : "request_" + getId();
+        return getId() == null ? "" : "request_" + getId();
     }
 
     public Set<HistoryEntry> getHistory() {

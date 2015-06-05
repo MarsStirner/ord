@@ -1,17 +1,17 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForOfficeKeepingFile;
 import ru.entity.model.document.OfficeKeepingFile;
+import ru.hitsl.sql.dao.OfficeKeepingFileDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
 @Named("officeKeepingFiles")
 @ViewScoped

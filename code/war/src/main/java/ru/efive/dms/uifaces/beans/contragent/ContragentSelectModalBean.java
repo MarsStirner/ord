@@ -1,7 +1,7 @@
 package ru.efive.dms.uifaces.beans.contragent;
 
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
-import ru.entity.model.crm.Contragent;
+import ru.entity.model.referenceBook.Contragent;
 
 import javax.faces.context.FacesContext;
 

@@ -2,11 +2,11 @@ package ru.efive.dms.uifaces.beans.incoming;
 
 import org.joda.time.LocalDate;
 import org.primefaces.model.DefaultTreeNode;
-import ru.efive.dms.dao.IncomingDocumentDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.IncomingDocument;
+import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
 import ru.util.ApplicationHelper;
 
 import javax.faces.view.ViewScoped;
@@ -17,8 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @Named("in_documents_by_executing_date")
 @ViewScoped

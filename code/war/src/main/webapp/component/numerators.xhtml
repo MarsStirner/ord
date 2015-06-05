@@ -57,11 +57,11 @@
             <p:column style="min-width:5em" headerText="Автор" sortBy="#{row.author}" field="author.lastName">
                 <h:outputText value="#{row.author.description}"/>
             </p:column>
-            <p:column style="min-width:5em" headerText="Тип документа">
-                <h:outputText value="#{row.documentType}"/>
+            <p:column style="min-width:5em" headerText="Тип документа" sortBy="#{row.documentType}" field="documentType.value">
+                <h:outputText value="#{row.documentType.value}"/>
             </p:column>
             <p:column style="min-width:12em" headerText="Номенклатура" sortBy="#{row.nomenclature.code}" field="nomenclature.code">
-                <h:outputText value="#{row.nomenclature.code}"/>
+                <h:outputText value="#{row.nomenclature.code}-#{row.nomenclature.value}"/>
             </p:column>
             <p:column style="min-width:12em" headerText="Текущий номер" sortBy="#{row.value}" field="value">
                 <h:outputText value="#{row.value}"/>

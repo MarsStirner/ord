@@ -3,10 +3,8 @@ package ru.efive.dms.util;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.DictionaryManagementBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.dao.user.RoleDAOHibernate;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.NoStatusAction;
 import ru.efive.wf.core.activity.SendMailActivity;
@@ -17,12 +15,15 @@ import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentAction;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.RoleType;
+import ru.entity.model.referenceBook.Nomenclature;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.wf.HumanTask;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.entity.model.wf.HumanTaskTreeNode;
 import ru.external.AgreementIssue;
+import ru.hitsl.sql.dao.*;
+import ru.hitsl.sql.dao.user.RoleDAOHibernate;
 import ru.util.ApplicationHelper;
 
 import javax.faces.context.FacesContext;
@@ -32,7 +33,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 public final class WorkflowHelper {
 

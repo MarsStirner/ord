@@ -72,7 +72,7 @@
                     <tr class="row">
                         <td class="first">Категория:</td>
                         <td class="second" colspan="3">
-                            <h:outputText value="#{group.document.category}" class="wide"/>
+                            <h:outputText value="#{group.document.groupType.value}" class="wide"/>
                         </td>
                     </tr>
                     <tr class="row">
@@ -84,7 +84,7 @@
                     <tr class="row">
                         <td class="first">Алиас:</td>
                         <td class="second" colspan="3">
-                            <h:outputText value="#{group.document.alias}" class="wide"/>
+                            <h:outputText value="#{group.document.code}" class="wide"/>
                         </td>
                     </tr>
                     <tr class="row">
@@ -112,7 +112,7 @@
                     <tr class="row">
                         <td class="first">Категория:</td>
                         <td class="second">
-                            <p:selectOneMenu id="groupType" value="#{group.document.category}" converter="GroupTypeConverter">
+                            <p:selectOneMenu id="groupType" value="#{group.document.groupType}" converter="GroupTypeConverter">
                             <f:selectItems value="#{dictionaryManagement.groupTypes}"/>
                         </p:selectOneMenu>
                         </td>
@@ -126,7 +126,7 @@
                     <tr class="row">
                         <td class="first">Алиас:</td>
                         <td class="second">
-                            <p:inputText value="#{group.document.alias}"/>
+                            <p:inputText value="#{group.document.code}"/>
                         </td>
                     </tr>
                     <tr class="row">

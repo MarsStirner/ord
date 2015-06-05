@@ -2,11 +2,12 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.user.UserAccessLevel;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
@@ -21,7 +22,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_internal_documents")
-public class InternalDocument extends IdentifiedEntity implements ProcessedData, AgreementIssue {
+public class InternalDocument extends DeletableEntity implements ProcessedData, AgreementIssue {
     private static final long serialVersionUID = -7971345050896379926L;
 
     /**
@@ -42,12 +43,6 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
     @Column(name = "creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date creationDate;
-
-    /**
-     * Удален ли документ
-     */
-    @Column(name = "deleted")
-    private boolean deleted;
 
     /**
      * Срок исполнения
@@ -399,17 +394,9 @@ public class InternalDocument extends IdentifiedEntity implements ProcessedData,
         return "internal_doc";
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
     @Transient
     public String getUniqueId() {
-        return getId() == 0 ? "" : "internal_" + getId();
+        return getId() == null ? "" : "internal_" + getId();
     }
 
     public Set<HistoryEntry> getHistory() {

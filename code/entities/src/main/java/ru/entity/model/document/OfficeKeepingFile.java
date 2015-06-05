@@ -2,7 +2,7 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
 import ru.external.ProcessedData;
 
 import javax.persistence.*;
@@ -19,7 +19,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "dms_office_keeping_files")
-public class OfficeKeepingFile extends IdentifiedEntity implements ProcessedData {
+public class OfficeKeepingFile extends DeletableEntity implements ProcessedData {
 
     @Transient
     public DocumentType getDocumentType() {
@@ -71,14 +71,6 @@ public class OfficeKeepingFile extends IdentifiedEntity implements ProcessedData
 
     public void setUnitsCount(int unitsCount) {
         this.unitsCount = unitsCount;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
     }
 
     public void setFileIndex(String fileIndex) {
@@ -226,10 +218,6 @@ public class OfficeKeepingFile extends IdentifiedEntity implements ProcessedData
      */
     private String boxNumber;
 
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
 
     /**
      * Текущий статус документа в процессе

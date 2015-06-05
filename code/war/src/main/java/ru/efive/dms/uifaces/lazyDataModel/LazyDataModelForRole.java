@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.sql.dao.user.RoleDAOHibernate;
 import ru.entity.model.user.Role;
+import ru.hitsl.sql.dao.user.RoleDAOHibernate;
 
 import java.util.List;
 import java.util.Map;

@@ -1,9 +1,9 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
-import ru.efive.dms.util.security.AuthorizationData;
 import ru.entity.model.document.OfficeKeepingFile;
+import ru.external.AuthorizationData;
+import ru.hitsl.sql.dao.OfficeKeepingFileDAOImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -30,10 +30,10 @@ public class LazyDataModelForOfficeKeepingFile extends AbstractFilterableLazyDat
 
     @Override
     public List<OfficeKeepingFile> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        setRowCount((((Long) dao.countDocument(getFilter(), false)).intValue()));
+        setRowCount((((Long) dao.countDocument(filter, false)).intValue()));
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.findDocuments(filter, false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

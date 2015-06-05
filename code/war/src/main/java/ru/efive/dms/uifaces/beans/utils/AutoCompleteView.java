@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.beans.utils;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.dao.user.DepartmentDAO;
-import ru.efive.sql.dao.user.PositionDAO;
-import ru.entity.model.user.Department;
-import ru.entity.model.user.Position;
+import ru.entity.model.referenceBook.Department;
+import ru.entity.model.referenceBook.Position;
+import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
+import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -13,8 +13,8 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.DEPARTMENT_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -32,22 +32,22 @@ public class AutoCompleteView {
     @Named("sessionManagement")
     SessionManagementBean sessionManagement;
 
-    private DepartmentDAO departmentDAO;
+    private DepartmentDAOImpl departmentDAOImpl;
     private List<Department> allDepartments;
 
-    private PositionDAO positionDAO;
+    private PositionDAOImpl positionDAO;
     private List<Position> allPositions;
 
 
     @PostConstruct
     public void init() {
-        departmentDAO = sessionManagement.getDAO(DepartmentDAO.class, DEPARTMENT_DAO);
-        positionDAO = sessionManagement.getDAO(PositionDAO.class, POSITION_DAO);
+        departmentDAOImpl = sessionManagement.getDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO);
+        positionDAO = sessionManagement.getDAO(PositionDAOImpl.class, POSITION_DAO);
     }
 
     public List<Department> completeDepartment(final String query) {
         if (allDepartments == null) {
-            allDepartments = departmentDAO.findDocuments();
+            allDepartments = departmentDAOImpl.findDocuments();
         }
         final List<Department> result = new ArrayList<Department>(MAX_SEARCH_RESULTS);
         int i = 0;

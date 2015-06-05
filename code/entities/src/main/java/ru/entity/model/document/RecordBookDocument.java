@@ -1,6 +1,6 @@
 package ru.entity.model.document;
 
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
@@ -14,7 +14,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "dms_record_book_documents")
-public class RecordBookDocument extends IdentifiedEntity {
+public class RecordBookDocument extends DeletableEntity {
     private static final long serialVersionUID = -5522881582616193416L;
     /**
      * Дата создания документа
@@ -44,11 +44,6 @@ public class RecordBookDocument extends IdentifiedEntity {
     @Column(name = "plannedDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date plannedDate;
-    /**
-     * Удален ли документ
-     */
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted;
 
     public User getAuthor() {
         return author;
@@ -80,14 +75,6 @@ public class RecordBookDocument extends IdentifiedEntity {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public Date getPlannedDate() {

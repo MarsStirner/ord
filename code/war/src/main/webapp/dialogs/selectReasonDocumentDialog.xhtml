@@ -97,7 +97,7 @@
                                 <h:outputText value="#{row.registrationNumber}"/>
                             </p:column>
                             <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field="form.value">
-                                <h:outputText value="#{row.form}"/>
+                                <h:outputText value="#{row.form.value}"/>
                             </p:column>
                             <p:column headerText="Статус" style="width:8em;" sortBy="#{row.status}" field="statusId">
                                 <h:outputText value="#{row.getDocumentStatus().getName()}"/>
@@ -135,7 +135,7 @@
                                 <h:outputText value="#{row.registrationNumber}"/>
                             </p:column>
                             <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field="form.value">
-                                <h:outputText value="#{row.form}"/>
+                                <h:outputText value="#{row.form.value}"/>
                             </p:column>
                             <p:column headerText="Статус"  style="width:8em;" sortBy="#{row.status}" field="statusId">
                                 <h:outputText value="#{row.getDocumentStatus().getName()}"/>

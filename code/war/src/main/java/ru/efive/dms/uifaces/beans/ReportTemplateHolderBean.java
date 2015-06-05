@@ -1,12 +1,12 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.dms.dao.ReportDAOImpl;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
-import ru.entity.model.document.Region;
 import ru.entity.model.document.ReportTemplate;
+import ru.entity.model.referenceBook.Region;
+import ru.hitsl.sql.dao.ReportDAOImpl;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.REPORT_DAO;
 
 @Named("reportTemplate")
 @ViewScoped

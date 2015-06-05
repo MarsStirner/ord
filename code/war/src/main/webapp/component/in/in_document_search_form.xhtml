@@ -287,8 +287,7 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="contragent" value="#{incoming_search.contragent}"
-                                  converter="ContragentConverter"/>
+                    <h:outputText id="contragent" value="#{incoming_search.contragent.value}"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -410,7 +409,7 @@
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                <h:outputText value="#{row.form}"/>
+                <h:outputText value="#{row.form.value}"/>
             </p:column>
             <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
                 <h:outputText value="#{row.executionDate}">

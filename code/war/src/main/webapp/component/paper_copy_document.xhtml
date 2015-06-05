@@ -6,7 +6,9 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite" xmlns:p="http://primefaces.org/ui"
+      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my = "http://xmlns.jcp.org/jsf/composite/mycomponents"
         >
 
 <ui:composition template="/jsf-template/template.xhtml">
@@ -452,7 +454,7 @@
                     <h:selectOneMenu id="material" value="#{paper_copy_document.document.material}"
                                      converter="PaperCopyDocumentFormConverter">
                         <f:selectItems
-                                value="#{dictionaryManagement.getDocumentFormsByCategory('Бумажные экземпляры')}"/>
+                                value="#{dictionaryManagement.getDocumentFormsByCategory('PAPER_COPY')}"/>
                     </h:selectOneMenu>
                 </td>
             </tr>
@@ -596,28 +598,7 @@
 </p:tab>
 
 <p:tab title = "История">
-    <div style="width: 100%; margin: 0;">
-        <p:dataTable id="history_list" value="#{paper_copy_document.document.historyList}"
-                     var="history_entry" grouping="false">
-            <p:column headerText="Дата">
-                <h:outputText value="#{history_entry.startDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
-                </h:outputText>
-            </p:column>
-            <p:column headerText="Статус">
-                <h:outputText value="#{history_entry.fromStatusName}"/>
-            </p:column>
-            <p:column headerText="Действие">
-                <h:outputText value="#{history_entry.actionName}"/>
-            </p:column>
-            <p:column headerText="Автор">
-                <h:outputText value="#{history_entry.owner.descriptionShort}"/>
-            </p:column>
-            <p:column headerText="Комментарий">
-                <h:outputText value="#{history_entry.commentary}"/>
-            </p:column>
-        </p:dataTable>
-    </div>
+    <my:historyTable id ="historyTable" value ="#{paper_copy_document.document.historyList}"/>
 </p:tab>
 </p:tabView>
 </div>

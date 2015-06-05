@@ -6,6 +6,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:my ="http://xmlns.jcp.org/jsf/composite/mycomponents"
         >
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
@@ -107,7 +108,7 @@
                             </label>
                         </td>
                         <td>
-                            <h:outputText value="//TODO #{numerator.document.documentType}"/>
+                            <h:outputText value="#{numerator.document.documentType.value}"/>
                         </td>
                     </tr>
                     <tr class="row">
@@ -189,7 +190,7 @@
                             </label>
                         </td>
                         <td>
-                            <h:outputText value="//TODO DROP-down with default from get params #{numerator.document.documentType}"/>
+                            <my:documentTypeSelectOneMenu id="documentTypeSelectOneMenu" value="#{numerator.document.documentType}"/>
                         </td>
                     </tr>
                     <tr class="row">
@@ -199,11 +200,7 @@
                             </label>
                         </td>
                         <td>
-                            <p:selectOneMenu id="numeratorNomenclatureSelectOneMenu" value="#{numerator.document.nomenclature}"
-                                             converter="NomenclatureConverter" style="width:100%">
-                                <f:selectItems value="#{dictionaryManagement.getNomenclatureWithEmptyValue()}" var="nomenclature_row"
-                                               itemLabel="#{nomenclature_row.code}-#{nomenclature_row.value}"/>
-                            </p:selectOneMenu>
+                            <my:nomenclatureSelectOneMenu id="nomenclatureSelectOneMenu" value="#{numerator.document.nomenclature}" style="width:100%;"/>
                         </td>
                     </tr>
                     <tr class="row">

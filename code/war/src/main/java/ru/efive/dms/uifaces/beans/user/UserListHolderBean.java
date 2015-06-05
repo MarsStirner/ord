@@ -2,12 +2,12 @@ package ru.efive.dms.uifaces.beans.user;
 
 import org.springframework.context.ApplicationContext;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.ldap.LDAPImportService;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.util.ApplicationDAONames;
 
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;

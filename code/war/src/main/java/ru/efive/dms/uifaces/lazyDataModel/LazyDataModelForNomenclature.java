@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.dms.dao.NomenclatureDAOImpl;
-import ru.entity.model.document.Nomenclature;
+import ru.entity.model.referenceBook.Nomenclature;
+import ru.hitsl.sql.dao.referenceBook.NomenclatureDAOImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -33,10 +33,10 @@ public class LazyDataModelForNomenclature extends AbstractFilterableLazyDataMode
 
     @Override
     public List<Nomenclature> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        setRowCount((int) dao.countDocument(filter, false));
+        setRowCount(dao.countItems(filter));
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findDocuments(filter, false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.getItems(filter, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

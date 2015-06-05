@@ -1,6 +1,6 @@
 package ru.entity.model.user;
 
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,7 +16,7 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "Substitutions.getAll", query = "SELECT a FROM Substitution a")
 })
-public class Substitution extends IdentifiedEntity{
+public class Substitution extends DeletableEntity{
 
     @Column(name = "startDate")
     @Temporal(TemporalType.DATE)
@@ -25,9 +25,6 @@ public class Substitution extends IdentifiedEntity{
     @Column(name = "endDate")
     @Temporal(TemporalType.DATE)
     private Date endDate;
-
-    @Column(name="deleted", nullable = false)
-    private boolean deleted;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id", nullable = false)
@@ -92,13 +89,6 @@ public class Substitution extends IdentifiedEntity{
         this.type = type;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
 
     @Override
     public String toString() {

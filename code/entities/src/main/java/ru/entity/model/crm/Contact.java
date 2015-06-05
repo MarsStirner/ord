@@ -2,6 +2,7 @@ package ru.entity.model.crm;
 
 import org.apache.commons.lang.StringUtils;
 import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.referenceBook.Contragent;
 import ru.util.Descriptionable;
 
 import javax.persistence.*;
@@ -9,8 +10,6 @@ import javax.persistence.*;
 /**
  * Контакты
  * (контактные лица различных организаций (предположение))
- *
- * @author Alexey Vagizov
  */
 @Entity
 @Table(name = "contacts")

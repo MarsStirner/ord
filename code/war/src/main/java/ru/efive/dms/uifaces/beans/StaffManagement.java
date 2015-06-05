@@ -1,13 +1,13 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.entity.model.user.Group;
+import ru.hitsl.sql.dao.user.GroupDAOHibernate;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
 
 @Named("staffManagement")
 @RequestScoped

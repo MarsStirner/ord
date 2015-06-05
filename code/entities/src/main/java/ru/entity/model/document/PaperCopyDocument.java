@@ -3,7 +3,8 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
@@ -18,7 +19,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_paper_copy_documents")
-public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData {
+public class PaperCopyDocument extends DeletableEntity implements ProcessedData {
     private static final long serialVersionUID = -5522881582616193416L;
 
     /**
@@ -98,10 +99,6 @@ public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData
      */
     private Date returnDate;
 
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
 
     /**
      * История
@@ -159,15 +156,6 @@ public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData
         this.grouping = grouping;
     }
 
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
     public String getWFResultDescription() {
         return this.WFResultDescription;
     }
@@ -178,7 +166,7 @@ public class PaperCopyDocument extends IdentifiedEntity implements ProcessedData
 
     @Transient
     public String getUniqueId() {
-        return getId() == 0 ? "" : "paper_copy_" + getId();
+        return getId() == null ? "" : "paper_copy_" + getId();
     }
 
     public void setHistory(Set<HistoryEntry> history) {

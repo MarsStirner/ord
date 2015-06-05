@@ -7,7 +7,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my = "http://xmlns.jcp.org/jsf/composite/mycomponents">
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -140,7 +141,7 @@
                 <ui:param name="statusId_In_PROJ" value="#{internal_doc.document.documentStatus.id eq 1}"/>
                 <p:selectOneMenu id="form" value="#{internal_doc.document.form}" converter="InternalDocumentFormConverter"
                                  rendered="#{internal_doc.createState or (internal_doc.editState and statusId_In_PROJ)}">
-                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Внутренние документы')}"/>
+                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('INTERNAL')}"/>
                 </p:selectOneMenu>
                 <h:outputText value="#{internal_doc.document.form}" rendered="#{internal_doc.viewState or (internal_doc.editState and not statusId_In_PROJ)}"/>
                 <h:outputText value=" № #{internal_doc.document.registrationNumber}" rendered="#{internal_doc.editState or internal_doc.viewState}"/>
@@ -388,7 +389,7 @@
                                             Новая резолюция
                                             <f:param name="docAction" value="create"/>
                                             <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="resolution"/>
+                                            <f:param name="formId" value="TASK_RESOLUTION"/>
                                         </h:outputLink>
                                     </div>
                                 </h:panelGroup>
@@ -399,7 +400,7 @@
                                             Новое поручение
                                             <f:param name="docAction" value="create"/>
                                             <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="task"/>
+                                            <f:param name="formId" value="TASK_ASSIGMENT"/>
                                         </h:outputLink>
                                     </div>
                                 </h:panelGroup>
@@ -410,7 +411,7 @@
                                             Новая задача
                                             <f:param name="docAction" value="create"/>
                                             <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="exercise"/>
+                                            <f:param name="formId" value="TASK_TASK"/>
                                         </h:outputLink>
                                     </div>
                                 </h:panelGroup>
@@ -967,28 +968,7 @@
                     </h:panelGroup>
                 </p:tab>
                 <p:tab title="История" rendered="#{internal_doc.viewState or internal_doc.createState or internal_doc.editState}">
-                    <div style="width: 100%; margin: 0;">
-                        <p:dataTable id="history_list" value="#{internal_doc.document.historyList}"
-                                     var="history_entry" grouping="false">
-                            <p:column headerText="Дата">
-                                <h:outputText value="#{history_entry.startDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="Статус">
-                                <h:outputText value="#{history_entry.fromStatusName}"/>
-                            </p:column>
-                            <p:column headerText="Действие">
-                                <h:outputText value="#{history_entry.actionName}"/>
-                            </p:column>
-                            <p:column headerText="Автор">
-                                <h:outputText value="#{history_entry.owner.descriptionShort}"/>
-                            </p:column>
-                            <p:column headerText="Комментарий">
-                                <h:outputText value="#{history_entry.commentary}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </div>
+                    <my:historyTable id ="historyTable" value ="#{internal_doc.document.historyList}"/>
                 </p:tab>
             </p:tabView>
         </div>

@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.dms.dao.RegionDAOImpl;
-import ru.entity.model.document.Region;
+import ru.entity.model.referenceBook.Region;
+import ru.hitsl.sql.dao.referenceBook.RegionDAOImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -27,10 +27,10 @@ public class LazyDataModelForRegion extends AbstractFilterableLazyDataModel<Regi
 
     @Override
     public List<Region> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        setRowCount((int) dao.countDocument(getFilter(), false));
+        setRowCount(dao.countItems(filter));
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findDocuments(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.getItems(filter, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.dms.dao.ReportDAOImpl;
 import ru.entity.model.document.ReportTemplate;
+import ru.hitsl.sql.dao.ReportDAOImpl;
 
 import java.util.List;
 import java.util.Map;

@@ -1,12 +1,12 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
 import com.google.common.collect.ImmutableMap;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForOutgoingDocument;
 import ru.entity.model.document.OutgoingDocument;
+import ru.hitsl.sql.dao.OutgoingDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -14,8 +14,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 
-import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @Named("outDocumentsOnConsideration")
 @ViewScoped

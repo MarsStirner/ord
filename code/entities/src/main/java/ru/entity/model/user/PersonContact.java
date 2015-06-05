@@ -2,6 +2,7 @@ package ru.entity.model.user;
 
 
 import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.referenceBook.ContactInfoType;
 
 import javax.persistence.*;
 
@@ -22,7 +23,7 @@ public class PersonContact extends IdentifiedEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "type_id", nullable = false)
-    private RbContactInfoType type;
+    private ContactInfoType type;
 
     @Column(name = "value", nullable = true)
     private String value;
@@ -30,7 +31,7 @@ public class PersonContact extends IdentifiedEntity {
     public PersonContact() {
     }
 
-    public PersonContact(User person, RbContactInfoType type, String value) {
+    public PersonContact(User person, ContactInfoType type, String value) {
         this.person = person;
         this.type = type;
         this.value = value;
@@ -44,11 +45,11 @@ public class PersonContact extends IdentifiedEntity {
         this.person = person;
     }
 
-    public RbContactInfoType getType() {
+    public ContactInfoType getType() {
         return type;
     }
 
-    public void setType(RbContactInfoType type) {
+    public void setType(ContactInfoType type) {
         this.type = type;
     }
 

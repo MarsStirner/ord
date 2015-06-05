@@ -1,1 +1,0 @@
-ALTER TABLE dms_internal_documents ADD COLUMN closePeriodRegistrationFlag BOOL DEFAULT false;

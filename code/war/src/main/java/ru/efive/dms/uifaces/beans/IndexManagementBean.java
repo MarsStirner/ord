@@ -10,9 +10,10 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.io.Serializable;
 
-
+//TODO remove Startup & Singleton after auto init Spring config
 @Singleton(name ="indexManagement")
 @Startup
+
 @Named("indexManagement")
 @ApplicationScoped
 public class IndexManagementBean implements Serializable {

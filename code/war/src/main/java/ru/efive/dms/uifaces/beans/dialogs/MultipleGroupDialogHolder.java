@@ -5,8 +5,8 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForGroup;
-import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.entity.model.user.Group;
+import ru.hitsl.sql.dao.user.GroupDAOHibernate;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -15,7 +15,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
 
 /**
  * Author: Upatov Egor <br>

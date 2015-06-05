@@ -3,7 +3,6 @@ package ru.entity.model.enums;
 /**
  * @author Nastya Peshekhonova
  *         TODO: Временное решение, следует перевести это в таблицe базы данных и использовать ее. От куда были взяты номера статусов непонятно
- * @see ru.entity.model.document.Status
  */
 public enum DocumentStatus {
     PROJECT("Проект", 1),

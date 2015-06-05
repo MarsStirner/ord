@@ -1,35 +1,36 @@
 package ru.efive.dao.alfresco;
 
+import org.alfresco.webservice.types.NamedValue;
+import org.alfresco.webservice.util.Constants;
+import org.alfresco.webservice.util.Utils;
+
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.alfresco.webservice.types.NamedValue;
-import org.alfresco.webservice.util.Constants;
-import org.alfresco.webservice.util.Utils;
-import ru.util.ApplicationHelper;
-
-
 /**
  * Вложение
  *
  * @author Alexey Vagizov
  */
 public class Attachment extends AlfrescoNode {
+    public static String STORE_NAME = "E5 DMS";
+    public static String NAMESPACE = "http://www.efive.ru/model/dictionary/1.0";
+    public static String NAMESPACE_PREFIX = "e5-dms";
+    public static String TYPE_FILE = "File";
 
     /**
      * Конструктор по умолчанию
      */
     public Attachment() {
         super();
-        setNamespace(ApplicationHelper.NAMESPACE);
-        setNamespacePrefix(ApplicationHelper.NAMESPACE_PREFIX);
-        setNodeType(ApplicationHelper.TYPE_FILE);
+        setNamespace(NAMESPACE);
+        setNamespacePrefix(NAMESPACE_PREFIX);
+        setNodeType(TYPE_FILE);
         List<String> path = new ArrayList<String>();
-        path.add(ApplicationHelper.STORE_NAME);
+        path.add(STORE_NAME);
         path.add("Attachments");
         setPath(path);
     }

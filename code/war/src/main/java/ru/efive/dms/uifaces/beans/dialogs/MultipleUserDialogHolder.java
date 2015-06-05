@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -15,7 +15,7 @@ import javax.inject.Named;
 import java.util.List;
 import java.util.Map;
 
-import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 /**
  * Author: Upatov Egor <br>

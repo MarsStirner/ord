@@ -45,6 +45,10 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
         this.selectedAction = selectedAction;
     }
 
+    public void setSelectedAction(IAction selectedAction){
+        this.selectedAction = selectedAction;
+    }
+
     public boolean selected(IAction action) {
         return this.selectedAction != null && this.selectedAction.equals(action);
     }

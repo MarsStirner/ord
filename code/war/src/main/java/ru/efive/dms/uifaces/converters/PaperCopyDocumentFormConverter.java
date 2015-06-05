@@ -1,9 +1,10 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.dao.DocumentFormDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.entity.model.document.DocumentForm;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
+import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,7 +12,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.DOCUMENT_FORM_DAO;
 
 @FacesConverter("PaperCopyDocumentFormConverter")
 public class PaperCopyDocumentFormConverter implements Converter {
@@ -22,7 +23,8 @@ public class PaperCopyDocumentFormConverter implements Converter {
             SessionManagementBean sessionManagement =
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Бумажные экземпляры", value);
+            List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByDocumentTypeCodeAndValue(
+                    DocumentType.RB_CODE_PAPER_COPY, value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

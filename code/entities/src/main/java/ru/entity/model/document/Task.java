@@ -2,7 +2,8 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 import ru.util.ApplicationHelper;
@@ -17,7 +18,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_tasks")
-public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
+public class Task extends DeletableEntity implements ProcessedData, Cloneable {
 
     private static final long serialVersionUID = -1414080814402194966L;
 
@@ -56,12 +57,6 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "controller_id", nullable = true)
     private User controller;
-
-    /**
-     * Удален ли документ
-     */
-    @Column(name = "deleted")
-    private boolean deleted;
 
     /**
      * Дата создания документа
@@ -257,17 +252,7 @@ public class Task extends IdentifiedEntity implements ProcessedData, Cloneable {
 
     @Transient
     public String getUniqueId() {
-        return getId() == 0 ? "" : "task_" + getId();
-    }
-
-
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
+        return getId() == null ? "" : "task_" + getId();
     }
 
     public void setHistory(Set<HistoryEntry> history) {

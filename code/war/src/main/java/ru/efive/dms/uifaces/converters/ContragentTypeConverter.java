@@ -1,9 +1,9 @@
 package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.dms.util.ApplicationDAONames;
-import ru.efive.sql.dao.RbContragentTypeDAOImpl;
-import ru.entity.model.crm.ContragentType;
+import ru.entity.model.referenceBook.ContragentType;
+import ru.hitsl.sql.dao.referenceBook.ContragentTypeDAOImpl;
+import ru.hitsl.sql.dao.util.ApplicationDAONames;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -23,8 +23,8 @@ public class ContragentTypeConverter implements Converter {
     public Object getAsObject(FacesContext fc, UIComponent uiComponent, String value) {
         if (value != null && value.trim().length() > 0) {
             SessionManagementBean sessionManagement = fc.getApplication().evaluateExpressionGet(fc, "#{sessionManagement}", SessionManagementBean.class);
-            RbContragentTypeDAOImpl service = sessionManagement.getDAO(RbContragentTypeDAOImpl.class, ApplicationDAONames.RB_CONTRAGENT_TYPE_DAO);
-            final List<ContragentType> resultList = service.findByValue(value);
+            ContragentTypeDAOImpl service = sessionManagement.getDAO(ContragentTypeDAOImpl.class, ApplicationDAONames.RB_CONTRAGENT_TYPE_DAO);
+            final List<ContragentType> resultList = service.getByValue(value);
             if (resultList.isEmpty()) {
                 return null;
             }

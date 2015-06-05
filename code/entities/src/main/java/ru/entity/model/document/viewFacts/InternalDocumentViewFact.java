@@ -13,7 +13,7 @@ import java.util.Date;
  * Description: <br>
  */
 @Entity
-@Table(name = "dms_internal_documents_views")
+@Table(name = "internal_documents_views")
 @IdClass(InternalDocumentViewFactPrimaryKey.class)
 public class InternalDocumentViewFact {
 

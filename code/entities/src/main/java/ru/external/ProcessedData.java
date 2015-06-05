@@ -6,7 +6,7 @@ import ru.entity.model.enums.DocumentType;
 import java.io.Serializable;
 
 public interface ProcessedData extends Serializable {
-    public int getId();
+    public Integer getId();
 
     public DocumentType getDocumentType();
 

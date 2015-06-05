@@ -6,7 +6,8 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents">
 
 <ui:composition template="/jsf-template/template.xhtml">
     <ui:define name="header">
@@ -119,7 +120,9 @@
                                     <tr class="row">
                                         <td class="first">Номенклатура дел по-умолчанию:</td>
                                         <td>
-                                            <h:outputText value="#{user.document.defaultNomenclature.code.concat('-').concat(user.document.defaultNomenclature.value)}" class="wide"/>
+                                            <h:outputText
+                                                    value="#{user.document.defaultNomenclature.code.concat('-').concat(user.document.defaultNomenclature.value)}"
+                                                    class="wide"/>
                                         </td>
                                     </tr>
                                     <tr class="row">
@@ -188,24 +191,24 @@
                                         </td>
                                         <td>
                                             <!--<p:autoComplete-->
-                                                    <!--id="jobDepartmentPicker"-->
-                                                    <!--value="#{user.document.jobDepartment}"-->
-                                                    <!--completeMethod="#{autoCompleteView.completeDepartment}"-->
-                                                    <!--var="item"-->
-                                                    <!--itemValue="#{item}"-->
-                                                    <!--itemLabel="#{item.value}"-->
-                                                    <!--converter="departmentConverter"-->
-                                                    <!--forceSelection="true"-->
-                                                    <!--minQueryLength="2"-->
-                                                    <!--queryDelay="500"-->
-                                                    <!--size="100"-->
-                                                    <!--emptyMessage="Нету элементов"-->
-                                                    <!--placeHolder="Выберете подразделение"-->
-                                                    <!--maxResults="10"-->
-                                                    <!--converterMessage="Не существует такого отделения"-->
-                                                    <!--/>-->
+                                            <!--id="jobDepartmentPicker"-->
+                                            <!--value="#{user.document.jobDepartment}"-->
+                                            <!--completeMethod="#{autoCompleteView.completeDepartment}"-->
+                                            <!--var="item"-->
+                                            <!--itemValue="#{item}"-->
+                                            <!--itemLabel="#{item.value}"-->
+                                            <!--converter="departmentConverter"-->
+                                            <!--forceSelection="true"-->
+                                            <!--minQueryLength="2"-->
+                                            <!--queryDelay="500"-->
+                                            <!--size="100"-->
+                                            <!--emptyMessage="Нету элементов"-->
+                                            <!--placeHolder="Выберете подразделение"-->
+                                            <!--maxResults="10"-->
+                                            <!--converterMessage="Не существует такого отделения"-->
+                                            <!--/>-->
                                             <!--<p:watermark for="jobDepartmentPicker"-->
-                                                         <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
+                                            <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
                                             <h:inputText value="#{user.document.jobDepartmentString}" class="wide"/>
                                         </td>
                                     </tr>
@@ -215,23 +218,23 @@
                                         </td>
                                         <td>
                                             <!--<p:autoComplete-->
-                                                    <!--id="jobPositionPicker"-->
-                                                    <!--value="#{user.document.jobPosition}"-->
-                                                    <!--completeMethod="#{autoCompleteView.completePosition}"-->
-                                                    <!--var="item"-->
-                                                    <!--itemValue="#{item}"-->
-                                                    <!--itemLabel="#{item.value}"-->
-                                                    <!--converter="positionConverter"-->
-                                                    <!--forceSelection="true"-->
-                                                    <!--minQueryLength="2"-->
-                                                    <!--queryDelay="500"-->
-                                                    <!--size="100"-->
-                                                    <!--emptyMessage="Нету элементов"-->
-                                                    <!--maxResults="10"-->
-                                                    <!--converterMessage="Не существует такой должности"-->
-                                                    <!--/>-->
+                                            <!--id="jobPositionPicker"-->
+                                            <!--value="#{user.document.jobPosition}"-->
+                                            <!--completeMethod="#{autoCompleteView.completePosition}"-->
+                                            <!--var="item"-->
+                                            <!--itemValue="#{item}"-->
+                                            <!--itemLabel="#{item.value}"-->
+                                            <!--converter="positionConverter"-->
+                                            <!--forceSelection="true"-->
+                                            <!--minQueryLength="2"-->
+                                            <!--queryDelay="500"-->
+                                            <!--size="100"-->
+                                            <!--emptyMessage="Нету элементов"-->
+                                            <!--maxResults="10"-->
+                                            <!--converterMessage="Не существует такой должности"-->
+                                            <!--/>-->
                                             <!--<p:watermark for="jobPositionPicker"-->
-                                                         <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
+                                            <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
                                             <h:inputText value="#{user.document.jobPositionString}" class="wide"/>
                                         </td>
                                     </tr>
@@ -244,11 +247,9 @@
                                     <tr class="row">
                                         <td class="first">Номенклатура дел по-умолчанию:</td>
                                         <td>
-                                            <p:selectOneMenu id="userNomenclatureSelectOneMenu" value="#{user.document.defaultNomenclature}"
-                                                             converter="NomenclatureConverter" style="width:100%">
-                                                <f:selectItems value="#{dictionaryManagement.getNomenclatureWithEmptyValue()}" var="nomenclature_row"
-                                                               itemLabel="#{nomenclature_row.code}-#{nomenclature_row.value}"/>
-                                            </p:selectOneMenu>
+                                            <my:nomenclatureSelectOneMenu id="userNomenclatureSelectOneMenu"
+                                                                                 value="#{user.document.defaultNomenclature}" style="width:100%"/>
+
                                         </td>
                                     </tr>
                                     <tr class="row">

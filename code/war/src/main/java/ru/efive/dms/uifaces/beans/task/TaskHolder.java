@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
@@ -26,7 +25,11 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.*;
+import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
@@ -39,8 +42,8 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("task")
 @ConversationScoped
@@ -186,17 +189,16 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         } else {
             logger.warn("RootDocumentId is not set");
         }
-        DocumentForm form = null;
         final String formId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("formId");
-        List<DocumentForm> forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndDescription(
-                "Поручения", StringUtils.isEmpty(formId) ? "task" : formId
-        );
-        if (!forms.isEmpty()) {
-            form = forms.get(0);
+        final DocumentForm form = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                .getByCode(DocumentForm.RB_CODE_TASK_ASSIGMENT);
+
+        if (form != null) {
+            doc.setForm(form);
         } else {
-            forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Поручения");
-            if (forms.size() > 0) {
-                form = forms.get(0);
+            final List<DocumentForm> forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByDocumentTypeCode(DocumentType.RB_CODE_TASK);
+            if (forms != null  && !forms.isEmpty()) {
+                doc.setForm(forms.get(0));
             }
         }
         if (form != null) {

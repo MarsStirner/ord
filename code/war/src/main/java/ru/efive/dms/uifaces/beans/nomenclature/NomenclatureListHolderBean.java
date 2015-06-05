@@ -7,18 +7,18 @@ package ru.efive.dms.uifaces.beans.nomenclature;
  * Description: <br>
  */
 
-import ru.efive.dms.dao.NomenclatureDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForNomenclature;
-import ru.entity.model.document.Nomenclature;
+import ru.entity.model.referenceBook.Nomenclature;
+import ru.hitsl.sql.dao.referenceBook.NomenclatureDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static ru.efive.dms.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
 
 @Named("nomenclatureList")
 @ViewScoped

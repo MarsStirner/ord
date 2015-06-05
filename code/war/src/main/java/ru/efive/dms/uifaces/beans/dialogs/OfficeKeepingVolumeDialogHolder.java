@@ -2,10 +2,10 @@ package ru.efive.dms.uifaces.beans.dialogs;
 
 
 import org.primefaces.model.LazyDataModel;
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForOfficeKeepingVolume;
 import ru.entity.model.document.OfficeKeepingVolume;
+import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -14,7 +14,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.util.Map;
 
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 /**
  * Author: Upatov Egor <br>

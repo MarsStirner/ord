@@ -4,13 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.RbContactTypeDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
+import ru.entity.model.referenceBook.ContactInfoType;
 import ru.entity.model.user.PersonContact;
-import ru.entity.model.user.RbContactInfoType;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.referenceBook.ContactInfoTypeDAOImpl;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 import ru.util.ApplicationHelper;
 
 import javax.faces.context.FacesContext;
@@ -20,8 +20,8 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 @Named("user")
 @ViewScoped
@@ -115,7 +115,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
     public boolean addContact() {
         PersonContact newContact = new PersonContact();
         newContact.setPerson(getDocument());
-        final List<RbContactInfoType> typeList = sessionManagement.getDictionaryDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO).findDocuments();
+        final List<ContactInfoType> typeList = sessionManagement.getDictionaryDAO(ContactInfoTypeDAOImpl.class, RB_CONTACT_TYPE_DAO).getItems();
         if (!typeList.isEmpty()) {
             newContact.setType(typeList.get(0));
             return getContactList().add(newContact);
@@ -150,7 +150,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         setDocument(sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getItemById(id));
         final Set<PersonContact> contacts = getDocument().getContacts();
         if(contacts!=null && !contacts.isEmpty() ) {
-            contactList = new ArrayList<PersonContact>(contacts);
+            contactList = new ArrayList<>(contacts);
         }
     }
 
@@ -209,7 +209,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
             //Удаляем пустые контактные данные, введенные пользователем
             removeEmptyContacts(contactList);
             getDocument().getContacts().clear();
-            getDocument().getContacts().addAll(new HashSet<PersonContact>(contactList));
+            getDocument().getContacts().addAll(new HashSet<>(contactList));
             User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(getDocument());
             if (user == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);

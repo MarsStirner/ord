@@ -9,10 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.DocumentFormDAOImpl;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.PaperCopyDocumentDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
@@ -26,15 +22,20 @@ import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
-import ru.entity.model.document.DocumentForm;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.InternalDocument;
 import ru.entity.model.document.PaperCopyDocument;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
+import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.user.UserAccessLevel;
+import ru.hitsl.sql.dao.InternalDocumentDAOImpl;
+import ru.hitsl.sql.dao.PaperCopyDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
+import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
@@ -46,8 +47,8 @@ import java.io.Serializable;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("internal_doc")
 @ConversationScoped
@@ -219,15 +220,15 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         final LocalDateTime created = new LocalDateTime();
         doc.setCreationDate(created.toDate());
 
-        DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
-                .findByCategoryAndValue("Внутренние документы", "Служебная записка");
-        if (!list.isEmpty()) {
-            form = list.get(0);
+        final DocumentForm form = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                .getByCode(DocumentForm.RB_CODE_INTERNAL_OFFICE_MEMO);
+        if (form != null) {
+            doc.setForm(form);
         } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Внутренние документы");
-            if (!list.isEmpty()) {
-                form = list.get(0);
+           final List<DocumentForm> formList =  sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                    .findByDocumentTypeCode(DocumentType.RB_CODE_INTERNAL);
+            if (formList != null && !formList.isEmpty()) {
+                doc.setForm(formList.get(0));
             }
         }
         if (form != null) {
@@ -657,7 +658,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
         params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
         final User preselected = getDocument().getController();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);

@@ -1,9 +1,9 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.OfficeKeepingFile;
+import ru.hitsl.sql.dao.OfficeKeepingFileDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,7 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
 
 @FacesConverter("OfficeKeepingFileConverter")

@@ -1,16 +1,16 @@
 package ru.efive.dms.uifaces.beans;
 
-import ru.efive.dms.dao.ReportDAOImpl;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForReportTemplate;
 import ru.entity.model.document.ReportTemplate;
+import ru.hitsl.sql.dao.ReportDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static ru.efive.dms.util.ApplicationDAONames.REPORT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.REPORT_DAO;
 
 @Named("reportTemplateList")
 @ViewScoped

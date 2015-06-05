@@ -1,8 +1,8 @@
 package ru.entity.model.user;
 
 
-import ru.entity.model.enums.GroupType;
 import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.referenceBook.GroupType;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,6 +17,7 @@ import java.util.Set;
 @Table(name = "groups")
 public class Group extends DictionaryEntity {
 
+    public static final java.lang.String RB_CODE_MANAGERS = "MANAGERS";
     /**
      * Автор документа
      */
@@ -29,25 +30,17 @@ public class Group extends DictionaryEntity {
      * пользователи
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "groups_dms_system_persons",
-            joinColumns = {@JoinColumn(name = "groups_id")},
-            inverseJoinColumns = {@JoinColumn(name = "members_id")})
+    @JoinTable(name = "mmPersonToGroup",
+            joinColumns = {@JoinColumn(name = "group_id")},
+            inverseJoinColumns = {@JoinColumn(name = "member_id")})
      private Set<User> members;
 
     /**
      * Категория
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoryId")
-    private GroupType category;
-
-    /**
-     * Алиас
-     */
-    @Column(name="alias")
-    private String alias;
-
-
+    @JoinColumn(name = "groupType_id")
+    private GroupType groupType;
 
     public List<User> getMembersList() {
         List<User> result = new ArrayList<User>();
@@ -58,29 +51,12 @@ public class Group extends DictionaryEntity {
         return result;
     }
 
-
     public Set<User> getMembers() {
         return members;
     }
 
     public void setMembers(Set<User> members) {
         this.members = members;
-    }
-
-    public void setCategory(GroupType category) {
-        this.category = category;
-    }
-
-    public GroupType getCategory() {
-        return category;
-    }
-
-    public void setAlias(String alias) {
-        this.alias = alias;
-    }
-
-    public String getAlias() {
-        return alias;
     }
 
     public void setAuthor(User author) {
@@ -90,6 +66,4 @@ public class Group extends DictionaryEntity {
     public User getAuthor() {
         return author;
     }
-
-    private static final long serialVersionUID = 6366882739076305392L;
 }

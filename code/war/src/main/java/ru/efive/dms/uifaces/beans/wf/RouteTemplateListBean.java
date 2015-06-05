@@ -4,7 +4,7 @@ import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.efive.wf.core.dao.EngineDAOImpl;
-import ru.entity.model.document.Nomenclature;
+import ru.entity.model.referenceBook.Nomenclature;
 import ru.entity.model.wf.RouteTemplate;
 
 import javax.enterprise.context.SessionScoped;
@@ -13,7 +13,7 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.ENGINE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.ENGINE_DAO;
 
 @Named("routeTemplates")
 @SessionScoped

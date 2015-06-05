@@ -4,10 +4,10 @@ import org.apache.axis.utils.StringUtils;
 import org.primefaces.model.DefaultTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.TaskDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.Task;
+import ru.hitsl.sql.dao.TaskDAOImpl;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.TASK_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.TASK_DAO;
 
 /**
  * Author: Upatov Egor <br>

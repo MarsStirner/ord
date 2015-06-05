@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.sql.dao.user.GroupDAOHibernate;
 import ru.entity.model.user.Group;
+import ru.hitsl.sql.dao.user.GroupDAOHibernate;
 
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,6 @@ public class LazyDataModelForGroup extends AbstractFilterableLazyDataModel<Group
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findItems(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.findItems(getFilter(), false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

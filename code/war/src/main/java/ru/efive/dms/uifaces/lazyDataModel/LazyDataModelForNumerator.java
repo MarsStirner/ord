@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.dms.dao.NumeratorDAOImpl;
 import ru.entity.model.document.Numerator;
+import ru.hitsl.sql.dao.NumeratorDAOImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -37,6 +37,6 @@ public class LazyDataModelForNumerator extends AbstractFilterableLazyDataModel<N
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findDocuments(false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.findDocuments(false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
@@ -22,12 +21,20 @@ import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
-import ru.entity.model.crm.Contragent;
-import ru.entity.model.document.*;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.PaperCopyDocument;
+import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.PaperCopyDocumentDAOImpl;
+import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
+import ru.hitsl.sql.dao.referenceBook.DeliveryTypeDAOImpl;
+import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
+import ru.hitsl.sql.dao.referenceBook.SenderTypeDAOImpl;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
@@ -38,8 +45,8 @@ import javax.inject.Named;
 import java.io.Serializable;
 import java.util.*;
 
-import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("request_doc")
 @ViewScoped
@@ -210,48 +217,36 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             doc.setTemplateFlag(false);
         }
 
-        DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue("Обращения граждан", "Заявка на лечение");
-        if (list.size() > 0) {
-            form = list.get(0);
-
-        } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Обращения граждан");
-            if (list.size() > 0) {
-                form = list.get(0);
-            }
-        }
+        final DocumentForm form = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).getByCode(DocumentForm.RB_CODE_REQUEST_TREATMENT_CLAIM);
         if (form != null) {
             doc.setForm(form);
-        }
-
-        DeliveryType deliveryType = null;
-        List<DeliveryType> deliveryTypes = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).findByValue("Электронная почта");
-        if (deliveryTypes.size() > 0) {
-            deliveryType = deliveryTypes.get(0);
-
         } else {
-            deliveryTypes = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).findDocuments();
-            if (deliveryTypes.size() > 0) {
-                deliveryType = deliveryTypes.get(0);
+            final List<DocumentForm> formList = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                    .findByDocumentTypeCode(DocumentType.RB_CODE_REQUEST);
+            if (formList != null && !formList.isEmpty()) {
+                doc.setForm(formList.get(0));
             }
         }
+
+        final DeliveryType deliveryType = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO)
+                .getByCode(DeliveryType.RB_CODE_EMAIL);
         if (deliveryType != null) {
-            doc.setDeliveryType(deliveryType);
-        }
-
-        SenderType senderType = null;
-        List<SenderType> senderTypes = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO).findByValue("Физическое лицо");
-        if (senderTypes.size() > 0) {
-            senderType = senderTypes.get(0);
+           doc.setDeliveryType(deliveryType);
         } else {
-            senderTypes = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO).findDocuments();
-            if (senderTypes.size() > 0) {
-                senderType = senderTypes.get(0);
+            final List<DeliveryType> deliveryTypes = sessionManagement.getDictionaryDAO(DeliveryTypeDAOImpl.class, DELIVERY_TYPE_DAO).getItems();
+            if (deliveryTypes != null && !deliveryTypes.isEmpty()) {
+                doc.setDeliveryType(deliveryTypes.get(0));
             }
         }
+        final SenderType senderType = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO)
+                .getByCode(SenderType.PHYSICAL_ENTITY);
         if (senderType != null) {
-            doc.setSenderType(senderType);
+         doc.setSenderType(senderType);
+        } else {
+            final List<SenderType> senderTypes = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO).getItems();
+            if (senderTypes != null && !senderTypes.isEmpty()) {
+                doc.setSenderType(senderTypes.get(0));
+            }
         }
 
         HistoryEntry historyEntry = new HistoryEntry();

@@ -2,10 +2,10 @@ package ru.efive.dms.uifaces.beans.dialogs;
 
 
 import org.primefaces.model.LazyDataModel;
-import ru.efive.crm.dao.ContragentDAOHibernate;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForContragent;
-import ru.entity.model.crm.Contragent;
+import ru.entity.model.referenceBook.Contragent;
+import ru.hitsl.sql.dao.ContragentDAOHibernate;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -14,7 +14,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.util.Map;
 
-import static ru.efive.dms.util.ApplicationDAONames.CONTRAGENT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.CONTRAGENT_DAO;
 
 /**
  * Author: Upatov Egor <br>

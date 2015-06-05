@@ -1,13 +1,12 @@
 package ru.entity.model.document;
 
-import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.user.UserAccessLevel;
 import ru.external.ProcessedData;
 
 import javax.persistence.*;
@@ -22,7 +21,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_incoming_documents")
-public class IncomingDocument extends IdentifiedEntity implements ProcessedData {
+public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     private static final long serialVersionUID = -5522881582616193416L;
 
@@ -58,12 +57,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "controller_id")
     private User controller;
-
-    /**
-     * Удален ли документ
-     */
-    @Column(name = "deleted", nullable = false)
-    private boolean deleted;
 
     /**
      * Дата поступления
@@ -483,13 +476,6 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
         return "in_doc";
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
 
     public String getWFResultDescription() {
         return this.WFResultDescription;
@@ -501,7 +487,7 @@ public class IncomingDocument extends IdentifiedEntity implements ProcessedData 
 
     @Transient
     public String getUniqueId() {
-        return getId() == 0 ? "" : "incoming_" + getId();
+        return getId() == null ? "" : "incoming_" + getId();
     }
 
     public Set<HistoryEntry> getHistory() {

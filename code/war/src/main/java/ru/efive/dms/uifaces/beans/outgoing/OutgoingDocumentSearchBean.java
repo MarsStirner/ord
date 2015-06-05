@@ -5,8 +5,6 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.OutgoingDocumentDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
@@ -14,10 +12,13 @@ import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForOutgoingDocument;
-import ru.entity.model.crm.Contragent;
-import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.OutgoingDocument;
+import ru.entity.model.referenceBook.Contragent;
+import ru.entity.model.referenceBook.DeliveryType;
+import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.OutgoingDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -29,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.efive.dms.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
-import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
 @Named("outgoing_search")
 @ViewScoped
@@ -62,6 +63,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             setLazyModel(lazyDataModelForOutgoingDocument);
             searchPerformed= true;
         } catch (Exception e) {
+            searchPerformed = false;
             logger.error("OUTGOING: Error while search", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
         }
@@ -75,9 +77,8 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
-                .DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
         final User preselected = getController();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder

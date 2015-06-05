@@ -50,7 +50,7 @@
                             <p:menuButton value="#{sessionManagement.loggedUser.getDescription()}" style="float:right; width:10em;">
                                 <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
                             </p:menuButton>
-                            <p:commandButton id="accessMenuButton" type="button" value="#{sessionManagement.authData.currentAccessLevel}" style="float:right;"/>
+                            <p:commandButton id="accessMenuButton" type="button" value="#{sessionManagement.authData.currentAccessLevel.value}" style="float:right;"/>
                             <p:menu id = "accessMenu" overlay="true" model="#{dictionaryManagement.accessLevelsMenuModel}" trigger="accessMenuButton" my="left top" at="left bottom"/>
                         </div>
                     </div>

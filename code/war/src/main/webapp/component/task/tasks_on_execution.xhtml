@@ -20,7 +20,7 @@
                 <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                 Новый документ
                 <f:param name="docAction" value="create"/>
-                <f:param name="formId" value="task"/>
+                <f:param name="formId" value="TASK_ASSIGMENT"/>
             </h:outputLink>
         </div>
         <div class="defbutton">
@@ -76,7 +76,7 @@
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                <h:outputText value="#{row.form}"/>
+                <h:outputText value="#{row.form.value}"/>
             </p:column>
             <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
                 <h:outputText value="#{row.executionDate}">

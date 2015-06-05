@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.GroupTypeDAO;
-import ru.entity.model.enums.GroupType;
+import ru.entity.model.referenceBook.GroupType;
+import ru.hitsl.sql.dao.referenceBook.GroupTypeDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -13,7 +13,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.GROUP_TYPE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_TYPE_DAO;
 
 @FacesConverter("GroupTypeConverter")
 public class GroupTypeConverter implements Converter {
@@ -23,8 +23,7 @@ public class GroupTypeConverter implements Converter {
         try {
             SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context,
                     "#{sessionManagement}", SessionManagementBean.class);
-            List<GroupType> list = sessionManagement.getDictionaryDAO(GroupTypeDAO.class, GROUP_TYPE_DAO).findByValue
-                    (value);
+            List<GroupType> list = sessionManagement.getDictionaryDAO(GroupTypeDAOImpl.class, GROUP_TYPE_DAO).getByValue(value);
             if (!list.isEmpty()) {
                 return list.get(0);
             } else {

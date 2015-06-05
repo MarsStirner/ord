@@ -4,10 +4,10 @@ import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
-import ru.efive.sql.dao.user.GroupDAOHibernate;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.GroupDAOHibernate;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -16,8 +16,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 import java.util.Map;
 
-import static ru.efive.dms.util.ApplicationDAONames.GROUP_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -31,7 +31,7 @@ public class UserDialogHolder extends AbstractDialog<User> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON";
     public static final String DIALOG_TITLE_GET_PARAM_KEY = "DIALOG_TITLE";
-    public static final String DIALOG_GROUP_KEY = "DIALOG_GROUP_ALIAS";
+    public static final String DIALOG_GROUP_KEY = "DIALOG_GROUP_CODE";
 
     public static final String DIALOG_TITLE_VALUE_CONTROLLER = "CONTROLLER_TITLE";
     public static final String DIALOG_TITLE_VALUE_AUTHOR = "AUTHOR_TITLE";
@@ -58,15 +58,15 @@ public class UserDialogHolder extends AbstractDialog<User> {
     }
 
     private void initializeGroup(final Map<String, String> requestParameterMap) {
-        final String alias = requestParameterMap.get(DIALOG_GROUP_KEY);
-        if (StringUtils.isNotEmpty(alias)) {
-            logger.info("UserSelectDialog: initialized with group alias=\'{}\'", alias);
-            final Group group = ((GroupDAOHibernate)indexManagementBean.getContext().getBean(GROUP_DAO)).findGroupByAlias(alias);
+        final String code = requestParameterMap.get(DIALOG_GROUP_KEY);
+        if (StringUtils.isNotEmpty(code)) {
+            logger.info("UserSelectDialog: initialized with group code=\'{}\'", code);
+            final Group group = ((GroupDAOHibernate)indexManagementBean.getContext().getBean(GROUP_DAO)).getByCode(code);
             if(group != null){
                 logger.info("UserSelectDialog: initialized with group [{}]", group);
                 lazyModel.setFilterGroup(group);
             } else {
-                logger.error("UserSelectDialog: group not founded by alias= \'{}\'", alias);
+                logger.error("UserSelectDialog: group not founded by code= \'{}\'", code);
             }
         }
     }

@@ -2,7 +2,7 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
@@ -15,7 +15,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_office_keeping_volumes")
-public class OfficeKeepingVolume extends IdentifiedEntity implements ProcessedData {
+public class OfficeKeepingVolume extends DeletableEntity implements ProcessedData {
 
     @Transient
     public DocumentType getDocumentType() {
@@ -70,13 +70,6 @@ public class OfficeKeepingVolume extends IdentifiedEntity implements ProcessedDa
         this.unitsCount = unitsCount;
     }
 
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
 
     public void setVolumeIndex(String volumeIndex) {
         this.volumeIndex = volumeIndex;
@@ -242,11 +235,6 @@ public class OfficeKeepingVolume extends IdentifiedEntity implements ProcessedDa
      * Количество единиц хранения
      */
     private int unitsCount;
-
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
 
     /**
      * Текущий статус документа в процессе

@@ -3,7 +3,6 @@ package ru.efive.dms.uifaces.beans;
 import org.apache.commons.lang.StringUtils;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeSelectModal;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
@@ -13,6 +12,8 @@ import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.referenceBook.DeliveryType;
+import ru.hitsl.sql.dao.*;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
@@ -24,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("paper_copy_document")
 @ConversationScoped

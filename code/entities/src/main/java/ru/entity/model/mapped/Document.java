@@ -1,7 +1,6 @@
 package ru.entity.model.mapped;
 
 
-import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
@@ -11,7 +10,7 @@ import java.util.Date;
  * Базовый класс - документ
  */
 @MappedSuperclass
-public class Document extends IdentifiedEntity {
+public class Document extends DeletableEntity {
 
     public Date getCreated() {
         return created;
@@ -45,13 +44,6 @@ public class Document extends IdentifiedEntity {
         this.editor = editor;
     }
 
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
 
     /**
      * Дата создания
@@ -77,10 +69,7 @@ public class Document extends IdentifiedEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     private User editor;
 
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
+
 
 
     private static final long serialVersionUID = -5542939516927639639L;

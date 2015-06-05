@@ -54,14 +54,17 @@
 
 
     <modules>
-        <module>sql-dao</module>
-        <module>alfresco-dao</module>
-        <module>workflow_core</module>
-        <module>war</module>
-        <module>ear</module>
-        <module>ui-templates-core</module>
         <module>config</module>
         <module>entities</module>
+        <module>sql-dao</module>
+
+        <module>ui-templates-core</module>
+        <module>alfresco-dao</module>
+        <module>workflow_core</module>
+
+        <module>war</module>
+        <module>ear</module>
+
         <!--<module>workflow</module>-->
     </modules>
 

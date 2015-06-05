@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.crm.dao.ContragentDAOHibernate;
-import ru.entity.model.crm.Contragent;
+import ru.entity.model.referenceBook.Contragent;
+import ru.hitsl.sql.dao.ContragentDAOHibernate;
 
 import java.util.List;
 import java.util.Map;
@@ -29,10 +29,10 @@ public class LazyDataModelForContragent extends AbstractFilterableLazyDataModel<
     @Override
     public List<Contragent> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
             filters) {
-        setRowCount((int) dao.countItems(getFilter(), false));
+        setRowCount(dao.countItems(filter, false));
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findItems(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.findItems(filter, false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

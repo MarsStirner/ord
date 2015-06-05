@@ -3,17 +3,17 @@ package ru.efive.dms.uifaces.beans.position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.dao.user.PositionDAO;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
-import ru.entity.model.user.Position;
+import ru.entity.model.referenceBook.Position;
+import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 
-import static ru.efive.dms.util.ApplicationDAONames.POSITION_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -71,13 +71,13 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position, Int
 
     @Override
     protected void initDocument(Integer documentId) {
-        setDocument(sessionManagementBean.getDAO(PositionDAO.class, POSITION_DAO).get(documentId));
+        setDocument(sessionManagementBean.getDAO(PositionDAOImpl.class, POSITION_DAO).get(documentId));
     }
 
     @Override
     protected boolean saveNewDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(PositionDAO.class, POSITION_DAO).save(getDocument()));
+            setDocument(sessionManagementBean.getDAO(PositionDAOImpl.class, POSITION_DAO).save(getDocument()));
             return true;
         } catch (Exception e) {
             LOGGER.error("CANT SAVE NEW:", e);
@@ -88,7 +88,7 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position, Int
     @Override
     protected boolean saveDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(PositionDAO.class, POSITION_DAO).update(getDocument()));
+            setDocument(sessionManagementBean.getDAO(PositionDAOImpl.class, POSITION_DAO).update(getDocument()));
             return true;
         } catch (Exception e) {
             LOGGER.error("CANT SAVE:", e);

@@ -1,12 +1,11 @@
 package ru.entity.model.document;
 
-import ru.entity.model.crm.Contragent;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.user.UserAccessLevel;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
@@ -22,7 +21,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_outgoing_documents")
-public class OutgoingDocument extends IdentifiedEntity implements ProcessedData, AgreementIssue {
+public class OutgoingDocument extends DeletableEntity implements ProcessedData, AgreementIssue {
     private static final long serialVersionUID = -3273628760848307048L;
 
     /**
@@ -50,12 +49,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
-
-    /**
-     * Удален ли документ
-     */
-    @Column(name = "deleted")
-    private boolean deleted;
 
     /**
      * Дата регистрации
@@ -240,7 +233,7 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
 
     @Transient
     public String getUniqueId() {
-        return getId() == 0 ? "" : "outgoing_" + getId();
+        return getId() == null ? "" : "outgoing_" + getId();
     }
 
     public Date getCreationDate() {
@@ -389,14 +382,6 @@ public class OutgoingDocument extends IdentifiedEntity implements ProcessedData,
     @Override
     public String getBeanName() {
         return "out_doc";
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public String getWFResultDescription() {

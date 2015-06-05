@@ -5,44 +5,79 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
 /**
- * Запись справочника
+ * Запись справочника (ID + deleted + value + code)
  */
 @MappedSuperclass
-public class DictionaryEntity extends IdentifiedEntity {
-    /**
-     * значение
-     */
-    @Column(name="value")
-    private String value;
+public abstract class DictionaryEntity extends DeletableEntity {
 
     /**
-     * true - удалён, false или null - не удалён
+     * Описание значения справочника
      */
-    @Column(name="deleted", nullable = false)
-    private boolean deleted;
+    @Column(name = "value", nullable = false)
+    protected String value;
+    /*
+    Уникальный код записи справочника
+     */
+    @Column(name = "code", nullable = false, unique = true)
+    protected String code;
 
     /**
      * Конструктор по умолчанию.
      */
     public DictionaryEntity() {
-
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     public String getValue() {
         return value;
     }
 
-    public Boolean isDeleted() {
-        return deleted;
+    public void setValue(String value) {
+        this.value = value;
     }
 
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
+    public String getCode() {
+        return code;
     }
 
-    private static final long serialVersionUID = -8239024131091899733L;
+    public void setCode(final String code) {
+        this.code = code;
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * super.hashCode() + code.hashCode();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final DictionaryEntity that = (DictionaryEntity) o;
+
+        return code.equals(that.code);
+
+    }
+
+    @Override
+    public String toString() {
+       return value;
+    }
+
+    public String toLogString(){
+        final StringBuilder sb = new StringBuilder(getClass().getSimpleName()).append('{');
+        sb.append("value='").append(value).append('\'');
+        sb.append(", code='").append(code).append('\'');
+        sb.append(" ID[").append(id).append("]}");
+        return sb.toString();
+    }
+
+
 }

@@ -1,13 +1,13 @@
 package ru.efive.wf.core.data.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ru.entity.model.user.UserAccessLevel;
 import ru.efive.wf.core.ActionResult;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.data.LocalBackingBean;
+import ru.entity.model.referenceBook.UserAccessLevel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SelectAccessLevelForm implements LocalBackingBean {
 

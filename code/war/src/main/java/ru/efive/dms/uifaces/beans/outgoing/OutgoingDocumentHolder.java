@@ -9,24 +9,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.*;
 import ru.efive.dms.uifaces.beans.*;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.dms.util.ApplicationDAONames;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
-import ru.entity.model.crm.Contragent;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.referenceBook.Contragent;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
+import ru.entity.model.referenceBook.UserAccessLevel;
+import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.user.UserAccessLevel;
+import ru.hitsl.sql.dao.*;
+import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
+import ru.hitsl.sql.dao.util.ApplicationDAONames;
 import ru.util.ApplicationHelper;
 
 import javax.ejb.EJB;
@@ -38,8 +42,8 @@ import java.io.Serializable;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("out_doc")
 @ViewScoped
@@ -151,7 +155,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<String, List<String>>();
         params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of("TopManagers"));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
         final User preselected = getDocument().getController();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -344,21 +348,19 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         document.setCreationDate(created.toDate());
         document.setAuthor(sessionManagement.getLoggedUser());
 
-        DocumentForm form = null;
-        List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategoryAndValue(
-                "Исходящие документы", "Письмо"
-        );
-        if (!list.isEmpty()) {
-            form = list.get(0);
-        } else {
-            list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByCategory("Исходящие документы");
-            if (!list.isEmpty()) {
-                form = list.get(0);
-            }
-        }
+        final DocumentForm form = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                .getByCode(DocumentForm.RB_CODE_OUTGOING_LETTER);
+
         if (form != null) {
             document.setForm(form);
+        } else {
+            List<DocumentForm> formList = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO)
+                    .findByDocumentTypeCode(DocumentType.RB_CODE_OUTGOING);
+            if (formList != null && !formList.isEmpty()) {
+                document.setForm(formList.get(0));
+            }
         }
+
         UserAccessLevel accessLevel = sessionManagement.getLoggedUser().getCurrentUserAccessLevel();
         document.setUserAccessLevel(accessLevel);
 

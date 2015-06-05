@@ -1,6 +1,8 @@
 package ru.entity.model.document;
 
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.DocumentType;
+import ru.entity.model.referenceBook.Nomenclature;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
@@ -13,7 +15,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "rbNumerators")
-public class Numerator extends IdentifiedEntity {
+public class Numerator extends DeletableEntity {
     /**
      * Дата создания документа
      */
@@ -27,20 +29,12 @@ public class Numerator extends IdentifiedEntity {
     @JoinColumn(name = "author_id")
     private User author;
 
-    /**
-     * Удален ли документ
-     */
-    @Column(name="deleted")
-    private Boolean deleted;
-
-    //TODO справочник типов документов
-    /**
+     /**
      * Тип документа (Входящий|Исходящий|Внутренний|Обращение граждан)
+      * */
     @ManyToOne(fetch = FetchType.EAGER)
-     @JoinColumn(name = "documentType_id")
-     */
-    @Column(name = "documentType_id")
-    private Integer documentType;
+    @JoinColumn(name = "documentType_id")
+    private DocumentType documentType;
 
 
     /**
@@ -95,14 +89,6 @@ public class Numerator extends IdentifiedEntity {
         this.author = author;
     }
 
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
     public Nomenclature getNomenclature() {
         return nomenclature;
     }
@@ -143,11 +129,11 @@ public class Numerator extends IdentifiedEntity {
         this.endDate = endDate;
     }
 
-    public Integer getDocumentType() {
+    public DocumentType getDocumentType() {
         return documentType;
     }
 
-    public void setDocumentType(Integer documentType) {
+    public void setDocumentType(DocumentType documentType) {
         this.documentType = documentType;
     }
 }

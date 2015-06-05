@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
 import org.apache.commons.lang.StringUtils;
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForOfficeKeepingVolume;
 import ru.entity.model.document.OfficeKeepingVolume;
+import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -14,7 +14,7 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @Named("officeKeepingVolumes")
 @ViewScoped

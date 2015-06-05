@@ -2,8 +2,8 @@ package ru.efive.dms.uifaces.lazyDataModel.referencebook;
 
 import org.primefaces.model.SortOrder;
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
-import ru.efive.sql.dao.RbContragentTypeDAOImpl;
-import ru.entity.model.crm.ContragentType;
+import ru.entity.model.referenceBook.ContragentType;
+import ru.hitsl.sql.dao.referenceBook.ContragentTypeDAOImpl;
 
 import java.util.List;
 import java.util.Map;
@@ -16,9 +16,9 @@ import java.util.Map;
  */
 public class LazyDataModelForContragentType extends AbstractFilterableLazyDataModel<ContragentType> {
 
-    private  RbContragentTypeDAOImpl dao;
+    private ContragentTypeDAOImpl dao;
 
-    public LazyDataModelForContragentType(final RbContragentTypeDAOImpl daoHibernate) {
+    public LazyDataModelForContragentType(final ContragentTypeDAOImpl daoHibernate) {
         dao = daoHibernate;
     }
 
@@ -30,10 +30,10 @@ public class LazyDataModelForContragentType extends AbstractFilterableLazyDataMo
     @Override
     public List<ContragentType> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
             filters) {
-        setRowCount((int) dao.countItems(getFilter(), false));
+        setRowCount(dao.countItems(filter));
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findItems(getFilter(), false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.getItems(filter, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 }

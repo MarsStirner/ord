@@ -3,12 +3,12 @@ package ru.efive.dms.uifaces.beans;
 import org.apache.commons.lang.StringUtils;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.dao.RecordBookDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.RecordBookDocument;
+import ru.hitsl.sql.dao.RecordBookDocumentDAOImpl;
 
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.RECORD_BOOK_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.RECORD_BOOK_DAO;
 
 @Named("record_book_doc")
 @ConversationScoped

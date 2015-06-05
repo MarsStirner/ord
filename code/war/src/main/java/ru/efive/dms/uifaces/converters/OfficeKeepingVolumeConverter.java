@@ -1,9 +1,9 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.OfficeKeepingVolume;
+import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @FacesConverter("OfficeKeepingVolumeConverter")
 public class OfficeKeepingVolumeConverter implements Converter {

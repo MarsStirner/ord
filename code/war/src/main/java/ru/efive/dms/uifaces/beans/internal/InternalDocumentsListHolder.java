@@ -2,12 +2,12 @@ package ru.efive.dms.uifaces.beans.internal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForInternalDocument;
 import ru.entity.model.document.InternalDocument;
+import ru.hitsl.sql.dao.InternalDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
@@ -18,8 +18,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
 
 @Named("internal_documents")
 @ViewScoped

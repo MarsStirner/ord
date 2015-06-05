@@ -21,8 +21,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>ru.hitsl.dms</groupId>
-            <artifactId>entities</artifactId>
+            <groupId>logback.config</groupId>
+            <artifactId>config</artifactId>
             <version>1.0</version>
         </dependency>
 

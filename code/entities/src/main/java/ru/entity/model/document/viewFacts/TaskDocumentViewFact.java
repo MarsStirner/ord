@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "dms_task_documents_views")
+@Table(name = "task_documents_views")
 @IdClass(TaskDocumentViewFactPrimaryKey.class)
 public class TaskDocumentViewFact {
 

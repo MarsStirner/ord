@@ -8,6 +8,7 @@
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:my = "http://xmlns.jcp.org/jsf/composite/mycomponents"
         >
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -157,7 +158,7 @@
                           value="#{out_doc.document.documentStatus.id eq 1 or out_doc.document.documentStatus.id eq 2 or out_doc.document.documentStatus.id eq 3 or out_doc.document.documentStatus.id eq 80}"/>
                 <h:selectOneMenu id="form" value="#{out_doc.document.form}" converter="OutgoingDocumentFormConverter"
                                  rendered="#{out_doc.createState or (out_doc.editState and statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN)}">
-                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Исходящие документы')}"/>
+                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('OUTGOING')}"/>
                 </h:selectOneMenu>
                 <h:outputText value="#{out_doc.document.form}" rendered="#{out_doc.viewState or (out_doc.editState and not statusId_In_PROJ_OR_ON_CONSIDER_OR_AGREEMENT_OR_CHECK_IN)}"/>
                 <h:outputText value=" № #{out_doc.document.registrationNumber}" rendered="#{out_doc.editState or out_doc.viewState}"/>
@@ -286,7 +287,7 @@
                                         </label>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <h:outputText value="#{out_doc.document.contragent.fullName}" class="width"/>
+                                        <h:outputText value="#{out_doc.document.contragent.value}" class="width"/>
                                     </td>
                                 </tr>
                                 <tr class="row">
@@ -359,7 +360,7 @@
                                         </p:commandLink>
                                     </td>
                                     <td class="second" colspan="3">
-                                        <h:outputText id ="contragent" value="#{out_doc.document.contragent.fullName}" class="width"/>
+                                        <h:outputText id ="contragent" value="#{out_doc.document.contragent.value}" class="width"/>
                                     </td>
                                 </tr>
                                 <tr class="row">
@@ -842,30 +843,8 @@
                     </h:panelGroup>
                 </p:tab>
 
-                <p:tab title="История"
-                       rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
-                    <div style="width: 100%; margin: 0;">
-                        <p:dataTable id="history_list" value="#{out_doc.document.historyList}"
-                                     var="history_entry" grouping="false">
-                            <p:column headerText="Дата">
-                                <h:outputText value="#{history_entry.startDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
-                                </h:outputText>
-                            </p:column>
-                            <p:column headerText="Статус">
-                                <h:outputText value="#{history_entry.fromStatusName}"/>
-                            </p:column>
-                            <p:column headerText="Действие">
-                                <h:outputText value="#{history_entry.actionName}"/>
-                            </p:column>
-                            <p:column headerText="Автор">
-                                <h:outputText value="#{history_entry.owner.descriptionShort}"/>
-                            </p:column>
-                            <p:column headerText="Комментарий">
-                                <h:outputText value="#{history_entry.commentary}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </div>
+                <p:tab title="История" rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
+                    <my:historyTable id ="historyTable" value="#{out_doc.document.historyList}"/>
                 </p:tab>
             </p:tabView>
 

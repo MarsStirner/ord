@@ -1,21 +1,22 @@
 package ru.entity.model.document;
 
+import org.apache.commons.beanutils.PropertyUtils;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.Region;
+import ru.entity.model.user.User;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.apache.commons.beanutils.PropertyUtils;
-import ru.entity.model.mapped.IdentifiedEntity;
-import ru.entity.model.user.User;
-
 @Entity
 @Table(name = "report_templates")
-public class ReportTemplate extends IdentifiedEntity {
+public class ReportTemplate extends DeletableEntity {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
@@ -99,14 +100,6 @@ public class ReportTemplate extends IdentifiedEntity {
 
     public String getEndDescription() {
         return endDescription;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public Map<String, Object> getProperties() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -319,11 +312,6 @@ public class ReportTemplate extends IdentifiedEntity {
     private String regionProperty;
 
     private String regionDescription;
-
-    /**
-     * Удален ли документ
-     */
-    private boolean deleted;
 
 
     private static final long serialVersionUID = -5877947826192366106L;

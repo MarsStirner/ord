@@ -2,8 +2,8 @@ package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.RoleDAOHibernate;
 import ru.entity.model.user.Role;
+import ru.hitsl.sql.dao.user.RoleDAOHibernate;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,7 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
 
 @FacesConverter("RoleConverter")
 public class RoleConverter implements Converter {

@@ -2,15 +2,15 @@ package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 @FacesConverter("PersonConverter")
 public class PersonConverter implements Converter {

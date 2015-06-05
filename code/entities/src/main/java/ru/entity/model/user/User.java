@@ -1,13 +1,17 @@
 package ru.entity.model.user;
 
 import org.apache.commons.lang.StringUtils;
-import ru.entity.model.document.Nomenclature;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.Department;
+import ru.entity.model.referenceBook.Nomenclature;
+import ru.entity.model.referenceBook.Position;
+import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.util.ApplicationHelper;
 import ru.util.Descriptionable;
 import ru.util.StoredCodes;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 /**
@@ -15,7 +19,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_system_persons")
-public class User extends IdentifiedEntity implements Descriptionable, Comparable<User>{
+public class User extends DeletableEntity implements Descriptionable, Comparable<User>{
 
     /**********************************************************************
      * DATABASE FIELD MAPPING START
@@ -27,13 +31,6 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
     @Column(name = "created")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date created;
-
-    /**
-     * Признак удаления
-     * true - пользователь удалён
-     */
-    @Column(name = "deleted")
-    private boolean deleted;
 
     /**
      * фамилия
@@ -123,9 +120,9 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
      * группы
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="groups_dms_system_persons",
-            joinColumns = {@JoinColumn(name="members_id")},
-            inverseJoinColumns = {@JoinColumn(name="groups_id")}
+    @JoinTable(name="mmPersonToGroup",
+            joinColumns = {@JoinColumn(name="member_id")},
+            inverseJoinColumns = {@JoinColumn(name="group_id")}
     )
     private Set<Group> groups;
 
@@ -297,7 +294,7 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
     // Interface Comparable<User>
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
-    public int compareTo(User o) {
+    public int compareTo(@NotNull User o) {
         return getDescription().compareTo(o.getDescription());
     }
 
@@ -386,14 +383,6 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
 
     public void setCreated(Date created) {
         this.created = created;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
     }
 
     public Position getJobPosition() {
@@ -531,14 +520,14 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
 
     public boolean addToContacts(final PersonContact contact) {
         if (contacts == null) {
-            contacts = new HashSet<PersonContact>(1);
+            contacts = new HashSet<>(1);
         }
         return contacts.add(contact);
     }
 
     public boolean addToContacts(final Collection<PersonContact> newContacts) {
         if (contacts == null) {
-            contacts = new HashSet<PersonContact>(newContacts.size());
+            contacts = new HashSet<>(newContacts.size());
         }
         return contacts.addAll(newContacts);
     }
@@ -557,7 +546,7 @@ public class User extends IdentifiedEntity implements Descriptionable, Comparabl
         } else if (!(obj instanceof User)) {
             return false;
         }
-        return getId() == ((User) obj).getId();
+        return Objects.equals(getId(), ((User) obj).getId());
     }
 
     /**

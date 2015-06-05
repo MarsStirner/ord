@@ -1,22 +1,16 @@
 package ru.efive.wf.core.dao;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
-
-import ru.efive.sql.dao.GenericDAOHibernate;
+import org.hibernate.criterion.*;
 import ru.entity.model.mapped.Document;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.wf.RouteTemplate;
+import ru.hitsl.sql.dao.GenericDAOHibernate;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class EngineDAOImpl extends GenericDAOHibernate<Document> {
 

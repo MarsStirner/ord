@@ -7,7 +7,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my = "http://xmlns.jcp.org/jsf/composite/mycomponents">
 
 <ui:composition template="/jsf-template/template.xhtml">
 
@@ -139,7 +140,7 @@
                 <div class="name">
                     <h:outputText value="Новая"/>
                     <p:selectOneMenu id="form1" value="#{task.document.form}" converter="DocumentFormConverter"  style="width:15em;">
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Поручения')}"/>
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('TASK')}"/>
                     </p:selectOneMenu>
                 </div>
                 <div class="title">
@@ -149,7 +150,7 @@
             <h:panelGroup rendered="#{(task.editState and task.document.getDocumentStatus().getId() eq 1) and task.viewState}">
                 <div class="name">
                     <p:selectOneMenu id="form2" value="#{task.document.form}" converter="DocumentFormConverter"  style="width:15em;" >
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('Поручения')}"/>
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('TASK')}"/>
                     </p:selectOneMenu>
                 </div>
                 <div class="title">
@@ -239,7 +240,7 @@
                                 <td class="first">
                                     <label>
                         <span class="title">
-                            <h:outputText value="#{(task.document.form.description eq 'resolution')?'Руководитель:':'Инициатор:'}"/>
+                           Инициатор:
 						</span>
                                     </label>
                                 </td>
@@ -388,7 +389,7 @@
                                             <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
                                             Новое поручение
                                             <f:param name="docAction" value="create"/>
-                                            <f:param name="formId" value="task"/>
+                                            <f:param name="formId" value="TASK_ASSIGMENT"/>
                                             <f:param name="parentId" value="#{task.document.id}"/>
                                             <f:param name="rootDocumentId" value="#{task.document.rootDocumentId}"/>
                                         </h:outputLink>
@@ -515,30 +516,9 @@
 
                             </table>
                         </div>
-
                     </p:tab>
                     <p:tab title="История">
-                        <div style="width: 100%; margin: 0;">
-                            <p:dataTable id="history_list" value="#{task.document.historyList}" var="historyEntry" grouping="false">
-                                <p:column headerText="Дата">
-                                    <h:outputText value="#{historyEntry.startDate}">
-                                        <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm"/>
-                                    </h:outputText>
-                                </p:column>
-                                <p:column headerText="Статус">
-                                    <h:outputText value="#{historyEntry.fromStatusName}"/>
-                                </p:column>
-                                <p:column headerText="Действие">
-                                    <h:outputText value="#{historyEntry.actionName}"/>
-                                </p:column>
-                                <p:column headerText="Автор">
-                                    <h:outputText value="#{historyEntry.owner.descriptionShort}"/>
-                                </p:column>
-                                <p:column headerText="Комментарий">
-                                    <h:outputText value="#{historyEntry.commentary}"/>
-                                </p:column>
-                            </p:dataTable>
-                        </div>
+                        <my:historyTable id ="historyTable" value ="#{task.document.historyList}"/>
                     </p:tab>
                 </p:tabView>
         </div>

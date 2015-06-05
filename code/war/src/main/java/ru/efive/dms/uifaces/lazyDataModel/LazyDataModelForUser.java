@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import java.util.List;
 import java.util.Map;
@@ -33,8 +33,8 @@ public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> 
     public User getRowData(String rowKey) {
         final Integer identifier;
         try {
-            identifier = Integer.valueOf(rowKey);               } catch (NumberFormatException e) {
-
+            identifier = Integer.valueOf(rowKey);
+        } catch (NumberFormatException e) {
             return null;
         }
         return dao.getItemByIdForListView(identifier);
@@ -48,11 +48,11 @@ public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> 
             SortOrder sortOrder,
             Map<String, Object> filters
     ) {
-        setRowCount(((Long) dao.countUsers(getFilter(), false, showFired)).intValue());
+        setRowCount(((Long) dao.countUsers(filter, false, showFired)).intValue());
         if(getRowCount() < first){
             first = 0;
         }
-        return dao.findUsers(getFilter(), false, showFired, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+        return dao.findUsers(filter, false, showFired, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 
 }

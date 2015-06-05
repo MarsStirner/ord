@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.beans.department;
 
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.sql.dao.user.DepartmentDAO;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
-import ru.entity.model.user.Department;
+import ru.entity.model.referenceBook.Department;
+import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.DEPARTMENT_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -25,14 +25,14 @@ import static ru.efive.dms.util.ApplicationDAONames.DEPARTMENT_DAO;
 public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Department> {
 
     private String filter;
-    private static DepartmentDAO dao;
+    private static DepartmentDAOImpl dao;
     @Inject
     @Named("indexManagement")
     private IndexManagementBean indexManagement;
 
     @PostConstruct
     public void init() {
-        dao = indexManagement.getContext().getBean(DEPARTMENT_DAO, DepartmentDAO.class);
+        dao = indexManagement.getContext().getBean(DEPARTMENT_DAO, DepartmentDAOImpl.class);
     }
 
 

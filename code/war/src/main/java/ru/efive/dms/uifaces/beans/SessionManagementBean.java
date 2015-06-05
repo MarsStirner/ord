@@ -7,17 +7,17 @@ import org.springframework.context.ApplicationContext;
 import ru.efive.dao.InitializationException;
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.AlfrescoNode;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.ejb.SubstitutionDaoImpl;
-import ru.efive.dms.util.security.AuthorizationData;
-import ru.efive.sql.dao.DictionaryDAO;
-import ru.efive.sql.dao.GenericDAO;
-import ru.efive.sql.dao.user.UserAccessLevelDAO;
-import ru.efive.sql.dao.user.UserDAO;
-import ru.efive.sql.dao.user.UserDAOHibernate;
+import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
-import ru.entity.model.user.UserAccessLevel;
+import ru.external.AuthorizationData;
+import ru.hitsl.sql.dao.GenericDAO;
+import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
+import ru.hitsl.sql.dao.SubstitutionDaoImpl;
+import ru.hitsl.sql.dao.interfaces.DictionaryDAO;
+import ru.hitsl.sql.dao.referenceBook.UserAccessLevelDAOImpl;
+import ru.hitsl.sql.dao.user.UserDAO;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 
 @Named("sessionManagement")
@@ -239,7 +239,7 @@ public class SessionManagementBean implements Serializable {
     }
 
     public void setCurrentUserAccessLevel(final String id) {
-        final UserAccessLevel userAccessLevel = getDictionaryDAO(UserAccessLevelDAO.class, USER_ACCESS_LEVEL_DAO).get(Integer.valueOf(id));
+        final UserAccessLevel userAccessLevel = getDictionaryDAO(UserAccessLevelDAOImpl.class, USER_ACCESS_LEVEL_DAO).get(Integer.valueOf(id));
         if(userAccessLevel != null) {
             try {
                 authData.setCurrentAccessLevel(userAccessLevel);

@@ -2,9 +2,9 @@ package ru.efive.dms.uifaces.lazyDataModel.dialogs;
 
 import org.primefaces.model.SortOrder;
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import java.util.List;
 import java.util.Map;
@@ -60,17 +60,17 @@ public class LazyDataModelForUserInDialogs extends AbstractFilterableLazyDataMod
             Map<String, Object> filters
     ) {
         if (filterGroup == null) {
-            setRowCount(((Long) dao.countUsersForDialog(getFilter(), false, showFired)).intValue());
+            setRowCount(((Long) dao.countUsersForDialog(filter, false, showFired)).intValue());
             if(getRowCount() < first){
                 first = 0;
             }
-            return dao.findUsersForDialog(getFilter(), false, showFired, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+            return dao.findUsersForDialog(filter, false, showFired, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
         } else {
-            setRowCount(((Long) dao.countUsersForDialogByGroup(getFilter(), false, showFired, filterGroup)).intValue());
+            setRowCount(((Long) dao.countUsersForDialogByGroup(filter, false, showFired, filterGroup)).intValue());
             if(getRowCount() < first){
                 first = 0;
             }
-            return dao.findUsersForDialogByGroup(getFilter(), false, showFired, filterGroup, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+            return dao.findUsersForDialogByGroup(filter, false, showFired, filterGroup, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
         }
     }
 }

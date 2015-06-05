@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.dao.user.RbContactTypeDAO;
-import ru.entity.model.user.RbContactInfoType;
+import ru.entity.model.referenceBook.ContactInfoType;
+import ru.hitsl.sql.dao.referenceBook.ContactInfoTypeDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -10,7 +10,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -24,8 +24,8 @@ public class ContactTypeConverter implements Converter {
     public Object getAsObject(FacesContext fc, UIComponent uiComponent, String value) {
         if (value != null && value.trim().length() > 0) {
             SessionManagementBean sessionManagement = fc.getApplication().evaluateExpressionGet(fc, "#{sessionManagement}", SessionManagementBean.class);
-            RbContactTypeDAO service = sessionManagement.getDAO(RbContactTypeDAO.class, RB_CONTACT_TYPE_DAO);
-            final List<RbContactInfoType> resultList = service.findByValue(value);
+            ContactInfoTypeDAOImpl service = sessionManagement.getDAO(ContactInfoTypeDAOImpl.class, RB_CONTACT_TYPE_DAO);
+            final List<ContactInfoType> resultList = service.getByValue(value);
             if (resultList.isEmpty()) {
                 return null;
             }

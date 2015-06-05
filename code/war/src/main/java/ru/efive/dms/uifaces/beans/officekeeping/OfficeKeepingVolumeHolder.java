@@ -1,8 +1,6 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
 import org.apache.commons.lang.StringUtils;
-import ru.efive.dms.dao.OfficeKeepingFileDAOImpl;
-import ru.efive.dms.dao.OfficeKeepingVolumeDAOImpl;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
@@ -14,6 +12,8 @@ import ru.entity.model.document.OfficeKeepingFile;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.RoleType;
+import ru.hitsl.sql.dao.OfficeKeepingFileDAOImpl;
+import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
@@ -26,8 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @Named("officeKeepingVolume")
 @ConversationScoped

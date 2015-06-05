@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.beans.roles;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.dao.user.RoleDAOHibernate;
 import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
+import ru.hitsl.sql.dao.user.RoleDAOHibernate;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.efive.dms.util.ApplicationDAONames.ROLE_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
 
 @Named("role")
 @ViewScoped

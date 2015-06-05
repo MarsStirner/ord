@@ -1,9 +1,9 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.dao.RegionDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.entity.model.document.Region;
+import ru.entity.model.referenceBook.Region;
+import ru.hitsl.sql.dao.referenceBook.RegionDAOImpl;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,7 +11,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.REGION_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.REGION_DAO;
 
 @FacesConverter("RegionConverter")
 public class RegionConverter implements Converter {
@@ -22,7 +22,7 @@ public class RegionConverter implements Converter {
             SessionManagementBean sessionManagement =
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            List<Region> list = sessionManagement.getDictionaryDAO(RegionDAOImpl.class, REGION_DAO).findByValue(value);
+            List<Region> list = sessionManagement.getDictionaryDAO(RegionDAOImpl.class, REGION_DAO).getByValue(value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

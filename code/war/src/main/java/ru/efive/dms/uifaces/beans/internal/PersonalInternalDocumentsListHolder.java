@@ -1,10 +1,10 @@
 package ru.efive.dms.uifaces.beans.internal;
 
-import ru.efive.dms.dao.InternalDocumentDAOImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForPersonalDraftsInternalDocument;
 import ru.entity.model.document.InternalDocument;
+import ru.hitsl.sql.dao.InternalDocumentDAOImpl;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 
-import static ru.efive.dms.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.INTERNAL_DOCUMENT_FORM_DAO;
 
 @Named("personal_internal_documents")
 @ViewScoped

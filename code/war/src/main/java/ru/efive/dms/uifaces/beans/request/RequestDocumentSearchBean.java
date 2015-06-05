@@ -5,17 +5,17 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.dao.RequestDocumentDAOImpl;
-import ru.efive.dms.dao.ViewFactDaoImpl;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForRequestDocument;
-import ru.entity.model.document.DeliveryType;
 import ru.entity.model.document.RequestDocument;
+import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
+import ru.hitsl.sql.dao.ViewFactDaoImpl;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.efive.dms.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
-import static ru.efive.dms.util.ApplicationDAONames.VIEW_FACT_DAO;
-import static ru.efive.dms.util.DocumentSearchMapKeys.*;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
+import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
 @Named("request_search")
 @ViewScoped
@@ -57,6 +57,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
             setLazyModel(lazyDataModelForIncomingDocument);
             searchPerformed = true;
         } catch (Exception e) {
+            searchPerformed = false;
             logger.error("REQUEST: Error while search", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
         }

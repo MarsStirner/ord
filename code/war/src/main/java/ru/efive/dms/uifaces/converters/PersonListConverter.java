@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.converters;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.sql.dao.user.UserDAOHibernate;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import static ru.efive.dms.util.ApplicationDAONames.USER_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 @FacesConverter("PersonListConverter")
 public class PersonListConverter implements Converter {
