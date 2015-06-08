@@ -66,4 +66,12 @@ public class Group extends DictionaryEntity {
     public User getAuthor() {
         return author;
     }
+
+    public GroupType getGroupType() {
+        return groupType;
+    }
+
+    public void setGroupType(final GroupType groupType) {
+        this.groupType = groupType;
+    }
 }

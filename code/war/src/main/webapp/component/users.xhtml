@@ -15,45 +15,24 @@
     </ui:define>
 
     <ui:define name="contentButtonsPanel">
-        <div class="defbutton">
-            <h:outputLink value="/component/user.xhtml" target="_blank" rendered="#{isAdministrator or isHr}">
-                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                Новый пользователь
+        <p:toolbarGroup align="left">
+            <p:button value="Новый пользователь" outcome="/component/user.xhtml" target="_blank" icon="ui-icon-plusthick" rendered="#{isAdministrator or isHr}">
                 <f:param name="docAction" value="create"/>
-            </h:outputLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{userList.importLDAPUsers()}" rendered="#{isAdministrator or isHr}">
-                <h:graphicImage value="#{resource['images:users.png']}" width="16" height="16"/>
-                Импортировать пользователей из LDAP
-                <f:ajax render="personTable"/>
-            </h:commandLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{users.refresh()}">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                Обновить
-                <f:ajax render="personTable"/>
-            </h:commandLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink>
-                <p:selectBooleanCheckbox id = "firedFlag" value="#{users.showFired}"/>
-                Показать только уволенных
-                <f:ajax render="personTable userListHeader firedFlag" execute="firedFlag"/>
-            </h:commandLink>
-        </div>
+            </p:button>
+            <p:commandButton value="Обновить" update="personTable" icon="ui-icon-refresh" ajax="true"/>
+            <p:commandButton value="Импортировать пользовтелей из LDAP"
+                             action="#{userList.importLDAPUsers()}"
+                             rendered="#{isAdministrator or isHr}"
+                             update="personTable"/>
+            <p:commandButton value ="#{users.showFired ? 'Показать только работающих':'Показать только уволенных'}" action="#{users.setShowFired(not users.getShowFired)}" update="personTable userListHeader"/>
+        </p:toolbarGroup>
+        <p:toolbarGroup align="right">
+            <p:inputText placeholder="Введите текст для поиска" style="width:25em;" id="filterString" value="#{users.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" action="#{users.applyFilter()}" id="searchButton" process="@this filterString" update="personTable" icon="ui-icon-search"/>
+            <p:defaultCommand target="searchButton" />
+        </p:toolbarGroup>
     </ui:define>
 
-    <ui:define name="contentSearch">
-        <div id="searchbar" class="main_searchbar">
-            <p:inputText id="filter_string" value="#{users.filter}"
-                         style="display:block; float:left; width:60%; margin:2px 10px;"
-                         title="Поиск"/>
-            <p:commandButton value=" " action="#{users.applyFilter()}" styleClass="searchbutton"
-                             process="@this filter_string" update="personTable"/>
-        </div>
-    </ui:define>
     <ui:define name="contentTable">
         <p:dataTable id="personTable"
                      paginator="true"
@@ -62,6 +41,7 @@
                      paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
                      rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
                      paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     emptyMessage="#{props['EMPTY_RESULT']}"
                      value="#{users.lazyModel}"
                      var="person_row"
                      selectionMode="single"
