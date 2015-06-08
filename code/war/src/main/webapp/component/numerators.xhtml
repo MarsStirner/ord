@@ -9,35 +9,26 @@
 <ui:composition template="/jsf-template/listViewTemplate.xhtml">
 
     <ui:define name="contentLabel">Справочник нумераторов</ui:define>
-
     <ui:define name="contentButtonsPanel">
-        <div class="defbutton">
-            <h:outputLink value="/component/numerator.xhtml" target="_blank">
-                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                Новый документ
+        <p:toolbarGroup align="left">
+            <p:button value="Новый документ" outcome="/component/numerator.xhtml" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
-            </h:outputLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{numerators.refresh()}">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                Обновить
-                <f:ajax render="main_data_tbl"/>
-            </h:commandLink>
-        </div>
+            </p:button>
+            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+        </p:toolbarGroup>
     </ui:define>
 
-    <ui:define name="contentSearchPanel"/>
 
     <ui:define name="contentTable">
         <p:dataTable
-                id="main_data_tbl"
+                id="documentTable"
                 paginator="true"
                 rows="100"
                 currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
                 paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
                 rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
                 paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                emptyMessage="#{props['EMPTY_RESULT']}"
                 value="#{numerators.lazyModel}"
                 var="row"
                 lazy="true"

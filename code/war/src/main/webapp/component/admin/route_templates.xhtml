@@ -10,24 +10,14 @@
     <ui:define name="contentLabel">Шаблоны маршрутов согласования</ui:define>
 
     <ui:define name="contentButtonsPanel">
-        <div class="defbutton">
-            <h:panelGroup rendered="#{isAdministrator or isOfficeManager}">
-                <h:outputLink value="/component/admin/route_template.xhtml" target="_blank">
-                    <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                    Новый шаблон
-                    <f:param name="docAction" value="create"/>
-                </h:outputLink>
-            </h:panelGroup>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{routeTemplates.refresh()}">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                Обновить
-                <f:ajax render="documentTable"/>
-            </h:commandLink>
-        </div>
+        <p:toolbarGroup align="left">
+            <p:button value="Новый шаблон" outcome="/component/admin/route_template.xhtml" target="_blank" icon="ui-icon-plusthick">
+                <f:param name="docAction" value="create"/>
+            </p:button>
+            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+        </p:toolbarGroup>
     </ui:define>
-    <ui:define name="contentSearchPanel"/>
+
     <ui:define name="contentTable">
         <p:dataTable id="documentTable"
                      paginator="true"
@@ -36,6 +26,7 @@
                      paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
                      rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
                      paginatorPosition="#{props['PAGINATOR_POSITION']}"
+                     emptyMessage="#{props['EMPTY_RESULT']}"
                      value="#{routeTemplates.documents}"
                      var="row"
                      widgetVar="documentTableWidget"
@@ -49,8 +40,6 @@
             </p:column>
             <p:ajax event="rowSelect" onstart="goToRouteTemplate(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>
-
-
     </ui:define>
 
 </ui:composition>

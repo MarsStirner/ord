@@ -8,18 +8,12 @@
 
     <ui:define name="contentLabel">Тома дел</ui:define>
 
+
     <ui:define name="contentButtonsPanel">
-        <div class="defbutton">
-            <p:commandLink action="#{officeKeepingVolumes.refresh()}" update="documentTable">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                Обновить
-            </p:commandLink>
-        </div>
+        <p:toolbarGroup align="left">
+            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+        </p:toolbarGroup>
     </ui:define>
-
-
-
-    <ui:define name="contentSearchPanel"/>
 
     <ui:define name="contentTable">
         <p:dataTable id="documentTable"
@@ -29,6 +23,7 @@
                      paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
                      rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
                      paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     emptyMessage="#{props['EMPTY_RESULT']}"
                      value="#{officeKeepingVolumes.lazyModel}"
                      var="row"
                      lazy="true"
