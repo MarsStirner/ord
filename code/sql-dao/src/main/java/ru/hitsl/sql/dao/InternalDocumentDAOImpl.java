@@ -167,7 +167,8 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
             } else if (DocumentSearchMapKeys.FORM_VALUE_KEY.equals(key)) {
                 conjunction.add(Restrictions.eq("form.value", value));
             } else if (DocumentSearchMapKeys.FORM_CATEGORY_KEY.equals(key)) {
-                conjunction.add(Restrictions.eq("form.category", value));
+                criteria.createAlias("form.documentType", "documentType", INNER_JOIN);
+                conjunction.add(Restrictions.eq("documentType.code", value));
             } else if("closePeriodRegistrationFlag".equals(key)){
                 conjunction.add(Restrictions.eq("closePeriodRegistrationFlag", Boolean.valueOf(value.toString())));
             } else {
