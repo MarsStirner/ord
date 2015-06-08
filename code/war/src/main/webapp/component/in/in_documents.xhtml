@@ -12,35 +12,21 @@
         <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
-    <ui:define name="contentLabel">Входящие документы по номеру</ui:define>
+    <ui:define name="contentLabel"><h:outputText value="Входящие документы по номеру"/></ui:define>
 
     <ui:define name="contentButtonsPanel">
-        <div class="defbutton">
-            <h:outputLink value="/component/in/in_document.xhtml" target="_blank">
-                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                Новый документ
+        <p:toolbarGroup align="left">
+            <p:button value="Новый документ" outcome="/component/in/in_document.xhtml" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
-            </h:outputLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{in_documents.refresh()}">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                Обновить
-                <f:ajax render="documentTable"/>
-            </h:commandLink>
-        </div>
-    </ui:define>
-
-    <ui:define name="contentSearch">
-        <div id="searchbar" class="main_searchbar">
-            <p:inputText id="filterString" value="#{in_documents.filter}"
-                         style="display:block; float:left; width:60%; margin:2px 10px;"
-                         title="Поиск"/>
-            <p:commandButton value=" " action="#{in_documents.applyFilter()}" styleClass="searchbutton" process="@this filterString" update="documentTable"/>
-            <h:outputLink target="_blank" value="/component/in/in_document_search_form.xhtml" title="Перейти к форме расширенного поиска">
-                Расширенный поиск
-            </h:outputLink>
-        </div>
+            </p:button>
+            <p:commandButton action="#{in_documents.refresh()}" value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+        </p:toolbarGroup>
+        <p:toolbarGroup align="right">
+            <p:inputText placeholder="#{props['LIST_VIEW_SEARCH_PLACEHOLDER_TEXT']}" style="width:25em;" id="filterString" value="#{in_documents.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" action="#{in_documents.applyFilter()}" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
+            <p:button target="_blank" outcome="/component/in/in_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
+            <p:defaultCommand target="searchButton" />
+        </p:toolbarGroup>
     </ui:define>
 
     <ui:define name="contentTable">
@@ -77,7 +63,7 @@
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
                 <ui:repeat value="#{row.executorsList}" var="executor">
-                        <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
+                    <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
