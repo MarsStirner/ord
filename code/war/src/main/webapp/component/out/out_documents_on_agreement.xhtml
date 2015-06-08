@@ -15,35 +15,18 @@
     <ui:define name="contentLabel">Исходящие документы на согласовании</ui:define>
 
     <ui:define name="contentButtonsPanel">
-        <div class="defbutton">
-            <h:outputLink value="/component/out/out_document.xhtml" target="_blank">
-                <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                Новый документ
+        <p:toolbarGroup align="left">
+            <p:button value="Новый документ" outcome="/component/out/out_document.xhtml" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
-            </h:outputLink>
-        </div>
-        <div class="defbutton">
-            <h:commandLink action="#{outDocumentsOnAgreement.refresh()}">
-                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                Обновить
-                <p:ajax update="documentTable"/>
-            </h:commandLink>
-        </div>
-    </ui:define>
-
-    <ui:define name="contentSearch">
-        <div id="searchbar" class="main_searchbar">
-            <p:inputText id="filter_string" value="#{outDocumentsOnAgreement.filter}"
-                         style="display:block; float:left; width:60%; margin:2px 10px;"
-                         title="Поиск"/>
-            <p:commandButton value=" " action="#{outDocumentsOnAgreement.applyFilter()}" styleClass="searchbutton"
-                             process="@this filter_string" update="documentTable"/>
-            <h:outputLink target="_blank" value="/component/out/out_document_search_form.xhtml"
-                          title="Перейти к форме расширенного поиска"
-                          style="margin: 0 20px;">
-                Расширенный поиск
-            </h:outputLink>
-        </div>
+            </p:button>
+            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+        </p:toolbarGroup>
+        <p:toolbarGroup align="right">
+            <p:inputText placeholder="#{props['LIST_VIEW_SEARCH_PLACEHOLDER_TEXT']}" style="width:25em;" id="filterString" value="#{outDocumentsOnAgreement.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" id="searchButton" action="#{outDocumentsOnAgreement.applyFilter()}" process="filterString @this" update="documentTable" icon="ui-icon-search"/>
+            <p:button target="_blank" outcome="/component/out/out_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
+            <p:defaultCommand target="searchButton" />
+        </p:toolbarGroup>
     </ui:define>
 
     <ui:define name="contentTable">
@@ -54,6 +37,7 @@
                      paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
                      rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
                      paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     emptyMessage="#{props['EMPTY_RESULT']}"
                      value="#{outDocumentsOnAgreement.lazyModel}"
                      var="row"
                      lazy="true"

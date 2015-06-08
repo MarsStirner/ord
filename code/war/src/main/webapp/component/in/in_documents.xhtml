@@ -19,7 +19,7 @@
             <p:button value="Новый документ" outcome="/component/in/in_document.xhtml" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
-            <p:commandButton action="#{in_documents.refresh()}" value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
             <p:inputText placeholder="#{props['LIST_VIEW_SEARCH_PLACEHOLDER_TEXT']}" style="width:25em;" id="filterString" value="#{in_documents.filter}" title="Поиск"/>
