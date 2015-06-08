@@ -7,7 +7,7 @@ import ru.entity.model.document.Task;
 import ru.hitsl.sql.dao.TaskDAOImpl;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
@@ -15,7 +15,7 @@ import java.io.Serializable;
 import static ru.hitsl.sql.dao.util.ApplicationDAONames.TASK_DAO;
 
 @Named("personal_tasks")
-@SessionScoped
+@ViewScoped
 public class PersonalTaskListHolder extends AbstractDocumentLazyDataModelBean<Task> implements Serializable {
 
     private static final long serialVersionUID = 853542007446781235L;

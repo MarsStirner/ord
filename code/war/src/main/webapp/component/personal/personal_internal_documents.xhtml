@@ -21,7 +21,7 @@
         <p:toolbarGroup align="right">
             <p:inputText placeholder="#{props['LIST_VIEW_SEARCH_PLACEHOLDER_TEXT']}" style="width:25em;" id="filterString" value="#{personal_internal_documents.filter}" title="Поиск"/>
             <p:commandButton value="Найти" action="#{personal_internal_documents.applyFilter()}" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
-            <p:button target="_blank" outcome="/component/in/in_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
+            <p:button target="_blank" outcome="/component/internal/internal_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
             <p:defaultCommand target="searchButton" />
         </p:toolbarGroup>
     </ui:define>

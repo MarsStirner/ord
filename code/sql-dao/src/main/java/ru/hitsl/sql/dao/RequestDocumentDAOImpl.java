@@ -14,6 +14,7 @@ import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import java.util.*;
 
+import static org.hibernate.criterion.CriteriaSpecification.INNER_JOIN;
 import static ru.util.ApplicationHelper.getNextDayDate;
 
 public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
@@ -162,7 +163,8 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
             } else if (DocumentSearchMapKeys.FORM_VALUE_KEY.equals(key)) {
                 conjunction.add(Restrictions.eq("form.value", value));
             } else if (DocumentSearchMapKeys.FORM_CATEGORY_KEY.equals(key)) {
-                conjunction.add(Restrictions.eq("form.category", value));
+                criteria.createAlias("form.documentType", "documentType", INNER_JOIN);
+                conjunction.add(Restrictions.eq("documentType.code", value));
             } else {
                 logger.warn("FilterMapCriteria: Unknown key \'{}\' (value =\'{}\')", key, value);
             }
