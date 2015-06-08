@@ -24,7 +24,7 @@
                              action="#{userList.importLDAPUsers()}"
                              rendered="#{isAdministrator or isHr}"
                              update="personTable"/>
-            <p:commandButton value ="#{users.showFired ? 'Показать только работающих':'Показать только уволенных'}" action="#{users.setShowFired(not users.getShowFired)}" update="personTable userListHeader"/>
+            <p:commandButton value ="#{users.showFired ? 'Показать только работающих':'Показать только уволенных'}" action="#{users.setShowFired(not users.getShowFired())}" update="personTable userListHeader"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
             <p:inputText placeholder="Введите текст для поиска" style="width:25em;" id="filterString" value="#{users.filter}" title="Поиск"/>
