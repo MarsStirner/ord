@@ -83,8 +83,6 @@
                 <value>ru.entity.model.document.Task</value>
                 <value>ru.entity.model.document.RecordBookDocument</value>
 
-                <value>ru.entity.model.referenceBook.Region</value>
-                <value>ru.entity.model.referenceBook.Contragent</value>
                 <value>ru.entity.model.crm.Contact</value>
                 <value>ru.entity.model.document.Numerator</value>
                 <value>ru.entity.model.document.ReportTemplate</value>
@@ -121,6 +119,9 @@
                 <prop key="hibernate.jdbc.batch_size">10</prop>
                 <prop key="hibernate.dbcp.whenExhaustedAction">2</prop>
                 <prop key="hibernate.connection.autocommit">true</prop>
+                <prop key="hibernate.connection.useUnicode">true</prop>
+                <prop key="hibernate.connection.characterEncoding">UTF-8</prop>
+                <prop key="hibernate.connection.charSet">UTF-8</prop>
                 <!--TODO code analysis issue
                 <prop key="hibernate.globally_quoted_identifiers">true</prop>
                 -->

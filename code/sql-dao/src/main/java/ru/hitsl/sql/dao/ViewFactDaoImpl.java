@@ -13,6 +13,7 @@ import ru.entity.model.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Author: Upatov Egor <br>
@@ -20,6 +21,7 @@ import java.util.List;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+@SuppressWarnings("unchecked")
 public class ViewFactDaoImpl extends GenericDAOHibernate {
     //Логгеры
     private static final Logger loggerIncomingDocument = LoggerFactory.getLogger("INCOMING_DOCUMENT");
@@ -54,7 +56,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         for (IncomingDocument document : documents) {
             document.setStyleClass(UNVISITED_STYLE_CLASS_NAME);
             for (IncomingDocumentViewFact viewFact : viewFacts) {
-                if (document.getId() == viewFact.getDocument().getId()) {
+                if (Objects.equals(document.getId(), viewFact.getDocument().getId())) {
                     document.setStyleClass(VISITED_STYLE_CLASS_NAME);
                     break;
                 }
@@ -74,7 +76,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         for (OutgoingDocument document : documents) {
             document.setStyleClass(UNVISITED_STYLE_CLASS_NAME);
             for (OutgoingDocumentViewFact viewFact : viewFacts) {
-                if (document.getId() == viewFact.getDocument().getId()) {
+                if (Objects.equals(document.getId(), viewFact.getDocument().getId())) {
                     document.setStyleClass(VISITED_STYLE_CLASS_NAME);
                     break;
                 }
@@ -94,7 +96,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         for (InternalDocument document : documents) {
             document.setStyleClass(UNVISITED_STYLE_CLASS_NAME);
             for (InternalDocumentViewFact viewFact : viewFacts) {
-                if (document.getId() == viewFact.getDocument().getId()) {
+                if (Objects.equals(document.getId(), viewFact.getDocument().getId())) {
                     document.setStyleClass(VISITED_STYLE_CLASS_NAME);
                     break;
                 }
@@ -113,7 +115,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         for (RequestDocument document : documents) {
             document.setStyleClass(UNVISITED_STYLE_CLASS_NAME);
             for (RequestDocumentViewFact viewFact : viewFacts) {
-                if (document.getId() == viewFact.getDocument().getId()) {
+                if (Objects.equals(document.getId(), viewFact.getDocument().getId())) {
                     document.setStyleClass(VISITED_STYLE_CLASS_NAME);
                     break;
                 }
@@ -132,7 +134,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
         for (Task document : documents) {
             document.setStyleClass(UNVISITED_STYLE_CLASS_NAME);
             for (TaskDocumentViewFact viewFact : viewFacts) {
-                if (document.getId() == viewFact.getDocument().getId()) {
+                if (Objects.equals(document.getId(), viewFact.getDocument().getId())) {
                     document.setStyleClass(VISITED_STYLE_CLASS_NAME);
                     break;
                 }
@@ -409,7 +411,7 @@ public class ViewFactDaoImpl extends GenericDAOHibernate {
      * @return список идентификаторов документов (int)
      */
     private List<Integer> getIdList(final List<? extends IdentifiedEntity> documents) {
-        final List<Integer> idList = new ArrayList<Integer>(documents.size());
+        final List<Integer> idList = new ArrayList<>(documents.size());
         for (IdentifiedEntity document : documents) {
             idList.add(document.getId());
         }
