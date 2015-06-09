@@ -1,20 +1,24 @@
 <ui:component xmlns="http://www.w3.org/1999/xhtml"
               xmlns:ui="http://java.sun.com/jsf/facelets"
-              xmlns:composite="http://java.sun.com/jsf/composite"
+              xmlns:cc="http://java.sun.com/jsf/composite"
               xmlns:p="http://primefaces.org/ui"
-              xmlns:f="http://xmlns.jcp.org/jsf/core">
+              xmlns:f="http://xmlns.jcp.org/jsf/core"
+              xmlns:c="http://java.sun.com/jsp/jstl/core">
 
-    <composite:interface>
-        <composite:attribute name="id"/>
-        <composite:attribute name="value"/>
-        <composite:attribute name="style" required="false" type="java.lang.String" shortDescription="inline style for element"/>
-    </composite:interface>
+    <cc:interface>
+        <cc:attribute name="id"/>
+        <cc:attribute name="value"/>
+        <cc:attribute name="style" required="false" type="java.lang.String" shortDescription="inline style for element"/>
+        <cc:attribute name="withNoSelectOption" required="false" type="java.lang.Boolean" shortDescription="render no select options in dropdown or not" default="false"/>
+    </cc:interface>
 
-    <composite:implementation>
+    <cc:implementation>
         <p:selectOneMenu id="#{cc.attrs.id}" value="#{cc.attrs.value}" converter="#{DeliveryTypeConverter}" style="#{cc.attrs.style}">
-            <f:selectItem itemLabel="" noSelectionOption="true"/>
+            <c:if test="#{cc.attrs.withNoSelectOption}">
+                <f:selectItem itemLabel="" noSelectionOption="true"/>
+            </c:if>
             <f:selectItems value="#{dictionaryManagement.getDeliveryTypes()}"/>
         </p:selectOneMenu>
-    </composite:implementation>
+    </cc:implementation>
 
 </ui:component>

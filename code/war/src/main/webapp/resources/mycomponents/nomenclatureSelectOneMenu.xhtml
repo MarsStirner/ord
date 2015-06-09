@@ -3,17 +3,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:cc="http://xmlns.jcp.org/jsf/composite"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:f="http://java.sun.com/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <cc:interface>
     <cc:attribute name="id" required="true" type="java.lang.String" shortDescription="Unique identifier of the component in a namingContainer."/>
     <cc:attribute name="value" required="true" shortDescription="EL path to field"/>
     <cc:attribute name="style" required="false" type="java.lang.String" shortDescription="inline style for element"/>
+    <cc:attribute name="withNoSelectOption" required="false" type="java.lang.Boolean" shortDescription="render no select options in dropdown or not" default="false"/>
 </cc:interface>
 
 <cc:implementation>
     <p:selectOneMenu id="#{cc.attrs.id}" value="#{cc.attrs.value}" converter="#{NomenclatureConverter}" style="#{cc.attrs.style}">
-        <f:selectItem itemLabel="" noSelectionOption="true"/>
+        <c:if test="#{cc.attrs.withNoSelectOption}">
+            <f:selectItem itemLabel="" noSelectionOption="true"/>
+        </c:if>
         <f:selectItems value="#{dictionaryManagement.getNomenclature()}" var="nomenclature_row"
                        itemLabel="#{nomenclature_row.code}-#{nomenclature_row.value}"
                 />

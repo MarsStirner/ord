@@ -1,16 +1,16 @@
 <ui:component xmlns="http://www.w3.org/1999/xhtml"
               xmlns:ui="http://java.sun.com/jsf/facelets"
-              xmlns:composite="http://java.sun.com/jsf/composite"
+              xmlns:cc="http://java.sun.com/jsf/composite"
               xmlns:p="http://primefaces.org/ui"
               xmlns:f="http://xmlns.jcp.org/jsf/core"
               xmlns:h="http://java.sun.com/jsf/html">
 
-    <composite:interface>
-        <composite:attribute name="id"/>
-        <composite:attribute name="value"/>
-    </composite:interface>
+    <cc:interface>
+        <cc:attribute name="id"/>
+        <cc:attribute name="value"/>
+    </cc:interface>
 
-    <composite:implementation>
+    <cc:implementation>
         <p:dataTable id="#{cc.attrs.id}" value="#{cc.attrs.value}" var="history_entry" style="width:100%;">
             <p:column headerText="Дата">
                 <h:outputText value="#{history_entry.startDate}">
@@ -30,6 +30,6 @@
                 <h:outputText value="#{history_entry.commentary}"/>
             </p:column>
         </p:dataTable>
-    </composite:implementation>
+    </cc:implementation>
 
 </ui:component>
