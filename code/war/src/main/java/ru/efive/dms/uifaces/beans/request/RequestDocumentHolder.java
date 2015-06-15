@@ -37,7 +37,6 @@ import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 import ru.hitsl.sql.dao.referenceBook.SenderTypeDAOImpl;
 import ru.util.ApplicationHelper;
 
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -98,7 +97,8 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     private Permissions permissions;
 
     //Для проверки прав доступа
-    @EJB
+    @Inject
+    @Named("permissionChecker")
     private PermissionChecker permissionChecker;
     @Inject
     @Named("sessionManagement")

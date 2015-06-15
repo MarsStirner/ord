@@ -35,7 +35,6 @@ import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 import ru.hitsl.sql.dao.util.ApplicationDAONames;
 import ru.util.ApplicationHelper;
 
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -65,7 +64,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Named("documentTaskTree")
     private DocumentTaskTreeHolder taskTreeHolder;
     //Для проверки прав доступа
-    @EJB
+    @Inject
+    @Named("permissionChecker")
     private PermissionChecker permissionChecker;
 
     private List<Attachment> attachments = new ArrayList<Attachment>();
@@ -303,7 +303,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             if (getSelectedAction().isHistoryAction()) {
                 Set<HistoryEntry> history = document.getHistory();
                 if (history == null) {
-                    history = new HashSet<HistoryEntry>();
+                    history = new HashSet<>();
                 }
                 history.add(historyEntry);
                 document.setHistory(history);

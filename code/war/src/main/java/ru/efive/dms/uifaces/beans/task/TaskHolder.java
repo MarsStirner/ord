@@ -32,7 +32,6 @@ import ru.hitsl.sql.dao.*;
 import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 import ru.util.ApplicationHelper;
 
-import javax.ejb.EJB;
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -115,8 +114,9 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             }
         }
     };
-    //Для проверки прав доступа
-    @EJB
+
+    @Inject
+    @Named("permissionChecker")
     private PermissionChecker permissionChecker;
 
     public boolean isReadPermission() {

@@ -33,7 +33,6 @@ import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 import ru.hitsl.sql.dao.util.ApplicationDAONames;
 import ru.util.ApplicationHelper;
 
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -53,7 +52,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     private static final Logger LOGGER = LoggerFactory.getLogger("OUTGOING_DOCUMENT");
     private static final long serialVersionUID = 4716264614655470705L;
     //Для проверки прав доступа
-    @EJB
+    @Inject
+    @Named("permissionChecker")
     private PermissionChecker permissionChecker;
     //TODO ACL
     private Permissions permissions;

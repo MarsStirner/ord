@@ -12,8 +12,9 @@ import ru.external.AuthorizationData;
 import ru.hitsl.sql.dao.*;
 import ru.util.ApplicationHelper;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import static ru.efive.dms.util.security.Permissions.ALL_PERMISSIONS;
 import static ru.efive.dms.util.security.Permissions.Permission.EXECUTE;
@@ -26,10 +27,12 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
  * Company: Korus Consulting IT <br>
  * Description: Бин для проверки прав доступа к документам \ поручениям
  */
-@Stateless
+@Named("permissionChecker")
+@ApplicationScoped
 public class PermissionChecker {
 
-    @EJB(name = "indexManagement")
+    @Inject
+    @Named("indexManagement")
     private IndexManagementBean indexManagementBean;
 
     //Логгеры

@@ -38,7 +38,6 @@ import ru.hitsl.sql.dao.ViewFactDaoImpl;
 import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
 import ru.util.ApplicationHelper;
 
-import javax.ejb.EJB;
 import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -99,7 +98,8 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     //Для проверки прав доступа
-    @EJB
+    @Inject
+    @Named("permissionChecker")
     private PermissionChecker permissionChecker;
     //TODO ACL
     private Permissions permissions;
