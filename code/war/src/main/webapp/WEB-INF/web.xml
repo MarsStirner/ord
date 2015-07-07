@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
-    <description>E5 Documents Management System</description>
-    <display-name>E5 Documents Management System</display-name>
+    <description>Documents Management System</description>
+    <display-name>Documents Management System</display-name>
 
     <session-config>
         <session-timeout>45</session-timeout>
@@ -22,15 +22,6 @@
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
-    <servlet>
-        <servlet-name>fileDownloadServlet</servlet-name>
-        <servlet-class>ru.efive.dms.uifaces.FileDownloadServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>fileDownloadServlet</servlet-name>
-        <url-pattern>/component/file/*</url-pattern>
-    </servlet-mapping>
-
     <filter>
         <filter-name>AuthenticationFilter</filter-name>
         <filter-class>ru.efive.dms.uifaces.AuthenticationFilter</filter-class>
@@ -41,33 +32,12 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>UploadFilter</filter-name>
-        <filter-class>ru.efive.uifaces.filter.UploadFilter</filter-class>
-        <init-param>
-            <param-name>UPLOAD_MAX_SIZE</param-name>
-            <param-value>10485760000</param-value>
-        </init-param>
+        <filter-name>PrimeFaces FileUpload Filter</filter-name>
+        <filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>UploadFilter</filter-name>
+        <filter-name>PrimeFaces FileUpload Filter</filter-name>
         <servlet-name>Faces Servlet</servlet-name>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>ResourceCacheControlFilter</filter-name>
-        <filter-class>ru.efive.uifaces.filter.ResourceCacheControlFilter</filter-class>
-        <init-param>
-            <param-name>QUERY_STRING_PATTERN</param-name>
-            <param-value>ln=e5ui/.*</param-value>
-        </init-param>
-        <!--<init-param>
-            <param-name>FORCE_NO_CACHE</param-name>
-            <param-value>true</param-value>
-        </init-param>-->
-    </filter>
-    <filter-mapping>
-        <filter-name>ResourceCacheControlFilter</filter-name>
-        <url-pattern>/javax.faces.resource/*</url-pattern>
     </filter-mapping>
 
     <context-param>
@@ -81,8 +51,8 @@
     </context-param>
 
     <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>WEB-INF/classes/applicationContext.xml</param-value>
+        <param-name>primefaces.UPLOADER</param-name>
+        <param-value>commons</param-value><!-- Allowed values: auto, native and commons. -->
     </context-param>
 
     <!--This is basically GET request based. Every GET request creates a new logical view.-->
@@ -115,6 +85,11 @@
     <context-param>
         <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
         <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>WEB-INF/classes/applicationContext.xml</param-value>
     </context-param>
 
 </web-app>

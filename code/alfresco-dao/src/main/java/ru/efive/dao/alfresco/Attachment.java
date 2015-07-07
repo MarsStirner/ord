@@ -4,6 +4,7 @@ import org.alfresco.webservice.types.NamedValue;
 import org.alfresco.webservice.util.Constants;
 import org.alfresco.webservice.util.Utils;
 
+import java.io.Serializable;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -15,7 +16,7 @@ import java.util.List;
  *
  * @author Alexey Vagizov
  */
-public class Attachment extends AlfrescoNode {
+public class Attachment extends AlfrescoNode implements Serializable {
     public static String STORE_NAME = "E5 DMS";
     public static String NAMESPACE = "http://www.efive.ru/model/dictionary/1.0";
     public static String NAMESPACE_PREFIX = "e5-dms";

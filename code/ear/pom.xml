@@ -59,7 +59,6 @@
                             <bundleDir>/</bundleDir>
                             <context-root>/</context-root>
                         </webModule>
-
                     </modules>
                 </configuration>
             </plugin>
