@@ -93,6 +93,10 @@
     <!--LOGGERS-->
 
     <!--Логгеры для документов-->
+    <!-- базовый -->
+    <logger name="DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
+        <appender-ref ref="APPENDER_DOC"/>
+    </logger>
     <!--У каждого свой но все отписывают в один APPENDER_DOC-->
     <logger name="INCOMING_DOCUMENT" level="${logs.document.level}" additivity="${logs.document.additivity}">
         <appender-ref ref="APPENDER_DOC"/>
