@@ -201,24 +201,6 @@ public final class WorkflowHelper {
 
                     doc.setRegistrationNumber(in_number.toString());
 
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                            .findAllDocumentsByParentId(doc.getUniqueId());
-                    if (paperCopies.size() > 0) {
-                        for (PaperCopyDocument paperCopy : paperCopies) {
-                            String copyNumber = paperCopy.getRegistrationNumber();
-                            if (copyNumber.contains("...")) {
-                                copyNumber = copyNumber.replaceFirst("...", doc.getRegistrationNumber());
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            } else if (copyNumber.isEmpty()) {
-                                copyNumber = doc.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            }
-                            if (paperCopy.getDocumentStatus().getId() < 2) {
-                                paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
-                            }
-                            sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
-                        }
-                    }
 
                     Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
                     doc.setRegistrationDate(calendar.getTime());
@@ -238,14 +220,6 @@ public final class WorkflowHelper {
         return result;
     }
 
-    public static boolean setPaperCopyRegistrationNumber(PaperCopyDocument doc) {
-        if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
-            doc.setWFResultDescription("Необходимо указать номер оригинала;" + System.getProperty("line.separator"));
-            return false;
-        }
-        doc.setWFResultDescription("");
-        return true;
-    }
 
     public static boolean checkOutgoingPropertiesForArchiving(OutgoingDocument doc) {
         boolean result = false;
@@ -257,16 +231,7 @@ public final class WorkflowHelper {
                 "#{sessionManagement}",
                 SessionManagementBean.class
         );
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                .findAllDocumentsByParentId(doc.getUniqueId());
-        if (paperCopies.size() > 0) {
-            for (PaperCopyDocument paperCopy : paperCopies) {
-                String copyNumber = paperCopy.getRegistrationNumber();
-                if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № " + copyNumber + " необходимо перевести в один из архивных статусов;");
-                }
-            }
-        }
+
 
         if (in_result.toString().equals("")) {
             try {
@@ -302,27 +267,6 @@ public final class WorkflowHelper {
             document.setWFResultDescription(in_result.toString());
         }
         return result;
-    }
-
-    public static boolean setPaperCopyParentVolumeUnitsCount(PaperCopyDocument document) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                context,
-                "#{sessionManagement}",
-                SessionManagementBean.class
-        );
-        OfficeKeepingVolume parentVolume = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocumentById(
-                String.valueOf(document.getOfficeKeepingVolume().getId())
-        );
-        if (parentVolume != null) {
-            int units = parentVolume.getUnitsCount() + document.getSheetsCount();
-            parentVolume.setUnitsCount(units);
-            sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).save(parentVolume);
-            document.setWFResultDescription("");
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public static boolean setIncomingRegistrationNumber(IncomingDocument doc) {
@@ -387,25 +331,6 @@ public final class WorkflowHelper {
                     );
                     doc.setRegistrationNumber(in_number.toString());
 
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                            .findAllDocumentsByParentId(doc.getUniqueId());
-                    if (paperCopies.size() > 0) {
-                        for (PaperCopyDocument paperCopy : paperCopies) {
-                            String copyNumber = paperCopy.getRegistrationNumber();
-                            if (copyNumber.contains("...")) {
-                                copyNumber = copyNumber.replaceFirst("...", doc.getRegistrationNumber());
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            } else if (copyNumber.isEmpty()) {
-                                copyNumber = doc.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            }
-                            if (paperCopy.getDocumentStatus().getId() < 2) {
-                                paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
-                            }
-                            sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
-                        }
-                    }
-
                     Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
                     doc.setRegistrationDate(calendar.getTime());
                     result = true;
@@ -433,17 +358,6 @@ public final class WorkflowHelper {
                 "#{sessionManagement}",
                 SessionManagementBean.class
         );
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                .findAllDocumentsByParentId(doc.getUniqueId());
-        if (paperCopies.size() > 0) {
-            for (PaperCopyDocument paperCopy : paperCopies) {
-                String copyNumber = paperCopy.getRegistrationNumber();
-                if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber)
-                            .append(" необходимо перевести в один из архивных статусов;");
-                }
-            }
-        }
 
         if (in_result.toString().equals("")) {
             try {
@@ -461,40 +375,7 @@ public final class WorkflowHelper {
         return result;
     }
 
-    public static boolean checkPaperCopyPropertiesForArchiving(PaperCopyDocument doc) {
-        boolean result = false;
-        StringBuilder in_result = new StringBuilder("");
-        if (doc.getOfficeKeepingVolume() == null) {
-            in_result.append("Необходимо указать нужный том дела;").append(System.getProperty("line.separator"));
-        } else {
-            OfficeKeepingVolume parentVolume = doc.getOfficeKeepingVolume();
-            int limitUnitsCount = parentVolume.getLimitUnitsCount();
-            int currentUnitsCount = parentVolume.getUnitsCount();
-            if (limitUnitsCount < (currentUnitsCount + doc.getAppendixiesCount() * doc.getSheetsCount() * doc.getCopiesCount())) {
-                in_result.append("Количество листов в выбраном томе дела превышает предельно допустимое.")
-                        .append(System.getProperty("line.separator"));
-            }
-        }
 
-        if (doc.getSheetsCount() == 0) {
-            in_result.append("Необходимо указать количество листов;").append(System.getProperty("line.separator"));
-        }
-
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                doc.setWFResultDescription("");
-            }
-        } else {
-            doc.setWFResultDescription(in_result.toString());
-        }
-        return result;
-    }
 
     public static boolean setInternalRegistrationNumber(InternalDocument doc) {
         boolean result = false;
@@ -568,7 +449,7 @@ public final class WorkflowHelper {
                             in_number.append("Р/01/");
                         }
 
-                        in_filters.put("registrationNumber", in_number);
+                        in_filters.put("registrationNumber", in_number.toString());
                         in_filters.put("form", doc.getForm());
                         in_count = StringUtils.leftPad(
                                 String.valueOf(
@@ -601,7 +482,7 @@ public final class WorkflowHelper {
 
 
                     } else if (in_form.equals("Инструкция")) {
-                        in_filters.put("registrationNumber", in_number);
+                        in_filters.put("registrationNumber", in_number.toString());
                         in_filters.put("form", doc.getForm());
                         in_count = StringUtils.leftPad(
                                 String.valueOf(
@@ -621,7 +502,7 @@ public final class WorkflowHelper {
                         } else {
                             in_number.append("СЗ/01/");
                         }
-                        in_filters.put("registrationNumber", in_number);
+                        in_filters.put("registrationNumber", in_number.toString());
                         in_filters.put("form", doc.getForm());
                         in_count = StringUtils.leftPad(
                                 String.valueOf(
@@ -736,24 +617,6 @@ public final class WorkflowHelper {
                     }
                     doc.setRegistrationNumber(in_number.toString());
 
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                            .findAllDocumentsByParentId(doc.getUniqueId());
-                    if (paperCopies.size() > 0) {
-                        for (PaperCopyDocument paperCopy : paperCopies) {
-                            String copyNumber = paperCopy.getRegistrationNumber();
-                            if (copyNumber.contains("...")) {
-                                copyNumber = copyNumber.replaceFirst("...", doc.getRegistrationNumber());
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            } else if (copyNumber.isEmpty()) {
-                                copyNumber = doc.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            }
-                            if (paperCopy.getDocumentStatus().getId() < 2) {
-                                paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
-                            }
-                            sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
-                        }
-                    }
 
                     Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
                     doc.setRegistrationDate(calendar.getTime());
@@ -840,24 +703,7 @@ public final class WorkflowHelper {
                 }
                 doc.setRoleEditors(in_roles);
 
-                List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                        .findAllDocumentsByParentId(doc.getUniqueId());
-                if (paperCopies.size() > 0) {
-                    for (PaperCopyDocument paperCopy : paperCopies) {
-                        String copyNumber = paperCopy.getRegistrationNumber();
-                        if (copyNumber.contains("...")) {
-                            copyNumber = copyNumber.replaceFirst("...", doc.getRegistrationNumber());
-                            paperCopy.setRegistrationNumber(copyNumber);
-                        } else if (copyNumber.isEmpty()) {
-                            copyNumber = doc.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
-                            paperCopy.setRegistrationNumber(copyNumber);
-                        }
-                        if (paperCopy.getDocumentStatus().getId() < 2) {
-                            paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
-                        }
-                        sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
-                    }
-                }
+
                 result = true;
 
             } catch (Exception e) {
@@ -884,17 +730,7 @@ public final class WorkflowHelper {
                 "#{sessionManagement}",
                 SessionManagementBean.class
         );
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                .findAllDocumentsByParentId(doc.getUniqueId());
-        if (paperCopies.size() > 0) {
-            for (PaperCopyDocument paperCopy : paperCopies) {
-                String copyNumber = paperCopy.getRegistrationNumber();
-                if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber)
-                            .append(" необходимо перевести в один из архивных статусов;");
-                }
-            }
-        }
+
 
         if (in_result.toString().equals("")) {
             try {
@@ -922,17 +758,7 @@ public final class WorkflowHelper {
                 "#{sessionManagement}",
                 SessionManagementBean.class
         );
-        List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                .findAllDocumentsByParentId(doc.getUniqueId());
-        if (paperCopies.size() > 0) {
-            for (PaperCopyDocument paperCopy : paperCopies) {
-                String copyNumber = paperCopy.getRegistrationNumber();
-                if (paperCopy.getDocumentStatus().getId() < 99) {
-                    in_result.append("Бумажный экземпляр документа № ").append(copyNumber)
-                            .append(" необходимо перевести в один из архивных статусов;");
-                }
-            }
-        }
+
 
         if (in_result.toString().equals("")) {
             try {
@@ -1058,25 +884,6 @@ public final class WorkflowHelper {
                     */
                     in_number.append(in_count);
                     document.setRegistrationNumber(in_number.toString());
-
-                    List<PaperCopyDocument> paperCopies = sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO)
-                            .findAllDocumentsByParentId(document.getUniqueId());
-                    if (paperCopies.size() > 0) {
-                        for (PaperCopyDocument paperCopy : paperCopies) {
-                            String copyNumber = paperCopy.getRegistrationNumber();
-                            if (copyNumber.contains("...")) {
-                                copyNumber = copyNumber.replaceFirst("...", document.getRegistrationNumber());
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            } else if (copyNumber.isEmpty()) {
-                                copyNumber = document.getRegistrationNumber() + "/" + (paperCopies.size() + 1);
-                                paperCopy.setRegistrationNumber(copyNumber);
-                            }
-                            if (paperCopy.getDocumentStatus().getId() < 2) {
-                                paperCopy.setDocumentStatus(DocumentStatus.CHECK_IN_2);
-                            }
-                            sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
-                        }
-                    }
 
                     Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
                     document.setRegistrationDate(calendar.getTime());
@@ -1454,33 +1261,7 @@ public final class WorkflowHelper {
         return result;
     }
 
-    public static boolean checkPaperCopyPropertiesForUnfile(PaperCopyDocument doc) {
-        boolean result = false;
-        FacesContext context = FacesContext.getCurrentInstance();
-        StringBuilder in_result = new StringBuilder("");
 
-        if (doc.getCollector() == null) {
-            in_result.append("Необходимо указать кому будет выдан том дела;").append(System.getProperty("line.separator"));
-        }
-        if (doc.getReturnDate() == null) {
-            in_result.append("Необходимо указать дату возврата тома дела;").append(System.getProperty("line.separator"));
-        }
-
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                doc.setWFResultDescription("");
-            }
-        } else {
-            doc.setWFResultDescription(in_result.toString());
-        }
-        return result;
-    }
 
     public static boolean checkOfficeKeepingVolumePropertiesForUnfile(OfficeKeepingVolume doc) {
         boolean result = false;
@@ -1528,20 +1309,5 @@ public final class WorkflowHelper {
         return result;
     }
 
-    public static boolean setPaperCopyCollectorToEmpty(PaperCopyDocument doc) {
-        boolean result = false;
 
-        doc.setCollector(null);
-        doc.setReturnDate(null);
-        try {
-            result = true;
-        } catch (Exception e) {
-            result = false;
-            e.printStackTrace();
-        }
-        if (result) {
-            doc.setWFResultDescription("");
-        }
-        return result;
-    }
 }

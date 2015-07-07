@@ -1,14 +1,16 @@
 package ru.efive.uifaces.component.html;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UICommand;
-import javax.faces.component.behavior.ClientBehaviorHolder;
 import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.filter.UploadHandler;
 import ru.efive.uifaces.renderkit.html_basic.FileUploadRenderer;
+
+import javax.faces.component.FacesComponent;
+import javax.faces.component.UICommand;
+import javax.faces.component.behavior.ClientBehaviorHolder;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The component uploads selected by user files. Uploading can be processed with enclosing form or separately.
@@ -16,7 +18,7 @@ import ru.efive.uifaces.renderkit.html_basic.FileUploadRenderer;
  * @author Pavel Porubov
  */
 @FacesComponent(FileUpload.COMPONENT)
-public class FileUpload extends UICommand implements ClientBehaviorHolder {
+public class FileUpload extends UICommand implements ClientBehaviorHolder, Serializable {
 
     /** Component name */
     public static final String COMPONENT = "ru.efive.uifaces.FileUpload";
@@ -106,7 +108,7 @@ public class FileUpload extends UICommand implements ClientBehaviorHolder {
      * </ul>
      * The default behavior is {@code form}.
      */
-    public enum ActionBehavior {
+    public enum ActionBehavior implements Serializable{
         form, separate
     }
 

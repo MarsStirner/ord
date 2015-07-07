@@ -358,57 +358,7 @@
 </p:tab>
 <p:tab title="Документы">
     <fieldset>
-        <div class="actionbar">
-            <div class="menu">
-                <div class="defbutton">
-                    <h:commandLink action="#{paperCopyDocumentsByOfficeVolume.refresh()}">
-                        <f:ajax render="paper_copy_table"/>
-                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                        Обновить
-                    </h:commandLink>
-                </div>
-            </div>
-        </div>
-        <h:panelGroup>
-            <div id="modal_container" style="margin-top: 0;">
-                <div class="wrap" style="height: 250px; width: 100%; margin: 0;">
-                    <div class="inner" style="height: 250px;">
-                        <e5ui:dataTable id="paper_copy_table"
-                                        border="0" cellpadding="0" cellspacing="0"
-                                        value="#{paperCopyDocumentsByOfficeVolume.getDocumentsById(officeKeepingVolume.document.id)}"
-                                        var="paper_copy" style="width:100%">
-                            <e5ui:row ondblclick="goToPaperCopyDocument('#{paper_copy.id}');"/>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Номер</p>
-                                </f:facet>
-                                <h:outputText value="#{paper_copy.registrationNumber}"/>
-                            </e5ui:column>
-                            <e5ui:column style="min-width:15em">
-                                <f:facet name="header">
-                                    <p>Заголовок</p>
-                                </f:facet>
-                                <h:outputText value="#{paper_copy.shortDescription}"/>
-                            </e5ui:column>
-                            <e5ui:column>
-                                <f:facet name="header">
-                                    <p>Статус</p>
-                                </f:facet>
-                                <h:outputText value="#{paper_copy.getDocumentStatus().getName()}"/>
-                            </e5ui:column>
-                        </e5ui:dataTable>
-                    </div>
-                </div>
-                <div id="table_paging">
-                    <e5ui-comp:tablePager
-                            documentListHolder="#{paperCopyDocumentsByOfficeVolume}"
-                            style="display:inline;"/>
-                    <e5ui-comp:tablePageSizeSelector
-                            documentListHolder="#{paperCopyDocumentsByOfficeVolume}"
-                            style="display:inline;float:right;" pageSizes="10,25,50,100"/>
-                </div>
-            </div>
-        </h:panelGroup>
+
     </fieldset>
 </p:tab>
 <p:tab title="Местоположение">

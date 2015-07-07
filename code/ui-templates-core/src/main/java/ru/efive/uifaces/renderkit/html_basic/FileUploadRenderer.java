@@ -17,6 +17,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.render.FacesRenderer;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ import static ru.efive.uifaces.util.JSFUtils.getFacesContext;
         @ResourceDependency(name = "fileUpload.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "fileUpload.i18n.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "fileUpload.css", target = "head", library = "e5ui/css")})
-public class FileUploadRenderer extends HtmlBasicRenderer {
+public class FileUploadRenderer extends HtmlBasicRenderer implements Serializable{
 
     /** <code>Renderer</code> type for component */
     public static final String RENDERER = "ru.efive.uifaces.FileUpload";

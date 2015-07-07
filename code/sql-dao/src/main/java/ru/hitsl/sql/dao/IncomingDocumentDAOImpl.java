@@ -9,7 +9,6 @@ import org.joda.time.LocalDate;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
-import ru.entity.model.document.PaperCopyDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.Contragent;
@@ -219,15 +218,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
             } else if (DocumentSearchMapKeys.OFFICE_KEEPING_VOLUME_KEY.equals(key)) {
                 try {
                     final OfficeKeepingVolume volume = (OfficeKeepingVolume) value;
-                    final DetachedCriteria subCriterion = DetachedCriteria.forClass(PaperCopyDocument.class);
-                    subCriterion.add(Restrictions.eq("officeKeepingVolume.id", volume.getId()));
-                    subCriterion.add(Restrictions.ilike("parentDocumentId", "incoming_", MatchMode.ANYWHERE));
-                    List<PaperCopyDocument> in_results = getHibernateTemplate().findByCriteria(subCriterion);
-                    List<Integer> incomingDocumentsId = new ArrayList<Integer>();
-                    for (PaperCopyDocument paper : in_results) {
-                        String parentId = paper.getParentDocumentId();
-                        incomingDocumentsId.add(Integer.parseInt(parentId.substring(9)));
-                    }
+                    List<Integer> incomingDocumentsId = new ArrayList<>();
                     // http://stackoverflow.com/questions/13004142/hibernate-restriction-in-causes-an-error-if-the-list
                     // -is-empty
                     //короче: если список пустой - то будет синтаксическая ошибка в сформированном SQL,

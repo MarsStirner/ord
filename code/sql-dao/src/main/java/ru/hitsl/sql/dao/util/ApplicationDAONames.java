@@ -13,7 +13,6 @@ public final class ApplicationDAONames {
     public static final String GROUP_TYPE_DAO = "groupTypeDao";
     public static final String DOCUMENT_FORM_DAO = "documentFormDao";
     public static final String USER_ACCESS_LEVEL_DAO = "userAccessLevelDao";
-    public static final String PAPER_COPY_DOCUMENT_FORM_DAO = "paperCopyDao";
     public static final String INCOMING_DOCUMENT_FORM_DAO = "incomingDao";
     public static final String NUMERATOR_DAO = "numeratorDao";
     public static final String OUTGOING_DOCUMENT_FORM_DAO = "outgoingDao";

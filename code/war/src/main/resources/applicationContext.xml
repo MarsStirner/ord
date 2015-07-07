@@ -77,7 +77,6 @@
                 <value>ru.entity.model.document.InternalDocument</value>
                 <value>ru.entity.model.document.OutgoingDocument</value>
                 <value>ru.entity.model.document.RequestDocument</value>
-                <value>ru.entity.model.document.PaperCopyDocument</value>
                 <value>ru.entity.model.document.OfficeKeepingFile</value>
                 <value>ru.entity.model.document.OfficeKeepingVolume</value>
                 <value>ru.entity.model.document.Task</value>
@@ -167,8 +166,6 @@
     <bean id="internalDao" class="ru.hitsl.sql.dao.InternalDocumentDAOImpl" parent="daoSettings"/>
 
     <bean id="outgoingDao" class="ru.hitsl.sql.dao.OutgoingDocumentDAOImpl" parent="daoSettings"/>
-
-    <bean id="paperCopyDao" class="ru.hitsl.sql.dao.PaperCopyDocumentDAOImpl" parent="daoSettings"/>
 
     <bean id="requestDao" class="ru.hitsl.sql.dao.RequestDocumentDAOImpl" parent="daoSettings"/>
 

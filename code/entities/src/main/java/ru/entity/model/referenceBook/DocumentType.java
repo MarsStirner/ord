@@ -37,8 +37,4 @@ public class DocumentType extends DictionaryEntity {
      * Поручение
      */
     public static final String RB_CODE_TASK = "TASK";
-    /**
-     * Бумажные экземпляры
-     */
-    public static final String RB_CODE_PAPER_COPY = "PAPER_COPY";
 }

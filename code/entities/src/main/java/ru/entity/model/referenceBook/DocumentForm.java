@@ -164,22 +164,6 @@ public class DocumentForm extends DictionaryEntity {
      **/
     public static final String RB_CODE_INTERNAL_STATE = "INTERNAL_STATE";
     /**
-     * Бумага
-     **/
-    public static final String RB_CODE_PAPER_COPY_PAPER = "PAPER_COPY_PAPER";
-    /**
-     * Диск
-     **/
-    public static final String RB_CODE_PAPER_COPY_DISK = "PAPER_COPY_DISK";
-    /**
-     * Кассета
-     **/
-    public static final String RB_CODE_PAPER_COPY_CASSETE = "PAPER_COPY_CASSETE";
-    /**
-     * Снимок
-     **/
-    public static final String RB_CODE_PAPER_COPY_SNAPSHOT = "PAPER_COPY_SNAPSHOT";
-    /**
      * Резолюция
      **/
     public static final String RB_CODE_TASK_RESOLUTION = "TASK_RESOLUTION";

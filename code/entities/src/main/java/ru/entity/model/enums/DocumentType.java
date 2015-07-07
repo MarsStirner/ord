@@ -13,7 +13,6 @@ import java.util.List;
  */
 
 public enum DocumentType {
-    PaperCopyDocument("PaperCopyDocument", getPaperCopyDocumentStatuses(), getPaperCopyDocumentActions()),
     IncomingDocument("IncomingDocument", getIncomingDocumentStatuses(), getIncomingDocumentActions()),
     InternalDocument("InternalDocument", getInternalDocumentStatuses(), getInternalDocumentActions()),
     OutgoingDocument("OutgoingDocument", getOutgoingDocumentStatuses(), getOutgoingDocumentActions()),
@@ -82,30 +81,6 @@ public enum DocumentType {
                 result.add(status.getId());
         }
         return result;
-    }
-
-
-    public static List<DocumentStatus> getPaperCopyDocumentStatuses() {
-        return Arrays.asList(DocumentStatus.PROJECT,
-                DocumentStatus.CHECK_IN_2,
-                DocumentStatus.IN_ARCHIVE_99,
-                DocumentStatus.EXTRACT,
-                DocumentStatus.SOURCE_DESTROY,
-                DocumentStatus.REDIRECT,
-                DocumentStatus.SEND,
-                DocumentStatus.RECIVE);
-    }
-
-    public static List<DocumentAction> getPaperCopyDocumentActions() {
-        return Arrays.asList(DocumentAction.CHECK_IN_1,
-                DocumentAction.IN_ARCHIVE_99,
-                DocumentAction.EXTRACT,
-                DocumentAction.RETURN_TO_ARCHIVE,
-                DocumentAction.SOURCE_DESTROY_120,
-                DocumentAction.REDIRECT_IN_OTHER_ARCHIVE_130,
-                DocumentAction.SEND,
-                DocumentAction.RECIVE,
-                DocumentAction.CREATE);
     }
 
     public static List<DocumentStatus> getIncomingDocumentStatuses() {

@@ -71,13 +71,6 @@ function goToNomenclature(id) {
         window.open('/component/admin/nomenclature.xhtml?docId=' + id, '_blank');
     }
 }
-
-// К бумажным копиям документа
-function goToPaperCopyDocument(id) {
-    if (id != "") {
-        window.open('/component/paper_copy_document.xhtml?docId=' + id, '_blank');
-    }
-}
 // К подразделениям
 function goToDepartment(id) {
     if (id != 0) {

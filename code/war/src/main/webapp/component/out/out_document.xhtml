@@ -604,53 +604,6 @@
                     </h:panelGroup>
                 </p:tab>
                 <p:tab title="Связи" rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}"/>
-                <p:tab title="Оригинал" rendered="#{out_doc.viewState or out_doc.createState or out_doc.editState}">
-                    <fieldset>
-                        <div class="actionbar">
-                            <div class="menu">
-                                <h:panelGroup rendered="#{out_doc.document.getDocumentStatus().getId() gt 0}">
-                                    <div class="defbutton">
-                                        <h:outputLink value="/component/paper_copy_document.xhtml" target="_blank">
-                                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                                            Новый оригинал
-                                            <f:param name="docAction" value="create"/>
-                                            <f:param name="parentDocumentId" value="#{out_doc.document.uniqueId}"/>
-                                        </h:outputLink>
-                                    </div>
-                                </h:panelGroup>
-
-                                <div class="defbutton">
-                                    <h:commandLink action="paperCopyDocuments.refresh()">
-                                        <f:ajax render="paperCopyTable"/>
-                                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                                        Обновить
-                                    </h:commandLink>
-                                </div>
-                            </div>
-                        </div>
-                        <h:panelGroup>
-                            <p:dataTable id="paperCopyTable"
-                                         value="#{paperCopyDocuments.getAllDocumentsByParentDocumentId(out_doc.document.uniqueId)}"
-                                         var="row_paper_copy"
-                                         style="width:100%"
-                                         selectionMode="single"
-                                         rowKey="#{row_paper_copy.id}"
-                                         widgetVar="paperCopyTableWidget"
-                                    >
-                                <p:column headerText="Номер">
-                                    <h:outputText value="#{row_paper_copy.registrationNumber}"/>
-                                </p:column>
-                                <p:column headerText="Заголовок" style="min-width:15em">
-                                    <h:outputText value="#{row_paper_copy.shortDescription}"/>
-                                </p:column>
-                                <p:column headerText="Статус">
-                                    <h:outputText value="#{row_paper_copy.getDocumentStatus().getName()}"/>
-                                </p:column>
-                                <p:ajax event="rowSelect" onstart="goToPaperCopyDocument(PrimeFaces.widgets.paperCopyTableWidget.selection); return false;"/>
-                            </p:dataTable>
-                        </h:panelGroup>
-                    </fieldset>
-                </p:tab>
                 <p:tab title="Доступ">
                     <h:panelGroup rendered="#{out_doc.createState or out_doc.editState}">
                         <div class="row">

@@ -1,6 +1,5 @@
 package ru.efive.uifaces.bean;
 
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 import javax.annotation.PostConstruct;
@@ -30,7 +29,7 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * @param documents список документов, по которым надо построить дерево
      * @return корневой элемент дерева
      */
-    protected abstract DefaultTreeNode constructTreeFromDocumentList(final List<D> documents);
+    protected abstract TreeNode constructTreeFromDocumentList(final List<D> documents);
 
 
     ////////////////////// ABSTRACT METHODS END ////////////////////////////////////////////////////////////////////////
@@ -43,7 +42,7 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
     /**
      * корневой элемент дерева
      */
-    private DefaultTreeNode rootNode;
+    private TreeNode rootNode;
 
     /**
      * Документы, которые используются в дереве
@@ -139,7 +138,7 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      *
      * @return корневой элемент дерева
      */
-    public DefaultTreeNode getRoot() {
+    public TreeNode getRoot() {
         return rootNode;
     }
 

@@ -3,8 +3,7 @@ package ru.efive.dms.uifaces.beans.nomenclature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Nomenclature;
 import ru.hitsl.sql.dao.referenceBook.NomenclatureDAOImpl;
 
@@ -22,7 +21,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
  */
 @Named("nomenclature")
 @ViewScoped
-public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclature, Integer> {
+public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclature> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("RB_NOMENCLATURE");
 
@@ -46,10 +45,6 @@ public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclat
         return false;
     }
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
 
     @Override
     protected void initNewDocument() {
@@ -86,11 +81,6 @@ public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclat
             LOGGER.error("CANT SAVE:", e);
             return false;
         }
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
     }
 
     @Inject
