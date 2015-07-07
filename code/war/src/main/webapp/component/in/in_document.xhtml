@@ -13,11 +13,6 @@
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
 
-    <ui:define name="HEAD_CONTENT">
-        <h:outputScript library="js" name="primefacesLocale_ru.js"/>
-        <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
-    </ui:define>
-
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <my:homeButton outcome="/component/in/in_documents.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{in_doc.errorState}"/>
