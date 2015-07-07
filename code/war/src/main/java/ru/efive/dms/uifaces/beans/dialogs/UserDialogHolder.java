@@ -101,11 +101,10 @@ public class UserDialogHolder extends AbstractDialog<User> {
      */
     @Override
     public void initializePreSelected() {
-        final User preselected = (User) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
+        final User preselected = (User) getFromExternalContext(DIALOG_SESSION_KEY);
         if (preselected != null) {
             setSelected(preselected);
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
     }
 
     public LazyDataModel<User> getLazyModel() {

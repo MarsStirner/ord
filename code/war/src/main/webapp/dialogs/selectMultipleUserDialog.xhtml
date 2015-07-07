@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html
-        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
         >
-
-<h:head>
-    <title><h:outputText value="#{multipleUserDialog.title}"/></title>
-</h:head>
-
-<h:body>
-    <h:form id="selectMultipleUserDialogForm">
-        <p:inputText id="filter" value="#{multipleUserDialog.filter}"/>
-        <p:commandButton value="Поиск">
-            <f:ajax execute="filter" render="selectPersonTable"/>
-        </p:commandButton>
+<ui:composition template="/jsf-template/dialogTemplate.xhtml">
+    <ui:define name="PAGE_TITLE"><h:outputText value="#{multipleUserDialog.title}"/></ui:define>
+    <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectPersonTable"
                      paginator="true"
-                     rows="10"
-                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
-                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
-                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
-                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     rows="25"
+                     currentPageReportTemplate="#{props.CURRENT_PAGE_PAGINATOR_TEMPLATE}"
+                     paginatorTemplate="#{props.PAGINATOR_TEMPLATE}"
+                     rowsPerPageTemplate="#{props.ROWS_PER_PAGE_DROPDOWN}"
+                     paginatorPosition="#{props.PAGINATOR_POSITION}"
                      value="#{multipleUserDialog.lazyModel}"
                      var="person_row"
                      selectionMode="multiple"
@@ -34,12 +24,17 @@
                      lazy="true"
                      widgetVar="selectPersonTableVar"
                      scrollable="true"
-                     scrollHeight="400"
+                     scrollHeight="100%"
                      sortBy="#{person_row.lastName}"
                      sortOrder="ascending"
                      sortField="lastName"
+                     pageLinks="#{props.DIALOG_PAGE_LINKS}"
                 >
-            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field = "lastName">
+            <f:facet name="header">
+                <p:inputText id="filter" value="#{multipleUserDialog.filter}" styleClass="searchTextBox"/>
+                <p:commandButton value="Поиск" styleClass="searchButton" process="filter" update="selectPersonTable"/>
+            </f:facet>
+            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field="lastName">
                 <h:outputText value="#{person_row.lastName}"/>
             </p:column>
             <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
@@ -48,43 +43,11 @@
             <p:column headerText="Отчество" sortBy="#{person_row.middleName}" field="middleName">
                 <h:outputText value="#{person_row.middleName}"/>
             </p:column>
+            <f:facet name="footer">
+                <p:commandButton value="Выбрать" action="#{multipleUserDialog.confirmSelection}" styleClass="confirmButton"/>
+                <p:commandButton value="Отмена" action="#{multipleUserDialog.closeDialog}" styleClass="cancelButton"/>
+            </f:facet>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{multipleUserDialog.confirmSelection}"/>
-        <p:commandButton value="Отмена" action="#{multipleUserDialog.closeDialog}"/>
-        <h:outputScript>
-            //Override PF selection\unselection with cntrlKey
-            // difference in if(c){this.unselectRow(g,a)} was if(c &amp;amp; f)
-            //TODO check it before update PF version
-            window.onload = function () {
-                PrimeFaces.widgets.selectPersonTableVar.onRowClick = function (e, d, a) {
-                    if ($(e.target).is("td,span:not(.ui-c)")) {
-                        var g = $(d),
-                                c = g.hasClass("ui-state-highlight"),
-                                f = e.metaKey || e.ctrlKey,
-                                b = e.shiftKey;
-
-                        if (c) {
-                            this.unselectRow(g, a)
-                        } else {
-                            if (this.isSingleSelection() || (this.isMultipleSelection() &amp;&amp; e &amp;&amp; !f &amp;&amp; !b &amp;&amp; this.cfg.rowSelectMode === "new")) {
-                                this.unselectAllRows()
-                            }
-                            if (this.isMultipleSelection() &amp;&amp; e &amp;&amp; e.shiftKey) {
-                                this.selectRowsInRange(g)
-                            } else {
-                                this.originRowIndex = g.index();
-                                this.cursorIndex = null;
-                                this.selectRow(g, a)
-                            }
-                        }
-                        if (this.cfg.disabledTextSelection) {
-                            PrimeFaces.clearSelection()
-                        }
-                    }
-                };
-            }
-        </h:outputScript>
-    </h:form>
-</h:body>
-
+    </ui:define>
+</ui:composition>
 </html>

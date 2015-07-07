@@ -73,7 +73,7 @@ public class MultipleGroupDialogHolder extends AbstractDialog<List<Group>> {
     public void confirmSelection() {
         final DialogResult result;
         if(selected != null && !selected.isEmpty()) {
-           result= new DialogResult(Button.CONFIRM, new HashSet<Group>(selected));
+           result= new DialogResult(Button.CONFIRM, new HashSet<>(selected));
         } else {
             result = new DialogResult(Button.CONFIRM, null);
         }
@@ -86,10 +86,9 @@ public class MultipleGroupDialogHolder extends AbstractDialog<List<Group>> {
      */
     @Override
     public void initializePreSelected() {
-        final Set<Group> groupSet = (Set<Group>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
+        final Set<Group> groupSet = (Set<Group>) getFromExternalContext(DIALOG_SESSION_KEY);
         if (groupSet != null && !groupSet.isEmpty()) {
-            setSelected(new ArrayList<Group>(groupSet));
+            setSelected(new ArrayList<>(groupSet));
         }
     }
 

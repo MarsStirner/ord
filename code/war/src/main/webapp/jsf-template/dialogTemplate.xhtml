@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+>
+<h:head>
+    <h:outputScript library="js" name="fixPrimeFaces.js"/>
+    <ui:insert name="HEAD_CONTENT"/>
+    <title><ui:insert name="PAGE_TITLE"/></title>
+    <h:outputStylesheet library="css" name="dialog.css"/>
+</h:head>
+<h:body id="dialogBody">
+    <h:form id="dialogForm">
+        <div id = "tableWrapper">
+            <ui:insert name="DIALOG_CONTENT"/>
+        </div>
+        <script type="text/javascript">
+            console.log("Dialog: Bind resizeFunction to calculate height");
+            var $window = $(window).on('resize', function(){
+                console.log("Dialog: window:"+$(window).height());
+                var height = $(window).height() -2;
+                console.log("Dialog: tableHeight:"+ height);
+                $('#tableWrapper').height(height);
+            }).trigger('resize');
+        </script>
+    </h:form>
+</h:body>
+
+</html>

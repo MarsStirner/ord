@@ -76,11 +76,9 @@ public class ContragentDialogHolder extends AbstractDialog<Contragent> {
      */
     @Override
     public void initializePreSelected() {
-        final Contragent preselected = (Contragent) FacesContext.getCurrentInstance().getExternalContext()
-                .getSessionMap().get(DIALOG_SESSION_KEY);
+        final Contragent preselected = (Contragent) getFromExternalContext(DIALOG_SESSION_KEY);
         if (preselected != null) {
             setSelected(preselected);
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
     }
 }

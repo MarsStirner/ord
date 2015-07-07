@@ -75,10 +75,9 @@ public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
      */
     @Override
     public void initializePreSelected() {
-        final Set<Role> preselected = (Set<Role>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
+        final Set<Role> preselected = (Set<Role>) getFromExternalContext(DIALOG_SESSION_KEY);
         if (preselected != null && !preselected.isEmpty()) {
-            setSelected(new ArrayList<Role>(preselected));
+            setSelected(new ArrayList<>(preselected));
         }
     }
 
@@ -89,7 +88,7 @@ public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
     public void confirmSelection() {
         final DialogResult result;
         if(selected != null && !selected.isEmpty()) {
-            result= new DialogResult(Button.CONFIRM, new HashSet<Role>(selected));
+            result= new DialogResult(Button.CONFIRM, new HashSet<>(selected));
         } else {
             result = new DialogResult(Button.CONFIRM, null);
         }

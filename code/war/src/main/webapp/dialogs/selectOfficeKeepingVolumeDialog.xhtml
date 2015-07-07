@@ -1,31 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html
-        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
         >
-
-<h:head>
-    <title><h:outputText value="#{officeKeepingVolumeDialog.title}"/></title>
-</h:head>
-
-<h:body>
-    <h:form id="selectOfficeKeepingVolumeDialogForm">
-        <p:inputText id="filter" value="#{officeKeepingVolumeDialog.filter}"/>
-        <p:commandButton value="Поиск">
-            <f:ajax execute="filter" render="selectOfficeKeepingVolumeTable"/>
-        </p:commandButton>
+<ui:composition template="/jsf-template/dialogTemplate.xhtml">
+    <ui:define name="PAGE_TITLE"><h:outputText value="#{officeKeepingVolumeDialog.title}"/></ui:define>
+    <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectOfficeKeepingVolumeTable"
                      paginator="true"
                      rows="10"
-                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
-                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
-                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
-                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     currentPageReportTemplate="#{props.CURRENT_PAGE_PAGINATOR_TEMPLATE}"
+                     paginatorTemplate="#{props.PAGINATOR_TEMPLATE}"
+                     rowsPerPageTemplate="#{props.ROWS_PER_PAGE_DROPDOWN}"
+                     paginatorPosition="#{props.PAGINATOR_POSITION}"
                      value="#{officeKeepingVolumeDialog.lazyModel}"
                      var="officeKeepingVolume_row"
                      selectionMode="single"
@@ -33,24 +23,30 @@
                      lazy="true"
                      widgetVar="selectOfficeKeepingVolumeTableVar"
                      scrollable="true"
-                     scrollHeight="400"
+                     scrollHeight="100%"
                      sortBy="#{officeKeepingVolume_row.shortDescription}"
                      sortOrder="ascending"
                      sortField="shortDescription"
+                     pageLinks="#{props.DIALOG_PAGE_LINKS}"
                 >
-            <p:column headerText="Заголовок"  sortBy="#{officeKeepingVolume_row.shortDescription}" field="shortDescription">
+            <f:facet name="header">
+                <p:inputText id="filter" value="#{officeKeepingVolumeDialog.filter}" styleClass="searchTextBox"/>
+                <p:commandButton value="Поиск" process="filter" update="selectOfficeKeepingVolumeTable" styleClass="searchButton"/>
+            </f:facet>
+            <p:column headerText="Заголовок" sortBy="#{officeKeepingVolume_row.shortDescription}" field="shortDescription">
                 <h:outputText value="#{officeKeepingVolume_row.shortDescription}"/>
             </p:column>
             <p:column headerText="Статус" sortBy="#{officeKeepingVolume_row.statusId}" field="statusId">
                 <h:outputText value="#{officeKeepingVolume_row.getDocumentStatus().getName()}"/>
             </p:column>
-            <p:column headerText="Срок хранения"  sortBy="#{officeKeepingVolume_row.keepingPeriodReasons}" field="keepingPeriodReasons">
+            <p:column headerText="Срок хранения" sortBy="#{officeKeepingVolume_row.keepingPeriodReasons}" field="keepingPeriodReasons">
                 <h:outputText value="#{officeKeepingVolume_row.keepingPeriodReasons}"/>
             </p:column>
+            <f:facet name="footer">
+                <p:commandButton value="Выбрать" action="#{officeKeepingVolumeDialog.confirmSelection}" styleClass="confirmButton"/>
+                <p:commandButton value="Отмена" action="#{officeKeepingVolumeDialog.closeDialog}" styleClass="cancelButton"/>
+            </f:facet>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{officeKeepingVolumeDialog.confirmSelection}"/>
-        <p:commandButton value="Отмена" action="#{officeKeepingVolumeDialog.closeDialog}"/>
-    </h:form>
-</h:body>
-
+    </ui:define>
+</ui:composition>
 </html>

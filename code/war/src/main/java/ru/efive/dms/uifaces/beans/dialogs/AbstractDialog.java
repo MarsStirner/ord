@@ -1,11 +1,12 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
-import com.google.common.collect.ImmutableMap;
 import org.primefaces.context.RequestContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -22,7 +23,7 @@ public abstract class AbstractDialog<T> implements Serializable {
         CLEAR
     }
 
-    public class DialogResult{
+    public class DialogResult implements Serializable{
         private Button button;
         private Object result;
 
@@ -60,10 +61,21 @@ public abstract class AbstractDialog<T> implements Serializable {
 
     protected static final Logger logger = LoggerFactory.getLogger("DIALOG");
 
-    private static Map<String, Object> viewParams = ImmutableMap.of("modal", (Object)true, "draggable", false, "resizable", false);
+    private static Map<String, Object> viewOptions;
+    static {
+        viewOptions = new HashMap<>();
+        viewOptions.put("modal", true);
+        viewOptions.put("draggable", true);
+        viewOptions.put("width", "\'50%\'");
+        viewOptions.put("contentWidth", "\'100%\'");
+        viewOptions.put("contentHeight", "\'99%\'"); //Не 100%, т.к. на 100 появляется скролл
+        viewOptions.put("resizable", false);
+        viewOptions.put("height", "\'80vh\'");
+        viewOptions.put("position", "\'top\'");
+    }
 
-    public static Map<String, Object> getViewParams(){
-        return viewParams;
+    public static Map<String, Object> getViewOptions(){
+        return viewOptions;
     }
 
     /**
@@ -134,5 +146,9 @@ public abstract class AbstractDialog<T> implements Serializable {
 
     public void setSelected(T selected) {
         this.selected = selected;
+    }
+
+    protected Object getFromExternalContext(final String key){
+        return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(key);
     }
 }

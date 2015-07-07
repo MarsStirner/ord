@@ -54,11 +54,10 @@ public class RegionDialogHolder extends AbstractDialog<Region> {
      */
     @Override
     public void initializePreSelected() {
-        final Region preselected = (Region) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
+        final Region preselected = (Region) getFromExternalContext(DIALOG_SESSION_KEY);
         if (preselected != null) {
             setSelected(preselected);
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
     }
 
     public LazyDataModel<Region> getLazyModel() {

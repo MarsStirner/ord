@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+        >
+<h:head>
+    <title>Добавить версию файла</title>
+</h:head>
+<h:body style="width:95%;height:95vh;">
+    <h:form id="addAttachmentVersionForm" style="width:100%;height:100%;" enctype="multipart/form-data">
+        <p:panelGrid >
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-5">
+                    <p:outputLabel for="v_documentName" value="Наименование документа:"/>
+                </p:column>
+                <p:column styleClass="ui-grid-col-7">
+                    <h:outputText id ="v_documentName" value="#{attachmentVersionDialog.selected.fileName}" styleClass="outputText"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-5">
+                    <p:outputLabel for="v_documentVersion" value="Версия документа:"/>
+                </p:column>
+                <p:column styleClass="ui-grid-col-7">
+                    <h:outputText id ="v_documentVersion" value="#{attachmentVersionDialog.selected.currentRevision.version}" styleClass="outputText"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column colspan="2" styleClass="ui-grid-col-12">
+                    <p:fileUpload id="dialog_file_upload" fileUploadListener="#{attachmentVersionDialog.handleFileUpload}" multiple="false" mode="advanced"
+                                  widgetVar="dialogUploadFileWidget"
+                                  label="Выбрать файл" sizeLimit = "104857600"
+                                  uploadLabel="Загрузить выбранное" cancelLabel="Отмена" invalidSizeMessage="Размер файла не должен превышать 100 МБ"
+                                  fileLimit="1" fileLimitMessage="В качестве новой версии можно указать не более 1-го файла"
+                                  />
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+        <p:commandButton value="Отмена" action="#{attachmentVersionDialog.closeDialog}"/>
+    </h:form>
+</h:body>
+</html>

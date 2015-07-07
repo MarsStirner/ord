@@ -3,20 +3,21 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
         >
-<h:head>
-    <title><h:outputText value="#{multipleRoleDialog.title}"/></title>
-</h:head>
-
-<h:body>
-    <h:form id="selectMultipleUserDialogForm">
+<ui:composition template="/jsf-template/dialogTemplate.xhtml">
+    <ui:define name="PAGE_TITLE">
+        <h:outputText value="#{multipleRoleDialog.title}"/>
+    </ui:define>
+    <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectRoleTable"
                      paginator="true"
                      rows="25"
-                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
-                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
-                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
-                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     currentPageReportTemplate="#{props.CURRENT_PAGE_PAGINATOR_TEMPLATE}"
+                     paginatorTemplate="#{props.PAGINATOR_TEMPLATE}"
+                     rowsPerPageTemplate="#{props.ROWS_PER_PAGE_DROPDOWN}"
+                     paginatorPosition = "#{props.PAGINATOR_POSITION}"
                      value="#{multipleRoleDialog.lazyModel}"
                      var="role_row"
                      selectionMode="multiple"
@@ -25,51 +26,20 @@
                      lazy="true"
                      widgetVar="selectRoleTableVar"
                      scrollable="true"
-                     scrollHeight="450"
+                     scrollHeight="100%"
                      sortBy="#{role_row.name}"
                      sortOrder="ascending"
                      sortField="name"
+                     pageLinks="#{props.DIALOG_PAGE_LINKS}"
                 >
             <p:column headerText="Наименование" sortBy="#{role_row.name}" field = "name">
                 <h:outputText value="#{role_row.name}"/>
             </p:column>
+            <f:facet name="footer">
+                <p:commandButton value="Выбрать" action="#{multipleRoleDialog.confirmSelection}" styleClass="confirmButton"/>
+                <p:commandButton value="Отмена" action="#{multipleRoleDialog.closeDialog}" styleClass="cancelButton"/>
+            </f:facet>
         </p:dataTable>
-        <p:commandButton value="Выбрать" action="#{multipleRoleDialog.confirmSelection}"/>
-        <p:commandButton value="Отмена" action="#{multipleRoleDialog.closeDialog}"/>
-        <h:outputScript>
-            //Override PF selection\unselection with cntrlKey
-            // difference in if(c){this.unselectRow(g,a)} was if(c &amp;amp; f)
-            //TODO check it before update PF version
-            window.onload = function () {
-            PrimeFaces.widgets.selectRoleTableVar.onRowClick = function (e, d, a) {
-            if ($(e.target).is("td,span:not(.ui-c)")) {
-            var g = $(d),
-            c = g.hasClass("ui-state-highlight"),
-            f = e.metaKey || e.ctrlKey,
-            b = e.shiftKey;
-
-            if (c) {
-            this.unselectRow(g, a)
-            } else {
-            if (this.isSingleSelection() || (this.isMultipleSelection() &amp;&amp; e &amp;&amp; !f &amp;&amp; !b &amp;&amp; this.cfg.rowSelectMode === "new")) {
-            this.unselectAllRows()
-            }
-            if (this.isMultipleSelection() &amp;&amp; e &amp;&amp; e.shiftKey) {
-            this.selectRowsInRange(g)
-            } else {
-            this.originRowIndex = g.index();
-            this.cursorIndex = null;
-            this.selectRow(g, a)
-            }
-            }
-            if (this.cfg.disabledTextSelection) {
-            PrimeFaces.clearSelection()
-            }
-            }
-            };
-            }
-        </h:outputScript>
-    </h:form>
-</h:body>
-
+    </ui:define>
+</ui:composition>
 </html>

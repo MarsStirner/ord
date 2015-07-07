@@ -84,8 +84,7 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
      */
     @Override
     public void initializePreSelected() {
-        final List<User> personList = (List<User>) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
+        final List<User> personList = (List<User>) getFromExternalContext(DIALOG_SESSION_KEY);
         if (personList != null) {
             setSelected(personList);
         }

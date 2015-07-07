@@ -75,11 +75,9 @@ public class OfficeKeepingVolumeDialogHolder extends AbstractDialog<OfficeKeepin
      */
     @Override
     public void initializePreSelected() {
-        final OfficeKeepingVolume preselected = (OfficeKeepingVolume) FacesContext.getCurrentInstance()
-                .getExternalContext().getSessionMap().get(DIALOG_SESSION_KEY);
+        final OfficeKeepingVolume preselected = (OfficeKeepingVolume) getFromExternalContext(DIALOG_SESSION_KEY);
         if (preselected != null) {
             setSelected(preselected);
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(DIALOG_SESSION_KEY);
     }
 }
