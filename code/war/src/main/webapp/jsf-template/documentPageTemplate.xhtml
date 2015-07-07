@@ -4,17 +4,55 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-        >
-
+      xmlns:o="http://omnifaces.org/ui">
 <h:head>
     <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
-    <ui:insert name="headContent"/>
-    <ui:insert name="pageTitle">
+    <h:outputScript library="js" name="fixPrimeFaces.js"/>
+    <ui:insert name="HEAD_CONTENT"/>
+    <ui:insert name="PAGE_TITLE">
         <title>Документооборот ФНКЦ ДГОИ</title>
     </ui:insert>
+    <h:outputStylesheet>
+        div[id*="stickyGroup"]{
+            padding:0 !important;
+        }
+
+        .ui-panelgrid-cell {
+            float:none !important;
+        }
+        .ui-outputlabel{
+            color: dimgrey;
+        }
+        .ui-grid-row{
+            border-color: transparent;
+            border-bottom-color: rgb(228, 225, 225);
+        }
+        .ui-grid-row:after {
+            content: none !important;
+        }
+        .ui-grid-col-2 {
+            vertical-align: top;
+        }
+        .ui-noborder{
+            border: 0 !important;
+            box-shadow: none !important;
+        }
+        .outputText{
+            font-size: medium !important;
+        }
+        .hide-column-names table thead tr {
+            display: none;
+        }
+        .ui-tabs .ui-tabs-panel {
+            padding: 1em 0 !important;
+        }
+        td[colspan="5"]{
+            padding:0 !important;
+        }
+
+    </h:outputStylesheet>
 </h:head>
-<!--TODO дописать шаблон страницы документа-->
-<h:body id="pageBody">
+<h:body id="pageBody" style="padding: 0; margin:0;">
     <!-- Блок объявления параметров -->
     <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
     <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
@@ -25,39 +63,35 @@
     <ui:param name="isOuter" value="#{sessionManagement.isOuter()}"/>
     <ui:param name="isHr" value="#{sessionManagement.isHr()}"/>
     <ui:param name="isFilling" value="#{sessionManagement.isFilling()}"/>
-    <p:panel id="TOOLBAR_PNL" widgetVar="toolbarPanelWidget">
-        <ui:insert name="TOOLBAR_BTNS">
-            <ui:insert name="HOME_BTN">
-                <h:outputLink value="/component/in/in_documents.xhtml">
-                    <h:graphicImage value="#{resource['images:home.png']}"/>
-                </h:outputLink>
-            </ui:insert>
-            <ui:insert name="EDIT_BTN">
-                <p:commandLink update="@all">
-                    <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                    Редактировать
-                </p:commandLink>
-            </ui:insert>
-            <ui:insert name="CNC_BTN">
-                <p:commandLink update="@all">
-                    <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                    Отменить
-                </p:commandLink>
-            </ui:insert>
-            <ui:insert name="SAVE_BTN">
-                <p:commandLink update="@all">
-                    <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                    Сохранить
-                </p:commandLink>
-            </ui:insert>
-            <ui:insert name="ACT_BTN">
-                <p:commandLink update="@all">
-                    <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                    Сохранить
-                </p:commandLink>
-            </ui:insert>
-        </ui:insert>
-    </p:panel>
+    <!-- Форма документа -->
+    <o:form id="documentForm" includeRequestParams="true">
+        <p:panel id="stickyGroup">
+            <p:toolbar id="documentToolbar" widgetVar="documentToolbarWidget">
+                <!--  Метка для вставки всего содержимого TOOLBAR-а -->
+                <ui:insert name="TOOLBAR CONTENT">
+                    <p:toolbarGroup align="left">
+                        <!-- Метка для вставки содержимого левой части TOOLBAR-а (Кнопки) -->
+                        <ui:insert name="TOOLBAR_LEFT_GROUP_CONTENT"/>
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <!-- Метка для вставки содержимого правой части TOOLBAR-а -->
+                        <ui:insert name="TOOLBAR_RIGHT_GROUP_CONTENT"/>
+                    </p:toolbarGroup>
+                </ui:insert>
+            </p:toolbar>
+        </p:panel>
+        <p:panel id="documentHeaderPanel" closable="false" toggleable="false" widgetVar="documentHeaderPanelWidget">
+            <!-- Шапка документа -->
+            <ui:insert name="DOCUMENT_HEADER"/>
+        </p:panel>
+        <p:sticky target="stickyGroup"/>
+        <p:panel id="contentPanel">
+            <!-- Содержимое документа -->
+            <ui:insert name="DOCUMENT_CONTENT"/>
+        </p:panel>
+        <!-- Диалоги, используемые в документе -->
+        <ui:insert name="DIALOGS"/>
+    </o:form>
 </h:body>
 
 </html>

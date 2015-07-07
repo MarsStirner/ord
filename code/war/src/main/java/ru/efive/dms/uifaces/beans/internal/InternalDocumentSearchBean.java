@@ -82,7 +82,7 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onControllerChosen(SelectEvent event) {
@@ -108,7 +108,7 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
                     .DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onResponsibleChosen(SelectEvent event) {
@@ -132,7 +132,7 @@ public class InternalDocumentSearchBean extends AbstractDocumentSearchBean<Inter
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onRecipientsChosen(SelectEvent event) {

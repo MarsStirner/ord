@@ -1,11 +1,12 @@
 package ru.efive.dms.uifaces.beans.wf;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.roles.RoleListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserListSelectModalBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.wf.core.dao.EngineDAOImpl;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.wf.HumanTask;
@@ -15,7 +16,6 @@ import ru.entity.model.wf.RouteTemplate;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ConversationScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Calendar;
@@ -25,7 +25,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.ENGINE_DAO;
 
 @Named("routeTemplate")
 @ConversationScoped
-public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate, Integer> {
+public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate> {
 
     @Override
     protected boolean deleteDocument() {
@@ -33,34 +33,26 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         try {
             result = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).delete(getDocumentId());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+                addMessage(null, MSG_CANT_DELETE);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
+            addMessage(null, MSG_ERROR_ON_DELETE);
         }
         return result;
     }
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
 
     @Override
     protected void initDocument(Integer id) {
         try {
             setDocument(sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).get(RouteTemplate.class, id));
             if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
+                setState(State.ERROR);
+                addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
+            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MSG_ERROR_ON_INITIALIZE);
             e.printStackTrace();
         }
     }
@@ -81,13 +73,13 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         try {
             RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).save(RouteTemplate.class, getDocument());
             if (template == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+               addMessage(null, MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+            addMessage(null, MSG_ERROR_ON_SAVE);
         }
         return result;
     }
@@ -98,13 +90,13 @@ public class RouteTemplateBean extends AbstractDocumentHolderBean<RouteTemplate,
         try {
             RouteTemplate template = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).save(RouteTemplate.class, getDocument());
             if (template == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                addMessage(null, MSG_CANT_SAVE);
             } else {
                 result = true;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
         }
         return result;
     }

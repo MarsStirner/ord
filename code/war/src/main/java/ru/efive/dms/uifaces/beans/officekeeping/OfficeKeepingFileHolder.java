@@ -2,8 +2,7 @@ package ru.efive.dms.uifaces.beans.officekeeping;
 
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.OfficeKeepingFile;
@@ -24,7 +23,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
 @Named("officeKeepingFile")
 @ConversationScoped
-public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKeepingFile, Integer> implements Serializable {
+public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKeepingFile> implements Serializable {
 
     @Override
     protected boolean deleteDocument() {
@@ -39,20 +38,10 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     }
 
     @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
-
-    @Override
     protected void initDocument(Integer id) {
         setDocument(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocumentById(id));
         if (getDocument() == null) {
-            setState(STATE_NOT_FOUND);
+           setDocumentNotFound();
         }
     }
 

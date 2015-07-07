@@ -1,8 +1,8 @@
 package ru.efive.dms.uifaces.beans;
 
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.ReportTemplate;
 import ru.entity.model.referenceBook.Region;
@@ -20,7 +20,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.REPORT_DAO;
 
 @Named("reportTemplate")
 @ViewScoped
-public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate, Integer> implements Serializable {
+public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate> implements Serializable {
 
     @Override
     protected boolean deleteDocument() {
@@ -35,25 +35,15 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     }
 
     @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
-
-    @Override
     protected void initDocument(Integer id) {
         ReportTemplate reportTemplate = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).get(id);
         reportTemplate.setStartDate(new Date());
         reportTemplate.setEndDate(new Date());
         setDocument(reportTemplate);
         if (getDocument() == null) {
-            setState(STATE_NOT_FOUND);
+           setDocumentNotFound();
         } else {
-            setState(STATE_EDIT);
+            setState(State.EDIT);
         }
     }
 

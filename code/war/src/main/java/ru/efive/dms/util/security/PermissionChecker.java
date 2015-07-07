@@ -15,6 +15,7 @@ import ru.util.ApplicationHelper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.Serializable;
 
 import static ru.efive.dms.util.security.Permissions.ALL_PERMISSIONS;
 import static ru.efive.dms.util.security.Permissions.Permission.EXECUTE;
@@ -29,7 +30,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
  */
 @Named("permissionChecker")
 @ApplicationScoped
-public class PermissionChecker {
+public class PermissionChecker implements Serializable{
 
     @Inject
     @Named("indexManagement")

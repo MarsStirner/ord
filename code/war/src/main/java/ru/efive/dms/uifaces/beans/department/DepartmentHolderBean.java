@@ -3,8 +3,7 @@ package ru.efive.dms.uifaces.beans.department;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Department;
 import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
 
@@ -24,7 +23,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
 
 @Named("department")
 @ConversationScoped
-public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department, Integer> implements Serializable {
+public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("DEPARTMENT");
 
     /**
@@ -54,11 +53,6 @@ public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department,
     protected boolean deleteDocument() {
         getDocument().setDeleted(true);
         return getDocument().isDeleted();
-    }
-
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
     }
 
     @Override
@@ -95,12 +89,6 @@ public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department,
             return false;
         }
     }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
-
 
     @Inject
     @Named("sessionManagement")

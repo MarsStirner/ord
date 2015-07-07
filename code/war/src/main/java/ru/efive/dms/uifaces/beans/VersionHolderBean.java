@@ -1,11 +1,14 @@
 package ru.efive.dms.uifaces.beans;
 
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
 
@@ -53,4 +56,7 @@ public class VersionHolderBean implements Serializable {
         this.buildDate = buildDate;
     }
 
+    public String getClasspathInfo() {
+        return StringUtils.join((((URLClassLoader) Thread.currentThread().getContextClassLoader())).getURLs(), "\n");
+    }
 }

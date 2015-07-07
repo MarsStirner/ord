@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans.task;
 
 import org.apache.axis.utils.StringUtils;
 import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -10,7 +11,7 @@ import ru.entity.model.document.Task;
 import ru.hitsl.sql.dao.TaskDAOImpl;
 import ru.util.ApplicationHelper;
 
-import javax.enterprise.context.ConversationScoped;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
@@ -24,7 +25,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.TASK_DAO;
  * Description: Бин для содержания дерева поручений для конкретного документа<br>
  */
 @Named("documentTaskTree")
-@ConversationScoped
+@ViewScoped
 public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task> {
     private static final Logger logger = LoggerFactory.getLogger("TASK");
 
@@ -51,7 +52,7 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     @Override
     protected List<Task> loadDocuments() {
         if (StringUtils.isEmpty(rootDocumentId)) {
-            return new ArrayList<Task>(0);
+            return new ArrayList<>(0);
         } else if(rootDocumentId.startsWith("task")){
             logger.debug("Start loading Tasks on \"{}\"", rootDocumentId);
             final Integer parentId = ApplicationHelper.getIdFromUniqueIdString(rootDocumentId);
@@ -59,7 +60,7 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
                 return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getChildrenTaskByParentId(parentId, false);
             } else {
                 logger.warn("ParentId is not match pattern!");
-                return new ArrayList<Task>(0);
+                return new ArrayList<>(0);
             }
         }
         logger.debug("Start loading Tasks on \"{}\"", rootDocumentId);
@@ -73,8 +74,9 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
      * @return корневой элемент дерева
      */
     @Override
-    protected DefaultTreeNode constructTreeFromDocumentList(List<Task> documents) {
+    protected TreeNode constructTreeFromDocumentList(List<Task> documents) {
         final DefaultTreeNode root = new DefaultTreeNode("ROOT", null);
+        root.setRowKey("0");
         if (!documents.isEmpty()) {
             logger.debug("Start construct tree from {} tasks", documents.size());
             if (logger.isTraceEnabled()) {
@@ -83,17 +85,16 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
                 }
             }
             //ORD-40 Так как мы работаем с сортированным списком - то перемешивать на основе хэша его не надо
-            final HashMap<Integer, DefaultTreeNode> taskMap = new LinkedHashMap<Integer, DefaultTreeNode>(documents.size());
+            final HashMap<Integer, TreeNode> taskMap = new LinkedHashMap<>(documents.size());
             for (Task document : documents) {
                 taskMap.put(document.getId(), new DefaultTreeNode("task", document, null));
             }
-            for (Map.Entry<Integer, DefaultTreeNode> entry : taskMap.entrySet()) {
-                final DefaultTreeNode node = entry.getValue();
-                node.setRowKey(String.valueOf(entry.getKey()));
+            for (Map.Entry<Integer, TreeNode> entry : taskMap.entrySet()) {
+                final TreeNode node = entry.getValue();
                 node.setSelectable(true);
                 final Task data = (Task) node.getData();
                 if (data.getParent() != null) {
-                    final DefaultTreeNode parentNode = taskMap.get(data.getParent().getId());
+                    final TreeNode parentNode = taskMap.get(data.getParent().getId());
                     if(parentNode != null) {
                         node.setParent(parentNode);
                         parentNode.getChildren().add(node);

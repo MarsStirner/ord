@@ -3,9 +3,8 @@ package ru.efive.dms.uifaces.beans.officekeeping;
 import org.apache.commons.lang.StringUtils;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.user.UserSelectModalBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.OfficeKeepingFile;
@@ -31,7 +30,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DA
 
 @Named("officeKeepingVolume")
 @ConversationScoped
-public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<OfficeKeepingVolume, Integer> implements Serializable {
+public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<OfficeKeepingVolume> implements Serializable {
     private static final long serialVersionUID = -7696075488442962088L;
     private boolean isRequisitesTabSelected = true;
     private boolean isDocumentsTabSelected = false;
@@ -41,22 +40,6 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
     @Inject
     @Named("sessionManagement")
     SessionManagementBean sessionManagement = new SessionManagementBean();
-
-    @Override
-    public String delete() {
-        String in_result = super.delete();
-        if (in_result != null && in_result.equals("delete")) {
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
-            } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
-                e.printStackTrace();
-            }
-            return in_result;
-        } else {
-            return in_result;
-        }
-    }
 
     @Override
     protected boolean deleteDocument() {
@@ -71,21 +54,11 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
     }
 
     @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
-
-    @Override
     protected void initDocument(Integer id) {
         setDocument(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).get(id));
 
         if (getDocument() == null) {
-            setState(STATE_NOT_FOUND);
+            setDocumentNotFound();
         }
     }
 
@@ -175,23 +148,6 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
         return false;
     }
 
-    @Override
-    protected String doAfterCreate() {
-        //officeKeepingVolumes.markNeedRefresh();
-        return super.doAfterCreate();
-    }
-
-    @Override
-    protected String doAfterDelete() {
-        //officeKeepingVolumes.markNeedRefresh();
-        return super.doAfterDelete();
-    }
-
-    @Override
-    protected String doAfterSave() {
-        //officeKeepingVolumes.markNeedRefresh();
-        return super.doAfterSave();
-    }
 
     public List<RoleType> getTypes() {
         List<RoleType> result = new ArrayList<RoleType>();

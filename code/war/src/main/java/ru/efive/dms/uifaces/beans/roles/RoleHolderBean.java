@@ -1,8 +1,9 @@
 package ru.efive.dms.uifaces.beans.roles;
 
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.State;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.user.Role;
 import ru.hitsl.sql.dao.user.RoleDAOHibernate;
@@ -21,7 +22,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
 
 @Named("role")
 @ViewScoped
-public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> implements Serializable {
+public class RoleHolderBean extends AbstractDocumentHolderBean<Role> implements Serializable {
 
     @Override
     protected boolean deleteDocument() {
@@ -35,21 +36,13 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> im
         return result;
     }
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
 
     @Override
     protected void initDocument(Integer id) {
         setDocument(sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).get(id));
         if (getDocument() == null) {
-            setState(STATE_NOT_FOUND);
+            setState(State.ERROR);
+            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
         }
     }
 
@@ -64,14 +57,14 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> im
         try {
             Role role = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).update(getDocument());
             if (role == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                addMessage(null, MSG_CANT_SAVE);
             } else {
                 setDocument(role);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+            addMessage(null, MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -83,14 +76,14 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role, Integer> im
         try {
             Role role = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).save(getDocument());
             if (role == null) {
-                FacesContext.getCurrentInstance().addMessage(null,MSG_CANT_SAVE);
+               addMessage(null,MSG_CANT_SAVE);
             } else {
                 setDocument(role);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return result;

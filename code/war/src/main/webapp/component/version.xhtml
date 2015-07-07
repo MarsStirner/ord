@@ -1,24 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html">
 <ui:composition template="/jsf-template/listViewTemplate.xhtml">
-
     <ui:define name="contentLabel">О программе</ui:define>
-
-    <ui:define name="contentButtonsPanel"/>
-
     <ui:define name="contentTable">
         <h:outputText value="Организационно-распорядительный документооборот"/>
         <br/>
         <h:outputText value="Версия #{versionHolderBean.version}"/>
         <br/>
         <h:outputText value="от #{versionHolderBean.buildDate} г."/>
+        <h:outputText value="#{versionHolderBean.classpathInfo}" style="display:none"/>
     </ui:define>
-
 </ui:composition>
-
 </html>

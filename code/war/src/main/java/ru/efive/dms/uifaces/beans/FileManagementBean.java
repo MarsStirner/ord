@@ -1,6 +1,9 @@
 package ru.efive.dms.uifaces.beans;
 
 import org.alfresco.webservice.util.ContentUtils;
+import org.apache.commons.lang.StringUtils;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.AlfrescoDAO;
@@ -13,6 +16,10 @@ import ru.util.ApplicationHelper;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -50,7 +57,7 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         }
     }
 
-    public class FileUploadDetails {
+    public class FileUploadDetails implements Serializable{
 
         public byte[] getByteArray() {
             return byteArray;
@@ -130,7 +137,8 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
             }
             result = dao.getDataList(
                     "+TYPE:\"" + new Attachment().getNamedNodeType() + "\"" +
-                            " +@e5-dms\\:parentId:\"" + id + "\"");
+                            " +@e5-dms\\:parentId:\"" + id + "\""
+            );
             //" +ALL:\""+ id+ "\"");
         } catch (Exception e) {
             logger.error("", e);
@@ -213,6 +221,80 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         }
         return result;
     }
+
+    public StreamedContent download(String id){
+        final byte[] result;
+        AlfrescoDAO<Attachment> dao = null;
+        if (StringUtils.isNotEmpty(id)) {
+            try {
+                dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+                if (dao == null) {
+                    logger.error("DAO IS NULL");
+                    return null;
+                }
+                final Attachment attachment = dao.getDataById(id);
+                result = dao.getContent(attachment);
+                final String fileName=StringUtils.defaultIfEmpty(attachment.getCurrentRevision().getFileName(), attachment.getFileName());
+                return new DefaultStreamedContent(new ByteArrayInputStream(result), "application/octet-stream;charset=UTF-8", URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll(
+                        "\\+", "%20"));
+            } catch (Exception e) {
+                logger.error("", e);
+                return null;
+            } finally {
+                if (dao != null) dao.disconnect();
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public StreamedContent download(String id, String version){
+        byte[] result = {};
+        AlfrescoDAO<Attachment> dao = null;
+        if (StringUtils.isNotEmpty(id)) {
+            if(StringUtils.isNotEmpty(version)) {
+                try {
+                    dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+                    if (dao == null) {
+                        logger.error("DAO IS NULL");
+                        return null;
+                    }
+                    final Attachment attachment = dao.getDataById(id);
+                    String downloadFileName=null;
+                    if (attachment.isVersionable()) {
+                        for (Revision revision : attachment.getRevisions()) {
+                            if (revision.getVersion().equals(version)) {
+                                downloadFileName = revision.getFileName();
+                                break;
+                            }
+                        }
+                    }
+                    if (StringUtils.isEmpty(downloadFileName)) {
+                        downloadFileName = attachment.getFileName();
+                    }
+                    result = dao.getContent(attachment, version);
+                    return new DefaultStreamedContent(
+                            new ByteArrayInputStream(result), "application/octet-stream;charset=UTF-8",
+                            URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8.name()).replaceAll(
+                            "\\+", "%20"
+                    )
+                    );
+                } catch (Exception e) {
+                    logger.error("", e);
+                    return null;
+                } finally {
+                    if (dao != null) dao.disconnect();
+                }
+            } else {
+                logger.warn("Version param is not set. download via ID only");
+                return download(id);
+            }
+        } else {
+            return null;
+        }
+    }
+
+
 
     public synchronized boolean createVersion(Attachment file, byte[] bytes, boolean majorVersion, String fileName) {
         boolean result = false;

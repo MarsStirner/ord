@@ -51,13 +51,13 @@ public class RequestDocumentListHolder extends AbstractDocumentLazyDataModelBean
                         if (!strings.isEmpty()) {
                             //Для некоторых парметров надо приводить типы
                             if (DocumentSearchMapKeys.STATUS_LIST_KEY.equals(entry.getKey())) {
-                                final Set<Integer> ints = new HashSet<Integer>(strings.size());
+                                final Set<Integer> ints = new HashSet<>(strings.size());
                                 for (String string : strings) {
                                     ints.add(Integer.valueOf(string));
                                 }
                                 filters.put(entry.getKey(), ints);
                             } else {
-                                filters.put(entry.getKey(), new ArrayList<String>(strings));
+                                filters.put(entry.getKey(), new ArrayList<>(strings));
                             }
                         }
                     } else {

@@ -2,8 +2,7 @@ package ru.efive.dms.uifaces.beans.utils;
 
 import javax.faces.application.FacesMessage;
 
-import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
-import static javax.faces.application.FacesMessage.SEVERITY_INFO;
+import static javax.faces.application.FacesMessage.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,6 +12,8 @@ import static javax.faces.application.FacesMessage.SEVERITY_INFO;
  */
 public class MessageHolder {
     public static final String MSG_KEY_FOR_VIEW_FACT = "viewFact";
+    public static final String MSG_KEY_FOR_ERROR = "error";
+    public static final String MSG_KEY_FOR_FILES = "files";
 
     public static final FacesMessage MSG_CANT_DELETE = new FacesMessage(SEVERITY_ERROR, "Невозможно удалить документ", "");
     public static final FacesMessage MSG_CANT_SAVE = new FacesMessage(SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", "");
@@ -42,6 +43,7 @@ public class MessageHolder {
 
     //ORD-42 факты просмотров документов
     public static final FacesMessage MSG_VIEW_FACT_REGISTERED = new FacesMessage(SEVERITY_INFO, "Факт просмотра документа сохранен", "");
+    public static final FacesMessage MSG_VIEW_FACT_REGISTRATION_ERROR = new FacesMessage(SEVERITY_WARN, "Ошибка при регистрации факта просмотра документа" ,"");
 
     // Неизветсная внутренняя ошибка
     public static final FacesMessage MSG_INTERNAL_ERROR = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка", "");
@@ -62,12 +64,14 @@ public class MessageHolder {
     public static final FacesMessage MSG_SUBSTITUTION_PERSON_DUPLICATE = new FacesMessage("Ошибка валидации", "Замещаемое лицо и заместитель один и тот-же человек.");
 
     //Сообщения для документа и holder-бина
-    public static final FacesMessage MSG_CANT_CREATE = new FacesMessage("У вас нет прав на создание нового документа");
-    public static final FacesMessage MSG_CANT_EDIT_WITHOUT_ID = new FacesMessage("Невозможно проводить редактирование не указав документ");
-    public static final FacesMessage MSG_NO_DOC_ID = new FacesMessage("Не указан идентификатор документа");
-    public static final FacesMessage MSG_DOC_ID_CONVERSION_ERROR = new FacesMessage("Некорректное значение идентифкатора");
-    public static final FacesMessage MSG_DOCUMENT_IS_DELETED = new FacesMessage("Запрошенный документ помечен как удаленный");
-    public static final FacesMessage MSG_DOCUMENT_NOT_FOUND = new FacesMessage("Запрошенный документ не найден");
-    public static final FacesMessage MSG_TRY_TO_EDIT_WITHOUT_PERMISSION = new FacesMessage("У вас нет прав на редактирование документа");
-    public static final FacesMessage MSG_TRY_TO_VIEW_WITHOUT_PERMISSION = new FacesMessage("У вас нет прав на просмотр документа");
+    public static final FacesMessage MSG_CANT_CREATE = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на создание нового документа",  "");
+    public static final FacesMessage MSG_CANT_EDIT_WITHOUT_ID = new FacesMessage(SEVERITY_ERROR, "Невозможно проводить редактирование не указав документ", "");
+    public static final FacesMessage MSG_NO_DOC_ID = new FacesMessage(SEVERITY_ERROR, "Не указан идентификатор документа", "");
+    public static final FacesMessage MSG_DOC_ID_CONVERSION_ERROR = new FacesMessage(SEVERITY_ERROR, "Некорректное значение идентифкатора", "");
+    public static final FacesMessage MSG_DOCUMENT_IS_DELETED = new FacesMessage(SEVERITY_ERROR, "Запрошенный документ помечен как удаленный", "");
+    public static final FacesMessage MSG_DOCUMENT_NOT_FOUND = new FacesMessage(SEVERITY_ERROR, "Запрошенный документ не найден", "");
+    public static final FacesMessage MSG_TRY_TO_EDIT_WITHOUT_PERMISSION = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на редактирование документа", "");
+    public static final FacesMessage MSG_TRY_TO_VIEW_WITHOUT_PERMISSION = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на просмотр документа", "");
+    public static final FacesMessage MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL = new FacesMessage(SEVERITY_WARN, "Уровень доступа к документу \'%s\' выше чем ваш текущий уровень доступа \'%s\'", "");
+
 }

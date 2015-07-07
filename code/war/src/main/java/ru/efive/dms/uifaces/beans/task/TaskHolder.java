@@ -13,14 +13,14 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.*;
@@ -36,7 +36,6 @@ import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -46,7 +45,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("task")
 @ConversationScoped
-public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implements Serializable {
+public class TaskHolder extends AbstractDocumentHolderBean<Task> implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger("TASK");
     private static final long serialVersionUID = 4716264614655470705L;
@@ -158,11 +157,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
     }
 
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
-    }
-
     // FILES
 
     @Override
@@ -196,8 +190,10 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         if (form != null) {
             doc.setForm(form);
         } else {
-            final List<DocumentForm> forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByDocumentTypeCode(DocumentType.RB_CODE_TASK);
-            if (forms != null  && !forms.isEmpty()) {
+            final List<DocumentForm> forms = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByDocumentTypeCode(
+                    DocumentType.RB_CODE_TASK
+            );
+            if (forms != null && !forms.isEmpty()) {
                 doc.setForm(forms.get(0));
             }
         }
@@ -286,10 +282,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return result;
     }
 
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
 
     @Override
     public boolean isCanDelete() {
@@ -300,6 +292,8 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return permissions.hasPermission(WRITE);
     }
 
+    // END OF FILES
+
     @Override
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
@@ -308,8 +302,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         }
         return permissions.hasPermission(WRITE);
     }
-
-    // END OF FILES
 
     @Override
     public boolean isCanView() {
@@ -320,20 +312,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         return permissions.hasPermission(READ);
     }
 
-    @Override
-    public String delete() {
-        String in_result = super.delete();  // also call deleteDocument()
-        if (in_result != null && in_result.equals(ACTION_RESULT_DELETE)) {
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
-            } catch (IOException e) {
-                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
-                logger.error("Error on redirect: ", e);
-            }
-        }
-        return in_result;
-    }
-
     /**
      * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
      *
@@ -342,13 +320,14 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
      */
     private boolean checkState(final Task document, final User user) {
         if (document == null) {
-            setState(STATE_NOT_FOUND);
+            setState(State.ERROR);
+            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
             logger.warn("Task NOT FOUND");
             return false;
         }
         if (document.isDeleted()) {
-            setState(STATE_DELETED);
-            setStateComment("Поручение удалено");
+            setState(State.ERROR);
+            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
             logger.warn("TASK[{}] IS DELETED", document.getId());
             return false;
         }
@@ -474,7 +453,10 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
                 if (users != null && users.size() == 1) {
                     initiator = users.iterator().next();
                 } else {
-                    logger.error("TASK[{}] can not set initiator cause: {}", task.getId(), users == null ? "executors is null" : "too much executors. size =" + users.size()
+                    logger.error(
+                            "TASK[{}] can not set initiator cause: {}",
+                            task.getId(),
+                            users == null ? "executors is null" : "too much executors. size =" + users.size()
                     );
                 }
             }
@@ -614,6 +596,74 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
         this.taskTreeHolder = taskTreeHolder;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Выбора инициатора ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseInitiator() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
+        final User preselected = getDocument().getInitiator();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
+    }
+
+    public void onInitiatorChosen(SelectEvent event) {
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose initiator: {}", result);
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final User selected = (User) result.getResult();
+            getDocument().setInitiator(selected);
+        }
+    }
+
+    //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseController() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_RESPONSIBLE));
+        final User preselected = getDocument().getController();
+        if (preselected != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
+    }
+
+    public void onControllerChosen(SelectEvent event) {
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose controller: {}", result);
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final User selected = (User) result.getResult();
+            getDocument().setController(selected);
+        }
+    }
+
+    // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
+    public void chooseExecutors() {
+        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_EXECUTORS));
+        final List<User> preselected = getDocument().getExecutorsList();
+        if (preselected != null && !preselected.isEmpty()) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
+        }
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
+    }
+
+    public void onExecutorsChosen(SelectEvent event) {
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        logger.info("Choose executors: {}", result);
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final List<User> selected = (List<User>) result.getResult();
+            if (selected != null && !selected.isEmpty()) {
+                getDocument().setExecutors(new HashSet<User>(selected));
+            } else {
+                getDocument().getExecutors().clear();
+            }
+        }
+        ;
+    }
+
     public class VersionAppenderModal extends ModalWindowHolderBean {
 
         private Attachment attachment;
@@ -687,72 +737,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, Integer> implem
             versionList = null;
             attachment = null;
         }
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //Выбора инициатора ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseInitiator() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        final User preselected = getDocument().getInitiator();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
-    }
-
-    public void onInitiatorChosen(SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        logger.info("Choose initiator: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
-            final User selected = (User) result.getResult();
-            getDocument().setInitiator(selected);
-        }
-    }
-
-    //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseController() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_RESPONSIBLE));
-        final User preselected = getDocument().getController();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
-    }
-
-    public void onControllerChosen(SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        logger.info("Choose controller: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
-            final User selected = (User) result.getResult();
-            getDocument().setController(selected);
-        }
-    }
-    // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseExecutors() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_EXECUTORS));
-        final List<User> preselected = getDocument().getExecutorsList();
-        if (preselected != null && !preselected.isEmpty()) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
-    }
-
-    public void onExecutorsChosen(SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        logger.info("Choose executors: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
-            final List<User> selected = (List<User>) result.getResult();
-            if(selected != null && !selected.isEmpty()) {
-                getDocument().setExecutors(new HashSet<User>(selected));
-            } else {
-                getDocument().getExecutors().clear();
-            }
-        };
     }
 
 }

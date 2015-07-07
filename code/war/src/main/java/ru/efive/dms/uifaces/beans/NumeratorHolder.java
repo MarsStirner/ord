@@ -2,8 +2,9 @@ package ru.efive.dms.uifaces.beans;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.State;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.Numerator;
 import ru.hitsl.sql.dao.NumeratorDAOImpl;
 import ru.util.ApplicationHelper;
@@ -21,7 +22,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.NUMERATOR_DAO;
 
 @Named("numerator")
 @ViewScoped
-public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integer> implements Serializable {
+public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> implements Serializable {
     private static final long serialVersionUID = 4716264614655470705L;
 
     private static final Logger logger = LoggerFactory.getLogger("RB_NUMERATOR");
@@ -40,19 +41,6 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
         return false;
     }
 
-    @Override
-    public String delete() {
-        String in_result = super.delete();
-        if (in_result != null && in_result.equals("delete")) {
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("delete_document.xhtml");
-            } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
-                logger.error("CANT_DELETE_NUMERATOR", e);
-            }
-        }
-        return in_result;
-    }
 
     @Override
     protected boolean deleteDocument() {
@@ -61,35 +49,27 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator, Integ
             document.setDeleted(true);
             setDocument(sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).merge(document));
             if (!getDocument().isDeleted()) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+               addMessage(null, MSG_CANT_DELETE);
             }
             return true;
         } catch (Exception e) {
             logger.error("CANT_DELETE_NUMERATOR", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
+            addMessage(null, MSG_ERROR_ON_DELETE);
         }
         return false;
     }
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
 
     @Override
     protected void initDocument(Integer id) {
         try {
             setDocument(sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).findDocumentById(id));
             if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
+                setState(State.ERROR);
+                addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
+            addMessage(null, MSG_ERROR_ON_INITIALIZE);
             logger.error("CANT_INIT_NUMERATOR", e);
         }
     }

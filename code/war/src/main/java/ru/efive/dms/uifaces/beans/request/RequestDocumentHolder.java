@@ -12,24 +12,21 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.PaperCopyDocument;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.PaperCopyDocumentDAOImpl;
 import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
 import ru.hitsl.sql.dao.ViewFactDaoImpl;
 import ru.hitsl.sql.dao.referenceBook.DeliveryTypeDAOImpl;
@@ -49,7 +46,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("request_doc")
 @ViewScoped
-public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDocument, Integer> implements Serializable {
+public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDocument> implements Serializable {
 
     //Именованный логгер (REQUEST_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("REQUEST_DOCUMENT");
@@ -113,20 +110,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
 
     @Override
-    public String delete() {
-        String in_result = super.delete();
-        if (AbstractDocumentHolderBean.ACTION_RESULT_DELETE.equals(in_result)) {
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
-            } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
-                LOGGER.error("INTERNAL ERROR ON DELETE:", e);
-            }
-        }
-        return in_result;
-    }
-
-    @Override
     protected boolean deleteDocument() {
         try {
             final boolean result = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).delete(getDocumentId());
@@ -141,15 +124,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         }
     }
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
 
     @Override
     protected void initDocument(Integer id) {
@@ -187,13 +161,12 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
      */
     private boolean checkState(final RequestDocument document, final User user) {
         if (document == null) {
-            setState(STATE_NOT_FOUND);
+           setDocumentNotFound();
             LOGGER.warn("Document NOT FOUND");
             return false;
         }
         if (document.isDeleted()) {
-            setState(STATE_DELETED);
-            setStateComment("Документ удален");
+            setDocumentDeleted();
             LOGGER.warn("Document[{}] IS DELETED", document.getId());
             return false;
         }
@@ -305,35 +278,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
                 document.setCreationDate(created);
                 document.setAuthor(currentUser);
 
-                PaperCopyDocument paperCopy = new PaperCopyDocument();
-                paperCopy.setDocumentStatus(DocumentStatus.NEW);
-                paperCopy.setCreationDate(created);
-                paperCopy.setAuthor(currentUser);
-
-                String parentId = document.getUniqueId();
-                if (StringUtils.isNotEmpty(parentId)) {
-                    paperCopy.setParentDocumentId(parentId);
-                }
-
-                paperCopy.setRegistrationNumber(".../1");
-                HistoryEntry historyEntry = new HistoryEntry();
-                historyEntry.setCreated(created);
-                historyEntry.setStartDate(created);
-                historyEntry.setOwner(currentUser);
-                historyEntry.setDocType(paperCopy.getDocumentType().getName());
-                historyEntry.setParentId(paperCopy.getId());
-                historyEntry.setActionId(0);
-                historyEntry.setFromStatusId(1);
-                historyEntry.setEndDate(created);
-                historyEntry.setProcessed(true);
-                historyEntry.setCommentary("");
-                Set<HistoryEntry> history = new HashSet<HistoryEntry>();
-                history.add(historyEntry);
-                paperCopy.setHistory(history);
-
-                paperCopy.setParentDocument(document);
-
-                sessionManagement.getDAO(PaperCopyDocumentDAOImpl.class, PAPER_COPY_DOCUMENT_FORM_DAO).save(paperCopy);
 
                 LOGGER.debug("uploading newly created files");
                 for (int i = 0; i < files.size(); i++) {
@@ -593,7 +537,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onResponsibleChosen(SelectEvent event) {
@@ -611,7 +555,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewOptions(), null);
     }
 
     public void onContragentChosen(SelectEvent event) {
@@ -629,7 +573,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(RegionDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectRegionDialog.xhtml", AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectRegionDialog.xhtml", AbstractDialog.getViewOptions(), null);
     }
 
     public void onRegionChosen(SelectEvent event) {
@@ -649,7 +593,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onRecipientsChosen(SelectEvent event) {
@@ -673,7 +617,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleGroupDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleGroupDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleGroupDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onRecipientGroupsChosen(SelectEvent event) {
@@ -697,7 +641,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onPersonReadersChosen(SelectEvent event) {
@@ -721,7 +665,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onPersonEditorsChosen(SelectEvent event) {
@@ -745,7 +689,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleRoleDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleRoleDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleRoleDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onRoleReadersChosen(SelectEvent event) {
@@ -769,7 +713,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleRoleDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleRoleDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleRoleDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onRoleEditorsChosen(SelectEvent event) {

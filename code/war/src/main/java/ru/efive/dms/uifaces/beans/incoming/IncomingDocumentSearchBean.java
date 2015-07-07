@@ -109,7 +109,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onControllerChosen(SelectEvent event) {
@@ -131,7 +131,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewOptions(), null);
     }
 
     public void onContragentChosen(SelectEvent event) {
@@ -155,7 +155,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onExecutorsChosen(SelectEvent event) {
@@ -179,7 +179,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onRecipientsChosen(SelectEvent event) {
@@ -201,7 +201,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(OfficeKeepingVolumeDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml", AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectOfficeKeepingVolumeDialog.xhtml", AbstractDialog.getViewOptions(), null);
     }
 
     public void onOfficeKeepingVolumeChosen(SelectEvent event) {

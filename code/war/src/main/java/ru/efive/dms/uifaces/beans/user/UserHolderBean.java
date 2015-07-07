@@ -3,9 +3,8 @@ package ru.efive.dms.uifaces.beans.user;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.referenceBook.ContactInfoType;
 import ru.entity.model.user.PersonContact;
 import ru.entity.model.user.User;
@@ -25,7 +24,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 @Named("user")
 @ViewScoped
-public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> implements Serializable {
+public class UserHolderBean extends AbstractDocumentHolderBean<User> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("USER");
     private List<PersonContact> contactList;
 
@@ -135,15 +134,6 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, Integer> im
         return result;
     }
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
 
     @Override
     protected void initDocument(Integer id) {

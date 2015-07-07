@@ -3,8 +3,10 @@ package ru.efive.dms.uifaces.beans.utils;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
+import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
 import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
+import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -13,8 +15,7 @@ import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
+import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -38,18 +39,21 @@ public class AutoCompleteView {
     private PositionDAOImpl positionDAO;
     private List<Position> allPositions;
 
+    private UserDAOHibernate userDao;
+
 
     @PostConstruct
     public void init() {
         departmentDAOImpl = sessionManagement.getDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO);
         positionDAO = sessionManagement.getDAO(PositionDAOImpl.class, POSITION_DAO);
+        userDao = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO);
     }
 
     public List<Department> completeDepartment(final String query) {
         if (allDepartments == null) {
             allDepartments = departmentDAOImpl.findDocuments();
         }
-        final List<Department> result = new ArrayList<Department>(MAX_SEARCH_RESULTS);
+        final List<Department> result = new ArrayList<>(MAX_SEARCH_RESULTS);
         int i = 0;
         if (queryStringValid(query)) {
             final String queryLowerCase = query.toLowerCase();
@@ -83,7 +87,7 @@ public class AutoCompleteView {
         if (allPositions == null) {
             allPositions = positionDAO.findDocuments();
         }
-        final List<Position> result = new ArrayList<Position>(MAX_SEARCH_RESULTS);
+        final List<Position> result = new ArrayList<>(MAX_SEARCH_RESULTS);
         int i = 0;
         if (queryStringValid(query)) {
             final String queryLowerCase = query.toLowerCase();
@@ -106,5 +110,10 @@ public class AutoCompleteView {
             }
         }
         return result;
+    }
+
+
+    public List<User> completeUser(final String query){
+        return userDao.findUsers(query, false,false, 0, 100, "lastName", true);
     }
 }

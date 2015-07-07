@@ -4,8 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.RecordBookDocument;
 import ru.hitsl.sql.dao.RecordBookDocumentDAOImpl;
@@ -25,7 +24,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.RECORD_BOOK_DAO;
 
 @Named("record_book_doc")
 @ConversationScoped
-public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordBookDocument, Integer> implements Serializable {
+public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordBookDocument> implements Serializable {
 
     @Override
     protected boolean deleteDocument() {
@@ -43,21 +42,11 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
     }
 
     @Override
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
-
-    @Override
     protected void initDocument(Integer id) {
         try {
             setDocument(sessionManagement.getDAO(RecordBookDocumentDAOImpl.class, RECORD_BOOK_DAO).get(id));
             if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
+                setDocumentNotFound();
             } else {
                 updateAttachments();
             }

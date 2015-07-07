@@ -20,8 +20,7 @@ public class IndexManagementBean implements Serializable {
 
     @PostConstruct
     public void initializeIndex() {
-        context = new ClassPathXmlApplicationContext("applicationContext.xml");
-
+       context = new ClassPathXmlApplicationContext("applicationContext.xml");
     }
 
     public ApplicationContext getContext() {

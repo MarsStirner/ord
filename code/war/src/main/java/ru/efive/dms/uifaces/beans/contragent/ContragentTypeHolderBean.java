@@ -10,8 +10,7 @@ package ru.efive.dms.uifaces.beans.contragent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.ContragentType;
 import ru.hitsl.sql.dao.ContragentDAOHibernate;
@@ -31,7 +30,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_CONTRAGENT_TYPE_DAO;
 
 @Named("contragentType")
 @ViewScoped
-public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<ContragentType, Integer> implements Serializable{
+public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<ContragentType> implements Serializable{
 
     private static final Logger logger = LoggerFactory.getLogger("RB_CONTRAGENT_TYPE");
 
@@ -64,11 +63,6 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
     }
 
     @Override
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
-    }
-
-    @Override
     protected void initNewDocument() {
         final ContragentType document = new ContragentType();
         document.setDeleted(false);
@@ -80,7 +74,7 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
         try {
             final ContragentType document = sessionManagement.getDAO(ContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).get(id);
             if (document == null) {
-                setState(STATE_NOT_FOUND);
+                setDocumentNotFound();
             } else {
                 setDocument(document);
             }
@@ -121,10 +115,5 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             return false;
         }
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
     }
 }

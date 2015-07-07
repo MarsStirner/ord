@@ -4,11 +4,10 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.user.GroupDAOHibernate;
@@ -25,7 +24,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
 
 @Named("group")
 @ViewScoped
-public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> implements Serializable {
+public class GroupHolderBean extends AbstractDocumentHolderBean<Group> implements Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("GROUP");
 
@@ -44,20 +43,12 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
     }
 
     @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
-
-    @Override
     protected void initDocument(Integer id) {
         setDocument(sessionManagement.getDAO(GroupDAOHibernate.class, GROUP_DAO).getItemById(id));
         if (getDocument() == null) {
-            setState(STATE_NOT_FOUND);
+           setDocumentNotFound();
+        } else if(getDocument().isDeleted()){
+            setDocumentDeleted();
         }
     }
 
@@ -111,7 +102,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group, Integer> 
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewParams(), null);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectMultipleUserDialog.xhtml", AbstractDialog.getViewOptions(), null);
     }
 
     public void onMembersChosen(SelectEvent event) {

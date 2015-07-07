@@ -20,4 +20,11 @@
         </view-handler>
 
     </application>
+    <render-kit>
+        <renderer>
+            <component-family>org.primefaces.component</component-family>
+            <renderer-type>org.primefaces.component.FileUploadRenderer</renderer-type>
+            <renderer-class>ru.efive.dms.util.fixes.FixedFileUploadRenderer</renderer-class>
+        </renderer>
+    </render-kit>
 </faces-config>

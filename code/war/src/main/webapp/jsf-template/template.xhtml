@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui"
+      xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui"
         >
 
 <h:head>
@@ -20,7 +20,7 @@
 
     <div id="main_global">
 
-        <h:form id="main_content_form">
+        <o:form id="main_content_form" includeRequestParams="true">
             <!-- Блок объявления параметров -->
             <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
             <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
@@ -36,7 +36,7 @@
                 <div id="leftMenu">
                     <div id="leftMenuTiltle">Документооборот ФНКЦ ДГОИ</div>
                     <div id="leftMenuHolder">
-                       <ui:include src="leftMenu.xhtml"/>
+                        <ui:include src="leftMenu.xhtml"/>
                     </div>
                 </div>
                 <div id="split"/>
@@ -66,7 +66,7 @@
                 Content
             </ui:insert>
 
-        </h:form>
+        </o:form>
 
         <ui:insert name="footer">
         </ui:insert>

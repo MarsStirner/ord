@@ -6,10 +6,9 @@ import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.SubstitutionDaoImpl;
@@ -33,7 +32,7 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
  */
 @Named("substitution")
 @ConversationScoped
-public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution, Integer> {
+public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution> {
 
     //Именованный логгер
     private static final Logger logger = LoggerFactory.getLogger("SUBSTITUTION");
@@ -71,7 +70,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onPersonChosen(final SelectEvent event) {
@@ -92,7 +91,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewParams(), params);
+        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
     public void onSubstitutorChosen(final SelectEvent event) {
@@ -122,11 +121,6 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
             return false;
         }
-    }
-
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
     }
 
     @Override
@@ -200,11 +194,6 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
             result = false;
         }
         return result;
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
     }
 
     @Inject

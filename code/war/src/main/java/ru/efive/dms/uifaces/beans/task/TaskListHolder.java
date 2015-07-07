@@ -49,13 +49,13 @@ public class TaskListHolder extends AbstractDocumentLazyDataModelBean<Task> {
                             if (!strings.isEmpty()) {
                                 //Для некоторых парметров надо приводить типы
                                 if (STATUS_LIST_KEY.equals(entry.getKey())) {
-                                    final ArrayList<Integer> ints = new ArrayList<Integer>(strings.size());
+                                    final ArrayList<Integer> ints = new ArrayList<>(strings.size());
                                     for (String string : strings) {
                                         ints.add(Integer.valueOf(string));
                                     }
                                     filters.put(entry.getKey(), ints);
                                 } else {
-                                    filters.put(entry.getKey(), new ArrayList<String>(strings));
+                                    filters.put(entry.getKey(), new ArrayList<>(strings));
                                 }
                             }
                         } else {

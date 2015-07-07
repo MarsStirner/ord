@@ -3,8 +3,7 @@ package ru.efive.dms.uifaces.beans.contragent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.document.RequestDocument;
@@ -29,22 +28,22 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("contragent")
 @ViewScoped
-public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Integer> implements Serializable {
+public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> implements Serializable {
     private static final Logger logger = LoggerFactory.getLogger("CONTRAGENT");
 
     @Override
-    public String delete() {
-        super.delete();
-        if (this.getDocument().isDeleted()) {
+    public boolean doAfterDelete() {
+        if (getDocument().isDeleted()) {
             try {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("delete_contragent.xhtml");
             } catch (Exception e) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
-                logger.error("Error on delete", e);
+                addMessage(null, MSG_ERROR_ON_DELETE);
+                logger.error("Error on redirect", e);
+                return false;
             }
-            return "";
+            return true;
         } else {
-            return "";
+            return false;
         }
     }
 
@@ -97,21 +96,11 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Int
     }
 
     @Override
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
-    }
-
-    @Override
     protected void initDocument(Integer id) {
         try {
             setDocument(sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).get(id));
             if (getDocument() == null) {
-                setState(STATE_NOT_FOUND);
+              setDocumentNotFound();
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);

@@ -3,8 +3,7 @@ package ru.efive.dms.uifaces.beans.position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
-import ru.efive.uifaces.bean.AbstractDocumentHolderBean;
-import ru.efive.uifaces.bean.FromStringConverter;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Position;
 import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
 
@@ -24,7 +23,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
 
 @Named("position")
 @ConversationScoped
-public class PositionHolderBean extends AbstractDocumentHolderBean<Position, Integer> implements Serializable {
+public class PositionHolderBean extends AbstractDocumentHolderBean<Position> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("POSITION");
 
     /**
@@ -56,10 +55,6 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position, Int
         return getDocument().isDeleted();
     }
 
-    @Override
-    protected Integer getDocumentId() {
-        return getDocument().getId();
-    }
 
     @Override
     protected void initNewDocument() {
@@ -94,11 +89,6 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position, Int
             LOGGER.error("CANT SAVE:", e);
             return false;
         }
-    }
-
-    @Override
-    protected FromStringConverter<Integer> getIdConverter() {
-        return FromStringConverter.INTEGER_CONVERTER;
     }
 
 
