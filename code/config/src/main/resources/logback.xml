@@ -118,7 +118,7 @@
 
     <logger name="FILTER" level="DEBUG"/>
 
-    <logger name="SESSION_LISTENER" level="DEBUG"/>
+    <logger name="UTIL" level="DEBUG"/>
 
     <logger name="TASK" level="${logs.document.level}" additivity="${logs.document.additivity}">
         <appender-ref ref="APPENDER_TASK"/>
