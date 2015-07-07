@@ -157,12 +157,6 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
     @JoinColumn(name = "userAccessLevel_id", nullable = false)
     private UserAccessLevel userAccessLevel;
 
-    /**
-     * Номер ERP
-     */
-    @Column(name = "erpNumber")
-    private String erpNumber;
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Связанные сущности
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,14 +262,6 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
         this.registrationNumber = registrationNumber;
     }
 
-    public String getErpNumber() {
-        return erpNumber;
-    }
-
-    public void setErpNumber(String erpNumber) {
-        this.erpNumber = erpNumber;
-    }
-
     public Date getRegistrationDate() {
         return registrationDate;
     }
@@ -294,9 +280,11 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     public List<User> getRecipientUserList() {
         if (recipientUsers != null && !recipientUsers.isEmpty()) {
-            return new ArrayList<User>(recipientUsers);
+            final ArrayList<User> result = new ArrayList<>(recipientUsers);
+            Collections.sort(result);
+            return result;
         }
-        return new ArrayList<User>(0);
+        return new ArrayList<>(0);
     }
 
     public Set<User> getPersonReaders() {
@@ -309,9 +297,9 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     public List<User> getPersonReadersList() {
         if (personReaders != null && !personReaders.isEmpty()) {
-            return new ArrayList<User>(personReaders);
+            return new ArrayList<>(personReaders);
         }
-        return new ArrayList<User>(0);
+        return new ArrayList<>(0);
     }
 
     public Set<Role> getRoleReaders() {
@@ -324,9 +312,9 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     public List<Role> getRoleReadersList(){
         if (roleReaders != null && !roleReaders.isEmpty()) {
-            return new ArrayList<Role>(roleReaders);
+            return new ArrayList<>(roleReaders);
         }
-        return new ArrayList<Role>(0);
+        return new ArrayList<>(0);
     }
 
     public Contragent getContragent() {
@@ -371,9 +359,9 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     public List<User> getExecutorsList() {
         if (executors != null && !executors.isEmpty()) {
-            return new ArrayList<User>(executors);
+            return new ArrayList<>(executors);
         }
-        return new ArrayList<User>(0);
+        return new ArrayList<>(0);
     }
 
     public String getShortDescription() {
@@ -500,7 +488,7 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     @Transient
     public List<HistoryEntry> getHistoryList() {
-        List<HistoryEntry> result = new ArrayList<HistoryEntry>();
+        List<HistoryEntry> result = new ArrayList<>();
         if (history != null) {
             result.addAll(history);
         }
@@ -516,7 +504,7 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
      */
     public boolean addToHistory(final HistoryEntry historyEntry) {
         if (history == null) {
-            this.history = new HashSet<HistoryEntry>(1);
+            this.history = new HashSet<>(1);
         }
         return this.history.add(historyEntry);
     }
@@ -536,9 +524,9 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
      */
     public List<Group> getRecipientGroupsList() {
         if (recipientGroups == null || recipientGroups.isEmpty()) {
-            return new ArrayList<Group>(0);
+            return new ArrayList<>(0);
         } else {
-            return new ArrayList<Group>(recipientGroups);
+            return new ArrayList<>(recipientGroups);
         }
     }
 
@@ -552,9 +540,9 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     public List<Role> getRoleEditorsList() {
         if (roleEditors == null || roleEditors.isEmpty()) {
-            return new ArrayList<Role>(0);
+            return new ArrayList<>(0);
         } else {
-            return new ArrayList<Role>(roleEditors);
+            return new ArrayList<>(roleEditors);
         }
     }
 
@@ -568,9 +556,9 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
 
     public List<User> getPersonEditorsList() {
         if (personEditors == null || personEditors.isEmpty()) {
-            return new ArrayList<User>(0);
+            return new ArrayList<>(0);
         } else {
-            return new ArrayList<User>(personEditors);
+            return new ArrayList<>(personEditors);
         }
     }
 

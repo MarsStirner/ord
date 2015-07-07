@@ -53,7 +53,7 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public List<OutgoingDocument> findAllDocumentsByReasonDocumentId(final String rootDocumentId) {
-        return getHibernateTemplate().findByCriteria(getSimplestCriteria().add(Restrictions.eq("reasonDocumentId", rootDocumentId)));
+        return getHibernateTemplate().findByCriteria(getListCriteria().add(Restrictions.eq("reasonDocumentId", rootDocumentId)));
     }
 
 
