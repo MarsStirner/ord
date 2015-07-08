@@ -59,5 +59,7 @@
         <logs.document.level>DEBUG</logs.document.level>
         <!--Аддитивность для лога документов-->
         <logs.document.additivity>true</logs.document.additivity>
+        <!--На сколько дней хранить историю логов-->
+        <logs.maxHistory>30</logs.maxHistory>
     </properties>
 </project>

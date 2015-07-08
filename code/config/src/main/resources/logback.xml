@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration scan="true" debug="true">
+<configuration debug="true">
     <jmxConfigurator/>
     <contextName>ORD</contextName>
 
@@ -20,8 +20,8 @@
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/LDAP/LDAP.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/LDAP/LDAP.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>${logs.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -49,8 +49,8 @@
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/TASK/TASK.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/TASK/TASK.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>${logs.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -61,8 +61,8 @@
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/documents/doc.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/documents/doc.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>${logs.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -73,8 +73,8 @@
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/DAO/DAO.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/DAO/DAO.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>${logs.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -85,8 +85,20 @@
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ALFRESCO/alfresco.%d{yyyy-MM-dd}.log.gz
-            </fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ALFRESCO/alfresco.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>${logs.maxHistory}</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Для различных подсистемных сообщений (Утилиты, Конвертеры)-->
+    <appender name="APPENDER_UTIL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/util/util.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <maxHistory>${logs.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -114,11 +126,17 @@
 
     <logger name="AUTH" level="DEBUG"/>
 
-    <logger name="CONVERTER" level="DEBUG"/>
-
     <logger name="FILTER" level="DEBUG"/>
 
-    <logger name="UTIL" level="DEBUG"/>
+    <!--Логгеры для различных утилит-->
+    <!-- Матрица редактируемости полей-->
+    <logger name="EDITABLE_MATRIX" level="DEBUG">
+        <appender-ref ref="APPENDER_UTIL"/>
+    </logger>
+    <!-- Логгер для конвертеров-->
+    <logger name="CONVERTER" level="DEBUG">
+        <appender-ref ref="APPENDER_UTIL"/>
+    </logger>
 
     <logger name="TASK" level="${logs.document.level}" additivity="${logs.document.additivity}">
         <appender-ref ref="APPENDER_TASK"/>
