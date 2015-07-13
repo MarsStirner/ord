@@ -13,6 +13,7 @@
     </cc:interface>
 
     <cc:implementation>
+        <h:form id="#{cc.attrs.type}Form">
         <h:panelGroup id ="#{cc.attrs.type}Table" layout="block" styleClass="ui-datatable ui-widget" rendered="#{cc.attrs.rendered}">
             <div class="ui-datatable-header ui-widget-header ui-corner-top">#{cc.attrs.headerText}</div>
             <div class="ui-datatable-tablewrapper">
@@ -50,17 +51,13 @@
             </div>
             <div class="ui-datatable-footer ui-widget-header ui-corner-bottom">
                 <p:commandButton value="Сохранить" action="#{editableMatrix.applyAllChanges()}" update="@form" process="@form">
-                    <p:confirm header="Изменение матрицы редактирования"
-                               message="#{cc.attrs.confirmMessage != null ? cc.attrs.confirmMessage : 'Вы уверены что хотите сохранить изменения?'}"
+                    <p:confirm message="#{cc.attrs.confirmMessage != null ? cc.attrs.confirmMessage : 'Вы уверены что хотите сохранить изменения?'}"
                                icon="ui-icon-comment"/>
                 </p:commandButton>
                 <p:commandButton value="Отменить" action="#{editableMatrix.reload()}" process="@none" update="@form"/>
             </div>
         </h:panelGroup>
-        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-            <p:commandButton value="Да, я знаю что делаю" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
-            <p:commandButton value="Нет, не стоит сохранять" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
-        </p:confirmDialog>
+        </h:form>
     </cc:implementation>
 
 </ui:component>

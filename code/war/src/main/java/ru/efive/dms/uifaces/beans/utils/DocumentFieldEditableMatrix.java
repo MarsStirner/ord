@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.util.DocumentTypeField;
@@ -32,6 +33,16 @@ public class DocumentFieldEditableMatrix {
     @Inject
     @Named("indexManagement")
     private IndexManagementBean indexManagement;
+
+    /**
+     * Yes, we can inject @SessionScoped in @ApplicationScoped
+     * deal with it!
+     * http://docs.jboss.org/weld/reference/latest/en-US/html/injection.html#d0e1429 (4.9 Client proxies)
+     */
+    @Inject
+    @Named("sessionManagement")
+    private SessionManagementBean sessionManagement;
+
     private EditableMatrixDaoImpl dao = null;
     private DocumentTypeMatrix incoming;
     private DocumentTypeMatrix outgoing;
@@ -152,6 +163,11 @@ public class DocumentFieldEditableMatrix {
      */
     public void applyAllChanges() {
         logger.warn("Apply matrix changes to DB");
+        if(!sessionManagement.getAuthData().isAdministrator()){
+            logger.error("TRY TO save changes by NON-admin user [{}]. ACCESS FORBIDDEN. reload matrix from source.", sessionManagement.getAuthData().getAuthorized().getId());
+            reload();
+            return;
+        }
         dao.updateValues(incoming.getMatrix());
         dao.updateValues(outgoing.getMatrix());
         dao.updateValues(internal.getMatrix());
@@ -218,10 +234,6 @@ public class DocumentFieldEditableMatrix {
             } else {
                 return false;
             }
-        }
-
-        public void setFieldEditable(final int statusId, final String filedName, final Boolean value){
-            logger.info(value.toString());
         }
 
         protected void toLog() {
