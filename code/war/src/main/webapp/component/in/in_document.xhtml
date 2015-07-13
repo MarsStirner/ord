@@ -12,23 +12,7 @@
         >
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
-
-    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/in/in_documents.xhtml"/>
-        <h:outputText value="Ошибка" rendered="#{in_doc.errorState}"/>
-        <p:commandButton value="Редактировать" action="#{in_doc.edit}" rendered="#{in_doc.viewState and in_doc.editPermission}"
-                         icon="ui-icon-pencil" update="@form"/>
-        <p:commandButton value="Отменить" action="#{in_doc.view}" rendered="#{in_doc.editState}"
-                         icon="ui-icon-cancel" update="@form"/>
-        <p:commandButton value="Сохранить" action="#{in_doc.save}" rendered="#{in_doc.editState or in_doc.createState}"
-                         icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{in_doc.delete}" rendered="#{in_doc.editState}"
-                         icon="ui-icon-trash" update="@form"/>
-        <p:commandButton value="Действия" action="#{in_doc.processorModal.show}" rendered="#{in_doc.viewState and in_doc.executePermission}"
-                         icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
-    </ui:define>
-
-    <ui:define name="DOCUMENT_HEADER">
+    <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{in_doc.createState or in_doc.editState}" scope="request"/>
         <c:set var="statusId" value="#{in_doc.document.documentStatus.id}" scope="request"/>
@@ -61,6 +45,24 @@
         <!-- Поле 'Доступ-Читатели'  -->
         <c:set var="editable_AccessTabReaders"  value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessReaders')}" scope="request"/>
         <!-- Конец блока переменных -->
+    </ui:define>
+
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/in/in_documents.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{in_doc.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{in_doc.edit}" rendered="#{in_doc.viewState and in_doc.editPermission}"
+                         icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Отменить" action="#{in_doc.view}" rendered="#{in_doc.editState}"
+                         icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{in_doc.save}" rendered="#{in_doc.editState or in_doc.createState}"
+                         icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{in_doc.delete}" rendered="#{in_doc.editState}"
+                         icon="ui-icon-trash" update="@form"/>
+        <p:commandButton value="Действия" action="#{in_doc.processorModal.show}" rendered="#{in_doc.viewState and in_doc.executePermission}"
+                         icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
+    </ui:define>
+
+    <ui:define name="DOCUMENT_HEADER">
         <p:messages id="errorMessages" for="error" rendered="#{in_doc.errorState}"/>
         <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not in_doc.errorState}"
                       style="font-weight: bold; display:inline-block; width:85%;">

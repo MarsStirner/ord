@@ -636,9 +636,11 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     public void updateAttachments() {
+        LOGGER.debug("Start updating attachments");
         if (getDocument() != null && getDocumentId() != 0) {
             attachments = fileManagement.getFilesByParentId(getDocument().getUniqueId());
         }
+        LOGGER.debug("Finish updating attachments");
     }
 
     public void deleteAttachment(Attachment attachment) {

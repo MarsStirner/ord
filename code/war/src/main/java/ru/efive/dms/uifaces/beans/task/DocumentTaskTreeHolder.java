@@ -76,9 +76,8 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     @Override
     protected TreeNode constructTreeFromDocumentList(List<Task> documents) {
         final DefaultTreeNode root = new DefaultTreeNode("ROOT", null);
-        root.setRowKey("0");
+        logger.debug("Start construct tree from {} tasks", documents.size());
         if (!documents.isEmpty()) {
-            logger.debug("Start construct tree from {} tasks", documents.size());
             if (logger.isTraceEnabled()) {
                 for (Task task : documents) {
                     logger.trace("{}", task);
