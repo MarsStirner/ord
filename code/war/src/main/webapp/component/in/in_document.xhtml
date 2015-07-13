@@ -30,6 +30,7 @@
 
     <ui:define name="DOCUMENT_HEADER">
         <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{in_doc.createState or in_doc.editState}"/>
         <c:set var="statusId" value="#{in_doc.document.documentStatus.id}"/>
         <c:set var="status_OnRegistration" value="#{statusId eq 1}"/>
         <c:set var="status_Registered" value="#{statusId eq 2}"/>
@@ -38,29 +39,27 @@
         <c:set var="status_InArchive" value="#{statusId eq 100}"/>
         <c:set var="status_OutArchive" value="#{statusId eq 110}"/>
         <!-- Редактируемость полей (true - редактируемо, иначе только для просмотра) -->
-        <!-- Поле 'Краткое содержание' редактируется только при создании ИЛИ при редактировании в статусе 'На регистрации' -->
-        <c:set var="editable_ShortDescription" value="#{in_doc.createState or (in_doc.editState and status_OnRegistration)}"/>
-        <!-- Поле 'Вид документа' редактируется только при создании ИЛИ при редактировании в статусах 'На регистрации'/'Зарегистрирован'/'На исполнении' -->
-        <c:set var="editable_DocumentForm"
-               value="#{in_doc.createState or (in_doc.editState and (status_OnRegistration or status_Registered or status_OnExecution))}"/>
-        <!-- Поле 'Тип доставки' редактируется только при создании ИЛИ при редактировании в статусе 'На регистрации' -->
-        <c:set var="editable_DeliveryType" value="#{in_doc.createState or (in_doc.editState and status_OnRegistration)}"/>
-        <!-- Поле 'Номер поступившего' редактируется только при создании ИЛИ при редактировании в статусе 'На регистрации' -->
-        <c:set var="editable_ReceivedDocumentNumber" value="#{in_doc.createState or (in_doc.editState and status_OnRegistration)}"/>
-        <!-- Поле 'Дата поступившего' редактируется только при создании ИЛИ при редактировании в статусе 'На регистрации' -->
-        <c:set var="editable_ReceivedDocumentDate" value="#{in_doc.createState or (in_doc.editState and status_OnRegistration)}"/>
-        <!-- Поле 'Руководитель' редактируется только при создании ИЛИ при редактировании в статусе 'На регистрации' -->
-        <c:set var="editable_Controller" value="#{in_doc.createState or (in_doc.editState and status_OnRegistration)}"/>
-        <!-- Поле 'Корреспондент' редактируется только при создании ИЛИ при редактировании в статусе 'На регистрации' -->
-        <c:set var="editable_Contragent" value="#{in_doc.createState or (in_doc.editState and status_OnRegistration)}"/>
-        <!-- Поле 'Адресаты' редактируется только при создании ИЛИ при редактировании в статусе 'На регистрации' -->
-        <c:set var="editable_Recipients" value="#{in_doc.createState or (in_doc.editState and status_OnRegistration)}"/>
-        <!-- Поле 'Исполнители' редактируется только при создании ИЛИ при редактировании в статусах 'На регистрации'/'Зарегистрирован'/'На исполнении' -->
-        <c:set var="editable_Executors"
-               value="#{in_doc.createState or (in_doc.editState and (status_OnRegistration or status_Registered or status_OnExecution))}"/>
-        <!-- Поле 'Доступ-редакторы' редактируется только при создании ИЛИ при редактировании в статусах 'На регистрации'/'Зарегистрирован'/'На исполнении' -->
-        <c:set var="editable_AccessTabEditors"
-               value="#{in_doc.createState or (in_doc.editState and (status_OnRegistration or status_Registered or status_OnExecution))}"/>
+        <c:set var="editable_ShortDescription" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'shortDescription')}"/>
+        <!-- Поле 'Вид документа' -->
+        <c:set var="editable_DocumentForm" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'form')}"/>
+        <!-- Поле 'Тип доставки' -->
+        <c:set var="editable_DeliveryType" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'deliveryType')}"/>
+        <!-- Поле 'Номер поступившего' -->
+        <c:set var="editable_ReceivedDocumentNumber" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedNumber')}"/>
+        <!-- Поле 'Дата поступившего' -->
+        <c:set var="editable_ReceivedDocumentDate" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedDate')}"/>
+        <!-- Поле 'Руководитель' -->
+        <c:set var="editable_Controller" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'controller')}"/>
+        <!-- Поле 'Корреспондент' -->
+        <c:set var="editable_Contragent" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'contragent')}"/>
+        <!-- Поле 'Адресаты'  -->
+        <c:set var="editable_Recipients" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'recipients')}"/>
+        <!-- Поле 'Исполнители' -->
+        <c:set var="editable_Executors"  value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executors')}"/>
+        <!-- Поле 'Доступ-редакторы'  -->
+        <c:set var="editable_AccessTabEditors"  value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessEditors')}"/>
+        <!-- Поле 'Доступ-Читатели'  -->
+        <c:set var="editable_AccessTabReaders"  value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessReaders')}"/>
         <!-- Конец блока переменных -->
         <p:messages id="errorMessages" for="error" rendered="#{in_doc.errorState}"/>
         <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not in_doc.errorState}"
@@ -379,8 +378,7 @@
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-4">
                             <p:outputLabel for="v_person_readers" value="Пользователи-читатели:"/>
-                            <p:commandButton icon="ui-icon-pencil" actionListener="#{in_doc.choosePersonReaders}"
-                                             rendered="#{in_doc.createState or in_doc.editState}">
+                            <p:commandButton icon="ui-icon-pencil" actionListener="#{in_doc.choosePersonReaders}" rendered="#{editable_AccessTabReaders}">
                                 <p:ajax event="dialogReturn" listener="#{in_doc.onPersonReadersChosen}" update="v_person_readers"/>
                             </p:commandButton>
                         </p:column>
@@ -410,8 +408,7 @@
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-4">
                             <p:outputLabel for="v_role_readers" value="Роли-читатели:"/>
-                            <p:commandButton icon="ui-icon-pencil" actionListener="#{in_doc.chooseRoleReaders}"
-                                             rendered="#{in_doc.createState or in_doc.editState}">
+                            <p:commandButton icon="ui-icon-pencil" actionListener="#{in_doc.chooseRoleReaders}" rendered="#{editable_AccessTabReaders}">
                                 <p:ajax event="dialogReturn" listener="#{in_doc.onRoleReadersChosen}" update="v_role_readers"/>
                             </p:commandButton>
                         </p:column>
@@ -426,8 +423,7 @@
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-4">
                             <p:outputLabel for="v_role_editors" value="Роли-редакторы:"/>
-                            <p:commandButton icon="ui-icon-pencil" actionListener="#{in_doc.chooseRoleEditors}"
-                                             rendered="#{editable_AccessTabEditors}">
+                            <p:commandButton icon="ui-icon-pencil" actionListener="#{in_doc.chooseRoleEditors}" rendered="#{editable_AccessTabEditors}">
                                 <p:ajax event="dialogReturn" listener="#{in_doc.onRoleEditorsChosen}" update="v_role_editors"/>
                             </p:commandButton>
                         </p:column>
