@@ -35,4 +35,6 @@ public final class ApplicationDAONames {
      */
     public static final String RB_DOCUMENT_TYPE_DAO = "documentTypeDao";
     public static final String RB_DELIVERY_TYPE_DAO = "deliveryTypeDao";
+
+    public static final String EDITABLE_MATRIX_DAO = "editableMatrixDao";
 }

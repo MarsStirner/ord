@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:my="http://java.sun.com/jsf/composite/mycomponents"
+      xmlns:p="http://primefaces.org/ui"
+        >
+
+<h:head>
+    <title>Матрица редактирования полей документа в зависимости от его типа и статуса</title>
+</h:head>
+
+<h:body>
+    <h:form id="incomingForm">
+        <my:editableMatrixInTableMode headerText="Входящие документы" id="incomingComposite"
+                                      rendered="true" type="incoming" reference="#{editableMatrix.incoming}"/>
+    </h:form>
+    <h:form id="outgoingForm">
+        <my:editableMatrixInTableMode headerText="Исходящие документы" id="outgoingComposite"
+                                      rendered="true" type="outgoing" reference="#{editableMatrix.outgoing}"
+                                      confirmMessage="Исхоядшки не поломаются после твоих правок, а?"/>
+    </h:form>
+    <h:form id="internalForm">
+        <my:editableMatrixInTableMode headerText="Внутренние документы" id="internalComposite"
+                                      rendered="true" type="internal" reference="#{editableMatrix.internal}"/>
+    </h:form>
+    <h:form id="requestForm">
+        <my:editableMatrixInTableMode headerText="Обращения граждан" id="requestComposite"
+                                      rendered="true" type="request" reference="#{editableMatrix.request}"/>
+    </h:form>
+    <h:form id="taskForm">
+        <my:editableMatrixInTableMode headerText="Поручения" id="taskComposite"
+                                      rendered="true" type="task" reference="#{editableMatrix.task}"/>
+    </h:form>
+
+    <p:ajaxStatus onstart="PF('statusDialog').show()" onsuccess="PF('statusDialog').hide()" />
+    <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false" showHeader="false">
+        Пожалуйста, подождите
+    </p:dialog>
+</h:body>
+</html>
+

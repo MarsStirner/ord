@@ -1,0 +1,68 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:cc="http://java.sun.com/jsf/composite"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://java.sun.com/jsf/html">
+
+    <cc:interface>
+        <cc:attribute name="headerText" type="java.lang.String" required="true"/>
+        <cc:attribute name="rendered" type="boolean" required="false" default="true"/>
+        <cc:attribute name="type" type="java.lang.String" required="false" default="untyped"/>
+        <cc:attribute name="reference" required="true"/>
+        <cc:attribute name="confirmMessage" type="java.lang.String" required="false" default="Вы уверены что хотите сохранить изменения?"/>
+    </cc:interface>
+
+    <cc:implementation>
+        <h:panelGroup id ="#{cc.attrs.type}Table" layout="block" styleClass="ui-datatable ui-widget" rendered="#{cc.attrs.rendered}">
+            <div class="ui-datatable-header ui-widget-header ui-corner-top">#{cc.attrs.headerText}</div>
+            <div class="ui-datatable-tablewrapper">
+                <table role="grid">
+                    <thead id="#{cc.attrs.type}TableHead">
+                    <tr role="row">
+                        <th class="ui-state-default outputText" role="columnheader">
+                            <h:outputText value="Поле" styleClass="ui-column-title"/>
+                        </th>
+                        <ui:repeat value="#{cc.attrs.reference.statuses}" var="status">
+                            <th class="ui-state-default outputText" role="columnheader">
+                                <h:outputText value="#{status.name}" styleClass="ui-column-title"/>
+                            </th>
+                        </ui:repeat>
+                    </tr>
+                    </thead>
+                    <tbody id ="outgoingTableBody" class="ui-datatable-data ui-widget-content">
+                    <ui:repeat value="#{cc.attrs.reference.fields}" var="field">
+                        <tr class="ui-widget-content ui-datatable-even">
+                            <td class="ui-state-default outputText" role="columnheader">
+                                <h:outputText value="#{field.fieldName}" styleClass="ui-column-title"/>
+                            </td>
+                            <ui:repeat value="#{cc.attrs.reference.statuses}" var="status">
+                                <td role="gridcell" style="padding:0; margin:0;">
+                                    <p:selectBooleanButton value="#{cc.attrs.reference.getItem(status.id, field.fieldCode).editable}"
+                                                           onIcon="ui-icon-check" offIcon="ui-icon-close" onLabel="" offLabel=""
+                                                           style="width:100%; height:100%; padding:0; margin:0;" />
+
+                                </td>
+                            </ui:repeat>
+                        </tr>
+                    </ui:repeat>
+                    </tbody>
+                </table>
+            </div>
+            <div class="ui-datatable-footer ui-widget-header ui-corner-bottom">
+                <p:commandButton value="Сохранить" action="#{editableMatrix.applyAllChanges()}" update="@form" process="@form">
+                    <p:confirm header="Изменение матрицы редактирования"
+                               message="#{cc.attrs.confirmMessage != null ? cc.attrs.confirmMessage : 'Вы уверены что хотите сохранить изменения?'}"
+                               icon="ui-icon-comment"/>
+                </p:commandButton>
+                <p:commandButton value="Отменить" action="#{editableMatrix.reload()}" process="@none" update="@form"/>
+            </div>
+        </h:panelGroup>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Да, я знаю что делаю" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="Нет, не стоит сохранять" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
+    </cc:implementation>
+
+</ui:component>
+
+

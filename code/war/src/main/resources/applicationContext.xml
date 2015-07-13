@@ -102,6 +102,7 @@
                 <value>ru.entity.model.document.viewFacts</value>
                 <!-- Reference Books -->
                 <value>ru.entity.model.referenceBook</value>
+                <value>ru.entity.model.util</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -210,5 +211,7 @@
     <bean id="viewFactDao" class="ru.hitsl.sql.dao.ViewFactDaoImpl" parent="daoSettings"/>
 
     <bean id="documentTypeDao" class="ru.hitsl.sql.dao.referenceBook.DocumentTypeDAOImpl" parent="daoSettings"/>
+
+    <bean id="editableMatrixDao" class="ru.hitsl.sql.dao.EditableMatrixDaoImpl" parent="daoSettings"/>
 
 </beans>

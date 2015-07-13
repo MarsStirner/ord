@@ -1159,7 +1159,7 @@ public final class ProcessFactory {
 
         prop = null;
         if (form != null) {
-            prop = PropertyUtils.getProperty(form, "description");
+            prop = PropertyUtils.getProperty(form, "value");
         }
         String formDescription = (prop == null ? "" : (String) prop);
 
