@@ -115,15 +115,15 @@
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="v_reasonDocument" value="Документ-основание:"/>
-                            <p:commandLink id="v_reasonDocument" onclick="goToDocumentByUniqueId('#{out_doc.document.reasonDocumentId}');">
-                                <h:outputText value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
-                            </p:commandLink>
-                        </p:column>
-                        <p:column colspan="3" styleClass="ui-grid-col-10">
                             <p:commandButton actionListener="#{out_doc.chooseReasonDocument}" icon="ui-icon-pencil"
                                              rendered="#{editable_reasonDocument}">
                                 <p:ajax event="dialogReturn" listener="#{out_doc.onReasonDocumentChosen}" update="v_reasonDocument"/>
                             </p:commandButton>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-10">
+                            <p:commandLink id="v_reasonDocument" onclick="goToDocumentByUniqueId('#{out_doc.document.reasonDocumentId}');">
+                                <h:outputText value="#{out_doc.getLinkDescriptionByUniqueId(out_doc.document.reasonDocumentId)}"/>
+                            </p:commandLink>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
