@@ -6,1100 +6,495 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:my = "http://xmlns.jcp.org/jsf/composite/mycomponents">
+      xmlns:my = "http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
-<ui:composition template="/jsf-template/template.xhtml">
+<ui:composition template="/jsf-template/documentPageTemplate.xhtml">
 
-    <ui:define name="running_head">
-        <h:outputScript library="js" name="primefacesLocale_ru.js"/>
-        <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{internal_doc.createState or internal_doc.editState}" scope="view"/>
+        <c:set var="statusId" value="#{internal_doc.document.documentStatus.id}" scope="view"/>
+        <c:set var="status_Project" value="#{statusId eq 1}" scope="view"/>
+        <c:set var="status_OnConsideration" value="#{statusId eq 2}" scope="view"/>
+        <c:set var="status_OnAgreement" value="#{statusId eq 3}" scope="view"/>
+        <c:set var="status_Registered" value="#{statusId eq 5}" scope="view"/>
+        <c:set var="status_OnExecution" value="#{statusId eq 80}" scope="view"/>
+        <c:set var="status_Executed" value="#{statusId eq 90}" scope="view"/>
+        <c:set var="status_InArchive" value="#{statusId eq 100}" scope="view"/>
+        <c:set var="status_OutArchive" value="#{statusId eq 110}" scope="view"/>
+        <!-- Редактируемость полей (true - редактируемо, иначе только для просмотра) -->
+        <c:set var="editable_ShortDescription" value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'shortDescription')}" scope="view"/>
+        <!-- Поле 'Вид документа' -->
+        <c:set var="editable_DocumentForm" value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'form')}" scope="view"/>
+        <!-- Поле 'Руководитель' -->
+        <c:set var="editable_Controller" value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'controller')}" scope="view"/>
+        <!-- Поле 'Адресаты'  -->
+        <c:set var="editable_Recipients" value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'recipients')}" scope="view"/>
+        <!-- Поле 'Ответственный' -->
+        <c:set var="editable_Responsible"  value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'responsible')}" scope="view"/>
+        <!-- Поле 'Дата исполнения' -->
+        <c:set var="editable_ExecutionDate"  value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'executionDate')}" scope="view"/>
+        <!-- Поле 'Дата подписания' -->
+        <c:set var="editable_SignDate"  value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'signDate')}" scope="view"/>
+        <!-- Поле 'Ответственный' -->
+        <c:set var="editable_Responsible"  value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'responsible')}" scope="view"/>
+        <!-- Поле 'Доступ-редакторы'  -->
+        <c:set var="editable_AccessTabEditors"  value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'accessEditors')}" scope="view"/>
+        <!-- Поле 'Доступ-Читатели'  -->
+        <c:set var="editable_AccessTabReaders"  value="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'accessReaders')}" scope="view"/>
+        <!-- Конец блока переменных -->
     </ui:define>
 
-    <ui:define name="header">
-        <h:panelGroup rendered="#{internal_doc.viewState or internal_doc.createState or internal_doc.editState}">
-            <div id="form_header">
-                <div class="actionbar">
-                    <div class="menu">
-                        <div class="defbutton">
-                            <h:outputLink value="/component/internal/internal_documents_by_number.xhtml">
-                                <h:graphicImage value="#{resource['images:home.png']}"/>
-                            </h:outputLink>
-                        </div>
-                        <div class="defbutton">
-                            <p:commandLink action="#{internal_doc.edit}" rendered="#{internal_doc.viewState and internal_doc.editPermission}" update="@all">
-                                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                                Редактировать
-                            </p:commandLink>
-                        </div>
-                        <div class="defbutton">
-                            <p:commandLink action="#{internal_doc.save}" rendered="#{internal_doc.editState or internal_doc.createState}" update="@all">
-                                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                                Сохранить
-                            </p:commandLink>
-                        </div>
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/internal/internal_documents_by_number.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{internal_doc.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{internal_doc.edit}" rendered="#{internal_doc.viewState and internal_doc.editPermission}"
+                         icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Отменить" action="#{internal_doc.view}" rendered="#{internal_doc.editState}"
+                         icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{internal_doc.save}" rendered="#{internal_doc.editState or internal_doc.createState}"
+                         icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{internal_doc.delete}" rendered="#{internal_doc.editState}"
+                         icon="ui-icon-trash" update="@form"/>
+        <p:commandButton value="Действия" action="#{internal_doc.processorModal.show}" rendered="#{internal_doc.viewState and internal_doc.executePermission}"
+                         icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
+    </ui:define>
 
-                        <div class="defbutton">
-                            <e5ui:formPart id="actions_fp">
-                                <p:commandLink onstart="actionsModal.clickOpen('actionsModal'); return false;"
-                                               rendered="#{internal_doc.executePermission and internal_doc.viewState}">
-                                    <h:graphicImage value="#{resource['images:button-do.png']}"/>
-                                    Действия
-                                </p:commandLink>
-                                <e5ui-comp:modalWindow id="actionsModal"
-                                                       modalWindowHolder="#{internal_doc.processorModal}"
-                                                       render=":main_content_form"
-                                                       execute="selectedAction :main_content_form" showButtons="false"
-                                                       widgetVar="actionsModal">
-                                    <h:panelGroup rendered="#{not(internal_doc.processorModal.processingState)}">
-                                        <div id="title">Действия</div>
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{internal_doc.processorModal.actionsAvailable}">
-                                        <div class="wrap" style="height: 90px; background-color: #fff; clear: both;">
-                                            <div class="inner" style="height: 90px;">
-                                                <e5ui:dataTable id="action_select_table" border="0"
-                                                                cellpadding="0" cellspacing="0"
-                                                                value="#{internal_doc.processorModal.availableActions}"
-                                                                var="row" grouping="false" width="100%">
-                                                    <e5ui:row
-                                                            onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                            styleClass="#{internal_doc.processorModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                    <e5ui:column>
-                                                        <f:facet name="header">
-                                                            <p>Доступные действия</p>
-                                                        </f:facet>
-                                                        <h:outputText value="#{row.action.name}"/>
-                                                        <h:commandLink id="selectLink" style="display: none;"
-                                                                       rendered="#{not internal_doc.processorModal.selected(row)}"
-                                                                       action="#{internal_doc.processorModal.select(row)}"/>
-                                                    </e5ui:column>
-                                                </e5ui:dataTable>
-                                            </div>
-                                        </div>
-                                    </h:panelGroup>
-                                    <h:panelGroup  rendered="#{internal_doc.processorModal.noActionsAvailable or internal_doc.processorModal.failureState or internal_doc.processorModal.processedState}">
-                                        <div style="padding-left: 10px;">
-                                            <ui:repeat value="#{internal_doc.processorModal.actionResult.split(':')}" var="element">
-                                                <h:outputText value="#{element}"/><br/>
-                                            </ui:repeat>
-                                        </div>
-                                    </h:panelGroup>
-                                    <h:panelGroup rendered="#{internal_doc.processorModal.processingState}">
-                                        <e5ui:include data="#{internal_doc.processorModal.processedActivity.document.form}"/>
-                                    </h:panelGroup>
-
-                                    <div class="e5ui-modal-bottombuttons">
-                                        <h:commandButton value="Выполнить" action="#{internal_doc.processorModal.process()}"
-                                                rendered="#{internal_doc.processorModal.actionsAvailable or internal_doc.processorModal.processingState}"/>
-                                        <h:button value="Отмена" onclick="actionsModal.clickClose(); return false;"
-                                                rendered="#{internal_doc.processorModal.actionsAvailable or internal_doc.processorModal.processingState}"/>
-                                        <h:button value="Закрыть" onclick="actionsModal.clickClose(); return false;"
-                                                rendered="#{internal_doc.processorModal.noActionsAvailable or internal_doc.processorModal.failureState or internal_doc.processorModal.processedState}"/>                                    </div>
-                                </e5ui-comp:modalWindow>
-                            </e5ui:formPart>
-                        </div>
-                        <div class="top">
-                            <h:commandLink styleClass="top_link" onclick="return false;">
-								<span>
-                                    <h:graphicImage value="#{resource['images:button-print.png']}"/>
-                                    Печать
-								</span>
-                            </h:commandLink>
-
-                            <div class="sub">
-                                <div class="item">
-                                    <h:commandLink action='#{reports.previewSqlReportByRequestParams()}'>
-                                        <h:graphicImage value="#{resource['images:blank.png']}"/>
-                                        <f:param name="reportName" value="internal_note.jrxml"/>
-                                        <f:param name="docId" value="#{internal_doc.document.id}"/>
-                                        Справка о ходе выполнения документа
-                                    </h:commandLink>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="role">
-                            <div class="top">
-                                <h:outputText value="#{internal_doc.document.getUserAccessLevel().value}"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{internal_doc.errorState}"/>
+        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not internal_doc.errorState}"
+                      style="font-weight: bold; display:inline-block; width:85%;">
+            Внутренний документ
+            <h:outputText value="#{internal_doc.document.form.value}"/>
+            <h:outputText value=" № #{internal_doc.document.registrationNumber} от " rendered="#{internal_doc.editState or internal_doc.viewState}"/>
+            <h:outputText value="#{internal_doc.document.registrationDate}" rendered="#{internal_doc.editState or internal_doc.viewState}">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </h:outputText>
+        </h:panelGroup>
+        <h:panelGroup layout="block" id="documentStatusDiv"
+                      style="display: inline-block; text-align: right; padding: 0.4em;
+                            background-color: rgb(60,141,188); border-radius: 4px; color: white;"
+                      rendered="#{not internal_doc.errorState}">
+            <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
         </h:panelGroup>
     </ui:define>
 
-    <ui:define name="left_menu"/>
+    <ui:define name="DOCUMENT_CONTENT">
+    <p:tabView id="documentTabPanel" widgetVar="internalDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast"
+               rendered="#{not internal_doc.errorState}">
+    <p:tab id="tab_info" title="Реквизиты">
+    <p:panelGrid>
+    <p:row styleClass="ui-grid-row">
+        <p:column styleClass="ui-grid-col-2">
+            <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
+        </p:column>
+        <p:column colspan="3" styleClass="ui-grid-col-10">
+            <h:outputText id="v_shortDescription" value="#{internal_doc.document.shortDescription}"
+                          rendered="#{not editable_ShortDescription}" styleClass="outputText" style="word-break: break-all"/>
+            <p:inputTextarea id="e_shortDescription" value="#{internal_doc.document.shortDescription}"
+                             rendered="#{editable_ShortDescription}" styleClass="inputText" style="width:100%;"/>
+        </p:column>
+    </p:row>
+    <p:row styleClass="ui-grid-row">
+        <p:column styleClass="ui-grid-col-2">
+            <p:outputLabel for="e_documentForm" value="Вид документа:"/>
+        </p:column>
+        <p:column colspan="3" styleClass="ui-grid-col-10">
+            <h:outputText id="v_documentForm" value="#{internal_doc.document.form.value}" styleClass="outputText"
+                          rendered="#{not editable_DocumentForm}"/>
+            <p:selectOneMenu id="e_documentForm" value="#{internal_doc.document.form}" converter="InternalDocumentFormConverter"
+                             required="true" styleClass="inputText" style="width:100%;" rendered="#{editable_DocumentForm}">
+                <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('INTERNAL')}"/>
+            </p:selectOneMenu>
+        </p:column>
+    </p:row>
+    <p:row styleClass="ui-grid-row">
+    <p:column styleClass="ui-grid-col-2">
+        <p:outputLabel for="v_author" value="Автор:"
+                       title="Поле 'Автор' не редактируемо и заполняется автоматически тем пользователем, который создал документ"/>
+    </p:column>
+    <p:column styleClass="ui-grid-col-10" colspan="3">
+        <h:outputText id="v_author" value="#{internal_doc.document.author.description}" styleClass="outputText"/>
+    </p:column>
+    </p:row>
+    <p:row styleClass="ui-grid-row">
+        <p:column styleClass="ui-grid-col-2">
+            <p:outputLabel for="e_signDate" value="Дата подписания:"/>
+        </p:column>
+        <p:column styleClass="ui-grid-col-4">
+            <h:outputText id="v_signDate" value="#{internal_doc.document.signatureDate}" lang="ru" styleClass="outputText"
+                          rendered="#{not editable_SignDate}">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </h:outputText>
+            <p:calendar id="e_signDate" value="#{internal_doc.document.signatureDate}" lang="ru" locale="ru"
+                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText"
+                        rendered="#{editable_SignDate}"/>
+        </p:column>
+        <p:column styleClass="ui-grid-col-3">
+            <p:outputLabel for="e_executionDate" value="Дата исполнения:"/>
+        </p:column>
+        <p:column styleClass="ui-grid-col-3">
+            <h:outputText id="v_executionDate" value="#{internal_doc.document.executionDate}" lang="ru" styleClass="outputText"
+                    rendered="#{not editable_ExecutionDate}">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </h:outputText>
+            <p:calendar id="e_executionDate" value="#{internal_doc.document.executionDate}" lang="ru" locale="ru"
+                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText"
+                        rendered="#{editable_ExecutionDate}"/>
+        </p:column>
+    </p:row>
+        <p:row styleClass="ui-grid-row">
+            <p:column styleClass="ui-grid-col-2">
+                <p:outputLabel for="v_controller" value="Руководитель:"/>
+                <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.chooseController}" rendered="#{editable_Controller}">
+                    <p:ajax event="dialogReturn" listener="#{internal_doc.onControllerChosen}" update="v_controller"/>
+                </p:commandButton>
+            </p:column>
+            <p:column styleClass="ui-grid-col-4">
+                <h:outputText id="v_controller" value="#{internal_doc.document.controller.description}" styleClass="outputText"/>
+            </p:column>
+            <p:column styleClass="ui-grid-col-3">
+                <p:outputLabel for="v_responsible" value="Ответственный:"/>
+                <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.chooseResponsible}" rendered="#{editable_Responsible}">
+                    <p:ajax event="dialogReturn" listener="#{internal_doc.onResponsibleChosen}" update="v_responsible"/>
+                </p:commandButton>
+            </p:column>
+            <p:column styleClass="ui-grid-col-3">
+                <h:outputText id="v_responsible" value="#{internal_doc.document.responsible.description}" styleClass="outputText"/>
+            </p:column>
 
-    <ui:define name="content">
-        <p:growl id="viewFactMessage" for="viewFact"/>
-
-        <div id="header_content">
-            <div class="name">
-                Внутренний документ
-                <!--Давать выбирать вид документа на основании его статусов "Проект документа"-->
-                <ui:param name="statusId_In_PROJ" value="#{internal_doc.document.documentStatus.id eq 1}"/>
-                <p:selectOneMenu id="form" value="#{internal_doc.document.form}" converter="InternalDocumentFormConverter"
-                                 rendered="#{internal_doc.createState or (internal_doc.editState and statusId_In_PROJ)}">
-                    <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('INTERNAL')}"/>
-                </p:selectOneMenu>
-                <h:outputText value="#{internal_doc.document.form}" rendered="#{internal_doc.viewState or (internal_doc.editState and not statusId_In_PROJ)}"/>
-                <h:outputText value=" № #{internal_doc.document.registrationNumber}" rendered="#{internal_doc.editState or internal_doc.viewState}"/>
-            </div>
-            <div class="title">
-                <h:outputText value="#{internal_doc.document.getDocumentStatus().getName()}"/>
-            </div>
-            <h:panelGroup rendered="#{internal_doc.notFoundState}">
-                <div class="name">404 - Документ не найден</div>
+        </p:row>
+    <p:row styleClass="ui-grid-row">
+        <p:column styleClass="ui-grid-col-2">
+            <p:outputLabel for="v_recipientUsers" value="Адресаты-пользователи: *"/>
+            <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.chooseRecipients}" rendered="#{editable_Recipients}">
+                <p:ajax event="dialogReturn" listener="#{internal_doc.onRecipientsChosen}" update="v_recipientUsers"/>
+            </p:commandButton>
+        </p:column>
+        <p:column styleClass="ui-grid-col-10" colspan="3">
+            <h:panelGroup id="v_recipientUsers">
+                <ui:repeat value="#{internal_doc.document.recipientUserList}" var="recipientUser">
+                    <h:outputText value="#{recipientUser.description}" styleClass="outputText"/><br/>
+                </ui:repeat>
             </h:panelGroup>
-            <h:panelGroup rendered="#{internal_doc.forbiddenState}">
-                <div class="name">
-                    В доступе отказано.
-                    <h:outputText value="#{internal_doc.stateComment}" lang="ru"/>
-                </div>
+        </p:column>
+    </p:row>
+    <p:row styleClass="ui-grid-row">
+        <p:column styleClass="ui-grid-col-2">
+            <p:outputLabel for="v_recipientGroups" value="Адресаты-группы:"/>
+            <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.chooseRecipientGroups}" rendered="#{editable_Recipients}">
+                <p:ajax event="dialogReturn" listener="#{internal_doc.onRecipientGroupsChosen}" update="v_recipientGroups"/>
+            </p:commandButton>
+        </p:column>
+        <p:column styleClass="ui-grid-col-10" colspan="3">
+            <h:panelGroup id="v_recipientGroups">
+                <ui:repeat value="#{internal_doc.document.recipientGroupsList}" var="recipientGroup">
+                    <h:outputText value="#{recipientGroup.value}" styleClass="outputText"/><br/>
+                </ui:repeat>
             </h:panelGroup>
-            <h:panelGroup
-                    rendered="#{not(internal_doc.createState or internal_doc.editState or internal_doc.viewState or internal_doc.notFoundState or internal_doc.forbiddenState)}">
-                <div class="name">В доступе отказано</div>
-            </h:panelGroup>
-        </div>
-
-        <div class="main_content">
-            <h:panelGroup rendered="#{internal_doc.editState or internal_doc.viewState or internal_doc.createState}">
-                <div class="row">
-                    <table class="form_grid">
-                        <tr class="row">
-                            <td class="third"/>
-                            <td class="forth"/>
-                            <td class="first">
-                                <label>
-                                    <span class="title">Автор:</span>
-                                </label>
-                            </td>
-                            <td class="second">
-                                <h:outputText value="#{internal_doc.document.author.getDescription()}"/>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </h:panelGroup>
-            <p:tabView widgetVar="internalDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
-                <p:tab title="Реквизиты" rendered="#{internal_doc.viewState or internal_doc.createState or internal_doc.editState}">
-                    <h:panelGroup rendered="#{internal_doc.viewState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Краткое	содержание:</span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <h:outputText value="#{internal_doc.document.shortDescription}"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Дата подписания:</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <h:outputText value="#{internal_doc.document.signatureDate}">
-                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                        </h:outputText>
-                                    </td>
-                                    <td class="third">
-                                        <label>
-                                            <span class="title">Руководитель</span>
-                                        </label>
-                                    </td>
-                                    <td class="forth">
-                                        <h:outputText value="#{internal_doc.document.controller.getDescription()}" class="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Срок исполнения</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <h:outputText value="#{internal_doc.document.executionDate}" lang="ru">
-                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                        </h:outputText>
-                                    </td>
-                                    <td class="third">
-                                        <label>
-                                            <span class="title">Контроль исполнения: </span>
-                                        </label>
-                                    </td>
-                                    <td class="fourth">
-                                        <h:outputText value="#{internal_doc.document.responsible.getDescription()}" class="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Адресаты-пользователи</span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <div class="width" style="overflow-y: scroll; height: 120px">
-                                            <ui:repeat value="#{internal_doc.document.recipientUserList}" var="recipientUser">
-                                                <h:outputText value="#{recipientUser.getDescription()}" class="width"/><br/>
-                                            </ui:repeat>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Адресаты-группы</span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <div class="width" style="overflow-y: scroll; height: 120px">
-                                            <ui:repeat value="#{internal_doc.document.recipientGroupsList}" var="recipientGroup">
-                                                <h:outputText value="#{recipientGroup.value}" class="width"/><br/>
-                                            </ui:repeat>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Номер в ERP</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <h:outputText value="#{internal_doc.document.erpNumber}"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{internal_doc.createState or internal_doc.editState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">
-                                        <label for="shortDescription">
-                                            <span class="title">Краткое содержание</span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <p:inputText id="shortDescription" value="#{internal_doc.document.shortDescription}" styleClass="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Дата подписания:</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <p:calendar id="signatureDate" value="#{internal_doc.document.signatureDate}" lang="ru" locale="ru"
-                                                    widgetVar="signatureDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-                                    </td>
-                                    <td class="third">
-                                        <p:commandLink actionListener="#{internal_doc.chooseController}" ajax="true" value="Руководитель">
-                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onControllerChosen}" update="controller"/>
-                                        </p:commandLink>
-                                    </td>
-                                    <td class="fourth">
-                                        <h:outputText id="controller" value="#{internal_doc.document.controller.getDescription()}" class="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label for="executionDate">
-                                            <span class="title">Срок исполнения</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <p:calendar id="executionDate" value="#{internal_doc.document.executionDate}" lang="ru" locale="ru"
-                                                    widgetVar="executionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-                                    </td>
-                                    <td class="third">
-                                        <p:commandLink actionListener="#{internal_doc.chooseResponsible}" ajax="true" value="Ответственный исполнитель">
-                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onResponsibleChosen}" update="responsible"/>
-                                        </p:commandLink>
-                                    </td>
-                                    <td class="fourth">
-                                        <h:outputText id="responsible" value="#{internal_doc.document.responsible.getDescription()}" class="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <p:commandLink value="Адресаты-пользователи" actionListener="#{internal_doc.chooseRecipients}" ajax="true">
-                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onRecipientsChosen}" update="recipientUsers"/>
-                                        </p:commandLink>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <div style="overflow-y: scroll; height: 120px">
-                                            <h:panelGroup id="recipientUsers">
-                                                <ui:repeat value="#{internal_doc.document.recipientUserList}" var="recipientUser">
-                                                    <h:outputText value="#{recipientUser.getDescription()}" class="width"/><br/>
-                                                </ui:repeat>
-                                            </h:panelGroup>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <p:commandLink value="Адресаты-группы" actionListener="#{internal_doc.chooseRecipientGroups}" ajax="true">
-                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onRecipientGroupsChosen}" update="recipientGroups"/>
-                                        </p:commandLink>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <div style="overflow-y: scroll; height: 120px">
-                                            <h:panelGroup id="recipientGroups">
-                                                <ui:repeat value="#{internal_doc.document.recipientGroupsList}" var="recipientGroup">
-                                                    <h:outputText value="#{recipientGroup.value}" class="width"/><br/>
-                                                </ui:repeat>
-                                            </h:panelGroup>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Номер в ERP</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <p:inputText value="#{internal_doc.document.erpNumber}"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-                </p:tab>
-                <p:tab title="Движение документа"
-                       rendered="#{internal_doc.viewState or internal_doc.createState or internal_doc.editState}">
-                    <fieldset>
-                        <legend>Поручения</legend>
-                        <div class="actionbar">
-                            <div class="menu">
-                                <h:panelGroup rendered="#{(internal_doc.document.getDocumentStatus().getId() eq 5)}">
-                                    <div class="defbutton">
-                                        <h:outputLink value="/component/task/task.xhtml" target="_blank">
-                                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                                            Новая резолюция
-                                            <f:param name="docAction" value="create"/>
-                                            <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="TASK_RESOLUTION"/>
-                                        </h:outputLink>
-                                    </div>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{(internal_doc.document.getDocumentStatus().getId() eq 80)}">
-                                    <div class="defbutton">
-                                        <h:outputLink value="/component/task/task.xhtml" target="_blank">
-                                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                                            Новое поручение
-                                            <f:param name="docAction" value="create"/>
-                                            <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="TASK_ASSIGMENT"/>
-                                        </h:outputLink>
-                                    </div>
-                                </h:panelGroup>
-                                <h:panelGroup  rendered="#{(internal_doc.document.form.value.equals('Служебная записка'))and(internal_doc.document.getDocumentStatus().getId() lt 80)}">
-                                    <div class="defbutton">
-                                        <h:outputLink value="/component/task/task.xhtml" target="_blank">
-                                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                                            Новая задача
-                                            <f:param name="docAction" value="create"/>
-                                            <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
-                                            <f:param name="formId" value="TASK_TASK"/>
-                                        </h:outputLink>
-                                    </div>
-                                </h:panelGroup>
-
-                                <div class="defbutton">
-                                    <h:commandLink action="#{internal_doc.taskTreeHolder.refresh()}">
-                                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
-                                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                                        Обновить
-                                    </h:commandLink>
-                                </div>
-                                <div class="defbutton">
-                                    <h:commandLink action="#{internal_doc.taskTreeHolder.collapseAll()}">
-                                        <h:graphicImage value="#{resource['images:minus.png']}"/>
-                                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
-                                        Свернуть все
-                                    </h:commandLink>
-                                </div>
-                                <div class="defbutton">
-                                    <h:commandLink action="#{internal_doc.taskTreeHolder.expandAll()}">
-                                        <h:graphicImage value="#{resource['images:plus.png']}"/>
-                                        <f:ajax render="task_table" onevent="function(data){if (data.status === 'success'){addRowHandlers(); } }"/>
-                                        Развернуть все
-                                    </h:commandLink>
-                                </div>
-                            </div>
-                        </div>
-                        <h:panelGroup>
-                            <div style="height: 250px; width: 100%; margin: 0;">
-                                <p:treeTable id="task_table"
-                                             value="#{internal_doc.taskTreeHolder.root}"
-                                             var="row_task"
-                                             style="width:100%; overflow-x:hidden;"
-                                             selectionMode="single"
-                                             emptyMessage="Записей нет"
-                                             widgetVar="taskTableVar">
-                                    <p:column headerText="Дата создания">
-                                        <h:outputText value="#{row_task.creationDate}">
-                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                        </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="Номер">
-                                        <h:outputText value="#{row_task.taskNumber}"/>
-                                    </p:column>
-                                    <p:column headerText="Автор">
-                                        <h:outputText value="#{row_task.author.getDescription()}"/>
-                                    </p:column>
-                                    <p:column headerText="Исполнитель">
-                                        <ui:repeat value="#{row_task.executorsList}" var="executor">
-                                            <h:outputText value="#{executor.getDescription()}"/><br/>
-                                        </ui:repeat>
-                                    </p:column>
-                                    <p:column headerText="Срок исполнения">
-                                        <h:outputText value="#{row_task.controlDate}">
-                                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
-                                        </h:outputText>
-                                    </p:column>
-                                    <p:column headerText="Содержание">
-                                        <h:outputText value="#{row_task.shortDescription}"/>
-                                    </p:column>
-                                    <p:column headerText="Статус">
-                                        <h:outputText value="#{row_task.getDocumentStatus().getName()}"/>
-                                    </p:column>
-                                    <p:column style="display:none;">
-                                        <input type="hidden" value="#{row_task.id}"/>
-                                    </p:column>
-                                    <p:ajax event="expand" oncomplete="addRowHandlers()"/>
-                                </p:treeTable>
-                                <script type="text/javascript">
-                                    function addRowHandlers() {
-                                        console.log("refresh treetable row onclick handlers");
-                                        var table_tree = document.getElementById(PrimeFaces.widgets.taskTableVar.id);
-                                        var rows = table_tree.getElementsByClassName("task");
-                                        for (var i = 0; i &lt; rows.length; i++) {
-                                            var currentRow = rows[i];
-                                            var createClickHandler = function (row) {
-                                                return function () {
-                                                    goToTask(row.lastChild.lastChild.value);
-                                                };
-                                            };
-                                            document.getElementById(currentRow.id).className = document.getElementById(currentRow.id).className.replace('ui-state-highlight', '');
-                                            currentRow.ondblclick = createClickHandler(currentRow);
-                                        }
-                                    }
-                                    window.onload = addRowHandlers;
-                                </script>
-                            </div>
+        </p:column>
+    </p:row>
+    </p:panelGrid>
+    </p:tab>
+    <p:tab id="tab_task" title="Поручения">
+        <p:treeTable id="task_table"
+                     value="#{internal_doc.taskTreeHolder.root}"
+                     var="row_task"
+                     selectionMode="single"
+                     emptyMessage="Записей нет"
+                     widgetVar="taskTableVar">
+            <p:column headerText="Дата создания" style="width:4.5em;" styleClass="outputText">
+                <h:outputText value="#{row_task.creationDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Номер" style="width:6em;" styleClass="outputText">
+                <h:outputText value="#{row_task.taskNumber}"/>
+            </p:column>
+            <p:column headerText="Автор" style="width:9em; white-space: normal;" styleClass="outputText">
+                <h:outputText value="#{row_task.author.getDescription()}"/>
+            </p:column>
+            <p:column headerText="Исполнитель" style="width:9em; white-space: normal;" styleClass="outputText">
+                <ui:repeat value="#{row_task.executorsList}" var="executor">
+                    <h:outputText value="#{executor.description}"/><br/>
+                </ui:repeat>
+            </p:column>
+            <p:column headerText="Срок исполнения" style="width:4.5em;" styleClass="outputText">
+                <h:outputText value="#{row_task.controlDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column headerText="Содержание" style="white-space: normal;" styleClass="outputText">
+                <h:outputText value="#{row_task.shortDescription}"/>
+            </p:column>
+            <p:column headerText="Статус" style="width:5em;" styleClass="outputText">
+                <h:outputText value="#{row_task.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:column style="display:none;">
+                <input type="hidden" value="#{row_task.id}"/>
+            </p:column>
+            <p:ajax event="expand" oncomplete="addRowHandlers()"/>
+        </p:treeTable>
+        <script type="text/javascript">
+            $(window).load(function () {
+                PrimeFaces.widgets.taskTableVar._render = function () {
+                    if (this.cfg.scrollable) {
+                        this.setupScrolling()
+                    }
+                    if (this.cfg.resizableColumns) {
+                        this.setupResizableColumns()
+                    }
+                    this.bindEvents();
+                    addRowHandlers();
+                }
+            });
+        </script>
+        <p:toolbar id="taskToolBar">
+            <p:toolbarGroup>
+                <p:button value="Новая резолюция" id="task_add_resolution_btn" outcome="/component/task/task.xhtml" target="_blank"
+                          icon="ui-icon-plusthick" rendered="#{status_Registered}">
+                    <f:param name="docAction" value="create"/>
+                    <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
+                    <f:param name="formId" value="TASK_RESOLUTION"/>
+                </p:button>
+                <p:button value="Новое поручение" id="task_add_assigment_btn" outcome="/component/task/task.xhtml" target="_blank"
+                          icon="ui-icon-plusthick" rendered="#{status_OnExecution}">
+                    <f:param name="docAction" value="create"/>
+                    <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
+                    <f:param name="formId" value="TASK_ASSIGMENT"/>
+                </p:button>
+                <p:commandButton value="Обновить" id="task_refresh_btn" action="#{internal_doc.taskTreeHolder.refresh}"
+                                 update="task_table" icon="ui-icon-refresh"/>
+                <p:commandButton value="Свернуть все" id="task_collapse_btn" action="#{internal_doc.taskTreeHolder.collapseAll}"
+                                 update="task_table" icon="ui-icon-carat-1-w"/>
+                <p:commandButton value="Развернуть все" id="task_expand_btn" action="#{internal_doc.taskTreeHolder.expandAll}"
+                                 update="task_table" icon="ui-icon-carat-1-e"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+    </p:tab>
+        <p:tab id="tab_access" title="Доступ">
+            <p:panelGrid style="width:100%">
+                <p:row styleClass="ui-grid-row">
+                    <p:column styleClass="ui-grid-col-4">
+                        <p:outputLabel for="e_docAccessLevel" value="Уровень допуска:"/>
+                    </p:column>
+                    <p:column styleClass="ui-grid-col-8">
+                        <h:outputText id="v_docAccessLevel" value="#{internal_doc.document.userAccessLevel.value}" rendered="#{internal_doc.viewState}"
+                                      styleClass="outputText"/>
+                        <p:selectOneMenu id="e_docAccessLevel" value="#{internal_doc.document.userAccessLevel}"
+                                         converter="UserAccessLevelConverter" rendered="#{internal_doc.editState or internal_doc.createState}">
+                            <f:selectItems var="level"
+                                           value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.authData.currentAccessLevel.level)}"
+                                           itemLabel="#{level.value}"/>
+                        </p:selectOneMenu>
+                    </p:column>
+                </p:row>
+                <p:row styleClass="ui-grid-row">
+                    <p:column styleClass="ui-grid-col-4">
+                        <p:outputLabel for="v_person_readers" value="Пользователи-читатели:"/>
+                        <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.choosePersonReaders}" rendered="#{editable_AccessTabReaders}">
+                            <p:ajax event="dialogReturn" listener="#{internal_doc.onPersonReadersChosen}" update="v_person_readers"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column styleClass="ui-grid-col-8">
+                        <h:panelGroup id="v_person_readers">
+                            <ui:repeat value="#{internal_doc.document.personReadersList}" var="personReader">
+                                <h:outputText value="#{personReader.description}" styleClass="outputText"/><br/>
+                            </ui:repeat>
                         </h:panelGroup>
-                    </fieldset>
-                </p:tab>
-
-                <p:tab title="Согласование"
-                       rendered="#{(internal_doc.agreementTreeEditAvailable or internal_doc.agreementTreeViewAvailable) and (internal_doc.viewState or internal_doc.createState or internal_doc.editState)}">
-                    <h:panelGroup id="agreement_tree_part">
-                        <h:panelGroup rendered="#{internal_doc.agreementTreeViewAvailable}">
-                            <div class="row" style="height: 250px; width: 100%; margin: 0; padding: 0">
-                                <div class="wrap" style="width:100%; margin: 0">
-                                    <div class="inner">
-                                        <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                                        var="httn"
-                                                        value="#{internal_doc.document.agreementTree.humanTaskTree}"
-                                                        grouping="true" levelCount="100">
-                                            <e5ui:row level="#{httn.grouping}" group="#{httn.parentNode}"
-                                                      fullRow="false" collapsed="false"/>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>Согласующий</p>
-                                                </f:facet>
-                                                <h:panelGroup rendered="#{httn.groupedNode}">
-                                                    <ui:repeat value="#{httn.taskList}" var="ht">
-                                                        <h:outputText value="#{ht.executor.getDescription()}"/><br/>
-                                                    </ui:repeat>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{not (httn.groupedNode)}">
-                                                    <h:outputText value="#{httn.firstTask.executor.getDescription()}"/>
-                                                </h:panelGroup>
-                                            </e5ui:column>
-                                            <e5ui:column rendered="#{internal_doc.document.getDocumentStatus().getId() gt 1}">
-                                                <h:panelGroup rendered="#{httn.groupedNode}">
-                                                    <ui:repeat value="#{httn.taskList}" var="ht">
-                                                        <h:graphicImage
-                                                                value="#{resource[ht.statusId eq 2?'images:document_letter_okay.png':(ht.statusId eq -1? 'images:document_letter_remove.png': 'images:document_letter_warning.png')]}"/>
-                                                        <br/>
-                                                    </ui:repeat>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{not (httn.groupedNode)}">
-                                                    <h:graphicImage
-                                                            value="#{resource[httn.firstTask.statusId eq 2?'images:document_letter_okay.png':(httn.firstTask.statusId eq -1? 'images:document_letter_remove.png': 'images:document_letter_warning.png')]}"/>
-                                                </h:panelGroup>
-                                            </e5ui:column>
-                                            <e5ui:column rendered="#{internal_doc.document.getDocumentStatus().getId() gt 1}">
-                                                <h:panelGroup rendered="#{httn.groupedNode}">
-                                                    <ui:repeat value="#{httn.taskList}" var="ht">
-                                                        <h:outputText value="#{ht.commentary}"/>
-                                                        <br/>
-                                                    </ui:repeat>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{not (httn.groupedNode)}">
-                                                    <h:outputText value="#{httn.firstTask.commentary}"/>
-                                                </h:panelGroup>
-                                            </e5ui:column>
-                                        </e5ui:dataTable>
-                                    </div>
-                                </div>
-                            </div>
+                    </p:column>
+                </p:row>
+                <p:row styleClass="ui-grid-row">
+                    <p:column styleClass="ui-grid-col-4">
+                        <p:outputLabel for="v_person_editors" value="Пользователи-редакторы:"/>
+                        <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.choosePersonEditors}" rendered="#{editable_AccessTabEditors}">
+                            <p:ajax event="dialogReturn" listener="#{internal_doc.onPersonEditorsChosen}" update="v_person_editors"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column styleClass="ui-grid-col-8">
+                        <h:panelGroup id="v_person_editors">
+                            <ui:repeat value="#{internal_doc.document.personEditorsList}" var="personEditor">
+                                <h:outputText value="#{personEditor.description}" styleClass="outputText"/><br/>
+                            </ui:repeat>
                         </h:panelGroup>
-                        <h:panelGroup rendered="#{internal_doc.agreementTreeEditAvailable}">
-                            <div class="row">
-                                <div class="actionbar">
-                                    <div class="menu">
-                                        <h:panelGroup rendered="#{internal_doc.document.agreementTree eq null}">
-                                            <div class="defbutton">
-                                                <h:commandLink action="#{humanTaskTreeControl.composeRouteTemplateSelectModal(internal_doc.document)}">
-                                                    <h:graphicImage value="/resources/images/plus.png"/>
-                                                    Новое согласование
-                                                </h:commandLink>
-                                            </div>
-                                        </h:panelGroup>
-                                        <h:panelGroup rendered="#{not (internal_doc.document.agreementTree eq null)}">
-                                            <div class="defbutton">
-                                                <h:commandLink action="#{humanTaskTreeControl.addRootHumanTask(internal_doc.document.agreementTree)}">
-                                                    <h:graphicImage value="/resources/images/plus.png"/>
-                                                    Новая ветвь согласования
-                                                </h:commandLink>
-                                            </div>
-                                        </h:panelGroup>
-                                    </div>
-                                </div>
-                                <div class="wrap" style="height: 250px; width: 100%; margin: 0;">
-                                    <div class="inner" style="height: 250px;">
-                                        <e5ui:dataTable id="route_template_table" border="0"
-                                                        cellpadding="0" cellspacing="0" var="httn"
-                                                        value="#{internal_doc.document.agreementTree.humanTaskTree}"
-                                                        grouping="true" levelCount="15"
-                                                        rendered="#{not (internal_doc.document.agreementTree eq null)}">
-                                            <e5ui:row level="#{httn.grouping}" group="#{httn.parentNode}" fullRow="false" collapsed="false"/>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>Согласующий</p>
-                                                </f:facet>
-                                                <h:panelGroup rendered="#{httn.groupedNode}">
-                                                    <ui:repeat value="#{httn.taskList}" var="ht">
-                                                        <h:commandLink action="#{humanTaskTreeControl.composeHumanTaskExecutorSelectModal(ht)}">
-                                                            <h:outputText value="#{ht.executor eq null? '...': ht.executor.description}"/>
-                                                        </h:commandLink>
-                                                        <br/>
-                                                    </ui:repeat>
-                                                </h:panelGroup>
-                                                <h:panelGroup rendered="#{not (httn.groupedNode)}">
-                                                    <h:commandLink action="#{humanTaskTreeControl.composeHumanTaskExecutorSelectModal(httn.firstTask)}">
-                                                        <h:outputText value="#{httn.firstTask.executor eq null? '...': httn.firstTask.executor.description}"/>
-                                                    </h:commandLink>
-                                                </h:panelGroup>
-                                            </e5ui:column>
-                                            <e5ui:column>
-                                                <h:commandLink action="#{humanTaskTreeControl.addParallelHumanTask(internal_doc.document.agreementTree, httn)}">
-                                                    <h:graphicImage value="/resources/images/plus.png"/>
-                                                    Параллельное согласование
-                                                </h:commandLink>
-                                            </e5ui:column>
-                                            <e5ui:column>
-                                                <h:commandLink action="#{humanTaskTreeControl.addFollowingHumanTask(internal_doc.document.agreementTree, httn)}">
-                                                    <h:graphicImage value="/resources/images/plus.png"/>
-                                                    Последовательное согласование
-                                                </h:commandLink>
-                                            </e5ui:column>
-                                        </e5ui:dataTable>
-                                        <e5ui-comp:modalWindow id="humanTaskExecutorSelectModal"
-                                                               modalWindowHolder="#{humanTaskTreeControl.humanTaskExecutorSelectModal}"
-                                                               render="route_template_table"
-                                                               execute="user_select_table" showButtons="false"
-                                                               style="width: 500px;"
-                                                               widgetVar="humanTaskExecutorSelectModal">
-                                            <div id="title">Выбор согласующего</div>
-                                            <div id="user_list" style="margin-top: 0;">
-                                                <div class="searchbar">
-                                                    <h:inputText id="filter_string"
-                                                                 value="#{humanTaskTreeControl.humanTaskExecutorSelectModal.userList.filter}"
-                                                                 style="display:block; float:left; margin-right:10px;"
-                                                                 title="Поиск"/>
-                                                    <h:commandButton value=" "
-                                                                     action="#{humanTaskTreeControl.humanTaskExecutorSelectModal.userList.changePageOffset(0)}"
-                                                                     styleClass="searchbutton">
-                                                        <f:ajax execute="humanTaskExecutorSelectModal:filter_string"
-                                                                render="humanTaskExecutorSelectModal:user_select_table humanTaskExecutorSelectModal:user_paging"/>
-                                                    </h:commandButton>
-                                                </div>
-                                                <div class="wrap"
-                                                     style="height: 250px; background-color: #fff; clear: both;">
-                                                    <div class="inner" style="height: 250px;">
-                                                        <e5ui:dataTable id="user_select_table" border="0"
-                                                                        cellpadding="0" cellspacing="0"
-                                                                        value="#{humanTaskTreeControl.humanTaskExecutorSelectModal.userList.documents}"
-                                                                        var="row" grouping="false" width="100%">
-                                                            <e5ui:row
-                                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                                    styleClass="#{humanTaskTreeControl.humanTaskExecutorSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Согласующий</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.description}"/>
-                                                                <h:commandLink id="selectLink" style="display: none;"
-                                                                               rendered="#{not humanTaskTreeControl.humanTaskExecutorSelectModal.selected(row)}"
-                                                                               action="#{humanTaskTreeControl.humanTaskExecutorSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                        </e5ui:dataTable>
-                                                    </div>
-                                                </div>
-                                                <div style="clear: both;">
-                                                    <h:panelGroup id="user_paging">
-                                                        <e5ui-comp:tablePager id="pager"
-                                                                              documentListHolder="#{humanTaskTreeControl.humanTaskExecutorSelectModal.userList}"/>
-                                                    </h:panelGroup>
-                                                </div>
-                                            </div>
-                                            <div class="e5ui-modal-bottombuttons">
-                                                <h:button
-                                                        onclick="humanTaskExecutorSelectModal.clickSave(); return false;"
-                                                        value="Выбрать"/>
-                                                <h:button
-                                                        onclick="humanTaskExecutorSelectModal.clickClose(); return false;"
-                                                        value="Отмена"/>
-                                            </div>
-                                        </e5ui-comp:modalWindow>
-
-                                        <e5ui-comp:modalWindow id="routeTemplateSelectModal"
-                                                               modalWindowHolder="#{humanTaskTreeControl.routeTemplateSelectModal}"
-                                                               render="agreement_tree_part"
-                                                               execute="modal_select_table" showButtons="false"
-                                                               style="width: 500px;"
-                                                               widgetVar="routeTemplateSelectModal">
-                                            <div id="title">Выбор шаблона согласования</div>
-                                            <div id="modal_list" style="margin-top: 0;">
-                                                <div class="wrap"
-                                                     style="height: 250px; background-color: #fff; clear: both;">
-                                                    <div class="inner" style="height: 250px;">
-                                                        <e5ui:dataTable id="modal_select_table" border="0"
-                                                                        cellpadding="0" cellspacing="0"
-                                                                        value="#{humanTaskTreeControl.routeTemplateSelectModal.routeTemplateList.documents}"
-                                                                        var="row" grouping="false" width="100%">
-                                                            <e5ui:row
-                                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                                    styleClass="#{humanTaskTreeControl.routeTemplateSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                            <e5ui:column>
-                                                                <f:facet name="header">
-                                                                    <p>Шаблон согласования</p>
-                                                                </f:facet>
-                                                                <h:outputText value="#{row.name}"/>
-                                                                <h:commandLink id="selectLink" style="display: none;"
-                                                                               rendered="#{not humanTaskTreeControl.routeTemplateSelectModal.selected(row)}"
-                                                                               action="#{humanTaskTreeControl.routeTemplateSelectModal.select(row)}"/>
-                                                            </e5ui:column>
-                                                        </e5ui:dataTable>
-                                                    </div>
-                                                </div>
-                                                <div style="clear: both;">
-                                                    <e5ui-comp:tablePager id="pager"
-                                                                          documentListHolder="#{humanTaskTreeControl.routeTemplateSelectModal.routeTemplateList}"/>
-                                                </div>
-                                            </div>
-                                            <div class="e5ui-modal-bottombuttons">
-                                                <h:button onclick="routeTemplateSelectModal.clickSave(); return false;"
-                                                          value="Выбрать"/>
-                                                <h:button onclick="routeTemplateSelectModal.clickClose(); return false;"
-                                                          value="Отмена"/>
-                                            </div>
-                                        </e5ui-comp:modalWindow>
-                                    </div>
-                                </div>
-                            </div>
+                    </p:column>
+                </p:row>
+                <p:row styleClass="ui-grid-row">
+                    <p:column styleClass="ui-grid-col-4">
+                        <p:outputLabel for="v_role_readers" value="Роли-читатели:"/>
+                        <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.chooseRoleReaders}" rendered="#{editable_AccessTabReaders}">
+                            <p:ajax event="dialogReturn" listener="#{internal_doc.onRoleReadersChosen}" update="v_role_readers"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column styleClass="ui-grid-col-8">
+                        <h:panelGroup id="v_role_readers">
+                            <ui:repeat value="#{internal_doc.document.roleReadersList}" var="roleReader">
+                                <h:outputText value="#{roleReader.name}" styleClass="outputText"/><br/>
+                            </ui:repeat>
                         </h:panelGroup>
-                    </h:panelGroup>
-                </p:tab>
-
-                <p:tab title="Связи" rendered="#{internal_doc.viewState or internal_doc.createState or internal_doc.editState}"/>
-                <p:tab title="Доступ">
-                    <h:panelGroup rendered="#{internal_doc.createState or internal_doc.editState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Уровень допуска: </span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <p:selectOneMenu id="accessLevel" value="#{internal_doc.document.userAccessLevel}" style="width:15em;" converter="UserAccessLevelConverter">
-                                            <f:selectItems value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.getLoggedUser().getCurrentUserAccessLevel().level)}"/>
-                                        </p:selectOneMenu>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td colspan="2">
-                                        <fieldset>
-                                            <legend>Пользователи</legend>
-                                            <table class="form_grid">
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        <p:commandButton value="Читатели" actionListener="#{internal_doc.choosePersonReaders}">
-                                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onPersonReadersChosen}" update="personReaders"/>
-                                                        </p:commandButton>
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <h:panelGroup id="personReaders">
-                                                                <ui:repeat value="#{internal_doc.document.personReadersList}" var="personReader">
-                                                                    <h:outputText value="#{personReader.getDescription()}" class="width"/><br/>
-                                                                </ui:repeat>
-                                                            </h:panelGroup>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        <p:commandButton value="Редакторы" actionListener="#{internal_doc.choosePersonEditors}">
-                                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onPersonEditorsChosen}" update="personEditors"/>
-                                                        </p:commandButton>
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <h:panelGroup id="personEditors">
-                                                                <ui:repeat value="#{internal_doc.document.personEditorsList}" var="personEditor">
-                                                                    <h:outputText value="#{personEditor.getDescription()}" class="width"/><br/>
-                                                                </ui:repeat>
-                                                            </h:panelGroup>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="row">
-                                                    <td class="first"/>
-                                                    <td class="second"/>
-                                                    <td class="third"/>
-                                                    <td class="fourth"/>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
-                                    </td>
-                                    <td colspan="2">
-                                        <fieldset>
-                                            <legend>Роли</legend>
-                                            <table class="form_grid">
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        <p:commandButton value="Читатели" actionListener="#{internal_doc.chooseRoleReaders}">
-                                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onRoleReadersChosen}" update="roleReaders"/>
-                                                        </p:commandButton>
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <h:panelGroup id="roleReaders">
-                                                                <ui:repeat value="#{internal_doc.document.roleReadersList}" var="roleReader">
-                                                                    <h:outputText value="#{roleReader.name}" class="width"/><br/>
-                                                                </ui:repeat>
-                                                            </h:panelGroup>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        <p:commandButton value="Редакторы" actionListener="#{internal_doc.chooseRoleEditors}">
-                                                            <p:ajax event="dialogReturn" listener="#{internal_doc.onRoleEditorsChosen}" update="roleEditors"/>
-                                                        </p:commandButton>
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <h:panelGroup id="roleEditors">
-                                                                <ui:repeat value="#{internal_doc.document.roleEditorsList}" var="roleEditor">
-                                                                    <h:outputText value="#{roleEditor.name}" class="width"/><br/>
-                                                                </ui:repeat>
-                                                            </h:panelGroup>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="row"/>
-                                            </table>
-                                        </fieldset>
-                                    </td>
-                                </tr>
-                                <tr class="row"/>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-
-                    <h:panelGroup rendered="#{internal_doc.viewState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td>
-                                        <label>
-                                            <span class="title"> Уровень допуска:</span>
-                                        </label>
-                                    </td>
-                                    <td colspan="3">
-                                        <h:outputText value="#{internal_doc.document.userAccessLevel.value}"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td colspan="2">
-                                        <fieldset>
-                                            <legend>Пользователи</legend>
-                                            <table class="form_grid">
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        Читатели:
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <ui:repeat value="#{internal_doc.document.personReadersList}" var="personReader">
-                                                                <h:outputText value="#{personReader.getDescription()}" class="width"/><br/>
-                                                            </ui:repeat>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        <span class="title">Редакторы: </span>
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <ui:repeat value="#{internal_doc.document.personEditorsList}" var="personEditor">
-                                                                <h:outputText value="#{personEditor.getDescription()}" class="width"/><br/>
-                                                            </ui:repeat>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
-                                    </td>
-                                    <td colspan="2">
-                                        <fieldset>
-                                            <legend>Роли</legend>
-                                            <table class="form_grid">
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        <span class="title">На чтение: </span>
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <ui:repeat value="#{internal_doc.document.roleReadersList}" var="roleReader">
-                                                                <h:outputText value="#{roleReader.name}" class="width"/><br/>
-                                                            </ui:repeat>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <tr class="row">
-                                                    <td class="first">
-                                                        <label>
-                                                            <span class="title">На редактирование:</span>
-                                                        </label>
-                                                    </td>
-                                                    <td class="second" colspan="3">
-                                                        <div style="overflow-y: scroll; height: 90px">
-                                                            <ui:repeat value="#{internal_doc.document.roleEditorsList}" var="roleEditor">
-                                                                <h:outputText value="#{roleEditor.name}" class="width"/><br/>
-                                                            </ui:repeat>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </fieldset>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-                </p:tab>
-                <p:tab title="История" rendered="#{internal_doc.viewState or internal_doc.createState or internal_doc.editState}">
-                    <my:historyTable id ="historyTable" value ="#{internal_doc.document.historyList}"/>
-                </p:tab>
-            </p:tabView>
-        </div>
+                    </p:column>
+                </p:row>
+                <p:row styleClass="ui-grid-row">
+                    <p:column styleClass="ui-grid-col-4">
+                        <p:outputLabel for="v_role_editors" value="Роли-редакторы:"/>
+                        <p:commandButton icon="ui-icon-pencil" actionListener="#{internal_doc.chooseRoleEditors}" rendered="#{editable_AccessTabEditors}">
+                            <p:ajax event="dialogReturn" listener="#{internal_doc.onRoleEditorsChosen}" update="v_role_editors"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:column styleClass="ui-grid-col-8">
+                        <h:panelGroup id="v_role_editors">
+                            <ui:repeat value="#{internal_doc.document.roleEditorsList}" var="roleEditor">
+                                <h:outputText value="#{roleEditor.name}" styleClass="outputText"/><br/>
+                            </ui:repeat>
+                        </h:panelGroup>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:tab>
+        <p:tab id="tab_history" title="История">
+            <my:historyTable id="historyTable" value="#{internal_doc.document.historyList}"/>
+        </p:tab>
+        <p:tab id="tab_files" title="Файлы" rendered="#{not internal_doc.createState}">
+            <p:dataTable id="table_attachment" value="#{internal_doc.attachments}" var="attachment" rowExpandMode="single">
+                <p:column style="width:1em" styleClass="outputText">
+                    <p:rowToggler rendered="#{not empty attachment.revisions}"/>
+                </p:column>
+                <p:column headerText="Имя файла" styleClass="outputText">
+                    <h:outputText
+                            value="#{not empty attachment.currentRevision.fileName ? attachment.currentRevision.fileName : attachment.fileName}"/>
+                </p:column>
+                <p:column headerText="Версия" style="width:10em" styleClass="outputText">
+                    <h:outputText value="#{attachment.currentRevision.version}" style="padding-right:0.5em;"/>
+                    <p:commandButton value="Добавить" icon="ui-icon-extlink" actionListener="#{internal_doc.addVersionForAttachment(attachment)}">
+                        <p:ajax event="dialogReturn" listener="#{internal_doc.handleAddVersionDialogResult}" update=":documentForm:msg"/>
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
+                    <h:outputText
+                            value="#{userList.getUserFullNameById(attachment.currentRevision.authorId != 0 ? attachment.currentRevision.authorId : attachment.authorId)}"/>
+                </p:column>
+                <p:column headerText="Скачать" style="width:7em">
+                    <p:commandButton value="Скачать" ajax="false" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
+                        <p:fileDownload value="#{fileManagement.download(attachment.id)}"/>
+                    </p:commandButton>
+                </p:column>
+                <p:column headerText="Удалить" rendered="#{statusId lt 90}" style="width:7em">
+                    <p:commandButton value="Удалить" action="#{internal_doc.deleteAttachment(attachment)}"/>
+                </p:column>
+                <p:rowExpansion styleClass="no-padding">
+                    <p:dataTable var="revision" value="#{attachment.revisions}" styleClass="hide-column-names"
+                                 style="padding-left: 2.1em; padding-right:0;">
+                        <f:facet name="header">
+                            История версий для файла #{not empty attachment.currentRevision.fileName ? attachment.currentRevision.fileName : attachment.fileName}
+                        </f:facet>
+                        <p:column headerText="Имя файла" styleClass="outputText">
+                            <h:outputText value="#{not empty revision.fileName ? revision.fileName : attachment.fileName}"/>
+                        </p:column>
+                        <p:column headerText="Версия" style="width:4em" styleClass="outputText">
+                            <h:outputText value="#{revision.version}"/>
+                        </p:column>
+                        <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
+                            <h:outputText
+                                    value="#{userList.getUserFullNameById(revision.authorId != 0 ? revision.authorId : attachment.authorId)}"/>
+                        </p:column>
+                        <p:column headerText="Скачать" style="width:7em">
+                            <p:commandButton value="Скачать" ajax="false" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
+                                <p:fileDownload value="#{fileManagement.download(attachment.id, revision.version)}"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+            </p:dataTable>
+            <!-- Это конечно КОСТЫЛИЩЕ, но если после первой загрузки файла делать еще один XHR запрос,
+             то следующая загрузка работает нормально. Пишут, что это связано с переходом на JSF 2.2 .
+              я-хз, долго искал и долго пытался исправить,
+             в общем каждый четный запрос XHR для fileUpload почему-то идет лесом, а нечетные - нет-->
+            <p:fileUpload id="files" fileUploadListener="#{internal_doc.handleFileUpload}" multiple="true" mode="advanced" widgetVar="uploadFileWidget"
+                          label="Выбрать файл" sizeLimit="104857600"
+                          uploadLabel="Загрузить выбранное" cancelLabel="Отмена" invalidSizeMessage="Размер файла не должен превышать 100 МБ"
+                          fileLimit="3" fileLimitMessage="Не более 3-х файлов за один раз, пожалуйста"
+                          update=":documentForm:msg table_attachment"
+                          oncomplete="workaround(); PrimeFaces.widgets.uploadFileWidget.uploadedFileCount = PrimeFaces.widgets.uploadFileWidget.uploadedFileCount - 1;"/>
+            <p:remoteCommand id="workaround" name="workaround"/>
+        </p:tab>
+    </p:tabView>
     </ui:define>
 
-    <ui:define name="footer">
-        <h:form id="file_upload_form" enctype="multipart/form-data"
-                rendered="#{internal_doc.viewState or internal_doc.createState or internal_doc.editState}">
-            <div style="padding-top: 10px;">
-                <fieldset>
-                    <legend>Файлы</legend>
-                    <div class="menu">
-                        <div class="defbutton">
-                            <e5ui:fileUpload id="file_upload" multiple="true"
-                                             actionBehavior="separate" maxFilesCount="0"
-                                             uploadHandler="#{fileManagement.uploadHandler}"
-                                             action="#{internal_doc.uploadAttachments(fileManagement.details)}"
-                                             onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
-                                             onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
-                                <f:ajax render="file_upload_form"/>
-                            </e5ui:fileUpload>
-                        </div>
-                        <div class="defbutton">
-                            <h:commandLink action="#{internal_doc.updateAttachments()}">
-                                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                                Обновить
-                                <f:ajax render=":file_upload_form"/>
-                            </h:commandLink>
-                        </div>
-                    </div>
-                    <div style="margin-top: 10px;">
-                        <div class="wrap_main" id="table_wrap">
-                            <div class="inner" id="table_inner">
-                                <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                                id="file_table" value="#{internal_doc.attachments}" var="row">
-                                    <e5ui:column>
-                                        <h:outputText value="#{row.currentRevision.fileName}"/>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <h:outputText value="#{row.currentRevision.version}"/>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <h:outputText
-                                                value="#{userList.getUserFullNameById(row.currentRevision.authorId)}"/>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <h:outputLink value="/component/file/download.xhtml" target="_blank">
-                                            <h:graphicImage value="/resources/images/download_doc.gif"/>
-                                            <f:param name="id" value="#{row.id}"/>
-                                            Скачать
-                                        </h:outputLink>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <h:commandLink action="#{internal_doc.initializeVersionAppender(row)}">
-                                            <h:graphicImage value="/resources/images/CheckOut_icon.gif"/>
-                                            <f:ajax render=":file_upload_form"/>
-                                            Добавить версию документа
-                                        </h:commandLink>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <h:commandLink action="#{internal_doc.initializeVersionHistory(row)}">
-                                            <h:graphicImage value="/resources/images/CheckOut_icon.gif"/>
-                                            <f:ajax render=":file_upload_form"/>
-                                            История версий
-                                        </h:commandLink>
-                                    </e5ui:column>
-                                    <e5ui:column>
-                                        <h:commandLink action="#{internal_doc.deleteAttachment(row)}">
-                                            <h:graphicImage value="/resources/images/delete.gif"/>
-                                            <f:ajax render=":file_upload_form :main_content_form"/>
-                                            Удалить
-                                        </h:commandLink>
-                                    </e5ui:column>
-                                </e5ui:dataTable>
+    <ui:define name="FOOTER"/>
 
-                                <e5ui-comp:modalWindow id="versionAppenderModal"
-                                                       modalWindowHolder="#{internal_doc.versionAppenderModal}"
-                                                       render=":file_upload_form" execute=":file_upload_form"
-                                                       style="width:300px;" showButtons="false"
-                                                       widgetVar="versionAppenderModal">
-                                    <div id="title">Добавление версии документа</div>
-                                    <div id="modal_container" style="margin-top: 0;">
-                                        <div>
-                                            Документ:
-                                            <h:outputText
-                                                    value="#{internal_doc.versionAppenderModal.attachment.currentRevision.fileName}"/>
-                                        </div>
-                                        <div>
-                                            Текущая версия:
-                                            <h:outputText
-                                                    value="#{internal_doc.versionAppenderModal.attachment.currentRevision.version}"/>
-                                        </div>
-                                        <div>
-                                            <h:selectBooleanCheckbox
-                                                    value="#{internal_doc.versionAppenderModal.majorVersion}"/>
-                                            Увеличить старший номер
-                                        </div>
-                                        <div style="margin-top: 5px;">
-                                            <e5ui:fileUpload id="version_upload" multiple="false"
-                                                             actionBehavior="separate" maxFilesCount="1"
-                                                             uploadHandler="#{fileManagement.uploadHandler}"
-                                                             action="#{internal_doc.versionAppenderModal.saveAttachment}"
-                                                             onuploading="e5ui_ajaxStatus.ajsgStopped=true;splash_screen_2.startShow();"
-                                                             onuploaded="splash_screen_2.stopShow();e5ui_ajaxStatus.ajsgStopped=false;">
-                                                <f:ajax render=":file_upload_form"
-                                                        execute=":file_upload_form:versionAppenderModal"/>
-                                            </e5ui:fileUpload>
-                                        </div>
-                                    </div>
-                                    <div class="e5ui-modal-bottombuttons">
-                                        <h:button
-                                                onclick="versionAppenderModal.clickClose(); return false;"
-                                                value="Отмена"/>
-                                    </div>
-                                </e5ui-comp:modalWindow>
 
-                                <e5ui-comp:modalWindow id="versionHistoryModal"
-                                                       modalWindowHolder="#{internal_doc.versionHistoryModal}"
-                                                       render=":file_upload_form" execute=":file_upload_form"
-                                                       style="width:500px;" showButtons="false"
-                                                       widgetVar="versionHistoryModal">
-                                    <div id="title">История версий документа</div>
-                                    <div id="modal_container" style="margin-top: 0;">
-                                        <div class="wrap_main" id="table_wrap">
-                                            <div class="inner" id="table_inner">
-                                                <e5ui:dataTable border="0" cellpadding="0" cellspacing="0"
-                                                                id="version_table"
-                                                                value="#{internal_doc.versionHistoryModal.versionList}"
-                                                                var="row">
-                                                    <e5ui:column style="min-width:8em;">
-                                                        <h:outputText
-                                                                value="#{row.fileName eq null? internal_doc.versionHistoryModal.attachment.fileName: row.fileName}"/>
-                                                    </e5ui:column>
-                                                    <e5ui:column style="min-width:5em;">
-                                                        <h:outputText value="#{row.version}"/>
-                                                    </e5ui:column>
-                                                    <e5ui:column style="min-width:12em;">
-                                                        <h:outputText
-                                                                value="#{userList.getUserFullNameById(row.authorId eq 0? internal_doc.versionHistoryModal.attachment.authorId: row.authorId)}"/>
-                                                    </e5ui:column>
-                                                    <e5ui:column style="min-width:7em;">
-                                                        <h:outputLink value="/component/file/download.xhtml"
-                                                                      target="_blank">
-                                                            <h:graphicImage value="/resources/images/download_doc.gif"/>
-                                                            <f:param name="id"
-                                                                     value="#{internal_doc.versionHistoryModal.attachment.id}"/>
-                                                            <f:param name="revision" value="#{row.version}"/>
-                                                            Скачать
-                                                        </h:outputLink>
-                                                    </e5ui:column>
-                                                </e5ui:dataTable>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="e5ui-modal-bottombuttons">
-                                        <h:button onclick="versionHistoryModal.clickClose(); return false;" value="Закрыть"/>
-                                    </div>
-                                </e5ui-comp:modalWindow>
-                            </div>
-                        </div>
-                    </div>
-                </fieldset>
-            </div>
-            <e5ui-comp:splashScreen id="splash_screen_2"
-                                    widgetVar="splash_screen_2" timeout="0">
-                <f:facet name="timeoutPanel">
-                    <div style="background-color: white; border-top: solid 1px black; border-bottom: solid 1px black; padding: 30px; text-align: center; margin: 200px auto; width: 300px;">
-                        Пожалуйста, подождите...
-                    </div>
-                </f:facet>
-            </e5ui-comp:splashScreen>
-            <script>
-                e5ui_splashScreen.startShowOnSubmit('splash_screen_2',
-                        ['file_upload_form']);
-            </script>
-        </h:form>
-
-        <h:outputStylesheet library="css" name="datatable.css"/>
-        <h:outputStylesheet library="css" name="modalWindow.css"/>
+    <ui:define name="DIALOGS">
+        <p:growl id="msg"/>
+        <!-- Сообщения о фактах просмотра-->
+        <p:growl id="viewFactMessage" for="viewFact"/>
+        <!-- Жаваскрипт для этой страницы-->
+        <script type="text/javascript">
+            function showStatus() {
+                PF('statusDialog').show();
+            }
+            function hideStatus() {
+                PF('statusDialog').hide();
+            }
+            function addRowHandlers() {
+                console.log("refresh treetable row onclick handlers");
+                var table_tree = document.getElementById(PrimeFaces.widgets.taskTableVar.id);
+                var rows = table_tree.getElementsByClassName("task");
+                for (var i = 0; i &lt; rows.length; i++) {
+                    var currentRow = rows[i];
+                    var createClickHandler = function (row) {
+                        return function () {
+                            row.className.replace('ui-state-highlight', '');
+                            goToTask(row.lastChild.lastChild.value);
+                        };
+                    };
+                    currentRow.ondblclick = createClickHandler(currentRow);
+                }
+            }
+        </script>
+        <!-- Диалог при загрузке файла -->
+        <p:dialog modal="true" widgetVar="statusDialog" header="Загрузка файла" draggable="false" closable="false" resizable="false">
+            <h:outputText value="Пожалуйста подождите пока ваш файл будет загружен"/>
+        </p:dialog>
+        <!-- Диалог работы с действиями -->
+        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false"
+                  resizable="false" width="50%" closeOnEscape="true" fitViewport="true">
+            <h:panelGroup id="actionForm" rendered="#{internal_doc.processorModal.modalVisible}">
+                <h:panelGroup rendered="#{internal_doc.processorModal.actionsAvailable}">
+                    <p:dataTable id="action_select_table"
+                                 value="#{internal_doc.processorModal.availableActions}"
+                                 var="row_action"
+                                 width="100%"
+                                 emptyMessage="Доступных действий нет"
+                                 rowKey="#{row_action.action.name}"
+                                 selectionMode="single"
+                                 selection="#{internal_doc.processorModal.selectedAction}">
+                        <p:column headerText="Доступные действия">
+                            <h:outputText value="#{row_action.action.name}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+                <h:panelGroup id="actiopResult"
+                              rendered="#{internal_doc.processorModal.noActionsAvailable or internal_doc.processorModal.failureState or internal_doc.processorModal.processedState}">
+                    <h:outputText style="padding-left:10px;" value="#{internal_doc.processorModal.actionResult}"/>
+                </h:panelGroup>
+                <h:panelGroup id="actionActivity" rendered="#{internal_doc.processorModal.processingState}">
+                    <e5ui:include data="#{internal_doc.processorModal.processedActivity.document.form}"/>
+                </h:panelGroup>
+                <p:commandButton action="#{internal_doc.processorModal.process()}"
+                                 rendered="#{internal_doc.processorModal.actionsAvailable or internal_doc.processorModal.processingState}"
+                                 value="Выполнить" update="actionForm">
+                </p:commandButton>
+                <p:commandButton rendered="#{internal_doc.processorModal.actionsAvailable or internal_doc.processorModal.processingState}"
+                                 onclick="PF('actionDialogVar').close(); return false;"
+                                 value="Отмена"/>
+                <p:commandButton
+                        rendered="#{internal_doc.processorModal.noActionsAvailable or internal_doc.processorModal.failureState or internal_doc.processorModal.processedState}"
+                        onclick="PF('actionDialogVar').close(); return false;"
+                        value="Закрыть"/>
+            </h:panelGroup>
+        </p:dialog>
     </ui:define>
 
 </ui:composition>

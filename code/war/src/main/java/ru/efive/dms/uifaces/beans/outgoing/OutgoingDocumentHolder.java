@@ -1,6 +1,7 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.primefaces.context.RequestContext;
@@ -135,6 +136,28 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         final String selected = (String) event.getObject();
         getDocument().setReasonDocumentId(selected);
         LOGGER.info("Choose reasonDocument From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
+    }
+
+    public void addVersionForAttachment(final Attachment attachment){
+        if (attachment != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AttachmentVersionDialogHolder.DIALOG_SESSION_KEY, attachment);
+            final Map<String, List<String>> params = ImmutableMap.of(
+                    AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY,
+                    (List<String>) ImmutableList.of(getDocument().getUniqueId())
+            );
+            RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params );
+        } else {
+            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
+        }
+    }
+
+    public void handleAddVersionDialogResult(final SelectEvent event){
+        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
+        LOGGER.info("Add version dialog: {}", result);
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+            final FacesMessage msg = (FacesMessage) result.getResult();
+            addMessage(MessageHolder.MSG_KEY_FOR_FILES, msg);
+        }
     }
 
     //Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
