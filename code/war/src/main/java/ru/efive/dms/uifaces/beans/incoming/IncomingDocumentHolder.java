@@ -99,7 +99,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
 
     private ProcessorModalBean processorModal = new ProcessorModalBean() {
-
         @Override
         protected void doInit() {
             setProcessedData(getDocument());
@@ -132,8 +131,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 setActionResult(in_result);
             }
         }
-
-
     };
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -439,7 +436,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 }
                 relatedDocuments = loadRelatedDocuments();
             }
-
         } catch (Exception e) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
