@@ -174,7 +174,7 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
             } else if ("taskDocumentId".equals(key)) {
                 final Disjunction disjunction = Restrictions.disjunction();
                 disjunction.add(Restrictions.ilike("rootDocumentId", "task_%"));
-                disjunction.add(Restrictions.isEmpty("rootDocumentId"));
+                disjunction.add(Restrictions.eq("rootDocumentId", ""));
                 disjunction.add(Restrictions.isNull("rootDocumentId"));
                 conjunction.add(disjunction);
             } else if (DocumentSearchMapKeys.REGISTRATION_NUMBER_KEY.equals(key)) {
