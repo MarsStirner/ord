@@ -132,7 +132,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
      * @param paramName name of the GET parameter
      * @return String value of named get parameter, if not set returns null
      */
-    private String getRequestParamByName(final String paramName) {
+    public String getRequestParamByName(final String paramName) {
         return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(paramName);
     }
 

@@ -273,6 +273,19 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         return result;
     }
 
+    /**
+     * Добавление в историю еще одной записи, если история пуста, то она создается
+     *
+     * @param historyEntry Запись в истории, которую надо добавить
+     * @return статус добавления (true - успех)
+     */
+    public boolean addToHistory(final HistoryEntry historyEntry) {
+        if (history == null) {
+            this.history = new HashSet<>(1);
+        }
+        return this.history.add(historyEntry);
+    }
+
     public void setRootDocumentId(String rootDocumentId) {
         this.rootDocumentId = rootDocumentId;
     }
