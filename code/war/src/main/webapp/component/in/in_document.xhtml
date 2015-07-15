@@ -446,8 +446,8 @@
                     </p:column>
                     <p:column headerText="Версия" style="width:10em" styleClass="outputText">
                         <h:outputText value="#{attachment.currentRevision.version}" style="padding-right:0.5em;"/>
-                        <p:commandButton value="Добавить" icon="ui-icon-extlink" actionListener="#{in_doc.addVersionForAttachment(attachment)}">
-                            <p:ajax event="dialogReturn" listener="#{in_doc.handleAddVersionDialogResult}" update=":documentForm:msg"/>
+                        <p:commandButton value="Добавить" icon="ui-icon-extlink" actionListener="#{in_doc.addVersionForAttachment(attachment)}" rendered="#{in_doc.editPermission}">
+                            <p:ajax event="dialogReturn" listener="#{in_doc.handleAddVersionDialogResult}" update="table_attachment :documentForm:msg"/>
                         </p:commandButton>
                     </p:column>
                     <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
@@ -459,8 +459,8 @@
                             <p:fileDownload value="#{fileManagement.download(attachment.id)}"/>
                         </p:commandButton>
                     </p:column>
-                    <p:column headerText="Удалить" rendered="#{statusId lt 90}" style="width:7em">
-                        <p:commandButton value="Удалить" action="#{in_doc.deleteAttachment(attachment)}"/>
+                    <p:column headerText="Удалить" rendered="#{statusId lt 90 and in_doc.editPermission}" style="width:7em">
+                        <p:commandButton value="Удалить" action="#{in_doc.deleteAttachment(attachment)}" update="table_attachment"/>
                     </p:column>
                     <p:rowExpansion styleClass="no-padding">
                         <p:dataTable var="revision" value="#{attachment.revisions}" styleClass="hide-column-names"
@@ -490,12 +490,13 @@
                  то следующая загрузка работает нормально. Пишут, что это связано с переходом на JSF 2.2 .
                   я-хз, долго искал и долго пытался исправить,
                  в общем каждый четный запрос XHR для fileUpload почему-то идет лесом, а нечетные - нет-->
-                <p:fileUpload id="files" fileUploadListener="#{in_doc.handleFileUpload}" multiple="true" mode="advanced" widgetVar="uploadFileWidget"
+                <p:fileUpload id="files" fileUploadListener="#{in_doc.handleFileUpload}" multiple="false" mode="advanced" widgetVar="uploadFileWidget"
                               label="Выбрать файл" sizeLimit="104857600"
                               uploadLabel="Загрузить выбранное" cancelLabel="Отмена" invalidSizeMessage="Размер файла не должен превышать 100 МБ"
-                              fileLimit="3" fileLimitMessage="Не более 3-х файлов за один раз, пожалуйста"
+                              fileLimit="1" fileLimitMessage="Не более 1-го файла за раз, пожалуйста"
                               update=":documentForm:msg table_attachment"
-                              oncomplete="workaround(); PrimeFaces.widgets.uploadFileWidget.uploadedFileCount = PrimeFaces.widgets.uploadFileWidget.uploadedFileCount - 1;"/>
+                              oncomplete="workaround(); PrimeFaces.widgets.uploadFileWidget.uploadedFileCount = PrimeFaces.widgets.uploadFileWidget.uploadedFileCount - 1;"
+                              rendered="#{in_doc.editPermission}"/>
                 <p:remoteCommand id="workaround" name="workaround"/>
             </p:tab>
         </p:tabView>

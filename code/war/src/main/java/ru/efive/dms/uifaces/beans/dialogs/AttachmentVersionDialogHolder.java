@@ -5,11 +5,14 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 import ru.efive.dao.alfresco.Attachment;
+import ru.efive.dms.uifaces.beans.FileManagementBean;
+import ru.efive.dms.uifaces.beans.SessionManagementBean;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Map;
 
@@ -25,6 +28,12 @@ import java.util.Map;
 public class AttachmentVersionDialogHolder extends AbstractDialog<Attachment> {
     public static final String DIALOG_SESSION_KEY = "DIALOG_ATTACHMENT_VERSION";
     public static final String DIALOG_DOCUMENT_KEY = "documentId";
+    @Inject
+    @Named("sessionManagement")
+    private SessionManagementBean sessionManagement;
+    @Inject
+    @Named("fileManagement")
+    private FileManagementBean fileManagement;
     private String documentId;
 
     /**
@@ -47,7 +56,7 @@ public class AttachmentVersionDialogHolder extends AbstractDialog<Attachment> {
     public String initializeDocumentKey(Map<String, String> requestParameterMap) {
         final String value = requestParameterMap.get(DIALOG_DOCUMENT_KEY);
         if (StringUtils.isNotEmpty(value)) {
-           this.documentId = value;
+            this.documentId = value;
         }
         return null;
     }
@@ -55,11 +64,28 @@ public class AttachmentVersionDialogHolder extends AbstractDialog<Attachment> {
 
     public void handleFileUpload(FileUploadEvent event) {
         UploadedFile file = event.getFile();
-        logger.info(file.getFileName());
-        final DialogResult result = new DialogResult(Button.CONFIRM, new FacesMessage(
-                "Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
-        logger.debug("DIALOG_BTN_CONFIRM:  {}", result);
-        RequestContext.getCurrentInstance().closeDialog(result);
+        logger.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
+        final boolean uploadResult = fileManagement.createVersion(
+                selected, file.getContents(), false, file.getFileName(), sessionManagement.getAuthData().getAuthorized()
+        );
+        if (uploadResult) {
+            final DialogResult result = new DialogResult(
+                    Button.CONFIRM, new FacesMessage(
+                    "Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()
+            )
+            );
+            logger.debug("DIALOG_BTN_CONFIRM:  {}", result);
+            RequestContext.getCurrentInstance().closeDialog(result);
+        } else {
+            final DialogResult result = new DialogResult(
+                    Button.CONFIRM, new FacesMessage(
+                    "Error! " + file.getFileName() + " is not uploaded."
+            )
+            );
+            logger.debug("DIALOG_BTN_CONFIRM:  {}", result);
+            RequestContext.getCurrentInstance().closeDialog(result);
+        }
+
     }
 
     public String getDocumentId() {

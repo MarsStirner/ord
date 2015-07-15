@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.beans;
 
-import org.alfresco.webservice.util.ContentUtils;
 import org.apache.commons.lang.StringUtils;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -9,105 +8,26 @@ import org.slf4j.LoggerFactory;
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.uifaces.filter.UploadHandler;
-import ru.efive.uifaces.filter.UploadInfo;
-import ru.util.ApplicationHelper;
+import ru.entity.model.user.User;
 
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.ByteArrayInputStream;
-import java.io.Serializable;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
 @Named("fileManagement")
 @SessionScoped
-public class FileManagementBean implements java.io.Serializable, UploadHandler {
+public class FileManagementBean implements java.io.Serializable {
     private static final Logger logger = LoggerFactory.getLogger("ALFRESCO");
+    private static final String CONTENT_TYPE = "application/octet-stream;charset=UTF-8";
 
-    // uploading
-
-    public UploadHandler getUploadHandler() {
-        return this;
-    }
-
-    @Override
-    public void handleUpload(UploadInfo uploadInfo) {
-        details = new FileUploadDetails();
-        if (uploadInfo.getFileName() == null || uploadInfo.getFileName().isEmpty()) {
-            logger.info("file name is \"{}\"", (uploadInfo.getFileName() == null ? "null" : "empty"));
-            return;
-        }
-        try {
-            byte[] byteArray = ContentUtils.convertToByteArray(uploadInfo.getData());
-            Attachment attachment = new Attachment();
-            attachment.setCreated(Calendar.getInstance(ApplicationHelper.getLocale()).getTime());
-            attachment.setFileName(uploadInfo.getFileName());
-            attachment.setAuthorId(sessionManagementBean.getLoggedUser().getId());
-            uploadInfo.getData().close();
-            details.setAttachment(attachment);
-            details.setByteArray(byteArray);
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-    }
-
-    public class FileUploadDetails implements Serializable{
-
-        public byte[] getByteArray() {
-            return byteArray;
-        }
-
-        public void setByteArray(byte[] byteArray) {
-            this.byteArray = byteArray;
-        }
-
-        public String getAsString() {
-            return new String(byteArray);
-        }
-
-        public Attachment getAttachment() {
-            return attachment;
-        }
-
-        public void setAttachment(Attachment attachment) {
-            this.attachment = attachment;
-        }
-
-        private byte[] byteArray;
-        private Attachment attachment;
-    }
-
-    public FileUploadDetails getDetails() {
-        return details;
-    }
-
-    private FileUploadDetails details;
 
     // file operations
-
-    public synchronized Attachment getFileById(int id) {
-        Attachment result = null;
-        AlfrescoDAO<Attachment> dao = null;
-        try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
-            if (dao == null) {
-                return null;
-            }
-            result = dao.getDataById(Integer.toString(id));
-        } catch (Exception e) {
-            result = null;
-            logger.error("", e);
-        } finally {
-            if (dao != null) dao.disconnect();
-        }
-        return result;
-    }
 
     public synchronized Attachment getFileById(String id) {
         Attachment result = null;
@@ -148,7 +68,7 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         return result;
     }
 
-    public synchronized boolean createFile(Attachment file, byte[] bytes) {
+    public boolean createFile(Attachment file, byte[] bytes) {
         boolean result = false;
         AlfrescoDAO<Attachment> dao = null;
         try {
@@ -182,46 +102,6 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         return result;
     }
 
-    public synchronized byte[] downloadFile(String id) {
-        byte[] result = {};
-        AlfrescoDAO<Attachment> dao = null;
-        if (id != null && !id.equals("")) {
-            try {
-                dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
-                if (dao == null) {
-                    return result;
-                }
-                Attachment attachment = dao.getDataById(id);
-                result = dao.getContent(attachment);
-            } catch (Exception e) {
-                logger.error("", e);
-            } finally {
-                if (dao != null) dao.disconnect();
-            }
-        }
-        return result;
-    }
-
-    public synchronized byte[] downloadFile(String id, String version) {
-        byte[] result = {};
-        AlfrescoDAO<Attachment> dao = null;
-        if (id != null && !id.equals("")) {
-            try {
-                dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
-                if (dao == null) {
-                    return result;
-                }
-                Attachment attachment = dao.getDataById(id);
-                result = dao.getContent(attachment, version);
-            } catch (Exception e) {
-                logger.error("", e);
-            } finally {
-                if (dao != null) dao.disconnect();
-            }
-        }
-        return result;
-    }
-
     public StreamedContent download(String id){
         final byte[] result;
         AlfrescoDAO<Attachment> dao = null;
@@ -235,7 +115,7 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
                 final Attachment attachment = dao.getDataById(id);
                 result = dao.getContent(attachment);
                 final String fileName=StringUtils.defaultIfEmpty(attachment.getCurrentRevision().getFileName(), attachment.getFileName());
-                return new DefaultStreamedContent(new ByteArrayInputStream(result), "application/octet-stream;charset=UTF-8", URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll(
+                return new DefaultStreamedContent(new ByteArrayInputStream(result), CONTENT_TYPE, URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll(
                         "\\+", "%20"));
             } catch (Exception e) {
                 logger.error("", e);
@@ -274,7 +154,7 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
                     }
                     result = dao.getContent(attachment, version);
                     return new DefaultStreamedContent(
-                            new ByteArrayInputStream(result), "application/octet-stream;charset=UTF-8",
+                            new ByteArrayInputStream(result), CONTENT_TYPE,
                             URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8.name()).replaceAll(
                             "\\+", "%20"
                     )
@@ -292,6 +172,23 @@ public class FileManagementBean implements java.io.Serializable, UploadHandler {
         } else {
             return null;
         }
+    }
+
+    public synchronized boolean createVersion(Attachment file, byte[] bytes, boolean majorVersion, String fileName, User owner) {
+        boolean result = false;
+        AlfrescoDAO<Attachment> dao = null;
+        try {
+            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            if (dao == null) {
+                return false;
+            }
+            result = dao.createVersion(file, bytes, owner.getId(), fileName, majorVersion);
+        } catch (Exception e) {
+            logger.error("", e);
+        } finally {
+            if (dao != null) dao.disconnect();
+        }
+        return result;
     }
 
 

@@ -3,7 +3,6 @@ package ru.efive.dms.uifaces.beans;
 import org.apache.commons.lang.StringUtils;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
-import ru.efive.dms.uifaces.beans.FileManagementBean.FileUploadDetails;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.entity.model.document.RecordBookDocument;
@@ -130,51 +129,9 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
         return attachments;
     }
 
-    public void uploadAttachments(FileUploadDetails details) {
-        try {
-            if (details.getAttachment() != null) {
-                Attachment attachment = details.getAttachment();
-                //attachment.setFileName(new String(attachment.getFileName().getBytes(), "utf-8"));
-                attachment.setFileName(attachment.getFileName());
-                if (getDocumentId() == null || getDocumentId() == 0) {
-                    attachments.add(attachment);
-                    files.add(details.getByteArray());
-                } else {
-                    attachment.setParentId(new String(("request_" + getDocumentId()).getBytes(), "utf-8"));
-                    System.out.println("result of the upload operation - " + fileManagement.createFile(attachment, details.getByteArray()));
-                    updateAttachments();
-                }
-            }
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
-            e.printStackTrace();
-        }
-    }
 
-    public void versionAttachment(FileUploadDetails details, Attachment attachment, boolean majorVersion) {
-        try {
-            if (details.getByteArray() != null) {
-                if (getDocumentId() == null || getDocumentId() == 0) {
-                    if (attachments.contains(attachment)) {
-                        int pos = attachments.indexOf(attachment);
-                        if (pos > -1) {
-                            files.remove(pos);
-                            files.add(pos, details.getByteArray());
-                        }
-                    } else {
-                        attachments.add(attachment);
-                        files.add(details.getByteArray());
-                    }
-                } else {
-                    System.out.println("result of the upload operation - " + fileManagement.createVersion(attachment, details.getByteArray(), majorVersion, details.getAttachment().getFileName()));
-                    updateAttachments();
-                }
-            }
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_ATTACH);
-            e.printStackTrace();
-        }
-    }
+
+
 
     public void updateAttachments() {
         if (getDocumentId() != null && getDocumentId() != 0) {
@@ -231,12 +188,6 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
                }*/
         }
 
-        public void saveAttachment() {
-            if (attachment != null) {
-                versionAttachment(fileManagement.getDetails(), attachment, majorVersion);
-            }
-            versionAppenderModal.save();
-        }
 
         @Override
         protected void doHide() {
