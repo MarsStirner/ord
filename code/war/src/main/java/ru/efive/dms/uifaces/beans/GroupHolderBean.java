@@ -16,7 +16,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 
@@ -24,7 +23,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
 
 @Named("group")
 @ViewScoped
-public class GroupHolderBean extends AbstractDocumentHolderBean<Group> implements Serializable {
+public class GroupHolderBean extends AbstractDocumentHolderBean<Group>  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("GROUP");
 
@@ -109,9 +108,9 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group> implement
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         LOGGER.info("Choose members  : {}", result);
         if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final List<User> selected = (List<User>) event.getObject();
+            final List<User> selected = (List<User>) result.getResult();
             if(selected != null && !selected.isEmpty()) {
-                getDocument().setMembers(new HashSet<User>(selected));
+                getDocument().setMembers(new HashSet<>(selected));
             }  else {
                 getDocument().getMembers().clear();
             }

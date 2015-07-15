@@ -15,12 +15,11 @@ import ru.hitsl.sql.dao.OfficeKeepingFileDAOImpl;
 import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
 import ru.util.ApplicationHelper;
 
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -29,9 +28,9 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @Named("officeKeepingVolume")
-@ConversationScoped
-public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<OfficeKeepingVolume> implements Serializable {
-    private static final long serialVersionUID = -7696075488442962088L;
+@ViewScoped
+public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<OfficeKeepingVolume>  {
+
     private boolean isRequisitesTabSelected = true;
     private boolean isDocumentsTabSelected = false;
     private boolean isLocationTabSelected = false;
@@ -97,7 +96,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
         historyEntry.setEndDate(created);
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
-        Set<HistoryEntry> history = new HashSet<HistoryEntry>();
+        Set<HistoryEntry> history = new HashSet<>();
         history.add(historyEntry);
         document.setHistory(history);
 
@@ -108,7 +107,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).update((OfficeKeepingVolume) getDocument());
+            OfficeKeepingVolume record = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).update(getDocument());
             if (record == null) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
             } else {
@@ -150,60 +149,11 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
 
 
     public List<RoleType> getTypes() {
-        List<RoleType> result = new ArrayList<RoleType>();
-        for (RoleType type : RoleType.values()) {
-            result.add(type);
-        }
+        List<RoleType> result = new ArrayList<>();
+        Collections.addAll(result, RoleType.values());
         return result;
     }
 
-    public String getRequisitesTabHeader() {
-        return "<span><span>Реквизиты</span></span>";
-    }
-
-    public boolean isRequisitesTabSelected() {
-        return isRequisitesTabSelected;
-    }
-
-    public void setRequisitesTabSelected(boolean isRequisitesTabSelected) {
-        this.isRequisitesTabSelected = isRequisitesTabSelected;
-    }
-
-    public String getLocationTabHeader() {
-        return "<span><span>Местоположение</span></span>";
-    }
-
-    public boolean isLocationTabSelected() {
-        return isLocationTabSelected;
-    }
-
-    public void setLocationTabSelected(boolean isLocationTabSelected) {
-        this.isLocationTabSelected = isLocationTabSelected;
-    }
-
-    public String getDocumentsTabHeader() {
-        return "<span><span>Документы</span></span>";
-    }
-
-    public boolean isDocumentsTabSelected() {
-        return isDocumentsTabSelected;
-    }
-
-    public void setDocumentsTabSelected(boolean isDocumentsTabSelected) {
-        this.isDocumentsTabSelected = isDocumentsTabSelected;
-    }
-
-    public String getHistoryTabHeader() {
-        return "<span><span>История</span></span>";
-    }
-
-    public void setHistoryTabSelected(boolean isHistoryTabSelected) {
-        this.isHistoryTabSelected = isHistoryTabSelected;
-    }
-
-    public boolean isHistoryTabSelected() {
-        return isHistoryTabSelected;
-    }
 
     public ProcessorModalBean getProcessorModal() {
         return processorModal;
@@ -231,7 +181,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
             if (getSelectedAction().isHistoryAction()) {
                 Set<HistoryEntry> history = document.getHistory();
                 if (history == null) {
-                    history = new HashSet<HistoryEntry>();
+                    history = new HashSet<>();
                 }
                 history.add(historyEntry);
                 document.setHistory(history);

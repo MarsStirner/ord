@@ -48,14 +48,8 @@
                     </div>
                 </div>
             </h:panelGroup>
-            <h:panelGroup rendered="#{role.notFoundState}">
-                <div class="name">404 - Роль не найдена</div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{role.forbiddenState}">
-                <div class="name">403 - Действие запрещено</div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{not(role.createState or role.editState or role.viewState or role.notFoundState or role.forbiddenState)}">
-                <div class="name">В доступе отказано</div>
+            <h:panelGroup rendered="#{role.errorState}">
+                <div class="name">Ошибка</div>
             </h:panelGroup>
         </div>
 

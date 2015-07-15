@@ -50,15 +50,8 @@
             <div class="name">Заметка</div>
         </h:panelGroup>
 
-        <h:panelGroup rendered="#{record_book_doc.notFoundState}">
-            <div class="name">404 - Документ не найден</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{record_book_doc.forbiddenState}">
-            <div class="name">403 - Действие запрещено</div>
-        </h:panelGroup>
-        <h:panelGroup
-                rendered="#{not(record_book_doc.createState or record_book_doc.editState or record_book_doc.viewState or record_book_doc.notFoundState or record_book_doc.forbiddenState)}">
-            <div class="name">В доступе отказано</div>
+        <h:panelGroup rendered="#{record_book_doc.errorState}">
+            <div class="name">Ошибка</div>
         </h:panelGroup>
     </div>
 

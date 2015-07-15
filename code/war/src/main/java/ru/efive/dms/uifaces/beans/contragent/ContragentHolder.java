@@ -17,7 +17,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +27,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 @Named("contragent")
 @ViewScoped
-public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> implements Serializable {
+public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
     private static final Logger logger = LoggerFactory.getLogger("CONTRAGENT");
 
     @Override
@@ -81,12 +80,12 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> imp
                 contragent.setDeleted(true);
                 contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(contragent);
                 if (contragent == null) {
-                    FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+                    addMessage(null, MSG_CANT_DELETE);
                     return false;
                 }
                 return true;
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
+                addMessage(null, MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
             }
         } catch (Exception e) {
             logger.error("Error on deleteDocument", e);
@@ -98,12 +97,12 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> imp
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).get(id));
+            setDocument(sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).getItemById(id));
             if (getDocument() == null) {
               setDocumentNotFound();
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
+            addMessage(null, MSG_ERROR_ON_INITIALIZE);
             logger.error("initializeError", e);
         }
     }
@@ -120,13 +119,13 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> imp
         try {
             Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(getDocument());
             if (contragent == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+               addMessage(null, MSG_CANT_SAVE);
                 return false;
             }
             return true;
         } catch (Exception e) {
             logger.error("Error on save", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+            addMessage(null, MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -136,13 +135,13 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> imp
         try {
             final Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(getDocument());
             if (contragent == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+               addMessage(null, MSG_CANT_SAVE);
                 return false;
             }
             return true;
         } catch (Exception e) {
             logger.error("Error on save New", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
     }

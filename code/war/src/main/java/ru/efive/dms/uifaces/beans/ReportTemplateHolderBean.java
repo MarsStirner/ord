@@ -12,7 +12,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 import java.util.Date;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
@@ -20,7 +19,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.REPORT_DAO;
 
 @Named("reportTemplate")
 @ViewScoped
-public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate> implements Serializable {
+public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate>{
 
     @Override
     protected boolean deleteDocument() {
@@ -29,7 +28,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
             sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+            addMessage(null, MSG_CANT_DELETE);
         }
         return result;
     }
@@ -62,7 +61,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
             result = true;
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_REPORT_CREATION);
+            addMessage(null, MSG_ERROR_ON_REPORT_CREATION);
             e.printStackTrace();
         }
         return result;

@@ -18,14 +18,8 @@
                 <h:outputText value="#{group.document.value}"/>
             </div>
         </h:panelGroup>
-        <h:panelGroup rendered="#{group.notFoundState}">
-            <div class="name">404 - Группа не найдена</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{group.forbiddenState}">
-            <div class="name">403 - Действие запрещено</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{not(group.createState or group.editState or group.viewState or group.notFoundState or group.forbiddenState)}">
-            <div class="name">В доступе отказано</div>
+        <h:panelGroup rendered="#{group.errorState}">
+            <div class="name">Ошибка</div>
         </h:panelGroup>
     </ui:define>
 
@@ -112,7 +106,7 @@
                     <tr class="row">
                         <td class="first">Категория:</td>
                         <td class="second">
-                            <p:selectOneMenu id="groupType" value="#{group.document.groupType}" converter="GroupTypeConverter">
+                            <p:selectOneMenu id="groupType" value="#{group.document.groupType}" converter="GroupTypeConverter" style="width:15em;">
                             <f:selectItems value="#{dictionaryManagement.groupTypes}"/>
                         </p:selectOneMenu>
                         </td>

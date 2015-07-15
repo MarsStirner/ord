@@ -49,15 +49,8 @@
                 <h:outputText value="#{nomenclature.document.value}"/>
             </div>
         </h:panelGroup>
-        <h:panelGroup rendered="#{nomenclature.notFoundState}">
-            <div class="name">404 - Контрагент не найден</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{nomenclature.forbiddenState}">
-            <div class="name">403 - Действие запрещено</div>
-        </h:panelGroup>
-        <h:panelGroup
-                rendered="#{not(nomenclature.createState or nomenclature.editState or nomenclature.viewState or nomenclature.notFoundState or nomenclature.forbiddenState)}">
-            <div class="name">В доступе отказано</div>
+        <h:panelGroup rendered="#{nomenclature.errorState}">
+            <div class="name">Ошибка</div>
         </h:panelGroup>
     </ui:define>
 

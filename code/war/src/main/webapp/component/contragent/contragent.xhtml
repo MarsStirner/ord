@@ -59,15 +59,8 @@
                 <h:outputText value="#{contragent.document.shortName}"/>
             </div>
         </h:panelGroup>
-        <h:panelGroup rendered="#{contragent.notFoundState}">
-            <div class="name">404 - Контрагент не найден</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{contragent.forbiddenState}">
-            <div class="name">403 - Действие запрещено</div>
-        </h:panelGroup>
-        <h:panelGroup
-                rendered="#{not(contragent.createState or contragent.editState or contragent.viewState or contragent.notFoundState or contragent.forbiddenState)}">
-            <div class="name">В доступе отказано</div>
+        <h:panelGroup rendered="#{contragent.errorState}">
+            <div class="name">Ошибка</div>
         </h:panelGroup>
     </ui:define>
 

@@ -97,5 +97,57 @@ public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Методы для получения единичной записи с нужным уровнем вложенности связей
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Получить документ с FULL_CRITERIA  по его идентификатору
+     *
+     * @param id идентификатор документа
+     * @return документ, полученный с FULL_CRITERIA
+     */
+    @SuppressWarnings("unchecked")
+    public Contragent getItemById(Integer id) {
+        final List resultList = getHibernateTemplate().findByCriteria(getFullCriteria().add(Restrictions.eq("id", id)));
+        if (resultList.isEmpty()) {
+            return null;
+        } else {
+            return (Contragent) resultList.get(0);
+        }
+    }
+
+    /**
+     * Получить документ с LIST_CRITERIA  по его идентификатору
+     *
+     * @param id идентификатор документа
+     * @return документ, полученный с LIST_CRITERIA
+     */
+    @SuppressWarnings("unchecked")
+    public Contragent getItemByIdForListView(Integer id) {
+        final List resultList = getHibernateTemplate().findByCriteria(getListCriteria().add(Restrictions.eq("id", id)));
+        if (resultList.isEmpty()) {
+            return null;
+        } else {
+            return (Contragent) resultList.get(0);
+        }
+    }
+
+    /**
+     * Получить документ с SIMPLE_CRITERIA  по его идентификатору
+     *
+     * @param id идентификатор документа
+     * @return документ, полученный с SIMPLE_CRITERIA
+     */
+    @SuppressWarnings("unchecked")
+    public Contragent getItemByIdForSimpleView(Integer id) {
+        final List resultList = getHibernateTemplate().findByCriteria(getSimplestCriteria().add(Restrictions.eq("id", id)));
+        if (resultList.isEmpty()) {
+            return null;
+        } else {
+            return (Contragent) resultList.get(0);
+        }
+    }
+
 
 }

@@ -16,7 +16,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 import java.util.*;
 
 import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_CONTACT_TYPE_DAO;
@@ -24,7 +23,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 @Named("user")
 @ViewScoped
-public class UserHolderBean extends AbstractDocumentHolderBean<User> implements Serializable {
+public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     private static final Logger LOGGER = LoggerFactory.getLogger("USER");
     private List<PersonContact> contactList;
 

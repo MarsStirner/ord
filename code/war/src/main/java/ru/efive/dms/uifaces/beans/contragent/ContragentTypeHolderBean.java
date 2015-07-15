@@ -21,7 +21,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.List;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
@@ -30,7 +29,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_CONTRAGENT_TYPE_DAO;
 
 @Named("contragentType")
 @ViewScoped
-public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<ContragentType> implements Serializable{
+public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<ContragentType> {
 
     private static final Logger logger = LoggerFactory.getLogger("RB_CONTRAGENT_TYPE");
 
@@ -53,11 +52,11 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
                 }
                 return true;
             } else{
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+                addMessage(null, MSG_CANT_DELETE);
                 return false;
             }
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_RB_CONTRAGENT_TYPE_IS_USED_BY_SOME_CONTRAGENTS);
+            addMessage(null, MSG_RB_CONTRAGENT_TYPE_IS_USED_BY_SOME_CONTRAGENTS);
             return false;
         }
     }
@@ -79,7 +78,7 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
                 setDocument(document);
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_INITIALIZE);
+            addMessage(null, MSG_ERROR_ON_INITIALIZE);
             logger.error("initializeError", e);
         }
     }
@@ -89,13 +88,13 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
         try {
             final ContragentType document = sessionManagement.getDAO(ContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).save(getDocument());
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                addMessage(null, MSG_CANT_SAVE);
                 return false;
             }
             return true;
         } catch (Exception e) {
             logger.error("Error on save New", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
     }
@@ -105,14 +104,14 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
         try {
             ContragentType document = sessionManagement.getDAO(ContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).save(getDocument());
             if (document == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                addMessage(null, MSG_CANT_SAVE);
                 return false;
             }
             setDocument(document);
             return true;
         } catch (Exception e) {
             logger.error("Error on save", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+            addMessage(null, MSG_ERROR_ON_SAVE);
             return false;
         }
     }

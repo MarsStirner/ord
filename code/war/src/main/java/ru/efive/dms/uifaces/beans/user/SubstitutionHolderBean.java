@@ -14,8 +14,8 @@ import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.SubstitutionDaoImpl;
 import ru.hitsl.sql.dao.util.ApplicationDAONames;
 
-import javax.enterprise.context.ConversationScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
  * Description: бин для отображения замещения<br>
  */
 @Named("substitution")
-@ConversationScoped
+@ViewScoped
 public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution> {
 
     //Именованный логгер
@@ -63,7 +63,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     //Выбора замещаемого ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void choosePerson() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        final Map<String, List<String>> params = new HashMap<>();
         params.put(
                 UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION));
         final User preselected = getDocument().getPerson();
@@ -84,7 +84,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     //Выбора замещающего ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseSubstitutor() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        final Map<String, List<String>> params = new HashMap<>();
         params.put(
                 UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR));
         final User preselected = getDocument().getSubstitution();

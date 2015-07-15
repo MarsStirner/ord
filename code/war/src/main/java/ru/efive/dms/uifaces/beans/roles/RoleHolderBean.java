@@ -12,7 +12,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +21,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
 
 @Named("role")
 @ViewScoped
-public class RoleHolderBean extends AbstractDocumentHolderBean<Role> implements Serializable {
+public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
 
     @Override
     protected boolean deleteDocument() {

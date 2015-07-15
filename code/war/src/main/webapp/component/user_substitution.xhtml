@@ -11,194 +11,182 @@
 
 <ui:composition template="/jsf-template/template.xhtml">
 
-<ui:define name="running_head">
-    <h:outputScript library="js" name="primefacesLocale_ru.js"/>
-    <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
-</ui:define>
+    <ui:define name="running_head">
+        <h:outputScript library="js" name="primefacesLocale_ru.js"/>
+        <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
+    </ui:define>
 
-<ui:define name="header">
-    <h:panelGroup rendered="#{(substitution.viewState or substitution.createState or substitution.editState) and isFilling}">
-        <div id="form_header">
-            <div class="actionbar">
-                <div class="menu">
-                    <div class="defbutton">
-                        <h:outputLink value="/component/user_substitutions.xhtml">
-                            <h:graphicImage value="#{resource['images:home.png']}"/>
-                        </h:outputLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{substitution.edit}" rendered="#{substitution.viewState}">
-                            <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                            Редактировать
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{substitution.save}"
-                                       rendered="#{substitution.editState or substitution.createState}">
-                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                            Сохранить
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{substitution.delete()}" rendered="#{substitution.viewState}">
-                            <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                            Удалить
-                            <f:param name="docAction" value="delete"/>
-                        </h:commandLink>
+    <ui:define name="header">
+        <h:panelGroup rendered="#{(substitution.viewState or substitution.createState or substitution.editState) and isFilling}">
+            <div id="form_header">
+                <div class="actionbar">
+                    <div class="menu">
+                        <div class="defbutton">
+                            <h:outputLink value="/component/user_substitutions.xhtml">
+                                <h:graphicImage value="#{resource['images:home.png']}"/>
+                            </h:outputLink>
+                        </div>
+                        <div class="defbutton">
+                            <h:commandLink action="#{substitution.edit}" rendered="#{substitution.viewState}">
+                                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
+                                Редактировать
+                            </h:commandLink>
+                        </div>
+                        <div class="defbutton">
+                            <h:commandLink action="#{substitution.save}"
+                                           rendered="#{substitution.editState or substitution.createState}">
+                                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
+                                Сохранить
+                            </h:commandLink>
+                        </div>
+                        <div class="defbutton">
+                            <h:commandLink action="#{substitution.delete()}" rendered="#{substitution.viewState}">
+                                <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
+                                Удалить
+                                <f:param name="docAction" value="delete"/>
+                            </h:commandLink>
+                        </div>
                     </div>
                 </div>
             </div>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="left_menu"/>
+
+    <ui:define name="content">
+
+        <p:growl id="growl" showDetail="true" sticky="true"/>
+
+        <div id="header_content">
+            <c:choose>
+                <c:when test="#{substitution.viewState or substitution.editState}">
+                    <h:panelGroup>
+                        <div class="name">
+                            <h:outputText value="Замещение № #{substitution.document.id}"/>
+                        </div>
+                    </h:panelGroup>
+                </c:when>
+                <c:when test="#{substitution.createState}">
+                    <div class="name">
+                        Новое замещение
+                    </div>
+                </c:when>
+                <c:when test="#{substitution.errorState}">
+                    <h:panelGroup>
+                        <div class="name">Ошибка</div>
+                    </h:panelGroup>
+                </c:when>
+            </c:choose>
         </div>
-    </h:panelGroup>
-</ui:define>
 
-<ui:define name="left_menu"/>
-
-<ui:define name="content">
-
-<p:growl id="growl" showDetail="true" sticky="true"/>
-
-<div id="header_content">
-    <c:choose>
-        <c:when test="#{substitution.viewState or substitution.editState}">
-            <h:panelGroup>
-                <div class="name">
-                    <h:outputText value="Замещение № #{substitution.document.id}"/>
-                </div>
-            </h:panelGroup>
-        </c:when>
-        <c:when test="#{substitution.createState}">
-            <div class="name">
-                Новое замещение
-            </div>
-        </c:when>
-        <c:when test="#{substitution.notFoundState}">
-            <h:panelGroup>
-                <div class="name">404 - Документ не найден</div>
-            </h:panelGroup>
-        </c:when>
-        <c:when test="#{substitution.forbiddenState}">
-            <h:panelGroup>
-                <div class="name">
-                    В доступе отказано.
-                </div>
-            </h:panelGroup>
-        </c:when>
-        <c:when test="#{not(substitution.createState or substitution.editState or substitution.viewState or substitution.notFoundState or substitution.forbiddenState)}">
-            <h:panelGroup>
-                <div class="name">В доступе отказано</div>
-            </h:panelGroup>
-        </c:when>
-    </c:choose>
-</div>
-
-<div class="main_content">
-    <p:panel id="documentSection">
-        <table class="form_grid">
-            <tr class="row">
-                <td class="first">
-                    <label for="startDate">
-                        <span class="title">Дата начала интервала</span>
-                    </label>
-                </td>
-                <td class="second">
-                    <c:choose>
-                        <c:when test="#{substitution.viewState}">
-                            <h:outputText id="startDate" value="#{substitution.document.startDate}">
-                                <f:convertDateTime pattern="dd.MM.yyyy"/>
-                            </h:outputText>
-                        </c:when>
-                        <c:when test="#{substitution.editState or substitution.createState}">
-                            <p:calendar id="startDate" value="#{substitution.document.startDate}" lang="ru"
-                                        locale="ru"
-                                        widgetVar="startDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-                        </c:when>
-                    </c:choose>
-                </td>
-            </tr>
-            <tr class="row">
-                <td class="first">
-                    <label for="endDate">
-                        <span class="title">Дата окончания интервала</span>
-                    </label>
-                </td>
-                <td class="second">
-                    <c:choose>
-                        <c:when test="#{substitution.viewState}">
-                            <h:outputText id="endDate" value="#{substitution.document.endDate}">
-                                <f:convertDateTime pattern="dd.MM.yyyy"/>
-                            </h:outputText>
-                        </c:when>
-                        <c:when test="#{substitution.editState or substitution.createState}">
-                            <p:calendar id="endDate" value="#{substitution.document.endDate}" lang="ru"
-                                        locale="ru"
-                                        widgetVar="endDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-                        </c:when>
-                    </c:choose>
-                </td>
-            </tr>
-            <tr class="row">
-                <td class="first">
-                        <c:choose>
-                            <c:when test="#{substitution.viewState}">
-                                <label for="person"><span class="title">Замещаемое лицо</span></label>
-                            </c:when>
-                            <c:when test="#{substitution.editState or substitution.createState}">
-                                <p:commandButton value="Замещаемое лицо" actionListener="#{substitution.choosePerson}">
-                                    <p:ajax event="dialogReturn" listener="#{substitution.onPersonChosen}" update="person"/>
-                                </p:commandButton>
-                            </c:when>
-                        </c:choose>
-                </td>
-                <td class="second">
-                    <h:outputText id="person" value="#{substitution.document.person.getDescription()}"/>
-                </td>
-            </tr>
-            <tr class="row">
-                <td class="first">
-                    <label for="person">
-                        <c:choose>
-                            <c:when test="#{substitution.viewState}">
-                                <span class="title">Заместитель</span>
-                            </c:when>
-                            <c:when test="#{substitution.editState or substitution.createState}">
-                                <p:commandButton value="Заместитель" actionListener="#{substitution.chooseSubstitutor}">
-                                    <p:ajax event="dialogReturn" listener="#{substitution.onSubstitutorChosen}" update="substitution"/>
-                                </p:commandButton>
-                            </c:when>
-                        </c:choose>
-                    </label>
-                </td>
-                <td class="second">
-                    <h:outputText id="substitution"  value="#{substitution.document.substitution.getDescription()}"/>
-                </td>
-            </tr>
-            <tr class="row">
-                <td class="first">
-                    <label>
-                        <span class="title">Тип замещения</span>
-                    </label>
-                </td>
-                <td class="second">
-                    <c:choose>
-                        <c:when test="#{substitution.viewState}">
-                            <h:outputText id="type" value="#{substitution.document.type}" converter="SubstitutionTypeConverter"/>
-                        </c:when>
-                        <c:when test="#{substitution.editState or substitution.createState}">
-                            <p:selectOneMenu value="#{substitution.document.type}" style="width:1000px;">
-                                <f:selectItem itemLabel="Помощник" itemValue="1"/>
-                                <f:selectItem itemLabel="Исполняющий обязанности" itemValue="2"/>
-                            </p:selectOneMenu>
-                        </c:when>
-                    </c:choose>
-                </td>
-            </tr>
-        </table>
-    </p:panel>
-</div>
+        <div class="main_content">
+            <p:panel id="documentSection">
+                <table class="form_grid">
+                    <tr class="row">
+                        <td class="first">
+                            <label for="startDate">
+                                <span class="title">Дата начала интервала</span>
+                            </label>
+                        </td>
+                        <td class="second">
+                            <c:choose>
+                                <c:when test="#{substitution.viewState}">
+                                    <h:outputText id="startDate" value="#{substitution.document.startDate}">
+                                        <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                    </h:outputText>
+                                </c:when>
+                                <c:when test="#{substitution.editState or substitution.createState}">
+                                    <p:calendar id="startDate" value="#{substitution.document.startDate}" lang="ru"
+                                                locale="ru"
+                                                widgetVar="startDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                </c:when>
+                            </c:choose>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">
+                            <label for="endDate">
+                                <span class="title">Дата окончания интервала</span>
+                            </label>
+                        </td>
+                        <td class="second">
+                            <c:choose>
+                                <c:when test="#{substitution.viewState}">
+                                    <h:outputText id="endDate" value="#{substitution.document.endDate}">
+                                        <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                    </h:outputText>
+                                </c:when>
+                                <c:when test="#{substitution.editState or substitution.createState}">
+                                    <p:calendar id="endDate" value="#{substitution.document.endDate}" lang="ru"
+                                                locale="ru"
+                                                widgetVar="endDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                </c:when>
+                            </c:choose>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">
+                            <c:choose>
+                                <c:when test="#{substitution.viewState}">
+                                    <label for="person"><span class="title">Замещаемое лицо</span></label>
+                                </c:when>
+                                <c:when test="#{substitution.editState or substitution.createState}">
+                                    <p:commandButton value="Замещаемое лицо" actionListener="#{substitution.choosePerson}">
+                                        <p:ajax event="dialogReturn" listener="#{substitution.onPersonChosen}" update="person"/>
+                                    </p:commandButton>
+                                </c:when>
+                            </c:choose>
+                        </td>
+                        <td class="second">
+                            <h:outputText id="person" value="#{substitution.document.person.getDescription()}"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">
+                            <label for="person">
+                                <c:choose>
+                                    <c:when test="#{substitution.viewState}">
+                                        <span class="title">Заместитель</span>
+                                    </c:when>
+                                    <c:when test="#{substitution.editState or substitution.createState}">
+                                        <p:commandButton value="Заместитель" actionListener="#{substitution.chooseSubstitutor}">
+                                            <p:ajax event="dialogReturn" listener="#{substitution.onSubstitutorChosen}" update="substitution"/>
+                                        </p:commandButton>
+                                    </c:when>
+                                </c:choose>
+                            </label>
+                        </td>
+                        <td class="second">
+                            <h:outputText id="substitution"  value="#{substitution.document.substitution.getDescription()}"/>
+                        </td>
+                    </tr>
+                    <tr class="row">
+                        <td class="first">
+                            <label>
+                                <span class="title">Тип замещения</span>
+                            </label>
+                        </td>
+                        <td class="second">
+                            <c:choose>
+                                <c:when test="#{substitution.viewState}">
+                                    <h:outputText id="type" value="#{substitution.document.type}" converter="SubstitutionTypeConverter"/>
+                                </c:when>
+                                <c:when test="#{substitution.editState or substitution.createState}">
+                                    <p:selectOneMenu value="#{substitution.document.type}" style="width:1000px;">
+                                        <f:selectItem itemLabel="Помощник" itemValue="1"/>
+                                        <f:selectItem itemLabel="Исполняющий обязанности" itemValue="2"/>
+                                    </p:selectOneMenu>
+                                </c:when>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </table>
+            </p:panel>
+        </div>
 
 
-</ui:define>
+    </ui:define>
 
 </ui:composition>
 

@@ -12,262 +12,256 @@
 
 <ui:composition template="/jsf-template/template.xhtml">
 
-<ui:define name="running_head">
-    <!--#{reportTemplate.document.id}-->
+    <ui:define name="running_head">
+        <!--#{reportTemplate.document.id}-->
 
-    <h:outputScript library="js" name="primefacesLocale_ru.js" target="head"/>
-    <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css" target="head"/>
-</ui:define>
+        <h:outputScript library="js" name="primefacesLocale_ru.js" target="head"/>
+        <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css" target="head"/>
+    </ui:define>
 
 
-<ui:define name="header">
-    <div id="form_header">
-        <div class="actionbar">
-            <div class="menu">
-                <div class="defbutton">
-                    <h:commandLink action="#{reportTemplate.save}" rendered="#{reportTemplate.viewState}">
-                        <h:graphicImage value="#{resource['images:blank.png']}"/>
-                        Сформировать
-                    </h:commandLink>
+    <ui:define name="header">
+        <div id="form_header">
+            <div class="actionbar">
+                <div class="menu">
+                    <div class="defbutton">
+                        <h:commandLink action="#{reportTemplate.save}" rendered="#{reportTemplate.viewState}">
+                            <h:graphicImage value="#{resource['images:blank.png']}"/>
+                            Сформировать
+                        </h:commandLink>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</ui:define>
+    </ui:define>
 
-<ui:define name="left_menu"/>
+    <ui:define name="left_menu"/>
 
-<ui:define name="content">
-<div id="header_content">
-    <h:panelGroup rendered="#{reportTemplate.createState}">
-        <div class="name">Новый шаблон</div>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{reportTemplate.editState or reportTemplate.viewState}">
-        <div class="name">
-            <h:outputText value="#{reportTemplate.document.displayName}"/>
-        </div>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{reportTemplate.notFoundState}">
-        <div class="name">404 - Контрагент не найден</div>
-    </h:panelGroup>
-    <h:panelGroup rendered="#{reportTemplate.forbiddenState}">
-        <div class="name">403 - Действие запрещено</div>
-    </h:panelGroup>
-    <h:panelGroup
-            rendered="#{not(reportTemplate.createState or reportTemplate.editState or reportTemplate.viewState or reportTemplate.notFoundState or reportTemplate.forbiddenState)}">
-        <div class="name">В доступе отказано</div>
-    </h:panelGroup>
-</div>
-
-<div class="main_content">
-<h:panelGroup rendered="#{reportTemplate.viewState}">
-    <div class="row">
-        <table class="form_grid">
-            <tr class="row">
-                <td class="first">
-                    <h:outputText value="#{reportTemplate.document.startDescription}"/>:
-                </td>
-                <td>
-                    <p:calendar id="startDate" value="#{reportTemplate.document.startDate}" lang="ru" locale="ru"
-                                widgetVar="startDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-                </td>
-            </tr>
-            <h:panelGroup rendered="#{(reportTemplate.document.type eq 1) or(reportTemplate.document.type eq 101)}">
-                <tr class="row">
-                    <td class="first">
-                        <h:outputText value="#{reportTemplate.document.endDescription}"/>:
-                    </td>
-                    <td>
-                        <p:calendar id="endDate" value="#{reportTemplate.document.endDate}" lang="ru" locale="ru"
-                                    widgetVar="endDateVar" pattern="dd.MM.yyyy" showOn="both"/>
-                    </td>
-                </tr>
+    <ui:define name="content">
+        <div id="header_content">
+            <h:panelGroup rendered="#{reportTemplate.createState}">
+                <div class="name">Новый шаблон</div>
             </h:panelGroup>
-            <h:panelGroup
-                    rendered="#{(reportTemplate.document.type eq 100)or(reportTemplate.document.type eq 101)}">
-                <tr class="row">
-                    <td class="first">
-                        <h:outputLink onclick="userSelectModalVar.clickOpen('userSelectModal'); return false;">
-                            <h:outputText value="#{reportTemplate.document.userDescription}"/>
-                        </h:outputLink>
-                        <e5ui-comp:modalWindow id="userSelectModal"
-                                               modalWindowHolder="#{reportTemplate.userSelectModal}"
-                                               render=":main_content_form:user" execute="select_table"
-                                               showButtons="false" style="width: 500px;"
-                                               widgetVar="userSelectModalVar">
-                            <div id="title">Выбор</div>
-                            <div id="modal_container" style="margin-top: 0;">
-                                <div class="searchbar">
-                                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                                    <h:inputText id="filter_string"
-                                                 value="#{((reportTemplate.document.userGroup==null) or (reportTemplate.document.userGroup.isEmpty()))?userList.filter:staffManagement.filter}"
-                                                 style="display:block; float:left; margin-right:10px;"
-                                                 title="Поиск"/>
-                                    <h:commandButton value=" "
-                                                     rendered="#{(reportTemplate.document.userGroup==null) or (reportTemplate.document.userGroup.isEmpty())}"
-                                                     action="#{reportTemplate.userSelectModal.userList.changePageOffset(0)}"
-                                                     styleClass="searchbutton">
-                                        <f:ajax execute="userSelectModal:filter_string"
-                                                render="userSelectModal:ajaxModal userSelectModal:modal_paging"/>
-                                    </h:commandButton>
-                                    <h:commandButton value=" "
-                                                     rendered="#{(reportTemplate.document.userGroup!=null) and (not(reportTemplate.document.userGroup.isEmpty()))}"
-                                                     action="#{staffManagement.setFilter(staffManagement.getFilter())}"
-                                                     styleClass="searchbutton">
-                                        <f:ajax
-                                                execute="userSelectModal:filter_string"
-                                                render="userSelectModal:ajaxModal userSelectModal:modal_paging"/>
-                                    </h:commandButton>
-                                </div>
-                                <div class="wrap" style="height: 300px;">
-                                    <div class="inner" style="height: 300px;">
-                                        <e5ui:dataTable id="select_table" border="0"
-                                                        cellpadding="0" cellspacing="0"
-                                                        value="#{
+            <h:panelGroup rendered="#{reportTemplate.editState or reportTemplate.viewState}">
+                <div class="name">
+                    <h:outputText value="#{reportTemplate.document.displayName}"/>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{reportTemplate.errorState}">
+                <div class="name">Ошибка</div>
+            </h:panelGroup>
+        </div>
+
+        <div class="main_content">
+            <p:growl/>
+            <h:panelGroup rendered="#{reportTemplate.viewState}">
+                <div class="row">
+                    <table class="form_grid">
+                        <tr class="row">
+                            <td class="first">
+                                <h:outputText value="#{reportTemplate.document.startDescription}"/>:
+                            </td>
+                            <td>
+                                <p:calendar id="startDate" value="#{reportTemplate.document.startDate}" lang="ru" locale="ru"
+                                            widgetVar="startDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                            </td>
+                        </tr>
+                        <h:panelGroup rendered="#{(reportTemplate.document.type eq 1) or(reportTemplate.document.type eq 101)}">
+                            <tr class="row">
+                                <td class="first">
+                                    <h:outputText value="#{reportTemplate.document.endDescription}"/>:
+                                </td>
+                                <td>
+                                    <p:calendar id="endDate" value="#{reportTemplate.document.endDate}" lang="ru" locale="ru"
+                                                widgetVar="endDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                </td>
+                            </tr>
+                        </h:panelGroup>
+                        <h:panelGroup
+                                rendered="#{(reportTemplate.document.type eq 100)or(reportTemplate.document.type eq 101)}">
+                            <tr class="row">
+                                <td class="first">
+                                    <h:outputLink onclick="userSelectModalVar.clickOpen('userSelectModal'); return false;">
+                                        <h:outputText value="#{reportTemplate.document.userDescription}"/>
+                                    </h:outputLink>
+                                    <e5ui-comp:modalWindow id="userSelectModal"
+                                                           modalWindowHolder="#{reportTemplate.userSelectModal}"
+                                                           render=":main_content_form:user" execute="select_table"
+                                                           showButtons="false" style="width: 500px;"
+                                                           widgetVar="userSelectModalVar">
+                                        <div id="title">Выбор</div>
+                                        <div id="modal_container" style="margin-top: 0;">
+                                            <div class="searchbar">
+                                                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                                                <h:inputText id="filter_string"
+                                                             value="#{((reportTemplate.document.userGroup==null) or (reportTemplate.document.userGroup.isEmpty()))?userList.filter:staffManagement.filter}"
+                                                             style="display:block; float:left; margin-right:10px;"
+                                                             title="Поиск"/>
+                                                <h:commandButton value=" "
+                                                                 rendered="#{(reportTemplate.document.userGroup==null) or (reportTemplate.document.userGroup.isEmpty())}"
+                                                                 action="#{reportTemplate.userSelectModal.userList.changePageOffset(0)}"
+                                                                 styleClass="searchbutton">
+                                                    <f:ajax execute="userSelectModal:filter_string"
+                                                            render="userSelectModal:ajaxModal userSelectModal:modal_paging"/>
+                                                </h:commandButton>
+                                                <h:commandButton value=" "
+                                                                 rendered="#{(reportTemplate.document.userGroup!=null) and (not(reportTemplate.document.userGroup.isEmpty()))}"
+                                                                 action="#{staffManagement.setFilter(staffManagement.getFilter())}"
+                                                                 styleClass="searchbutton">
+                                                    <f:ajax
+                                                            execute="userSelectModal:filter_string"
+                                                            render="userSelectModal:ajaxModal userSelectModal:modal_paging"/>
+                                                </h:commandButton>
+                                            </div>
+                                            <div class="wrap" style="height: 300px;">
+                                                <div class="inner" style="height: 300px;">
+                                                    <e5ui:dataTable id="select_table" border="0"
+                                                                    cellpadding="0" cellspacing="0"
+                                                                    value="#{
                                                         ((reportTemplate.document.userGroup==null) or (reportTemplate.document.userGroup.isEmpty()))
                                                         ?
                                                         userList.documents
                                                         :
                                                         dictionaryManagement.findGroupByCode(reportTemplate.document.userGroup).membersList
                                                         }"
-                                                        var="row" grouping="false" width="100%">
-                                            <e5ui:row
-                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                    styleClass="#{reportTemplate.userSelectModal.selected(row)? 'grid_row_selected': ''}"/>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>
-                                                        <h:outputText
-                                                                value="#{reportTemplate.document.userDescription}"/>
-                                                    </p>
-                                                </f:facet>
-                                                <h:outputText value="#{row}" converter="PersonConverter"/>
-                                                <h:commandLink id="selectLink" style="display: none;"
-                                                               rendered="#{not reportTemplate.userSelectModal.selected(row)}"
-                                                               action="#{reportTemplate.userSelectModal.select(row)}"/>
-                                            </e5ui:column>
-                                        </e5ui:dataTable>
-                                    </div>
-                                </div>
-                                <div style="clear: both;">
-                                    <h:panelGroup id="modal_paging">
-                                        <e5ui-comp:tablePager id="pager"
-                                                              documentListHolder="#{reportTemplate.userSelectModal.userList}"/>
-                                    </h:panelGroup>
-                                </div>
-                            </div>
-                            <div class="e5ui-modal-bottombuttons">
-                                <h:button onclick="userSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                                <h:button onclick="userSelectModalVar.clickClose(); return false;" value="Отмена"/>
-                            </div>
-                        </e5ui-comp:modalWindow>
-                    </td>
-                    <td class="fourth">
-                        <h:outputText id="user" value="#{reportTemplate.document.user}" converter="PersonConverter"
-                                      class="wide"/>
-                    </td>
-                </tr>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{not empty reportTemplate.document.regionAlias}">
-                <tr class="row">
-                    <td class="first">
-                        <label> <span class="title">
+                                                                    var="row" grouping="false" width="100%">
+                                                        <e5ui:row
+                                                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                                styleClass="#{reportTemplate.userSelectModal.selected(row)? 'grid_row_selected': ''}"/>
+                                                        <e5ui:column>
+                                                            <f:facet name="header">
+                                                                <p>
+                                                                    <h:outputText
+                                                                            value="#{reportTemplate.document.userDescription}"/>
+                                                                </p>
+                                                            </f:facet>
+                                                            <h:outputText value="#{row}" converter="PersonConverter"/>
+                                                            <h:commandLink id="selectLink" style="display: none;"
+                                                                           rendered="#{not reportTemplate.userSelectModal.selected(row)}"
+                                                                           action="#{reportTemplate.userSelectModal.select(row)}"/>
+                                                        </e5ui:column>
+                                                    </e5ui:dataTable>
+                                                </div>
+                                            </div>
+                                            <div style="clear: both;">
+                                                <h:panelGroup id="modal_paging">
+                                                    <e5ui-comp:tablePager id="pager"
+                                                                          documentListHolder="#{reportTemplate.userSelectModal.userList}"/>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                        <div class="e5ui-modal-bottombuttons">
+                                            <h:button onclick="userSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                                            <h:button onclick="userSelectModalVar.clickClose(); return false;" value="Отмена"/>
+                                        </div>
+                                    </e5ui-comp:modalWindow>
+                                </td>
+                                <td class="fourth">
+                                    <h:outputText id="user" value="#{reportTemplate.document.user}" converter="PersonConverter"
+                                                  class="wide"/>
+                                </td>
+                            </tr>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{not empty reportTemplate.document.regionAlias}">
+                            <tr class="row">
+                                <td class="first">
+                                    <label> <span class="title">
                 <h:outputLink title="Регион"
                               onclick="regionSelectModalVar.clickOpen('regionSelectModal'); return false;">
                     Регион
                 </h:outputLink>
             </span>
-                        </label>
-                        <e5ui-comp:modalWindow
-                                id="regionSelectModal"
-                                modalWindowHolder="#{reportTemplate.regionSelectModal}"
-                                render="region" execute="select_table"
-                                showButtons="false" style="width: 500px;"
-                                widgetVar="regionSelectModalVar">
-                            <div id="title">Выбор региона</div>
-                            <div id="modal_container" style="margin-top: 0;">
-                                <div class="searchbar">
-                                    <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
-                                    <h:inputText id="filter_string"
-                                                 value="#{dictionaryManagement.filter}"
-                                                 style="display:block; float:left; margin-right:10px;"
-                                                 title="Поиск"/>
-                                    <h:commandButton value=" " action="null"
-                                                     styleClass="searchbutton">
-                                        <f:ajax execute="regionSelectModal:filter_string"
-                                                render="regionSelectModal:ajaxModal"/>
-                                    </h:commandButton>
-                                </div>
-                                <div class="wrap" style="height: 300px;">
-                                    <div class="inner" style="height: 300px;">
-                                        <e5ui:dataTable id="select_table" border="0"
-                                                        cellpadding="0" cellspacing="0"
-                                                        value="#{dictionaryManagement.regions}" var="region"
-                                                        grouping="false" width="100%">
-                                            <e5ui:row
-                                                    onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                    styleClass="#{reportTemplate.regionSelectModal.selected(region)? 'grid_row_selected': ''}"/>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>Регион</p>
-                                                </f:facet>
-                                                <h:outputText value="#{region.value}"/>
-                                                <h:commandLink id="selectLink" style="display: none;"
-                                                               rendered="#{not reportTemplate.regionSelectModal.selected(region)}"
-                                                               action="#{reportTemplate.regionSelectModal.select(region)}"/>
-                                            </e5ui:column>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>Категория</p>
-                                                </f:facet>
-                                                <h:outputText value="#{region.category}"/>
-                                                <h:commandLink style="display: none;"
-                                                               rendered="#{not reportTemplate.regionSelectModal.selected(region)}"
-                                                               action="#{reportTemplate.regionSelectModal.select(region)}"/>
-                                                <h:commandLink style="display: none;"
-                                                               rendered="#{reportTemplate.regionSelectModal.selected(region)}"
-                                                               action="#{reportTemplate.regionSelectModal.unselect()}"/>
-                                            </e5ui:column>
-                                        </e5ui:dataTable>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="e5ui-modal-bottombuttons">
-                                <h:button onclick="regionSelectModalVar.clickSave(); return false;" value="Выбрать"/>
-                                <h:button onclick="regionSelectModalVar.clickClose(); return false;" value="Отмена"/>
-                            </div>
-                        </e5ui-comp:modalWindow>
-                    </td>
-                    <td class="second">
-                        <h:outputText id="region" value="#{reportTemplate.document.region}"
-                                      converter="RegionConverter"/>
-                    </td>
-                </tr>
+                                    </label>
+                                    <e5ui-comp:modalWindow
+                                            id="regionSelectModal"
+                                            modalWindowHolder="#{reportTemplate.regionSelectModal}"
+                                            render="region" execute="select_table"
+                                            showButtons="false" style="width: 500px;"
+                                            widgetVar="regionSelectModalVar">
+                                        <div id="title">Выбор региона</div>
+                                        <div id="modal_container" style="margin-top: 0;">
+                                            <div class="searchbar">
+                                                <span style="float: left; margin-top: 3px">Поиск:&nbsp;</span>
+                                                <h:inputText id="filter_string"
+                                                             value="#{dictionaryManagement.filter}"
+                                                             style="display:block; float:left; margin-right:10px;"
+                                                             title="Поиск"/>
+                                                <h:commandButton value=" " action="null"
+                                                                 styleClass="searchbutton">
+                                                    <f:ajax execute="regionSelectModal:filter_string"
+                                                            render="regionSelectModal:ajaxModal"/>
+                                                </h:commandButton>
+                                            </div>
+                                            <div class="wrap" style="height: 300px;">
+                                                <div class="inner" style="height: 300px;">
+                                                    <e5ui:dataTable id="select_table" border="0"
+                                                                    cellpadding="0" cellspacing="0"
+                                                                    value="#{dictionaryManagement.regions}" var="region"
+                                                                    grouping="false" width="100%">
+                                                        <e5ui:row
+                                                                onclick="e5ui_util.clickElement(this, 'selectLink$');"
+                                                                styleClass="#{reportTemplate.regionSelectModal.selected(region)? 'grid_row_selected': ''}"/>
+                                                        <e5ui:column>
+                                                            <f:facet name="header">
+                                                                <p>Регион</p>
+                                                            </f:facet>
+                                                            <h:outputText value="#{region.value}"/>
+                                                            <h:commandLink id="selectLink" style="display: none;"
+                                                                           rendered="#{not reportTemplate.regionSelectModal.selected(region)}"
+                                                                           action="#{reportTemplate.regionSelectModal.select(region)}"/>
+                                                        </e5ui:column>
+                                                        <e5ui:column>
+                                                            <f:facet name="header">
+                                                                <p>Категория</p>
+                                                            </f:facet>
+                                                            <h:outputText value="#{region.category}"/>
+                                                            <h:commandLink style="display: none;"
+                                                                           rendered="#{not reportTemplate.regionSelectModal.selected(region)}"
+                                                                           action="#{reportTemplate.regionSelectModal.select(region)}"/>
+                                                            <h:commandLink style="display: none;"
+                                                                           rendered="#{reportTemplate.regionSelectModal.selected(region)}"
+                                                                           action="#{reportTemplate.regionSelectModal.unselect()}"/>
+                                                        </e5ui:column>
+                                                    </e5ui:dataTable>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="e5ui-modal-bottombuttons">
+                                            <h:button onclick="regionSelectModalVar.clickSave(); return false;" value="Выбрать"/>
+                                            <h:button onclick="regionSelectModalVar.clickClose(); return false;" value="Отмена"/>
+                                        </div>
+                                    </e5ui-comp:modalWindow>
+                                </td>
+                                <td class="second">
+                                    <h:outputText id="region" value="#{reportTemplate.document.region}"
+                                                  converter="RegionConverter"/>
+                                </td>
+                            </tr>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{(not empty reportTemplate.document.documentFormAlias)}">
+                            <tr class="row">
+                                <td class="first">
+                                    <h:outputText value="#{reportTemplate.document.documentFormDescription}"/>:
+                                </td>
+                                <td>
+                                    <h:selectOneMenu id="form" value="#{reportTemplate.document.documentForm}"
+                                                     converter="InternalDocumentFormConverter">
+                                        <f:selectItems
+                                                value="#{dictionaryManagement.getDocumentFormsByCategory(reportTemplate.document.documentFormGroup)}"/>
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                        </h:panelGroup>
+                    </table>
+                </div>
             </h:panelGroup>
-            <h:panelGroup rendered="#{(not empty reportTemplate.document.documentFormAlias)}">
-                <tr class="row">
-                    <td class="first">
-                        <h:outputText value="#{reportTemplate.document.documentFormDescription}"/>:
-                    </td>
-                    <td>
-                        <h:selectOneMenu id="form" value="#{reportTemplate.document.documentForm}"
-                                         converter="InternalDocumentFormConverter">
-                            <f:selectItems
-                                    value="#{dictionaryManagement.getDocumentFormsByCategory(reportTemplate.document.documentFormGroup)}"/>
-                        </h:selectOneMenu>
-                    </td>
-                </tr>
-            </h:panelGroup>
-        </table>
-    </div>
-</h:panelGroup>
 
-</div>
-</ui:define>
+        </div>
+    </ui:define>
 
-<ui:define name="footer">
-    <h:outputStylesheet library="css" name="datatable.css"/>
-</ui:define>
+    <ui:define name="footer">
+        <h:outputStylesheet library="css" name="datatable.css"/>
+    </ui:define>
 
 
 </ui:composition>
