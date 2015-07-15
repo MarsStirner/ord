@@ -417,8 +417,20 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             if (!checkState(document, currentUser)) {
                 return;
             }
+            relatedDocuments = loadRelatedDocuments();
             //Проверка прав на открытие
             permissions = permissionChecker.getPermissions(sessionManagement.getAuthData(), document);
+            if(!isReadPermission()){
+                //Проверяем права на связанные доки, если есть, то прокидываем на чтение
+                for(OutgoingDocument relatedDocument : relatedDocuments){
+                    final Permissions relatedPermissions = permissionChecker.getPermissions(sessionManagement.getAuthData(), relatedDocument);
+                    if(relatedPermissions.hasPermission(READ)){
+                        LOGGER.info("Get permissions from related documents [{}], {}", relatedDocument.getUniqueId(), relatedPermissions);
+                        permissions.addPermission(READ);
+                        break;
+                    }
+                }
+            }
             if (isReadPermission()) {
                 //Простановка факта просмотра записи
                 if (sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser)) {
@@ -434,7 +446,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                     LOGGER.warn("Exception while check upload files", e);
                     addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
                 }
-                relatedDocuments = loadRelatedDocuments();
             }
         } catch (Exception e) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
