@@ -28,7 +28,7 @@
 
     <ui:define name="headerSearchButton">
         <div class="defbutton">
-            <h:commandLink action="#{request_search.performSearch}" styleClass="searchbutton">
+            <h:commandLink id="searchBtn" action="#{request_search.performSearch}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-search.png']}"/>
                 <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
                         onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); PF('searchResultsPanelVar').expand();}}"/>
@@ -55,6 +55,7 @@
 
     <!--Параметры поиска-->
     <ui:define name="searchParameters">
+        <p:defaultCommand target="searchBtn"/>
         <p:panelGrid id="searchPanelGrid" style="width:100%">
             <p:row>
                 <p:column>
