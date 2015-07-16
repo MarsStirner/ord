@@ -306,10 +306,10 @@
                  то следующая загрузка работает нормально. Пишут, что это связано с переходом на JSF 2.2 .
                   я-хз, долго искал и долго пытался исправить,
                  в общем каждый четный запрос XHR для fileUpload почему-то идет лесом, а нечетные - нет-->
-                <p:fileUpload id="files" fileUploadListener="#{task.handleFileUpload}" multiple="true" mode="advanced" widgetVar="uploadFileWidget"
+                <p:fileUpload id="files" fileUploadListener="#{task.handleFileUpload}" multiple="false" mode="advanced" widgetVar="uploadFileWidget"
                               label="Выбрать файл" sizeLimit="104857600"
                               uploadLabel="Загрузить выбранное" cancelLabel="Отмена" invalidSizeMessage="Размер файла не должен превышать 100 МБ"
-                              fileLimit="3" fileLimitMessage="Не более 3-х файлов за один раз, пожалуйста"
+                              fileLimit="1" fileLimitMessage="Не более 1-го файла за раз, пожалуйста"
                               update=":documentForm:msg table_attachment"
                               oncomplete="workaround(); PrimeFaces.widgets.uploadFileWidget.uploadedFileCount = PrimeFaces.widgets.uploadFileWidget.uploadedFileCount - 1;"/>
                 <p:remoteCommand id="workaround" name="workaround"/>

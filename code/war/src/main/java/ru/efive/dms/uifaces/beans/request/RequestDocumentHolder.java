@@ -87,7 +87,17 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     public void handleFileUpload(FileUploadEvent event) {
         final UploadedFile file = event.getFile();
         if (file != null) {
-            LOGGER.info(file.getFileName());
+            LOGGER.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
+            final Attachment attachment = new Attachment();
+            attachment.setFileName(file.getFileName());
+            attachment.setCreated(new LocalDateTime().toDate());
+            attachment.setAuthorId(sessionManagement.getAuthData().getAuthorized().getId());
+            attachment.setParentId(getDocument().getUniqueId());
+            final boolean result = fileManagement.createFile(attachment, file.getContents());
+            LOGGER.info("After alfresco call Attachment.id={}", attachment.getId());
+            if(result){
+                attachments.add(attachment);
+            }
             addMessage(new FacesMessage("Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
         } else {
             addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
