@@ -3,6 +3,8 @@ package ru.hitsl.sql.dao;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
+import org.hibernate.classic.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
@@ -14,6 +16,7 @@ import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.user.Group;
 import ru.external.AuthorizationData;
 import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
@@ -27,7 +30,6 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
     static {
         logger = LoggerFactory.getLogger("INCOMING_DAO");
     }
-
 
     @Override
     protected Class<IncomingDocument> getPersistentClass() {
@@ -49,11 +51,6 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Работа со списками документов
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     public List<IncomingDocument> findControlledDocumentsByUser(final String filter, final AuthorizationData authData, final Date controlDate) {
         final DetachedCriteria criteria = getListCriteria();
         applyFilterCriteria(criteria, filter);
@@ -69,14 +66,16 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
             criteria.add(Restrictions.in("controller.id", authData.getUserIds()));
         }
         criteria.add(Restrictions.isNotNull("executionDate"));
-        if(controlDate != null){
-           criteria.add(Restrictions.le("executionDate", controlDate));
+        if (controlDate != null) {
+            criteria.add(Restrictions.le("executionDate", controlDate));
         }
         criteria.addOrder(Order.desc("executionDate"));
         return getHibernateTemplate().findByCriteria(criteria);
     }
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Критерии для различных вариантов отображения документов
+    // Работа со списками документов
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -88,12 +87,16 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
     public DetachedCriteria getSimplestCriteria() {
         return DetachedCriteria.forClass(IncomingDocument.class, "this").setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Критерии для различных вариантов отображения документов
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Получить критерий для отбора Документов и их показа в расширенных списках
      * Исполнители - LEFT
      * Вид документа - LEFT
      * Корреспондент - LEFT
+     *
      * @return критерий для документов с DISTINCT
      */
     @Override
@@ -120,13 +123,52 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         result.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("recipientGroups", "recipientGroups", CriteriaSpecification.LEFT_JOIN);
-        result.createAlias("recipientGroups.members","recipientGroups.members", CriteriaSpecification.LEFT_JOIN);
+        result.createAlias("recipientGroups.members", "recipientGroups.members", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("userAccessLevel", "userAccessLevel", CriteriaSpecification.INNER_JOIN);
         result.createAlias("history", "history", CriteriaSpecification.LEFT_JOIN);
         return result;
     }
+
+    /**
+     * Получить документ с FULL_CRITERIA  по его идентификатору
+     *
+     * @param id идентификатор документа
+     * @return документ, полученный с FULL_CRITERIA
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public IncomingDocument getItemById(Integer id) {
+        final DetachedCriteria criteria = getListCriteria();
+        criteria.add(Restrictions.idEq(id));
+        criteria.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("userAccessLevel", "userAccessLevel", CriteriaSpecification.INNER_JOIN);
+        criteria.createAlias("history", "history", CriteriaSpecification.LEFT_JOIN);
+        final IncomingDocument document;
+        Session session=null;
+        try {
+            session = getHibernateTemplate().getSessionFactory().openSession();
+            final Criteria executable = criteria.getExecutableCriteria(session);
+            document = (IncomingDocument) executable.uniqueResult();
+            if(document != null) {
+                getHibernateTemplate().initialize(document.getRecipientGroups());
+                for(Group currentGroup : document.getRecipientGroups()){
+                    getHibernateTemplate().initialize(currentGroup.getMembers());
+                }
+            }
+        } finally {
+            if(session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        return document;
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Работа с критериями (общая)
@@ -177,7 +219,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
             } else if (DocumentSearchMapKeys.SHORT_DESCRIPTION_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
                 conjunction.add(Restrictions.ilike("shortDescription", (String) value, MatchMode.ANYWHERE));
             } else if (DocumentSearchMapKeys.STATUS_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
-                conjunction.add(Restrictions.eq("statusId", Integer.valueOf((String)value)));
+                conjunction.add(Restrictions.eq("statusId", Integer.valueOf((String) value)));
             } else if (DocumentSearchMapKeys.CONTROLLER_KEY.equals(key)) {
                 createUserEqRestriction(conjunction, key, "controller.id", value);
             } else if (DocumentSearchMapKeys.RECIPIENTS_KEY.equals(key)) {

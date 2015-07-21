@@ -2,6 +2,8 @@ package ru.hitsl.sql.dao;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
@@ -10,6 +12,7 @@ import ru.entity.model.document.InternalDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.user.Group;
 import ru.external.AuthorizationData;
 import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
@@ -97,6 +100,44 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
         result.createAlias("userAccessLevel", "userAccessLevel", INNER_JOIN);
         result.createAlias("history", "history", LEFT_JOIN);
         return result;
+    }
+
+    /**
+     * Получить документ с FULL_CRITERIA  по его идентификатору
+     *
+     * @param id идентификатор документа
+     * @return документ, полученный с FULL_CRITERIA
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public InternalDocument getItemById(Integer id) {
+        final DetachedCriteria criteria = getListCriteria();
+        criteria.add(Restrictions.idEq(id));
+        criteria.createAlias("personEditors", "personEditors", LEFT_JOIN);
+        criteria.createAlias("personReaders", "personReaders", LEFT_JOIN);
+        criteria.createAlias("recipientUsers", "recipientUsers", LEFT_JOIN);
+        criteria.createAlias("roleReaders", "roleReaders", LEFT_JOIN);
+        criteria.createAlias("roleEditors", "roleEditors", LEFT_JOIN);
+        criteria.createAlias("userAccessLevel", "userAccessLevel", INNER_JOIN);
+        criteria.createAlias("history", "history", LEFT_JOIN);
+        final InternalDocument document;
+        Session session=null;
+        try {
+            session = getHibernateTemplate().getSessionFactory().openSession();
+            final Criteria executable = criteria.getExecutableCriteria(session);
+            document = (InternalDocument) executable.uniqueResult();
+            if(document != null) {
+                getHibernateTemplate().initialize(document.getRecipientGroups());
+                for(Group currentGroup : document.getRecipientGroups()){
+                    getHibernateTemplate().initialize(currentGroup.getMembers());
+                }
+            }
+        } finally {
+            if(session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        return document;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2,6 +2,8 @@ package ru.hitsl.sql.dao;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.RequestDocument;
@@ -9,6 +11,7 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.user.Group;
 import ru.external.AuthorizationData;
 import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
@@ -82,6 +85,48 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
         result.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
         result.createAlias("history", "history", CriteriaSpecification.LEFT_JOIN);
         return result;
+    }
+
+    /**
+     * Получить документ с FULL_CRITERIA  по его идентификатору
+     *
+     * @param id идентификатор документа
+     * @return документ, полученный с FULL_CRITERIA
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public RequestDocument getItemById(Integer id) {
+        final DetachedCriteria criteria = getListCriteria();
+        criteria.add(Restrictions.idEq(id));
+        criteria.createAlias("responsible", "responsible", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("deliveryType", "deliveryType", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("senderType", "senderType", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("region", "region", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("contragent", "contragent", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("recipientUsers", "recipientUsers", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("personReaders", "personReaders", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("personEditors", "personEditors", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("roleReaders", "roleReaders", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("roleEditors", "roleEditors", CriteriaSpecification.LEFT_JOIN);
+        criteria.createAlias("history", "history", CriteriaSpecification.LEFT_JOIN);
+        final RequestDocument document;
+        Session session=null;
+        try {
+            session = getHibernateTemplate().getSessionFactory().openSession();
+            final Criteria executable = criteria.getExecutableCriteria(session);
+            document = (RequestDocument) executable.uniqueResult();
+            if(document != null) {
+                getHibernateTemplate().initialize(document.getRecipientGroups());
+                for(Group currentGroup : document.getRecipientGroups()){
+                    getHibernateTemplate().initialize(currentGroup.getMembers());
+                }
+            }
+        } finally {
+            if(session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+        return document;
     }
 
     /**
