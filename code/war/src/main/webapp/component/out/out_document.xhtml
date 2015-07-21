@@ -127,10 +127,10 @@
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
+                        <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="e_signDate" value="Дата подписания:"/>
                         </p:column>
-                        <p:column styleClass="ui-grid-col-3">
+                        <p:column styleClass="ui-grid-col-4">
                             <h:outputText id="v_signDate" value="#{out_doc.document.signatureDate}" lang="ru" styleClass="outputText"
                                           rendered="#{not editable_SignDate}">
                                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
@@ -147,22 +147,22 @@
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
+                        <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="v_controller" value="Руководитель:"/>
                             <p:commandButton icon="ui-icon-pencil" actionListener="#{out_doc.chooseController}" rendered="#{editable_Controller}">
                                 <p:ajax event="dialogReturn" listener="#{out_doc.onControllerChosen}" update="v_controller"/>
                             </p:commandButton>
                         </p:column>
-                        <p:column styleClass="ui-grid-col-3">
+                        <p:column styleClass="ui-grid-col-4">
                             <h:outputText id="v_controller" value="#{out_doc.document.controller.description}" styleClass="outputText"/>
                         </p:column>
-                        <p:column styleClass="ui-grid-col-3">
+                        <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="v_executor" value="Исполнитель:"/>
                             <p:commandButton icon="ui-icon-pencil" actionListener="#{out_doc.chooseExecutor}" rendered="#{editable_Executor}">
                                 <p:ajax event="dialogReturn" listener="#{out_doc.onExecutorChosen}" update="v_executor"/>
                             </p:commandButton>
                         </p:column>
-                        <p:column styleClass="ui-grid-col-3">
+                        <p:column styleClass="ui-grid-col-4">
                             <h:outputText id="v_executor" value="#{out_doc.document.executor.description}" styleClass="outputText"/>
                         </p:column>
                     </p:row>
