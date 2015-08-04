@@ -36,8 +36,8 @@
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <my:homeButton outcome="/component/task/tasks.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{task.errorState}"/>
-        <p:commandButton value="Редактировать" action="#{task.edit}" rendered="#{task.viewState and task.editPermission}"
-                         icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Редактировать" action="#{task.edit}" icon="ui-icon-pencil" update="@form"
+                         rendered="#{task.viewState and task.editPermission and editableMatrix.task.isStateEditable(statusId)}"/>
         <p:commandButton value="Отменить" action="#{task.view}" rendered="#{task.editState}"
                          icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{task.save}" rendered="#{task.editState or task.createState}"
@@ -307,7 +307,7 @@
                   я-хз, долго искал и долго пытался исправить,
                  в общем каждый четный запрос XHR для fileUpload почему-то идет лесом, а нечетные - нет-->
                 <p:fileUpload id="files" fileUploadListener="#{task.handleFileUpload}" multiple="false" mode="advanced" widgetVar="uploadFileWidget"
-                              label="Выбрать файл" sizeLimit="104857600"
+                              label="Выбрать файл" sizeLimit="104857600" auto="true"
                               uploadLabel="Загрузить выбранное" cancelLabel="Отмена" invalidSizeMessage="Размер файла не должен превышать 100 МБ"
                               fileLimit="1" fileLimitMessage="Не более 1-го файла за раз, пожалуйста"
                               update=":documentForm:msg table_attachment"

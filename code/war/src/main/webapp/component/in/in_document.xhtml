@@ -50,7 +50,8 @@
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <my:homeButton outcome="/component/in/in_documents.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{in_doc.errorState}"/>
-        <p:commandButton value="Редактировать" action="#{in_doc.edit}" rendered="#{in_doc.viewState and in_doc.editPermission}"
+        <p:commandButton value="Редактировать" action="#{in_doc.edit}"
+                         rendered="#{in_doc.viewState and in_doc.editPermission and editableMatrix.incoming.isStateEditable(statusId)}"
                          icon="ui-icon-pencil" update="@form"/>
         <p:commandButton value="Отменить" action="#{in_doc.view}" rendered="#{in_doc.editState}"
                          icon="ui-icon-cancel" update="@form"/>
@@ -491,7 +492,7 @@
                   я-хз, долго искал и долго пытался исправить,
                  в общем каждый четный запрос XHR для fileUpload почему-то идет лесом, а нечетные - нет-->
                 <p:fileUpload id="files" fileUploadListener="#{in_doc.handleFileUpload}" multiple="false" mode="advanced" widgetVar="uploadFileWidget"
-                              label="Выбрать файл" sizeLimit="104857600"
+                              label="Выбрать файл" sizeLimit="104857600" auto="true"
                               uploadLabel="Загрузить выбранное" cancelLabel="Отмена" invalidSizeMessage="Размер файла не должен превышать 100 МБ"
                               fileLimit="1" fileLimitMessage="Не более 1-го файла за раз, пожалуйста"
                               update=":documentForm:msg table_attachment"

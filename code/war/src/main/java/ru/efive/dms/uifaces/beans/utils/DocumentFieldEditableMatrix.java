@@ -265,5 +265,14 @@ public class DocumentFieldEditableMatrix {
             }
             return null;
         }
+
+        public boolean isStateEditable(int status){
+            for (Map.Entry<String, Boolean> entry : getEditableMap(status).entrySet()) {
+                if(entry.getValue()){
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
