@@ -358,7 +358,7 @@ public class ReportsManagmentBean {
             exporter.exportReport();
 
         } catch (JRException e) {
-            e.printStackTrace();
+            throw new SQLException(e);
         } finally{
             conn.close();
         }

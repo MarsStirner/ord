@@ -99,12 +99,12 @@
      wf_history.`commentary` AS wf_history_commentary,
      wf_history.`startDate` AS wf_history_startDate
 FROM
-     `dms_request_documents` dms_request_documents INNER JOIN `dms_tasks` dms_tasks ON concat('request_', dms_request_documents.`id`) = dms_tasks.`parentId`
+     `dms_request_documents` dms_request_documents INNER JOIN `dms_tasks` dms_tasks ON concat('request_', dms_request_documents.`id`) = dms_tasks.`rootDocumentId`
      INNER JOIN `dms_tasks_executors` dms_tasks_executors ON dms_tasks.`id` = dms_tasks_executors.`id`
      INNER JOIN `dms_task_history` dms_task_history ON dms_tasks.`id` = dms_task_history.`task_id`
      INNER JOIN `wf_history` wf_history ON dms_task_history.`history_entry_id` = wf_history.`id`
      INNER JOIN `dms_system_persons` dms_system_persons ON dms_tasks_executors.`executor_id` = dms_system_persons.`id`
-     INNER JOIN `documents_forms` documents_forms on documents_forms.`id` = dms_request_documents.`form_id`
+     INNER JOIN `rbDocumentForm` documents_forms on documents_forms.`id` = dms_request_documents.`form_id`
 WHERE
      dms_tasks.`creationDate` >= $P{DateFrom}
  AND dms_tasks.`creationDate` <= $P{DateTo}

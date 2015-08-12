@@ -89,9 +89,8 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
             //Увольняем сотрудника
             user.fire(now);
         }
-        final User alteredUser = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(user);
-        setDocument(alteredUser);
-        return alteredUser.isFired();
+        sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(user);
+        return user.isFired();
     }
 
     /**
