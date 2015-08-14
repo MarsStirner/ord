@@ -1,5 +1,6 @@
 package ru.efive.dms.uifaces.beans.user;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -12,7 +13,7 @@ import ru.hitsl.sql.dao.referenceBook.ContactInfoTypeDAOImpl;
 import ru.hitsl.sql.dao.user.UserDAOHibernate;
 import ru.util.ApplicationHelper;
 
-import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -25,6 +26,12 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 @ViewScoped
 public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     private static final Logger LOGGER = LoggerFactory.getLogger("USER");
+
+
+    @Inject
+    @Named("sessionManagement")
+    SessionManagementBean sessionManagement;
+
     private List<PersonContact> contactList;
 
     public List<PersonContact> getContactList() {
@@ -37,7 +44,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
 
     @Override
     public boolean isCanCreate() {
-        if (!super.isCanEdit()) {
+        if (isErrorState()) {
             LOGGER.error("TRY TO CREATE ON ErrorState");
             return false;
         }
@@ -52,12 +59,12 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
 
     @Override
     public boolean isCanEdit() {
-        if (!super.isCanEdit()) {
+        if (isErrorState()) {
             LOGGER.error("TRY TO EDIT ON ErrorState");
             return false;
         }
-        final User loggedUser = sessionManagement.getLoggedUser();
-        if (!loggedUser.isAdministrator() && !loggedUser.isHr()) {
+        final User loggedUser = sessionManagement.getAuthData().getAuthorized();
+        if (!loggedUser.isAdministrator() && !loggedUser.isHr() && !isOwner()) {
             LOGGER.error("User[{}] try to edit User[{}] info without permission. Restricted!", loggedUser.getId(), getDocumentId());
             return false;
         } else {
@@ -65,13 +72,20 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
         }
     }
 
+    public boolean isEditPermission() {
+        final User loggedUser = sessionManagement.getAuthData().getAuthorized();
+        return loggedUser.isAdministrator() || loggedUser.isHr();
+    }
+
     /**
      * Меняет пароль у открытого на редактирование пользователя (+ хэширует при setPassword)
-     *
-     * @param newPass новый пароль
      */
-    public void changePassword(String newPass) {
-        getDocument().setPassword(newPass);
+    public void changePassword(ValueChangeEvent event) {
+        final String value = (String) event.getNewValue();
+        if(StringUtils.isNotEmpty(value)) {
+            getDocument().setPassword(value);
+            event.getComponent().setTransient(true);
+        }
     }
 
     /**
@@ -110,7 +124,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
      * @return успешность добавления
      */
     public boolean addContact() {
-        PersonContact newContact = new PersonContact();
+        final PersonContact newContact = new PersonContact();
         newContact.setPerson(getDocument());
         final List<ContactInfoType> typeList = sessionManagement.getDictionaryDAO(ContactInfoTypeDAOImpl.class, RB_CONTACT_TYPE_DAO).getItems();
         if (!typeList.isEmpty()) {
@@ -122,57 +136,61 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
 
     @Override
     protected boolean deleteDocument() {
-        boolean result = false;
-        try {
-            sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).delete(getDocument());
-            result = true;
-        } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
+        if(isCanEdit()) {
+            try {
+                final User document = getDocument();
+                LOGGER.debug("Delete User[{}]", document.getId());
+                document.setDeleted(true);
+                sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(getDocument());
+                return document.isDeleted();
+            } catch (Exception e) {
+                addMessage(null, MessageHolder.MSG_CANT_DELETE);
+            }
+        } else {
+            LOGGER.error("TRY TO DELETE without permission");
         }
-        return result;
+        return false;
     }
 
 
     @Override
     protected void initDocument(Integer id) {
+        LOGGER.info("Open User[{}]", id);
         setDocument(sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getItemById(id));
         final Set<PersonContact> contacts = getDocument().getContacts();
-        if(contacts!=null && !contacts.isEmpty() ) {
+        if(contacts != null && !contacts.isEmpty() ) {
             contactList = new ArrayList<>(contacts);
+        } else {
+            contactList = new ArrayList<>(5);
         }
     }
 
     @Override
     protected void initNewDocument() {
-        User user = new User();
+        LOGGER.info("Create new user");
+        final User user = new User();
         user.setCreated(Calendar.getInstance(ApplicationHelper.getLocale()).getTime());
         user.setDeleted(false);
         user.setFired(false);
         setDocument(user);
-        contactList = new ArrayList<PersonContact>(5);
+        contactList = new ArrayList<>(5);
     }
 
     @Override
     protected boolean saveDocument() {
-        boolean result = false;
+        LOGGER.info("Save changes to User[{}]", getDocument().getId());
         try {
             //Удаляем пустые контактные данные, введенные пользователем
             removeEmptyContacts(contactList);
             getDocument().getContacts().clear();
-            getDocument().getContacts().addAll(new HashSet<PersonContact>(contactList));
-            User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).update(getDocument());
-            if (user == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
-            } else {
-                setDocument(user);
-                result = true;
-            }
+            getDocument().getContacts().addAll(new HashSet<>(contactList));
+            sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).update(getDocument());
+            return true;
         } catch (Exception e) {
-            result = false;
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
-            e.printStackTrace();
+            LOGGER.error("Error on save:", e);
+            addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+            return false;
         }
-        return result;
     }
 
     /**
@@ -184,7 +202,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
         final Iterator<PersonContact> contactIterator = contacts.iterator();
         while (contactIterator.hasNext()) {
             final PersonContact item = contactIterator.next();
-            if (item.getValue().isEmpty()) {
+            if (StringUtils.isEmpty(item.getValue())) {
                 contactIterator.remove();
             }
         }
@@ -192,25 +210,19 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
 
     @Override
     protected boolean saveNewDocument() {
-        boolean result = false;
+        LOGGER.info("Save new User");
         try {
             //Удаляем пустые контактные данные, введенные пользователем
             removeEmptyContacts(contactList);
             getDocument().getContacts().clear();
             getDocument().getContacts().addAll(new HashSet<>(contactList));
-            User user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(getDocument());
-            if (user == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_SAVE);
-            } else {
-                setDocument(user);
-                result = true;
-            }
+            sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).save(getDocument());
+            return true;
         } catch (Exception e) {
-            result = false;
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
-            e.printStackTrace();
+            LOGGER.error("Error on save new:", e);
+            addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+            return false;
         }
-        return result;
     }
 
     /**
@@ -220,10 +232,4 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     public boolean isOwner(){
         return sessionManagement.getAuthData().getAuthorized().equals(getDocument());
     }
-
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
-
-    private static final long serialVersionUID = 5947443099767481905L;
 }

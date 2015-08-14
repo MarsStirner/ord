@@ -86,6 +86,17 @@ public class Permissions {
      * Все права RWX
      */
     public static final Permissions ALL_PERMISSIONS = new Permissions(true, true, true);
+
+    /**
+     * Права RW
+     */
+    public static final Permissions RW_PERMISSIONS = new Permissions(true, true, false);
+
+    /**
+     * Только R право
+     */
+    public static final Permissions R_PERMISSIONS = new Permissions(true, false, false);
+
     /**
      * Все права RWX
      */

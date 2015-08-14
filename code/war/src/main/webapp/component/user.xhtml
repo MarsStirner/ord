@@ -3,377 +3,221 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents">
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+        >
 
-<ui:composition template="/jsf-template/template.xhtml">
-    <ui:define name="header">
-        <div id="form_header">
-            <div class="actionbar">
-                <div class="menu">
-                    <div class="defbutton">
-                        <h:outputLink value="/component/users.xhtml">
-                            <h:graphicImage value="#{resource['images:home.png']}"/>
-                        </h:outputLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{user.edit}" rendered="#{user.viewState and (isAdministrator or isHr)}">
-                            <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                            Редактировать
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{user.cancel}" rendered="#{user.editState or user.createState}">
-                            <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                            Отменить
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{user.save}" rendered="#{user.editState or user.createState}">
-                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                            Сохранить
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{user.changeFired}" rendered="#{user.viewState and (isAdministrator or isHr)}">
-                            <h:graphicImage
-                                    value="#{user.document.fired ? resource['images:button-accept.png'] : resource['images:button-reject.png']}"/>
-                            <h:outputText value="#{user.document.fired ? 'Восстановить' : 'Уволить'}"/>
-                        </h:commandLink>
-                    </div>
-                </div>
-            </div>
-        </div>
+<ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/users.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{user.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{user.edit}" rendered="#{user.viewState and user.editPermission}" icon="ui-icon-pencil"
+                         update="@form"/>
+        <p:commandButton value="Отменить" action="#{user.view}" rendered="#{user.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{user.save}" rendered="#{user.editState or user.createState}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="#{user.document.fired ? 'Восстановить' : 'Уволить'}" action="#{user.changeFired}"
+                         rendered="#{user.viewState and user.editPermission}" icon="ui-icon-eject" update="@form"/>
     </ui:define>
 
-    <ui:define name="content">
-        <div id="header_content">
-            <h:panelGroup rendered="#{user.createState}">
-                <div class="name">Новый пользователь</div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{user.editState or user.viewState}">
-                <div class="name">
-                    <div>
-                        <h:outputText value="#{user.document.getDescription()}"/>
-                        <h:outputText value=" [Уволен]" rendered="#{user.document.fired}"/>
-                    </div>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{user.errorState}">
-                <div class="name">Ошибка</div>
-            </h:panelGroup>
-        </div>
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <c:set var="stateEditable" value="#{user.createState or user.editState}" scope="view"/>
+    </ui:define>
 
-        <div class="main_content">
-            <p:tabView activeIndex="0" widgetVar="userTabViewVar" id="content_table" rendered="#{not user.errorState}">
-                <p:tab title="Реквизиты">
-                    <c:if test="#{user.viewState}">
-                        <h:panelGroup>
-                            <div class="row">
-                                <table class="form_grid">
-                                    <tr class="row">
-                                        <td class="first">Фамилия:</td>
-                                        <td>
-                                            <h:outputText value="#{user.document.lastName}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Имя:</td>
-                                        <td>
-                                            <h:outputText value="#{user.document.firstName}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Отчество:</td>
-                                        <td>
-                                            <h:outputText value="#{user.document.middleName}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Подразделение:</td>
-                                        <td>
-                                            <h:outputText value="#{user.document.jobDepartmentString}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Должность:</td>
-                                        <td>
-                                            <h:outputText value="#{user.document.jobPositionString}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Email:</td>
-                                        <td>
-                                            <h:outputText value="#{user.document.email}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Номенклатура дел по-умолчанию:</td>
-                                        <td>
-                                            <h:outputText
-                                                    value="#{user.document.defaultNomenclature.code.concat('-').concat(user.document.defaultNomenclature.value)}"
-                                                    class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td><h3>Контактные данные</h3></td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td colspan="2">
-                                            <div id="main_table_2" style="width:100%">
-                                                <p:dataTable id="view_contacts_tbl"
-                                                             value="#{user.contactList}"
-                                                             var="contact"
-                                                             width="100%">
-                                                    <p:column headerText="Тип">
-                                                        <h:outputText value="#{contact.type}"/>
-                                                    </p:column>
-                                                    <p:column headerText="Номер">
-                                                        <h:outputText value="#{contact.value}"/>
-                                                    </p:column>
-                                                </p:dataTable>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </h:panelGroup>
-                    </c:if>
-                    <c:if test="#{user.createState or user.editState}">
-                        <h:panelGroup>
-                            <div class="row">
-                                <table class="form_grid">
-                                    <tr class="row">
-                                        <td class="first">Фамилия:</td>
-                                        <td>
-                                            <h:inputText value="#{user.document.lastName}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Имя:</td>
-                                        <td>
-                                            <h:inputText value="#{user.document.firstName}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Отчество:</td>
-                                        <td>
-                                            <h:inputText value="#{user.document.middleName}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Логин:</td>
-                                        <td>
-                                            <h:inputText value="#{user.document.login}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Пароль:</td>
-                                        <td>
-                                            <h:inputText binding="#{newPass}" class="wide">
-                                                <f:ajax listener="#{user.changePassword(newPass.value)}"/>
-                                            </h:inputText>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">
-                                            Подразделение
-                                        </td>
-                                        <td>
-                                            <!--<p:autoComplete-->
-                                            <!--id="jobDepartmentPicker"-->
-                                            <!--value="#{user.document.jobDepartment}"-->
-                                            <!--completeMethod="#{autoCompleteView.completeDepartment}"-->
-                                            <!--var="item"-->
-                                            <!--itemValue="#{item}"-->
-                                            <!--itemLabel="#{item.value}"-->
-                                            <!--converter="departmentConverter"-->
-                                            <!--forceSelection="true"-->
-                                            <!--minQueryLength="2"-->
-                                            <!--queryDelay="500"-->
-                                            <!--size="100"-->
-                                            <!--emptyMessage="Нету элементов"-->
-                                            <!--placeHolder="Выберете подразделение"-->
-                                            <!--maxResults="10"-->
-                                            <!--converterMessage="Не существует такого отделения"-->
-                                            <!--/>-->
-                                            <!--<p:watermark for="jobDepartmentPicker"-->
-                                            <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
-                                            <h:inputText value="#{user.document.jobDepartmentString}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">
-                                            Должность
-                                        </td>
-                                        <td>
-                                            <!--<p:autoComplete-->
-                                            <!--id="jobPositionPicker"-->
-                                            <!--value="#{user.document.jobPosition}"-->
-                                            <!--completeMethod="#{autoCompleteView.completePosition}"-->
-                                            <!--var="item"-->
-                                            <!--itemValue="#{item}"-->
-                                            <!--itemLabel="#{item.value}"-->
-                                            <!--converter="positionConverter"-->
-                                            <!--forceSelection="true"-->
-                                            <!--minQueryLength="2"-->
-                                            <!--queryDelay="500"-->
-                                            <!--size="100"-->
-                                            <!--emptyMessage="Нету элементов"-->
-                                            <!--maxResults="10"-->
-                                            <!--converterMessage="Не существует такой должности"-->
-                                            <!--/>-->
-                                            <!--<p:watermark for="jobPositionPicker"-->
-                                            <!--value="Введите первые символы для поиска соответствий в справочнике"/>-->
-                                            <h:inputText value="#{user.document.jobPositionString}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Email:</td>
-                                        <td>
-                                            <h:inputText value="#{user.document.email}" class="wide"/>
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td class="first">Номенклатура дел по-умолчанию:</td>
-                                        <td>
-                                            <my:nomenclatureSelectOneMenu id="userNomenclatureSelectOneMenu"
-                                                                                 value="#{user.document.defaultNomenclature}" style="width:100%" withNoSelectOption="true"/>
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{user.errorState}"/>
+        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not user.errorState}"
+                      style="font-weight: bold; display:inline-block; width:85%;">
+            <h:outputText value="#{user.document.description}" rendered="#{not user.createState}"/>
+            <h:outputText value="Новый пользователь" rendered="#{user.createState}"/>
+            <h:outputText value=" [Уволен]" rendered="#{user.document.fired}"/>
+        </h:panelGroup>
+    </ui:define>
 
-                                        </td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td><h3>Контактные данные</h3></td>
-                                    </tr>
-                                    <tr class="row">
-                                        <td colspan="2">
-                                            <div id="main_table" style="width:100%">
-                                                <p:dataTable id="edit_contacts_tbl"
-                                                             value="#{user.contactList}" var="contact"
-                                                             width="100%">
-                                                    <p:column headerText="Тип">
-                                                        <h:selectOneMenu
-                                                                id="contactTypeSelectMenu" value="#{contact.type}"
-                                                                converter="ContactTypeConverter" style="font-size:10pt;"
-                                                                immediate="true">
-                                                            <f:selectItems value="#{dictionaryManagement.contactTypes}"/>
-                                                        </h:selectOneMenu>
-                                                    </p:column>
-                                                    <p:column headerText="Номер">
-                                                        <h:inputText value="#{contact.value}"/>
-                                                    </p:column>
-                                                    <p:column headerText="Удалить">
-                                                        <h:commandLink action="#{user.deleteContact(contact)}">
-                                                            <h:graphicImage value="#{resource['images:button-reject.png']}"/>
-                                                        </h:commandLink>
-                                                    </p:column>
-                                                </p:dataTable>
-                                                <h:commandButton value="Добавить новый контакт" action="#{user.addContact()}"/>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </h:panelGroup>
-                    </c:if>
+
+    <ui:define name="DOCUMENT_CONTENT">
+        <p:tabView activeIndex="0" widgetVar="userTabViewVar" id="content_table" rendered="#{not user.errorState}">
+            <p:tab title="Реквизиты">
+                <p:panelGrid style="width:100%">
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_lastName" value="Фамилия"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <h:outputText id="v_lastName" value="#{user.document.lastName}" rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputText id="e_lastName" value="#{user.document.lastName}" required="true"
+                                         rendered="#{stateEditable}" styleClass="inputText" style="width:100%;"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_firstName" value="Имя"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <h:outputText id="v_firstName" value="#{user.document.firstName}" rendered="#{not stateEditable}"
+                                          styleClass="outputText"/>
+                            <p:inputText id="e_firstName" value="#{user.document.firstName}" required="true" rendered="#{stateEditable}"
+                                         styleClass="inputText" style="width:100%;"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_patrName" value="Отчество"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <h:outputText id="v_patrName" value="#{user.document.middleName}" rendered="#{not stateEditable}"
+                                          styleClass="outputText"/>
+                            <p:inputText id="e_patrName" value="#{user.document.middleName}" required="true" rendered="#{stateEditable}"
+                                         styleClass="inputText" style="width:100%;"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row" rendered="#{stateEditable}">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_login" value="Логин"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <p:inputText id="e_login" value="#{user.document.login}" required="true" rendered="#{stateEditable}"
+                                         styleClass="inputText" style="width:100%;"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row" rendered="#{stateEditable}">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_passwrd" value="Пароль"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <p:inputText id="e_passwrd" styleClass="inputText" style="width:100%;" valueChangeListener="#{user.changePassword}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_jobDepartment" value="Подразделение"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <h:outputText id="v_jobDepartment" value="#{user.document.jobDepartmentString}" rendered="#{not stateEditable}"
+                                          styleClass="outputText"/>
+                            <p:autoComplete id="e_jobDepartment" value="#{user.document.jobDepartmentString}" rendered="#{stateEditable}"
+                                            completeMethod="#{autoCompleteView.completeDepartment}"
+                                            forceSelection="false" minQueryLength="2" queryDelay="500" size="100"
+                                            emptyMessage="Нет подходящих элементов" placeHolder="Выберете подразделение" maxResults="10"/>
+                        </p:column>
+
+
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_jobPosition" value="Должность"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <h:outputText id="v_jobPosition" value="#{user.document.jobPositionString}" rendered="#{not stateEditable}"
+                                          styleClass="outputText"/>
+                            <p:autoComplete id="e_jobPosition" value="#{user.document.jobPositionString}" rendered="#{stateEditable}"
+                                            completeMethod="#{autoCompleteView.completePosition}"
+                                            forceSelection="false" minQueryLength="2" queryDelay="500" size="100"
+                                            emptyMessage="Нет подходящих элементов" placeHolder="Выберете должность" maxResults="10"/>
+                        </p:column>
+
+
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_mail" value="Email"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <h:outputText id="v_mail" value="#{user.document.email}" rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputText id="e_mail" value="#{user.document.email}" required="true" rendered="#{stateEditable}" styleClass="inputText"
+                                         style="width:100%;"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-3">
+                            <p:outputLabel for="e_nomenclature" value="Номенклатура дел по-умолчанию"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-9">
+                            <h:outputText id="v_nomenclature" rendered="#{not stateEditable}" styleClass="outputText"
+                                          value="#{user.document.defaultNomenclature.code.concat('-').concat(user.document.defaultNomenclature.value)}"/>
+                            <my:nomenclatureSelectOneMenu id="e_nomenclature" rendered="#{stateEditable}" value="#{user.document.defaultNomenclature}"
+                                                          style="width:100%" withNoSelectOption="true"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:dataTable id="contacts_tbl" value="#{user.contactList}" var="contact" width="100%"
+                             editable="#{stateEditable}" editMode="row" editingRow="#{stateEditable}">
+                    <f:facet name="header">
+                        <div align="left">Контактные данные</div>
+                    </f:facet>
+                    <p:column headerText="Тип">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{contact.type}" styleClass="outputText"/></f:facet>
+                            <f:facet name="input">
+                                <p:selectOneMenu id="contactTypeSelectMenu" value="#{contact.type}" converter="ContactTypeConverter"
+                                                 style="width:97%; margin:0 0.5em" styleClass="inputText">
+                                    <f:selectItems value="#{dictionaryManagement.contactTypes}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column headerText="Номер">
+                        <p:cellEditor>
+                            <f:facet name="output"><h:outputText value="#{contact.value}" styleClass="outputText"/></f:facet>
+                            <f:facet name="input"><p:inputText value="#{contact.value}" style="width:97%; margin:0 0.5em"
+                                                               styleClass="inputText"/></f:facet>
+                        </p:cellEditor>
+                    </p:column>
+                    <p:column rendered="#{stateEditable}" style="width: 50px; padding:0;">
+                        <p:commandButton action="#{user.deleteContact(contact)}" icon="ui-icon-trash" update="contacts_tbl" style="width:100%;"/>
+                    </p:column>
+                    <f:facet name="footer">
+                        <div align="left">
+                            <p:commandButton value="Добавить контакт" action="#{user.addContact}" update="contacts_tbl" rendered="#{stateEditable}"/>
+                        </div>
+                    </f:facet>
+                </p:dataTable>
+            </p:tab>
+            <c:if test="#{isAdministrator or isHr}">
+                <p:tab title="Права доступа|допуска">
+                    <p:panelGrid style="width:100%">
+                        <p:row styleClass="ui-grid-row">
+                            <p:column styleClass="ui-grid-col-3">
+                                <p:outputLabel for="e_maxAccessLevel" value="Максимальный уровень допуска"/>
+                            </p:column>
+                            <p:column colspan="3" styleClass="ui-grid-col-9">
+                                <h:outputText id="v_maxAccessLevel" rendered="#{not stateEditable}" styleClass="outputText"
+                                              value="#{user.document.maxUserAccessLevel.value}"/>
+                                <p:selectOneMenu id="e_maxAccessLevel" value="#{user.document.maxUserAccessLevel}" required="true"
+                                                 converter="UserAccessLevelConverter" style="width:100%;" styleClass="inputText"
+                                                 rendered="#{stateEditable}">
+                                    <f:selectItems value="#{dictionaryManagement.userAccessLevels}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                        </p:row>
+                        <p:row styleClass="ui-grid-row">
+                            <p:column styleClass="ui-grid-col-3">
+                                <p:outputLabel for="v_currentAccessLevel" value="Текущий уровень допуска"/>
+                            </p:column>
+                            <p:column colspan="3" styleClass="ui-grid-col-9">
+                                <h:outputText id="v_currentAccessLevel" styleClass="outputText"
+                                              value="#{user.document.currentUserAccessLevel.value}"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <fieldset>
+                        <legend>
+                            <label>
+                                <span class="title">Роли</span>
+                            </label>
+                        </legend>
+                        <h:selectManyCheckbox collectionType="java.util.HashSet"
+                                              layout="pageDirection" value="#{user.document.roles}"
+                                              converter="RoleConverter" disabled="#{not stateEditable}">
+                            <f:selectItems value="#{roleList.availableRoles}"/>
+                        </h:selectManyCheckbox>
+                    </fieldset>
+
                 </p:tab>
-                <c:if test="#{isAdministrator or isHr}">
-                    <p:tab title="Права доступа|допуска">
-                        <h:panelGroup rendered="#{user.createState or user.editState}">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Максимальный уровень допуска: </span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <h:selectOneMenu id="accessLevel" value="#{user.document.maxUserAccessLevel}"
-                                                         converter="UserAccessLevelConverter">
-                                            <f:selectItems value="#{dictionaryManagement.userAccessLevels}"/>
-                                        </h:selectOneMenu>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Текущий уровень допуска: </span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <h:outputText value="#{user.document.currentUserAccessLevel}"
-                                                      converter="UserAccessLevelConverter"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first" colspan="2">
-                                        <fieldset>
-                                            <legend>
-                                                <label>
-                                                    <span class="title">Роли</span>
-                                                </label>
-                                            </legend>
-                                            <h:selectManyCheckbox collectionType="java.util.HashSet"
-                                                                  layout="pageDirection" value="#{user.document.roles}"
-                                                                  converter="RoleConverter">
-                                                <f:selectItems value="#{roleList.availableRoles}"/>
-                                            </h:selectManyCheckbox>
-                                        </fieldset>
-                                    </td>
-                                </tr>
-                            </table>
-                        </h:panelGroup>
-                        <h:panelGroup rendered="#{user.viewState}">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Максимальный уровень допуска: </span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <h:outputText value="#{user.document.maxUserAccessLevel}"
-                                                      converter="UserAccessLevelConverter"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Текущий уровень допуска: </span>
-                                        </label>
-                                    </td>
-                                    <td class="second" colspan="3">
-                                        <h:outputText value="#{user.document.currentUserAccessLevel}"
-                                                      converter="UserAccessLevelConverter"/></td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first" colspan="4">
-                                        <fieldset>
-                                            <legend>
-                                                <label><span class="title">Роли</span> </label>
-                                            </legend>
-                                            <h:selectManyCheckbox collectionType="java.util.HashSet"
-                                                                  layout="pageDirection" value="#{user.document.roles}"
-                                                                  converter="RoleConverter" disabled="true">
-                                                <f:selectItems value="#{roleList.availableRoles}"/>
-                                            </h:selectManyCheckbox>
-                                        </fieldset>
-                                    </td>
-                                </tr>
-                            </table>
-                        </h:panelGroup>
-                    </p:tab>
-                </c:if>
-            </p:tabView>
-        </div>
+            </c:if>
+        </p:tabView>
     </ui:define>
-
-    <ui:define name="left_menu"/>
-
-    <ui:define name="footer"/>
-
 </ui:composition>
 </html>  
