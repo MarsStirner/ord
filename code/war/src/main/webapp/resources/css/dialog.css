@@ -13,10 +13,12 @@ form{
     width: 22%;
 }
 .ui-button.confirmButton {
-    background: linear-gradient(greenyellow, #7AD6B4);
-    width: 33%;
+   /* background: linear-gradient(greenyellow, #7AD6B4);  */
+    width: 25%;
+    margin: 0 1em;
 }
 .ui-button.cancelButton {
-    background: linear-gradient(lightcoral,red);
-    width: 33%;
+    /* background: linear-gradient(lightcoral,red); */
+    width: 25%;
+    margin: 0 1em;
 }
