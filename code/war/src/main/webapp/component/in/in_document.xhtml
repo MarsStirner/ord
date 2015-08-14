@@ -59,8 +59,7 @@
         <p:commandButton value="Редактировать" action="#{in_doc.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{in_doc.viewState and in_doc.editPermission and editableMatrix.incoming.isStateEditable(statusId)}"/>
         <p:commandButton value="Отменить" action="#{in_doc.view}" rendered="#{in_doc.editState}" icon="ui-icon-cancel" update="@form"/>
-        <p:commandButton value="Сохранить" action="#{in_doc.save}" rendered="#{in_doc.editState or in_doc.createState}" icon="ui-icon-disk"
-                         update="@form"/>
+        <p:commandButton value="Сохранить" action="#{in_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{in_doc.delete}" rendered="#{in_doc.editState}" icon="ui-icon-trash" update="@form"/>
         <p:commandButton value="Действия" action="#{in_doc.processorModal.show}" rendered="#{in_doc.viewState and in_doc.executePermission}"
                          icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
@@ -370,7 +369,7 @@
                             <h:outputText id="v_docAccessLevel" value="#{in_doc.document.userAccessLevel.value}" rendered="#{in_doc.viewState}"
                                           styleClass="outputText"/>
                             <p:selectOneMenu id="e_docAccessLevel" value="#{in_doc.document.userAccessLevel}"
-                                             converter="UserAccessLevelConverter" rendered="#{in_doc.editState or in_doc.createState}">
+                                             converter="UserAccessLevelConverter" rendered="#{stateEditable}">
                                 <f:selectItems var="level"
                                                value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.authData.currentAccessLevel.level)}"
                                                itemLabel="#{level.value}"/>
