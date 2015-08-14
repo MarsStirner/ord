@@ -84,7 +84,7 @@ public final class WorkflowHelper {
                     if (activity instanceof SendMailActivity) {
                         SendMailActivity sendMailActivity = (SendMailActivity) activity;
                         MailMessage message = sendMailActivity.getMessage();
-                        List<String> sendTo = new ArrayList<String>();
+                        List<String> sendTo = new ArrayList<>();
                         sendTo.add(selectedUser.getEmail());
                         message.setSendTo(sendTo);
                         sendMailActivity.setMessage(message);
@@ -92,7 +92,7 @@ public final class WorkflowHelper {
                 }
                 final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
                 task.setWFResultDescription(String.format(delegateReason, task.getExecutors().iterator().next().getDescription()));
-                final HashSet<User> users = new HashSet<User>(1);
+                final HashSet<User> users = new HashSet<>(1);
                 users.add(selectedUser);
                 task.setExecutors(users);
 
@@ -108,35 +108,29 @@ public final class WorkflowHelper {
     }
 
     public static boolean addToDocumentAgreementUsers(OutgoingDocument document, ArrayList<User> usersList) {
-        boolean result = true;
-
         if (usersList.size() > 0) {
             Set<User> currentUsers = document.getAgreementUsers();
             if (currentUsers == null) {
-                document.setAgreementUsers(new HashSet(usersList));
+                document.setAgreementUsers(new HashSet<>(usersList));
             } else {
-                currentUsers.addAll(new HashSet(usersList));
+                currentUsers.addAll(new HashSet<>(usersList));
                 document.setAgreementUsers(currentUsers);
             }
         }
-
-        return result;
+        return true;
     }
 
     public static boolean addToDocumentAgreementUsers(InternalDocument document, ArrayList<User> usersList) {
-        boolean result = true;
-
         if (usersList.size() > 0) {
             Set<User> currentUsers = document.getAgreementUsers();
             if (currentUsers == null) {
-                document.setAgreementUsers(new HashSet(usersList));
+                document.setAgreementUsers(new HashSet<>(usersList));
             } else {
-                currentUsers.addAll(new HashSet(usersList));
+                currentUsers.addAll(new HashSet<>(usersList));
                 document.setAgreementUsers(currentUsers);
             }
         }
-
-        return result;
+        return true;
     }
 
     public static boolean setOutgoingRegistrationNumber(OutgoingDocument doc) {
@@ -160,20 +154,16 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
+                        context, "#{sessionManagement}", SessionManagementBean.class
                 );
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{dictionaryManagement}",
-                        DictionaryManagementBean.class
+                        context, "#{dictionaryManagement}", DictionaryManagementBean.class
                 );
 
                 if (doc.getRegistrationNumber() == null || doc.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                    Set<Role> in_roles = new HashSet<Role>(1);
+                    Set<Role> in_roles = new HashSet<>(1);
                     Role in_office;
                     if (in_nomenclature != null) {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
@@ -189,10 +179,9 @@ public final class WorkflowHelper {
                     doc.setRoleEditors(in_roles);
                     final String in_count = StringUtils.leftPad(
                             String.valueOf(
-                                    new HashSet<OutgoingDocument>(
+                                    new HashSet<>(
                                             sessionManagement.getDAO(
-                                                    OutgoingDocumentDAOImpl.class,
-                                                    OUTGOING_DOCUMENT_FORM_DAO
+                                                    OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO
                                             ).findRegistratedDocumentsByCriteria(in_number.toString())
                                     ).size() + 1
                             ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
@@ -222,51 +211,13 @@ public final class WorkflowHelper {
 
 
     public static boolean checkOutgoingPropertiesForArchiving(OutgoingDocument doc) {
-        boolean result = false;
-        FacesContext context = FacesContext.getCurrentInstance();
-        StringBuffer in_result = new StringBuffer("");
-
-        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                context,
-                "#{sessionManagement}",
-                SessionManagementBean.class
-        );
-
-
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                doc.setWFResultDescription("");
-            }
-        } else {
-            doc.setWFResultDescription(in_result.toString());
-        }
-        return result;
+        doc.setWFResultDescription("");
+        return true;
     }
 
     public static boolean setIncomingDocumentParentVolumeUnitsCount(IncomingDocument document) {
-        boolean result = false;
-        String in_result = "";
-        FacesContext context = FacesContext.getCurrentInstance();
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                document.setWFResultDescription("");
-            }
-        } else {
-            document.setWFResultDescription(in_result.toString());
-        }
-        return result;
+        document.setWFResultDescription("");
+        return true;
     }
 
     public static boolean setIncomingRegistrationNumber(IncomingDocument doc) {
@@ -291,19 +242,15 @@ public final class WorkflowHelper {
             try {
 
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
+                        context, "#{sessionManagement}", SessionManagementBean.class
                 );
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{dictionaryManagement}",
-                        DictionaryManagementBean.class
+                        context, "#{dictionaryManagement}", DictionaryManagementBean.class
                 );
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     final StringBuilder in_number = new StringBuilder();
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                    Set<Role> in_roles = new HashSet<Role>();
+                    Set<Role> in_roles = new HashSet<>();
                     Role in_office;
                     if (in_nomenclature != null) {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
@@ -321,7 +268,7 @@ public final class WorkflowHelper {
                     in_number.append(
                             StringUtils.leftPad(
                                     String.valueOf(
-                                            new HashSet<IncomingDocument>(
+                                            new HashSet<>(
                                                     sessionManagement.
                                                             getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                                                             .findRegistratedDocumentsByCriteria(in_number.toString())
@@ -349,32 +296,9 @@ public final class WorkflowHelper {
     }
 
     public static boolean checkIncomingPropertiesForArchiving(IncomingDocument doc) {
-        boolean result = false;
-        FacesContext context = FacesContext.getCurrentInstance();
-        StringBuilder in_result = new StringBuilder("");
-
-        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                context,
-                "#{sessionManagement}",
-                SessionManagementBean.class
-        );
-
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                doc.setWFResultDescription("");
-            }
-        } else {
-            doc.setWFResultDescription(in_result.toString());
-        }
-        return result;
+        doc.setWFResultDescription("");
+        return true;
     }
-
 
 
     public static boolean setInternalRegistrationNumber(InternalDocument doc) {
@@ -399,20 +323,16 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
+                        context, "#{sessionManagement}", SessionManagementBean.class
                 );
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{dictionaryManagement}",
-                        DictionaryManagementBean.class
+                        context, "#{dictionaryManagement}", DictionaryManagementBean.class
                 );
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     StringBuffer in_number = new StringBuffer();
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                    Set<Role> in_roles = new HashSet<Role>(1);
+                    Set<Role> in_roles = new HashSet<>(1);
                     Role in_office;
                     if (in_nomenclature != null) {
                         in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO)
@@ -437,84 +357,84 @@ public final class WorkflowHelper {
                     String in_form = doc.getForm().getValue();
 
 
-                    Map<String, Object> in_filters = new HashMap<String, Object>();
+                    Map<String, Object> in_filters = new HashMap<>();
                     String in_count;
                     SimpleDateFormat ydf = new SimpleDateFormat("yyyy");
-                    if (in_form.equals("Распоряжение")) {
-                        //Р/индекс/номер по порядку
-                        in_number = new StringBuffer();
-                        if (in_nomenclature != null) {
-                            in_number.append("Р/").append(in_nomenclature.getCode()).append("/");
-                        } else {
-                            in_number.append("Р/01/");
-                        }
+                    switch (in_form) {
+                        case "Распоряжение":
+                            //Р/индекс/номер по порядку
+                            in_number = new StringBuffer();
+                            if (in_nomenclature != null) {
+                                in_number.append("Р/").append(in_nomenclature.getCode()).append("/");
+                            } else {
+                                in_number.append("Р/01/");
+                            }
 
-                        in_filters.put("registrationNumber", in_number.toString());
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(
-                                                        InternalDocumentDAOImpl.class,
-                                                        INTERNAL_DOCUMENT_FORM_DAO
-                                                ).findDocumentsByCriteria(
-                                                        in_filters,
-                                                        true,
-                                                        false
-                                                )
-                                        ).size() + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append(in_count);
+                            in_filters.put("registrationNumber", in_number.toString());
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(
+                                                            InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO
+                                                    ).findDocumentsByCriteria(
+                                                            in_filters, true, false
+                                                    )
+                                            ).size() + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append(in_count);
 
-                    } else if (in_form.equals("Методическое пособие")) {
-                        in_filters.put("registrationNumber", "%");
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
-                                                        .findDocumentsByCriteria(in_filters, true, false)
-                                        ).size() + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append(in_count).append("/Методические пособия/").append(ydf.format(Calendar.getInstance().getTime()));
-
-
-                    } else if (in_form.equals("Инструкция")) {
-                        in_filters.put("registrationNumber", in_number.toString());
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
-                                                        .findDocumentsByCriteria(in_filters, true, false)
-                                        ).size() + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append(in_count).append("/Инструкции/").append(ydf.format(Calendar.getInstance().getTime()));
+                            break;
+                        case "Методическое пособие":
+                            in_filters.put("registrationNumber", "%");
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                            .findDocumentsByCriteria(in_filters, true, false)
+                                            ).size() + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append(in_count).append("/Методические пособия/").append(ydf.format(Calendar.getInstance().getTime()));
 
 
-                    } else if (in_form.equals("Служебная записка")) {
-                        in_number = new StringBuffer();
-                        if (in_nomenclature != null) {
-                            in_number.append("СЗ/" + in_nomenclature.getCode() + "/");
-                        } else {
-                            in_number.append("СЗ/01/");
-                        }
-                        in_filters.put("registrationNumber", in_number.toString());
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(
-                                                        InternalDocumentDAOImpl.class,
-                                                        INTERNAL_DOCUMENT_FORM_DAO
-                                                ).findDocumentsByCriteria(in_filters, true, false)
-                                        ).size() + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append(in_count);
+                            break;
+                        case "Инструкция":
+                            in_filters.put("registrationNumber", in_number.toString());
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                            .findDocumentsByCriteria(in_filters, true, false)
+                                            ).size() + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append(in_count).append("/Инструкции/").append(ydf.format(Calendar.getInstance().getTime()));
+
+
+                            break;
+                        case "Служебная записка":
+                            in_number = new StringBuffer();
+                            if (in_nomenclature != null) {
+                                in_number.append("СЗ/").append(in_nomenclature.getCode()).append("/");
+                            } else {
+                                in_number.append("СЗ/01/");
+                            }
+                            in_filters.put("registrationNumber", in_number.toString());
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(
+                                                            InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO
+                                                    ).findDocumentsByCriteria(in_filters, true, false)
+                                            ).size() + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append(in_count);
 
                                 /*in_number=new StringBuffer();
                                         in_filters.put("registrationNumber", "%");
@@ -522,98 +442,99 @@ public final class WorkflowHelper {
                                         in_count=new  StringBuffer("0000"+String.valueOf(sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findDocumentsByCriteria(in_filters,true,false).size()+1));
                                         in_number.append("СЗ/"+in_count.substring(in_count.length()-4)+"/"+ydf.format(java.util.Calendar.getInstance ().getTime()));*/
 
-                    } else if (in_form.equals("Информационное письмо")) {
-                        in_number = new StringBuffer();
-                        in_filters.put("registrationNumber", "%");
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
-                                                        .findDocumentsByCriteria(in_filters, true, false)
-                                        ).size()
-                                                //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
-                                                + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
+                            break;
+                        case "Информационное письмо":
+                            in_number = new StringBuffer();
+                            in_filters.put("registrationNumber", "%");
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                            .findDocumentsByCriteria(in_filters, true, false)
+                                            ).size()
+                                                    //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
+                                                    + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
 
-                    } else if (in_form.equals("Гарантийное письмо")) {
-                        in_number = new StringBuffer();
-                        in_filters.put("registrationNumber", "%");
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
-                                                        .findDocumentsByCriteria(in_filters, true, false)
-                                        ).size()
-                                                //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
-                                                + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append("ГП/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
+                            break;
+                        case "Гарантийное письмо":
+                            in_number = new StringBuffer();
+                            in_filters.put("registrationNumber", "%");
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                                                            .findDocumentsByCriteria(in_filters, true, false)
+                                            ).size()
+                                                    //+sessionManagement.getDAO(InternalDocumentDAOImpl.class,INTERNAL_DOCUMENT_FORM_DAO).findRegistratedDocumentsByForm("Служебная записка").size()
+                                                    + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append("ГП/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
 
-                    } else if (in_form.equals("Приказ")) {
-                        in_number = new StringBuffer();
+                            break;
+                        case "Приказ":
+                            in_number = new StringBuffer();
 
-                        Map<String, Object> outDateOrder_filters = new HashMap<String, Object>();
-                        outDateOrder_filters.put("registrationNumber", "%/%");
-                        outDateOrder_filters.put("form", doc.getForm());
-                        outDateOrder_filters.put("closePeriodRegistrationFlag", "false");
-                        int outDateOrderCount = new HashSet<InternalDocument>(
-                                sessionManagement.getDAO(
-                                        InternalDocumentDAOImpl.class,
-                                        INTERNAL_DOCUMENT_FORM_DAO
-                                ).findDocumentsByCriteria(outDateOrder_filters, true, false)
-                        ).size();
+                            Map<String, Object> outDateOrder_filters = new HashMap<>();
+                            outDateOrder_filters.put("registrationNumber", "%/%");
+                            outDateOrder_filters.put("form", doc.getForm());
+                            outDateOrder_filters.put("closePeriodRegistrationFlag", "false");
+                            int outDateOrderCount = new HashSet<>(
+                                    sessionManagement.getDAO(
+                                            InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO
+                                    ).findDocumentsByCriteria(outDateOrder_filters, true, false)
+                            ).size();
 
-                        in_filters.put("registrationNumber", "%");
-                        in_filters.put("form", doc.getForm());
-                        in_filters.put("closePeriodRegistrationFlag", "false");
-                        int summaryOrderCount = new HashSet<InternalDocument>(
-                                sessionManagement.getDAO(
-                                        InternalDocumentDAOImpl.class,
-                                        INTERNAL_DOCUMENT_FORM_DAO
-                                ).findDocumentsByCriteria(in_filters, true, false)
-                        ).size();
+                            in_filters.put("registrationNumber", "%");
+                            in_filters.put("form", doc.getForm());
+                            in_filters.put("closePeriodRegistrationFlag", "false");
+                            int summaryOrderCount = new HashSet<>(
+                                    sessionManagement.getDAO(
+                                            InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO
+                                    ).findDocumentsByCriteria(in_filters, true, false)
+                            ).size();
 
-                        in_count = StringUtils.leftPad(String.valueOf(summaryOrderCount - outDateOrderCount + 1), LEFT_PAD_COUNT, LEFT_PAD_CHAR);
-                        in_number.append(in_count);
-                    } else if (in_form.equals("Правила внутреннего распорядка")) {
-                        in_number = new StringBuffer();
-                        in_filters.put("registrationNumber", "%");
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(
-                                                        InternalDocumentDAOImpl.class,
-                                                        INTERNAL_DOCUMENT_FORM_DAO
-                                                ).findDocumentsByCriteria(in_filters, true, false)
-                                        ).size() + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append("ПВР/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
-                    } else if (in_form.equals("Положение")) {
-                        in_number = new StringBuffer();
-                        in_filters.put("registrationNumber", "%");
-                        in_filters.put("form", doc.getForm());
-                        in_count = StringUtils.leftPad(
-                                String.valueOf(
-                                        new HashSet<InternalDocument>(
-                                                sessionManagement.getDAO(
-                                                        InternalDocumentDAOImpl.class,
-                                                        INTERNAL_DOCUMENT_FORM_DAO
-                                                ).findDocumentsByCriteria(in_filters, true, false)
-                                        ).size() + 1
-                                ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
-                        );
-                        in_number.append("Положение/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
-                    } else {
-                        result = false;
-                        doc.setWFResultDescription("Данный вид документа не может быть зарегистрирован!");
-                        return result;
+                            in_count = StringUtils.leftPad(String.valueOf(summaryOrderCount - outDateOrderCount + 1), LEFT_PAD_COUNT, LEFT_PAD_CHAR);
+                            in_number.append(in_count);
+                            break;
+                        case "Правила внутреннего распорядка":
+                            in_number = new StringBuffer();
+                            in_filters.put("registrationNumber", "%");
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(
+                                                            InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO
+                                                    ).findDocumentsByCriteria(in_filters, true, false)
+                                            ).size() + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append("ПВР/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
+                            break;
+                        case "Положение":
+                            in_number = new StringBuffer();
+                            in_filters.put("registrationNumber", "%");
+                            in_filters.put("form", doc.getForm());
+                            in_count = StringUtils.leftPad(
+                                    String.valueOf(
+                                            new HashSet<>(
+                                                    sessionManagement.getDAO(
+                                                            InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO
+                                                    ).findDocumentsByCriteria(in_filters, true, false)
+                                            ).size() + 1
+                                    ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
+                            );
+                            in_number.append("Положение/").append(in_count).append("/").append(ydf.format(Calendar.getInstance().getTime()));
+                            break;
+                        default:
+                            doc.setWFResultDescription("Данный вид документа не может быть зарегистрирован!");
+                            return false;
                     }
                     doc.setRegistrationNumber(in_number.toString());
 
@@ -669,12 +590,10 @@ public final class WorkflowHelper {
         }
 
 
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
-                context,
-                "#{sessionManagement}",
-                SessionManagementBean.class
+        SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
+                context, "#{sessionManagement}", SessionManagementBean.class
         );
-        Map<String, Object> in_filters = new HashMap<String, Object>();
+        Map<String, Object> in_filters = new HashMap<>();
         in_filters.put("registrationNumber", doc.getRegistrationNumber());
         List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
                 .findDocumentsByCriteria(in_filters, false, true);
@@ -686,15 +605,17 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{dictionaryManagement}",
-                        DictionaryManagementBean.class
+                        context, "#{dictionaryManagement}", DictionaryManagementBean.class
                 );
                 Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
-                Set<Role> in_roles = new HashSet<Role>(1);
+                Set<Role> in_roles = new HashSet<>(1);
                 Role in_office;
                 if (in_nomenclature != null) {
-                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_" + in_nomenclature.getCode()));
+                    in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(
+                            RoleType.valueOf(
+                                    "OFFICE_" + in_nomenclature.getCode()
+                            )
+                    );
                 } else {
                     in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.valueOf("OFFICE_01"));
                 }
@@ -721,59 +642,13 @@ public final class WorkflowHelper {
     }
 
     public static boolean checkInternalPropertiesForArchiving(InternalDocument doc) {
-        boolean result = false;
-        FacesContext context = FacesContext.getCurrentInstance();
-        StringBuilder in_result = new StringBuilder("");
-
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
-                context,
-                "#{sessionManagement}",
-                SessionManagementBean.class
-        );
-
-
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                doc.setWFResultDescription("");
-            }
-        } else {
-            doc.setWFResultDescription(in_result.toString());
-        }
-        return result;
+        doc.setWFResultDescription("");
+        return true;
     }
 
     public static boolean checkRequestPropertiesForArchiving(RequestDocument doc) {
-        boolean result = false;
-        FacesContext context = FacesContext.getCurrentInstance();
-        StringBuilder in_result = new StringBuilder("");
-
-        SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
-                context,
-                "#{sessionManagement}",
-                SessionManagementBean.class
-        );
-
-
-        if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                doc.setWFResultDescription("");
-            }
-        } else {
-            doc.setWFResultDescription(in_result.toString());
-        }
-        return result;
+        doc.setWFResultDescription("");
+        return true;
     }
 
     public static boolean checkInternalDocumentPropertiesForReview(InternalDocument doc) {
@@ -791,20 +666,16 @@ public final class WorkflowHelper {
             try {
 
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
+                        context, "#{sessionManagement}", SessionManagementBean.class
                 );
                 DictionaryManagementBean dictionaryManager = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{dictionaryManagement}",
-                        DictionaryManagementBean.class
+                        context, "#{dictionaryManagement}", DictionaryManagementBean.class
                 );
 
                 if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     Nomenclature in_nomenclature = dictionaryManager.getNomenclatureByUser(doc.getController());
                     Role in_administrationRole = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.ADMINISTRATOR);
-                    Set<Role> in_roles = new HashSet<Role>(2);
+                    Set<Role> in_roles = new HashSet<>(2);
                     in_roles.add(in_administrationRole);
 
                     Role in_office;
@@ -862,32 +733,27 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
+                        context, "#{sessionManagement}", SessionManagementBean.class
                 );
 
 
                 if (document.getRegistrationNumber() == null || document.getRegistrationNumber().isEmpty()) {
                     final StringBuilder in_number = new StringBuilder();
-                    //TODO
-                    String in_count = "0";/*= StringUtils.leftPad(
+                    String in_count = StringUtils.leftPad(
                             String.valueOf(
-                                    new HashSet<RequestDocument>(
+                                    new HashSet<>(
                                             sessionManagement.getDAO(
-                                                    RequestDocumentDAOImpl.class,
-                                                    REQUEST_DOCUMENT_FORM_DAO
+                                                    RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO
                                             ).findRegistratedDocuments()
                                     ).size() + 1
                             ), LEFT_PAD_COUNT, LEFT_PAD_CHAR
                     );
-                    */
                     in_number.append(in_count);
                     document.setRegistrationNumber(in_number.toString());
 
                     Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
                     document.setRegistrationDate(calendar.getTime());
-                    Set<Role> in_roles = new HashSet<Role>();
+                    Set<Role> in_roles = new HashSet<>();
                     Role in_office = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findRoleByType(RoleType.REQUEST_MANAGER);
                     in_roles.add(in_office);
 
@@ -932,15 +798,13 @@ public final class WorkflowHelper {
         if (in_result.toString().isEmpty()) {
             try {
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
+                        context, "#{sessionManagement}", SessionManagementBean.class
                 );
                 if (StringUtils.isEmpty(doc.getTaskNumber())) {
                     //Номер не задан
                     StringBuilder in_number = new StringBuilder();
                     StringBuilder in_count = new StringBuilder();
-                    Map<String, Object> in_filters = new HashMap<String, Object>();
+                    Map<String, Object> in_filters = new HashMap<>();
 
                     final String key = doc.getRootDocumentId();
                     if (StringUtils.isNotEmpty(key)) {
@@ -948,7 +812,6 @@ public final class WorkflowHelper {
                         if (key.contains("_")) {
                             final Integer idInt = ApplicationHelper.getIdFromUniqueIdString(key);
                             if (idInt != null) {
-                                final String id = idInt.toString();
                                 if (key.contains("incoming")) {
                                     IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                                             .getItemByIdForSimpleView(idInt);
@@ -958,8 +821,9 @@ public final class WorkflowHelper {
                                             .getItemByIdForSimpleView(idInt);
                                     in_number.append(out_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("internal")) {
-                                    InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
-                                            .getItemByIdForSimpleView(idInt);
+                                    InternalDocument internal_doc = sessionManagement.getDAO(
+                                            InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO
+                                    ).getItemByIdForSimpleView(idInt);
                                     in_number.append(internal_doc.getRegistrationNumber()).append("/");
                                 } else if (key.contains("request")) {
                                     RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
@@ -1013,9 +877,7 @@ public final class WorkflowHelper {
         try {
             final FacesContext context = FacesContext.getCurrentInstance();
             final SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                    context,
-                    "#{sessionManagement}",
-                    SessionManagementBean.class
+                    context, "#{sessionManagement}", SessionManagementBean.class
             );
 
             //TODO когда-нибудь, когда мир станет вновь светлым и ясным, когда прекратятся войны, исчезнет коррупция,
@@ -1030,7 +892,7 @@ public final class WorkflowHelper {
                 templateTask.setParent(doc);
                 templateTask.getHistory().clear();
 
-                final Map<String, Object> in_filters = new HashMap<String, Object>();
+                final Map<String, Object> in_filters = new HashMap<>();
                 final Matcher matcher = Pattern.compile("(.*)([0-9]+)$").matcher(doc.getTaskNumber());
                 if (matcher.find()) {
                     templateTask.setTaskNumber(matcher.group(1));
@@ -1041,13 +903,13 @@ public final class WorkflowHelper {
 
                 for (User currentExecutor : doc.getExecutors()) {
                     final Task currentTask = (Task) templateTask.clone();
-                    final Set<User> executorsSet = new HashSet<User>(1);
+                    final Set<User> executorsSet = new HashSet<>(1);
                     executorsSet.add(currentExecutor);
                     currentTask.setExecutors(executorsSet);
                     //+2 потому что жизнь-боль и первое поручение еще не сохранено в БД с корректным номером
-                    int numberOffset = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDocuments(in_filters, false, false) +2;
+                    int numberOffset = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).countDocuments(in_filters, false, false) + 2;
                     currentTask.setTaskNumber(currentTask.getTaskNumber().concat(String.valueOf(numberOffset)));
-                    Set<HistoryEntry> history = new HashSet<HistoryEntry>(1);
+                    Set<HistoryEntry> history = new HashSet<>(1);
                     final HistoryEntry entry = new HistoryEntry();
                     entry.setActionId(DocumentAction.REDIRECT_TO_EXECUTION_1.getId());
                     entry.setCreated(new Date());
@@ -1086,7 +948,7 @@ public final class WorkflowHelper {
             tree.setCreated(created);
             tree.setDeleted(false);
 
-            List<HumanTaskTreeNode> newRootNodes = new ArrayList<HumanTaskTreeNode>();
+            List<HumanTaskTreeNode> newRootNodes = new ArrayList<>();
 
             if (template.getRootNodes() != null) {
                 for (HumanTaskTreeNode rootNodeTemplate : template.getRootNodeList()) {
@@ -1094,7 +956,7 @@ public final class WorkflowHelper {
                     newRootNode.setAuthor(author);
                     newRootNode.setCreated(created);
                     newRootNode.setDeleted(false);
-                    List<HumanTask> newTasks = new ArrayList<HumanTask>();
+                    List<HumanTask> newTasks = new ArrayList<>();
                     for (HumanTask taskTemplate : rootNodeTemplate.getTaskList()) {
                         HumanTask newTask = new HumanTask();
                         newTask.setAuthor(author);
@@ -1120,7 +982,7 @@ public final class WorkflowHelper {
     }
 
     private static List<HumanTaskTreeNode> getChildNodeListFromTemplate(HumanTaskTreeNode rootNodeTemplate) throws Exception {
-        List<HumanTaskTreeNode> result = new ArrayList<HumanTaskTreeNode>();
+        List<HumanTaskTreeNode> result = new ArrayList<>();
         try {
             SessionManagementBean sessionManagement = FacesContext.getCurrentInstance().getApplication().evaluateExpressionGet(
                     FacesContext.getCurrentInstance(), "#{sessionManagement}", SessionManagementBean.class
@@ -1134,7 +996,7 @@ public final class WorkflowHelper {
                     newChildNode.setAuthor(author);
                     newChildNode.setCreated(created);
                     newChildNode.setDeleted(false);
-                    List<HumanTask> newTasks = new ArrayList<HumanTask>();
+                    List<HumanTask> newTasks = new ArrayList<>();
                     for (HumanTask taskTemplate : childNodeTemplate.getTaskList()) {
                         HumanTask newTask = new HumanTask();
                         newTask.setAuthor(author);
@@ -1169,9 +1031,7 @@ public final class WorkflowHelper {
         if (in_result.toString().equals("")) {
             try {
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
+                        context, "#{sessionManagement}", SessionManagementBean.class
                 );
                 long checkCount = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO)
                         .countDocumentsByNumber(doc.getFileIndex());
@@ -1209,12 +1069,6 @@ public final class WorkflowHelper {
 
         if (in_result.toString().equals("")) {
             try {
-                //FacesContext context=FacesContext.getCurrentInstance();
-                SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(
-                        context,
-                        "#{sessionManagement}",
-                        SessionManagementBean.class
-                );
 
                 if (doc.getVolumeIndex() == null || doc.getVolumeIndex().isEmpty()) {
                     StringBuffer in_number = new StringBuffer();
@@ -1262,51 +1116,29 @@ public final class WorkflowHelper {
     }
 
 
-
     public static boolean checkOfficeKeepingVolumePropertiesForUnfile(OfficeKeepingVolume doc) {
-        boolean result = false;
-        FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
-
         if (doc.getCollector() == null) {
             in_result.append("Необходимо указать кому будет выдан том дела;").append(System.getProperty("line.separator"));
         }
         if (doc.getReturnDate() == null) {
             in_result.append("Необходимо указать дату возврата тома дела;").append(System.getProperty("line.separator"));
         }
-
         if (in_result.toString().equals("")) {
-            try {
-                result = true;
-            } catch (Exception e) {
-                result = false;
-                e.printStackTrace();
-            }
-            if (result) {
-                doc.setWFResultDescription("");
-            }
+            doc.setWFResultDescription("");
+            return true;
         } else {
             doc.setWFResultDescription(in_result.toString());
         }
-        return result;
+        return false;
     }
 
 
     public static boolean setOfficeKeepingVolumeCollectorToEmpty(OfficeKeepingVolume doc) {
-        boolean result = false;
-
         doc.setCollector(null);
         doc.setReturnDate(null);
-        try {
-            result = true;
-        } catch (Exception e) {
-            result = false;
-            e.printStackTrace();
-        }
-        if (result) {
-            doc.setWFResultDescription("");
-        }
-        return result;
+        doc.setWFResultDescription("");
+        return true;
     }
 
 

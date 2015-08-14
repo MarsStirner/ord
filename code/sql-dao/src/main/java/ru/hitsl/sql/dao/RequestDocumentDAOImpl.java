@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
+import org.hibernate.type.StringType;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentStatus;
@@ -29,6 +30,15 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
     @Override
     protected Class<RequestDocument> getPersistentClass() {
         return RequestDocument.class;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<RequestDocument> findRegistratedDocuments() {
+        DetachedCriteria detachedCriteria = getSimplestCriteria();
+        detachedCriteria.add(Restrictions.isNotNull("registrationNumber"));
+        Calendar calendar = Calendar.getInstance();
+        detachedCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(this_.registrationDate, '%Y') like lower(?)", calendar.get(Calendar.YEAR) + "%", new StringType()));
+        return getHibernateTemplate().findByCriteria(detachedCriteria);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
