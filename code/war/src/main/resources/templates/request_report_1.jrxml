@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
-<!-- 2015-08-17T02:05:00 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="547" leftMargin="24" rightMargin="24" topMargin="20" bottomMargin="20" uuid="01bc4a45-957d-4221-ac6b-3a099ac05aaf">
+<!-- 2015-08-17T13:51:21 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="547" leftMargin="24" rightMargin="24" topMargin="20" bottomMargin="20" uuid="01bc4a45-957d-4221-ac6b-3a099ac05aaf">
 	<property name="ireport.zoom" value="1.210000000000009"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ORD.xml"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -223,4 +224,30 @@
 			</textField>
 		</band>
 	</summary>
+	<noData>
+		<band height="79">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="547" height="22" uuid="66d0968a-64a6-4663-b91d-4d16cde96792"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+				</textElement>
+				<text><![CDATA[ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="22" width="547" height="20" uuid="48ed746b-0591-4266-8dc9-09e807f29b44"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Обращения в центр за консультациями из регионов России за период с "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateFrom})+" по "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateTo})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="49" width="547" height="30" uuid="785db41a-5bf8-42c9-98e3-f963a3f0aa47"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Данные для отчета отстутвуют]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>

@@ -38,12 +38,9 @@
         <h:outputText value="Ошибка" rendered="#{task.errorState}"/>
         <p:commandButton value="Редактировать" action="#{task.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{task.viewState and task.editPermission and editableMatrix.task.isStateEditable(statusId)}"/>
-        <p:commandButton value="Отменить" action="#{task.view}" rendered="#{task.editState}"
-                         icon="ui-icon-cancel" update="@form"/>
-        <p:commandButton value="Сохранить" action="#{task.save}" rendered="#{task.editState or task.createState}"
-                         icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{task.delete}" rendered="#{task.editState}"
-                         icon="ui-icon-trash" update="@form"/>
+        <p:commandButton value="Отменить" action="#{task.view}" rendered="#{task.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{task.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{task.delete}" rendered="#{task.editState}" icon="ui-icon-trash" update="@form"/>
         <p:commandButton value="Действия" action="#{task.processorModal.show}" rendered="#{task.viewState and task.executePermission}"
                          icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
     </ui:define>
@@ -68,19 +65,18 @@
     </ui:define>
 
     <ui:define name="DOCUMENT_CONTENT">
-        <p:tabView id="documentTabPanel" widgetVar="incomingDocumentTabViewVar" activeIndex="0" effect="fade" effectDuration="fast"
-                   rendered="#{not task.errorState}">
+        <p:tabView id="documentTabPanel" widgetVar="tabViewVar" effect="fade" effectDuration="fast" rendered="#{not task.errorState}">
             <p:tab id="tab_info" title="Реквизиты">
-                <p:panelGrid>
+                <p:panelGrid style="width:100%;">
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
                             <h:outputText id="v_shortDescription" value="#{task.document.shortDescription}"
-                                          rendered="#{not editable_ShortDescription}" styleClass="outputText" style="word-break: break-all"/>
+                                          rendered="#{not editable_ShortDescription}" styleClass="outputText"/>
                             <p:inputTextarea id="e_shortDescription" value="#{task.document.shortDescription}"
-                                             rendered="#{editable_ShortDescription}" styleClass="inputText" style="width:100%;"/>
+                                             rendered="#{editable_ShortDescription}" styleClass="inputText"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -91,7 +87,7 @@
                             <h:outputText id="v_documentForm" value="#{task.document.form.value}" styleClass="outputText"
                                           rendered="#{not editable_DocumentForm}"/>
                             <p:selectOneMenu id="e_documentForm" value="#{task.document.form}" converter="#{DocumentFormConverter}"
-                                             required="true" styleClass="inputText" style="width:100%;" rendered="#{editable_DocumentForm}">
+                                             required="true" styleClass="inputText" rendered="#{editable_DocumentForm}">
                                 <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('TASK')}"/>
                             </p:selectOneMenu>
                         </p:column>
@@ -113,8 +109,8 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_responsible" value="Контролер:"/>
-                            <p:commandButton icon="ui-icon-pencil" actionListener="#{task.chooseController}" rendered="#{editable_Responsible}">
+                            <p:outputLabel for="v_responsible" value="Руководитель:"  rendered="#{not editable_Responsible}"/>
+                            <p:commandButton value="Руководитель" actionListener="#{task.chooseController}" rendered="#{editable_Responsible}">
                                 <p:ajax event="dialogReturn" listener="#{task.onControllerChosen}" update="v_responsible"/>
                             </p:commandButton>
                         </p:column>
@@ -136,8 +132,8 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="v_executors" value="Исполнители:"/>
-                            <p:commandButton icon="ui-icon-pencil" actionListener="#{task.chooseExecutors}" rendered="#{editable_Executors}">
+                            <p:outputLabel for="v_executors" value="Исполнители:" rendered="#{not editable_Executors}"/>
+                            <p:commandButton value="Исполнители" actionListener="#{task.chooseExecutors}" rendered="#{editable_Executors}">
                                 <p:ajax event="dialogReturn" listener="#{task.onExecutorsChosen}" update="v_executors"/>
                             </p:commandButton>
                         </p:column>

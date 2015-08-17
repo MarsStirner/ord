@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
-<!-- 2015-08-17T02:07:48 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="letters_journal" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="aa1cd20f-699d-470e-b951-947c4ee80642">
+<!-- 2015-08-17T13:48:28 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="letters_journal" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="aa1cd20f-699d-470e-b951-947c4ee80642">
 	<property name="ireport.zoom" value="1.1000000000000005"/>
 	<property name="ireport.x" value="54"/>
 	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ORD.xml"/>
 	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -48,7 +49,7 @@
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="802" height="30" uuid="6b27bfdf-4c22-45b0-bd70-ef7b3377b06f"/>
 				<textElement textAlignment="Center">
-					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+					<font fontName="Tahoma" size="12" pdfFontName=""/>
 				</textElement>
 				<text><![CDATA[ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России
 ]]></text>
@@ -226,4 +227,58 @@
 	<summary>
 		<band splitType="Stretch"/>
 	</summary>
+	<noData>
+		<band height="108">
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="195" y="50" width="130" height="20" uuid="5cc8759b-16fd-46ed-a913-44aa6fa08ab5"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{StartDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="420" y="50" width="126" height="20" uuid="51659000-8f34-4fa7-b9a6-7e432319860b"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{EndDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="30" width="802" height="20" uuid="96da0d86-25eb-4765-9b81-84a5855eb6de"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="16"/>
+				</textElement>
+				<text><![CDATA[Журнал благодарностей от пациентов]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="30" uuid="bb68b2da-dca3-4be5-a28b-2506b8603027"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="12" pdfFontName=""/>
+				</textElement>
+				<text><![CDATA[ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="368" y="50" width="52" height="20" uuid="e43500cb-92b1-4cd0-85a8-2eae7dba6155"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<text><![CDATA[по]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="145" y="50" width="50" height="20" uuid="b955714a-7338-4783-9121-50a41fdfb1d7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<text><![CDATA[c]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="70" width="802" height="30" uuid="2599cc4d-c8f4-4936-8576-db75fc882409"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Данные для отчета отстутвуют]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>
