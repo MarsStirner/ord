@@ -1214,7 +1214,7 @@ public final class ProcessFactory {
                     }
                     String exerciseTypeValue = (prop == null ? "" : (String) prop).toLowerCase();
 
-                    if (exerciseType.equals("обращение") || exerciseType.equals("заявление")) {
+                    if ("обращение".equals(exerciseType) || "заявление".equals(exerciseType)) {
                         subject = "Поступило новое" + exerciseTypeValue + " @DocumentNumber";
                         body = body.append("К вам поступила новое ").append(exerciseTypeValue).append(" на исполнение \n\n");
                     } else {
@@ -1271,7 +1271,7 @@ public final class ProcessFactory {
                     subject = "Ваша резолюция " + docNumber + " " + statusName;
                     body = body.append("Резолюция перешла в статус \"").append(statusName).append("\"\n\n");
                 } else {
-                    body = body.append("Поручение перешло в статус ").append(status).append("\n\n");
+                    body = body.append("Поручение перешло в статус ").append(statusName).append("\n\n");
                 }
 
                 MailMessage message = new MailMessage(sendTo, null, subject, body.append("<a href=\"").append(getHost()).append("/component/task/task.xhtml?docId=").
@@ -1331,7 +1331,7 @@ public final class ProcessFactory {
                         subject = "Ваша резолюция " + docNumber + " " + statusName;
                         body = body.append("Резолюция перешла в статус \"").append(statusName).append("\"\n\n");
                     } else {
-                        body = body.append("Поручение перешло в статус ").append(status).append("\n\n");
+                        body = body.append("Поручение перешло в статус ").append(statusName).append("\n\n");
                     }
 
                     MailMessage message = new MailMessage(sendTo, null, subject, body.append("<a href=\"").append(getHost()).append("/component/task/task.xhtml?docId=").

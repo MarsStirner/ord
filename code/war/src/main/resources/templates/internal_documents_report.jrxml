@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
-<!-- 2015-08-17T02:05:42 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Outgoing_documents" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="aa06a06b-b5d5-47a1-a5b0-5063b9f1a341">
+<!-- 2015-08-17T20:06:26 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Outgoing_documents" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="aa06a06b-b5d5-47a1-a5b0-5063b9f1a341">
 	<property name="ireport.zoom" value="1.0245201830476058"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -260,4 +260,88 @@
 	<summary>
 		<band splitType="Stretch"/>
 	</summary>
+	<noData>
+		<band height="114">
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="348" y="50" width="126" height="20" uuid="ebd8eb00-398e-4e12-a726-64a8349f7d3f"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{EndDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="495" y="50" width="75" height="20" uuid="7eaf674b-f3ee-4664-b73c-3100c52e64fc"/>
+				<textElement>
+					<font fontName="Tahoma" size="11"/>
+				</textElement>
+				<text><![CDATA[Руководитель:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="296" y="50" width="52" height="20" uuid="2bc2de81-2747-45b0-bce7-3c347ee6b322"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<text><![CDATA[по]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement key="table 1" x="570" y="50" width="232" height="20" uuid="43f09e7a-b47d-421f-834e-1399f6c2bf18"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Manager" uuid="da736b0a-7150-458b-a58c-57dad674e9c2">
+						<datasetParameter name="ManagerId">
+							<datasetParameterExpression><![CDATA[$P{ManagerId}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="233" uuid="67cbf58c-e43b-4448-bdb1-251d83c83f50">
+						<jr:tableFooter height="20" rowSpan="1">
+							<textField>
+								<reportElement x="0" y="0" width="233" height="20" uuid="cca4fea7-7001-4ae0-bbde-343e39227710"/>
+								<textElement>
+									<font fontName="Tahoma" size="12"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{managerInfo}]]></textFieldExpression>
+							</textField>
+						</jr:tableFooter>
+						<jr:detailCell height="0" rowSpan="1"/>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement x="116" y="50" width="50" height="20" uuid="0766fca2-da03-4808-a187-7083f7138c18"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<text><![CDATA[c]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="30" uuid="5e802219-3186-4684-b9d9-74a77f31f7ef"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+				</textElement>
+				<text><![CDATA[ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="30" width="802" height="20" uuid="86b5c92d-50f1-43fc-b158-b42497f48284"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="16"/>
+				</textElement>
+				<text><![CDATA[Журнал регистрации ОРД (организационно-распорядительные документы)]]></text>
+			</staticText>
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="166" y="50" width="130" height="20" uuid="f69cc3c3-3a67-4566-892f-64781a4b2c5f"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{StartDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="84" width="802" height="30" uuid="fa53aa72-30be-461a-87be-c07624da5f77"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Данные для отчета отстувуют]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>

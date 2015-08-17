@@ -209,6 +209,9 @@ public class DocumentFieldEditableMatrix {
                 }
                 statusFields.put(item.getField().getFieldCode(), item.isEditable() && item.getField().isEditable());
             }
+            if(!statusFields.isEmpty()){
+                fastAccessMap.put(lastStatus, statusFields);
+            }
         }
 
         public List<DocumentTypeField> getFields() {
@@ -267,9 +270,12 @@ public class DocumentFieldEditableMatrix {
         }
 
         public boolean isStateEditable(int status){
-            for (Map.Entry<String, Boolean> entry : getEditableMap(status).entrySet()) {
-                if(entry.getValue()){
-                    return true;
+            final Map<String, Boolean> editableMap = getEditableMap(status);
+            if(editableMap != null && !editableMap.isEmpty()) {
+                for (Map.Entry<String, Boolean> entry : editableMap.entrySet()) {
+                    if (entry.getValue()) {
+                        return true;
+                    }
                 }
             }
             return false;

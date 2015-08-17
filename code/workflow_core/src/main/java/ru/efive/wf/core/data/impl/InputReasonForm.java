@@ -19,7 +19,6 @@ public class InputReasonForm implements LocalBackingBean {
                 + "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
                 + "<html xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:h=\"http://java.sun.com/jsf/html\" "
                 + "xmlns:f=\"http://java.sun.com/jsf/core\" xmlns:e5ui=\"http://efive.ru/uitemplates\">\n"
-                + "<div id=\"title\">Комментарий</div>\n"
                 + "<div style=\"margin-top:0;\">\n"
                 + "  <span class=\"title\">Комментарий:</span>\n"
                 + "  <h:inputTextarea id=\"action_comment\"  rows=\"3\""

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
-<!-- 2015-08-17T02:07:20 -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="letters_journal" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="976d6968-8bf5-4176-8730-6b2e67589c53">
+<!-- 2015-08-17T20:09:22 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="letters_journal" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="976d6968-8bf5-4176-8730-6b2e67589c53">
 	<property name="ireport.zoom" value="1.1000000000000005"/>
 	<property name="ireport.x" value="54"/>
 	<property name="ireport.y" value="0"/>
@@ -226,4 +226,58 @@
 	<summary>
 		<band splitType="Stretch"/>
 	</summary>
+	<noData>
+		<band height="104">
+			<staticText>
+				<reportElement x="145" y="50" width="50" height="20" uuid="720e34ce-ec5f-495b-83b2-32ea8bbe0943"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<text><![CDATA[c]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="30" width="802" height="20" uuid="e270af82-b2eb-470d-adaa-7da2f0fd6e26"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="16"/>
+				</textElement>
+				<text><![CDATA[Журнал жалоб больных]]></text>
+			</staticText>
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="195" y="50" width="130" height="20" uuid="ad0385af-5a27-4936-8e37-408b0ddd05df"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{StartDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd.MM.yyyy">
+				<reportElement x="420" y="50" width="126" height="20" uuid="bd3abcd6-abdf-499b-8ed6-c0f7830cdbf6"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{EndDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="368" y="50" width="52" height="20" uuid="e7096aa9-52a0-45c4-89d8-db928194a67c"/>
+				<textElement>
+					<font fontName="Tahoma" size="14"/>
+				</textElement>
+				<text><![CDATA[по]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="30" uuid="81aab4da-e80b-4e74-95ed-5159fbd3bf00"/>
+				<textElement textAlignment="Center">
+					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+				</textElement>
+				<text><![CDATA[ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="70" width="801" height="30" uuid="4eb2cccd-0880-4795-972d-750527f1c544"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Данные для отчета отстувуют]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>
