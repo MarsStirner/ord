@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-08-17T02:01:58 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="24673ae9-20ab-4bdb-8d5d-5abaf2d43f5e">
 	<property name="ireport.zoom" value="1.1269722013523664"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -138,14 +140,14 @@ group by dms_tasks.`id`]]>
 	<title>
 		<band height="68" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="22" width="802" height="20"/>
+				<reportElement x="0" y="22" width="802" height="20" uuid="a65c8a42-8277-4e11-b660-23fbd38bd851"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Отказ от консультации пациента за период с "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateFrom})+" по "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateTo})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="802" height="22"/>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="22" uuid="a72bbbd9-8558-4d7c-8a3c-f2222dbdb185"/>
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
 				</textElement>
@@ -153,7 +155,7 @@ group by dms_tasks.`id`]]>
 ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="0" y="42" width="802" height="20"/>
+				<reportElement x="0" y="42" width="802" height="20" uuid="331b559f-3cb2-48d3-82c9-5ad8da292bac"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
@@ -168,35 +170,35 @@ group by dms_tasks.`id`]]>
 	<columnHeader>
 		<band height="25" splitType="Stretch">
 			<staticText>
-				<reportElement style="table_TD" x="0" y="0" width="25" height="25"/>
+				<reportElement style="table_TD" x="0" y="0" width="25" height="25" uuid="bedfda9d-bef9-4404-8597-e8513f59ddbd"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[№]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="25" y="0" width="192" height="25"/>
+				<reportElement style="table_TD" x="25" y="0" width="192" height="25" uuid="5fd7d414-9132-45f4-b253-2fcf07932a89"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[ФИО(обратившегося)]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="217" y="0" width="116" height="25"/>
+				<reportElement style="table_TD" x="217" y="0" width="116" height="25" uuid="80600f68-55b5-4969-b0f8-7d46f6799fa6"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[Дата создания поручения]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="333" y="0" width="110" height="25"/>
+				<reportElement style="table_TD" x="333" y="0" width="110" height="25" uuid="488f75ae-ceec-49cd-b6d6-eef8e8004f72"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[Дата отказа]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="443" y="0" width="359" height="25"/>
+				<reportElement style="table_TD" x="443" y="0" width="359" height="25" uuid="45667b67-4470-4ff1-8132-c31fbaf8c47c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
@@ -207,7 +209,7 @@ group by dms_tasks.`id`]]>
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="25" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="25" height="20" uuid="4c6d8f32-a5ad-4a36-b18f-3dd1b2df0876"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -215,7 +217,7 @@ group by dms_tasks.`id`]]>
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="25" y="0" width="192" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="25" y="0" width="192" height="20" uuid="093e974a-8f1a-45c9-a304-2bd44c727a6c"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -223,7 +225,7 @@ group by dms_tasks.`id`]]>
 				<textFieldExpression><![CDATA[$F{dms_request_documents_senderLastName}+" "+$F{dms_request_documents_senderFirstName}+" "+$F{dms_request_documents_senderMiddleName}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="217" y="0" width="116" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="217" y="0" width="116" height="20" uuid="7d38bc2e-d1e6-4645-a3a3-8b8afe303e93"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -231,7 +233,7 @@ group by dms_tasks.`id`]]>
 				<textFieldExpression><![CDATA[$F{dms_tasks_creationDate}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="333" y="0" width="110" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="333" y="0" width="110" height="20" uuid="6fd02639-8747-4681-bc39-2960a1011a25"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -239,7 +241,7 @@ group by dms_tasks.`id`]]>
 				<textFieldExpression><![CDATA[$F{wf_history_startDate}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="443" y="0" width="359" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="443" y="0" width="359" height="20" uuid="246b375a-517c-4f5a-8787-94f1ba1a733e"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -257,7 +259,7 @@ group by dms_tasks.`id`]]>
 	<summary>
 		<band height="20" splitType="Stretch">
 			<textField pattern="">
-				<reportElement style="table_TD" x="0" y="0" width="802" height="20"/>
+				<reportElement style="table_TD" x="0" y="0" width="802" height="20" uuid="00a22cb2-12ef-445e-b3e1-a75eca9c2f7b"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>

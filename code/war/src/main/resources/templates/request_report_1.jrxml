@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="595" pageHeight="842" columnWidth="547" leftMargin="24" rightMargin="24" topMargin="20" bottomMargin="20">
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-08-17T02:05:00 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="547" leftMargin="24" rightMargin="24" topMargin="20" bottomMargin="20" uuid="01bc4a45-957d-4221-ac6b-3a099ac05aaf">
 	<property name="ireport.zoom" value="1.210000000000009"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -86,8 +88,7 @@
 	<parameter name="DateFrom" class="java.util.Date"/>
 	<parameter name="DateTo" class="java.util.Date"/>
 	<queryString>
-		<![CDATA[
-		SELECT
+		<![CDATA[SELECT
 		    documentId,
             kladrId,
             kladrValue,
@@ -99,11 +100,10 @@
             DATE(checkDate) >= DATE($P{DateFrom})
             AND
             DATE(checkDate) <= DATE($P{DateTo})
-        ORDER BY kladrValue ASC
-        ]]>
+        ORDER BY kladrValue ASC]]>
 	</queryString>
 	<field name="documentId" class="java.lang.Integer"/>
-    <field name="kladrId" class="java.lang.Integer"/>
+	<field name="kladrId" class="java.lang.Integer"/>
 	<field name="kladrValue" class="java.lang.String"/>
 	<field name="kladrCategory" class="java.lang.String"/>
 	<field name="senderInfo" class="java.lang.String"/>
@@ -119,7 +119,7 @@
 		<groupHeader>
 			<band height="20">
 				<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-					<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="547" height="20"/>
+					<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="547" height="20" uuid="35fbb9e7-3296-4ae1-a57b-00f6becc4ca2"/>
 					<box leftPadding="4"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Tahoma" isBold="true"/>
@@ -132,7 +132,7 @@
 		<groupFooter>
 			<band height="20">
 				<textField>
-					<reportElement style="table_TD" x="0" y="0" width="547" height="20"/>
+					<reportElement style="table_TD" x="0" y="0" width="547" height="20" uuid="09aa949a-1a56-40de-94c8-d91fcd1534c9"/>
 					<textElement verticalAlignment="Middle">
 						<font fontName="Tahoma" isBold="false" isItalic="false" isUnderline="false"/>
 						<paragraph leftIndent="5"/>
@@ -148,14 +148,14 @@
 	<title>
 		<band height="47" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="22" width="547" height="20"/>
+				<reportElement x="0" y="22" width="547" height="20" uuid="020ffde0-c3d5-4b4c-aac0-d90108fe1661"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Обращения в центр за консультациями из регионов России за период с "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateFrom})+" по "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateTo})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="547" height="22"/>
+				<reportElement mode="Opaque" x="0" y="0" width="547" height="22" uuid="2456d2e3-fcfd-442d-bfe2-ac5ed787f0d6"/>
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
 				</textElement>
@@ -170,14 +170,14 @@
 	<columnHeader>
 		<band height="20" splitType="Stretch">
 			<staticText>
-				<reportElement style="table_TD" x="0" y="0" width="40" height="20"/>
+				<reportElement style="table_TD" x="0" y="0" width="40" height="20" uuid="bbc95d0c-65a6-4f2d-a64e-6ae647d68406"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[№]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="40" y="0" width="507" height="20"/>
+				<reportElement style="table_TD" x="40" y="0" width="507" height="20" uuid="e688e769-d679-494e-a7ee-18c9d4930c59"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
@@ -188,7 +188,7 @@
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="40" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="40" height="20" uuid="f7283fc4-850c-4086-b226-a8c4322b103d"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -196,7 +196,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="40" y="0" width="507" height="20"/>
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="40" y="0" width="507" height="20" uuid="84fc117c-3724-4ad5-ba4b-b772e97e5f8d"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -214,7 +214,7 @@
 	<summary>
 		<band height="20" splitType="Stretch">
 			<textField pattern="">
-				<reportElement style="table_TD" x="0" y="0" width="547" height="20"/>
+				<reportElement style="table_TD" x="0" y="0" width="547" height="20" uuid="ceb98d84-0258-4d54-8c80-a846beef63c1"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma" isBold="true"/>
 					<paragraph leftIndent="5"/>

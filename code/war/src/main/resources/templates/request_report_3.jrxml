@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" >
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2015-08-17T02:03:14 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99349081-2f87-4f8a-a6fe-03bef7417748">
 	<property name="ireport.zoom" value="1.2396694214876032"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -83,7 +85,7 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<subDataset name="Manager">
+	<subDataset name="Manager" uuid="22effc06-93c2-458a-a1f7-3fd40e31b37c">
 		<parameter name="ExecutorId" class="java.lang.String" isForPrompting="false"/>
 		<queryString>
 			<![CDATA[SELECT
@@ -147,7 +149,7 @@
 	<title>
 		<band height="39" splitType="Stretch">
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="802" height="19"/>
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="802" height="19" uuid="51acd3e8-6ad1-457b-b1ff-e191221110e6"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="12"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -155,7 +157,7 @@
 				<textFieldExpression><![CDATA["Обращения в центр за консультациями из регионов России"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="0" y="19" width="325" height="19" />
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="19" width="325" height="19" uuid="9f7dcbde-9277-4274-a545-36ad5cc62b1f"/>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="12"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -163,18 +165,18 @@
 				<textFieldExpression><![CDATA["Исполнитель:"]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement key="table 1" x="325" y="19" width="477" height="20" />
+				<reportElement key="table 1" x="325" y="19" width="477" height="20" uuid="73579a31-eec8-4791-8545-e8241bd6e7c2"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="Manager">
+					<datasetRun subDataset="Manager" uuid="a3abfaee-6c20-474b-8e9a-06cc43955824">
 						<datasetParameter name="ExecutorId">
 							<datasetParameterExpression><![CDATA[$P{ExecutorId}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="233" >
+					<jr:column width="233" uuid="31a29e6c-eab3-4cbd-bc08-5cf9e2e7559e">
 						<jr:tableFooter height="20" rowSpan="1">
 							<textField>
-								<reportElement x="0" y="0" width="233" height="20" />
+								<reportElement x="0" y="0" width="233" height="20" uuid="eb1a9871-2ade-4905-9e2a-cf27343dcad1"/>
 								<textElement>
 									<font fontName="Tahoma" size="12"/>
 								</textElement>
@@ -193,49 +195,49 @@
 	<columnHeader>
 		<band height="25" splitType="Stretch">
 			<staticText>
-				<reportElement style="table_TD" x="0" y="0" width="25" height="25" />
+				<reportElement style="table_TD" x="0" y="0" width="25" height="25" uuid="5442fc3f-0307-4983-8c31-1d644206e776"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[№]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="25" y="0" width="75" height="25" />
+				<reportElement style="table_TD" x="25" y="0" width="75" height="25" uuid="c92616fe-82d0-474f-9161-cc62535dbc97"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[Номер обращения]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="100" y="0" width="225" height="25" />
+				<reportElement style="table_TD" x="100" y="0" width="225" height="25" uuid="643784a3-ea4b-41d6-9949-a55d039f06e9"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[ФИО]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="325" y="0" width="134" height="25" />
+				<reportElement style="table_TD" x="325" y="0" width="134" height="25" uuid="9a76fbd8-faa6-4f9f-b46e-a6f97b852913"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[Краткое содержание]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="548" y="0" width="75" height="25" />
+				<reportElement style="table_TD" x="548" y="0" width="75" height="25" uuid="e86be8ad-a1b9-4188-8c62-efe1bcb628c1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[Номер исходящего]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="623" y="0" width="179" height="25" />
+				<reportElement style="table_TD" x="623" y="0" width="179" height="25" uuid="ed7353ba-a849-476c-850d-28b4f54145f4"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
 				<text><![CDATA[Краткое содержание]]></text>
 			</staticText>
 			<staticText>
-				<reportElement style="table_TD" x="459" y="0" width="89" height="25" />
+				<reportElement style="table_TD" x="459" y="0" width="89" height="25" uuid="8e802442-3539-4f70-87b6-a9a04d227f62"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="10"/>
 				</textElement>
@@ -246,7 +248,7 @@
 	<detail>
 		<band height="20" splitType="Stretch">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="25" height="20" />
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="25" height="20" uuid="6c3c0ced-ccf7-4316-a32c-cb6ff6b3f27b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -254,7 +256,7 @@
 				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="459" y="0" width="89" height="20" />
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="459" y="0" width="89" height="20" uuid="9f7711a1-8103-4c8c-ad57-d10f0681073c"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -262,7 +264,7 @@
 				<textFieldExpression><![CDATA[$F{kladrValue}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="100" y="0" width="225" height="20" />
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="100" y="0" width="225" height="20" uuid="2a7ac617-9a67-4920-addc-9f37b2f85f45"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -270,7 +272,7 @@
 				<textFieldExpression><![CDATA[$F{senderInfo}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="25" y="0" width="75" height="20" />
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="25" y="0" width="75" height="20" uuid="9267bb8a-bd45-4b76-b81d-85045d7cc008"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -278,7 +280,7 @@
 				<textFieldExpression><![CDATA[$F{requestDocumentRegistrationNumber}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="623" y="0" width="179" height="20" />
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="623" y="0" width="179" height="20" uuid="adf84835-c57b-4f28-8da8-62ded5b804af"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -286,7 +288,7 @@
 				<textFieldExpression><![CDATA[$F{outgoingDocumentShortDescription}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="325" y="0" width="134" height="20" />
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="325" y="0" width="134" height="20" uuid="8356cce0-ebd1-4b00-a0e7-bd2f08864869"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -294,7 +296,7 @@
 				<textFieldExpression><![CDATA[$F{requestDocumentShortDescription}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="dd.MM.yyyy" isBlankWhenNull="true">
-				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="548" y="0" width="75" height="20" />
+				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="548" y="0" width="75" height="20" uuid="47f07059-6cb9-45a0-95b4-56f42dad09e8"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5" spacingBefore="2"/>
@@ -312,7 +314,7 @@
 	<summary>
 		<band height="20" splitType="Stretch">
 			<textField>
-				<reportElement style="table_TD" x="0" y="0" width="802" height="20" />
+				<reportElement style="table_TD" x="0" y="0" width="802" height="20" uuid="7d341527-2af3-4240-897e-1aaab45e12b1"/>
 				<textElement verticalAlignment="Middle">
 					<font fontName="Tahoma"/>
 					<paragraph leftIndent="5"/>
