@@ -1918,7 +1918,7 @@ public final class ProcessFactory {
         toStatusAction.setPreActionActivities(activites);
 
         toStatus = new Status<T>();
-        toStatus.setStatus(DocumentStatus.IN_ARCHIVE_3);
+        toStatus.setStatus(DocumentStatus.IN_ARCHIVE_100);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
