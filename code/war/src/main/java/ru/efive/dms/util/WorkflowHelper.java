@@ -887,7 +887,7 @@ public final class WorkflowHelper {
                 taskLogger.debug("Group task start clone");
                 //Групповое поручение
                 final Task templateTask = (Task) doc.clone();
-                templateTask.setId(0);
+                templateTask.setId(null);
                 templateTask.getExecutors().clear();
                 templateTask.setParent(doc);
                 templateTask.getHistory().clear();

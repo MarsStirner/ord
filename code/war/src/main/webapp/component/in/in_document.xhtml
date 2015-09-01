@@ -30,6 +30,9 @@
         <!-- Поле 'Тип доставки' -->
         <c:set var="editable_DeliveryType" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'deliveryType')}"
                scope="view"/>
+        <!-- Поле 'Дата исполнения' -->
+        <c:set var="editable_ExecutionDate" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executionDate')}"
+               scope="view"/>
         <!-- Поле 'Номер поступившего' -->
         <c:set var="editable_ReceivedDocumentNumber" value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedNumber')}"
                scope="view"/>
@@ -75,6 +78,9 @@
             <h:outputText value="#{in_doc.document.registrationDate}" rendered="#{in_doc.editState or in_doc.viewState}">
                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
             </h:outputText>
+            <div style="float: right; padding-right:1.5em;">
+                <h:outputText id="v_author" value="Зарегистрировал: #{in_doc.document.author.description}" styleClass="outputText"/>
+            </div>
         </h:panelGroup>
         <h:panelGroup layout="block" id="documentStatusDiv" rendered="#{not in_doc.errorState}"
                       style="display: inline-block; text-align: right; padding: 0.4em; background-color: rgb(60,141,188); border-radius: 4px; color: white;"
@@ -89,17 +95,6 @@
                    rendered="#{not in_doc.errorState}">
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%">
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
-                        </p:column>
-                        <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputText id="v_shortDescription" value="#{in_doc.document.shortDescription}"
-                                          rendered="#{not editable_ShortDescription}" styleClass="outputText"/>
-                            <p:inputTextarea id="e_shortDescription" value="#{in_doc.document.shortDescription}"
-                                             rendered="#{editable_ShortDescription}" styleClass="inputText"/>
-                        </p:column>
-                    </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="e_documentForm" value="Вид документа:"/>
@@ -136,12 +131,15 @@
                             </h:outputText>
                         </p:column>
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="v_executionDate" value="Дата исполнения:"/>
+                            <p:outputLabel for="e_executionDate" value="Дата исполнения:"/>
                         </p:column>
                         <p:column styleClass="ui-grid-col-4">
-                            <h:outputText id="v_executionDate" value="#{in_doc.document.executionDate}" lang="ru" styleClass="outputText">
+                            <h:outputText id="v_executionDate" value="#{in_doc.document.executionDate}" lang="ru" styleClass="outputText"
+                                          rendered="#{not editable_ExecutionDate}">
                                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                             </h:outputText>
+                            <p:calendar id="e_executionDate" value="#{in_doc.document.executionDate}" lang="ru" locale="ru"
+                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_ExecutionDate}"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -168,20 +166,13 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="v_author" value="Автор:"
-                                           title="Поле 'Автор' не редактируемо и заполняется автоматически тем пользователем, который создал документ"/>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-4">
-                            <h:outputText id="v_author" value="#{in_doc.document.author.description}" styleClass="outputText"/>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="v_controller" value="Руководитель:" rendered="#{not editable_Controller}"/>
                             <p:commandButton value="Руководитель" actionListener="#{in_doc.chooseController}" rendered="#{editable_Controller}"
                                              styleClass="dialogButton">
                                 <p:ajax event="dialogReturn" listener="#{in_doc.onControllerChosen}" update="v_controller"/>
                             </p:commandButton>
                         </p:column>
-                        <p:column styleClass="ui-grid-col-4">
+                        <p:column colspan="3"  styleClass="ui-grid-col-10">
                             <h:outputText id="v_controller" value="#{in_doc.document.controller.description}" styleClass="outputText"/>
                         </p:column>
                     </p:row>
@@ -243,6 +234,17 @@
                                     <h:outputText value="#{executor.description}" styleClass="outputText"/><br/>
                                 </ui:repeat>
                             </h:panelGroup>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-10">
+                            <h:outputText id="v_shortDescription" value="#{in_doc.document.shortDescription}"
+                                          rendered="#{not editable_ShortDescription}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_shortDescription" value="#{in_doc.document.shortDescription}"
+                                             rendered="#{editable_ShortDescription}" styleClass="inputText"/>
                         </p:column>
                     </p:row>
                 </p:panelGrid>

@@ -355,7 +355,7 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         clone.setDocumentStatus(getDocumentStatus());
         clone.setErpNumber(erpNumber);
         clone.setExecutionDate(executionDate);
-        clone.setExecutors(executors);
+        clone.setExecutors(new HashSet<>(executors));
         clone.setForm(form);
         clone.setHistory(history);
         clone.setInitiator(initiator);
