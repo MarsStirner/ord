@@ -249,7 +249,7 @@
                     </p:row>
                 </p:panelGrid>
             </p:tab>
-            <p:tab id="tab_task" title="Движение документов">
+            <p:tab id="tab_task" title="Движение документа">
                 <p:treeTable id="task_table"
                              value="#{in_doc.taskTreeHolder.root}"
                              var="row_task"
@@ -330,6 +330,7 @@
                              var="outgoing_document_row"
                              emptyMessage="#{props['EMPTY_RESULT']}"
                              selectionMode="single"
+                             resizableColumns="true"
                              widgetVar="relationDocumentTableVar"
                              rowKey="#{outgoing_document_row.id}">
                     <f:facet name="header">

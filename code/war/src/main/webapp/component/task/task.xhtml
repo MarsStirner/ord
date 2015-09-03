@@ -55,6 +55,9 @@
             <h:outputText value="#{task.document.registrationDate}" rendered="#{task.editState or task.viewState}">
                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
             </h:outputText>
+            <div style="float: right; padding-right:1.5em;">
+                <h:outputText id="v_author" value="Зарегистрировал: #{task.document.author.description}" styleClass="outputText"/>
+            </div>
         </h:panelGroup>
         <h:panelGroup layout="block" id="documentStatusDiv"
                       style="display: inline-block; text-align: right; padding: 0.4em;
@@ -70,17 +73,6 @@
                 <p:panelGrid style="width:100%;">
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
-                        </p:column>
-                        <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputText id="v_shortDescription" value="#{task.document.shortDescription}"
-                                          rendered="#{not editable_ShortDescription}" styleClass="outputText"/>
-                            <p:inputTextarea id="e_shortDescription" value="#{task.document.shortDescription}"
-                                             rendered="#{editable_ShortDescription}" styleClass="inputText"/>
-                        </p:column>
-                    </p:row>
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="e_documentForm" value="Вид документа:"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
@@ -94,16 +86,9 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="v_author" value="Автор:"
-                                           title="Поле 'Автор' не редактируемо и заполняется автоматически тем пользователем, который создал документ"/>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-4">
-                            <h:outputText id="v_author" value="#{task.document.author.description}" styleClass="outputText"/>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-3">
                             <p:outputLabel for="v_initiator" value="Инициатор:"/>
                         </p:column>
-                        <p:column styleClass="ui-grid-col-3">
+                        <p:column colspan="3" styleClass="ui-grid-col-10">
                             <h:outputText id="v_initiator" value="#{task.document.initiator.description}" styleClass="outputText"/>
                         </p:column>
                     </p:row>
@@ -145,9 +130,20 @@
                             </h:panelGroup>
                         </p:column>
                     </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-10">
+                            <h:outputText id="v_shortDescription" value="#{task.document.shortDescription}"
+                                          rendered="#{not editable_ShortDescription}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_shortDescription" value="#{task.document.shortDescription}"
+                                             rendered="#{editable_ShortDescription}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
                 </p:panelGrid>
             </p:tab>
-            <p:tab id="tab_task" title="Движение документов">
+            <p:tab id="tab_task" title="Движение документа">
                 <p:treeTable id="task_table"
                              value="#{task.taskTreeHolder.root}"
                              var="row_task"
@@ -272,7 +268,7 @@
                         </p:commandButton>
                     </p:column>
                     <p:column headerText="Удалить" rendered="#{statusId lt 90}" style="width:7em">
-                        <p:commandButton value="Удалить" action="#{task.deleteAttachment(attachment)}"/>
+                        <p:commandButton value="Удалить" action="#{task.deleteAttachment(attachment)}" update="table_attachment"/>
                     </p:column>
                     <p:rowExpansion styleClass="no-padding">
                         <p:dataTable var="revision" value="#{attachment.revisions}" styleClass="hide-column-names"

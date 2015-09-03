@@ -73,6 +73,9 @@
             <h:outputText value="#{request_doc.document.registrationDate}" rendered="#{request_doc.editState or request_doc.viewState}">
                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
             </h:outputText>
+            <div style="float: right; padding-right:1.5em;">
+                <h:outputText id="v_author" value="Зарегистрировал: #{request_doc.document.author.description}" styleClass="outputText"/>
+            </div>
         </h:panelGroup>
         <h:panelGroup layout="block" id="documentStatusDiv"
                       style="display: inline-block; text-align: right; padding: 0.4em;
@@ -88,17 +91,6 @@
                    rendered="#{not request_doc.errorState}">
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%">
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
-                        </p:column>
-                        <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputText id="v_shortDescription" value="#{request_doc.document.shortDescription}"
-                                          rendered="#{not editable_ShortDescription}" styleClass="outputText"/>
-                            <p:inputTextarea id="e_shortDescription" value="#{request_doc.document.shortDescription}"
-                                             rendered="#{editable_ShortDescription}" styleClass="inputText"/>
-                        </p:column>
-                    </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="e_documentForm" value="Вид документа:"/>
@@ -127,16 +119,9 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="v_author" value="Автор:"
-                                           title="Поле 'Автор' не редактируемо и заполняется автоматически тем пользователем, который создал документ"/>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-4">
-                            <h:outputText id="v_author" value="#{request_doc.document.author.description}" styleClass="outputText"/>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="e_receivedDocumentDate" value="Дата поступления:"/>
                         </p:column>
-                        <p:column styleClass="ui-grid-col-4">
+                        <p:column colspan="3" styleClass="ui-grid-col-10">
                             <h:outputText id="v_receivedDocumentDate" value="#{request_doc.document.receivedDocumentDate}" lang="ru"
                                           styleClass="outputText" rendered="#{not editable_ReceivedDate}">
                                 <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
@@ -271,9 +256,20 @@
                             </h:panelGroup>
                         </p:column>
                     </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_shortDescription" value="Краткое содержание:"/>
+                        </p:column>
+                        <p:column colspan="3" styleClass="ui-grid-col-10">
+                            <h:outputText id="v_shortDescription" value="#{request_doc.document.shortDescription}"
+                                          rendered="#{not editable_ShortDescription}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_shortDescription" value="#{request_doc.document.shortDescription}"
+                                             rendered="#{editable_ShortDescription}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
                 </p:panelGrid>
             </p:tab>
-            <p:tab id="tab_task" title="Движение документов">
+            <p:tab id="tab_task" title="Движение документа">
                 <p:treeTable id="task_table"
                              value="#{request_doc.taskTreeHolder.root}"
                              var="row_task"
@@ -348,6 +344,7 @@
                              var="outgoing_document_row"
                              emptyMessage="#{props['EMPTY_RESULT']}"
                              selectionMode="single"
+                             resizableColumns="true"
                              widgetVar="relationDocumentTableVar"
                              rowKey="#{outgoing_document_row.id}">
                     <f:facet name="header">
@@ -475,7 +472,7 @@
                         </p:commandButton>
                     </p:column>
                     <p:column headerText="Удалить" rendered="#{statusId lt 90}" style="width:7em">
-                        <p:commandButton value="Удалить" action="#{request_doc.deleteAttachment(attachment)}"/>
+                        <p:commandButton value="Удалить" action="#{request_doc.deleteAttachment(attachment)}" update="table_attachment"/>
                     </p:column>
                     <p:rowExpansion styleClass="no-padding">
                         <p:dataTable var="revision" value="#{attachment.revisions}" styleClass="hide-column-names"
