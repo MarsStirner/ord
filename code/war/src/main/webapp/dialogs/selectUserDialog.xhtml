@@ -33,7 +33,7 @@
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{userDialog.filter}" styleClass="searchTextBox"/>
-                <p:commandButton value="Поиск" styleClass="searchButton" process="filter" update="selectPersonTable"/>
+                <p:commandButton value="Поиск" styleClass="searchButton" process="filter selectPersonTable" update="selectPersonTable"/>
             </f:facet>
             <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field="lastName">
                 <h:outputText value="#{person_row.lastName}"/>

@@ -1,11 +1,14 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.UnselectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,6 +149,24 @@ public abstract class AbstractDialog<T> implements Serializable {
 
     public void setSelected(T selected) {
         this.selected = selected;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void onRowSelect(final SelectEvent event){
+        if(selected instanceof Collection) {
+            ((Collection)selected).add(event.getObject());
+        } else {
+            selected = (T) event.getObject();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void onRowUnSelect(final UnselectEvent event){
+        if(selected instanceof Collection) {
+            ((Collection)selected).remove(event.getObject());
+        } else {
+            selected = null;
+        }
     }
 
     protected Object getFromExternalContext(final String key){

@@ -61,11 +61,11 @@
                             <c:choose>
                                 <c:when test="#{reasonDocumentDialog.incoming}">
                                     <p:inputText id="filterStringIncoming"  value="#{in_documents.filter}" style="width:80%;" title="Поиск"/>
-                                    <p:commandButton action="#{in_documents.applyFilter()}" value="Найти" process="@this filterStringIncoming" update="incomingDocumentTable"/>
+                                    <p:commandButton action="#{in_documents.applyFilter()}" value="Найти" process="@this filterStringIncoming incomingDocumentTable" update="incomingDocumentTable"/>
                                 </c:when>
                             <c:otherwise>
                                 <p:inputText id="filterStringRequest" value="#{request_documents.filter}" style="width:80%;" title="Поиск"/>
-                                <p:commandButton action="#{request_documents.applyFilter()}" value="Найти" process="@this filterStringRequest" update="requestDocumentTable"/>
+                                <p:commandButton action="#{request_documents.applyFilter()}" value="Найти" process="@this filterStringRequest requestDocumentTable" update="requestDocumentTable"/>
                             </c:otherwise>
                             </c:choose>
                         </f:facet>

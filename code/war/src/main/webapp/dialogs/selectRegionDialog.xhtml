@@ -33,7 +33,7 @@
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{regionDialog.filter}" styleClass="searchTextBox"/>
-                <p:commandButton value="Поиск" process="filter" update="selectRegionTable" styleClass="searchButton"/>
+                <p:commandButton value="Поиск" process="filter selectRegionTable" update="selectRegionTable" styleClass="searchButton"/>
             </f:facet>
             <p:column headerText="Регион" sortBy="#{region_row.value}" field = "value">
                 <h:outputText value="#{region_row.value}"/>

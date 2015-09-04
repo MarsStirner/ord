@@ -31,7 +31,7 @@
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{officeKeepingVolumeDialog.filter}" styleClass="searchTextBox"/>
-                <p:commandButton value="Поиск" process="filter" update="selectOfficeKeepingVolumeTable" styleClass="searchButton"/>
+                <p:commandButton value="Поиск" process="filter selectOfficeKeepingVolumeTable" update="selectOfficeKeepingVolumeTable" styleClass="searchButton"/>
             </f:facet>
             <p:column headerText="Заголовок" sortBy="#{officeKeepingVolume_row.shortDescription}" field="shortDescription">
                 <h:outputText value="#{officeKeepingVolume_row.shortDescription}"/>

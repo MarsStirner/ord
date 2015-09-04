@@ -33,7 +33,7 @@
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{contragentDialog.filter}" styleClass="searchTextBox"/>
-                <p:commandButton value="Поиск" styleClass="searchButton" process="filter" update="selectContragentTable"/>
+                <p:commandButton value="Поиск" styleClass="searchButton" process="filter selectContragentTable" update="selectContragentTable"/>
             </f:facet>
             <p:column headerText="Краткое наименование" sortBy="#{contragent_row.shortName}" field="shortName">
                 <h:outputText value="#{contragent_row.shortName}"/>
