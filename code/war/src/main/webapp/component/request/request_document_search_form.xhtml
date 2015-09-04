@@ -82,8 +82,8 @@
                 </p:column>
                 <p:column colspan="3">
                     <p:selectOneMenu id="form" value="#{request_search.form}" converter="RequestDocumentFormConverter">
-                        <f:selectItems
-                                value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Обращения граждан')}"/>
+                        <f:selectItem itemLabel="" noSelectionOption="true"/>
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('REQUEST')}"/>
                     </p:selectOneMenu>
                 </p:column>
             </p:row>

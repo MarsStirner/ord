@@ -84,10 +84,9 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{outgoing_search.form}"
-                                     converter="OutgoingDocumentFormConverter">
-                        <f:selectItems
-                                value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Исходящие документы')}"/>
+                    <p:selectOneMenu id="form" value="#{outgoing_search.form}" converter="OutgoingDocumentFormConverter">
+                        <f:selectItem itemLabel="" noSelectionOption="true"/>
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('OUTGOING')}"/>
                     </p:selectOneMenu>
                 </p:column>
             </p:row>

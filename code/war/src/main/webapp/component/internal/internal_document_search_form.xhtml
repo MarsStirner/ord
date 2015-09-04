@@ -82,10 +82,9 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{internal_search.form}"
-                                     converter="InternalDocumentFormConverter">
-                        <f:selectItems
-                                value="#{dictionaryManagement.getDocumentFormsByCategoryWithEmptyValue('Внутренние документы')}"/>
+                    <p:selectOneMenu id="form" value="#{internal_search.form}" converter="InternalDocumentFormConverter">
+                        <f:selectItem itemLabel="" noSelectionOption="true"/>
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('INTERNAL')}"/>
                     </p:selectOneMenu>
                 </p:column>
             </p:row>
