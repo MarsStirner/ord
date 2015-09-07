@@ -50,13 +50,13 @@
                      sortField="creationDate"
                      sortOrder="descending"
                 >
+            <p:column headerText="Номер" style="width:9em;" sortBy="#{row.taskNumber}" field = "taskNumber" >
+                <h:outputText value="#{row.taskNumber}"/>
+            </p:column>
             <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field = "creationDate" >
                 <h:outputText value="#{row.creationDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
-            </p:column>
-            <p:column headerText="Номер" style="width:9em;" sortBy="#{row.taskNumber}" field = "taskNumber" >
-                <h:outputText value="#{row.taskNumber}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
                 <ui:repeat value="#{row.executorsList}" var="element">

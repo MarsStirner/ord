@@ -51,13 +51,13 @@
                      sortField="signatureDate"
                      sortOrder="descending"
                 >
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
+                <h:outputText value="#{row.registrationNumber}"/>
+            </p:column>
             <p:column headerText="Дата подписания" style="width:9em;" sortBy="#{row.signatureDate}" field="signatureDate">
                 <h:outputText value="#{row.signatureDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
-            </p:column>
-            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
-                <h:outputText value="#{row.registrationNumber}"/>
             </p:column>
             <p:column headerText="Ответственный" style="width:12em;" sortBy="#{row.responsible}" field="responsible.lastName">
                 <h:outputText value="#{row.responsible.getDescriptionShort()}"/>

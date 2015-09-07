@@ -50,13 +50,13 @@
                      sortField="registrationDate"
                      sortOrder="descending"
                 >
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+                <h:outputText value="#{row.registrationNumber}"/>
+            </p:column>
             <p:column headerText="Дата регистрации" style="width:9em;" sortBy="#{row.registrationDate}" field = "registrationDate">
                 <h:outputText value="#{row.registrationDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
-            </p:column>
-            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
-                <h:outputText value="#{row.registrationNumber}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
                 <h:outputText value="#{row.executor.getDescriptionShort()}"/>
