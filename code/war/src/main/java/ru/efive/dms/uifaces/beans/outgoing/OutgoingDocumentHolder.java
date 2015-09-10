@@ -564,47 +564,62 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         if (!documentKey.isEmpty()) {
             final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
             if (documentKey.contains("incoming")) {
-                IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+                final  IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
                         .getItemByIdForSimpleView(rootDocumentId);
-                return (in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber()
-                        .equals("") ? "Черновик входщяего документа от " + ApplicationHelper
-                        .formatDate(in_doc.getCreationDate()) : "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + ApplicationHelper
-                        .formatDate(in_doc.getRegistrationDate()));
+                if (in_doc != null) {
+                    return (in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ? "Черновик входщяего документа от " + ApplicationHelper
+                            .formatDate(in_doc.getCreationDate()) : "Входящий документ № " + in_doc
+                            .getRegistrationNumber() + " от " + ApplicationHelper.formatDate(in_doc.getRegistrationDate()));
+                } else {
+                    return "";
+                }
 
             } else if (documentKey.contains("outgoing")) {
-                OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
+                final OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
                         .getItemByIdForSimpleView(rootDocumentId);
-                return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber()
-                        .equals("") ? "Черновик исходящего документа от " + ApplicationHelper
-                        .formatDate(out_doc.getCreationDate()) : "Исходящий документ № " + out_doc
-                        .getRegistrationNumber() + " от " + ApplicationHelper.formatDate(out_doc.getRegistrationDate()));
+                if(out_doc != null) {
+                    return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ? "Черновик исходящего документа от " + ApplicationHelper
+                            .formatDate(out_doc.getCreationDate()) : "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(out_doc.getRegistrationDate()));
+                } else {
+                    return "";
+                }
 
             } else if (documentKey.contains("internal")) {
-                InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
+                final InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
                         .getItemByIdForSimpleView(rootDocumentId);
-                return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber()
-                        .equals("") ? "Черновик внутреннего документа от " + ApplicationHelper.formatDate(
-                        internal_doc.getCreationDate()
-                ) : "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(
-                        internal_doc.getRegistrationDate()
-                ));
+                if(internal_doc != null) {
+                    return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ? "Черновик внутреннего документа от " + ApplicationHelper.formatDate(
+                            internal_doc.getCreationDate()
+                    ) : "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(
+                            internal_doc.getRegistrationDate()
+                    ));
+                } else {
+                    return "";
+                }
 
             } else if (documentKey.contains("request")) {
-                RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
+                final RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
                         .getItemByIdForSimpleView(rootDocumentId);
-                return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber()
-                        .equals("") ? "Черновик обращения граждан от " + ApplicationHelper.formatDate(
-                        request_doc.getCreationDate()
-                ) : "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(
-                        request_doc.getRegistrationDate()
-                ));
+                if(request_doc != null) {
+                    return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ? "Черновик обращения граждан от " + ApplicationHelper.formatDate(
+                            request_doc.getCreationDate()
+                    ) : "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(
+                            request_doc.getRegistrationDate()
+                    ));
+                } else {
+                    return "";
+                }
 
             } else if (documentKey.contains("task")) {
-                Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemByIdForSimpleView(rootDocumentId);
-                return (task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ? "Черновик поручения от " + ApplicationHelper
-                        .formatDate(task_doc.getCreationDate()) : "Поручение № " + task_doc.getTaskNumber() + " от " + ApplicationHelper.formatDate(
-                        task_doc.getCreationDate()
-                ));
+                final Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemByIdForSimpleView(rootDocumentId);
+                if(task_doc != null) {
+                    return (task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ? "Черновик поручения от " + ApplicationHelper
+                            .formatDate(task_doc.getCreationDate()) : "Поручение № " + task_doc.getTaskNumber() + " от " + ApplicationHelper.formatDate(
+                            task_doc.getCreationDate()
+                    ));
+                } else {
+                    return "";
+                }
             }
         }
         return "";
