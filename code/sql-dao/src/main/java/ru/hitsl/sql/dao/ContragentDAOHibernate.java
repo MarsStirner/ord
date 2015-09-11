@@ -75,7 +75,8 @@ public class ContragentDAOHibernate extends GenericDAOHibernate<Contragent> {
             final Disjunction disjunction = Restrictions.disjunction();
             disjunction.add(Restrictions.ilike("value", filter, ANYWHERE));
             disjunction.add(Restrictions.ilike("shortName", filter, ANYWHERE));
-            disjunction.add(Restrictions.ilike("type.value", filter, ANYWHERE));
+            // По замечаниям от Опарина не надо фильтровать по названию типа котрагента
+            //disjunction.add(Restrictions.ilike("type.value", filter, ANYWHERE));
             criteria.add(disjunction);
         }
     }
