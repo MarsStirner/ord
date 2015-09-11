@@ -227,7 +227,7 @@
                             </h:outputLink>
                         </p:column>
                     </p:row>
-                    <p:row styleClass="ui-grid-row" rendered="#{not task.document.parent eq null}">
+                    <p:row styleClass="ui-grid-row" rendered="#{not (task.document.parent eq null)}">
                         <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="v_parentTask" value="Родительское поручение:"/>
                         </p:column>
