@@ -175,7 +175,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Применитиь к текущим критериям огарничения сложного фильтра
+     * Применитиь к текущим критериям ограничения сложного фильтра
      *
      * @param criteria текущий критерий, в который будут добавлены условия  (НЕ менее LIST_CRITERIA)
      * @param filters  сложный фильтр (карта)
@@ -286,6 +286,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
     /**
      * Производит поиск заданной строки в (по условию ИЛИ [дизъюнкция]):
      * регистрационном номере,
+     * Номеру поступившего,
      * дате регистрации (формат - 'DD.MM.YYYY'),
      * сроке исполнения (формат - 'DD.MM.YYYY'),
      * кратком описании,
@@ -305,6 +306,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
         }
         final Disjunction disjunction = Restrictions.disjunction();
         disjunction.add(Restrictions.ilike("registrationNumber", filter, MatchMode.ANYWHERE));
+        disjunction.add(Restrictions.ilike("receivedDocumentNumber", filter, MatchMode.ANYWHERE));
         disjunction.add(createDateLikeTextRestriction("registrationDate", filter));
         disjunction.add(createDateLikeTextRestriction("executionDate", filter));
         disjunction.add(Restrictions.ilike("shortDescription", filter, MatchMode.ANYWHERE));
@@ -320,7 +322,7 @@ public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
 
         //TODO справочник в БД
         final List<DocumentStatus> statuses = DocumentType.getIncomingDocumentStatuses();
-        final List<Integer> statusIdList = new ArrayList<Integer>(statuses.size());
+        final List<Integer> statusIdList = new ArrayList<>(statuses.size());
         for (DocumentStatus current : statuses) {
             if (current.getName().contains(filter)) {
                 statusIdList.add(current.getId());
