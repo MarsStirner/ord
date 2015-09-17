@@ -137,7 +137,8 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         if (StringUtils.isNotEmpty(filter)) {
             final Disjunction disjunction = Restrictions.disjunction();
             disjunction.add(Restrictions.ilike("lastName", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("middleName", filter, MatchMode.ANYWHERE));
+            //ORD-115 TODO поиск с весовыми коэффициентами
+           // disjunction.add(Restrictions.ilike("middleName", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("firstName", filter, MatchMode.ANYWHERE));
             criteria.add(disjunction);
         }
