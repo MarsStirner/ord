@@ -220,6 +220,15 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     // Параметры поиска ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    // Регистрационный номер
+    public void setReceivedDocumentNumber(final String value) {
+        putNotNullToFilters(RECEIVED_DOCUMENT_NUMBER_KEY, value);
+    }
+
+    public String getReceivedDocumentNumber() {
+        return (String) filters.get(RECEIVED_DOCUMENT_NUMBER_KEY);
+    }
+
 
     // Руководитель
     public void setController(final User value) {
