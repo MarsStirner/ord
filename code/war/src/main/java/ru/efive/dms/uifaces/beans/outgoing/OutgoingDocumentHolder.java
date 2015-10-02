@@ -660,30 +660,27 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     public void deleteAttachment(Attachment attachment) {
-        OutgoingDocument document = getDocument();
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-        HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(sessionManagement.getLoggedUser());
-        historyEntry.setDocType(document.getDocumentType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("Файл " + attachment.getFileName() + " был удален");
-        Set<HistoryEntry> history = document.getHistory();
-        history.add(historyEntry);
-        document.setHistory(history);
-
-        setDocument(document);
-
-        if (fileManagement.deleteFile(attachment)) {
-            updateAttachments();
+        if (attachment != null && isCanEdit()) {
+            final OutgoingDocument document = getDocument();
+            final Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+            HistoryEntry historyEntry = new HistoryEntry();
+            historyEntry.setCreated(created);
+            historyEntry.setStartDate(created);
+            historyEntry.setOwner(sessionManagement.getLoggedUser());
+            historyEntry.setDocType(document.getDocumentType().getName());
+            historyEntry.setParentId(document.getId());
+            historyEntry.setActionId(0);
+            historyEntry.setFromStatusId(1);
+            historyEntry.setEndDate(created);
+            historyEntry.setProcessed(true);
+            historyEntry.setCommentary("Файл " + attachment.getFileName() + " был удален");
+            document.addToHistory(historyEntry);
+            setDocument(document);
+            if (fileManagement.deleteFile(attachment)) {
+                updateAttachments();
+            }
+            sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
         }
-
-        sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
     }
 
     public ProcessorModalBean getProcessorModal() {

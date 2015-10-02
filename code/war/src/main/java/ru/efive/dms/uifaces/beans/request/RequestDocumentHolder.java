@@ -630,9 +630,9 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     }
 
     public void deleteAttachment(Attachment attachment) {
-        if (attachment != null) {
-            RequestDocument document = getDocument();
-            Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+        if (attachment != null && isCanEdit()) {
+            final RequestDocument document = getDocument();
+            final Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             HistoryEntry historyEntry = new HistoryEntry();
             historyEntry.setCreated(created);
             historyEntry.setStartDate(created);

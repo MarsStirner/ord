@@ -662,9 +662,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     public void deleteAttachment(Attachment attachment) {
-        if (attachment != null) {
-            IncomingDocument document = getDocument();
-            Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+        if (attachment != null && isCanEdit()) {
+            final IncomingDocument document = getDocument();
+            final Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             HistoryEntry historyEntry = new HistoryEntry();
             historyEntry.setCreated(created);
             historyEntry.setStartDate(created);
