@@ -448,7 +448,7 @@
                 <my:historyTable id="historyTable" value="#{request_doc.document.historyList}"/>
             </p:tab>
             <p:tab id="tab_files" title="Файлы" rendered="#{not request_doc.createState}">
-                <p:dataTable id="table_attachment" value="#{request_doc.attachments}" var="attachment" rowExpandMode="single">
+                <p:dataTable id="table_attachment" value="#{request_doc.attachments}" var="attachment" rowExpandMode="single" emptyMessage="#{props.EMPTY_ATTACHMENTS}">
                     <p:column style="width:1em" styleClass="outputText">
                         <p:rowToggler rendered="#{not empty attachment.revisions}"/>
                     </p:column>
