@@ -20,7 +20,7 @@
                 <f:param name="docAction" value="create"/>
             </p:button>
             <p:commandButton value="Обновить" update="personTable" icon="ui-icon-refresh" ajax="true"/>
-            <p:commandButton value="Импортировать пользовтелей из LDAP"
+            <p:commandButton value="Импортировать пользователей из LDAP"
                              action="#{userList.importLDAPUsers()}"
                              rendered="#{isAdministrator or isHr}"
                              update="personTable"/>
