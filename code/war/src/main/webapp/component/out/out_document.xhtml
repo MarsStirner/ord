@@ -284,7 +284,7 @@
                             <p:fileDownload value="#{fileManagement.download(attachment.id)}"/>
                         </p:commandButton>
                     </p:column>
-                    <p:column headerText="Удалить" rendered="#{statusId lt 90 and out_doc.isEditPermission}" style="width:7em">
+                    <p:column headerText="Удалить" rendered="#{statusId lt 90 and out_doc.editPermission}" style="width:7em">
                         <p:commandButton value="Удалить" action="#{out_doc.deleteAttachment(attachment)}" update="table_attachment"/>
                     </p:column>
                     <p:rowExpansion styleClass="no-padding">
