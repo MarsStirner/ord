@@ -595,6 +595,7 @@ public final class WorkflowHelper {
         );
         Map<String, Object> in_filters = new HashMap<>();
         in_filters.put("registrationNumber", doc.getRegistrationNumber());
+        in_filters.put("DEPRECATED_REGISTRATION_DATE", doc.getRegistrationDate());
         List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
                 .findDocumentsByCriteria(in_filters, false, true);
         if (copyDocuments.size() != 0) {

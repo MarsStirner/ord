@@ -41,7 +41,12 @@ public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
     public List<InternalDocument> findDocumentsByCriteria(Map<String, Object> in_map, boolean showDeleted, boolean showDrafts) {
         DetachedCriteria in_searchCriteria = getListCriteria();
         addDraftsAndDeletedRestrictions(in_searchCriteria, showDeleted, showDrafts);
-        final LocalDate currentDate = new LocalDate();
+        LocalDate currentDate;
+        if(in_map.containsKey("DEPRECATED_REGISTRATION_DATE")){
+           currentDate = new LocalDate(in_map.get("DEPRECATED_REGISTRATION_DATE"));
+        } else {
+            currentDate = new LocalDate();
+        }
         in_searchCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(registrationDate, '%Y') like lower(?)",
                                                           currentDate.getYear() + "%", new StringType()));
         applyFilterMapCriteria(in_searchCriteria, in_map);
