@@ -69,12 +69,12 @@ public abstract class AbstractDialog<T> implements Serializable {
         viewOptions = new HashMap<>();
         viewOptions.put("modal", true);
         viewOptions.put("draggable", true);
-        viewOptions.put("width", "\'50%\'");
-        viewOptions.put("contentWidth", "\'100%\'");
-        viewOptions.put("contentHeight", "\'99%\'"); //Не 100%, т.к. на 100 появляется скролл
+        viewOptions.put("width", "50%");
+        viewOptions.put("contentWidth", "100%");
+        viewOptions.put("contentHeight", "98%"); //Не 100%, т.к. на 100 появляется скролл
         viewOptions.put("resizable", false);
-        viewOptions.put("height", "\'80vh\'");
-        viewOptions.put("position", "\'top\'");
+        viewOptions.put("height", "80vh");
+        viewOptions.put("position", "top");
     }
 
     public static Map<String, Object> getViewOptions(){
