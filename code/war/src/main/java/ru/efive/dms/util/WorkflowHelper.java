@@ -594,6 +594,7 @@ public final class WorkflowHelper {
                 context, "#{sessionManagement}", SessionManagementBean.class
         );
         Map<String, Object> in_filters = new HashMap<>();
+        //TODO вычистить эту ересь при внедрении нумераторов
         in_filters.put("registrationNumber", doc.getRegistrationNumber());
         in_filters.put("DEPRECATED_REGISTRATION_DATE", doc.getRegistrationDate());
         List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
