@@ -41,19 +41,12 @@ public class SessionManagementBean implements Serializable {
     public static final String BACK_URL = "app.back.url";
 
     private final static Logger LOGGER = LoggerFactory.getLogger("AUTH");
-
+    private static final long serialVersionUID = -916300301346029630L;
     private AuthorizationData authData;
-
     private long reqDocumentsCount = 0;
-
     private String userName;
     private String password;
-
     private String backUrl;
-
-
-
-
     //Назначенные роли
     private boolean isAdministrator = false;
     private boolean isRecorder = false;
@@ -63,31 +56,25 @@ public class SessionManagementBean implements Serializable {
     private boolean isOuter = false;
     private boolean isHr = false;
     private boolean isFilling = false;
-
     private boolean isSubstitution = false;
-
     @Inject
     @Named("indexManagement")
     private IndexManagementBean indexManagement;
-
-    private static final long serialVersionUID = -916300301346029630L;
-
-
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public String getUserName() {
         return userName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public boolean isLoggedIn() {
@@ -95,9 +82,9 @@ public class SessionManagementBean implements Serializable {
     }
 
     public void logIn() {
-        if (userName != null && !userName.isEmpty() && password != null && !password.isEmpty()) {
+        if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {
+            LOGGER.info("Try to login [{}][{}]", userName, password);
             try {
-                LOGGER.info("Try to login [{}][{}]", userName, password);
                 UserDAO dao = getDAO(UserDAOHibernate.class, USER_DAO);
                 User loggedUser = dao.findByLoginAndPassword(userName, ru.util.ApplicationHelper.getMD5(password));
                 if (loggedUser != null) {
@@ -127,15 +114,17 @@ public class SessionManagementBean implements Serializable {
                         loggedUser = dao.save(loggedUser);
                     }
                     //Поиск замещений, где найденный пользователь является заместителем
-                    final List<Substitution> substitutions = getDAO(SubstitutionDaoImpl.class, SUBSTITUTION_DAO)
-                            .findCurrentDocumentsOnSubstitution(loggedUser, false);
+                    final List<Substitution> substitutions = getDAO(SubstitutionDaoImpl.class, SUBSTITUTION_DAO).findCurrentDocumentsOnSubstitution(
+                            loggedUser,
+                            false
+                    );
                     if (!substitutions.isEmpty()) {
-                       this.authData = new AuthorizationData(loggedUser, substitutions);
-                    }  else {
+                        this.authData = new AuthorizationData(loggedUser, substitutions);
+                    } else {
                         this.authData = new AuthorizationData(loggedUser);
                     }
                     RequestDocumentDAOImpl docDao = getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO);
-                    reqDocumentsCount = docDao.countDocumentListByFilters(authData,null, null, false, false);
+                    reqDocumentsCount = docDao.countDocumentListByFilters(authData, null, null, false, false);
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
 
                     Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);
@@ -176,7 +165,6 @@ public class SessionManagementBean implements Serializable {
     }
 
 
-
     @SuppressWarnings({"rawtypes", "unchecked"})
     public <T extends DictionaryDAO> T getDictionaryDAO(Class<T> persistentClass, String beanName) {
         return (T) indexManagement.getContext().getBean(beanName);
@@ -192,7 +180,9 @@ public class SessionManagementBean implements Serializable {
         AlfrescoDAO alfrescoDao = (AlfrescoDAO) context.getBean("alfrescoDao");
         try {
             alfrescoDao.initClass(class_);
-            if (!alfrescoDao.connect()) throw new InitializationException();
+            if (!alfrescoDao.connect()) {
+                throw new InitializationException();
+            }
         } catch (InitializationException e) {
             LOGGER.error("Unable to instantiate connection to Alfresco remote service");
             alfrescoDao = null;
@@ -224,7 +214,6 @@ public class SessionManagementBean implements Serializable {
     }
 
 
-
     public String getBackUrl() {
         String url = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
         if (StringUtils.isEmpty(backUrl)) {
@@ -240,7 +229,7 @@ public class SessionManagementBean implements Serializable {
 
     public void setCurrentUserAccessLevel(final String id) {
         final UserAccessLevel userAccessLevel = getDictionaryDAO(UserAccessLevelDAOImpl.class, USER_ACCESS_LEVEL_DAO).get(Integer.valueOf(id));
-        if(userAccessLevel != null) {
+        if (userAccessLevel != null) {
             try {
                 authData.setCurrentAccessLevel(userAccessLevel);
                 getDAO(UserDAOHibernate.class, USER_DAO).save(authData.getAuthorized());
@@ -306,13 +295,12 @@ public class SessionManagementBean implements Serializable {
     }
 
 
-
-    public List<User> getSubstitutedUsers(){
+    public List<User> getSubstitutedUsers() {
         return new ArrayList<User>(authData.getSubstitutedUsers());
     }
 
 
-    public AuthorizationData getAuthData(){
+    public AuthorizationData getAuthData() {
         return authData;
     }
 }
