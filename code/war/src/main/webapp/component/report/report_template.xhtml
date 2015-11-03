@@ -49,8 +49,9 @@
             </p:row>
             <p:row styleClass="ui-grid-row" rendered="#{(reportTemplate.document.type eq 100)or(reportTemplate.document.type eq 101)}">
                 <p:column styleClass="ui-grid-col-3">
-                    <p:outputLabel for="e_user" value="#{reportTemplate.document.userDescription}"/>
-                    <p:commandButton icon="ui-icon-pencil" actionListener="#{reportTemplate.choosePerson}">
+                     <p:commandButton value="#{reportTemplate.document.userDescription}"
+                                      actionListener="#{reportTemplate.choosePerson}"
+                                      styleClass="dialogButton">
                         <p:ajax event="dialogReturn" listener="#{reportTemplate.onPersonChosen}" update="e_user"/>
                     </p:commandButton>
                 </p:column>
@@ -60,8 +61,9 @@
             </p:row>
             <p:row styleClass="ui-grid-row" rendered="#{not empty reportTemplate.document.regionAlias}">
                 <p:column styleClass="ui-grid-col-3">
-                    <p:outputLabel for="e_region" value="#{reportTemplate.document.regionAlias}"/>
-                    <p:commandButton icon="ui-icon-pencil" actionListener="#{reportTemplate.chooseRegion}">
+                    <p:commandButton value="#{reportTemplate.document.regionAlias}"
+                                     actionListener="#{reportTemplate.chooseRegion}"
+                                     styleClass="dialogButton">
                         <p:ajax event="dialogReturn" listener="#{reportTemplate.onRegionChosen}" update="e_region"/>
                     </p:commandButton>
                 </p:column>
