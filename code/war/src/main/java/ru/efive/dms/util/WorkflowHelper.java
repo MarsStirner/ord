@@ -24,6 +24,7 @@ import ru.entity.model.wf.HumanTaskTreeNode;
 import ru.external.AgreementIssue;
 import ru.hitsl.sql.dao.*;
 import ru.hitsl.sql.dao.user.RoleDAOHibernate;
+import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 import ru.util.ApplicationHelper;
 
 import javax.faces.context.FacesContext;
@@ -597,10 +598,15 @@ public final class WorkflowHelper {
         //TODO вычистить эту ересь при внедрении нумераторов
         in_filters.put("registrationNumber", doc.getRegistrationNumber());
         in_filters.put("DEPRECATED_REGISTRATION_DATE", doc.getRegistrationDate());
+        in_filters.put(DocumentSearchMapKeys.FORM_KEY, doc.getForm());
         List<InternalDocument> copyDocuments = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
                 .findDocumentsByCriteria(in_filters, false, true);
         if (copyDocuments.size() != 0) {
             in_result.append("Документ под таким номером уже существует;").append(System.getProperty("line.separator"));
+            for (InternalDocument internalDocument : copyDocuments) {
+                in_result.append(internalDocument.getId()).append("-\'").append(internalDocument.getRegistrationNumber()).append("\';");
+            }
+
             doc.setRegistrationNumber(null);
         }
 

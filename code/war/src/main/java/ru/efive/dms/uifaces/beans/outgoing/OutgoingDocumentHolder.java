@@ -137,8 +137,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ReasonDocumentDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
         final Map<String, Object> viewParams = new HashMap<>(AbstractDialog.getViewOptions());
-        viewParams.put("width", "\'95%\'");
-        viewParams.put("contentWidth", "\'100%\'");
+        viewParams.put("width", "95%");
+        viewParams.put("contentWidth", "100%");
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectReasonDocumentDialog.xhtml", viewParams, null);
     }
 
