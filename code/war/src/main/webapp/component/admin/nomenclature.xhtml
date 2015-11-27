@@ -5,117 +5,65 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
         >
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
-    <ui:define name="running_head">
-        <h:outputStylesheet library="css" name="datatable.css"/>
-    </ui:define>
-    <ui:define name="headerEditButton">
-        <div class="defbutton">
-            <h:commandLink action="#{nomenclature.edit}" rendered="#{nomenclature.viewState}">
-                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                Редактировать
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerSaveButton">
-        <div class="defbutton">
-            <h:commandLink action="#{nomenclature.save}"
-                           rendered="#{nomenclature.editState or nomenclature.createState}">
-                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                Сохранить
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerCancelButton">
-        <div class="defbutton">
-            <h:commandLink action="#{nomenclature.cancel}"
-                           rendered="#{nomenclature.editState or nomenclature.createState}">
-                <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                Отменить
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerDeleteButton"/>
-    <ui:define name="contentReferenceBookName">Справочник номенклатур дел</ui:define>
-
-    <ui:define name="contentItemName">
-        <h:panelGroup rendered="#{nomenclature.createState}">
-            <div class="name">Новая номенклатура дел</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{nomenclature.editState or nomenclature.viewState}">
-            <div class="name">
-                <h:outputText value="#{nomenclature.document.value}"/>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{nomenclature.errorState}">
-            <div class="name">Ошибка</div>
-        </h:panelGroup>
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{nomenclature.createState or nomenclature.editState}" scope="view"/>
     </ui:define>
 
-    <ui:define name="contentItemInfo">
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/admin/nomenclatures.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{nomenclature.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{nomenclature.edit}" icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Отменить" action="#{nomenclature.view}" rendered="#{nomenclature.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{nomenclature.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{nomenclature.delete}" rendered="#{nomenclature.editState}" icon="ui-icon-trash" update="@form"/>
+    </ui:define>
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{nomenclature.errorState}"/>
+        <h:panelGroup layout="block" id="referenceBookHeaderDiv">Справочник номенклатур дел</h:panelGroup>
+        <h:panelGroup layout="block" id="documentHeaderDiv">
+            <h:panelGroup rendered="#{nomenclature.createState}">
+                <div class="name">Новая номенклатура дел</div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{nomenclature.editState or nomenclature.viewState}">
+                <div class="name">
+                    <h:outputText value="#{nomenclature.document.value}"/>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{nomenclature.errorState}">
+                <div class="name">Ошибка</div>
+            </h:panelGroup>
+        </h:panelGroup>
         <p:growl id="contragentTypeMessages"/>
-        <h:panelGroup rendered="#{nomenclature.viewState}">
-            <div class="row">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Наименование:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{nomenclature.document.value}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Код:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{nomenclature.document.code}"/>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{nomenclature.createState or nomenclature.editState}">
-            <div class="row">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Наименование:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <label>
-                                <h:inputText style="width:90%" value="#{nomenclature.document.value}"/>
-                            </label>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Код:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <label>
-                                <h:inputText style="width:90%" value="#{nomenclature.document.code}"/>
-                            </label>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </h:panelGroup>
-
     </ui:define>
 
-
+    <ui:define name="DOCUMENT_CONTENT">
+        <p:panelGrid style="width:100%">
+        <p:row styleClass="ui-grid-row">
+            <p:column styleClass="ui-grid-col-2">
+                <p:outputLabel for="e_value" value="Наименование:"/>
+            </p:column>
+            <p:column colspan="3" styleClass="ui-grid-col-10">
+                <h:outputText id="v_value" value="#{nomenclature.document.value}" styleClass="outputText"  rendered="#{not stateEditable}"/>
+                <p:inputText id="e_value" value="#{nomenclature.document.value}" required="true" styleClass="inputText" rendered="#{stateEditable}"/>
+            </p:column>
+        </p:row>
+        <p:row styleClass="ui-grid-row">
+            <p:column styleClass="ui-grid-col-2">
+                <p:outputLabel for="e_code" value="Код:"/>
+            </p:column>
+            <p:column colspan="3" styleClass="ui-grid-col-10">
+                <h:outputText id="v_code" value="#{nomenclature.document.code}" styleClass="outputText"  rendered="#{not stateEditable}"/>
+                <p:inputText id="e_code" value="#{nomenclature.document.code}" required="true" styleClass="inputText" rendered="#{stateEditable}"/>
+            </p:column>
+        </p:row>
+        </p:panelGrid>
+    </ui:define>
 </ui:composition>
 
 </html>

@@ -1,80 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-        >
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:o="http://omnifaces.org/ui">
 <h:head>
-    <h:outputStylesheet library="css" name="style.css"/>
-    <title>
-        <ui:insert name="pageTitle">Документооборот ФНКЦ ДГОИ</ui:insert>
-    </title>
-    <ui:insert name="running_head"/>
+    <h:outputScript library="js" name="primefacesLocale_ru.js"/>
+    <h:outputStylesheet library="css" name="document.css"/>
+    <ui:insert name="HEAD_CONTENT"/>
+    <ui:insert name="PAGE_TITLE">
+        <title>Документооборот ФНКЦ ДГОИ</title>
+    </ui:insert>
 </h:head>
-<h:body id="main_body">
-    <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
-    <c:set var="isAdministrator" value="#{sessionManagement.isAdministrator()}" scope="session"/>
-    <c:set var="isRecorder" value="#{sessionManagement.isRecorder()}" scope="session"/>
-    <c:set var="isOfficeManager" value="#{sessionManagement.isOfficeManager()}" scope="session"/>
-    <c:set var="isRequestManager" value="#{sessionManagement.isRequestManager()}" scope="session"/>
-    <c:set var="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}" scope="session"/>
-    <c:set var="isOuter" value="#{sessionManagement.isOuter()}" scope="session"/>
-    <c:set var="isHr" value="#{sessionManagement.isHr()}" scope="session"/>
-    <c:set var="isFilling" value="#{sessionManagement.isFilling()}" scope="session"/>
-    <h:form>
-        <ui:insert name="header">
-            <div id="form_header">
-                <div class="menu">
-                    <ui:insert name="headerEditButton">
-                        <div class="defbutton">
-                            <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                            Кнопка для редактирования
-                        </div>
-                    </ui:insert>
-                    <ui:insert name="headerSaveButton">
-                        <div class="defbutton">
-                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                            Кнопка для Сохранения
-                        </div>
-                    </ui:insert>
-                    <ui:insert name="headerCancelButton">
-                        <div class="defbutton">
-                            <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                            Кнопка для Отмены
-                        </div>
-                    </ui:insert>
-                    <ui:insert name="headerDeleteButton">
-                        <div class="defbutton">
-                            <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                            Кнопка для Удаления
-                        </div>
-                    </ui:insert>
-                </div>
-            </div>
-        </ui:insert>
-        <ui:insert name="content">
-            <div id="header_content">
-                <div class="referenceBookName">
-                    <div class="name" style="width:100%">
-                        <ui:insert name="contentReferenceBookName">
-                            <h:outputText value="Справочник &lt;Имя справочника&gt;"/>
-                        </ui:insert>
-                    </div>
-                </div>
-                <div class="referenceBookItemName">
-                    <ui:insert name="contentItemName">
-                        <h:outputText value="Название открытой записи"/>
-                    </ui:insert>
-                </div>
-            </div>
-            <div class="main_content">
-                <ui:insert name="contentItemInfo">
-                    <h:outputText value="Таблица с информацией об открытой записи"/>
+<h:body id="pageBody" style="padding: 0; margin:0;">
+    <!-- Блок объявления параметров -->
+    <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
+    <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
+    <ui:param name="isRecorder" value="#{sessionManagement.isRecorder()}"/>
+    <ui:param name="isOfficeManager" value="#{sessionManagement.isOfficeManager()}"/>
+    <ui:param name="isRequestManager" value="#{sessionManagement.isRequestManager()}"/>
+    <ui:param name="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
+    <ui:param name="isOuter" value="#{sessionManagement.isOuter()}"/>
+    <ui:param name="isHr" value="#{sessionManagement.isHr()}"/>
+    <ui:param name="isFilling" value="#{sessionManagement.isFilling()}"/>
+    <ui:insert name="VARIABLE_DEFINITIONS"/>
+    <!-- Форма документа -->
+    <o:form id="documentForm" includeRequestParams="true">
+        <p:panel id="stickyGroup">
+            <p:toolbar id="documentToolbar" widgetVar="documentToolbarWidget">
+                <!--  Метка для вставки всего содержимого TOOLBAR-а -->
+                <ui:insert name="TOOLBAR CONTENT">
+                    <p:toolbarGroup align="left">
+                        <!-- Метка для вставки содержимого левой части TOOLBAR-а (Кнопки) -->
+                        <ui:insert name="TOOLBAR_LEFT_GROUP_CONTENT"/>
+                    </p:toolbarGroup>
+                    <p:toolbarGroup align="right">
+                        <!-- Метка для вставки содержимого правой части TOOLBAR-а -->
+                        <ui:insert name="TOOLBAR_RIGHT_GROUP_CONTENT"/>
+                    </p:toolbarGroup>
                 </ui:insert>
-            </div>
-        </ui:insert>
-    </h:form>
+            </p:toolbar>
+        </p:panel>
+        <p:panel id="documentHeaderPanel" closable="false" toggleable="false" widgetVar="documentHeaderPanelWidget">
+            <!-- Шапка документа -->
+            <ui:insert name="DOCUMENT_HEADER"/>
+        </p:panel>
+        <p:sticky target="stickyGroup"/>
+        <p:panel id="contentPanel">
+            <!-- Содержимое документа -->
+            <ui:insert name="DOCUMENT_CONTENT"/>
+        </p:panel>
+        <!-- Диалоги, используемые в документе -->
+        <ui:insert name="DIALOGS"/>
+    </o:form>
 </h:body>
+
 </html>

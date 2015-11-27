@@ -1,0 +1,57 @@
+@import "primefacesExtension/calendarIcon.css";
+
+div[id*="stickyGroup"] {
+    padding: 0 !important;
+}
+
+.ui-panelgrid-cell {
+    float: none !important;
+}
+
+.ui-outputlabel {
+    color: dimgrey;
+}
+
+.ui-grid-row {
+    border-color: transparent;
+    border-bottom-color: rgb(228, 225, 225);
+}
+
+.ui-grid-row:after {
+    content: none !important;
+}
+
+.ui-grid-col-2 {
+    vertical-align: top;
+}
+
+.ui-noborder {
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.outputText {
+    font-size: medium !important;
+    word-break: break-all
+}
+
+.inputText {
+    width: 100% !important;
+}
+
+.dialogButton {
+    width: 100%;
+}
+
+.hide-column-names table thead tr {
+    display: none;
+}
+
+.ui-tabs .ui-tabs-panel {
+    padding: 1em 0 !important;
+}
+
+td[colspan="5"] {
+    padding: 0 !important;
+}
+

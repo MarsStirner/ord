@@ -81,7 +81,7 @@ function fixDataTableMultipleSelection() {
                 b = e.shiftKey;
 
             if (c) {
-                this.unselectRow(g, a)
+                this.unselectRow(g, a);
             } else {
                 if (this.isSingleSelection() || (this.isMultipleSelection() && e && !f && !b && this.cfg.rowSelectMode === "new")) {
                     this.unselectAllRows()
