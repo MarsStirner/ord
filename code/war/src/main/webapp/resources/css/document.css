@@ -1,4 +1,4 @@
-@import "primefacesExtension/calendarIcon.css";
+@import "primefacesExtension/calendarIcon.css.xhtml?ln=css";
 
 div[id*="stickyGroup"] {
     padding: 0 !important;

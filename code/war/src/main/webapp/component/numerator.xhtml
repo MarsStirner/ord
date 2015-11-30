@@ -1,244 +1,136 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:my ="http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://java.sun.com/jsf/core"
         >
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
-    <ui:define name="running_head">
-        <h:outputStylesheet library="css" name="datatable.css"/>
-        <h:outputScript library="js" name="primefacesLocale_ru.js"/>
-        <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
-    </ui:define>
-    <ui:define name="headerEditButton">
-        <div class="defbutton">
-            <h:commandLink action="#{numerator.edit}" rendered="#{numerator.viewState and numerator.canEdit}">
-                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                Редактировать
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerSaveButton">
-        <div class="defbutton">
-            <h:commandLink action="#{numerator.save}" rendered="#{numerator.editState or numerator.createState}">
-                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                Сохранить
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerCancelButton">
-        <div class="defbutton">
-            <h:commandLink action="#{numerator.cancel}" rendered="#{numerator.editState or numerator.createState}">
-                <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                Отменить
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerDeleteButton">
-        <div class="defbutton">
-            <h:commandLink action="#{numerator.delete()}" rendered="#{isAdministrator and numerator.viewState and numerator.canDelete}">
-                <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                Удалить
-                <f:param name="docAction" value="delete"/>
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="contentReferenceBookName">Справочник Нумераторов</ui:define>
-
-    <ui:define name="contentItemName">
-        <h:panelGroup rendered="#{numerator.createState}">
-            <div class="name">Новый нумератор</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{numerator.editState or numerator.viewState}">
-            <div class="name">
-                <h:outputText value="Нумератор от "/>
-                <h:outputText value="#{numerator.document.creationDate}">
-                    <f:convertDateTime pattern="dd.MM.yyyy"/>
-                </h:outputText>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{numerator.errorState}">
-            <div class="name">Ошибка</div>
-        </h:panelGroup>
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{numerator.createState or numerator.editState}" scope="view"/>
     </ui:define>
 
-    <ui:define name="contentItemInfo">
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/numerators.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{numerator.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{numerator.edit}"
+                         rendered="#{numerator.viewState and numerator.canEdit}" icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Отменить" action="#{numerator.view}" rendered="#{numerator.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{numerator.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{numerator.delete}" rendered="#{isAdministrator and numerator.viewState and numerator.canDelete}"
+                         icon="ui-icon-trash" update="@form"/>
+    </ui:define>
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{numerator.errorState}"/>
+        <h:panelGroup layout="block" id="referenceBookHeaderDiv">Справочник Нумераторов</h:panelGroup>
+        <h:panelGroup layout="block" id="documentHeaderDiv">
+            <h:panelGroup rendered="#{numerator.createState}">
+                <div class="name">Новый нумератор</div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{numerator.editState or numerator.viewState}">
+                <div class="name">
+                    <h:outputText value="Нумератор от "/>
+                    <h:outputText value="#{numerator.document.creationDate}">
+                        <f:convertDateTime pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{numerator.errorState}">
+                <div class="name">Ошибка</div>
+            </h:panelGroup>
+        </h:panelGroup>
         <p:growl id="numeratorMessages"/>
-        <h:panelGroup rendered="#{numerator.viewState}">
-            <div class="row">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Дата создания:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.creationDate}">
-                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
-                            </h:outputText>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Автор</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.author.getDescription()}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Тип документа</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.documentType.value}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Номенклатура</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText
-                                    value="#{numerator.document.nomenclature != null ? numerator.document.nomenclature.code.concat('-').concat(numerator.document.nomenclature.value) : 'Отсутствует(любая номенклатура)'}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Текущий номер</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.value}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Комментарий</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.shortDescription}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Срок действия</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputFormat value="С {0, date, dd.MM.yyyy} ПО {1, date, dd.MM.yyyy}">
-                                <f:param value="#{numerator.document.startDate}"/>
-                                <f:param value="#{numerator.document.endDate}"/>
-                            </h:outputFormat>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{numerator.createState or numerator.editState}">
-            <div class="row">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Дата создания:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.creationDate}">
-                                <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
-                            </h:outputText>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Автор</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.author.getDescription()}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Тип документа</span>
-                            </label>
-                        </td>
-                        <td>
-                            <my:documentTypeSelectOneMenu id="documentTypeSelectOneMenu" value="#{numerator.document.documentType}" withNoSelectOption="true"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Номенклатура</span>
-                            </label>
-                        </td>
-                        <td>
-                            <my:nomenclatureSelectOneMenu id="nomenclatureSelectOneMenu" value="#{numerator.document.nomenclature}" style="width:100%;" withNoSelectOption="true"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Текущий номер</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{numerator.document.value}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Комментарий</span>
-                            </label>
-                        </td>
-                        <td>
-                            <p:inputText value="#{numerator.document.shortDescription}" style="width:100%;"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Срок действия</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="C "/>
-                            <p:calendar id="startDateCalendar" value="#{numerator.document.startDate}" lang="ru"
-                                        locale="ru"
-                                        widgetVar="startDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"/>
-                            <h:outputText value=" ПО "/>
-                            <p:calendar id="endDateCalendar" value="#{numerator.document.endDate}" lang="ru"
-                                        locale="ru"
-                                        widgetVar="endDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"/>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </h:panelGroup>
     </ui:define>
 
-
+    <ui:define name="DOCUMENT_CONTENT">
+        <p:panelGrid style="width:100%">
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_creationDate" value="Дата создания:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_creationDate" value="#{numerator.document.creationDate}" styleClass="outputText">
+                        <f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"/>
+                    </h:outputText>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_author" value="Автор:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText  id="v_author" value="#{numerator.document.author.description}" styleClass="outputText"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="documentTypeSelectOneMenu" value="Тип документа:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_documentType" value="#{numerator.document.documentType.value}"
+                                   styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <my:documentTypeSelectOneMenu id="documentTypeSelectOneMenu" value="#{numerator.document.documentType}"
+                                                  rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="nomenclatureSelectOneMenu" value="Номенклатура:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText styleClass="outputText" rendered="#{not stateEditable}"
+                            value="#{numerator.document.nomenclature != null ? numerator.document.nomenclature.code.concat('-').concat(numerator.document.nomenclature.value) : 'Отсутствует(любая номенклатура)'}"
+                            />
+                    <my:nomenclatureSelectOneMenu id="nomenclatureSelectOneMenu" value="#{numerator.document.nomenclature}"
+                                                  style="width:100%;" withNoSelectOption="true" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_currentNumber" value="Текущий номер:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText  id="v_currentNumber" value="#{numerator.document.value}" styleClass="outputText"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_commentary" value="Комментарий:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_commentary" value="#{numerator.document.shortDescription}"
+                                  styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_commentary" value="#{numerator.document.shortDescription}" styleClass="inputText" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel value="Срок действия:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText value="C "/>
+                    <h:outputText value="#{numerator.document.startDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}">
+                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                    <p:calendar id="startDateCalendar" value="#{numerator.document.startDate}" lang="ru"
+                                locale="ru" widgetVar="startDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"
+                            rendered="#{stateEditable}"/>
+                    <h:outputText value=" ПО "/>
+                    <h:outputText value="#{numerator.document.endDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}">
+                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    </h:outputText>
+                    <p:calendar id="endDateCalendar" value="#{numerator.document.endDate}" lang="ru"
+                                locale="ru" widgetVar="endDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"
+                                rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </ui:define>
 </ui:composition>
 
 </html>
