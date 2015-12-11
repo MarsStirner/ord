@@ -8,6 +8,7 @@ import org.hibernate.classic.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
@@ -26,10 +27,8 @@ import static ru.util.ApplicationHelper.getNextDayDate;
 
 @SuppressWarnings("unchecked")
 public class IncomingDocumentDAOImpl extends DocumentDAO<IncomingDocument> {
+    private static final Logger logger = LoggerFactory.getLogger("INCOMING_DAO");
 
-    static {
-        logger = LoggerFactory.getLogger("INCOMING_DAO");
-    }
 
     @Override
     protected Class<IncomingDocument> getPersistentClass() {

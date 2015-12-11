@@ -3,6 +3,7 @@ package ru.hitsl.sql.dao;
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.Task;
 import ru.entity.model.enums.DocumentStatus;
@@ -18,9 +19,7 @@ import static ru.util.ApplicationHelper.getNextDayDate;
 
 public class TaskDAOImpl extends DocumentDAO<Task> {
 
-    static {
-        logger = LoggerFactory.getLogger("TASK_DAO");
-    }
+    private static final Logger logger = LoggerFactory.getLogger("TASK_DAO");
 
     @Override
     protected Class<Task> getPersistentClass() {

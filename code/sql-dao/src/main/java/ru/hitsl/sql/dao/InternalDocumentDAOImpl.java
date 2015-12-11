@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.InternalDocument;
 import ru.entity.model.enums.DocumentStatus;
@@ -23,9 +24,9 @@ import static ru.util.ApplicationHelper.getNextDayDate;
 
 
 public class InternalDocumentDAOImpl extends DocumentDAO<InternalDocument> {
-    static {
-        logger = LoggerFactory.getLogger("INTERNAL_DAO");
-    }
+
+    private static final Logger logger = LoggerFactory.getLogger("INTERNAL_DAO");
+
 
     @Override
     protected Class<InternalDocument> getPersistentClass() {

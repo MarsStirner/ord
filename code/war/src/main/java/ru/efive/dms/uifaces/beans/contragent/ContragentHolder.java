@@ -12,12 +12,13 @@ import ru.hitsl.sql.dao.ContragentDAOHibernate;
 import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
 import ru.hitsl.sql.dao.OutgoingDocumentDAOImpl;
 import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
+import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,18 +33,13 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
 
     @Override
     public boolean doAfterDelete() {
-        if (getDocument().isDeleted()) {
-            try {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("delete_contragent.xhtml");
-            } catch (Exception e) {
-                addMessage(null, MSG_ERROR_ON_DELETE);
-                logger.error("Error on redirect", e);
-                return false;
-            }
-            return true;
-        } else {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("delete_contragent.xhtml");
+        } catch (IOException e){
+            logger.error("Error on redirect", e);
             return false;
         }
+        return true;
     }
 
     @Override
@@ -51,9 +47,8 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
         try {
             Contragent contragent = getDocument();
             boolean hasDocuments;
-            final Map<String, Object> in_map = new HashMap<String, Object>();
-            in_map.put("contragent", contragent);
-            //TODO исправить после переписывания
+            final Map<String, Object> in_map = new HashMap<>();
+            in_map.put(DocumentSearchMapKeys.CONTRAGENT_KEY, contragent);
             List<IncomingDocument> incomingDocuments = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).getDocumentListByFilters(sessionManagement.getAuthData(), null, in_map, null, true, 0, -1, false, false);
             if (incomingDocuments.isEmpty()) {
                 List<RequestDocument> requestDocuments = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).getDocumentListByFilters(
@@ -64,10 +59,6 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
                         true,
                         0, -1, false, false);
                 if (requestDocuments.isEmpty()) {
-                    in_map.clear();
-                    final List<Contragent> recipients = new ArrayList<Contragent>();
-                    recipients.add(contragent);
-                    in_map.put("recipientContragents", recipients);
                     List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getDocumentListByFilters(sessionManagement.getAuthData(), null, in_map, null, true, 0, -1, false, false);
                     hasDocuments = !outgoingDocuments.isEmpty();
                 } else {

@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public abstract class DocumentDAO<T extends DeletableEntity> extends GenericDAOHibernate<T>{
 
-    protected static Logger logger = LoggerFactory.getLogger("DOCUMENT_DAO");
+    private static Logger logger = LoggerFactory.getLogger("DOCUMENT_DAO");
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

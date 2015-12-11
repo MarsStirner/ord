@@ -6,10 +6,12 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
+import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.Group;
@@ -23,9 +25,7 @@ import static ru.util.ApplicationHelper.getNextDayDate;
 
 public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
 
-    static {
-        logger = LoggerFactory.getLogger("REQUEST_DAO");
-    }
+    private static final Logger logger = LoggerFactory.getLogger("REQUEST_DAO");
 
     @Override
     protected Class<RequestDocument> getPersistentClass() {
@@ -214,6 +214,13 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
                     conjunction.add(Restrictions.eq("form.id", form.getId()));
                 } catch (ClassCastException e) {
                     logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT DocumentForm. Non critical, continue...", key, value);
+                }
+            } else if (DocumentSearchMapKeys.CONTRAGENT_KEY.equals(key)) {
+                try {
+                    final Contragent contragent = (Contragent) value;
+                    conjunction.add(Restrictions.eq("contragent.id", contragent.getId()));
+                } catch (ClassCastException e) {
+                    logger.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT Contragent. Non critical, continue...", key, value);
                 }
             } else if (DocumentSearchMapKeys.FORM_VALUE_KEY.equals(key)) {
                 conjunction.add(Restrictions.eq("form.value", value));

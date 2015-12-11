@@ -1,153 +1,86 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://java.sun.com/jsf/html"
         >
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
-    <ui:define name="running_head">
-        <h:outputStylesheet library="css" name="datatable.css"/>
-    </ui:define>
-    <ui:define name="headerEditButton">
-        <div class="defbutton">
-            <h:commandLink action="#{contragent.edit}" rendered="#{contragent.viewState}">
-                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                <f:ajax execute="@form" render="@form" />
-                Редактировать
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerSaveButton">
-        <div class="defbutton">
-            <h:commandLink action="#{contragent.save}" rendered="#{contragent.editState or contragent.createState}">
-                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                <f:ajax execute="@form" render="@form" />
-                Сохранить
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerCancelButton">
-        <div class="defbutton">
-            <h:commandLink action="#{contragent.cancel}" rendered="#{contragent.editState or contragent.createState}">
-                <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                <f:ajax execute="@form" render="@form" />
-                Отменить
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerDeleteButton">
-        <div class="defbutton">
-            <h:commandLink action="#{contragent.delete()}" rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
-                <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                Удалить
-                <f:param name="docAction" value="delete"/>
-            </h:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="contentReferenceBookName">Справочник Контрагентов</ui:define>
 
-    <ui:define name="contentItemName">
-        <h:panelGroup rendered="#{contragent.createState}">
-            <div class="name">Новый контрагент</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{contragent.editState or contragent.viewState}">
-            <div class="name">
-                <h:outputText value="#{contragent.document.shortName}"/>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{contragent.errorState}">
-            <div class="name">Ошибка</div>
-        </h:panelGroup>
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{contragent.createState or contragent.editState}" scope="view"/>
     </ui:define>
 
-    <ui:define name="contentItemInfo">
-        <h:panelGroup rendered="#{contragent.viewState}">
-            <div class="row">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Краткое	наименование:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{contragent.document.shortName}"/>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Полное наименование:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{contragent.document.value}"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="first">
-                            <label>
-                                <span class="title">Тип контрагента:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <h:outputText value="#{contragent.document.type.value}"/>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{contragent.createState or contragent.editState}">
-            <div class="row">
-                <table class="form_grid">
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Краткое	наименование:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <label>
-                                <h:inputText style="width:90%" value="#{contragent.document.shortName}"/>
-                            </label>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Полное наименование:</span>
-                            </label>
-                        </td>
-                        <td>
-                            <label>
-                                <h:inputText style="width:90%" value="#{contragent.document.value}"/>
-                            </label>
-                        </td>
-                    </tr>
-                    <tr class="row">
-                        <td class="first">
-                            <label>
-                                <span class="title">Тип контрагента</span>
-                            </label>
-                        </td>
-                        <td>
-                            <p:selectOneMenu id="contragentTypeSelectOneMenu" value="#{contragent.document.type}"
-                                             converter="ContragentTypeConverter">
-                                <f:selectItems value="#{dictionaryManagement.contragentTypes}" var="contragentType_row"
-                                               itemLabel="#{contragentType_row.value}"/>
-                            </p:selectOneMenu>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </h:panelGroup>
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/contragent/contragents.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{contragent.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{contragent.edit}"
+                         rendered="#{contragent.viewState and contragent.canEdit}" icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Отменить" action="#{contragent.view}" rendered="#{contragent.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{contragent.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{contragent.delete}" rendered="#{isAdministrator or isOfficeManager or isRequestManager}"
+                         icon="ui-icon-trash" update="@form"/>
     </ui:define>
 
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{contragent.errorState}"/>
+        <h:panelGroup layout="block" id="referenceBookHeaderDiv">Справочник Контрагентов</h:panelGroup>
+        <h:panelGroup layout="block" id="documentHeaderDiv">
+            <h:panelGroup rendered="#{contragent.createState}">
+                <div class="name">Новый контрагент</div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{contragent.editState or contragent.viewState}">
+                <div class="name">
+                    <h:outputText value="#{contragent.document.shortName}"/>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{contragent.errorState}">
+                <div class="name">Ошибка</div>
+            </h:panelGroup>
+        </h:panelGroup>
+        <p:growl id="numeratorMessages"/>
+    </ui:define>
 
+    <ui:define name="DOCUMENT_CONTENT">
+        <p:panelGrid style="width:100%">
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_shortName" value="Краткое	наименование:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_shortName" value="#{contragent.document.shortName}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_shortName" value="#{contragent.document.shortName}" styleClass="inputText" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_fullName" value="Полное наименование:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_fullName" value="#{contragent.document.value}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_fullName" value="#{contragent.document.value}" styleClass="inputText" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_type" value="Тип контрагента:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_type" value="#{contragent.document.type.value}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:selectOneMenu id="e_type" value="#{contragent.document.type}"
+                                     converter="ContragentTypeConverter" styleClass="inputText" rendered="#{stateEditable}">
+                        <f:selectItems value="#{dictionaryManagement.contragentTypes}" var="contragentType_row"
+                                       itemLabel="#{contragentType_row.value}"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </ui:define>
 </ui:composition>
 
 </html>

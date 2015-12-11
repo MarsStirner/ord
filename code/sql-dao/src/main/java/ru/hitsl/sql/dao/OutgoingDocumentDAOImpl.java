@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.enums.DocumentStatus;
@@ -24,9 +25,7 @@ import static ru.util.ApplicationHelper.getNextDayDate;
 @SuppressWarnings("unchecked")
 public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
 
-    static {
-        logger = LoggerFactory.getLogger("OUTGOING_DAO");
-    }
+    private static final Logger logger = LoggerFactory.getLogger("OUTGOING_DAO");
 
     @Override
     protected Class<OutgoingDocument> getPersistentClass() {
