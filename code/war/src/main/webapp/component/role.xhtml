@@ -3,92 +3,69 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
-<ui:composition template="/jsf-template/template.xhtml">
+        >
+<ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
 
-    <ui:define name="left_menu"/>
-
-    <ui:define name="header">
-        <div id="form_header">
-            <div class="actionbar">
-                <div class="menu">
-                    <div class="defbutton">
-                        <p:commandLink action="#{role.edit}" rendered="#{role.viewState}" update="@all">
-                            <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                            Редактировать
-                        </p:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <p:commandLink action="#{role.cancel}" rendered="#{role.editState or role.createState}" update="@all">
-                            <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                            Отменить
-                        </p:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <p:commandLink action="#{role.save}" rendered="#{role.editState or role.createState}" update="@all">
-                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                            Сохранить
-                        </p:commandLink>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{role.createState or role.editState}" scope="view"/>
     </ui:define>
 
-    <ui:define name="content">
-        <div id="header_content">
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/roles.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{role.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{role.edit}"
+                         rendered="#{role.viewState and role.canEdit}" icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Отменить" action="#{role.view}" rendered="#{role.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{role.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+    </ui:define>
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{role.errorState}"/>
+        <h:panelGroup layout="block" id="referenceBookHeaderDiv">Справочник Ролей</h:panelGroup>
+        <h:panelGroup layout="block" id="documentHeaderDiv">
             <h:panelGroup rendered="#{role.createState}">
                 <div class="name">Новая роль</div>
             </h:panelGroup>
             <h:panelGroup rendered="#{role.editState or role.viewState}">
                 <div class="name">
-                    <div>
-                        <h:outputText value="#{role.document.name}"/>
-                    </div>
+                    <h:outputText value="Роль #{role.document.name}"/>
                 </div>
             </h:panelGroup>
             <h:panelGroup rendered="#{role.errorState}">
                 <div class="name">Ошибка</div>
             </h:panelGroup>
-        </div>
-
-        <div class="main_content">
-            <h:panelGroup rendered="#{role.viewState}">
-                <div class="row">
-                    <table class="form_grid">
-                        <tr class="row">
-                            <td class="first">Название:</td>
-                            <td><h:outputText value="#{role.document.name}" class="wide"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Тип роли:</td>
-                            <td><h:outputText value="#{role.document.roleType}" class="wide"/></td>
-                        </tr>
-                    </table>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{role.createState or role.editState}">
-                <div class="row">
-                    <table class="form_grid">
-                        <tr class="row">
-                            <td class="first">Название:</td>
-                            <td><p:inputText value="#{role.document.name}"/></td>
-                        </tr>
-                        <tr class="row">
-                            <td class="first">Тип роли:</td>
-                            <td>
-                                <p:selectOneMenu id="roleType" value="#{role.document.roleType}" style="width:15em;">
-                                    <f:selectItems value="#{role.types}"/>
-                                </p:selectOneMenu>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </h:panelGroup>
-        </div>
+        </h:panelGroup>
+        <p:growl id="roleMessages"/>
     </ui:define>
-    <ui:define name="footer"/>
-</ui:composition>
 
+    <ui:define name="DOCUMENT_CONTENT">
+        <p:panelGrid style="width:100%">
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_name" value="Наименование:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_name" value="#{role.document.name}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_name" value="#{role.document.name}" styleClass="inputText" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_type" value="Тип роли:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_type" value="#{role.document.roleType}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:selectOneMenu id="e_type" value="#{role.document.roleType}" styleClass="inputText" rendered="#{stateEditable}">
+                        <f:selectItems value="#{role.types}"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </ui:define>
+
+</ui:composition>
 </html>
