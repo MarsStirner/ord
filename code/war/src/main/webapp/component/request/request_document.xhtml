@@ -472,7 +472,9 @@
                         </p:commandButton>
                     </p:column>
                     <p:column headerText="Удалить" rendered="#{statusId lt 90 and request_doc.editPermission}" style="width:7em">
-                        <p:commandButton value="Удалить" action="#{request_doc.deleteAttachment(attachment)}" update="table_attachment"/>
+                        <p:commandButton value="Удалить" action="#{request_doc.deleteAttachment(attachment)}" update="table_attachment">
+                            <p:confirm header="Удаление вложения" message="Вы уверены, что хотите удалить это вложение?" />
+                        </p:commandButton>
                     </p:column>
                     <p:rowExpansion styleClass="no-padding">
                         <p:dataTable var="revision" value="#{attachment.revisions}" styleClass="hide-column-names"
@@ -546,6 +548,11 @@
         <p:dialog modal="true" widgetVar="statusDialog" header="Загрузка файла" draggable="false" closable="false" resizable="false">
             <h:outputText value="Пожалуйста подождите пока ваш файл будет загружен"/>
         </p:dialog>
+        <!-- Подтверждение действия(удаление вложения)-->
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="Нет" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
         <!-- Диалог работы с действиями -->
         <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false"
                   resizable="false" width="50%" closeOnEscape="true" fitViewport="true">

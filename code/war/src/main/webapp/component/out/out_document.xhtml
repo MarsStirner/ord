@@ -285,7 +285,9 @@
                         </p:commandButton>
                     </p:column>
                     <p:column headerText="Удалить" rendered="#{statusId lt 90 and out_doc.editPermission}" style="width:7em">
-                        <p:commandButton value="Удалить" action="#{out_doc.deleteAttachment(attachment)}" update="table_attachment"/>
+                        <p:commandButton value="Удалить" action="#{out_doc.deleteAttachment(attachment)}" update="table_attachment">
+                            <p:confirm header="Удаление вложения" message="Вы уверены, что хотите удалить это вложение?" />
+                        </p:commandButton>
                     </p:column>
                     <p:rowExpansion styleClass="no-padding">
                         <p:dataTable var="revision" value="#{attachment.revisions}" styleClass="hide-column-names"
@@ -340,6 +342,11 @@
                 PF('statusDialog').hide();
             }
         </script>
+        <!-- Подтверждение действия(удаление вложения)-->
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+            <p:commandButton value="Нет" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+        </p:confirmDialog>
         <!-- Диалог при загрузке файла -->
         <p:dialog modal="true" widgetVar="statusDialog" header="Загрузка файла" draggable="false" closable="false" resizable="false">
             <h:outputText value="Пожалуйста подождите пока ваш файл будет загружен"/>
