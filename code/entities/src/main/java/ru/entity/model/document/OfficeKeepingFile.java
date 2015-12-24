@@ -91,7 +91,7 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
 
     @Transient
     public List<OfficeKeepingVolume> getVolumesList() {
-        List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>();
+        List<OfficeKeepingVolume> result = new ArrayList<>();
         if (volumes != null) {
             result.addAll(volumes);
         }
@@ -100,8 +100,8 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
 
     @Transient
     public List<OfficeKeepingVolume> getRegistratedVolumesList() {
-        List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>();
-        if (volumes != null && volumes.size() > 0) {
+        List<OfficeKeepingVolume> result = new ArrayList<>();
+        if (volumes != null && !volumes.isEmpty()) {
             for (OfficeKeepingVolume volume : volumes) {
                 if (volume.getDocumentStatus().getId() >= 2) {
                     result.add(volume);
@@ -121,7 +121,7 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
 
     @Transient
     public List<HistoryEntry> getHistoryList() {
-        List<HistoryEntry> result = new ArrayList<HistoryEntry>();
+        List<HistoryEntry> result = new ArrayList<>();
         if (history != null) {
             result.addAll(history);
         }

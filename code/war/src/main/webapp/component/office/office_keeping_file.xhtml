@@ -5,378 +5,215 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:e5ui="http://efive.ru/uitemplates"
-      xmlns:e5ui-comp="http://efive.ru/uitemplates/composite"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents">
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+        >
 
-<ui:composition template="/jsf-template/template.xhtml">
-
-    <ui:define name="running_head">
-        <e5ui-comp:userSessionUpdate interval="300"/>
+<ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{officeKeepingFile.createState or officeKeepingFile.editState}" scope="view"/>
+        <c:set var="statusId" value="#{officeKeepingFile.document.documentStatus.id}" scope="view"/>
+        <!-- Конец блока переменных -->
     </ui:define>
 
-    <ui:define name="left_menu"/>
-
-    <ui:define name="header">
-        <div id="form_header">
-            <div class="actionbar">
-                <div class="menu">
-                    <div class="defbutton">
-                        <h:commandLink action="#{officeKeepingFile.edit}" rendered="#{officeKeepingFile.viewState}">
-                            <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                            Редактировать
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{officeKeepingFile.cancel}" rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
-                            <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                            Отменить
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <h:commandLink action="#{officeKeepingFile.save}" rendered="#{officeKeepingFile.editState or officeKeepingFile.createState}">
-                            <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                            Сохранить
-                        </h:commandLink>
-                    </div>
-                    <div class="defbutton">
-                        <e5ui:formPart id="actions_fp">
-                            <h:commandLink onclick="actionsModal.clickOpen('actionsModal'); return false;">
-                                <h:graphicImage value="#{resource['images:button-do.png']}"/>
-                                Действия
-                            </h:commandLink>
-                            <e5ui-comp:modalWindow id="actionsModal"
-                                                   modalWindowHolder="#{officeKeepingFile.processorModal}"
-                                                   render="main_content_form:" execute="@this" showButtons="false"
-                                                   widgetVar="actionsModal">
-                                <h:panelGroup rendered="#{not(officeKeepingFile.processorModal.processingState)}">
-                                    <div id="title">Действия</div>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{officeKeepingFile.processorModal.actionsAvailable}">
-                                    <div class="wrap"
-                                         style="height: 90px; background-color: #fff; clear: both;">
-                                        <div class="inner" style="height: 90px;">
-                                            <e5ui:dataTable id="action_select_table" border="0"
-                                                            cellpadding="0" cellspacing="0"
-                                                            value="#{officeKeepingFile.processorModal.availableActions}"
-                                                            var="row" grouping="false" width="100%">
-                                                <e5ui:row
-                                                        onclick="e5ui_util.clickElement(this, 'selectLink$');"
-                                                        styleClass="#{officeKeepingFile.processorModal.selected(row)? 'grid_row_selected': ''}"/>
-                                                <e5ui:column>
-                                                    <f:facet name="header">
-                                                        <p>Доступные действия</p>
-                                                    </f:facet>
-                                                    <h:outputText value="#{row.action.name}"/>
-                                                    <h:commandLink id="selectLink" style="display: none;"
-                                                                   rendered="#{not officeKeepingFile.processorModal.selected(row)}"
-                                                                   action="#{officeKeepingFile.processorModal.select(row)}"/>
-                                                </e5ui:column>
-                                            </e5ui:dataTable>
-                                        </div>
-                                    </div>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}">
-                                    <h:outputText style="padding-left:10px;" value="#{officeKeepingFile.processorModal.actionResult}"/>
-                                </h:panelGroup>
-                                <h:panelGroup rendered="#{officeKeepingFile.processorModal.processingState}">
-                                    <e5ui:include data="#{officeKeepingFile.processorModal.processedActivity.document.form}"/>
-                                </h:panelGroup>
-
-                                <div class="e5ui-modal-bottombuttons">
-                                    <h:commandButton
-                                            action="#{officeKeepingFile.processorModal.process()}"
-                                            rendered="#{officeKeepingFile.processorModal.actionsAvailable or officeKeepingFile.processorModal.processingState}"
-                                            value="Выполнить">
-                                    </h:commandButton>
-                                    <h:button
-                                            rendered="#{officeKeepingFile.processorModal.actionsAvailable or officeKeepingFile.processorModal.processingState}"
-                                            onclick="actionsModal.clickClose(); return false;"
-                                            value="Отмена"/>
-                                    <h:button
-                                            rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}"
-                                            onclick="actionsModal.clickClose(); return false;"
-                                            value="Закрыть"/>
-                                </div>
-                            </e5ui-comp:modalWindow>
-                        </e5ui:formPart>
-                    </div>
-
-                </div>
-            </div>
-        </div>
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/office/office_keeping_files.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{officeKeepingFile.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{officeKeepingFile.edit}" icon="ui-icon-pencil" update="@form"
+                         rendered="#{officeKeepingFile.viewState}"/>
+        <p:commandButton value="Отменить" action="#{officeKeepingFile.cancel}" rendered="#{officeKeepingFile.editState}" icon="ui-icon-cancel"
+                         update="@form"/>
+        <p:commandButton value="Сохранить" action="#{officeKeepingFile.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Действия" action="#{officeKeepingFile.processorModal.show}" rendered="#{officeKeepingFile.viewState}"
+                         icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
     </ui:define>
 
-    <ui:define name="content">
-        <div id="header_content">
-            <h:panelGroup rendered="#{officeKeepingFile.createState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() eq 1)}">
-                <e5ui:formPart id="editHeaderPart">
-                    <div class="name">
-                        Номенклатура дела №
-                        <p:inputText value="#{officeKeepingFile.document.fileIndex}"/>
-                    </div>
-                    <div class="title">
-                        <h:outputText value="#{officeKeepingFile.document.getDocumentStatus().getName()}"/>
-                    </div>
-                </e5ui:formPart>
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{officeKeepingFile.errorState}"/>
+        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not officeKeepingFile.errorState}"
+                      style="font-weight: bold; display:inline-block; width:85%;">
+            Номенклатура дела №
+            <h:outputText value="#{officeKeepingFile.document.fileIndex}"/>
+        </h:panelGroup>
+        <h:panelGroup layout="block" id="documentStatusDiv" rendered="#{not officeKeepingFile.errorState}"
+                      style="display: inline-block; text-align: right; padding: 0.4em; background-color: rgb(60,141,188); border-radius: 4px; color: white;"
+                >
+            <h:outputText value="#{officeKeepingFile.document.getDocumentStatus().getName()}"/>
+        </h:panelGroup>
+    </ui:define>
+
+
+    <ui:define name="DOCUMENT_CONTENT">
+        <p:tabView id="documentTabPanel" widgetVar="officeKeepingFileTabViewVar" effect="fade" effectDuration="fast"
+                   rendered="#{not officeKeepingFile.errorState}">
+            <p:tab id="tab_info" title="Реквизиты">
+                <p:panelGrid style="width:100%">
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_shortDescription" value="Заголовок:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-10">
+                            <h:outputText id="v_shortDescription" value="#{officeKeepingFile.document.shortDescription}"
+                                          rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_shortDescription" value="#{officeKeepingFile.document.shortDescription}"
+                                             rendered="#{stateEditable}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_keepingPeriodReasons" value="Срок хранения и № статей по перечню:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-10">
+                            <h:outputText id="v_keepingPeriodReasons" value="#{officeKeepingFile.document.keepingPeriodReasons}"
+                                          rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_keepingPeriodReasons" value="#{officeKeepingFile.document.keepingPeriodReasons}"
+                                             rendered="#{stateEditable}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_comment" value="Примечания:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-10">
+                            <h:outputText id="v_comment" value="#{officeKeepingFile.document.comments}"
+                                          rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_comment" value="#{officeKeepingFile.document.comments}"
+                                             rendered="#{stateEditable}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2" styleClass="ui-widget-header ui-grid-col-12">
+                            <h:outputText value="Местоположение"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_fund" value="Фонд:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-10">
+                            <h:outputText id="v_fund" value="#{officeKeepingFile.document.fundNumber}"
+                                          rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_fund" value="#{officeKeepingFile.document.fundNumber}"
+                                             rendered="#{stateEditable}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_stand" value="Стеллаж:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-10">
+                            <h:outputText id="v_stand" value="#{officeKeepingFile.document.standNumber}"
+                                          rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_stand" value="#{officeKeepingFile.document.standNumber}"
+                                             rendered="#{stateEditable}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_shelf" value="Полка:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-10">
+                            <h:outputText id="v_shelf" value="#{officeKeepingFile.document.shelfNumber}"
+                                          rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_shelf" value="#{officeKeepingFile.document.shelfNumber}"
+                                             rendered="#{stateEditable}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-2">
+                            <p:outputLabel for="e_box" value="Короб:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-10">
+                            <h:outputText id="v_box" value="#{officeKeepingFile.document.boxNumber}"
+                                          rendered="#{not stateEditable}" styleClass="outputText"/>
+                            <p:inputTextarea id="e_box" value="#{officeKeepingFile.document.boxNumber}"
+                                             rendered="#{stateEditable}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:tab>
+            <p:tab title="Тома дел">
+                <p:toolbar id="delaToolBar">
+                    <p:toolbarGroup>
+                        <p:button value="Новый том дела" id="task_add_keeping_volume" outcome="/component/office/office_keeping_volume.xhtml" target="_blank"
+                                  icon="ui-icon-plusthick">
+                            <f:param name="docAction" value="create"/>
+                            <f:param name="parentId" value="#{officeKeepingFile.document.id}"/>
+                        </p:button>
+                        <p:commandButton value="Обновить" id="task_refresh_btn" action="#{officeKeepingVolumes.refresh}"
+                                         update="dela" icon="ui-icon-refresh"/>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                <p:dataTable id="dela"
+                             value="#{officeKeepingVolumes.getAllVolumesByParentFileId(officeKeepingFile.document.id)}"
+                             var="row"
+                             selectionMode="single"
+                             emptyMessage="Записей нет"
+                             rowKey="#{row.id}"
+                             widgetVar="delaVar">
+                    <p:column headerText="Индекс" style="width:4.5em;" styleClass="outputText">
+                        <h:outputText value="#{row.volumeIndex}"/>
+                    </p:column>
+                    <p:column headerText="Заголовок" styleClass="outputText">
+                        <h:outputText value="#{row.shortDescription}"/>
+                    </p:column>
+                    <p:column headerText="Срок хранения" style="width:14em;" styleClass="outputText">
+                        <h:outputText value="#{row.keepingPeriodReasons}"/>
+                    </p:column>
+                    <p:column headerText="Статус" style="width:5em;" styleClass="outputText">
+                        <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                    </p:column>
+                    <p:ajax event="rowSelect" onstart="goToOfficeKeepingVolume(PrimeFaces.widgets.delaVar.selection); return false;"/>
+                </p:dataTable>
+            </p:tab>
+            <p:tab id="tab_history" title="История">
+                <my:historyTable id="historyTable" value="#{officeKeepingFile.document.historyList}"/>
+            </p:tab>
+        </p:tabView>
+    </ui:define>
+
+    <ui:define name="DIALOGS">
+        <p:growl id="msg"/>
+        <!-- Диалог работы с действиями -->
+        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false"
+                  resizable="false" width="50%" closeOnEscape="true" fitViewport="true">
+            <h:panelGroup id="actionForm" rendered="#{officeKeepingFile.processorModal.modalVisible}">
+                <h:panelGroup rendered="#{officeKeepingFile.processorModal.actionsAvailable}">
+                    <p:dataTable id="action_select_table"
+                                 value="#{officeKeepingFile.processorModal.availableActions}"
+                                 var="row_action"
+                                 width="100%"
+                                 emptyMessage="Доступных действий нет"
+                                 rowKey="#{row_action.action.name}"
+                                 selectionMode="single"
+                                 selection="#{officeKeepingFile.processorModal.selectedAction}">
+                        <p:column headerText="Доступные действия">
+                            <h:outputText value="#{row_action.action.name}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+                <h:panelGroup id="actiopResult"
+                              rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}">
+                    <h:outputText style="padding-left:10px;" value="#{officeKeepingFile.processorModal.actionResult}"/>
+                </h:panelGroup>
+                <h:panelGroup id="actionActivity" rendered="#{officeKeepingFile.processorModal.processingState}">
+                    <e5ui:include data="#{officeKeepingFile.processorModal.processedActivity.document.form}"/>
+                </h:panelGroup>
+                <p:commandButton action="#{officeKeepingFile.processorModal.process()}"
+                                 rendered="#{officeKeepingFile.processorModal.actionsAvailable or officeKeepingFile.processorModal.processingState}"
+                                 value="Выполнить" update="actionForm">
+                </p:commandButton>
+                <p:commandButton rendered="#{officeKeepingFile.processorModal.actionsAvailable or officeKeepingFile.processorModal.processingState}"
+                                 onclick="PF('actionDialogVar').close(); return false;"
+                                 value="Отмена"/>
+                <p:commandButton
+                        rendered="#{officeKeepingFile.processorModal.noActionsAvailable or officeKeepingFile.processorModal.failureState or officeKeepingFile.processorModal.processedState}"
+                        onclick="PF('actionDialogVar').close(); return false;"
+                        value="Закрыть"/>
             </h:panelGroup>
-            <h:panelGroup rendered="#{officeKeepingFile.viewState or (officeKeepingFile.editState and officeKeepingFile.document.getDocumentStatus().getId() ge 1)}">
-                <div class="name">
-                    <div>
-                        Номенклатура дел №
-                        <h:outputText value="#{officeKeepingFile.document.fileIndex}"/>
-                    </div>
-                </div>
-                <div class="title">
-                    <h:outputText value="#{officeKeepingFile.document.getDocumentStatus().getName()}"/>
-                </div>
-            </h:panelGroup>
-            <h:panelGroup rendered="#{officeKeepingFile.errorState}">
-                <div class="name">Ошибка</div>
-            </h:panelGroup>
-        </div>
-
-        <div class="main_content">
-            <p:tabView widgetVar="officeKeepingFileTabViewVar" activeIndex="0" effect="fade" effectDuration="fast">
-                <p:tab title="Реквизиты">
-                    <h:panelGroup rendered="#{officeKeepingFile.viewState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">Заголовок:</td>
-                                    <td>
-                                        <h:outputText value="#{officeKeepingFile.document.shortDescription}" class="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">Срок хранения и № статей по перечню:</td>
-                                    <td>
-                                        <h:outputText value="#{officeKeepingFile.document.keepingPeriodReasons}" class="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">Примечания:</td>
-                                    <td>
-                                        <h:outputText value="#{officeKeepingFile.document.comments}" class="wide"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{officeKeepingFile.createState or officeKeepingFile.editState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">Заголовок:</td>
-                                    <td>
-                                        <p:inputText value="#{officeKeepingFile.document.shortDescription}" styleClass="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">Срок хранения и № статей по перечню:</td>
-                                    <td>
-                                        <p:inputText value="#{officeKeepingFile.document.keepingPeriodReasons}" styleClass="wide"/>
-                                    </td>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">Примечания:</td>
-                                    <td>
-                                        <p:inputText value="#{officeKeepingFile.document.comments}" styleClass="wide"/>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-                </p:tab>
-                <p:tab title="Тома дел">
-                    <fieldset>
-                        <legend>Тома дела</legend>
-
-                        <div class="actionbar">
-                            <div class="menu">
-                                <h:panelGroup rendered="#{officeKeepingFile.document.getDocumentStatus().getId() eq 2}">
-                                    <div class="defbutton">
-                                        <h:outputLink value="/component/office/office_keeping_volume.xhtml" target="_blank">
-                                            <h:graphicImage value="#{resource['images:newf_buttn_icon.png']}"/>
-                                            Новый том
-                                            <f:param name="docAction" value="create"/>
-                                            <f:param name="parentId" value="#{officeKeepingFile.document.id}"/>
-                                        </h:outputLink>
-                                    </div>
-                                </h:panelGroup>
-
-                                <div class="defbutton">
-                                    <h:commandLink action="#{officeKeepingVolumes.refresh()}">
-                                        <f:ajax render="select_table"/>
-                                        <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
-                                        Обновить
-                                    </h:commandLink>
-                                </div>
-                            </div>
-                        </div>
-                        <h:panelGroup>
-                            <div id="modal_container" style="margin-top: 0;">
-                                <div class="wrap" style="height: 250px; width: 100%; margin: 0;">
-                                    <div class="inner" style="height: 250px;">
-                                        <e5ui:dataTable id="select_table" border="0" cellpadding="0"
-                                                        cellspacing="0"
-                                                        value="#{officeKeepingVolumes.getAllVolumesByParentFileId(officeKeepingFile.document.id)}"
-                                                        var="row" style="width:100%">
-                                            <e5ui:row ondblclick="goToOfficeKeepingVolume('#{row.id}');"/>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>Индекс</p>
-                                                </f:facet>
-                                                <h:outputText value="#{row.volumeIndex}"/>
-                                            </e5ui:column>
-                                            <e5ui:column style="min-width:15em">
-                                                <f:facet name="header">
-                                                    <p>Заголовок</p>
-                                                </f:facet>
-                                                <h:outputText value="#{row.shortDescription}"/>
-                                            </e5ui:column>
-                                            <e5ui:column style="min-width:8em">
-                                                <f:facet name="header">
-                                                    <p>Срок хранения</p>
-                                                </f:facet>
-                                                <h:outputText value="#{row.keepingPeriodReasons}"/>
-                                            </e5ui:column>
-                                            <e5ui:column>
-                                                <f:facet name="header">
-                                                    <p>Статус</p>
-                                                </f:facet>
-                                                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-                                            </e5ui:column>
-                                        </e5ui:dataTable>
-                                    </div>
-                                </div>
-                            </div>
-                        </h:panelGroup>
-                    </fieldset>
-                </p:tab>
-                <p:tab title="Местоположение">
-                    <h:panelGroup rendered="#{officeKeepingFile.viewState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Фонд</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <h:outputText value="#{officeKeepingFile.document.fundNumber}" class="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Стеллаж</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <h:outputText value="#{officeKeepingFile.document.standNumber}" class="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Полка</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <h:outputText value="#{officeKeepingFile.document.shelfNumber}" class="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label>
-                                            <span class="title">Короб</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <h:outputText value="#{officeKeepingFile.document.boxNumber}" class="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-                    <h:panelGroup rendered="#{officeKeepingFile.createState or officeKeepingFile.editState}">
-                        <div class="row">
-                            <table class="form_grid">
-                                <tr class="row">
-                                    <td class="first">
-                                        <label for="fundNumber">
-                                            <span class="title">Фонд</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <p:inputText value="#{officeKeepingFile.document.fundNumber}" id="fundNumber" styleClass="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label for="standNumber">
-                                            <span class="title">Стеллаж</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <p:inputText value="#{officeKeepingFile.document.standNumber}" id="standNumber" styleClass="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label for="shelfNumber">
-                                            <span class="title">Полка</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <p:inputText value="#{officeKeepingFile.document.shelfNumber}" id="shelfNumber" styleClass="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                                <tr class="row">
-                                    <td class="first">
-                                        <label for="boxNumber">
-                                            <span class="title">Короб</span>
-                                        </label>
-                                    </td>
-                                    <td class="second">
-                                        <p:inputText value="#{officeKeepingFile.document.boxNumber}" id="boxNumber" styleClass="short"/>
-                                    </td>
-                                    <td class="third"/>
-                                    <td class="fourth"/>
-                                </tr>
-                            </table>
-                        </div>
-                    </h:panelGroup>
-                </p:tab>
-                <p:tab title="История" rendered="#{officeKeepingFile.viewState or officeKeepingFile.createState or officeKeepingFile.editState}">
-                    <my:historyTable id ="historyTable" value ="#{officeKeepingFile.document.historyList}"/>
-                </p:tab>
-            </p:tabView>
-        </div>
-
+        </p:dialog>
     </ui:define>
-
-    <ui:define name="footer">
-        <h:outputStylesheet library="css" name="datatable.css"/>
-        <h:outputStylesheet library="css" name="modalWindow.css"/>
-    </ui:define>
-
 </ui:composition>
-
 </html>
