@@ -1,5 +1,6 @@
 package ru.efive.dms.util.ldap;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
@@ -399,6 +400,7 @@ public class LDAPImportService {
         user.setFirstName(ldapUser.getFirstName());
         user.setLastName(ldapUser.getLastName());
         user.setMiddleName(ldapUser.getPatrName());
+        user.setEmail(ldapUser.getMail());
         if (ldapUser.getJobPosition() != null && !ldapUser.getJobPosition().isEmpty()) {
             final String requestedPositionName = ldapUser.getJobPosition().trim();
             boolean founded = false;
@@ -432,7 +434,6 @@ public class LDAPImportService {
         user.setLastModified(ldapUser.getLastModified());
         if (ldapUser.getMail() != null && !ldapUser.getMail().isEmpty()) {
             user.addToContacts(new PersonContact(user, EMAIL_CONTACT_TYPE, ldapUser.getMail()));
-            user.setEmail(ldapUser.getMail());
         }
         if (ldapUser.getPhone() != null && !ldapUser.getPhone().isEmpty()) {
             user.addToContacts(new PersonContact(user, PHONE_CONTACT_TYPE, ldapUser.getPhone()));
@@ -465,6 +466,9 @@ public class LDAPImportService {
                 localUser.setFirstName(ldapUser.getFirstName());
                 localUser.setLastName(ldapUser.getLastName());
                 localUser.setMiddleName(ldapUser.getPatrName());
+                if(StringUtils.isNotEmpty(ldapUser.getMail())){
+                    localUser.setEmail(ldapUser.getMail());
+                }
                 if (ldapUser.getJobPosition() != null && !ldapUser.getJobPosition().isEmpty()) {
                     final String requestedPositionName = ldapUser.getJobPosition().trim();
                     boolean founded = false;

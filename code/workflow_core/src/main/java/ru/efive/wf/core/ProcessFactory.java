@@ -937,7 +937,7 @@ public final class ProcessFactory {
         mailActivity = null;
         prop = PropertyUtils.getProperty(t, "responsible");
         User responsible = (prop == null ? null : (User) prop);
-        if (responsible != null) {
+        if (responsible != null && StringUtils.isNotEmpty(responsible.getEmail())) {
             mailActivity = new SendMailActivity();
             sendTo.add(responsible.getEmail());
             MailMessage message1 = new MailMessage(sendTo, null, "Вы назнaчены ответственным по документу @DocumentNumber" + docNumber,

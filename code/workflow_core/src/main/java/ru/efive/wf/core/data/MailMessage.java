@@ -1,24 +1,53 @@
 package ru.efive.wf.core.data;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class MailMessage {
 
+    private List<String> sendTo;
+    private List<String> copyTo;
+    private List<String> blindCopyTo;
+    private String subject;
+    private String body;
+    private String contentType;
+
     public MailMessage(List<String> sendTo, List<String> copyTo, String subject, String body) {
-        this.sendTo = sendTo;
-        this.copyTo = copyTo;
+        if(sendTo != null) {
+            this.sendTo = new ArrayList<>(sendTo.size());
+            for (String s : sendTo) {
+                if (StringUtils.isNotEmpty(s)) {
+                    this.sendTo.add(s);
+                }
+            }
+        }
+        if(copyTo !=null) {
+            this.copyTo = new ArrayList<>(copyTo.size());
+            for (String s : copyTo) {
+                if (StringUtils.isNotEmpty(s)) {
+                    this.copyTo.add(s);
+                }
+            }
+        }
         this.subject = subject;
         this.body = body;
     }
-
 
     public List<String> getSendTo() {
         return sendTo == null ? new ArrayList<String>() : sendTo;
     }
 
     public void setSendTo(List<String> sendTo) {
-        this.sendTo = sendTo;
+        if(sendTo != null) {
+            this.sendTo = new ArrayList<>(sendTo.size());
+            for (String s : sendTo) {
+                if (StringUtils.isNotEmpty(s)) {
+                    this.sendTo.add(s);
+                }
+            }
+        }
     }
 
     public List<String> getCopyTo() {
@@ -26,7 +55,14 @@ public class MailMessage {
     }
 
     public void setCopyTo(List<String> copyTo) {
-        this.copyTo = copyTo;
+        if(copyTo !=null) {
+            this.copyTo = new ArrayList<>(copyTo.size());
+            for (String s : copyTo) {
+                if (StringUtils.isNotEmpty(s)) {
+                    this.copyTo.add(s);
+                }
+            }
+        }
     }
 
     public List<String> getBlindCopyTo() {
@@ -53,22 +89,11 @@ public class MailMessage {
         this.body = body;
     }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
     public String getContentType() {
         return contentType;
     }
 
-
-    private List<String> sendTo;
-    private List<String> copyTo;
-    private List<String> blindCopyTo;
-
-    private String subject;
-
-    private String body;
-
-    private String contentType;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
 }
