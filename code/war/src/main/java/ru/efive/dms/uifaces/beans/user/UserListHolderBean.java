@@ -59,7 +59,7 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
                     );
     }
 
-    public void importLDAPUsers() {
+    public void importLDAPUsers() throws Exception {
         ApplicationContext context = sessionManagement.getIndexManagement().getContext();
         LDAPImportService service = (LDAPImportService) context.getBean("ldapImportService");
         service.run();

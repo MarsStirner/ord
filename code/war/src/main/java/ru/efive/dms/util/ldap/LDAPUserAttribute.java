@@ -31,6 +31,8 @@ public enum LDAPUserAttribute {
     FIO_ATTR_VALUE("DisplayName"),
     // Атрибут логина
     LOGIN_ATTR_VALUE("sAMAccountName"),
+    // Атрибут разрешения входа
+    UAC_ATTR_VALUE("userAccountControl"),
     //Distinguished Name
     DN_ATTR("distinguishedName");
     private final String name;

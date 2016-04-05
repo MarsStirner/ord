@@ -14,6 +14,7 @@ import java.util.Date;
 public class LDAPUser {
 
     private static final SimpleDateFormat lastModifiedFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    private static final String BLOCKED_ACCOUNT_MARKER = "514";
 
     //Distinguished Name (DN)
     private String DN;
@@ -43,9 +44,8 @@ public class LDAPUser {
     //Логин
     private String login;
 
-    public LDAPUser(Attributes attributes, boolean fired) throws NamingException, ParseException {
+    public LDAPUser(Attributes attributes) throws NamingException, ParseException {
         final NamingEnumeration<? extends Attribute> allAtributes = attributes.getAll();
-        setFired(fired);
         while (allAtributes != null && allAtributes.hasMore()) {
             final Attribute current = allAtributes.next();
             if (LDAPUserAttribute.LAST_NAME_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
@@ -72,7 +72,15 @@ public class LDAPUser {
                 setDN(current);
             } else if(LDAPUserAttribute.LOGIN_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())){
                 setLogin(current);
+            } else if(LDAPUserAttribute.UAC_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())){
+                setBlocked(current);
             }
+        }
+    }
+
+    private void setBlocked(final Attribute blocked) throws NamingException {
+        if(blocked !=null){
+            this.fired = BLOCKED_ACCOUNT_MARKER.equals(blocked.get());
         }
     }
 

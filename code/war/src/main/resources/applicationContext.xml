@@ -25,7 +25,7 @@
         <property name="passwordValue" value="${ldap.password.value}"/>
         <property name="filterValue" value="${ldap.filter.value}"/>
         <property name="baseValue" value="${ldap.base.value}"/>
-        <property name="skipBaseValue" value="${ldap.skipbase.value}"/>
+        <property name="firedBaseValue" value="${ldap.base.fired.value}"/>
     </bean>
 
     <bean id="alfrescoDao" class="ru.efive.dao.alfresco.AlfrescoDAO">
