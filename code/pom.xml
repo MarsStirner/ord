@@ -6,7 +6,7 @@
 
     <groupId>ru.efive.dms</groupId>
     <artifactId>dms-app</artifactId>
-    <version>0.3.8</version>
+    <version>0.3.9</version>
     <packaging>pom</packaging>
 
     <name>E5 Documents management system</name>
