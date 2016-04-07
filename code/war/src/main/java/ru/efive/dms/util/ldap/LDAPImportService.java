@@ -93,6 +93,10 @@ public class LDAPImportService {
         for (LDAPUser currentLdapUser : userList) {
             i++;
             LOGGER.debug("#{} Start processing [{}]", i, currentLdapUser.getDN());
+            if(currentLdapUser.getDN().contains("Глушкова Светлана Юрьевна")){
+                i++;
+                i--;
+            }
             //Поиск совпадений  по GUID
             boolean foundedByGuid = false;
             for (User currentLocalUser : cache.getLocalUsers()) {
@@ -487,16 +491,7 @@ public class LDAPImportService {
                     final Attribute attribute = allAtributes.next();
                     sb.append(attribute.getID()).append('=');
                     if (attribute.get() instanceof byte[]) {
-                        byte[] bytes = (byte[]) attribute.get();
-                        StringBuilder guid = new StringBuilder();
-                        for (byte aByte : bytes) {
-                            StringBuffer dblByte = new StringBuffer(Integer.toHexString(aByte & 0xff));
-                            if (dblByte.length() == 1) {
-                                guid.append("0");
-                            }
-                            guid.append(dblByte);
-                        }
-                        sb.append(guid.toString());
+                        sb.append(LDAPUser.convertToDashedString((byte[]) attribute.get()));
                     } else {
                         sb.append(attribute.get());
                     }

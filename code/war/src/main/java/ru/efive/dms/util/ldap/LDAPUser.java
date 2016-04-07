@@ -216,18 +216,45 @@ public class LDAPUser {
 
     public void setGuid(Attribute objectGUID) throws NamingException {
         //Не может быть null
-        byte [] bytes = (byte[]) objectGUID.get();
-        StringBuffer guid = new StringBuffer();
-        for (byte aByte : bytes) {
-            StringBuffer dblByte = new StringBuffer(Integer.toHexString(aByte & 0xff));
-            if (dblByte.length() == 1) {
-                guid.append("0");
-            }
-            guid.append(dblByte);
-        }
-        this.guid = guid.toString();
+        this.guid = convertToDashedString((byte[]) objectGUID.get());
     }
 
+    public static String convertToDashedString(byte[] objectGUID) {
+        StringBuilder displayStr = new StringBuilder();
+
+        displayStr.append(prefixZeros((int) objectGUID[3] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[2] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[1] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[0] & 0xFF));
+        displayStr.append("-");
+        displayStr.append(prefixZeros((int) objectGUID[5] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[4] & 0xFF));
+        displayStr.append("-");
+        displayStr.append(prefixZeros((int) objectGUID[7] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[6] & 0xFF));
+        displayStr.append("-");
+        displayStr.append(prefixZeros((int) objectGUID[8] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[9] & 0xFF));
+        displayStr.append("-");
+        displayStr.append(prefixZeros((int) objectGUID[10] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[11] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[12] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[13] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[14] & 0xFF));
+        displayStr.append(prefixZeros((int) objectGUID[15] & 0xFF));
+
+        return displayStr.toString();
+    }
+
+    private static String prefixZeros(int value) {
+        if (value <= 0xF) {
+            StringBuilder sb = new StringBuilder("0");
+            sb.append(Integer.toHexString(value));
+            return sb.toString();
+        } else {
+            return Integer.toHexString(value);
+        }
+    }
     /**
      * Дата последнего изменения
      * @return
