@@ -5,61 +5,49 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
-    <ui:define name="contentReferenceBookName">Справочник групп</ui:define>
-    <ui:define name="contentItemName">
-        <h:panelGroup rendered="#{group.createState}">
-            <div class="name">Новая группа</div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{group.editState or group.viewState}">
-            <div class="name">
-                <h:outputText value="#{group.document.value}"/>
-            </div>
-        </h:panelGroup>
-        <h:panelGroup rendered="#{group.errorState}">
-            <div class="name">Ошибка</div>
-        </h:panelGroup>
+    <ui:define name="VARIABLE_DEFINITIONS">
+        <!-- Статусы документа -->
+        <c:set var="stateEditable" value="#{group.createState or group.editState}" scope="view"/>
     </ui:define>
 
-    <ui:define name="headerEditButton">
-        <div class="defbutton">
-            <p:commandLink action="#{group.edit}" rendered="#{group.viewState}" update="@all">
-                <h:graphicImage value="#{resource['images:edit_buttn.png']}"/>
-                Редактировать
-            </p:commandLink>
-        </div>
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/groups.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{group.errorState}"/>
+        <p:commandButton value="Редактировать" action="#{group.edit}"
+                         rendered="#{group.viewState and group.canEdit}" icon="ui-icon-pencil" update="@form"/>
+        <p:commandButton value="Отменить" action="#{group.view}" rendered="#{group.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{group.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{group.delete}" rendered="#{isAdministrator and group.viewState and group.canDelete}"
+                         icon="ui-icon-trash" update="@form"/>
     </ui:define>
-    <ui:define name="headerCancelButton">
-        <div class="defbutton">
-            <p:commandLink action="#{group.cancel}" rendered="#{group.editState or group.createState}" update="@all">
-                <h:graphicImage value="#{resource['images:button-cancel.png']}"/>
-                Отменить
-            </p:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerSaveButton">
-        <div class="defbutton">
-            <p:commandLink action="#{group.save}" rendered="#{group.editState or group.createState}" update="@all">
-                <h:graphicImage value="#{resource['images:save_buttn.png']}"/>
-                Сохранить
-            </p:commandLink>
-        </div>
-    </ui:define>
-    <ui:define name="headerDeleteButton">
-        <div class="defbutton">
-            <p:commandLink action="#{group.delete()}"
-                           rendered="#{isAdministrator or (group.document.author.id eq sessionManagement.getLoggedUser().id)}">
-                <h:graphicImage value="#{resource['images:dell_buttn.png']}"/>
-                Удалить
-                <f:param name="docAction" value="delete"/>
-            </p:commandLink>
-        </div>
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{group.errorState}"/>
+        <h:panelGroup layout="block" id="referenceBookHeaderDiv">Справочник групп</h:panelGroup>
+        <h:panelGroup layout="block" id="documentHeaderDiv">
+            <h:panelGroup rendered="#{group.createState}">
+                <div class="name">Новая группа</div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{group.editState or group.viewState}">
+                <div class="name">
+                    <h:outputText value="#{group.document.value}"/>
+                </div>
+            </h:panelGroup>
+            <h:panelGroup rendered="#{group.errorState}">
+                <div class="name">Ошибка</div>
+            </h:panelGroup>
+        </h:panelGroup>
+        <p:growl id="msg"/>
     </ui:define>
 
 
-    <ui:define name="contentItemInfo">
+
+
+    <ui:define name="DOCUMENT_CONTENT">
         <h:panelGroup rendered="#{group.viewState}">
             <div class="row">
                 <table class="form_grid">

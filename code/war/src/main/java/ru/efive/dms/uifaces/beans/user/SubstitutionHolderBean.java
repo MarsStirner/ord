@@ -7,8 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.SubstitutionDaoImpl;
@@ -36,36 +38,16 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     //Именованный логгер
     private static final Logger logger = LoggerFactory.getLogger("SUBSTITUTION");
-
-    @Override
-    public boolean isCanCreate() {
-        return super.isCanCreate() && sessionManagement.isFilling();
-    }
-
-    @Override
-    public boolean isCanDelete() {
-        return super.isCanDelete()&& sessionManagement.isFilling();
-    }
-
-    @Override
-    public boolean isCanEdit() {
-        return super.isCanEdit() && sessionManagement.isFilling();
-    }
-
-    @Override
-    public boolean isCanView() {
-        return super.isCanView() && sessionManagement.isFilling();
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    @Inject
+    @Named("sessionManagement")
+    SessionManagementBean sessionManagement = new SessionManagementBean();
 
     //Выбора замещаемого ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void choosePerson() {
         final Map<String, List<String>> params = new HashMap<>();
         params.put(
-                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION));
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION)
+        );
         final User preselected = getDocument().getPerson();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -76,7 +58,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     public void onPersonChosen(final SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         logger.info("Choose person: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setPerson(selected);
         }
@@ -86,7 +68,8 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     public void chooseSubstitutor() {
         final Map<String, List<String>> params = new HashMap<>();
         params.put(
-                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR));
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR)
+        );
         final User preselected = getDocument().getSubstitution();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -94,19 +77,18 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public void onSubstitutorChosen(final SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         logger.info("Choose substitution: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setSubstitution(selected);
         }
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///// КОНЕЦ Диалоговые окошки  /////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
     @Override
     protected boolean deleteDocument() {
@@ -118,7 +100,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
             return true;
         } catch (Exception e) {
             logger.error("saveDocument ERROR:", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+            addMessage(MSG_ERROR_ON_DELETE);
             return false;
         }
     }
@@ -134,13 +116,21 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     protected void initDocument(Integer id) {
         final User currentUser = sessionManagement.getLoggedUser();
         logger.info("Open Document[{}] by user[{}]", id, currentUser.getId());
-        final Substitution doc = sessionManagement.getDAO(SubstitutionDaoImpl.class, ApplicationDAONames.SUBSTITUTION_DAO).get(id);
-        if (doc != null) {
-            setDocument(doc);
-        } else {
-            logger.error("Document[{}] not found", id);
+        final Substitution document = sessionManagement.getDAO(SubstitutionDaoImpl.class, ApplicationDAONames.SUBSTITUTION_DAO).get(id);
+        setDocument(document);
+        if (document == null) {
+            setState(State.ERROR);
+            logger.warn("Document NOT FOUND");
+            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+        } else if (document.isDeleted()) {
+            setState(State.ERROR);
+            logger.warn("Document[{}] IS DELETED", document.getId());
+            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
         }
     }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///// КОНЕЦ Диалоговые окошки  /////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected boolean saveNewDocument() {
@@ -156,11 +146,31 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
                 return true;
             } catch (Exception e) {
                 logger.error("saveDocument ERROR:", e);
-                FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+                addMessage(MSG_ERROR_ON_SAVE);
                 return false;
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isCanCreate() {
+        return super.isCanCreate() && sessionManagement.isFilling();
+    }
+
+    @Override
+    public boolean isCanDelete() {
+        return super.isCanDelete() && sessionManagement.isFilling();
+    }
+
+    @Override
+    public boolean isCanEdit() {
+        return super.isCanEdit() && sessionManagement.isFilling();
+    }
+
+    @Override
+    public boolean isCanView() {
+        return super.isCanView() && sessionManagement.isFilling();
     }
 
     /**
@@ -174,29 +184,25 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         if (document.getStartDate() != null && document.getEndDate() != null) {
             if (document.getStartDate().after(document.getEndDate())) {
                 logger.error("Save cancelled: startDate[{}] is not before endDate[{}]", document.getStartDate(), document.getEndDate());
-                FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_DATE_MISMATCH);
+                addMessage(MSG_SUBSTITUTION_DATE_MISMATCH);
                 result = false;
             }
         }
         if (document.getSubstitution() == null) {
             logger.error("Save cancelled: substitution not set");
-            FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_SUBSTITUTOR_NOT_SET);
+            addMessage(MSG_SUBSTITUTION_SUBSTITUTOR_NOT_SET);
             result = false;
         }
         if (document.getPerson() == null) {
             logger.error("Save cancelled: person not set");
-            FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_PERSON_NOT_SET);
+            addMessage(MSG_SUBSTITUTION_PERSON_NOT_SET);
             result = false;
         }
         if (document.getPerson() != null && document.getSubstitution() != null && document.getPerson().equals(document.getSubstitution())) {
             logger.error("Save cancelled: person and substitution is one people");
-            FacesContext.getCurrentInstance().addMessage(null, MSG_SUBSTITUTION_PERSON_DUPLICATE);
+            addMessage(MSG_SUBSTITUTION_PERSON_DUPLICATE);
             result = false;
         }
         return result;
     }
-
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
 }

@@ -35,7 +35,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group>  {
             FacesContext.getCurrentInstance().getExternalContext().redirect("deleted_group.xhtml");
             return true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+            addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
             LOGGER.error("Error on delete:", e);
         }
         return false;
