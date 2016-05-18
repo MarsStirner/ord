@@ -203,12 +203,12 @@
                              selectionMode="single"
                              emptyMessage="Записей нет"
                              widgetVar="taskTableVar">
-                    <p:column headerText="Дата создания" style="width:4.5em;" styleClass="outputText">
+                    <p:column headerText="Дата создания" style="width:7em;" styleClass="outputText">
                         <h:outputText value="#{row_task.creationDate}">
                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Номер" style="width:6em;" styleClass="outputText">
+                    <p:column headerText="Номер" style="width:7em;" styleClass="outputText">
                         <h:outputText value="#{row_task.taskNumber}"/>
                     </p:column>
                     <p:column headerText="Автор" style="width:9em; white-space: normal;" styleClass="outputText">
@@ -219,15 +219,15 @@
                             <h:outputText value="#{executor.description}"/><br/>
                         </ui:repeat>
                     </p:column>
-                    <p:column headerText="Срок исполнения" style="width:4.5em;" styleClass="outputText">
+                    <p:column headerText="Срок исполнения" style="width:9em;" styleClass="outputText">
                         <h:outputText value="#{row_task.controlDate}">
                             <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
-                    <p:column headerText="Содержание" style="white-space: normal;" styleClass="outputText">
+                    <p:column headerText="Содержание" style="width:100%; white-space: normal;" styleClass="outputText">
                         <h:outputText value="#{row_task.shortDescription}"/>
                     </p:column>
-                    <p:column headerText="Статус" style="width:5em;" styleClass="outputText">
+                    <p:column headerText="Статус" style="width:7em;" styleClass="outputText">
                         <h:outputText value="#{row_task.getDocumentStatus().getName()}"/>
                     </p:column>
                     <p:column style="display:none;">
