@@ -85,7 +85,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      * Признак уволенного сотрудника
      * TRUE - уволен
      */
-    @Column(name = "fired")
+    @Column(name = "fired", nullable = false)
     private boolean fired;
 
     /**
