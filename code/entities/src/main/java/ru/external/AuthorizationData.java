@@ -284,4 +284,8 @@ public class AuthorizationData implements Serializable{
         sb.append("\n]");
         return sb.toString();
     }
+
+    public String getDefaultPage() {
+        return "/component/in/in_documents.xhtml";
+    }
 }

@@ -132,6 +132,7 @@ public class SessionManagementBean implements Serializable {
                         backUrl = requestUrl.toString();
                         LOGGER.info("back url={}", backUrl);
                     }
+
                     setRoleFlags();
 
                     LOGGER.info("SUCCESSFUL LOGIN:{}\n AUTH_DATA={}", loggedUser.getId(), authData);
@@ -191,16 +192,15 @@ public class SessionManagementBean implements Serializable {
     }
 
     public String logOut() {
+        LOGGER.info("LOGOUT: {}", authData);
         authData = null;
         userName = null;
         password = null;
-
         FacesContext facesContext = FacesContext.getCurrentInstance();
         if (facesContext != null) {
             ExternalContext externalContext = facesContext.getExternalContext();
             externalContext.invalidateSession();
         }
-        LOGGER.info("LOGOUT");
         return "/index?faces-redirect=true";
     }
 
@@ -214,17 +214,17 @@ public class SessionManagementBean implements Serializable {
     }
 
 
-    public String getBackUrl() {
-        String url = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+    private String getBackUrl() {
+        final StringBuilder result = new StringBuilder(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath());
         if (StringUtils.isEmpty(backUrl)) {
-            return url + "/component/in/in_documents.xhtml";
+            result.append(authData.getDefaultPage());
         } else {
-            LOGGER.info("redirectUrl:{}", backUrl);
-            final String redirectTo = url + backUrl;
+            result.append(backUrl);
             //Должно стрелять только один раз
             backUrl = "";
-            return redirectTo;
         }
+        LOGGER.info("redirectUrl: \'{}\'", result.toString());
+        return result.toString();
     }
 
     public void setCurrentUserAccessLevel(final String id) {

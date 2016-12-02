@@ -130,7 +130,7 @@
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
 				</textElement>
-				<text><![CDATA[ФГБУ ФНКЦ ДГОИ им. Дмитрия Рогачева Минздрава России]]></text>
+				<text><![CDATA[ФГБУ ННПЦ ДГОИ им. Дмитрия Рогачева Минздрава России]]></text>
 			</staticText>
 			<textField pattern="dd.MM.yyyy">
 				<reportElement x="263" y="59" width="142" height="20" uuid="fb7fc791-9769-49a6-bd0d-c0c890c5225e"/>
@@ -349,7 +349,7 @@
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
 				</textElement>
-				<text><![CDATA[ФГБУ ФНКЦ ДГОИ им. Дмитрия Рогачева Минздрава России]]></text>
+				<text><![CDATA[ФГБУ ННПЦ ДГОИ им. Дмитрия Рогачева Минздрава России]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="30" width="802" height="20" uuid="f9a18d97-8eee-4882-8bca-2cef4606c9c2"/>
