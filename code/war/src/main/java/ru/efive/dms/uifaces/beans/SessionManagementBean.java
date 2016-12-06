@@ -214,7 +214,7 @@ public class SessionManagementBean implements Serializable {
     }
 
 
-    private String getBackUrl() {
+    public String getBackUrl() {
         final StringBuilder result = new StringBuilder(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath());
         if (StringUtils.isEmpty(backUrl)) {
             result.append(authData.getDefaultPage());
