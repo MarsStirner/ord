@@ -51,7 +51,7 @@
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName=""/>
 				</textElement>
-				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздарава России
+				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздрава России
 ]]></text>
 			</staticText>
 			<staticText>
@@ -255,7 +255,7 @@
 				<textElement textAlignment="Center">
 					<font fontName="Tahoma" size="12" pdfFontName=""/>
 				</textElement>
-				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздарава России
+				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздрава России
 ]]></text>
 			</staticText>
 			<staticText>
