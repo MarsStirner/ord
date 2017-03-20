@@ -232,7 +232,7 @@ public class DynaDataTableRenderer extends AbstractTableRenderer {
         sel = false;
 
         Map<String, String> requestParameterMap = context.getExternalContext().getRequestParameterMap();
-        boolean event = false;
+        boolean event;
         String execute = requestParameterMap.get(PARTIAL_EXECUTE_PARAM_NAME);
         if (execute != null && !execute.isEmpty()) {
             event = execute.contains(ALL_PARTIAL_PHASE_CLIENT_IDS);
@@ -255,7 +255,7 @@ public class DynaDataTableRenderer extends AbstractTableRenderer {
                 if (first != bean.getPagination().getOffset()) {
                     bean.changeOffset(first);
                 }
-            } else first = bean.getPagination().getOffset();
+            }
             iid = id + "-rows";
             int rows;
             if (requestParameterMap.containsKey(iid)) {
@@ -263,7 +263,7 @@ public class DynaDataTableRenderer extends AbstractTableRenderer {
                 if (rows != bean.getPagination().getPageSize()) {
                     bean.changePageSize(rows);
                 }
-            } else rows = bean.getPagination().getPageSize();
+            }
             iid = id + "-inSelector";
             sel = requestParameterMap.containsKey(iid) && Boolean.parseBoolean(requestParameterMap.get(iid));
             iid = id + "-wOffset";

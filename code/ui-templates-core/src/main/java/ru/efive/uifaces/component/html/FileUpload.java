@@ -154,7 +154,7 @@ public class FileUpload extends UICommand implements ClientBehaviorHolder, Seria
     public static final String DEFAULT_EVENT_NAME = "upload";
 
     private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(
-            Arrays.asList(DEFAULT_EVENT_NAME));
+            Collections.singletonList(DEFAULT_EVENT_NAME));
 
     /** {@inheritDoc} */
     @Override

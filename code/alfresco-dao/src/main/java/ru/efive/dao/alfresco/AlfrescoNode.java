@@ -1,11 +1,11 @@
 package ru.efive.dao.alfresco;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.alfresco.webservice.types.NamedValue;
 import org.alfresco.webservice.util.Constants;
 import org.alfresco.webservice.util.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlfrescoNode extends ru.efive.dao.Data {
 
@@ -89,7 +89,7 @@ public class AlfrescoNode extends ru.efive.dao.Data {
 
 
     public boolean setNodeProperties(NamedValue[] nodeProperties) {
-        boolean result = false;
+        boolean result;
         try {
             for (NamedValue namedValue : nodeProperties) {
                 if (namedValue.getName().endsWith(Constants.PROP_NAME)) {

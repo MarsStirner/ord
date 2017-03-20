@@ -38,7 +38,7 @@ public final class ProcessFactory {
     }
 
     public static <T extends ProcessedData> Process getProcessByType(T t) {
-        Process process = null;
+        Process process;
         try {
             System.out.println("process factory initialization");
             process = new Process();
@@ -139,11 +139,10 @@ public final class ProcessFactory {
         if (sendTo.size() > 0) {
             SendMailActivity mailActivity = new SendMailActivity();
             String subject = "Вы назнaчены ответственным по документу @DocumentNumber";
-            StringBuffer body = new StringBuffer();
-            body.append("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n");
-            MailMessage message = new MailMessage(sendTo, null, subject, body.
-                    append("<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=").
-                    append(id).append("\" >Ссылка на документ</a>").toString());
+            String body = "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" +
+                    "<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=" +
+                    id + "\" >Ссылка на документ</a>";
+            MailMessage message = new MailMessage(sendTo, null, subject, body);
             message.setContentType("text/html");
             mailActivity.setMessage(message);
             activites.add(mailActivity);
@@ -373,7 +372,6 @@ public final class ProcessFactory {
         toStatusAction.setDestinationStatus(toStatus);
 
         prop = PropertyUtils.getProperty(t, "registrationNumber");
-        docNumber = (prop == null ? "" : (String) prop);
 
         fromStatusActions.add(toStatusAction);
         processStatus.setAvailableActions(fromStatusActions);
@@ -401,7 +399,7 @@ public final class ProcessFactory {
             HumanTaskTree tree = (HumanTaskTree) agreementTree;
             //List<String> sendTo = EngineHelper.doGenerateAgreementPrimaryNotificationList(tree);
             //List<String> blindCopyTo = new ArrayList<String>();
-            InvokeMethodActivity addAgreementUsersActivity = null;
+            InvokeMethodActivity addAgreementUsersActivity;
             Set<User> executors = EngineHelper.doGenerateAgreementPrimaryExecutors(tree);
             if (executors.size() > 0) {
                 addAgreementUsersActivity = new InvokeMethodActivity();
@@ -431,9 +429,8 @@ public final class ProcessFactory {
 
         if (sendTo.size() > 0) {
             MailMessage message = new MailMessage(sendTo, null, "Новый запрос на согласование",
-                    new StringBuilder("Новый запрос на согласование\n\n").
-                            append("<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=").
-                            append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
+                    "Новый запрос на согласование\n\n" + "<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=" +
+                            process.getProcessedData().getId() + "\" >Ссылка на документ</a>");
             message.setContentType("text/html");
             SendMailActivity mailActivity = new SendMailActivity();
             mailActivity.setMessage(message);
@@ -594,11 +591,10 @@ public final class ProcessFactory {
         if (sendTo.size() > 0) {
             SendMailActivity mailActivity = new SendMailActivity();
             String subject = "Вы назнaчены ответственным по документу @DocumentNumber";
-            StringBuffer body = new StringBuffer();
-            body.append("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n");
-            MailMessage message = new MailMessage(sendTo, null, subject, body.
-                    append("<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=").
-                    append(id).append("\" >Ссылка на документ</a>").toString());
+            String body = "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" +
+                    "<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=" +
+                    id + "\" >Ссылка на документ</a>";
+            MailMessage message = new MailMessage(sendTo, null, subject, body);
             message.setContentType("text/html");
             mailActivity.setMessage(message);
             activites.add(mailActivity);
@@ -653,11 +649,10 @@ public final class ProcessFactory {
             if (sendTo.size() > 0) {
                 SendMailActivity mailActivity = new SendMailActivity();
                 String subject = "Вы назнaчены ответственным по документу @DocumentNumber";
-                StringBuffer body = new StringBuffer();
-                body.append("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n");
-                MailMessage message = new MailMessage(sendTo, null, subject, body.
-                        append("<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=").
-                        append(id).append("\" >Ссылка на документ</a>").toString());
+                String body = "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" +
+                        "<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=" +
+                        id + "\" >Ссылка на документ</a>";
+                MailMessage message = new MailMessage(sendTo, null, subject, body);
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
                 activites.add(mailActivity);
@@ -734,11 +729,10 @@ public final class ProcessFactory {
                 activites = new ArrayList<>();
                 SendMailActivity mailActivity = new SendMailActivity();
                 String subject = "Ваш документ перешел перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"";
-                StringBuffer body = new StringBuffer();
-                body.append("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n");
-                MailMessage message = new MailMessage(sendTo, null, subject, body.
-                        append("<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=").
-                        append(id).append("\" >Ссылка на документ</a>").toString());
+                String body = "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" +
+                        "<a href=\"" + getHost() + "/component/internal/internal_document.xhtml?docId=" +
+                        id + "\" >Ссылка на документ</a>";
+                MailMessage message = new MailMessage(sendTo, null, subject, body);
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
                 activites.add(mailActivity);
@@ -895,9 +889,8 @@ public final class ProcessFactory {
         if (recipients.size() > 0) {
             mailActivity = new SendMailActivity();
             MailMessage message2 = new MailMessage(new ArrayList(recipients), null, "Вам адресован документ @DocumentNumber" + docNumber,
-                    new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").
-                            append("<a href=\"" + getHost() + "/component/request/request_document.xhtml?docId=").
-                            append(id).append("\" >Ссылка на документ</a>").toString());
+                    "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" + "<a href=\"" + getHost() + "/component/request/request_document.xhtml?docId=" +
+                            id + "\" >Ссылка на документ</a>");
             message2.setContentType("text/html");
             mailActivity.setMessage(message2);
             activites.add(mailActivity);
@@ -941,9 +934,8 @@ public final class ProcessFactory {
             mailActivity = new SendMailActivity();
             sendTo.add(responsible.getEmail());
             MailMessage message1 = new MailMessage(sendTo, null, "Вы назнaчены ответственным по документу @DocumentNumber" + docNumber,
-                    new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").
-                            append("<a href=\"" + getHost() + "/component/request/request_document.xhtml?docId=").
-                            append(id).append("\" >Ссылка на документ</a>").toString());
+                    "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" + "<a href=\"" + getHost() + "/component/request/request_document.xhtml?docId=" +
+                            id + "\" >Ссылка на документ</a>");
             message1.setContentType("text/html");
             mailActivity.setMessage(message1);
         }
@@ -1201,28 +1193,32 @@ public final class ProcessFactory {
                 SendMailActivity mailActivity = new SendMailActivity();
                 String subject = "Поступило новое поручение @DocumentNumber";
                 StringBuffer body = new StringBuffer();
-                if (formDescription.equals("resolution")) {
-                    subject = "Поступила новая резолюция @DocumentNumber";
-                    body = body.append("К вам поступила новая резолюция на исполнение \n\n");
-                } else if (formDescription.equals("exercise")) {
-                    prop = PropertyUtils.getProperty(t, "exerciseType");
-                    Object exerciseType = (prop == null ? null : (Object) prop);
+                switch (formDescription) {
+                    case "resolution":
+                        subject = "Поступила новая резолюция @DocumentNumber";
+                        body = body.append("К вам поступила новая резолюция на исполнение \n\n");
+                        break;
+                    case "exercise":
+                        prop = PropertyUtils.getProperty(t, "exerciseType");
+                        Object exerciseType = (prop == null ? null : (Object) prop);
 
-                    prop = null;
-                    if (form != null) {
-                        prop = PropertyUtils.getProperty(exerciseType, "value");
-                    }
-                    String exerciseTypeValue = (prop == null ? "" : (String) prop).toLowerCase();
+                        prop = null;
+                        if (form != null) {
+                            prop = PropertyUtils.getProperty(exerciseType, "value");
+                        }
+                        String exerciseTypeValue = (prop == null ? "" : (String) prop).toLowerCase();
 
-                    if ("обращение".equals(exerciseType) || "заявление".equals(exerciseType)) {
-                        subject = "Поступило новое" + exerciseTypeValue + " @DocumentNumber";
-                        body = body.append("К вам поступила новое ").append(exerciseTypeValue).append(" на исполнение \n\n");
-                    } else {
-                        subject = "Поступила новая " + exerciseTypeValue + " @DocumentNumber";
-                        body = body.append("К вам поступила новая").append(exerciseTypeValue).append(" на исполнение \n\n");
-                    }
-                } else {
-                    body = body.append("К вам поступило новое поручение на исполнение \n\n");
+                        if ("обращение".equals(exerciseType) || "заявление".equals(exerciseType)) {
+                            subject = "Поступило новое" + exerciseTypeValue + " @DocumentNumber";
+                            body = body.append("К вам поступила новое ").append(exerciseTypeValue).append(" на исполнение \n\n");
+                        } else {
+                            subject = "Поступила новая " + exerciseTypeValue + " @DocumentNumber";
+                            body = body.append("К вам поступила новая").append(exerciseTypeValue).append(" на исполнение \n\n");
+                        }
+                        break;
+                    default:
+                        body = body.append("К вам поступило новое поручение на исполнение \n\n");
+                        break;
                 }
 
                 MailMessage message = new MailMessage(sendTo, null, subject, body.append("<a href=\"").append(getHost()).append("/component/task/task.xhtml?docId=").
@@ -1549,9 +1545,8 @@ public final class ProcessFactory {
                 }
             }
             MailMessage message = new MailMessage(sendTo, null, "Новый запрос на согласование",
-                    new StringBuilder("Новый запрос на согласование\n\n").
-                            append("<a href=\"" + getHost() + "/component/out/out_document.xhtml?docId=").
-                            append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
+                    "Новый запрос на согласование\n\n" + "<a href=\"" + getHost() + "/component/out/out_document.xhtml?docId=" +
+                            process.getProcessedData().getId() + "\" >Ссылка на документ</a>");
             //message.setBlindCopyTo(blindCopyTo);
             message.setContentType("text/html");
             SendMailActivity mailActivity = new SendMailActivity();
@@ -1627,11 +1622,10 @@ public final class ProcessFactory {
             if (sendTo.size() > 0) {
                 SendMailActivity mailActivity = new SendMailActivity();
                 String subject = "Вы назнaчены ответственным по документу @DocumentNumber";
-                StringBuffer body = new StringBuffer();
-                body.append("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n");
-                MailMessage message = new MailMessage(sendTo, null, subject, body.
-                        append("<a href=\"" + getHost() + "/component/out/out_document.xhtml?docId=").
-                        append(id).append("\" >Ссылка на документ</a>").toString());
+                String body = "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" +
+                        "<a href=\"" + getHost() + "/component/out/out_document.xhtml?docId=" +
+                        id + "\" >Ссылка на документ</a>";
+                MailMessage message = new MailMessage(sendTo, null, subject, body);
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
                 activites.add(mailActivity);
@@ -1832,8 +1826,8 @@ public final class ProcessFactory {
             if (sendTo.size() > 0) {
                 mailActivity = new SendMailActivity();
                 MailMessage message1 = new MailMessage(sendTo, null, "Вы назнaчены ответственным по документу @DocumentNumber" + docNumber,
-                        new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").append("<a href=\"").append(getHost()).append("/component/in/in_document.xhtml?docId=").
-                                append(id).append("\" >Ссылка на документ</a>").toString());
+                        "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" + "<a href=\"" + getHost() + "/component/in/in_document.xhtml?docId=" +
+                                id + "\" >Ссылка на документ</a>");
                 message1.setContentType("text/html");
                 mailActivity.setMessage(message1);
             }
@@ -1848,8 +1842,8 @@ public final class ProcessFactory {
 
         if (recipients.size() > 0) {
             MailMessage message2 = new MailMessage(new ArrayList(recipients), null, "Вам адресован документ @DocumentNumber" + docNumber,
-                    new StringBuilder("Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n").append("<a href=\"").append(getHost()).append("/component/in/in_document.xhtml?docId=").
-                            append(id).append("\" >Ссылка на документ</a>").toString());
+                    "Документ перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"\n\n" + "<a href=\"" + getHost() + "/component/in/in_document.xhtml?docId=" +
+                            id + "\" >Ссылка на документ</a>");
             activites.add(getMailActivity(message2));
             toStatus.setPreStatusActivities(activites);
         }

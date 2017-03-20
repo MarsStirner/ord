@@ -35,10 +35,9 @@ public class PersonListConverter implements Converter {
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        StringBuffer mresult = new StringBuffer();
-        Iterator iterator = ((List) value).iterator();
-        while (iterator.hasNext()) {
-            User in_user = (User) iterator.next();
+        StringBuilder mresult = new StringBuilder();
+        for (Object o : ((List) value)) {
+            User in_user = (User) o;
             mresult.append(in_user.getLogin()).append("<br \\>");
         }
         return mresult.toString();

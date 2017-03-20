@@ -18,10 +18,7 @@ import ru.external.ProcessUser;
 import ru.external.ProcessedData;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HumanTaskActionGenerator {
 
@@ -37,7 +34,7 @@ public class HumanTaskActionGenerator {
     public List<IAction> generateActionsFromTask(HumanTask task) {
         List<IAction> result = new ArrayList<>();
         try {
-            if (task != null && task.getExecutor() != null && task.getExecutor().getId() != 0 && process.getProcessUser().getId() == task.getExecutor().getId()) {
+            if (task != null && task.getExecutor() != null && task.getExecutor().getId() != 0 && Objects.equals(process.getProcessUser().getId(), task.getExecutor().getId())) {
                 /**
                  * compose agree action
                  */
@@ -60,9 +57,8 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 MailMessage message = new MailMessage(sendTo, null, "Согласовано",
-                        new StringBuilder("Согласовано\n").append(task.getExecutor().getDescription()).append("\n\n").
-                                append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
-                                append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
+                        "Согласовано\n" + task.getExecutor().getDescription() + "\n\n" + "<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=" +
+                                process.getProcessedData().getId() + "\" >Ссылка на документ</a>");
                 message.setBlindCopyTo(blindCopyTo);
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
@@ -75,9 +71,8 @@ public class HumanTaskActionGenerator {
                 sendTo = EngineHelper.doGenerateAgreementSecondaryNotificationList(resolver, task);
                 sendTo.add(task.getExecutor().getEmail());
                 message = new MailMessage(sendTo, null, "Новый запрос на согласование",
-                        new StringBuilder("Новый запрос на согласование\n\n").
-                                append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
-                                append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
+                        "Новый запрос на согласование\n\n" + "<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=" +
+                                process.getProcessedData().getId() + "\" >Ссылка на документ</a>");
                 message.setBlindCopyTo(blindCopyTo);
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
@@ -120,9 +115,8 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, null, "Отказ в согласовании ",
-                        new StringBuilder("Отказано в согласовании\n").append(task.getExecutor().getDescription()).append("\n\n").
-                                append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
-                                append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
+                        "Отказано в согласовании\n" + task.getExecutor().getDescription() + "\n\n" + "<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=" +
+                                process.getProcessedData().getId() + "\" >Ссылка на документ</a>");
                 message.setBlindCopyTo(blindCopyTo);
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
@@ -167,9 +161,8 @@ public class HumanTaskActionGenerator {
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, copyTo, "Делегирован запрос на согласование ",
-                        new StringBuilder("Делегирован запрос на согласование\n").append(task.getExecutor().getDescription()).append("\n\n").
-                                append("<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=").
-                                append(process.getProcessedData().getId()).append("\" >Ссылка на документ</a>").toString());
+                        "Делегирован запрос на согласование\n" + task.getExecutor().getDescription() + "\n\n" + "<a href=\"" + in_serverHost + "/component/out/out_document.xhtml?docId=" +
+                                process.getProcessedData().getId() + "\" >Ссылка на документ</a>");
                 message.setBlindCopyTo(blindCopyTo);
                 message.setContentType("text/html");
                 mailActivity.setMessage(message);
@@ -201,22 +194,22 @@ public class HumanTaskActionGenerator {
 
                         Object prop = PropertyUtils.getProperty(data, "author");
                         User user = (prop == null ? null : (User) prop);
-                        if (user != null && user.getId() == currentUser.getId()) {
+                        if (user != null && Objects.equals(user.getId(), currentUser.getId())) {
                             return true;
                         }
                         prop = PropertyUtils.getProperty(data, "initiator");
                         user = (prop == null ? null : (User) prop);
-                        if (user != null && user.getId() == currentUser.getId()) {
+                        if (user != null && Objects.equals(user.getId(), currentUser.getId())) {
                             return true;
                         }
                         prop = PropertyUtils.getProperty(data, "executor");
                         user = (prop == null ? null : (User) prop);
-                        if (user != null && user.getId() == currentUser.getId()) {
+                        if (user != null && Objects.equals(user.getId(), currentUser.getId())) {
                             return true;
                         }
                         prop = PropertyUtils.getProperty(data, "responsible");
                         user = (prop == null ? null : (User) prop);
-                        if (user != null && user.getId() == currentUser.getId()) {
+                        if (user != null && Objects.equals(user.getId(), currentUser.getId())) {
                             return true;
                         }
                     } catch (Exception e) {

@@ -41,10 +41,9 @@ public abstract class AbstractFilter implements Filter {
         if (filterConfig == null) {
             return (this.getClass().getName() + "()");
         }
-        StringBuilder sb = new StringBuilder(this.getClass().getName() + "(");
-        sb.append(filterConfig);
-        sb.append(")");
-        return (sb.toString());
+        String sb = this.getClass().getName() + "(" + filterConfig +
+                ")";
+        return (sb);
     }
 
     /**

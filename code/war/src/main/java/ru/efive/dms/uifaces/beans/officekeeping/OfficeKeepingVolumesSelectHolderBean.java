@@ -75,7 +75,7 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
     }
 
     public void setFilters(Map<String, Object> filters) {
-        this.filters = filters;
+        OfficeKeepingVolumesSelectHolderBean.filters = filters;
     }
 
     public void setOfficeKeepingVolume(OfficeKeepingVolume volume) {

@@ -53,11 +53,10 @@ public abstract class AbstractDialog<T> implements Serializable {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("DialogResult{");
-            sb.append("button=").append(button);
-            sb.append(", result=").append(result);
-            sb.append('}');
-            return sb.toString();
+            String sb = "DialogResult{" + "button=" + button +
+                    ", result=" + result +
+                    '}';
+            return sb;
         }
     }
 

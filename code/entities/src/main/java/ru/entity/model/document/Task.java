@@ -369,20 +369,19 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Task[");
-        sb.append(getId()).append("]:{");
-        sb.append("controlDate=").append(ApplicationHelper.formatDate(controlDate));
-        sb.append(", creationDate=").append(ApplicationHelper.formatDate(creationDate));
-        sb.append(", author=").append(author.getDescription());
-        sb.append(", initiator=").append(initiator != null ? initiator.getDescription() : "null");
-        sb.append(", controller=").append(controller != null ? controller.getDescription() : "null");
-        sb.append(", parent=").append(parent != null ? parent.getId() : "null");
-        sb.append(", registrationDate=").append(ApplicationHelper.formatDate(registrationDate));
-        sb.append(", shortDescription='").append(shortDescription).append('\'');
-        sb.append(", statusId=").append(statusId);
-        sb.append(", taskNumber='").append(taskNumber).append('\'');
-        sb.append(", rootDocumentId='").append(rootDocumentId).append('\'');
-        sb.append('}');
-        return sb.toString();
+        String sb = "Task[" + getId() + "]:{" +
+                "controlDate=" + ApplicationHelper.formatDate(controlDate) +
+                ", creationDate=" + ApplicationHelper.formatDate(creationDate) +
+                ", author=" + author.getDescription() +
+                ", initiator=" + (initiator != null ? initiator.getDescription() : "null") +
+                ", controller=" + (controller != null ? controller.getDescription() : "null") +
+                ", parent=" + (parent != null ? parent.getId() : "null") +
+                ", registrationDate=" + ApplicationHelper.formatDate(registrationDate) +
+                ", shortDescription='" + shortDescription + '\'' +
+                ", statusId=" + statusId +
+                ", taskNumber='" + taskNumber + '\'' +
+                ", rootDocumentId='" + rootDocumentId + '\'' +
+                '}';
+        return sb;
     }
 }

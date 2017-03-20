@@ -1,12 +1,12 @@
 package ru.efive.wf.core.activity;
 
+import ru.efive.wf.core.IActivity;
+import ru.external.ProcessedData;
+
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import ru.efive.wf.core.IActivity;
-import ru.external.ProcessedData;
 
 public class InvokeMethodActivity implements IActivity {
 
@@ -16,7 +16,7 @@ public class InvokeMethodActivity implements IActivity {
 
     @Override
     public <T extends ProcessedData> boolean initialize(T t) {
-        boolean result = false;
+        boolean result;
         try {
             processedData = t;
             class_ = t.getClass();

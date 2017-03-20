@@ -84,7 +84,7 @@ public class Attachment extends AlfrescoNode implements Serializable {
 
     @Override
     public boolean setNodeProperties(NamedValue[] nodeProperties) {
-        boolean result = false;
+        boolean result;
         try {
             for (NamedValue namedValue : nodeProperties) {
                 if (namedValue.getName().endsWith(Constants.PROP_NAME)) {

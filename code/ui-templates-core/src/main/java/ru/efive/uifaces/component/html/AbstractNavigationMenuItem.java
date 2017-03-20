@@ -16,7 +16,7 @@ public abstract class AbstractNavigationMenuItem extends UIOutput {
     
     @Override
     public String getFamily() {
-        return ComponentFamily.NAVIGATION_MENU.toString();
+        return ComponentFamily.NAVIGATION_MENU;
     }
 
     public enum PropertyKeys {

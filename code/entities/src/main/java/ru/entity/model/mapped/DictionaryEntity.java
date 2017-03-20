@@ -72,11 +72,11 @@ public abstract class DictionaryEntity extends DeletableEntity {
     }
 
     public String toLogString(){
-        final StringBuilder sb = new StringBuilder(getClass().getSimpleName()).append('{');
-        sb.append("value='").append(value).append('\'');
-        sb.append(", code='").append(code).append('\'');
-        sb.append(" ID[").append(id).append("]}");
-        return sb.toString();
+        String sb = getClass().getSimpleName() + '{' +
+                "value='" + value + '\'' +
+                ", code='" + code + '\'' +
+                " ID[" + id + "]}";
+        return sb;
     }
 
 

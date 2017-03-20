@@ -41,7 +41,7 @@ public class HtmlDataTableColumn extends HtmlColumn {
 
     public Integer getOrderAsInteger() {
         if (orderAsInteger == null) {
-            orderAsInteger = ConverterUtils.objectAsInteger(getOrder(), Integer.valueOf(0));
+            orderAsInteger = ConverterUtils.objectAsInteger(getOrder(), 0);
         }
 
         return orderAsInteger;

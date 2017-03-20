@@ -294,7 +294,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
 
     @Override
     public boolean createData(T data) {
-        boolean result = false;
+        boolean result;
         try {
             ParentReference parentReference = getCompanyHome();
             for (int i = 0; i < data.getPath().size(); i++) {
@@ -334,7 +334,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
 
     @Override
     public boolean updateData(T data) {
-        boolean result = false;
+        boolean result;
         try {
             Node node = getNode(data);
             if (node != null) {
@@ -370,7 +370,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
 
     @Override
     public boolean deleteData(T data) {
-        boolean result = false;
+        boolean result;
         try {
             Reference nodeReference = new Reference(STORE, data.getId(), null);
             CMLDelete delete = new CMLDelete(new Predicate(new Reference[]{nodeReference}, null, null));
@@ -470,7 +470,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     }
 
     public boolean createVersion(T data, InputStream inputStream, int authorId, String fileName) {
-        boolean result = false;
+        boolean result;
         try {
             Reference nodeReference = getNodeReference(data);
             if (!isVersionable(nodeReference)) {
@@ -498,7 +498,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     }
 
     public boolean createVersion(T data, byte[] bytes, int authorId, String fileName, boolean majorVersion) {
-        boolean result = false;
+        boolean result;
         try {
             Reference nodeReference = getNodeReference(data);
             if (!isVersionable(nodeReference)) {

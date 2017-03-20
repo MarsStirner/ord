@@ -154,7 +154,7 @@ public class HtmlTabPage extends UICommand implements ClientBehaviorHolder {
     public static final String DEFAULT_EVENT_NAME = "select";
 
     private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(
-            Arrays.asList(DEFAULT_EVENT_NAME));
+            Collections.singletonList(DEFAULT_EVENT_NAME));
 
     /** {@inheritDoc} */
     @Override

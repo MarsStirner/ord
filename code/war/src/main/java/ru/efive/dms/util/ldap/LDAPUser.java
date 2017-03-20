@@ -220,37 +220,33 @@ public class LDAPUser {
     }
 
     public static String convertToDashedString(byte[] objectGUID) {
-        StringBuilder displayStr = new StringBuilder();
+        String displayStr = prefixZeros((int) objectGUID[3] & 0xFF) +
+                prefixZeros((int) objectGUID[2] & 0xFF) +
+                prefixZeros((int) objectGUID[1] & 0xFF) +
+                prefixZeros((int) objectGUID[0] & 0xFF) +
+                "-" +
+                prefixZeros((int) objectGUID[5] & 0xFF) +
+                prefixZeros((int) objectGUID[4] & 0xFF) +
+                "-" +
+                prefixZeros((int) objectGUID[7] & 0xFF) +
+                prefixZeros((int) objectGUID[6] & 0xFF) +
+                "-" +
+                prefixZeros((int) objectGUID[8] & 0xFF) +
+                prefixZeros((int) objectGUID[9] & 0xFF) +
+                "-" +
+                prefixZeros((int) objectGUID[10] & 0xFF) +
+                prefixZeros((int) objectGUID[11] & 0xFF) +
+                prefixZeros((int) objectGUID[12] & 0xFF) +
+                prefixZeros((int) objectGUID[13] & 0xFF) +
+                prefixZeros((int) objectGUID[14] & 0xFF) +
+                prefixZeros((int) objectGUID[15] & 0xFF);
 
-        displayStr.append(prefixZeros((int) objectGUID[3] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[2] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[1] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[0] & 0xFF));
-        displayStr.append("-");
-        displayStr.append(prefixZeros((int) objectGUID[5] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[4] & 0xFF));
-        displayStr.append("-");
-        displayStr.append(prefixZeros((int) objectGUID[7] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[6] & 0xFF));
-        displayStr.append("-");
-        displayStr.append(prefixZeros((int) objectGUID[8] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[9] & 0xFF));
-        displayStr.append("-");
-        displayStr.append(prefixZeros((int) objectGUID[10] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[11] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[12] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[13] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[14] & 0xFF));
-        displayStr.append(prefixZeros((int) objectGUID[15] & 0xFF));
-
-        return displayStr.toString();
+        return displayStr;
     }
 
     private static String prefixZeros(int value) {
         if (value <= 0xF) {
-            StringBuilder sb = new StringBuilder("0");
-            sb.append(Integer.toHexString(value));
-            return sb.toString();
+            return "0" + Integer.toHexString(value);
         } else {
             return Integer.toHexString(value);
         }

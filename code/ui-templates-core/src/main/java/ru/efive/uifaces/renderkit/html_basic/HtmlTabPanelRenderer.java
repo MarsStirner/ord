@@ -17,6 +17,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.render.FacesRenderer;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -209,7 +210,7 @@ public class HtmlTabPanelRenderer extends HtmlBasicRenderer {
                                 case ajax:
                                     findEnclosingForm(tabPage);
                                     AjaxBehavior ab = new AjaxBehavior();
-                                    List<String> ids = Arrays.asList(component.getClientId());
+                                    List<String> ids = Collections.singletonList(component.getClientId());
                                     ab.setExecute(ids);
                                     ab.setRender(ids);
                                     ClientBehaviorContext abCtx = ClientBehaviorContext.createClientBehaviorContext(

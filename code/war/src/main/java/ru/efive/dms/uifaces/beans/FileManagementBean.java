@@ -30,7 +30,7 @@ public class FileManagementBean implements java.io.Serializable {
     // file operations
 
     public synchronized Attachment getFileById(String id) {
-        Attachment result = null;
+        Attachment result;
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
@@ -129,7 +129,7 @@ public class FileManagementBean implements java.io.Serializable {
     }
 
     public StreamedContent download(String id, String version){
-        byte[] result = {};
+        byte[] result;
         AlfrescoDAO<Attachment> dao = null;
         if (StringUtils.isNotEmpty(id)) {
             if(StringUtils.isNotEmpty(version)) {

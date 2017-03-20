@@ -78,9 +78,6 @@ public class SendMailActivity implements IActivity {
             }
             Transport.send(mimeMessage);
             result = true;
-        } catch (NamingException | InvocationTargetException | IllegalAccessException | MessagingException e) {
-            resultMessage = e.getMessage();
-            e.printStackTrace();
         } catch (Exception e) {
             resultMessage = e.getMessage();
             e.printStackTrace();

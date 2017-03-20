@@ -1,29 +1,23 @@
 package ru.efive.wf.core.util;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import ru.entity.model.user.User;
-import ru.entity.model.enums.DocumentStatus;
 import ru.efive.wf.core.HumanTaskProcessAction;
 import ru.efive.wf.core.HumanTaskTreeStateResolver;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.activity.SendMailActivity;
 import ru.efive.wf.core.data.EditableProperty;
+import ru.efive.wf.core.data.MailMessage;
+import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.User;
 import ru.entity.model.wf.HumanTask;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.entity.model.wf.HumanTaskTreeNode;
-import ru.efive.wf.core.data.MailMessage;
+
+import java.util.*;
 
 public final class EngineHelper {
 
     public static boolean doHumanTaskAgreeAction(HumanTaskTreeStateResolver resolver, HumanTask task) {
-        boolean result = false;
+        boolean result;
         try {
             Date currentDate = Calendar.getInstance(new Locale("ru", "RU")).getTime();
             List<HumanTask> currentTaskList = resolver.getCurrentTaskList();
@@ -42,7 +36,7 @@ public final class EngineHelper {
     }
 
     public static boolean doHumanTaskDeclineAction(HumanTaskProcessAction declineAction, HumanTask task) {
-        boolean result = false;
+        boolean result;
         try {
             Date currentDate = Calendar.getInstance(new Locale("ru", "RU")).getTime();
             List<HumanTask> currentTaskList = declineAction.getResolver().getCurrentTaskList();
@@ -161,7 +155,7 @@ public final class EngineHelper {
                         List<HumanTask> parallelTasks = node.getTaskList();
                         boolean notifyNext = true;
                         for (HumanTask parallelTask : parallelTasks) {
-                            if (parallelTask.getId() != processedTask.getId() && parallelTask.getStatusId() == 1) {
+                            if (!Objects.equals(parallelTask.getId(), processedTask.getId()) && parallelTask.getStatusId() == 1) {
                                 notifyNext = false;
                             }
                         }

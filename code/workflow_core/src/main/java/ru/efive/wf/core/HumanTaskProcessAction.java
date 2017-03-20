@@ -1,12 +1,12 @@
 package ru.efive.wf.core;
 
-import java.io.Serializable;
-
 import org.apache.commons.beanutils.PropertyUtils;
-
 import ru.entity.model.user.User;
 import ru.entity.model.wf.HumanTask;
 import ru.external.ProcessUser;
+
+import java.io.Serializable;
+import java.util.Objects;
 
 public class HumanTaskProcessAction extends UserAction implements Serializable {
 
@@ -44,7 +44,7 @@ public class HumanTaskProcessAction extends UserAction implements Serializable {
 
             Object prop = PropertyUtils.getProperty(task, "executor");
             User user = (prop == null ? null : (User) prop);
-            if (user != null && user.getId() == currentUser.getId()) {
+            if (user != null && Objects.equals(user.getId(), currentUser.getId())) {
                 return true;
             }
         } catch (Exception e) {

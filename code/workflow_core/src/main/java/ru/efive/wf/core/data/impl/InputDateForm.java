@@ -1,15 +1,15 @@
 package ru.efive.wf.core.data.impl;
 
+import ru.efive.wf.core.ActionResult;
+import ru.efive.wf.core.activity.enums.EditablePropertyScope;
+import ru.efive.wf.core.data.EditableProperty;
+import ru.efive.wf.core.data.LocalBackingBean;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import ru.efive.wf.core.ActionResult;
-import ru.efive.wf.core.activity.enums.EditablePropertyScope;
-import ru.efive.wf.core.data.EditableProperty;
-import ru.efive.wf.core.data.LocalBackingBean;
 
 public class InputDateForm implements LocalBackingBean {
     private List<EditableProperty> properties;
@@ -149,7 +149,7 @@ public class InputDateForm implements LocalBackingBean {
 
 
     public String getYesterDate() {
-        String dateString = null;
+        String dateString;
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, -1);

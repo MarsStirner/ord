@@ -46,12 +46,11 @@ public class ReportsManagmentBean {
         String in_reportName = requestProperties.get("reportName");
         ApplicationContext context = indexManagement.getContext();
         DataSource dataSource = (DataSource) context.getBean("dataSource");
-        Connection conn = dataSource.getConnection();
 
         /* Get Data source */
         JasperReport report = null;
         JasperPrint print = null;
-        try {
+        try (Connection conn = dataSource.getConnection()) {
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("templates/" + in_reportName);
             report = JasperCompileManager.compileReport(inputStream);
             Map<String, Object> in_map = new HashMap<>();
@@ -85,8 +84,6 @@ public class ReportsManagmentBean {
 
         } catch (JRException e) {
             e.printStackTrace();
-        } finally{
-            conn.close();
         }
     }
 
@@ -224,7 +221,6 @@ public class ReportsManagmentBean {
         String in_printerName = requestProperties.get("printerName");
         ApplicationContext context = indexManagement.getContext(); //new ClassPathXmlApplicationContext("applicationContext.xml");
         DataSource dataSource = (DataSource) context.getBean("dataSource");
-        Connection conn = dataSource.getConnection();
 
         //Properties printerProperties=new Properties();
         PrintService psZebra = null;
@@ -247,7 +243,7 @@ public class ReportsManagmentBean {
         /* Get Data source */
         JasperReport report = null;
         JasperPrint print = null;
-        try {
+        try (Connection conn = dataSource.getConnection()) {
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("templates/" + in_reportName);
             report = JasperCompileManager.compileReport(inputStream);
             Map<String, Object> in_map = new HashMap<>();
@@ -282,8 +278,6 @@ public class ReportsManagmentBean {
             //JasperExportManager.exportReportToPdfFile(print,"c:/reports/db_big_report.pdf");
         } catch (JRException e) {
             e.printStackTrace();
-        } finally{
-            conn.close();
         }
         if (true) {
             return;
@@ -328,12 +322,11 @@ public class ReportsManagmentBean {
         Map<String, Object> requestProperties = reportTemplate.getProperties();
         String in_reportName = requestProperties.get("reportName").toString();
         DataSource dataSource = (DataSource) context.getBean("dataSource");
-        Connection conn = dataSource.getConnection();
 
         /* Get Data source */
         JasperReport report = null;
         JasperPrint print = null;
-        try {
+        try (Connection conn = dataSource.getConnection()) {
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("templates/" + in_reportName);
             report = JasperCompileManager.compileReport(inputStream);
             Map<String, Object> in_map = new HashMap<>();
@@ -355,8 +348,6 @@ public class ReportsManagmentBean {
 
         } catch (JRException e) {
             throw new SQLException(e);
-        } finally{
-            conn.close();
         }
     }
 

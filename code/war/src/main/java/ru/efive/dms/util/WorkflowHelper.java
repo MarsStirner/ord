@@ -1079,7 +1079,7 @@ public final class WorkflowHelper {
             try {
 
                 if (doc.getVolumeIndex() == null || doc.getVolumeIndex().isEmpty()) {
-                    StringBuffer in_number = new StringBuffer();
+                    StringBuilder in_number = new StringBuilder();
                     //StringBuffer in_count=new  StringBuffer("0000"+String.valueOf(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class,OFFICE_KEEPING_FILE_DAO).findRegistratedDocuments().size()+1));
                     int in_count = 0;
                     OfficeKeepingFile parentFile = doc.getParentFile();

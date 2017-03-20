@@ -1,71 +1,18 @@
 package ru.efive.uifaces.bean.calendarPlan;
 
-import java.util.ResourceBundle;
-import java.util.List;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
 
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CAPTION_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.LINK_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.WIDGET_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.HEADER_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CELL_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.HOUR_DATE_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAY_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAY_DATE_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NOW_DAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.EVENT_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.EVENT_NUMBER_CLASS_FMT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.HIGHLIGHT_EVENT_SCRIPT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.WEEK_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.WEEK_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.MONTH_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.YEAR_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_YEAR_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_YEAR_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_WEEK_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_WEEK_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.UPDATE_PRESENTATION_SCRIPT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_DAY_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_WEEK_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_WEEK_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_MONTH_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CHANGE_WEEK_LAYOUT_EVENT;
-
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.getDisplayNames;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.getSpecialDaysClassesForDay;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.getSpecialDaysClassesForPeriod;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.DAY_OF_WEEK_NAMES;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.MONTH_NAMES;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.START_OF_MONTH_FMT;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.START_OF_WEEK_FMT;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderSpaceCell;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderSelectLink;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderPrevNextLink;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderLayoutLink;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.getStrs;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static java.lang.String.format;
+import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.*;
+import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.*;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
  *
@@ -230,7 +177,7 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
         ArrayList<CalendarPlanEvent> dayEvents = new ArrayList<>();
         Map<Integer, Integer> eventNumbers = new HashMap<>();
         int eventNumberSequence = 0;
-        Date start = null, stop = null;
+        Date start, stop = null;
         String id = writer.getComponent().getClientId();
         ResourceBundle strs = getStrs(writer.getContext().getViewRoot().getLocale());
         for (int day = 0; day < days; day++) {
@@ -369,8 +316,8 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
         writer.startElement(HtmlElement.DIV);
         writeStyleClass(null, writer, WEEK_NAME_CLASS);
 
-        int firstDayOfWeek = viewCalendar.getFirstDayOfWeek(),
-                lastDayOfWeek = firstDayOfWeek > 1 ? firstDayOfWeek - 1 : 7;
+        int firstDayOfWeek = viewCalendar.getFirstDayOfWeek();
+        int lastDayOfWeek = firstDayOfWeek > 1 ? firstDayOfWeek - 1 : 7;
         viewCalendar.set(Calendar.HOUR_OF_DAY, 0);
         viewCalendar.set(Calendar.MINUTE, 0);
         viewCalendar.set(Calendar.SECOND, 0);

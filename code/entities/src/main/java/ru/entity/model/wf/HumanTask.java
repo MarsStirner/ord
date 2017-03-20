@@ -5,6 +5,7 @@ import ru.entity.model.user.User;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Задача-согласование
@@ -69,7 +70,7 @@ public class HumanTask extends Document {
         if (executor == null) {
             if (other.executor != null)
                 return false;
-        } else if (executor.getId() != other.executor.getId())
+        } else if (!Objects.equals(executor.getId(), other.executor.getId()))
             return false;
         return statusId == other.statusId;
     }

@@ -9,7 +9,7 @@ public abstract class ParametrizedFieldActivity implements IActivity {
 
     @Override
     public <T extends ProcessedData> boolean initialize(T t) {
-        boolean result = false;
+        boolean result;
         try {
             processedData = t;
             class_ = t.getClass();

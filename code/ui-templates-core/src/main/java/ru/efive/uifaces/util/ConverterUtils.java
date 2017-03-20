@@ -46,7 +46,7 @@ public final class ConverterUtils {
         } else if (object.getClass() == Integer.class) {
             result = (Integer) object;
         } else if (object instanceof Number) {
-            result = Integer.valueOf(((Number) object).intValue());
+            result = ((Number) object).intValue();
         } else {
             result = Integer.valueOf(objectAsString(object));
         }

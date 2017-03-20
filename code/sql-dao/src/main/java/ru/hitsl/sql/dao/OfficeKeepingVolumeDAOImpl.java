@@ -116,7 +116,7 @@ public class OfficeKeepingVolumeDAOImpl extends GenericDAOHibernate<OfficeKeepin
 
         if ((in_map != null) && (in_map.size() > 0)) {
             Conjunction conjunction = Restrictions.conjunction();
-            String in_key = "";
+            String in_key;
 
             in_key = "volumeIndex";
             if (in_map.get(in_key) != null && in_map.get(in_key).toString().length() > 0) {
