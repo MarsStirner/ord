@@ -137,7 +137,6 @@ public class CalendarPlanRenderer extends HtmlBasicRenderer {
     @Override
     protected void encodeChildren(AdvancedResponseWriter writer,
             List<UIComponent> children) throws IOException {
-        return;
     }
 
     /** {@inheritDoc} */

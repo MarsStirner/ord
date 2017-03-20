@@ -265,7 +265,7 @@ public class DynaDataTableRenderer extends AbstractTableRenderer {
                 }
             } else rows = bean.getPagination().getPageSize();
             iid = id + "-inSelector";
-            sel = requestParameterMap.containsKey(iid) ? Boolean.parseBoolean(requestParameterMap.get(iid)) : false;
+            sel = requestParameterMap.containsKey(iid) && Boolean.parseBoolean(requestParameterMap.get(iid));
             iid = id + "-wOffset";
             wOffset = requestParameterMap.containsKey(iid) ? Integer.parseInt(requestParameterMap.get(iid)) : 0;
             iid = id + "-wSize";

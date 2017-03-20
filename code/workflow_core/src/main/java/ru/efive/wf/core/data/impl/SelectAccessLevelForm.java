@@ -43,7 +43,7 @@ public class SelectAccessLevelForm implements LocalBackingBean {
     }
 
     public boolean selected(UserAccessLevel selectedAccessLevel) {
-        return this.selectedAccessLevel == null ? false : this.selectedAccessLevel.equals(selectedAccessLevel);
+        return this.selectedAccessLevel != null && this.selectedAccessLevel.equals(selectedAccessLevel);
     }
 
     public void setScope(EditablePropertyScope scope) {

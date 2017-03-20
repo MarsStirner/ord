@@ -199,13 +199,11 @@ public class FileUploadRenderer extends HtmlBasicRenderer implements Serializabl
     @Override
     protected void encodeChildren(AdvancedResponseWriter writer,
             List<UIComponent> childrens) throws IOException {
-        return;
     }
 
     /** {@inheritDoc} */
     @Override
     protected void encodeEnd(AdvancedResponseWriter writer) throws IOException {
-        return;
     }
 
     /** {@inheritDoc} */

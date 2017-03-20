@@ -1,18 +1,10 @@
 package ru.entity.model.wf;
 
-import java.util.Date;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import ru.entity.model.mapped.Document;
 import ru.entity.model.user.User;
+
+import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Задача-согласование
@@ -79,9 +71,7 @@ public class HumanTask extends Document {
                 return false;
         } else if (executor.getId() != other.executor.getId())
             return false;
-        if (statusId != other.statusId)
-            return false;
-        return true;
+        return statusId == other.statusId;
     }
 
 

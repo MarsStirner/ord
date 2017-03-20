@@ -63,7 +63,7 @@ public class SelectUserForm implements LocalBackingBean {
     }
 
     public boolean selected(User user) {
-        return selectedUser == null ? false : selectedUser.equals(user);
+        return selectedUser != null && selectedUser.equals(user);
     }
 
     public void setScope(EditablePropertyScope scope) {

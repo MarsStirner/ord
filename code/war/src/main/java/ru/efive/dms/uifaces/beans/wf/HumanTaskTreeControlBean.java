@@ -135,7 +135,7 @@ public class HumanTaskTreeControlBean implements java.io.Serializable {
         }
 
         public boolean selected(RouteTemplate routeTemplate) {
-            return this.routeTemplate == null ? false : this.routeTemplate.equals(routeTemplate);
+            return this.routeTemplate != null && this.routeTemplate.equals(routeTemplate);
         }
 
         public void setAgreementIssueDoc(AgreementIssue agreementIssueDoc) {

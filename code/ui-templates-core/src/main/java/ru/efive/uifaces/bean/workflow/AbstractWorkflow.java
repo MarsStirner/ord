@@ -404,7 +404,7 @@ public abstract class AbstractWorkflow implements Serializable {
      */
     public boolean actionAllowed(String name) {
         Action action = actions.get(name);
-        return action == null? false: action.isAllowed();
+        return action != null && action.isAllowed();
     }
 
     /**
@@ -413,7 +413,7 @@ public abstract class AbstractWorkflow implements Serializable {
      */
     public boolean actionEnabled(String name) {
         Action action = actions.get(name);
-        return action == null ? false : action.isEnabled();
+        return action != null && action.isEnabled();
     }
 
     /**

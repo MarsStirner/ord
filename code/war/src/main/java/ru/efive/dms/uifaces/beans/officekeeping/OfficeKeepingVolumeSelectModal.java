@@ -1,9 +1,9 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import javax.faces.context.FacesContext;
-
-import ru.entity.model.document.OfficeKeepingVolume;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.document.OfficeKeepingVolume;
+
+import javax.faces.context.FacesContext;
 
 public class OfficeKeepingVolumeSelectModal extends ModalWindowHolderBean {
 
@@ -28,7 +28,7 @@ public class OfficeKeepingVolumeSelectModal extends ModalWindowHolderBean {
     }
 
     public boolean selected(OfficeKeepingVolume officeKeepingVolume) {
-        return this.officeKeepingVolume == null ? false : this.officeKeepingVolume.getVolumeIndex().equals(officeKeepingVolume.getVolumeIndex());
+        return this.officeKeepingVolume != null && this.officeKeepingVolume.getVolumeIndex().equals(officeKeepingVolume.getVolumeIndex());
     }
 
     @Override
