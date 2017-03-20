@@ -71,7 +71,7 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
 
     @Override
     protected void encodeBegin(AdvancedResponseWriter writer) throws IOException {
-        collapsedIds = new ArrayList<String>();
+        collapsedIds = new ArrayList<>();
 
         HtmlDataTable dataTable = (HtmlDataTable) writer.getComponent();
 
@@ -369,7 +369,7 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
     }
 
     private List<HtmlDataTableColumn> getColumnsToRender(List<UIComponent> childrens) {
-        List<HtmlDataTableColumn> result = new ArrayList<HtmlDataTableColumn>();
+        List<HtmlDataTableColumn> result = new ArrayList<>();
 
         for (UIComponent column : childrens) {
             if (column instanceof HtmlDataTableColumn && column.isRendered()) {

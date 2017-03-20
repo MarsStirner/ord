@@ -67,7 +67,7 @@ public class InputRegistrationNumberForm implements LocalBackingBean {
                 result.setProcessed(false);
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Не указан номер", ""));
             } else {
-                properties = new ArrayList<EditableProperty>();
+                properties = new ArrayList<>();
                 properties.add(new EditableProperty(getActionCommentaryField(), getActionCommentary(), getScope()));
                 result.setProcessed(true);
             }

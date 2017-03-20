@@ -281,9 +281,9 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     public List<User> getRecipientUserList() {
         if (recipientUsers != null && !recipientUsers.isEmpty()) {
-            return new ArrayList<User>(recipientUsers);
+            return new ArrayList<>(recipientUsers);
         }
-        return new ArrayList<User>(0);
+        return new ArrayList<>(0);
     }
 
     public Date getRegistrationDate() {
@@ -409,7 +409,7 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     @Transient
     public List<HistoryEntry> getHistoryList() {
-        List<HistoryEntry> result = new ArrayList<HistoryEntry>();
+        List<HistoryEntry> result = new ArrayList<>();
         if (history != null) {
             result.addAll(history);
         }
@@ -441,9 +441,9 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     public List<User> getPersonReadersList() {
         if (personReaders != null && !personReaders.isEmpty()) {
-            return new ArrayList<User>(personReaders);
+            return new ArrayList<>(personReaders);
         }
-        return new ArrayList<User>(0);
+        return new ArrayList<>(0);
     }
 
     public Set<Role> getRoleReaders() {
@@ -456,9 +456,9 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     public List<Role> getRoleReadersList(){
         if (roleReaders != null && !roleReaders.isEmpty()) {
-            return new ArrayList<Role>(roleReaders);
+            return new ArrayList<>(roleReaders);
         }
-        return new ArrayList<Role>(0);
+        return new ArrayList<>(0);
     }
 
     public Set<Role> getRoleEditors() {
@@ -471,9 +471,9 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     public List<Role> getRoleEditorsList() {
         if (roleEditors == null || roleEditors.isEmpty()) {
-            return new ArrayList<Role>(0);
+            return new ArrayList<>(0);
         } else {
-            return new ArrayList<Role>(roleEditors);
+            return new ArrayList<>(roleEditors);
         }
     }
 
@@ -487,9 +487,9 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     public List<User> getPersonEditorsList() {
         if (personEditors == null || personEditors.isEmpty()) {
-            return new ArrayList<User>(0);
+            return new ArrayList<>(0);
         } else {
-            return new ArrayList<User>(personEditors);
+            return new ArrayList<>(personEditors);
         }
     }
 
@@ -529,7 +529,7 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     @Transient
     public List<Group> getRecipientGroupsList() {
-        List<Group> in_result = new ArrayList<Group>();
+        List<Group> in_result = new ArrayList<>();
         if (recipientGroups != null) {
             in_result.addAll(recipientGroups);
         }

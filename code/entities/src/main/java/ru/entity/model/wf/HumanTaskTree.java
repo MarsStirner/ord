@@ -45,7 +45,7 @@ public class HumanTaskTree extends Document {
     }
 
     public List<HumanTaskTreeNode> getRootNodeList() {
-        List<HumanTaskTreeNode> result = new ArrayList<HumanTaskTreeNode>();
+        List<HumanTaskTreeNode> result = new ArrayList<>();
         result.addAll(rootNodes);
         Collections.sort(
                 result, new Comparator<HumanTaskTreeNode>() {
@@ -66,7 +66,7 @@ public class HumanTaskTree extends Document {
     }
 
     public List<HumanTaskTreeNode> loadHumanTaskTree() {
-        humanTaskTree = new ArrayList<HumanTaskTreeNode>();
+        humanTaskTree = new ArrayList<>();
         try {
             int grouping = 0;
             if (rootNodes != null) {
@@ -82,20 +82,20 @@ public class HumanTaskTree extends Document {
             }
         } catch (Exception e) {
             logger.error("Exception while forming tree", e);
-            humanTaskTree = new ArrayList<HumanTaskTreeNode>();
+            humanTaskTree = new ArrayList<>();
         }
         return humanTaskTree;
     }
 
     public void addRootNode(HumanTaskTreeNode node) {
         if (rootNodes == null) {
-            rootNodes = new HashSet<HumanTaskTreeNode>();
+            rootNodes = new HashSet<>();
         }
         rootNodes.add(node);
     }
 
     private List<HumanTaskTreeNode> formHumanTaskSubTree(HumanTaskTreeNode rootNode, int baseGrouping) {
-        List<HumanTaskTreeNode> result = new ArrayList<HumanTaskTreeNode>();
+        List<HumanTaskTreeNode> result = new ArrayList<>();
         try {
             if (rootNode.getChildNodes() != null) {
                 List<HumanTaskTreeNode> childNodeList = rootNode.getChildNodeList();

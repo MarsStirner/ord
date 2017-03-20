@@ -29,7 +29,7 @@ public class HumanTaskTreeNode extends Document {
     }
 
     public List<HumanTaskTreeNode> getChildNodeList() {
-        List<HumanTaskTreeNode> result = new ArrayList<HumanTaskTreeNode>();
+        List<HumanTaskTreeNode> result = new ArrayList<>();
         if (childNodes != null) {
             result.addAll(childNodes);
         }
@@ -44,7 +44,7 @@ public class HumanTaskTreeNode extends Document {
 
     public void addChildNode(HumanTaskTreeNode node) {
         if (childNodes == null) {
-            childNodes = new ArrayList<HumanTaskTreeNode>();
+            childNodes = new ArrayList<>();
         }
         childNodes.add(node);
     }
@@ -67,7 +67,7 @@ public class HumanTaskTreeNode extends Document {
     }
 
     public List<HumanTask> getTaskList() {
-        List<HumanTask> result = new ArrayList<HumanTask>();
+        List<HumanTask> result = new ArrayList<>();
         if (tasks != null) {
             result.addAll(tasks);
         }

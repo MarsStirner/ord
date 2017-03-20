@@ -47,7 +47,7 @@ public class DocumentSelectModal extends ModalWindowHolderBean {
     //--------------------------------------------------------------------------------------------------------------
 
     public List<String> getViewsType() {
-        List<String> in_results = new ArrayList<String>();
+        List<String> in_results = new ArrayList<>();
         in_results.add("Входящие документы");
         in_results.add("Обращения граждан");
         return in_results;

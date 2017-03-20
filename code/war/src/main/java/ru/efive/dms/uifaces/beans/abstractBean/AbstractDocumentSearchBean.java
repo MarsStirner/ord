@@ -30,7 +30,7 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
     /**
      * Набор фильтров в виде "Ключ"->"Значения"
      */
-    protected Map<String, Object> filters = new HashMap<String, Object>();
+    protected Map<String, Object> filters = new HashMap<>();
 
     protected boolean searchPerformed = false;
 
@@ -89,7 +89,7 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseAuthors() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        final Map<String, List<String>> params = new HashMap<>();
         params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR));
         final List<User> preselected = getAuthors();
         if (preselected != null) {

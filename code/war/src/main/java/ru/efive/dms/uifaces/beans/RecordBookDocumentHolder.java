@@ -136,7 +136,7 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
     public void updateAttachments() {
         if (getDocumentId() != null && getDocumentId() != 0) {
             attachments = fileManagement.getFilesByParentId("request_" + getDocumentId());
-            if (attachments == null) attachments = new ArrayList<Attachment>();
+            if (attachments == null) attachments = new ArrayList<>();
         }
     }
 
@@ -148,8 +148,8 @@ public class RecordBookDocumentHolder extends AbstractDocumentHolderBean<RecordB
         }
     }
 
-    private List<Attachment> attachments = new ArrayList<Attachment>();
-    private List<byte[]> files = new ArrayList<byte[]>();
+    private List<Attachment> attachments = new ArrayList<>();
+    private List<byte[]> files = new ArrayList<>();
 
     // END OF FILES
 

@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Status<T extends ProcessedData> {
-    private List<IActivity> preStatusActivities = new ArrayList<IActivity>();
-    private List<IActivity> postStatusActivities = new ArrayList<IActivity>();
-    private List<StatusChangeAction> actions = new ArrayList<StatusChangeAction>();
+    private List<IActivity> preStatusActivities = new ArrayList<>();
+    private List<IActivity> postStatusActivities = new ArrayList<>();
+    private List<StatusChangeAction> actions = new ArrayList<>();
     private T processedData;
     private boolean agreementEnabled = false;
     private DocumentStatus status = DocumentStatus.NEW;

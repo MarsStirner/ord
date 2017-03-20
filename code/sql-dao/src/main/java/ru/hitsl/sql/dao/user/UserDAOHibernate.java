@@ -302,7 +302,7 @@ public class UserDAOHibernate extends GenericDAOHibernate<User> implements UserD
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
         final List ids = getHibernateTemplate().findByCriteria(criteria, first, pageSize);
         if (ids.isEmpty()) {
-            return new ArrayList<User>(0);
+            return new ArrayList<>(0);
         }
         //Ищем только по этим ключам с упорядочиванием
         return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, sortField, sortOrder));

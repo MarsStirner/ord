@@ -29,7 +29,7 @@ public class ParametrizedPropertyLocalActivity extends ParametrizedFieldActivity
         try {
             BeanInfo info = Introspector.getBeanInfo(class_);
             PropertyDescriptor[] pds = info.getPropertyDescriptors();
-            Map<String, PropertyDescriptor> beanProperties = new HashMap<String, PropertyDescriptor>();
+            Map<String, PropertyDescriptor> beanProperties = new HashMap<>();
             for (PropertyDescriptor pd : pds) {
                 beanProperties.put(pd.getName(), pd);
             }

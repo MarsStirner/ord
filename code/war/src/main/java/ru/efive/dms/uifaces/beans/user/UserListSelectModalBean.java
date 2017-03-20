@@ -24,7 +24,7 @@ public class UserListSelectModalBean extends ModalWindowHolderBean {
 
     public void setUsers(List<User> users) {
         if (users == null) {
-            this.users = new ArrayList<User>();
+            this.users = new ArrayList<>();
         } else {
             this.users = users;
         }
@@ -60,7 +60,7 @@ public class UserListSelectModalBean extends ModalWindowHolderBean {
 
     private UserListHolderBean userList;
 
-    private List<User> users = new ArrayList<User>();
+    private List<User> users = new ArrayList<>();
 
     private static final long serialVersionUID = -9107594037615723746L;
 }

@@ -211,7 +211,7 @@ public class FileManagementBean implements java.io.Serializable {
     }
 
     public synchronized List<Revision> getVersionHistory(Attachment file) {
-        List<Revision> result = new ArrayList<Revision>();
+        List<Revision> result = new ArrayList<>();
         AlfrescoDAO<Attachment> dao = null;
         try {
             dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);

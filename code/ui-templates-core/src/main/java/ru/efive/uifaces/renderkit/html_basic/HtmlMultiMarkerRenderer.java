@@ -187,7 +187,7 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     private List<FacesMessage> getMessages(FacesContext context,
             UIComponent component) {
-        List<FacesMessage> messages = new ArrayList<FacesMessage>();
+        List<FacesMessage> messages = new ArrayList<>();
         if (component != null) {
             Iterator<FacesMessage> messageIterator = context
                     .getMessages(component.getClientId(context));

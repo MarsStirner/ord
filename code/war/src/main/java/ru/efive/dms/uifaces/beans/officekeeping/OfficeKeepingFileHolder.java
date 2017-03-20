@@ -62,7 +62,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         historyEntry.setEndDate(created);
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
-        Set<HistoryEntry> history = new HashSet<HistoryEntry>();
+        Set<HistoryEntry> history = new HashSet<>();
         history.add(historyEntry);
         document.setHistory(history);
 
@@ -108,7 +108,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     }
 
     public List<RoleType> getTypes() {
-        List<RoleType> result = new ArrayList<RoleType>();
+        List<RoleType> result = new ArrayList<>();
         Collections.addAll(result, RoleType.values());
         return result;
     }
@@ -131,7 +131,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
             if (getSelectedAction().isHistoryAction()) {
                 Set<HistoryEntry> history = document.getHistory();
                 if (history == null) {
-                    history = new HashSet<HistoryEntry>();
+                    history = new HashSet<>();
                 }
                 history.add(getHistoryEntry());
                 document.setHistory(history);

@@ -32,7 +32,7 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
 
     @Override
     protected List<OfficeKeepingVolume> loadDocuments() {
-        List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>(new HashSet<OfficeKeepingVolume>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
+        List<OfficeKeepingVolume> result = new ArrayList<>(new HashSet<>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
 /*
         Collections.sort(result, new Comparator<Task>() {
 			@Override
@@ -55,7 +55,7 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
     }
 
     public List<OfficeKeepingVolume> getAllVolumesByParentFileId(String parentId) {
-        List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>();
+        List<OfficeKeepingVolume> result = new ArrayList<>();
         try {
             if (parentId != null && !parentId.equals("")) {
                 result = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllVolumesByParentId(parentId);
@@ -87,7 +87,7 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
     }
 
     private String filter;
-    static private Map<String, Object> filters = new HashMap<String, Object>();
+    static private Map<String, Object> filters = new HashMap<>();
 
     static {
         filters.put("statusId", DocumentStatus.OPEN.getId());

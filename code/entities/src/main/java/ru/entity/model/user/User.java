@@ -202,7 +202,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
     }
 
     public List<Role> getRoleList() {
-        List<Role> result = new ArrayList<Role>();
+        List<Role> result = new ArrayList<>();
         if (roles != null) {
             result.addAll(roles);
         }

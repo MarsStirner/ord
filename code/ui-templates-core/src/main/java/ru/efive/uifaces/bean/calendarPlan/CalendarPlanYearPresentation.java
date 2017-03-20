@@ -86,7 +86,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
 
     public static Set<String> getSpecialDaysClassesForPeriod(CalendarPlanSpecialDaysComposition specialDays,
             Collection<CalendarPlanEvent> events, Date start, Date stop) {
-        Set<String> res = new HashSet<String>();
+        Set<String> res = new HashSet<>();
         if (specialDays != null && specialDays.getDays() != null) {
             for (CalendarPlanSpecialDay d : specialDays.getDays()) {
                 if (d.isContains(start, stop)) {
@@ -161,7 +161,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
                 writer.writeAttribute(HtmlAttribute.TYPE, HtmlAttributeValue.TYPE_TEXT_JAVASCRIPT, null);
                 StringBuilder txt = new StringBuilder();
                 txt.append("e5ui_calendarPlan.initDayTooltip(document.getElementById('").append(id).append("'), [");
-                ArrayList<CalendarPlanEvent> dayEvents = new ArrayList<CalendarPlanEvent>();
+                ArrayList<CalendarPlanEvent> dayEvents = new ArrayList<>();
                 Date start = viewCalendar.getTime();
                 viewCalendar.add(Calendar.DAY_OF_MONTH, 1);
                 Date stop = viewCalendar.getTime();
@@ -406,13 +406,13 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
     public static final int MONTH_NAMES = 1;
 
     public static Map<Integer, String>[] getDisplayNames(Calendar calendar, Locale locale) {
-        Map<Integer, String> dayOfWeekNames = new HashMap<Integer, String>();
+        Map<Integer, String> dayOfWeekNames = new HashMap<>();
         for (Map.Entry<String, Integer> de :
                 calendar.getDisplayNames(Calendar.DAY_OF_WEEK, Calendar.SHORT, locale).entrySet()) {
             dayOfWeekNames.put(de.getValue(), de.getKey());
         }
 
-        Map<Integer, String> monthNames = new HashMap<Integer, String>();
+        Map<Integer, String> monthNames = new HashMap<>();
         for (Map.Entry<String, Integer> me :
                 calendar.getDisplayNames(Calendar.MONTH, Calendar.LONG, locale).entrySet()) {
             monthNames.put(me.getValue(), me.getKey());

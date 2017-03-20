@@ -24,7 +24,7 @@ public class RoleListSelectModalBean extends ModalWindowHolderBean {
 
     public void setRoles(List<Role> roles) {
         if (roles == null) {
-            this.roles = new ArrayList<Role>();
+            this.roles = new ArrayList<>();
         } else {
             this.roles = roles;
         }
@@ -60,7 +60,7 @@ public class RoleListSelectModalBean extends ModalWindowHolderBean {
 
     private RoleListHolderBean roleList;
 
-    private List<Role> roles = new ArrayList<Role>();
+    private List<Role> roles = new ArrayList<>();
     //private List<role> roles;
 
     private static final long serialVersionUID = -9107594037615723746L;

@@ -102,7 +102,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
 
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        final Map<String, List<String>> params = new HashMap<>();
         params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
         params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
         final User preselected = getController();
@@ -149,7 +149,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
 
     // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseExecutors() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        final Map<String, List<String>> params = new HashMap<>();
         params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_EXECUTORS));
         final List<User> preselected = getExecutors();
         if (preselected != null && !preselected.isEmpty()) {
@@ -173,7 +173,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
 
     // Выбора адресатов /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseRecipients() {
-        final Map<String, List<String>> params = new HashMap<String, List<String>>();
+        final Map<String, List<String>> params = new HashMap<>();
         params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_RECIPIENTS));
         final List<User> preselected = getRecipients();
         if (preselected != null && !preselected.isEmpty()) {

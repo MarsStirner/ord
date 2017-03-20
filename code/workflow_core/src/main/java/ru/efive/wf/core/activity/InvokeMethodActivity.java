@@ -83,7 +83,7 @@ public class InvokeMethodActivity implements IActivity {
 
     private String className;
     private String methodName;
-    private List<Serializable> parameters = new ArrayList<Serializable>();
+    private List<Serializable> parameters = new ArrayList<>();
 
 
     private String resultMessage;

@@ -143,7 +143,7 @@ public class EngineDAOImpl extends GenericDAOHibernate<Document> {
             detachedCriteria.createAlias("editors", "editors", CriteriaSpecification.LEFT_JOIN);
             disjunction.add(Restrictions.eq("editors.id", userId));
 
-            List<Integer> rolesId = new ArrayList<Integer>();
+            List<Integer> rolesId = new ArrayList<>();
             List<Role> roles = user.getRoleList();
             if (roles != null && roles.size() > 0) {
                 for (Role role : roles) {
@@ -195,7 +195,7 @@ public class EngineDAOImpl extends GenericDAOHibernate<Document> {
             detachedCriteria.createAlias("editors", "editors", CriteriaSpecification.LEFT_JOIN);
             disjunction.add(Restrictions.eq("editors.id", userId));
 
-            List<Integer> rolesId = new ArrayList<Integer>();
+            List<Integer> rolesId = new ArrayList<>();
             List<Role> roles = user.getRoleList();
             if (roles != null && roles.size() > 0) {
                 for (Role role : roles) {

@@ -73,7 +73,7 @@ public enum DocumentType {
 
     public static List<Integer> getStatusIdListByStrKey(String documentName, String strKey) {
         DocumentType documentType = valueOf(documentName);
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         strKey = strKey.toLowerCase();
 
         for (DocumentStatus status : documentType.getStatuses()) {

@@ -44,8 +44,8 @@ public class AuthorizationData implements Serializable{
     /**
      * Список замещаемых пользователей
      */
-    private final Set<User> substitutedUsers = new HashSet<User>(0);
-    private final Set<Integer> userIds = new HashSet<Integer>(1);
+    private final Set<User> substitutedUsers = new HashSet<>(0);
+    private final Set<Integer> userIds = new HashSet<>(1);
 
     /**
      * Уровни допуска
@@ -64,23 +64,23 @@ public class AuthorizationData implements Serializable{
         this.authorized = authorized;
         this.userIds.add(authorized.getId());
         final Set<Role> authorizedRoles = authorized.getRoles();
-        this.roles = new HashSet<Role>(authorizedRoles.size());
-        this.roleIds = new HashSet<Integer>(authorizedRoles.size());
+        this.roles = new HashSet<>(authorizedRoles.size());
+        this.roleIds = new HashSet<>(authorizedRoles.size());
         for(Role current : authorizedRoles){
             roles.add(current);
             roleIds.add(current.getId());
         }
         final Set<Group> authorizedGroups = authorized.getGroups();
         if(!authorizedGroups.isEmpty()) {
-            this.groups = new HashSet<Group>(authorizedGroups.size());
-            this.groupIds = new HashSet<Integer>(authorizedGroups.size());
+            this.groups = new HashSet<>(authorizedGroups.size());
+            this.groupIds = new HashSet<>(authorizedGroups.size());
             for(Group current : authorizedGroups){
                 groups.add(current);
                 groupIds.add(current.getId());
             }
         } else {
-            this.groups = new HashSet<Group>(0);
-            this.groupIds = new HashSet<Integer>(0);
+            this.groups = new HashSet<>(0);
+            this.groupIds = new HashSet<>(0);
         }
         this.currentAccessLevel = authorized.getCurrentUserAccessLevel();
         this.maxAccessLevel= authorized.getMaxUserAccessLevel();

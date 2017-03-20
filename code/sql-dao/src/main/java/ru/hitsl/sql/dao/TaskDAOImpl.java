@@ -84,7 +84,7 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
             criteria.addOrder(Order.asc("taskNumber"));
 
             final List<Task> subResult = getHibernateTemplate().findByCriteria(criteria);
-            final List<Task> result = new ArrayList<Task>(subResult.size());
+            final List<Task> result = new ArrayList<>(subResult.size());
             for (Task task : subResult) {
                 result.add(task);
                 result.addAll(getChildrenTaskByParentId(task.getId(), showDeleted));
@@ -92,7 +92,7 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
             return result;
         } else {
             logger.warn("parentId  = 0. return empty list");
-            return new ArrayList<Task>(0);
+            return new ArrayList<>(0);
         }
     }
 
@@ -248,7 +248,7 @@ public class TaskDAOImpl extends DocumentDAO<Task> {
 
         //TODO справочник в БД
         final List<DocumentStatus> statuses = DocumentType.getTaskStatuses();
-        final Set<Integer> statusIdList = new HashSet<Integer>(statuses.size());
+        final Set<Integer> statusIdList = new HashSet<>(statuses.size());
         for (DocumentStatus current : statuses) {
             if (current.getName().contains(filter)) {
                 statusIdList.add(current.getId());

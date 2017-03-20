@@ -198,9 +198,9 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
 
     public List<User> getExecutorsList() {
         if(executors != null) {
-            return new ArrayList<User>(executors);
+            return new ArrayList<>(executors);
         } else {
-            return new ArrayList<User>(0);
+            return new ArrayList<>(0);
         }
     }
 
@@ -265,7 +265,7 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
 
     @Transient
     public List<HistoryEntry> getHistoryList() {
-        List<HistoryEntry> result = new ArrayList<HistoryEntry>();
+        List<HistoryEntry> result = new ArrayList<>();
         if (history != null) {
             result.addAll(history);
         }

@@ -304,7 +304,7 @@ public abstract class AbstractWorkflow implements Serializable {
     @PostConstruct
     private void postConstruct() {
         state = STATE_NEW;
-        actions = new HashMap<String, Action>();
+        actions = new HashMap<>();
 
         doInit();
         listActions(new ActionCollection() {

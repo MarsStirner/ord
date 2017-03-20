@@ -222,7 +222,7 @@ public class OutgoingDocumentDAOImpl extends DocumentDAO<OutgoingDocument> {
 
         //TODO справочник в БД
         final List<DocumentStatus> statuses = DocumentType.getOutgoingDocumentStatuses();
-        final List<Integer> statusIdList = new ArrayList<Integer>(statuses.size());
+        final List<Integer> statusIdList = new ArrayList<>(statuses.size());
         for (DocumentStatus current : statuses) {
             if (current.getName().contains(filter)) {
                 statusIdList.add(current.getId());

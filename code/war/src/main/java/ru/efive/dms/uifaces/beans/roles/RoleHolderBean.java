@@ -89,7 +89,7 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
     }
 
     public List<RoleType> getTypes() {
-        List<RoleType> result = new ArrayList<RoleType>();
+        List<RoleType> result = new ArrayList<>();
         Collections.addAll(result, RoleType.values());
         return result;
     }

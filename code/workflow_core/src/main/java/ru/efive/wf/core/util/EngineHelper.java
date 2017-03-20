@@ -84,7 +84,7 @@ public final class EngineHelper {
                     if (activity instanceof SendMailActivity) {
                         SendMailActivity sendMailActivity = (SendMailActivity) activity;
                         MailMessage message = sendMailActivity.getMessage();
-                        List<String> sendTo = new ArrayList<String>();
+                        List<String> sendTo = new ArrayList<>();
                         sendTo.add(selectedUser.getEmail());
                         message.setSendTo(sendTo);
                         sendMailActivity.setMessage(message);
@@ -110,9 +110,9 @@ public final class EngineHelper {
 
     // Получение и регистрация в контексте действия первичного списка рассылки о согласовании
     public static List<String> doGenerateAgreementPrimaryNotificationList(HumanTaskTree tree) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try {
-            Set<String> mails = new HashSet<String>();
+            Set<String> mails = new HashSet<>();
             for (HumanTaskTreeNode rootNode : tree.getRootNodeList()) {
                 for (HumanTask task : rootNode.getTaskList()) {
                     mails.add(task.getExecutor().getEmail());
@@ -127,9 +127,9 @@ public final class EngineHelper {
 
     // Получение и регистрация в контексте действия первичного списка пользователей о согласовании
     public static Set<User> doGenerateAgreementPrimaryExecutors(HumanTaskTree tree) {
-        Set<User> result = new HashSet<User>();
+        Set<User> result = new HashSet<>();
         try {
-            Set<User> users = new HashSet<User>();
+            Set<User> users = new HashSet<>();
             for (HumanTaskTreeNode rootNode : tree.getRootNodeList()) {
                 for (HumanTask task : rootNode.getTaskList()) {
                     users.add(task.getExecutor());
@@ -144,16 +144,16 @@ public final class EngineHelper {
 
     // Получение и регистрация в контексте действия вторичного списка рассылки о согласовании (на выполнении согласования)
     public static List<String> doGenerateAgreementSecondaryNotificationList(HumanTaskTreeStateResolver resolver, HumanTask task) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         try {
-            List<HumanTask> processedTaskList = new ArrayList<HumanTask>();
+            List<HumanTask> processedTaskList = new ArrayList<>();
             List<HumanTask> currentTaskList = resolver.getCurrentTaskList();
             for (HumanTask currentTask : currentTaskList) {
                 if (currentTask.getExecutor().equals(task.getExecutor()) && currentTask.getStatusId() == 1) {
                     processedTaskList.add(currentTask);
                 }
             }
-            Set<String> mails = new HashSet<String>();
+            Set<String> mails = new HashSet<>();
             for (HumanTask processedTask : processedTaskList) {
                 HumanTaskTreeNode node = processedTask.getParentNode();
                 if (node != null) {

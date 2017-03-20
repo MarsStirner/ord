@@ -21,7 +21,7 @@ public class PersonListConverter implements Converter {
         Object result = null;
         try {
             SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-            List<User> in_users = new ArrayList<User>();
+            List<User> in_users = new ArrayList<>();
             List<String> values = Arrays.asList(value.split("<br \\>"));
             for (String e : values) {
                 User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO)).getByLogin(e);

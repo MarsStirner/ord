@@ -76,11 +76,11 @@ public class Role extends IdentifiedEntity implements Comparable<Role>{
 
     public List<User> getPersonList() {
         if (persons != null && !persons.isEmpty()) {
-            List<User> result = new ArrayList<User>(persons);
+            List<User> result = new ArrayList<>(persons);
             Collections.sort(result);
             return result;
         }
-        return new ArrayList<User>(0);
+        return new ArrayList<>(0);
     }
 
     public Set<User> getPersons() {

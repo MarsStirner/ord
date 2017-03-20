@@ -103,7 +103,7 @@ public class ReportTemplate extends DeletableEntity {
     }
 
     public Map<String, Object> getProperties() throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map<String, Object> result = new HashMap<String, Object>();
+        Map<String, Object> result = new HashMap<>();
         result.put("reportName", templateName);
         result.put(startAlias, startDate);
 

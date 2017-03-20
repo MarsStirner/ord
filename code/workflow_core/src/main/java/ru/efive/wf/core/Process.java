@@ -50,5 +50,5 @@ public final class Process {
     private ProcessUser processUser;
     private Status<? extends ProcessedData> currentStatus;
 
-    private List<NoStatusAction> noStatusActions = new ArrayList<NoStatusAction>();
+    private List<NoStatusAction> noStatusActions = new ArrayList<>();
 }

@@ -21,7 +21,7 @@ public final class Engine {
             process = ProcessFactory.getProcessByType(processedData);
             process.setProcessUser(processUser);
 
-            List<IAction> actions = new ArrayList<IAction>();
+            List<IAction> actions = new ArrayList<>();
 
             if (process.getCurrentStatus().isAgreementEnabled()) {
                 HumanTaskTreeStateResolver resolver = new HumanTaskTreeStateResolver(processedData, ((AgreementIssue) processedData).getAgreementTree());

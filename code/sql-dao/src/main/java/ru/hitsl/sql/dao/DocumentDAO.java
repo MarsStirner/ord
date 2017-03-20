@@ -228,7 +228,7 @@ public abstract class DocumentDAO<T extends DeletableEntity> extends GenericDAOH
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
         final List ids = getHibernateTemplate().findByCriteria(criteria, first, pageSize);
         if (ids.isEmpty()) {
-            return new ArrayList<T>(0);
+            return new ArrayList<>(0);
         }
         //Ищем только по этим ключам с упорядочиванием
         return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, sortField, sortOrder));
@@ -373,7 +373,7 @@ public abstract class DocumentDAO<T extends DeletableEntity> extends GenericDAOH
         try {
             final List<User> userList = (List<User>) value;
             if (!userList.isEmpty()) {
-                List<Integer> userListId = new ArrayList<Integer>(userList.size());
+                List<Integer> userListId = new ArrayList<>(userList.size());
                 for (User user : userList) {
                     userListId.add(user.getId());
                 }

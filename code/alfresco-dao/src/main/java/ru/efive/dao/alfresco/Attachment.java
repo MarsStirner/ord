@@ -30,7 +30,7 @@ public class Attachment extends AlfrescoNode implements Serializable {
         setNamespace(NAMESPACE);
         setNamespacePrefix(NAMESPACE_PREFIX);
         setNodeType(TYPE_FILE);
-        List<String> path = new ArrayList<String>();
+        List<String> path = new ArrayList<>();
         path.add(STORE_NAME);
         path.add("Attachments");
         setPath(path);

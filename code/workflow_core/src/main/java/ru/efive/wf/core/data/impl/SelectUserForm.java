@@ -95,7 +95,7 @@ public class SelectUserForm implements LocalBackingBean {
                 result.setProcessed(false);
                 result.setDescription("Не выбран сотрудник");
             } else {
-                properties = new ArrayList<EditableProperty>();
+                properties = new ArrayList<>();
                 properties.add(new EditableProperty(getSelectedUserField(), getSelectedUser(), getScope()));
                 result.setProcessed(true);
             }

@@ -32,7 +32,7 @@ public class Permissions {
     }
 
     public Permissions() {
-        this.value = new HashSet<Permission>(3);
+        this.value = new HashSet<>(3);
     }
 
     public Permissions(boolean read, boolean write, boolean execute) {

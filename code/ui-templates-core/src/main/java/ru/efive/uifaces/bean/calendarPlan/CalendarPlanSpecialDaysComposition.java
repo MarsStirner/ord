@@ -30,7 +30,7 @@ public class CalendarPlanSpecialDaysComposition {
 
     public static CalendarPlanSpecialDaysComposition newSlice(CalendarPlanSpecialDaysComposition days, Date start,
             Date stop) {
-        final Collection<CalendarPlanSpecialDay> ndays = new ArrayList<CalendarPlanSpecialDay>();
+        final Collection<CalendarPlanSpecialDay> ndays = new ArrayList<>();
         for (CalendarPlanSpecialDay d : days.days) {
             if (d.isOccurs(start, stop)) {
                 ndays.add(d.slice(start, stop));
@@ -41,11 +41,11 @@ public class CalendarPlanSpecialDaysComposition {
 
     public static CalendarPlanSpecialDaysComposition newDisplacement(CalendarPlanSpecialDay day,
             CalendarPlanSpecialDay... days) {
-        Collection<CalendarPlanSpecialDay> rdays = new ArrayList<CalendarPlanSpecialDay>();
+        Collection<CalendarPlanSpecialDay> rdays = new ArrayList<>();
         rdays.add(day);
         if (days != null && days.length != 0) {
             for (CalendarPlanSpecialDay d : days) {
-                Collection<CalendarPlanSpecialDay> rrdays = new ArrayList<CalendarPlanSpecialDay>();
+                Collection<CalendarPlanSpecialDay> rrdays = new ArrayList<>();
                 for (CalendarPlanSpecialDay rday : rdays) {
                     CalendarPlanSpecialDay rrday;
                     rrday = rday.slice(null, d.getStart());
@@ -70,7 +70,7 @@ public class CalendarPlanSpecialDaysComposition {
     }
 
     public static CalendarPlanSpecialDaysComposition newUnion(final Collection<CalendarPlanSpecialDay>... days) {
-        Collection<CalendarPlanSpecialDay> ndays = new ArrayList<CalendarPlanSpecialDay>();
+        Collection<CalendarPlanSpecialDay> ndays = new ArrayList<>();
         for (Collection<CalendarPlanSpecialDay> ds : days) {
             if (ds != null) {
                 ndays.addAll(ds);
@@ -80,7 +80,7 @@ public class CalendarPlanSpecialDaysComposition {
     }
 
     public static CalendarPlanSpecialDaysComposition newUnion(final CalendarPlanSpecialDaysComposition... days) {
-        Collection<CalendarPlanSpecialDay> ndays = new ArrayList<CalendarPlanSpecialDay>();
+        Collection<CalendarPlanSpecialDay> ndays = new ArrayList<>();
         for (CalendarPlanSpecialDaysComposition ds : days) {
             if (ds != null) {
                 ndays.addAll(ds.days);

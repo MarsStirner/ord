@@ -13,7 +13,7 @@ public class GetNodeTest {
 
     //@Test
     public void testGetAndDeleteMethods() throws Exception {
-        AlfrescoDAO<AlfrescoNode> dao = new AlfrescoDAO<AlfrescoNode>();
+        AlfrescoDAO<AlfrescoNode> dao = new AlfrescoDAO<>();
         dao.initClass(AlfrescoNode.class);
         dao.setLogin(AlfrescoHelper.TEST_RUNTIME_USERNAME);
         dao.setPassword(AlfrescoHelper.TEST_RUNTIME_PASSWORD);

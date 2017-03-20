@@ -20,7 +20,7 @@ import java.util.List;
 public class MarkerFilter extends AbstractMatcherFilter<ILoggingEvent> {
 
     //Маркеры для сравнения
-    private List<Marker> markerList = new ArrayList<Marker>(5);
+    private List<Marker> markerList = new ArrayList<>(5);
 
     @Override
     public void start() {

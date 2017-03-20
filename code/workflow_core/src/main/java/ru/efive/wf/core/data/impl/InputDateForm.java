@@ -162,7 +162,7 @@ public class InputDateForm implements LocalBackingBean {
     public ActionResult initialize() {
         ActionResult result = new ActionResult();
         try {
-            properties = new ArrayList<EditableProperty>();
+            properties = new ArrayList<>();
             properties.add(new EditableProperty(getActionDateField(), getActionDate(), getScope()));
             properties.add(new EditableProperty(getActionCommentaryField(), getActionCommentary(), getScope()));
             result.setProcessed(true);

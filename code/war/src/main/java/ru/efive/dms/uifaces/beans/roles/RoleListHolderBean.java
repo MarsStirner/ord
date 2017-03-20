@@ -32,7 +32,7 @@ public class RoleListHolderBean extends AbstractDocumentLazyDataModelBean<Role> 
     }
 
     public List<Role> getAvailableRoles() {
-        List<Role> result = new ArrayList<Role>();
+        List<Role> result = new ArrayList<>();
         try {
             result = dao.findRoles(-1, -1, "name", true);
         } catch (Exception e) {

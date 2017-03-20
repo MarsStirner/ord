@@ -22,7 +22,7 @@ public class JSONLayout extends LayoutBase<ILoggingEvent> {
     // Версия ядра
     private String coreVersion;
     // Список тегов
-    private List<String> tagList = new ArrayList<String>(5);
+    private List<String> tagList = new ArrayList<>(5);
 
     private Gson gson = new Gson();
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS z");

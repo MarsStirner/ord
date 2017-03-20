@@ -25,7 +25,7 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
 public class RequestDocumentListHolder extends AbstractDocumentLazyDataModelBean<RequestDocument> {
 
     private static final Logger logger = LoggerFactory.getLogger("REQUEST_DOCUMENT");
-    private Map<String, Object> filters = new HashMap<String, Object>();
+    private Map<String, Object> filters = new HashMap<>();
     @Inject
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;

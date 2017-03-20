@@ -33,7 +33,7 @@ public class InternalDocumentsListHolder extends AbstractDocumentLazyDataModelBe
     @Named("sessionManagement")
     private transient SessionManagementBean sessionManagement;
 
-    private Map<String, Object> filters = new HashMap<String, Object>();
+    private Map<String, Object> filters = new HashMap<>();
 
     @PostConstruct
     /**

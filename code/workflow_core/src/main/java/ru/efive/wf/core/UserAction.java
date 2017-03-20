@@ -12,15 +12,15 @@ public abstract class UserAction implements IAction {
     protected boolean autoCommit = true;
     protected boolean historyAction = true;
     protected Transaction transaction;
-    private List<IActivity> localActivities = new ArrayList<IActivity>();
+    private List<IActivity> localActivities = new ArrayList<>();
     private String evaluationMessage;
     private boolean isCommentNecessary = false;
     private String comment;
-    private List<IActivity> preActionActivities = new ArrayList<IActivity>();
-    private List<IActivity> postActionActivities = new ArrayList<IActivity>();
+    private List<IActivity> preActionActivities = new ArrayList<>();
+    private List<IActivity> postActionActivities = new ArrayList<>();
     private List<IActivity> activities;
     private Process process;
-    private List<EditableProperty> properties = new ArrayList<EditableProperty>();
+    private List<EditableProperty> properties = new ArrayList<>();
 
     public UserAction(Process process) {
         this.process = process;

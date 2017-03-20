@@ -44,7 +44,7 @@ public class SubstitutionDaoImpl extends GenericDAOHibernate<Substitution> {
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
         List ids = getHibernateTemplate().findByCriteria(criteria, first, pageSize);
         if (ids.isEmpty()) {
-            return new ArrayList<Substitution>(0);
+            return new ArrayList<>(0);
         }
         //Ищем только по этим ключам с упорядочиванием
         DetachedCriteria resultCriteria = getDistinctCriteria(showDeleted).add(Restrictions.in("id", ids));

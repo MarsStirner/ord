@@ -54,7 +54,7 @@ public class ReportsManagmentBean {
         try {
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("templates/" + in_reportName);
             report = JasperCompileManager.compileReport(inputStream);
-            Map<String, Object> in_map = new HashMap<String, Object>();
+            Map<String, Object> in_map = new HashMap<>();
             for (Map.Entry<String, String> entry : requestProperties.entrySet()) {
                 System.out.println("_" + entry.getKey() + " - " + entry.getValue());
                 if (StringUtils.contains(entry.getKey(), "Date")) {
@@ -150,7 +150,7 @@ public class ReportsManagmentBean {
         try {
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("templates/" + in_reportName);
             report = JasperCompileManager.compileReport(inputStream);
-            Map<String, Object> in_map = new HashMap<String, Object>();
+            Map<String, Object> in_map = new HashMap<>();
             for (Map.Entry<String, String> entry : requestProperties.entrySet()) {
                 System.out.println("_" + entry.getKey());
                 in_map.put("_" + entry.getKey(), entry.getValue());
@@ -253,7 +253,7 @@ public class ReportsManagmentBean {
         try {
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("templates/" + in_reportName);
             report = JasperCompileManager.compileReport(inputStream);
-            Map<String, Object> in_map = new HashMap<String, Object>();
+            Map<String, Object> in_map = new HashMap<>();
             for (Map.Entry<String, String> entry : requestProperties.entrySet()) {
                 System.out.println("_" + entry.getKey());
                 if (StringUtils.contains(entry.getKey(), "Date")) {
@@ -340,7 +340,7 @@ public class ReportsManagmentBean {
         try {
             InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("templates/" + in_reportName);
             report = JasperCompileManager.compileReport(inputStream);
-            Map<String, Object> in_map = new HashMap<String, Object>();
+            Map<String, Object> in_map = new HashMap<>();
             for (Map.Entry<String, Object> entry : requestProperties.entrySet()) {
                 System.out.println("_" + entry.getKey());
                 in_map.put("_" + entry.getKey(), entry.getValue());

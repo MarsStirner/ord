@@ -129,7 +129,7 @@ public class OfficeKeepingVolume extends DeletableEntity implements ProcessedDat
 
     @Transient
     public List<HistoryEntry> getHistoryList() {
-        List<HistoryEntry> result = new ArrayList<HistoryEntry>();
+        List<HistoryEntry> result = new ArrayList<>();
         if (history != null) {
             result.addAll(history);
         }

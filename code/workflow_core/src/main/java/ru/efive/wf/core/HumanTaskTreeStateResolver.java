@@ -58,7 +58,7 @@ public class HumanTaskTreeStateResolver implements java.io.Serializable {
                             process = false;
                             result = false;
                             if (currentTaskList == null) {
-                                currentTaskList = new ArrayList<HumanTask>();
+                                currentTaskList = new ArrayList<>();
                             }
                             currentTaskList.add(task);
                         }
@@ -108,7 +108,7 @@ public class HumanTaskTreeStateResolver implements java.io.Serializable {
                             process = false;
                             result = false;
                             if (currentTaskList == null) {
-                                currentTaskList = new ArrayList<HumanTask>();
+                                currentTaskList = new ArrayList<>();
                             }
                             currentTaskList.add(task);
                         }
@@ -154,9 +154,9 @@ public class HumanTaskTreeStateResolver implements java.io.Serializable {
     }
 
     public List<HumanTask> getCurrentUniqueTaskList() {
-        List<HumanTask> uniqueTaskList = new ArrayList<HumanTask>();
+        List<HumanTask> uniqueTaskList = new ArrayList<>();
         try {
-            Set<HumanTask> tempSet = new LinkedHashSet<HumanTask>();
+            Set<HumanTask> tempSet = new LinkedHashSet<>();
             tempSet.addAll(currentTaskList);
             uniqueTaskList.addAll(tempSet);
         } catch (Exception e) {
@@ -167,7 +167,7 @@ public class HumanTaskTreeStateResolver implements java.io.Serializable {
     }
 
     public List<User> getCurrentExecutorList() {
-        List<User> currentExecutorList = new ArrayList<User>();
+        List<User> currentExecutorList = new ArrayList<>();
         try {
             for (HumanTask task : getCurrentUniqueTaskList()) {
                 currentExecutorList.add(task.getExecutor());

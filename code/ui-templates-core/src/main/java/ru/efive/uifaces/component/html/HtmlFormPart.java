@@ -27,7 +27,7 @@ import ru.efive.uifaces.component.ComponentFamily;
 @ListenerFor(systemEventClass=PostRestoreStateEvent.class)
 public class HtmlFormPart extends UIComponentBase {
 
-    private List<UICommand> formCommands = new ArrayList<UICommand>();
+    private List<UICommand> formCommands = new ArrayList<>();
 
     private boolean shouldProcess = true;
 

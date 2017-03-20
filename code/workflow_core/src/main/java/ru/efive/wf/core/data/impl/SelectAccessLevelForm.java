@@ -75,7 +75,7 @@ public class SelectAccessLevelForm implements LocalBackingBean {
                 result.setProcessed(false);
                 result.setDescription("Не выбран уровень допуска");
             } else {
-                properties = new ArrayList<EditableProperty>();
+                properties = new ArrayList<>();
                 properties.add(new EditableProperty(getSelectedAccessLevelField(), getSelectedAccessLevel(), getScope()));
                 result.setProcessed(true);
             }

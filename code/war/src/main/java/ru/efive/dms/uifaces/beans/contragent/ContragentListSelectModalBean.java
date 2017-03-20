@@ -23,7 +23,7 @@ public class ContragentListSelectModalBean extends ModalWindowHolderBean {
 
     public void setContragents(List<Contragent> contragents) {
         if (contragents == null) {
-            this.contragents = new ArrayList<Contragent>();
+            this.contragents = new ArrayList<>();
         } else {
             this.contragents = contragents;
         }
@@ -59,7 +59,7 @@ public class ContragentListSelectModalBean extends ModalWindowHolderBean {
 
     private ContragentListHolderBean contragentList;
 
-    private List<Contragent> contragents = new ArrayList<Contragent>();
+    private List<Contragent> contragents = new ArrayList<>();
 
     private static final long serialVersionUID = -4213711638535679710L;
 }

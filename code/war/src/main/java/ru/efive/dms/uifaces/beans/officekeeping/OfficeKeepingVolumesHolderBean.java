@@ -31,7 +31,7 @@ public class OfficeKeepingVolumesHolderBean extends AbstractDocumentLazyDataMode
     }
 
     public List<OfficeKeepingVolume> getAllVolumesByParentFileId(String parentId) {
-        List<OfficeKeepingVolume> result = new ArrayList<OfficeKeepingVolume>();
+        List<OfficeKeepingVolume> result = new ArrayList<>();
         try {
             if (StringUtils.isNotEmpty(parentId)) {
                 result = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllVolumesByParentId(parentId);

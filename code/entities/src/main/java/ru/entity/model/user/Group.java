@@ -43,7 +43,7 @@ public class Group extends DictionaryEntity {
     private GroupType groupType;
 
     public List<User> getMembersList() {
-        List<User> result = new ArrayList<User>();
+        List<User> result = new ArrayList<>();
         if (members != null) {
             result.addAll(members);
         }

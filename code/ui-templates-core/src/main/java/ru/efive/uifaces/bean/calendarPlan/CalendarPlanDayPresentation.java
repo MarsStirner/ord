@@ -121,7 +121,7 @@ public class CalendarPlanDayPresentation extends CalendarPlanPresentation {
         writer.startElement(HtmlElement.TR);
         writer.startElement(HtmlElement.TD);
 
-        Map<Integer, String> dayName = new HashMap<Integer, String>();
+        Map<Integer, String> dayName = new HashMap<>();
         dayName.put(viewCalendar.get(Calendar.DAY_OF_WEEK),
                 viewCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, locale));
         viewCalendar.add(Calendar.DAY_OF_WEEK, 1);

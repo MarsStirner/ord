@@ -14,7 +14,7 @@ public class CreateNodeTest {
 
     //@Test
     public void testCreateAndUpdateMethod() throws Exception {
-        AlfrescoDAO<AlfrescoNode> dao = new AlfrescoDAO<AlfrescoNode>();
+        AlfrescoDAO<AlfrescoNode> dao = new AlfrescoDAO<>();
         dao.initClass(AlfrescoNode.class);
         dao.setLogin(AlfrescoHelper.TEST_RUNTIME_USERNAME);
         dao.setPassword(AlfrescoHelper.TEST_RUNTIME_PASSWORD);
@@ -23,7 +23,7 @@ public class CreateNodeTest {
         dao.connect();
         AlfrescoNode alfrescoNode = new AlfrescoNode();
         alfrescoNode.setDisplayName("001");
-        List<String> path = new ArrayList<String>();
+        List<String> path = new ArrayList<>();
         path.add("E5_dms_space");
         alfrescoNode.setPath(path);
         //dao.createData(alfrescoNode);

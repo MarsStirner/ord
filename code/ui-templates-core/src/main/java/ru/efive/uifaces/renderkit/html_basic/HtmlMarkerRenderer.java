@@ -60,10 +60,10 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
         }
 
         FacesMessage.Severity maximumSeverity = null;
-        List<String> infoMessages = new ArrayList<String>();
-        List<String> warnMessages = new ArrayList<String>();
-        List<String> errorMessages = new ArrayList<String>();
-        List<String> fatalMessages = new ArrayList<String>();
+        List<String> infoMessages = new ArrayList<>();
+        List<String> warnMessages = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
+        List<String> fatalMessages = new ArrayList<>();
         String forComponentId = getFor(writer);
 
         Iterator<FacesMessage> messageIterator = getMessageIterator(writer,

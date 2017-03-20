@@ -31,7 +31,7 @@ public class TaskListHolder extends AbstractDocumentLazyDataModelBean<Task> {
     private transient SessionManagementBean sessionManagement;
 
     private static final Logger logger = LoggerFactory.getLogger("TASK");
-    private Map<String, Object> filters = new HashMap<String, Object>();
+    private Map<String, Object> filters = new HashMap<>();
 
     @PostConstruct
     public void init() {

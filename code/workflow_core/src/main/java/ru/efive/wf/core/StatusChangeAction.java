@@ -51,7 +51,7 @@ public class StatusChangeAction extends UserAction {
         try {
             List<IActivity> activities = toStatus.getPreStatusActivities();
             SetPropertyActivity changeStatusActivity = new SetPropertyActivity();
-            Map<String, Object> propertyChanges = new HashMap<String, Object>();
+            Map<String, Object> propertyChanges = new HashMap<>();
             propertyChanges.put("statusId", toStatus.getStatus().getId());
             changeStatusActivity.setPropertyChanges(propertyChanges);
             if (activities.add(changeStatusActivity)) {

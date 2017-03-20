@@ -9,7 +9,7 @@ import org.alfresco.webservice.util.Utils;
 
 public class AlfrescoNode extends ru.efive.dao.Data {
 
-    private List<String> path = new ArrayList<String>();
+    private List<String> path = new ArrayList<>();
     private String nodeType;
     private String namespace;
     private String namespacePrefix;

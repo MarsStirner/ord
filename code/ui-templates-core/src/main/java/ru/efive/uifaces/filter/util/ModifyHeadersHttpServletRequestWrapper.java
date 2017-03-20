@@ -32,16 +32,16 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
     public ModifyHeadersHttpServletRequestWrapper(Collection<String> removedHeaders,
             Map<String, Collection<String>> addedHeaders, HttpServletRequest request) {
         super(request);
-        this.removedHeaders = new HashSet<String>(removedHeaders.size());
+        this.removedHeaders = new HashSet<>(removedHeaders.size());
         for (String hn : removedHeaders) {
             this.removedHeaders.add(hn.toLowerCase());
         }
-        this.addedHeaders = new HashMap<String, Collection<String>>(addedHeaders.size());
+        this.addedHeaders = new HashMap<>(addedHeaders.size());
         for (Map.Entry<String, Collection<String>> hnv : addedHeaders.entrySet()) {
             String hn = hnv.getKey().toLowerCase();
             Collection<String> hv = this.addedHeaders.get(hn);
             if (hv == null) {
-                hv = new ArrayList<String>();
+                hv = new ArrayList<>();
                 this.addedHeaders.put(hn, hv);
             }
             hv.addAll(hnv.getValue());
@@ -71,17 +71,17 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
     public ModifyHeadersHttpServletRequestWrapper(String[] removedHeaders, String[] addedHeaders,
             HttpServletRequest request) {
         super(request);
-        this.removedHeaders = new HashSet<String>(removedHeaders.length);
+        this.removedHeaders = new HashSet<>(removedHeaders.length);
         for (String hn : removedHeaders) {
             this.removedHeaders.add(hn.toLowerCase());
         }
-        this.addedHeaders = new HashMap<String, Collection<String>>((addedHeaders.length / 2)
+        this.addedHeaders = new HashMap<>((addedHeaders.length / 2)
                 + (addedHeaders.length % 2));
         for (int i = 0; i < addedHeaders.length; i += 2) {
             String hn = addedHeaders[i].toLowerCase();
             Collection<String> hv = this.addedHeaders.get(hn);
             if (hv == null) {
-                hv = new ArrayList<String>();
+                hv = new ArrayList<>();
                 this.addedHeaders.put(hn, hv);
             }
             hv.add(i < (addedHeaders.length - 1) ? addedHeaders[i + 1] : "");
@@ -92,7 +92,7 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
     @Override
     public Enumeration<String> getHeaderNames() {
         Enumeration<String> headerNames = super.getHeaderNames();
-        Collection<String> res = addedHeaders != null ? new HashSet<String>(addedHeaders.keySet())
+        Collection<String> res = addedHeaders != null ? new HashSet<>(addedHeaders.keySet())
                 : new HashSet<String>();
         while (headerNames.hasMoreElements()) {
             String hn = headerNames.nextElement();

@@ -194,7 +194,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     }
 
     protected List<Revision> getVersionHistory(Reference reference) {
-        List<Revision> revisions = new ArrayList<Revision>();
+        List<Revision> revisions = new ArrayList<>();
         try {
             VersionHistory versionHistory = getAuthoringService().getVersionHistory(reference);
             for (Version version : versionHistory.getVersions()) {
@@ -226,15 +226,15 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
             return getDataList("TYPE:\"" + class_.newInstance().getNamedNodeType() + "\"");
         } catch (InstantiationException e) {
             logger.error("Exception in getDataList (queryPrepare)", e);
-            return new ArrayList<T>();
+            return new ArrayList<>();
         } catch (IllegalAccessException e) {
             logger.error("Exception in getDataList (queryPrepare)", e);
-            return new ArrayList<T>();
+            return new ArrayList<>();
         }
     }
 
     public List<T> getDataList(String queryString) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         try {
             Query query = new Query(Constants.QUERY_LANG_LUCENE, queryString);
             logger.info("Prepare query: {}", query.getStatement());
@@ -274,7 +274,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
                 data = class_.newInstance();
                 data.setId(node.getReference().getUuid());
                 if (data.getPath() == null || data.getPath().size() == 0) {
-                    List<String> path = new ArrayList<String>();
+                    List<String> path = new ArrayList<>();
                     path.add(node.getReference().getPath());
                     data.setPath(path);
                 }
@@ -534,7 +534,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     }
 
     public List<Revision> getRevisions(T data) {
-        List<Revision> result = new ArrayList<Revision>();
+        List<Revision> result = new ArrayList<>();
         try {
             Reference nodeReference = getNodeReference(data);
             if (!isVersionable(nodeReference)) {

@@ -64,7 +64,7 @@ public class UploadFilter extends AbstractFilter {
             hreq.setCharacterEncoding(DEFAULT_ENCODING);
         }
         if (ServletFileUpload.isMultipartContent(hreq)) {
-            final Map<String, ArrayList<String>> paramtersMap = new HashMap<String, ArrayList<String>>();
+            final Map<String, ArrayList<String>> paramtersMap = new HashMap<>();
 
             long sz = Long.parseLong(hreq.getHeader("content-length"));
             if (sz > maxSize) {
@@ -81,7 +81,7 @@ public class UploadFilter extends AbstractFilter {
                         String pv = Streams.asString(item.openStream(), DEFAULT_ENCODING);
                         ArrayList<String> pvs = paramtersMap.get(item.getFieldName());
                         if (pvs == null) {
-                            pvs = new ArrayList<String>();
+                            pvs = new ArrayList<>();
                         }
                         pvs.add(pv);
                         paramtersMap.put(item.getFieldName(), pvs);
@@ -112,7 +112,7 @@ public class UploadFilter extends AbstractFilter {
                 final Map<String, String[]> paramtersMapImmutable;
 
                 {
-                    Map<String, String[]> pm = new HashMap<String, String[]>();
+                    Map<String, String[]> pm = new HashMap<>();
                     for (Map.Entry<String, ArrayList<String>> pme : paramtersMap.entrySet()) {
                         pm.put(pme.getKey(), pme.getValue().toArray(new String[0]));
                     }

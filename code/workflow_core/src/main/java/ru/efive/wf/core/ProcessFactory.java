@@ -48,7 +48,7 @@ public final class ProcessFactory {
             String id = prop == null ? null : prop.toString();
 
             if (id != null && !id.equals("")) {
-                Status<T> currentStatus = new Status<T>();
+                Status<T> currentStatus = new Status<>();
                 if (t.getDocumentType().equals(DocumentType.IncomingDocument)) {
                     System.out.println("Initialization process for incoming document");
                     currentStatus = getCurrentStatusInDocument(t, process, prop);
@@ -88,7 +88,7 @@ public final class ProcessFactory {
     }
 
     private static <T extends ProcessedData> Status<T> getCurrentStatusInternalDocument(T t, final Process process, Object prop) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map<DocumentStatus, Status<T>> statuses = new HashMap<DocumentStatus, Status<T>>();
+        Map<DocumentStatus, Status<T>> statuses = new HashMap<>();
         prop = PropertyUtils.getProperty(t, "id");
         String id = prop == null ? null : prop.toString();
 
@@ -99,7 +99,7 @@ public final class ProcessFactory {
         }
         Set<String> recipients = getRecipients(t);
 
-        Status<T> processStatus = new Status<T>();
+        Status<T> processStatus = new Status<>();
         processStatus.setStatus(DocumentStatus.DOC_PROJECT_1);
         processStatus.setProcessedData(t);
 
@@ -108,22 +108,22 @@ public final class ProcessFactory {
         toStatusAction.setInitialStatus(processStatus);
 
         InvokeMethodActivity activity = new InvokeMethodActivity();
-        List<Serializable> list = new ArrayList<Serializable>();
+        List<Serializable> list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "checkInternalDocumentPropertiesForReview", list);
 
-        List<IActivity> activites = new ArrayList<IActivity>();
+        List<IActivity> activites = new ArrayList<>();
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        Status<T> toStatus = new Status<T>();
+        Status<T> toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.ON_CONSIDERATION);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         //1-mail
-        List<String> sendTo = new ArrayList<String>();
+        List<String> sendTo = new ArrayList<>();
         if (!recipients.isEmpty()) {
             sendTo.addAll(recipients);
         }
@@ -150,7 +150,7 @@ public final class ProcessFactory {
             toStatus.setPreStatusActivities(activites);
         }
 
-        List<StatusChangeAction> fromStatusActions = new ArrayList<StatusChangeAction>();
+        List<StatusChangeAction> fromStatusActions = new ArrayList<>();
         fromStatusActions.add(toStatusAction);
         processStatus.setAvailableActions(fromStatusActions);
 
@@ -158,7 +158,7 @@ public final class ProcessFactory {
 
         // На рассмотрении - Зарегистрирован
         processStatus = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
@@ -181,15 +181,15 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.CHECK_IN_5);
         toStatusAction.setInitialStatus(processStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setInternalRegistrationNumber", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.CHECK_IN_5);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -226,9 +226,9 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.CHECK_IN_55);
         toStatusAction.setInitialStatus(processStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setInternalRegistrationNumber", list);
         activites.add(activity);
@@ -270,7 +270,7 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.REGISTRATION_CLOSE_PERIOD_551);
         toStatusAction.setInitialStatus(processStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
 
         Date defaultRegistrationDate = new Date(Calendar.getInstance().getTimeInMillis() - 1000 * 60 * 60 * 24);
         ParametrizedPropertyLocalActivity localActivity = new ParametrizedPropertyLocalActivity();
@@ -298,9 +298,9 @@ public final class ProcessFactory {
 
         toStatusAction.setLocalActivities(activites);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setInternalRegistrationNumberOnOutDate", list);
         activites.add(activity);
@@ -338,7 +338,7 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.REGISTRATION_CLOSE_PERIOD_552);
         toStatusAction.setInitialStatus(processStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         defaultRegistrationDate = new Date(Calendar.getInstance().getTimeInMillis());
         localActivity = new ParametrizedPropertyLocalActivity();
         localActivity.setParentAction(toStatusAction);
@@ -363,9 +363,9 @@ public final class ProcessFactory {
 
         toStatusAction.setLocalActivities(activites);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setInternalRegistrationNumberOnOutDate", list);
         activites.add(activity);
@@ -387,15 +387,15 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.REDIRECT_TO_AGREEMENT);
         toStatusAction.setInitialStatus(processStatus);
 
-        Status<T> agreeStatus = new Status<T>();
+        Status<T> agreeStatus = new Status<>();
         agreeStatus.setStatus(DocumentStatus.AGREEMENT_3);
         agreeStatus.setProcessedData(t);
         agreeStatus.setAgreementEnabled(true);
 
         //List<String> sendTo=new ArrayList<String>();
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         Object agreementTree = PropertyUtils.getProperty(t, "agreementTree");
-        sendTo = new ArrayList<String>();
+        sendTo = new ArrayList<>();
 
         if (agreementTree != null) {
             HumanTaskTree tree = (HumanTaskTree) agreementTree;
@@ -405,7 +405,7 @@ public final class ProcessFactory {
             Set<User> executors = EngineHelper.doGenerateAgreementPrimaryExecutors(tree);
             if (executors.size() > 0) {
                 addAgreementUsersActivity = new InvokeMethodActivity();
-                list = new ArrayList<Serializable>();
+                list = new ArrayList<>();
                 list.add(t);
                 list.add(new ArrayList(executors));
                 addAgreementUsersActivity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "addToDocumentAgreementUsers", list);
@@ -449,7 +449,7 @@ public final class ProcessFactory {
         statuses.put(processStatus.getStatus(), processStatus);
 
         // На согласовании - Зарегистрирован
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
@@ -471,9 +471,9 @@ public final class ProcessFactory {
         toStatusAction.setInitialStatus(agreeStatus);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setInternalRegistrationNumber", list);
         activites.add(activity);
@@ -511,7 +511,7 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.REGISTRATION_CLOSE_PERIOD_661);
         toStatusAction.setInitialStatus(processStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         defaultRegistrationDate = new Date(Calendar.getInstance().getTimeInMillis());
         localActivity = new ParametrizedPropertyLocalActivity();
         localActivity.setParentAction(toStatusAction);
@@ -536,9 +536,9 @@ public final class ProcessFactory {
 
         toStatusAction.setLocalActivities(activites);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setInternalRegistrationNumberOnOutDate", list);
         activites.add(activity);
@@ -555,21 +555,21 @@ public final class ProcessFactory {
 
         //Зарегистрирован - На исполнении
         processStatus = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.REDIRECT_TO_EXECUTION_80);
         toStatusAction.setCommentNecessary(true);
         toStatusAction.setInitialStatus(processStatus);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.ON_EXECUTION_80);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         //1-mail
-        sendTo = new ArrayList<String>();
+        sendTo = new ArrayList<>();
 
         prop = PropertyUtils.getProperty(t, "responsible");
         User executor = (prop == null ? null : (User) prop);
@@ -610,17 +610,17 @@ public final class ProcessFactory {
 
         statuses.put(processStatus.getStatus(), processStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
 
         //На исполнении - Исполнен
         processStatus = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.EXECUTE_80);
         toStatusAction.setCommentNecessary(true);
         toStatusAction.setInitialStatus(processStatus);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.EXECUTE);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -631,7 +631,7 @@ public final class ProcessFactory {
         prop = PropertyUtils.getProperty(t, "controller");
         User controller = (prop == null ? null : (User) prop);
 
-        sendTo = new ArrayList<String>();
+        sendTo = new ArrayList<>();
 
         if (!recipients.isEmpty()) sendTo.addAll(recipients);
 
@@ -672,20 +672,20 @@ public final class ProcessFactory {
 
         //Исполнен - Архив
         processStatus = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.IN_ARCHIVE_90);
         toStatusAction.setInitialStatus(processStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "checkInternalPropertiesForArchiving", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.IN_ARCHIVE_100);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -703,12 +703,12 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.CANCEL_150);
         toStatusAction.setInitialStatus(processStatus);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.CANCEL_150);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         ParametrizedPropertyLocalActivity localActivity3 = new ParametrizedPropertyLocalActivity();
         localActivity3.setParentAction(toStatusAction);
         InputReasonForm reasonForm = new InputReasonForm();
@@ -723,7 +723,7 @@ public final class ProcessFactory {
         User author = (prop == null ? null : (User) prop);
 
         if (author != null) {
-            sendTo = new ArrayList<String>();
+            sendTo = new ArrayList<>();
             if (StringUtils.isNotEmpty(author.getEmail())) {
                 sendTo.add(author.getEmail());
             }
@@ -731,7 +731,7 @@ public final class ProcessFactory {
                 sendTo.addAll(recipients);
             }
             if (sendTo.size() > 0) {
-                activites = new ArrayList<IActivity>();
+                activites = new ArrayList<>();
                 SendMailActivity mailActivity = new SendMailActivity();
                 String subject = "Ваш документ перешел перешел в статус \"" + toStatusAction.getDestinationStatus().getStatus().getName() + "\"";
                 StringBuffer body = new StringBuffer();
@@ -752,7 +752,7 @@ public final class ProcessFactory {
         statuses.put(processStatus.getStatus(), processStatus);
 
         //Изменить уровень допуска
-        List<NoStatusAction> noStatusActions = new ArrayList<NoStatusAction>();
+        List<NoStatusAction> noStatusActions = new ArrayList<>();
         NoStatusAction changeAccessLevelAction = new NoStatusAction(process) {
             @Override
             public boolean isAvailable() {
@@ -767,7 +767,7 @@ public final class ProcessFactory {
         };
         changeAccessLevelAction.setAction(DocumentAction.CHANGE_ACCESS_LEVEL);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
 
         ParametrizedPropertyLocalActivity localActivity4 = new ParametrizedPropertyLocalActivity();
         localActivity4.setParentAction(changeAccessLevelAction);
@@ -800,7 +800,7 @@ public final class ProcessFactory {
     private static <T extends ProcessedData> Set<String> getRecipients(T t)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         Object properties;
-        Set<String> recipients = new HashSet<String>();
+        Set<String> recipients = new HashSet<>();
 
         properties = PropertyUtils.getProperty(t, "recipientUsers");
         Set<User> recipientUsers = (properties == null ? null : (Set<User>) properties);
@@ -831,42 +831,42 @@ public final class ProcessFactory {
     }
 
     private static <T extends ProcessedData> Status<T> getCurrentStatusRequestDocument(T t, Process process, Object prop) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map<DocumentStatus, Status<T>> statuses = new HashMap<DocumentStatus, Status<T>>();
+        Map<DocumentStatus, Status<T>> statuses = new HashMap<>();
         prop = PropertyUtils.getProperty(t, "id");
         String id = prop == null ? null : prop.toString();
 
         // На регистрации - Зарегистрирован
-        Status<T> processStatus = new Status<T>();
+        Status<T> processStatus = new Status<>();
         processStatus.setStatus(DocumentStatus.ON_REGISTRATION);
         processStatus.setProcessedData(t);
-        List<StatusChangeAction> fromStatusActions = new ArrayList<StatusChangeAction>();
+        List<StatusChangeAction> fromStatusActions = new ArrayList<>();
         StatusChangeAction toStatusAction = new StatusChangeAction(process);
 
         toStatusAction.setAction(DocumentAction.CHECK_IN_1);
         toStatusAction.setInitialStatus(processStatus);
 
-        List<IActivity> activites = new ArrayList<IActivity>();
+        List<IActivity> activites = new ArrayList<>();
         InvokeMethodActivity activity = new InvokeMethodActivity();
-        List<Serializable> list = new ArrayList<Serializable>();
+        List<Serializable> list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setRequestRegistrationNumber", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        Status<T> toStatus = new Status<T>();
+        Status<T> toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.CHECK_IN_2);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         SendMailActivity mailActivity = null;
         prop = PropertyUtils.getProperty(t, "registrationNumber");
         String docNumber = (prop == null ? "" : (String) prop);
 
         //2-mail
-        List<String> sendTo = new ArrayList<String>();
-        Set<String> recipients = new HashSet<String>();
-        activites = new ArrayList<IActivity>();
+        List<String> sendTo = new ArrayList<>();
+        Set<String> recipients = new HashSet<>();
+        activites = new ArrayList<>();
         prop = PropertyUtils.getProperty(t, "recipientUsers");
         Set<User> recipientUsers = (prop == null ? null : (Set<User>) prop);
         if (recipientUsers != null) {
@@ -919,13 +919,13 @@ public final class ProcessFactory {
 
         //Зарегистрирован - На исполнении
         processStatus = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.REDIRECT_TO_EXECUTION_2);
         toStatusAction.setCommentNecessary(true);
         toStatusAction.setInitialStatus(processStatus);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.ON_EXECUTION_80);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -959,13 +959,13 @@ public final class ProcessFactory {
 
         //На исполнении - Исполнен
         processStatus = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.EXECUTE_80);
         toStatusAction.setCommentNecessary(true);
         toStatusAction.setInitialStatus(processStatus);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.EXECUTE);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -977,19 +977,19 @@ public final class ProcessFactory {
 
         //Исполнен - Архив
         processStatus = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.IN_ARCHIVE_90);
         toStatusAction.setInitialStatus(processStatus);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.IN_ARCHIVE_100);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "checkRequestPropertiesForArchiving", list);
         activites.add(activity);
@@ -1007,27 +1007,27 @@ public final class ProcessFactory {
     }
 
     private static <T extends ProcessedData> Status<T> getCurrentStatusOfficeKeepingFile(T t, Process process) {
-        Map<DocumentStatus, Status<T>> statuses = new HashMap<DocumentStatus, Status<T>>();
+        Map<DocumentStatus, Status<T>> statuses = new HashMap<>();
 
         // На регистрации - Зарегистрирован
-        Status<T> processStatus = new Status<T>();
+        Status<T> processStatus = new Status<>();
         processStatus.setStatus(DocumentStatus.PROJECT);
         processStatus.setProcessedData(t);
-        List<StatusChangeAction> fromStatusActions = new ArrayList<StatusChangeAction>();
+        List<StatusChangeAction> fromStatusActions = new ArrayList<>();
         StatusChangeAction toStatusAction = new StatusChangeAction(process);
 
         toStatusAction.setAction(DocumentAction.CHECK_IN_1);
         toStatusAction.setInitialStatus(processStatus);
 
-        List<IActivity> activites = new ArrayList<IActivity>();
+        List<IActivity> activites = new ArrayList<>();
         InvokeMethodActivity activity = new InvokeMethodActivity();
-        List<Serializable> list = new ArrayList<Serializable>();
+        List<Serializable> list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setOfficeKeepingFileRegistrationNumber", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        Status<T> toStatus = new Status<T>();
+        Status<T> toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.REGISTERED);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1042,9 +1042,9 @@ public final class ProcessFactory {
     }
 
     private static <T extends ProcessedData> Status<T> getCurrentStatusOfficeKeepingVolume(T t, Process process) {
-        Map<DocumentStatus, Status<T>> statuses = new HashMap<DocumentStatus, Status<T>>();
+        Map<DocumentStatus, Status<T>> statuses = new HashMap<>();
         // Проект тома - Открыт
-        Status<T> status = new Status<T>();
+        Status<T> status = new Status<>();
         status.setStatus(DocumentStatus.VOLUME_PROJECT);
         status.setProcessedData(t);
 
@@ -1052,20 +1052,20 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.CHECK_IN_1);
         toStatusAction.setInitialStatus(status);
 
-        List<IActivity> activites = new ArrayList<IActivity>();
+        List<IActivity> activites = new ArrayList<>();
         InvokeMethodActivity activity = new InvokeMethodActivity();
-        List<Serializable> list = new ArrayList<Serializable>();
+        List<Serializable> list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setOfficeKeepingVolumeRegistrationNumber", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        Status<T> toStatus = new Status<T>();
+        Status<T> toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.OPEN);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        List<StatusChangeAction> fromStatusActions = new ArrayList<StatusChangeAction>();
+        List<StatusChangeAction> fromStatusActions = new ArrayList<>();
         fromStatusActions.add(toStatusAction);
         status.setAvailableActions(fromStatusActions);
 
@@ -1073,13 +1073,13 @@ public final class ProcessFactory {
 
         // Открыт - Закрыт
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
 
         toStatusAction.setAction(DocumentAction.CLOSE);
         toStatusAction.setInitialStatus(status);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.CLOSE);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1091,20 +1091,20 @@ public final class ProcessFactory {
 
         //Закрыт - изъят
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.EXTRACT);
         toStatusAction.setInitialStatus(status);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "checkOfficeKeepingVolumePropertiesForUnfile", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.EXTRACT);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1116,14 +1116,14 @@ public final class ProcessFactory {
 
         //Изъят из архива - Зарегистрирован
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.RETURN);
         toStatusAction.setInitialStatus(status);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setOfficeKeepingVolumeCollectorToEmpty", list);
         activites.add(activity);
@@ -1144,7 +1144,7 @@ public final class ProcessFactory {
 
     private static <T extends ProcessedData> Status<T> getCurrentStatusTask(T t, Process process, Object prop)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map<DocumentStatus, Status<T>> statuses = new HashMap<DocumentStatus, Status<T>>();
+        Map<DocumentStatus, Status<T>> statuses = new HashMap<>();
         prop = PropertyUtils.getProperty(t, "id");
         String id = prop == null ? null : prop.toString();
 
@@ -1167,31 +1167,31 @@ public final class ProcessFactory {
         Date executionDate = (prop == null ? null : (Date) prop);
 
         // Черновик - На исполнении
-        Status<T> status = new Status<T>();
+        Status<T> status = new Status<>();
         status.setStatus(DocumentStatus.DRAFT);
         status.setProcessedData(t);
-        List<StatusChangeAction> fromStatusActions = new ArrayList<StatusChangeAction>();
+        List<StatusChangeAction> fromStatusActions = new ArrayList<>();
         StatusChangeAction toStatusAction = new StatusChangeAction(process);
 
         toStatusAction.setAction(DocumentAction.REDIRECT_TO_EXECUTION_1);
         toStatusAction.setInitialStatus(status);
 
-        Status<T> toStatus = new Status<T>();
+        Status<T> toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.ON_EXECUTION_2);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        List<IActivity> activites = new ArrayList<IActivity>();
+        List<IActivity> activites = new ArrayList<>();
         InvokeMethodActivity activity = new InvokeMethodActivity();
-        List<Serializable> list = new ArrayList<Serializable>();
+        List<Serializable> list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setTaskRegistrationNumber", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         if (executors != null) {
-            List<String> sendTo = new ArrayList<String>();
+            List<String> sendTo = new ArrayList<>();
             for (User executor : executors) {
                 if (StringUtils.isNotEmpty(executor.getEmail())) {
                     sendTo.add(executor.getEmail());
@@ -1245,19 +1245,19 @@ public final class ProcessFactory {
 
         // На исполнении - Исполнен
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.EXECUTED);
         toStatusAction.setInitialStatus(status);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.EXECUTED);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         if (author != null) {
-            List<String> sendTo = new ArrayList<String>();
+            List<String> sendTo = new ArrayList<>();
             if ((author.getEmail() != null) && (!author.getEmail().isEmpty())) {
                 sendTo.add(author.getEmail());
             }
@@ -1299,12 +1299,12 @@ public final class ProcessFactory {
             toStatusAction.setAction(DocumentAction.CANCEL_25);
             toStatusAction.setInitialStatus(status);
 
-            toStatus = new Status<T>();
+            toStatus = new Status<>();
             toStatus.setStatus(DocumentStatus.CANCEL_4);
             toStatus.setProcessedData(t);
             toStatusAction.setDestinationStatus(toStatus);
 
-            activites = new ArrayList<IActivity>();
+            activites = new ArrayList<>();
             ParametrizedPropertyLocalActivity localActivity = new ParametrizedPropertyLocalActivity();
             localActivity.setParentAction(toStatusAction);
             InputReasonForm reasonForm = new InputReasonForm();
@@ -1315,9 +1315,9 @@ public final class ProcessFactory {
             activites.add(localActivity);
             toStatusAction.setLocalActivities(activites);
 
-            activites = new ArrayList<IActivity>();
+            activites = new ArrayList<>();
             if (author != null) {
-                List<String> sendTo = new ArrayList<String>();
+                List<String> sendTo = new ArrayList<>();
                 if ((author.getEmail() != null) && (!author.getEmail().isEmpty())) {
                     sendTo.add(author.getEmail());
                 }
@@ -1354,12 +1354,12 @@ public final class ProcessFactory {
 
         if (formDescription.equals("task") && t.getDocumentStatus().equals(DocumentStatus.ON_EXECUTION_2)) {
 
-            List<NoStatusAction> noStatusActions = new ArrayList<NoStatusAction>();
+            List<NoStatusAction> noStatusActions = new ArrayList<>();
             NoStatusAction delegateAction = new NoStatusAction(process);
 
             delegateAction.setAction(DocumentAction.DELEGATE_1001);
 
-            activites = new ArrayList<IActivity>();
+            activites = new ArrayList<>();
             ParametrizedPropertyLocalActivity localActivity = new ParametrizedPropertyLocalActivity();
             localActivity.setParentAction(delegateAction);
             SelectUserForm selectUserForm = new SelectUserForm();
@@ -1371,16 +1371,16 @@ public final class ProcessFactory {
             activites.add(localActivity);
             delegateAction.setLocalActivities(activites);
 
-            activites = new ArrayList<IActivity>();
+            activites = new ArrayList<>();
             activity = new InvokeMethodActivity();
-            list = new ArrayList<Serializable>();
+            list = new ArrayList<>();
             list.add(delegateAction);
             list.add(t);
             activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "doTaskDelegateAction", list);
             activites.add(activity);
 
             if (executors != null) {
-                List<String> sendTo = new ArrayList<String>();
+                List<String> sendTo = new ArrayList<>();
                 for (User executor : executors) {
                     if (StringUtils.isNotEmpty(executor.getEmail())) {
                         sendTo.add(executor.getEmail());
@@ -1416,7 +1416,7 @@ public final class ProcessFactory {
                 NoStatusAction changeDateAction = new NoStatusAction(process);
                 changeDateAction.setAction(DocumentAction.CHANGE_EXECUTION_DATE);
 
-                activites = new ArrayList<IActivity>();
+                activites = new ArrayList<>();
                 ParametrizedPropertyLocalActivity localActivity2 = new ParametrizedPropertyLocalActivity();
                 localActivity2.setParentAction(changeDateAction);
                 InputDateForm dateForm = new InputDateForm();
@@ -1445,12 +1445,12 @@ public final class ProcessFactory {
     }
 
     private static <T extends ProcessedData> Status<T> getCurrentStatusOutDocument(T t, final Process process) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        Map<DocumentStatus, Status<T>> statuses = new HashMap<DocumentStatus, Status<T>>();
+        Map<DocumentStatus, Status<T>> statuses = new HashMap<>();
         // Проект документа - На исполнении
-        Status<T> status = new Status<T>();
+        Status<T> status = new Status<>();
         status.setStatus(DocumentStatus.DOC_PROJECT_1);
         status.setProcessedData(t);
-        List<StatusChangeAction> fromStatusActions = new ArrayList<StatusChangeAction>();
+        List<StatusChangeAction> fromStatusActions = new ArrayList<>();
         StatusChangeAction toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
@@ -1474,16 +1474,16 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.CHECK_IN_80);
         toStatusAction.setInitialStatus(status);
 
-        List<IActivity> activites = new ArrayList<IActivity>();
+        List<IActivity> activites = new ArrayList<>();
         InvokeMethodActivity activity = new InvokeMethodActivity();
-        List<Serializable> list = new ArrayList<Serializable>();
+        List<Serializable> list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setOutgoingRegistrationNumber", list);
         activites.add(activity);
 
         toStatusAction.setPreActionActivities(activites);
 
-        Status<T> toStatus = new Status<T>();
+        Status<T> toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.CHECK_IN_80);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1499,13 +1499,13 @@ public final class ProcessFactory {
         fromStatusActions = statuses.get(DocumentStatus.DOC_PROJECT_1).getAvailableActions();
         toStatusAction = new StatusChangeAction(process);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
         toStatusAction.setAction(DocumentAction.REDIRECT_TO_CONSIDERATION_2);
         toStatusAction.setInitialStatus(status);
         toStatusAction.setPreActionActivities(activites);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.ON_CONSIDERATION);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1523,12 +1523,12 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.REDIRECT_TO_AGREEMENT);
         toStatusAction.setInitialStatus(status);
 
-        Status<T> agreeStatus = new Status<T>();
+        Status<T> agreeStatus = new Status<>();
         agreeStatus.setStatus(DocumentStatus.AGREEMENT_3);
         agreeStatus.setProcessedData(t);
         agreeStatus.setAgreementEnabled(true);
         ;
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         Object agreementTree = PropertyUtils.getProperty(t, "agreementTree");
         if (agreementTree != null) {
             HumanTaskTree tree = (HumanTaskTree) agreementTree;
@@ -1536,14 +1536,14 @@ public final class ProcessFactory {
             Set<User> executors = EngineHelper.doGenerateAgreementPrimaryExecutors(tree);
             if (executors.size() > 0) {
                 addAgreementUsersActivity = new InvokeMethodActivity();
-                list = new ArrayList<Serializable>();
+                list = new ArrayList<>();
                 list.add(t);
                 list.add(new ArrayList(executors));
                 addAgreementUsersActivity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "addToDocumentAgreementUsers", list);
                 activites.add(addAgreementUsersActivity);
             }
 
-            List<String> sendTo = new ArrayList<String>();
+            List<String> sendTo = new ArrayList<>();
             for (User executor : executors) {
                 if ((executor.getEmail() != null) && (!executor.getEmail().isEmpty())) {
                     sendTo.add(executor.getEmail());
@@ -1598,9 +1598,9 @@ public final class ProcessFactory {
         toStatus = statuses.get(DocumentStatus.CHECK_IN_80);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setOutgoingRegistrationNumber", list);
         activites.add(activity);
@@ -1611,7 +1611,7 @@ public final class ProcessFactory {
 
         statuses.put(status.getStatus(), status);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
 
         //1-mail
         Object prop = PropertyUtils.getProperty(t, "executor");
@@ -1621,7 +1621,7 @@ public final class ProcessFactory {
         String id = prop == null ? null : prop.toString();
 
         if (executor != null) {
-            List<String> sendTo = new ArrayList<String>();
+            List<String> sendTo = new ArrayList<>();
             if ((executor.getEmail() != null) && (!executor.getEmail().isEmpty())) {
                 sendTo.add(executor.getEmail());
             }
@@ -1646,7 +1646,7 @@ public final class ProcessFactory {
         statuses.put(toStatus.getStatus(), toStatus);
 
         // На согласовании - Зарегистрирован
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
@@ -1669,9 +1669,9 @@ public final class ProcessFactory {
         toStatusAction.setInitialStatus(agreeStatus);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setOutgoingRegistrationNumber", list);
         activites.add(activity);
@@ -1685,13 +1685,13 @@ public final class ProcessFactory {
 
         //Зарегистрирован - Исполнен
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.EXECUTE_90);
         toStatusAction.setCommentNecessary(true);
         toStatusAction.setInitialStatus(status);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.EXECUTE);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1703,20 +1703,20 @@ public final class ProcessFactory {
 
         //Исполнен - В архив
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.IN_ARCHIVE_99);
         toStatusAction.setInitialStatus(status);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "checkOutgoingPropertiesForArchiving", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.IN_ARCHIVE_100);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1728,7 +1728,7 @@ public final class ProcessFactory {
         statuses.put(toStatus.getStatus(), toStatus);
 
         //Изменить уровень допуска
-        List<NoStatusAction> noStatusActions = new ArrayList<NoStatusAction>();
+        List<NoStatusAction> noStatusActions = new ArrayList<>();
         ParametrizedPropertyLocalActivity localActivity2 = new ParametrizedPropertyLocalActivity();
         NoStatusAction changeAccessLevelAction = new NoStatusAction(process) {
             @Override
@@ -1744,7 +1744,7 @@ public final class ProcessFactory {
         };
         changeAccessLevelAction.setAction(DocumentAction.CHANGE_ACCESS_LEVEL);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
 
         localActivity2 = new ParametrizedPropertyLocalActivity();
         localActivity2.setParentAction(changeAccessLevelAction);
@@ -1770,15 +1770,15 @@ public final class ProcessFactory {
 
         prop = PropertyUtils.getProperty(t, "executionDate");
         Date executionDate = (prop == null ? null : (Date) prop);
-        Map<DocumentStatus, Status<T>> statuses = new HashMap<DocumentStatus, Status<T>>();
+        Map<DocumentStatus, Status<T>> statuses = new HashMap<>();
         prop = PropertyUtils.getProperty(t, "id");
         String id = prop == null ? null : prop.toString();
 
         // На регистрации - Зарегистрирован
-        Status<T> status = new Status<T>();
+        Status<T> status = new Status<>();
         status.setStatus(DocumentStatus.ON_REGISTRATION);
         status.setProcessedData(t);
-        List<StatusChangeAction> fromStatusActions = new ArrayList<StatusChangeAction>();
+        List<StatusChangeAction> fromStatusActions = new ArrayList<>();
         StatusChangeAction toStatusAction = new StatusChangeAction(process) {
             @Override
             public boolean isAvailable() {
@@ -1802,26 +1802,26 @@ public final class ProcessFactory {
         toStatusAction.setAction(DocumentAction.CHECK_IN_1);
         toStatusAction.setInitialStatus(status);
 
-        List<IActivity> activites = new ArrayList<IActivity>();
+        List<IActivity> activites = new ArrayList<>();
         InvokeMethodActivity activity = new InvokeMethodActivity();
-        List<Serializable> list = new ArrayList<Serializable>();
+        List<Serializable> list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "setIncomingRegistrationNumber", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        Status<T> toStatus = new Status<T>();
+        Status<T> toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.CHECK_IN_2);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         SendMailActivity mailActivity = null;
         prop = PropertyUtils.getProperty(t, "registrationNumber");
         String docNumber = (prop == null ? "" : (String) prop);
 
         //1-mail
-        List<String> sendTo = new ArrayList<String>();
+        List<String> sendTo = new ArrayList<>();
         prop = PropertyUtils.getProperty(t, "executors");
         Set<User> executors = (prop == null ? null : (Set<User>) prop);
         if (executors != null) {
@@ -1867,13 +1867,13 @@ public final class ProcessFactory {
 
         //На рассмотрении - На исполнении
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.REDIRECT_TO_EXECUTION_2);
         toStatusAction.setCommentNecessary(true);
         toStatusAction.setInitialStatus(status);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.ON_EXECUTION_80);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1886,13 +1886,13 @@ public final class ProcessFactory {
 
         //На исполнении - Исполнен
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.EXECUTE_80);
         toStatusAction.setCommentNecessary(true);
         toStatusAction.setInitialStatus(status);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.EXECUTE);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1904,20 +1904,20 @@ public final class ProcessFactory {
 
         //Исполнен - Архив
         status = toStatus;
-        fromStatusActions = new ArrayList<StatusChangeAction>();
+        fromStatusActions = new ArrayList<>();
         toStatusAction = new StatusChangeAction(process);
         toStatusAction.setAction(DocumentAction.IN_ARCHIVE_90);
         toStatusAction.setInitialStatus(status);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         activity = new InvokeMethodActivity();
-        list = new ArrayList<Serializable>();
+        list = new ArrayList<>();
         list.add(t);
         activity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "checkIncomingPropertiesForArchiving", list);
         activites.add(activity);
         toStatusAction.setPreActionActivities(activites);
 
-        toStatus = new Status<T>();
+        toStatus = new Status<>();
         toStatus.setStatus(DocumentStatus.IN_ARCHIVE_100);
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
@@ -1927,7 +1927,7 @@ public final class ProcessFactory {
 
         statuses.put(status.getStatus(), status);
         statuses.put(toStatus.getStatus(), toStatus);
-        List<NoStatusAction> noStatusActions = new ArrayList<NoStatusAction>();
+        List<NoStatusAction> noStatusActions = new ArrayList<>();
 
         NoStatusAction changeDateAction = new NoStatusAction(process) {
             @Override
@@ -1944,7 +1944,7 @@ public final class ProcessFactory {
         };
         changeDateAction.setAction(DocumentAction.CHANGE_EXECUTION_DATE);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
         ParametrizedPropertyLocalActivity localActivity2 = new ParametrizedPropertyLocalActivity();
         localActivity2.setParentAction(changeDateAction);
         InputDateForm dateForm = new InputDateForm();
@@ -1978,7 +1978,7 @@ public final class ProcessFactory {
         };
         changeAccessLevelAction.setAction(DocumentAction.CHANGE_ACCESS_LEVEL);
 
-        activites = new ArrayList<IActivity>();
+        activites = new ArrayList<>();
 
         localActivity2 = new ParametrizedPropertyLocalActivity();
         localActivity2.setParentAction(changeAccessLevelAction);

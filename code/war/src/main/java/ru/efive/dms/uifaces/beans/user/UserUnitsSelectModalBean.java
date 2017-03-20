@@ -36,7 +36,7 @@ public class UserUnitsSelectModalBean extends ModalWindowHolderBean {
 
     public void setUsers(List<User> users) {
         if (users == null) {
-            this.users = new ArrayList<User>();
+            this.users = new ArrayList<>();
         } else {
             this.users = users;
         }
@@ -48,7 +48,7 @@ public class UserUnitsSelectModalBean extends ModalWindowHolderBean {
 
     public void setGroups(List<Group> groups) {
         if (groups == null) {
-            this.groups = new ArrayList<Group>();
+            this.groups = new ArrayList<>();
         } else {
             this.groups = groups;
         }
@@ -94,8 +94,8 @@ public class UserUnitsSelectModalBean extends ModalWindowHolderBean {
     }
 
     private UserListHolderBean userList;
-    private List<User> users = new ArrayList<User>();
+    private List<User> users = new ArrayList<>();
 
     private GroupsHolderBean groupsView;
-    private List<Group> groups = new ArrayList<Group>();
+    private List<Group> groups = new ArrayList<>();
 }

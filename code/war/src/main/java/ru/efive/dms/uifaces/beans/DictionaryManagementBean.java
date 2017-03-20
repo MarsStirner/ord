@@ -46,7 +46,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<UserAccessLevel> getUserAccessLevelsLowerOrEqualMaxValue(int maxLevel) {
-        List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
+        List<UserAccessLevel> result = new ArrayList<>();
         try {
             List<UserAccessLevel> levels = sessionManagement.getDictionaryDAO(UserAccessLevelDAOImpl.class, USER_ACCESS_LEVEL_DAO).findDocuments();
             for (UserAccessLevel level : levels) {
@@ -61,7 +61,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<UserAccessLevel> getUserAccessLevelsGreaterOrEqualMaxValue(int maxLevel) {
-        List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
+        List<UserAccessLevel> result = new ArrayList<>();
         try {
             List<UserAccessLevel> levels = sessionManagement.getDictionaryDAO(UserAccessLevelDAOImpl.class, USER_ACCESS_LEVEL_DAO).findDocuments();
             for (UserAccessLevel level : levels) {
@@ -76,7 +76,7 @@ public class DictionaryManagementBean implements Serializable {
     }
 
     public List<UserAccessLevel> getUserAccessLevelsWithEmptyValue() {
-        List<UserAccessLevel> result = new ArrayList<UserAccessLevel>();
+        List<UserAccessLevel> result = new ArrayList<>();
         try {
             result = sessionManagement.getDictionaryDAO(UserAccessLevelDAOImpl.class, USER_ACCESS_LEVEL_DAO).findDocuments();
         } catch (Exception e) {
@@ -101,7 +101,7 @@ public class DictionaryManagementBean implements Serializable {
 
 
     public List<GroupType> getGroupTypes() {
-        List<GroupType> result = new ArrayList<GroupType>();
+        List<GroupType> result = new ArrayList<>();
         try {
             result = sessionManagement.getDictionaryDAO(GroupTypeDAOImpl.class, GROUP_TYPE_DAO).findDocuments();
         } catch (Exception e) {

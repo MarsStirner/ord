@@ -13,9 +13,9 @@ import java.util.Map;
  */
 public class LoggingSubsystemItem {
     private String level;
-    private Map<String, String> owner = new HashMap<String, String>();
-    private Map<String, String> data = new HashMap<String, String>();
-    private List<String> tags = new ArrayList<String>(5);
+    private Map<String, String> owner = new HashMap<>();
+    private Map<String, String> data = new HashMap<>();
+    private List<String> tags = new ArrayList<>(5);
 
     public LoggingSubsystemItem() {
     }

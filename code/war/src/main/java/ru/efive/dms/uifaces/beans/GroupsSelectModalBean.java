@@ -26,7 +26,7 @@ public class GroupsSelectModalBean extends ModalWindowHolderBean {
 
     public void setGroups(List<Group> groups) {
         if (groups == null) {
-            this.groups = new ArrayList<Group>();
+            this.groups = new ArrayList<>();
         } else {
             this.groups = groups;
         }
@@ -60,5 +60,5 @@ public class GroupsSelectModalBean extends ModalWindowHolderBean {
     }
 
     private GroupsHolderBean groupsView;
-    private List<Group> groups = new ArrayList<Group>();
+    private List<Group> groups = new ArrayList<>();
 }

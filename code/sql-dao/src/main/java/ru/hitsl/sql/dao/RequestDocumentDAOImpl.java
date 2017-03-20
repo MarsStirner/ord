@@ -260,7 +260,7 @@ public class RequestDocumentDAOImpl extends DocumentDAO<RequestDocument> {
 
         //TODO справочник в БД
         final List<DocumentStatus> statuses = DocumentType.getRequestDocumentStatuses();
-        final List<Integer> statusIdList = new ArrayList<Integer>(statuses.size());
+        final List<Integer> statusIdList = new ArrayList<>(statuses.size());
         for (DocumentStatus current : statuses) {
             if (current.getName().contains(filter)) {
                 statusIdList.add(current.getId());

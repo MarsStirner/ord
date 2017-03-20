@@ -74,7 +74,7 @@ public class EnumerationFactory {
      * @return instance of {@code Enumeration<E>} for {@code data}
      */
     public static <E> Enumeration<E> newInstance(Collection<? extends E> data) {
-        return new IteratorEnumeration<E>(data);
+        return new IteratorEnumeration<>(data);
     }
 
     /**
@@ -84,7 +84,7 @@ public class EnumerationFactory {
      * @return instance of {@code Enumeration<E>} for {@code data}
      */
     public static <E> Enumeration<E> newInstance(Iterator<? extends E> data) {
-        return new IteratorEnumeration<E>(data);
+        return new IteratorEnumeration<>(data);
     }
 
     /**
@@ -94,6 +94,6 @@ public class EnumerationFactory {
      * @return instance of {@code Enumeration<E>} for {@code data}
      */
     public static <E> Enumeration<E> newInstance(E[] data) {
-        return new ArrayEnumeration<E>(data);
+        return new ArrayEnumeration<>(data);
     }
 }

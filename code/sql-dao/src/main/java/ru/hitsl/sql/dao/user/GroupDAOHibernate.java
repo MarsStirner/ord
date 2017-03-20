@@ -123,7 +123,7 @@ public class GroupDAOHibernate extends DictionaryDAOHibernate<Group> {
         //получаем список ключей от сущностей, которые нам нужны (с корректным [LIMIT offset, count])
         final List ids = getHibernateTemplate().findByCriteria(criteria, first, pageSize);
         if (ids.isEmpty()) {
-            return new ArrayList<Group>(0);
+            return new ArrayList<>(0);
         }
         //Ищем только по этим ключам с упорядочиванием
         return getHibernateTemplate().findByCriteria(getIDListCriteria(ids, sortField, sortOrder));

@@ -137,7 +137,7 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
         }
         writer.endElement(HtmlElement.TD);
 
-        ArrayList<CalendarPlanEvent> hourEvents = new ArrayList<CalendarPlanEvent>();
+        ArrayList<CalendarPlanEvent> hourEvents = new ArrayList<>();
         for (int day = 0; day < days; day++) {
             writer.startElement(HtmlElement.TD);
 
@@ -227,8 +227,8 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
             CalendarPlanSpecialDaysComposition specialDays,
             Collection<CalendarPlanEvent> events,
             int days) throws IOException {
-        ArrayList<CalendarPlanEvent> dayEvents = new ArrayList<CalendarPlanEvent>();
-        Map<Integer, Integer> eventNumbers = new HashMap<Integer, Integer>();
+        ArrayList<CalendarPlanEvent> dayEvents = new ArrayList<>();
+        Map<Integer, Integer> eventNumbers = new HashMap<>();
         int eventNumberSequence = 0;
         Date start = null, stop = null;
         String id = writer.getComponent().getClientId();

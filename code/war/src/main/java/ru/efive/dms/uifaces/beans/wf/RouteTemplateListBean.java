@@ -42,7 +42,7 @@ public class RouteTemplateListBean extends AbstractDocumentListHolderBean<RouteT
 
     @Override
     protected List<RouteTemplate> loadDocuments() {
-        List<RouteTemplate> result = new ArrayList<RouteTemplate>();
+        List<RouteTemplate> result = new ArrayList<>();
         try {
             result = sessionManagement.getDAO(EngineDAOImpl.class, ENGINE_DAO).findRouteTemplates(sessionManagement.getLoggedUser(), false,
                     getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());

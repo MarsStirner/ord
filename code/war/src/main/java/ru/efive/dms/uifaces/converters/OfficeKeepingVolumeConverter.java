@@ -24,7 +24,7 @@ public class OfficeKeepingVolumeConverter implements Converter {
             SessionManagementBean sessionManagement =
                     (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
-            Map<String, Object> in_filters = new HashMap<String, Object>();
+            Map<String, Object> in_filters = new HashMap<>();
             List<OfficeKeepingVolume> list = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocuments(in_filters, "", false);
             if (list.size() != 0) {
                 for (OfficeKeepingVolume in_record : list) {

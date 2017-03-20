@@ -41,7 +41,7 @@ public class Person extends User implements ProcessUser {
         setLogin(user.getLogin());
         setMiddleName(user.getMiddleName());
         setPassword(user.getPassword());
-        totalRoles = new HashSet<Role>(user.getRoles());
+        totalRoles = new HashSet<>(user.getRoles());
         for(User currentUser : substitutedUsers){
            totalRoles.addAll(currentUser.getRoles());
         }

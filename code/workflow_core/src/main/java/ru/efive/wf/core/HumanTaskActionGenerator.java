@@ -35,7 +35,7 @@ public class HumanTaskActionGenerator {
     //private static String in_serverHost="http://10.0.200.60";
 
     public List<IAction> generateActionsFromTask(HumanTask task) {
-        List<IAction> result = new ArrayList<IAction>();
+        List<IAction> result = new ArrayList<>();
         try {
             if (task != null && task.getExecutor() != null && task.getExecutor().getId() != 0 && process.getProcessUser().getId() == task.getExecutor().getId()) {
                 /**
@@ -45,18 +45,18 @@ public class HumanTaskActionGenerator {
                 agreeAction.setAction(DocumentAction.AGREE);
                 agreeAction.setHistoryAction(false);
 
-                List<IActivity> activites = new ArrayList<IActivity>();
+                List<IActivity> activites = new ArrayList<>();
                 InvokeMethodActivity activity = new InvokeMethodActivity();
-                List<Serializable> list = new ArrayList<Serializable>();
+                List<Serializable> list = new ArrayList<>();
                 list.add(resolver);
                 list.add(task);
                 activity.setInvokeInformation("ru.efive.wf.core.util.EngineHelper", "doHumanTaskAgreeAction", list);
                 activites.add(activity);
 
                 SendMailActivity mailActivity = new SendMailActivity();
-                List<String> sendTo = new ArrayList<String>();
+                List<String> sendTo = new ArrayList<>();
                 sendTo.add(task.getExecutor().getEmail());
-                List<String> blindCopyTo = new ArrayList<String>();
+                List<String> blindCopyTo = new ArrayList<>();
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 MailMessage message = new MailMessage(sendTo, null, "Согласовано",
@@ -70,7 +70,7 @@ public class HumanTaskActionGenerator {
 
                 agreeAction.setPreActionActivities(activites);
 
-                activites = new ArrayList<IActivity>();
+                activites = new ArrayList<>();
                 mailActivity = new SendMailActivity();
                 sendTo = EngineHelper.doGenerateAgreementSecondaryNotificationList(resolver, task);
                 sendTo.add(task.getExecutor().getEmail());
@@ -94,7 +94,7 @@ public class HumanTaskActionGenerator {
                 declineAction.setAction(DocumentAction.NOT_AGREE);
                 declineAction.setHistoryAction(false);
 
-                activites = new ArrayList<IActivity>();
+                activites = new ArrayList<>();
                 ParametrizedPropertyLocalActivity localActivity = new ParametrizedPropertyLocalActivity();
                 localActivity.setParentAction(declineAction);
                 InputReasonForm reasonForm = new InputReasonForm();
@@ -105,18 +105,18 @@ public class HumanTaskActionGenerator {
                 activites.add(localActivity);
                 declineAction.setLocalActivities(activites);
 
-                activites = new ArrayList<IActivity>();
+                activites = new ArrayList<>();
                 activity = new InvokeMethodActivity();
-                list = new ArrayList<Serializable>();
+                list = new ArrayList<>();
                 list.add(declineAction);
                 list.add(task);
                 activity.setInvokeInformation("ru.efive.wf.core.util.EngineHelper", "doHumanTaskDeclineAction", list);
                 activites.add(activity);
 
                 mailActivity = new SendMailActivity();
-                sendTo = new ArrayList<String>();
+                sendTo = new ArrayList<>();
                 sendTo.add(task.getExecutor().getEmail());
-                blindCopyTo = new ArrayList<String>();
+                blindCopyTo = new ArrayList<>();
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, null, "Отказ в согласовании ",
@@ -139,7 +139,7 @@ public class HumanTaskActionGenerator {
                 delegateAction.setAction(DocumentAction.DELEGATE_10002);
                 delegateAction.setHistoryAction(false);
 
-                activites = new ArrayList<IActivity>();
+                activites = new ArrayList<>();
                 localActivity = new ParametrizedPropertyLocalActivity();
                 localActivity.setParentAction(delegateAction);
                 SelectUserForm selectUserForm = new SelectUserForm();
@@ -151,19 +151,19 @@ public class HumanTaskActionGenerator {
                 activites.add(localActivity);
                 delegateAction.setLocalActivities(activites);
 
-                activites = new ArrayList<IActivity>();
+                activites = new ArrayList<>();
                 activity = new InvokeMethodActivity();
-                list = new ArrayList<Serializable>();
+                list = new ArrayList<>();
                 list.add(delegateAction);
                 list.add(task);
                 activity.setInvokeInformation("ru.efive.wf.core.util.EngineHelper", "doHumanTaskDelegateAction", list);
                 activites.add(activity);
 
                 mailActivity = new SendMailActivity();
-                sendTo = new ArrayList<String>();
-                List<String> copyTo = new ArrayList<String>();
+                sendTo = new ArrayList<>();
+                List<String> copyTo = new ArrayList<>();
                 copyTo.add(task.getExecutor().getEmail());
-                blindCopyTo = new ArrayList<String>();
+                blindCopyTo = new ArrayList<>();
                 blindCopyTo.add("alexeyvagizov@gmail.com");
                 blindCopyTo.add("nkochubey@inbox.ru");
                 message = new MailMessage(sendTo, copyTo, "Делегирован запрос на согласование ",
@@ -228,20 +228,20 @@ public class HumanTaskActionGenerator {
             };
             result.setAction(DocumentAction.RETURN_TO_EDITING);
 
-            Status<ProcessedData> status = new Status<ProcessedData>();
+            Status<ProcessedData> status = new Status<>();
             status.setStatus(DocumentStatus.DOC_PROJECT_12);
             status.setProcessedData(process.getProcessedData());
 
             result.setDestinationStatus(status);
 
-            status = new Status<ProcessedData>();
+            status = new Status<>();
             status.setStatus(DocumentStatus.AGREEMENT_14);
             status.setProcessedData(process.getProcessedData());
             result.setInitialStatus(status);
 
-            List<IActivity> activities = new ArrayList<IActivity>();
+            List<IActivity> activities = new ArrayList<>();
             SetPropertyActivity activitySetProp = new SetPropertyActivity();
-            Map<String, Object> propertyChanges = new HashMap<String, Object>();
+            Map<String, Object> propertyChanges = new HashMap<>();
             propertyChanges.put("agreementTree", null);
             activitySetProp.setPropertyChanges(propertyChanges);
             activities.add(activitySetProp);
