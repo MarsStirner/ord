@@ -31,7 +31,7 @@ public class GenericDAOHibernate<T extends IdentifiedEntity> extends HibernateDa
      */
     @Override
     public T get(Serializable id) {
-        return (T) getHibernateTemplate().get(getPersistentClass(), id);
+        return getHibernateTemplate().get(getPersistentClass(), id);
     }
 
     /**
@@ -47,7 +47,7 @@ public class GenericDAOHibernate<T extends IdentifiedEntity> extends HibernateDa
     }
 
     public T merge(T entity) {
-        entity = (T) getHibernateTemplate().merge(entity);
+        entity = getHibernateTemplate().merge(entity);
         return entity;
     }
 

@@ -20,7 +20,7 @@ public class RoleConverter implements Converter {
         Object result = null;
         try {
             SessionManagementBean sessionManagement =
-                    (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
+                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
             List<Role> list = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findByValue(value);
             if (list.size() > 0) {

@@ -1,16 +1,16 @@
 package ru.efive.wf.core;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
-import ru.entity.model.user.User;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.user.User;
 import ru.entity.model.wf.HumanTask;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.entity.model.wf.HumanTaskTreeNode;
 import ru.external.ProcessedData;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class HumanTaskTreeStateResolver implements java.io.Serializable {
 
@@ -94,7 +94,7 @@ public class HumanTaskTreeStateResolver implements java.io.Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return false;
     }
 
     private boolean isSubTreeProcessed(HumanTaskTreeNode rootNode) {
@@ -146,7 +146,7 @@ public class HumanTaskTreeStateResolver implements java.io.Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
+        return false;
     }
 
     public List<HumanTask> getCurrentTaskList() {

@@ -17,7 +17,7 @@ public class UserUnitsSelectModalBean extends ModalWindowHolderBean {
     public UserListHolderBean getUserList() {
         if (userList == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            userList = (UserListHolderBean) context.getApplication().evaluateExpressionGet(context, "#{userList}", UserListHolderBean.class);
+            userList = context.getApplication().evaluateExpressionGet(context, "#{userList}", UserListHolderBean.class);
         }
         return userList;
     }
@@ -25,7 +25,7 @@ public class UserUnitsSelectModalBean extends ModalWindowHolderBean {
     public GroupsHolderBean getGroupsView() {
         if (groupsView == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            groupsView = (GroupsHolderBean) context.getApplication().evaluateExpressionGet(context, "#{groups}", GroupsHolderBean.class);
+            groupsView = context.getApplication().evaluateExpressionGet(context, "#{groups}", GroupsHolderBean.class);
         }
         return groupsView;
     }

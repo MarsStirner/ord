@@ -10,7 +10,7 @@ public class OfficeKeepingVolumeSelectModal extends ModalWindowHolderBean {
     public OfficeKeepingVolumesSelectHolderBean getOfficeKeepingVolumes() {
         if (officeKeepingVolumes == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            officeKeepingVolumes = (OfficeKeepingVolumesSelectHolderBean) context.getApplication().evaluateExpressionGet(context, "#{officeKeepingVolumesSelect}", OfficeKeepingVolumesSelectHolderBean.class);
+            officeKeepingVolumes = context.getApplication().evaluateExpressionGet(context, "#{officeKeepingVolumesSelect}", OfficeKeepingVolumesSelectHolderBean.class);
         }
         return officeKeepingVolumes;
     }

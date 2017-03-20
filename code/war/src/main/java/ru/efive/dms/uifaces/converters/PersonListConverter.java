@@ -20,11 +20,11 @@ public class PersonListConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement = (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
+            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
             List<User> in_users = new ArrayList<>();
             List<String> values = Arrays.asList(value.split("<br \\>"));
             for (String e : values) {
-                User in_user = ((UserDAOHibernate) sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO)).getByLogin(e);
+                User in_user = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO).getByLogin(e);
                 if (in_user != null) in_users.add(in_user);
             }
             result = in_users;

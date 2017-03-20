@@ -99,7 +99,7 @@ public class HtmlFormPart extends UIComponentBase {
             context.getViewRoot().invokeOnComponent(context, id, new ContextCallback() {
                 @Override
                 public void invokeContextCallback(FacesContext context, UIComponent target) {
-                    if (holder[0] == null && target instanceof UICommand && commands.contains((UICommand) target)) {
+                    if (holder[0] == null && target instanceof UICommand && commands.contains(target)) {
                         holder[0] = (UICommand) target;
                     }
                 }

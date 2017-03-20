@@ -21,7 +21,7 @@ public class RequestDocumentFormConverter implements Converter {
         Object result = null;
         try {
             SessionManagementBean sessionManagement =
-                    (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
+                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
             List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByDocumentTypeCodeAndValue(
                     DocumentType.RB_CODE_REQUEST, value);

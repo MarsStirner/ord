@@ -20,7 +20,7 @@ public class RegionConverter implements Converter {
         Object result = null;
         try {
             SessionManagementBean sessionManagement =
-                    (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
+                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
             List<Region> list = sessionManagement.getDictionaryDAO(RegionDAOImpl.class, REGION_DAO).getByValue(value);
             if (list.size() > 0) {

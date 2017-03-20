@@ -15,7 +15,7 @@ public class GroupsSelectModalBean extends ModalWindowHolderBean {
     public GroupsHolderBean getGroupsView() {
         if (groupsView == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            groupsView = (GroupsHolderBean) context.getApplication().evaluateExpressionGet(context, "#{groups}", GroupsHolderBean.class);
+            groupsView = context.getApplication().evaluateExpressionGet(context, "#{groups}", GroupsHolderBean.class);
         }
         return groupsView;
     }

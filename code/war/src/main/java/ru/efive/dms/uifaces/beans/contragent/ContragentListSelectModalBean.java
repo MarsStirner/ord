@@ -12,7 +12,7 @@ public class ContragentListSelectModalBean extends ModalWindowHolderBean {
     public ContragentListHolderBean getContragentList() {
         if (contragentList == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            contragentList = (ContragentListHolderBean) context.getApplication().evaluateExpressionGet(context, "#{contragentList}", ContragentListHolderBean.class);
+            contragentList = context.getApplication().evaluateExpressionGet(context, "#{contragentList}", ContragentListHolderBean.class);
         }
         return contragentList;
     }

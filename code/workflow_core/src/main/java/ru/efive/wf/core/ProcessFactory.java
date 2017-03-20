@@ -1147,7 +1147,7 @@ public final class ProcessFactory {
         Set<User> executors = prop == null ? null : (Set<User>) prop;
 
         prop = PropertyUtils.getProperty(t, "form");
-        Object form = (prop == null ? null : (Object) prop);
+        Object form = (prop == null ? null : prop);
 
         prop = null;
         if (form != null) {
@@ -1200,7 +1200,7 @@ public final class ProcessFactory {
                         break;
                     case "exercise":
                         prop = PropertyUtils.getProperty(t, "exerciseType");
-                        Object exerciseType = (prop == null ? null : (Object) prop);
+                        Object exerciseType = (prop == null ? null : prop);
 
                         prop = null;
                         if (form != null) {

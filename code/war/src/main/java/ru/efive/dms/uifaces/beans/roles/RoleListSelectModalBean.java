@@ -13,7 +13,7 @@ public class RoleListSelectModalBean extends ModalWindowHolderBean {
     public RoleListHolderBean getRoleList() {
         if (roleList == null) {
             FacesContext context = FacesContext.getCurrentInstance();
-            roleList = (RoleListHolderBean) context.getApplication().evaluateExpressionGet(context, "#{roleList}", RoleListHolderBean.class);
+            roleList = context.getApplication().evaluateExpressionGet(context, "#{roleList}", RoleListHolderBean.class);
         }
         return roleList;
     }

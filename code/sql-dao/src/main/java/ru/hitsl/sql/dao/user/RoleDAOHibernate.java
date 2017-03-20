@@ -74,7 +74,7 @@ public class RoleDAOHibernate extends GenericDAOHibernate<Role> {
         }
         List<Role> in_roles = getHibernateTemplate().findByCriteria(detachedCriteria);
         if(in_roles == null || !in_roles.isEmpty()) {
-            return (Role) in_roles.get(0);
+            return in_roles.get(0);
         } else {
             return null;
         }

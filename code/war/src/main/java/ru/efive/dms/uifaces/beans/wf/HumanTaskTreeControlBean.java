@@ -117,7 +117,7 @@ public class HumanTaskTreeControlBean implements java.io.Serializable {
         public RouteTemplateListBean getRouteTemplateList() {
             if (routeTemplateList == null) {
                 FacesContext context = FacesContext.getCurrentInstance();
-                routeTemplateList = (RouteTemplateListBean) context.getApplication().evaluateExpressionGet(context, "#{routeTemplates}", RouteTemplateListBean.class);
+                routeTemplateList = context.getApplication().evaluateExpressionGet(context, "#{routeTemplates}", RouteTemplateListBean.class);
             }
             return routeTemplateList;
         }

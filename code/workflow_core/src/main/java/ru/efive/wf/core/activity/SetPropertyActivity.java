@@ -1,13 +1,13 @@
 package ru.efive.wf.core.activity;
 
+import ru.efive.wf.core.IActivity;
+import ru.external.ProcessedData;
+
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Map;
-
-import ru.efive.wf.core.IActivity;
-import ru.external.ProcessedData;
 
 public class SetPropertyActivity implements IActivity {
 
@@ -47,7 +47,7 @@ public class SetPropertyActivity implements IActivity {
             for (String propertyName : propertyChanges.keySet()) {
                 if (beanProperties.keySet().contains(propertyName)) {
                     PropertyDescriptor pd = beanProperties.get(propertyName);
-                    pd.getWriteMethod().invoke(processedData, new Object[]{propertyChanges.get(propertyName)});
+                    pd.getWriteMethod().invoke(processedData, propertyChanges.get(propertyName));
                 } else {
                     System.out.println("Bean property not found");
                 }

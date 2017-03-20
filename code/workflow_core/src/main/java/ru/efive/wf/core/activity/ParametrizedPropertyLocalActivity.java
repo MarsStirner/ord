@@ -44,7 +44,7 @@ public class ParametrizedPropertyLocalActivity extends ParametrizedFieldActivity
                     } else if (property.getScope().equals(EditablePropertyScope.GLOBAL)) {
                         if (beanProperties.keySet().contains(property.getName())) {
                             PropertyDescriptor pd = beanProperties.get(property.getName());
-                            pd.getWriteMethod().invoke(getProcessedData(), new Object[]{property.getValue()});
+                            pd.getWriteMethod().invoke(getProcessedData(), property.getValue());
                             getParentAction().addProperty(property);
                             result = true;
                         } else {

@@ -20,7 +20,7 @@ public class EngineDAOImpl extends GenericDAOHibernate<Document> {
     }
 
     public <T extends Document> T get(Class<T> clazz, Serializable id) {
-        return (T) getHibernateTemplate().get(clazz, id);
+        return getHibernateTemplate().get(clazz, id);
     }
 
     @SuppressWarnings("unchecked")

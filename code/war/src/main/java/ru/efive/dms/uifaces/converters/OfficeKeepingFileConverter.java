@@ -21,7 +21,7 @@ public class OfficeKeepingFileConverter implements Converter {
         Object result = null;
         try {
             SessionManagementBean sessionManagement =
-                    (SessionManagementBean) context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
+                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
                             SessionManagementBean.class);
             List<OfficeKeepingFile> list = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocuments(false);
             if (list.size() != 0) {
