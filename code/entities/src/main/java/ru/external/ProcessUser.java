@@ -7,10 +7,10 @@ import java.util.Set;
 
 public interface ProcessUser extends Serializable{
 
-    public Integer getId();
+    Integer getId();
 
-    public String getEmail();
+    String getEmail();
 
-    public Set<Role> getRoles();
+    Set<Role> getRoles();
 
 }

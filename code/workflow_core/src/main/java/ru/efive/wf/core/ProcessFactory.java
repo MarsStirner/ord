@@ -1527,7 +1527,6 @@ public final class ProcessFactory {
         agreeStatus.setStatus(DocumentStatus.AGREEMENT_3);
         agreeStatus.setProcessedData(t);
         agreeStatus.setAgreementEnabled(true);
-        ;
         activites = new ArrayList<>();
         Object agreementTree = PropertyUtils.getProperty(t, "agreementTree");
         if (agreementTree != null) {

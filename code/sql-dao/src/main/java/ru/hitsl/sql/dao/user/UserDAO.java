@@ -15,7 +15,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param password пароль
      * @return пользователь или null, если такового не существует
      */
-    public User findByLoginAndPassword(String login, String password);
+    User findByLoginAndPassword(String login, String password);
 
     /**
      * Возвращает пользователя по логину
@@ -23,7 +23,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param login логин
      * @return пользователь или null, если такового не существует
      */
-    public User getByLogin(String login);
+    User getByLogin(String login);
 
 
     /**
@@ -37,7 +37,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param orderAsc    указывает направление сортировки. true = по возрастанию
      * @return список пользователей удовлетворяющих условию поиска
      */
-    public List<User> findUsers(String pattern, boolean showDeleted, boolean showFired, int offset, int count, String orderBy, boolean orderAsc);
+    List<User> findUsers(String pattern, boolean showDeleted, boolean showFired, int offset, int count, String orderBy, boolean orderAsc);
 
     /**
      * Находит количество пользователей по маске
@@ -46,7 +46,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param showDeleted включает в выборку удалённых пользователей
      * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
      */
-    public long countUsers(String pattern, boolean showDeleted, boolean showFired);
+    long countUsers(String pattern, boolean showDeleted, boolean showFired);
 
 
     /**
@@ -60,7 +60,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param orderAsc    указывает направление сортировки. true = по возрастанию
      * @return список пользователей удовлетворяющих условию поиска
      */
-    public List<User> findUsersForDialog(String pattern, boolean showDeleted, boolean showFired, int offset, int count, String orderBy, boolean orderAsc);
+    List<User> findUsersForDialog(String pattern, boolean showDeleted, boolean showFired, int offset, int count, String orderBy, boolean orderAsc);
 
     /**
      * Находит количество пользователей по маске
@@ -69,7 +69,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param showDeleted включает в выборку удалённых пользователей
      * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
      */
-    public long countUsersForDialog(String pattern, boolean showDeleted, boolean showFired);
+    long countUsersForDialog(String pattern, boolean showDeleted, boolean showFired);
 
 
     /**
@@ -84,7 +84,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param orderAsc порядок сортировки
      * @return список пользователей удовлетворяющий условиям
      */
-    public List<User> findUsersForDialogByGroup(final String pattern, final boolean showDeleted, final boolean showFired,final Group group, final int
+    List<User> findUsersForDialogByGroup(final String pattern, final boolean showDeleted, final boolean showFired, final Group group, final int
             offset, final int count, final String orderBy, final boolean orderAsc);
 
 
@@ -94,7 +94,7 @@ public interface UserDAO extends GenericDAO<User> {
      * @param showDeleted включает в выборку удалённых пользователей
      * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
      */
-    public long countUsersForDialogByGroup(final String pattern, final boolean showDeleted, final boolean showFired, final Group group);
+    long countUsersForDialogByGroup(final String pattern, final boolean showDeleted, final boolean showFired, final Group group);
 
 
 }

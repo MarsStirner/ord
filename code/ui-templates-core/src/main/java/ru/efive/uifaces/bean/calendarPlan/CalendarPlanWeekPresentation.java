@@ -85,7 +85,7 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
         return ID;
     }
 
-    public static enum Layout {
+    public enum Layout {
         byHours, byEvents
     }
     private Layout layout = Layout.byEvents;

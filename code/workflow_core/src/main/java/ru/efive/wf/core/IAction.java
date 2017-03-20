@@ -7,31 +7,31 @@ import ru.efive.wf.core.data.EditableProperty;
 
 public interface IAction {
 
-    public DocumentAction getAction();
+    DocumentAction getAction();
 
-    public ActionResult run();
+    ActionResult run();
 
-    public void commit() throws ProcessingException;
+    void commit() throws ProcessingException;
 
-    public void rollback() throws ProcessingException;
+    void rollback() throws ProcessingException;
 
-    public List<? extends IActivity> getPreActionActivities();
+    List<? extends IActivity> getPreActionActivities();
 
-    public List<? extends IActivity> getPostActionActivities();
+    List<? extends IActivity> getPostActionActivities();
 
-    public List<? extends IActivity> getLocalActivities();
+    List<? extends IActivity> getLocalActivities();
 
-    public String getEvaluationMessage();
+    String getEvaluationMessage();
 
-    public boolean isHistoryAction();
+    boolean isHistoryAction();
 
-    public void setComment(String comment);
+    void setComment(String comment);
 
-    public List<? extends IActivity> getActivities();
+    List<? extends IActivity> getActivities();
 
-    public List<EditableProperty> getProperties();
+    List<EditableProperty> getProperties();
 
-    public void addProperty(EditableProperty property) throws Exception;
+    void addProperty(EditableProperty property) throws Exception;
 
-    public void addProperties(List<EditableProperty> properties) throws Exception;
+    void addProperties(List<EditableProperty> properties) throws Exception;
 }

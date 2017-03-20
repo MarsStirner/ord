@@ -6,14 +6,14 @@ import ru.entity.model.enums.DocumentType;
 import java.io.Serializable;
 
 public interface ProcessedData extends Serializable {
-    public Integer getId();
+    Integer getId();
 
-    public DocumentType getDocumentType();
+    DocumentType getDocumentType();
 
-    public DocumentStatus getDocumentStatus();
+    DocumentStatus getDocumentStatus();
 
-    public void setDocumentStatus(DocumentStatus status);
+    void setDocumentStatus(DocumentStatus status);
 
-    public String getBeanName();
+    String getBeanName();
 
 }

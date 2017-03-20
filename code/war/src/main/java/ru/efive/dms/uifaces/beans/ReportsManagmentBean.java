@@ -182,7 +182,6 @@ public class ReportsManagmentBean {
         if (true) {
             return;
         }
-        ;
         //Configure page printing on found print
         DocPrintJob job = psZebra.createPrintJob();
         PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();
@@ -289,7 +288,6 @@ public class ReportsManagmentBean {
         if (true) {
             return;
         }
-        ;
         //Configure page printing on found print
         DocPrintJob job = psZebra.createPrintJob();
         PrintRequestAttributeSet printRequestAttributeSet = new HashPrintRequestAttributeSet();

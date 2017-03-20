@@ -52,7 +52,7 @@ public class CalendarPlanMonthPresentation extends CalendarPlanPresentation {
         return ID;
     }
 
-    public static enum Layout {
+    public enum Layout {
         one, vertical3, horizontal3
     }
     private Layout layout = Layout.one;

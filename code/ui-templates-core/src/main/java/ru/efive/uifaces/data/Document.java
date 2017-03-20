@@ -15,5 +15,5 @@ public interface Document<T> {
      * 
      * @return id of document.
      */
-    public T getId();
+    T getId();
 }

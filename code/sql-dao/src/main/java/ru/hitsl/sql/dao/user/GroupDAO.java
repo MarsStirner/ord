@@ -16,7 +16,7 @@ public interface GroupDAO extends GenericDAO<Group> {
      * @param password пароль
      * @return пользователь или null, если такового не существует
      */
-    public User findByLoginAndPassword(String login, String password);
+    User findByLoginAndPassword(String login, String password);
 
     /**
      * Возвращает пользователя по логину
@@ -24,9 +24,9 @@ public interface GroupDAO extends GenericDAO<Group> {
      * @param login логин
      * @return пользователь или null, если такового не существует
      */
-    public User getByLogin(String login);
+    User getByLogin(String login);
 
-    public User getByLogin(String login, Integer excludeUserId);
+    User getByLogin(String login, Integer excludeUserId);
 
     /**
      * Возвращает пользователя по email
@@ -34,9 +34,9 @@ public interface GroupDAO extends GenericDAO<Group> {
      * @param email адрес электронной почты
      * @return пользователь или null, если такового не существует
      */
-    public User getByEmail(String email);
+    User getByEmail(String email);
 
-    public User getByEmail(String email, Integer excludeUserId);
+    User getByEmail(String email, Integer excludeUserId);
 
 
 
@@ -58,7 +58,7 @@ public interface GroupDAO extends GenericDAO<Group> {
      * @param orderAsc    указывает направление сортировки. true = по возрастанию
      * @return список пользователей удовлетворяющих условию поиска
      */
-    public List<User> findUsers(String login, String firstname, String lastname, String middlename, String email, Role role, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc);
+    List<User> findUsers(String login, String firstname, String lastname, String middlename, String email, Role role, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc);
 
     /**
      * Находит количество пользователей, зарегистрированных в системе, удовлетворяющих условиям
@@ -72,7 +72,7 @@ public interface GroupDAO extends GenericDAO<Group> {
      * @param showDeleted включает в выборку удалённых пользователей
      * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
      */
-    public long countUsers(String login, String firstname, String lastname, String middlename, String email, Role role, boolean showDeleted);
+    long countUsers(String login, String firstname, String lastname, String middlename, String email, Role role, boolean showDeleted);
 
 
     /**
@@ -86,7 +86,7 @@ public interface GroupDAO extends GenericDAO<Group> {
      * @param orderAsc    указывает направление сортировки. true = по возрастанию
      * @return список пользователей удовлетворяющих условию поиска
      */
-    public List<User> findUsers(String pattern, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc);
+    List<User> findUsers(String pattern, boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc);
 
     /**
      * Находит количество пользователей по маске
@@ -95,6 +95,6 @@ public interface GroupDAO extends GenericDAO<Group> {
      * @param showDeleted включает в выборку удалённых пользователей
      * @return количество зарегистрированных пользователей удовлетворяющих условию поиска
      */
-    public long countUsers(String pattern, boolean showDeleted);
+    long countUsers(String pattern, boolean showDeleted);
 
 }

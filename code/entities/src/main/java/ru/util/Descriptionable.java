@@ -12,11 +12,11 @@ public interface Descriptionable {
      * Получить полное описание сущности
      * @return  строка с полным описанием сущности
      */
-    public String getDescription();
+    String getDescription();
 
     /**
      * Получить краткое описание сущности
      * @return  строка с кратким описанием сущности
      */
-    public String getDescriptionShort();
+    String getDescriptionShort();
 }

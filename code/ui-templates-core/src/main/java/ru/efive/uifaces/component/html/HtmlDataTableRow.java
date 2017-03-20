@@ -16,8 +16,8 @@ public class HtmlDataTableRow extends UIComponentBase {
 
     public static final String FACET_GROUP_DEFAULT = "fullRowDefault";
 
-    public static enum PropertyKeys {
-        group, level, collapsed;
+    public enum PropertyKeys {
+        group, level, collapsed
     }
 
     // ----------------------------------------------------------------------------------------------------------------

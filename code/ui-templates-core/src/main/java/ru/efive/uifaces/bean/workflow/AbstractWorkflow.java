@@ -232,7 +232,7 @@ public abstract class AbstractWorkflow implements Serializable {
     /**
      * Collection which is stores all possible actions for bean.
      */
-    protected static interface ActionCollection {
+    protected interface ActionCollection {
 
         void addAction(String name, Action action);
 

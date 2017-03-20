@@ -70,7 +70,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
         return ID;
     }
 
-    public static enum Layout {
+    public enum Layout {
         vertical3x4, vertical6x2, vertical2x6,
         horizontal3x4, horizontal6x2, horizontal2x6
     }

@@ -14,12 +14,12 @@ public class HtmlDataTableColumn extends HtmlColumn {
 
     private transient Integer orderAsInteger = null;
 
-    private static enum PropertyKeys {
+    private enum PropertyKeys {
         ORDER,
         style,
         styleClass,
         headerStyle,
-        footerStyle;
+        footerStyle
     }
 
     // ----------------------------------------------------------------------------------------------------------------

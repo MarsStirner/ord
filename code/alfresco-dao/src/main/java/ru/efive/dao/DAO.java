@@ -2,18 +2,18 @@ package ru.efive.dao;
 
 public interface DAO<T extends Data> {
 
-    public boolean connect();
+    boolean connect();
 
-    public boolean disconnect();
+    boolean disconnect();
 
-    public java.util.List<T> getDataList();
+    java.util.List<T> getDataList();
 
-    public T getDataById(String id);
+    T getDataById(String id);
 
-    public boolean createData(T data);
+    boolean createData(T data);
 
-    public boolean updateData(T data);
+    boolean updateData(T data);
 
-    public boolean deleteData(T data);
+    boolean deleteData(T data);
 
 }

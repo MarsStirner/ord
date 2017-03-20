@@ -6,9 +6,9 @@ import ru.efive.wf.core.ActionResult;
 
 public interface LocalBackingBean {
 
-    public String getForm();
+    String getForm();
 
-    public List<EditableProperty> getProperties();
+    List<EditableProperty> getProperties();
 
-    public ActionResult initialize();
+    ActionResult initialize();
 }

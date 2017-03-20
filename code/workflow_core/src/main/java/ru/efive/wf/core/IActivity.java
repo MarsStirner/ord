@@ -4,12 +4,12 @@ import ru.external.ProcessedData;
 
 public interface IActivity {
 
-    public <T extends ProcessedData> boolean initialize(T t);
+    <T extends ProcessedData> boolean initialize(T t);
 
-    public boolean execute();
+    boolean execute();
 
-    public boolean dispose();
+    boolean dispose();
 
-    public String getResult();
+    String getResult();
 
 }

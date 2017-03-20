@@ -15,7 +15,7 @@ public interface GenericDAO<E> extends BaseDAO<E> {
      * @param id идентификатор сущности (обычно числовое значение)
      * @return элемент сохраненный в БД.
      */
-    public E get(Serializable id);
+    E get(Serializable id);
 
     /**
      * Удаляет элемент сущности из БД.
@@ -23,7 +23,7 @@ public interface GenericDAO<E> extends BaseDAO<E> {
      * @param id идентификатор сущности для удаления.
      * @return true если удаление прошло успешно, иначе false
      */
-    public boolean delete(Serializable id);
+    boolean delete(Serializable id);
 
     /**
      * Поиск документов
@@ -35,7 +35,7 @@ public interface GenericDAO<E> extends BaseDAO<E> {
      * @param orderAsc    направление сортировки
      * @return список документов
      */
-    public List<E> findDocuments(boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc);
+    List<E> findDocuments(boolean showDeleted, int offset, int count, String orderBy, boolean orderAsc);
 
     /**
      * Кол-во документов
@@ -43,5 +43,5 @@ public interface GenericDAO<E> extends BaseDAO<E> {
      * @param showDeleted true - show deleted, false - hide deleted
      * @return кол-во результатов
      */
-    public long countDocument(boolean showDeleted);
+    long countDocument(boolean showDeleted);
 }

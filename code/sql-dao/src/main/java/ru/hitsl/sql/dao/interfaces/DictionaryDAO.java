@@ -15,7 +15,7 @@ public interface DictionaryDAO<E extends DictionaryEntity>  {
      * @param code Уникальный код записи справочника
      * @return запись справочника (в том числе и удаленную)\ NULL
      */
-    public E getByCode(String code);
+    E getByCode(String code);
 
     /**
      * Получить запись справочника по ее значению (если не найдено - NULL)
@@ -23,21 +23,21 @@ public interface DictionaryDAO<E extends DictionaryEntity>  {
      * @param value Значение записи справочника
      * @return записи справочника (только не удаленные) \ NULL
      */
-    public List<E> getByValue(String value);
+    List<E> getByValue(String value);
 
     /**
      * Получить все неудаленные записи справочника
      *
      * @return список неудаленных записей справочника
      */
-    public List<E> getItems();
+    List<E> getItems();
 
     /**
      * Получить количество неудаленных записей справочника
      *
      * @return количество неудаленных записей справочника
      */
-    public int countItems();
+    int countItems();
 
 
 
@@ -51,7 +51,7 @@ public interface DictionaryDAO<E extends DictionaryEntity>  {
      * @param orderAsc направление сортировки
      * @return страница со списком неудаленных записей справочника
      */
-    public List<E> getItems(final String filter, final int first, final int count, final String orderBy, final boolean orderAsc);
+    List<E> getItems(final String filter, final int first, final int count, final String orderBy, final boolean orderAsc);
 
     /**
      * Получить количество неудаленными записей справочника с учетом фильтра
@@ -59,5 +59,5 @@ public interface DictionaryDAO<E extends DictionaryEntity>  {
      * @param filter простой строковый фильтр
      * @return количество неудаленными записей справочника с учетом фильтра
      */
-    public int countItems(String filter);
+    int countItems(String filter);
 }

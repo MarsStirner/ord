@@ -11,8 +11,8 @@ import javax.faces.component.FacesComponent;
 @FacesComponent("ru.efive.uifaces.DataTable")
 public class HtmlDataTable extends javax.faces.component.html.HtmlDataTable {
     
-    private static enum PropertyKeys {
-        GROUPING, MAX_LEVEL;
+    private enum PropertyKeys {
+        GROUPING, MAX_LEVEL
     }
 
     /** <code>Renderer</code> type for component */

@@ -12,7 +12,7 @@ import ru.efive.uifaces.component.ComponentFamily;
 @FacesComponent("ru.efive.uifaces.FormPartTarget")
 public class HtmlFormPartTarget extends UIComponentBase {
 
-    private static enum PropertyKeys {
+    private enum PropertyKeys {
         FORM_PART
     }
 
