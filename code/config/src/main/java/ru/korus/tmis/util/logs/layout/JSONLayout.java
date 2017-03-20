@@ -1,8 +1,9 @@
 package ru.korus.tmis.util.logs.layout;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.LayoutBase;
+import com.google.gson.Gson;
+import ru.korus.tmis.util.logs.layout.jsonobjects.LoggingSubsystemItem;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -10,9 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import com.google.gson.Gson;
-import ru.korus.tmis.util.logs.layout.jsonobjects.LoggingSubsystemItem;
 
 /**
  * Author: Upatov Egor <br>

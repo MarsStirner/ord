@@ -1,7 +1,6 @@
 package ru.efive.uifaces.component.html;
 
 import javax.faces.component.FacesComponent;
-import javax.faces.component.UIColumn;
 import javax.faces.component.html.HtmlColumn;
 import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.util.ConverterUtils;

@@ -1,7 +1,6 @@
 package ru.korus.tmis.util.logs.task;
 
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.Layout;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;

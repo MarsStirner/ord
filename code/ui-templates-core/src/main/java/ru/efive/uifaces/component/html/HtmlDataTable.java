@@ -1,9 +1,8 @@
 package ru.efive.uifaces.component.html;
 
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UIData;
 import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.util.ConverterUtils;
+
+import javax.faces.component.FacesComponent;
 
 /**
  *

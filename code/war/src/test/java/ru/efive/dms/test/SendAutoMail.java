@@ -1,15 +1,19 @@
 package ru.efive.dms.test;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.mail.*;
-import javax.mail.internet.*;
-
-import java.util.Properties;
-import javax.activation.FileDataSource;
-import javax.activation.DataHandler;
 import ru.efive.dms.uifaces.beans.IndexManagementBean;
 import ru.efive.wf.core.MailSettings;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.mail.Message;
+import javax.mail.Multipart;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.util.Properties;
 
 public class SendAutoMail {
     @Inject

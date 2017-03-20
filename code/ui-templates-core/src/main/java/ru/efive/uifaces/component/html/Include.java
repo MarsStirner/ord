@@ -1,24 +1,19 @@
 package ru.efive.uifaces.component.html;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import ru.efive.uifaces.filter.util.DataInputURL;
+
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.component.UIComponent;
-import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.TagAttribute;
-import javax.faces.view.facelets.TagAttributeException;
-import javax.faces.view.facelets.TagConfig;
-import javax.faces.view.facelets.TagHandler;
-import ru.efive.uifaces.filter.util.DataInputURL;
-import ru.efive.uifaces.filter.util.org.apache.tools.ant.util.ReaderInputStream;
+import javax.faces.view.facelets.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
