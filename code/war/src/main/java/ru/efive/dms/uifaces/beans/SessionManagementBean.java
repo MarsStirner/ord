@@ -296,7 +296,7 @@ public class SessionManagementBean implements Serializable {
 
 
     public List<User> getSubstitutedUsers() {
-        return new ArrayList<User>(authData.getSubstitutedUsers());
+        return new ArrayList<>(authData.getSubstitutedUsers());
     }
 
 

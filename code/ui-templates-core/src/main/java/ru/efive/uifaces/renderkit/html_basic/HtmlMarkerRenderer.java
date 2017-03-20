@@ -521,9 +521,7 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
         UIComponent retComp = null;
         if (component.getChildCount() > 0) {
             List<UIComponent> children = component.getChildren();
-            for (int i = 0, size = children.size(); i < size; i++) {
-                UIComponent comp = children.get(i);
-
+            for (UIComponent comp : children) {
                 if (comp instanceof NamingContainer) {
                     try {
                         retComp = comp.findComponent(componentId);

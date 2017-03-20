@@ -104,9 +104,7 @@ public class ReportsManagmentBean {
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, new HashMap(), conn);
 
             JasperExportManager.exportReportToPdfFile(jasperPrint, "c:\\customers_report.pdf");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (JRException e) {
+        } catch (SQLException | JRException e) {
             e.printStackTrace();
         } finally {
             // Корректно закрываем соединение с базой
@@ -130,11 +128,11 @@ public class ReportsManagmentBean {
         PrintService psZebra = null;
         String sPrinterName = null;
         PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
-        for (int i = 0; i < services.length; i++) {
-            PrintServiceAttribute attr = services[i].getAttribute(PrinterName.class);
+        for (PrintService service : services) {
+            PrintServiceAttribute attr = service.getAttribute(PrinterName.class);
             sPrinterName = ((PrinterName) attr).getValue();
             if (sPrinterName.equals(in_printerName)) {
-                psZebra = services[i];
+                psZebra = service;
                 break;
             }
         }
@@ -233,11 +231,11 @@ public class ReportsManagmentBean {
         PrintService psZebra = null;
         String sPrinterName = null;
         PrintService[] services = PrintServiceLookup.lookupPrintServices(null, null);
-        for (int i = 0; i < services.length; i++) {
-            PrintServiceAttribute attr = services[i].getAttribute(PrinterName.class);
+        for (PrintService service : services) {
+            PrintServiceAttribute attr = service.getAttribute(PrinterName.class);
             sPrinterName = ((PrinterName) attr).getValue();
             if (sPrinterName.equals(in_printerName)) {
-                psZebra = services[i];
+                psZebra = service;
                 break;
             }
         }

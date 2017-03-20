@@ -224,10 +224,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     public List<T> getDataList() {
         try {
             return getDataList("TYPE:\"" + class_.newInstance().getNamedNodeType() + "\"");
-        } catch (InstantiationException e) {
-            logger.error("Exception in getDataList (queryPrepare)", e);
-            return new ArrayList<>();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             logger.error("Exception in getDataList (queryPrepare)", e);
             return new ArrayList<>();
         }

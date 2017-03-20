@@ -202,11 +202,11 @@ public abstract class UserAction implements IAction {
     }
 
     public void addProperties(List<EditableProperty> properties) throws Exception {
-        for (int i = 0; i < properties.size(); i++) {
-            if (properties.get(i) == null) {
+        for (EditableProperty property : properties) {
+            if (property == null) {
                 throw new Exception(EngineHelper.EXCEPTION_WRONG_NAME);
             }
-            this.properties.add(properties.get(i));
+            this.properties.add(property);
         }
     }
 }
