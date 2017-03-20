@@ -117,13 +117,12 @@ public class SendMailActivity implements IActivity {
             properties.put("mail.smtp.host", mailSettings.getSmtpHost());
             properties.put("mail.debug", "true");
            // properties.put("mail.pop3.socketFactory.class", "ru.efive.wf.core.util.DummySSLSocketFactory");
-            Session session = Session.getDefaultInstance(properties, new Authenticator() {
+            return Session.getDefaultInstance(properties, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {
                     return new PasswordAuthentication(mailSettings.getSmtpUser(), mailSettings.getSmptPassword());
                 }
             });
-            return session;
         }
         final Session session = (Session) new InitialContext().lookup(mailSettings.getJndi());
         System.out.println(session.getProperties().toString());

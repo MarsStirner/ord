@@ -129,7 +129,7 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
     /**
      * История
      */
-    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "dms_task_history",
             joinColumns = {@JoinColumn(name = "task_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
@@ -197,14 +197,14 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
     }
 
     public List<User> getExecutorsList() {
-        if(executors != null) {
+        if (executors != null) {
             return new ArrayList<>(executors);
         } else {
             return new ArrayList<>(0);
         }
     }
 
-    public Set<User> getExecutors(){
+    public Set<User> getExecutors() {
         return executors;
     }
 
@@ -328,8 +328,8 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
 
 
     /**
-     *  Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
-     *  TODO сделать класс-обертку
+     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * TODO сделать класс-обертку
      */
     @Transient
     private String styleClass;
@@ -369,19 +369,18 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
 
     @Override
     public String toString() {
-        String sb = "Task[" + getId() + "]:{" +
-                "controlDate=" + ApplicationHelper.formatDate(controlDate) +
-                ", creationDate=" + ApplicationHelper.formatDate(creationDate) +
-                ", author=" + author.getDescription() +
-                ", initiator=" + (initiator != null ? initiator.getDescription() : "null") +
-                ", controller=" + (controller != null ? controller.getDescription() : "null") +
-                ", parent=" + (parent != null ? parent.getId() : "null") +
-                ", registrationDate=" + ApplicationHelper.formatDate(registrationDate) +
-                ", shortDescription='" + shortDescription + '\'' +
-                ", statusId=" + statusId +
-                ", taskNumber='" + taskNumber + '\'' +
-                ", rootDocumentId='" + rootDocumentId + '\'' +
-                '}';
-        return sb;
+        return new StringBuilder().append("Task[").append(getId())
+                .append("]{ controlDate=").append(ApplicationHelper.formatDate(controlDate))
+                .append(", creationDate=").append(ApplicationHelper.formatDate(creationDate))
+                .append(", author=").append(author.getDescription())
+                .append(", initiator=").append(initiator != null ? initiator.getDescription() : "null")
+                .append(", controller=").append(controller != null ? controller.getDescription() : "null")
+                .append(", parent=").append(parent != null ? parent.getId() : "null")
+                .append(", registrationDate=").append(ApplicationHelper.formatDate(registrationDate))
+                .append(", shortDescription='").append(shortDescription).append('\'')
+                .append(", statusId=").append(statusId)
+                .append(", taskNumber='").append(taskNumber).append('\'')
+                .append(", rootDocumentId='").append(rootDocumentId).append('\'')
+                .append('}').toString();
     }
 }

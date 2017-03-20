@@ -1,6 +1,5 @@
 package ru.efive.uifaces.component.html;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import javax.faces.component.FacesComponent;

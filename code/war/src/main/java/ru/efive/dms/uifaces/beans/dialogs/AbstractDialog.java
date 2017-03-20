@@ -20,17 +20,17 @@ import java.util.Map;
  */
 public abstract class AbstractDialog<T> implements Serializable {
 
-    public enum Button{
+    public enum Button {
         CONFIRM,
         CLOSE,
         CLEAR
     }
 
-    public class DialogResult implements Serializable{
+    public class DialogResult implements Serializable {
         private Button button;
         private Object result;
 
-        public DialogResult(Button button, Object result){
+        public DialogResult(Button button, Object result) {
             this.button = button;
             this.result = result;
         }
@@ -53,10 +53,7 @@ public abstract class AbstractDialog<T> implements Serializable {
 
         @Override
         public String toString() {
-            String sb = "DialogResult{" + "button=" + button +
-                    ", result=" + result +
-                    '}';
-            return sb;
+            return "DialogResult{" + "button=" + button +", result=" + result +'}';
         }
     }
 
@@ -64,6 +61,7 @@ public abstract class AbstractDialog<T> implements Serializable {
     protected static final Logger logger = LoggerFactory.getLogger("DIALOG");
 
     private static Map<String, Object> viewOptions;
+
     static {
         viewOptions = new HashMap<>();
         viewOptions.put("modal", true);
@@ -76,7 +74,7 @@ public abstract class AbstractDialog<T> implements Serializable {
         viewOptions.put("position", "top");
     }
 
-    public static Map<String, Object> getViewOptions(){
+    public static Map<String, Object> getViewOptions() {
         return viewOptions;
     }
 
@@ -94,7 +92,7 @@ public abstract class AbstractDialog<T> implements Serializable {
     /**
      * Очистить выделение
      */
-    public void clearSelected(){
+    public void clearSelected() {
         logger.debug("DIALOG_BTN_CLEAR:  pressed");
         selected = null;
     }
@@ -102,7 +100,7 @@ public abstract class AbstractDialog<T> implements Serializable {
     /**
      * Закрыть диалог по кнопке "Выбрать"
      */
-    public void confirmSelection(){
+    public void confirmSelection() {
         final DialogResult result = new DialogResult(Button.CONFIRM, selected);
         logger.debug("DIALOG_BTN_CONFIRM:  {}", result);
         RequestContext.getCurrentInstance().closeDialog(result);
@@ -116,7 +114,6 @@ public abstract class AbstractDialog<T> implements Serializable {
         logger.debug("DIALOG_BTN_CLOSE:  {}", result);
         RequestContext.getCurrentInstance().closeDialog(result);
     }
-
 
 
     /**
@@ -151,24 +148,24 @@ public abstract class AbstractDialog<T> implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public void onRowSelect(final SelectEvent event){
-        if(selected instanceof Collection) {
-            ((Collection)selected).add(event.getObject());
+    public void onRowSelect(final SelectEvent event) {
+        if (selected instanceof Collection) {
+            ((Collection) selected).add(event.getObject());
         } else {
             selected = (T) event.getObject();
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void onRowUnSelect(final UnselectEvent event){
-        if(selected instanceof Collection) {
-            ((Collection)selected).remove(event.getObject());
+    public void onRowUnSelect(final UnselectEvent event) {
+        if (selected instanceof Collection) {
+            ((Collection) selected).remove(event.getObject());
         } else {
             selected = null;
         }
     }
 
-    protected Object getFromExternalContext(final String key){
+    protected Object getFromExternalContext(final String key) {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(key);
     }
 }

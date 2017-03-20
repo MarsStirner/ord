@@ -1,11 +1,11 @@
 package ru.efive.uifaces.filter;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletResponse;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Base filter
@@ -41,9 +41,7 @@ public abstract class AbstractFilter implements Filter {
         if (filterConfig == null) {
             return (this.getClass().getName() + "()");
         }
-        String sb = this.getClass().getName() + "(" + filterConfig +
-                ")";
-        return (sb);
+        return this.getClass().getName() + "(" + filterConfig +")";
     }
 
     /**

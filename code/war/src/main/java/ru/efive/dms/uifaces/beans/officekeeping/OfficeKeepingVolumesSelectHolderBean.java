@@ -32,21 +32,7 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
 
     @Override
     protected List<OfficeKeepingVolume> loadDocuments() {
-        List<OfficeKeepingVolume> result = new ArrayList<>(new HashSet<>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
-/*
-        Collections.sort(result, new Comparator<Task>() {
-			@Override
-			public int compare(Task o1, Task o2) {
-				Calendar c1 = Calendar.getInstance();
-				Calendar c2 = Calendar.getInstance();
-				c1.setTime(o1.getCreationDate());					
-				c2.setTime(o2.getCreationDate());				
-				int in_result = (-1)*c1.compareTo(c2);
-				return in_result;
-			}
-		});
-*/
-        return result;
+        return new ArrayList<>(new HashSet<>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
     }
 
     @Override

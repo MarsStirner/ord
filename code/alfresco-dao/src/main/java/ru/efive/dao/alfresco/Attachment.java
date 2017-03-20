@@ -121,11 +121,10 @@ public class Attachment extends AlfrescoNode implements Serializable {
             }
             String fileName = URLEncoder.encode(getFileName(), "UTF-8");
             System.out.println(fileName);
-            NamedValue namedValue[] = {Utils.createNamedValue(Constants.PROP_NAME, getDisplayName()),
+            return new NamedValue[]{Utils.createNamedValue(Constants.PROP_NAME, getDisplayName()),
                     Utils.createNamedValue(Constants.createQNameString(getNamespace(), "parentId"), getParentId()),
                     Utils.createNamedValue(Constants.createQNameString(getNamespace(), "authorId"), Integer.toString(getAuthorId())),
                     Utils.createNamedValue(Constants.createQNameString(getNamespace(), "fileName"), fileName)};
-            return namedValue;
         } catch (Exception e) {
             e.printStackTrace();
             return new NamedValue[]{};

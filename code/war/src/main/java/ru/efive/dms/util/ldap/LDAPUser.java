@@ -220,7 +220,7 @@ public class LDAPUser {
     }
 
     public static String convertToDashedString(byte[] objectGUID) {
-        String displayStr = prefixZeros((int) objectGUID[3] & 0xFF) +
+        return prefixZeros((int) objectGUID[3] & 0xFF) +
                 prefixZeros((int) objectGUID[2] & 0xFF) +
                 prefixZeros((int) objectGUID[1] & 0xFF) +
                 prefixZeros((int) objectGUID[0] & 0xFF) +
@@ -240,16 +240,10 @@ public class LDAPUser {
                 prefixZeros((int) objectGUID[13] & 0xFF) +
                 prefixZeros((int) objectGUID[14] & 0xFF) +
                 prefixZeros((int) objectGUID[15] & 0xFF);
-
-        return displayStr;
     }
 
     private static String prefixZeros(int value) {
-        if (value <= 0xF) {
-            return "0" + Integer.toHexString(value);
-        } else {
-            return Integer.toHexString(value);
-        }
+        return value <= 0xF ? "0" + Integer.toHexString(value) : Integer.toHexString(value);
     }
     /**
      * Дата последнего изменения

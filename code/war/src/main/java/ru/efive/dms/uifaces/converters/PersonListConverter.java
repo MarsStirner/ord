@@ -10,7 +10,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
