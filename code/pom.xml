@@ -30,9 +30,6 @@
         <module>workflow_core</module>
 
         <module>war</module>
-        <module>ear</module>
-
-        <!--<module>workflow</module>-->
     </modules>
 
     <properties>
