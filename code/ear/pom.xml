@@ -21,25 +21,26 @@
         <dependency>
             <groupId>ru.efive.dao</groupId>
             <artifactId>sql-dao</artifactId>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
             <groupId>ru.efive.dao</groupId>
             <artifactId>alfresco-dao</artifactId>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
             <groupId>ru.efive.dms</groupId>
             <artifactId>dms</artifactId>
-            <version>${project.version}</version>
+            <version>LATEST</version>
             <type>war</type>
         </dependency>
 
         <dependency>
             <groupId>logback.config</groupId>
             <artifactId>config</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
+            <version>LATEST</version>
         </dependency>
 
    </dependencies>

@@ -28,6 +28,7 @@ public class AlfrescoDAO<T extends AlfrescoNode> implements DAO<T> {
     private String password;
     private String path;
 
+
     protected final Store STORE = new Store(Constants.WORKSPACE_STORE, "SpacesStore");
     protected final Store STORE_LIGHTWEIGHT = new Store("versionStore", "version2Store");
     private static final ContentFormat CONTENT_FORMAT = new ContentFormat("application/octet-stream", "utf-8");

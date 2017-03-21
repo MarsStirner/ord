@@ -14,42 +14,10 @@
 
     <repositories>
         <repository>
-            <id>codehausSnapshots</id>
-            <name>Codehaus Snapshots</name>
-            <releases>
-                <enabled>false</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
-            <url>http://snapshots.maven.codehaus.org/maven2</url>
-            <layout>default</layout>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
         </repository>
-
-        <repository>
-            <id>springsource-milestones</id>
-            <name>SpringSource Milestones Proxy</name>
-            <url>https://oss.sonatype.org/content/repositories/springsource-milestones</url>
-        </repository>
-
-        <repository>     
-     		<id>alfresco-public</id>      
-     		<url>https://artifacts.alfresco.com/nexus/content/groups/public</url>   
-	</repository>
-
-
-            <repository>
-                <id>prime-repo</id>
-                <name>PrimeFaces Maven Repository</name>
-                <url>http://repository.primefaces.org</url>
-                <layout>default</layout>
-            </repository>
     </repositories>
-
 
 
     <modules>
@@ -68,16 +36,26 @@
     </modules>
 
     <properties>
-        <!-- Sources -->
-        <version.jdk>1.7</version.jdk>
+        <java.version>1.8</java.version>
         <source.encoding>UTF-8</source.encoding>
+        
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm.ss 'UTC'</maven.build.timestamp.format>
+        <timestamp>${maven.build.timestamp}</timestamp>
 
+        <!-- Library Versions -->
+        <version.javaee-api>7.0</version.javaee-api>
+        <version.logback>1.2.2</version.logback>
+        <version.slf4j>1.7.25</version.slf4j>
+        
+        <version.primefaces>6.0</version.primefaces>
+        <version.primefaces-themes>1.0.10</version.primefaces-themes>
+        <version.omnifaces>2.6</version.omnifaces>
+        
         <!-- Target -->
         <version.app.ear>6</version.app.ear>
-        <version.jdk.target>1.7</version.jdk.target>
 
         <!-- Components -->
-        <version.javaee-api>7.0</version.javaee-api>
+
 
         <!-- Test Environment -->
         <version.junit>4.8.2</version.junit>
@@ -96,43 +74,66 @@
     </properties>
 
     <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>javax</groupId>
-                <artifactId>javaee-api</artifactId>
-                <version>${version.javaee-api}</version>
-                <type>jar</type>
-                <scope>provided</scope>
-            </dependency>
-
+        <dependencies>  
             <dependency>
                 <groupId>ru.efive.dao</groupId>
                 <artifactId>sql-dao</artifactId>
-                <version>${project.version}</version>
+                <version>LATEST</version>
             </dependency>
 
             <dependency>
                 <groupId>ru.efive.dao</groupId>
                 <artifactId>alfresco-dao</artifactId>
-                <version>${project.version}</version>
+                <version>LATEST</version>
             </dependency>
 
             <dependency>
                 <groupId>ru.efive.workflow</groupId>
                 <artifactId>workflow-core</artifactId>
-                <version>${project.version}</version>
+                <version>LATEST</version>
             </dependency>
 
             <dependency>
                 <groupId>ru.efive.dms</groupId>
                 <artifactId>dms</artifactId>
-                <version>${project.version}</version>
+                <version>LATEST</version>
             </dependency>
 
+
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${version.logback}</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.10</version>
+                <version>${version.slf4j}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.primefaces</groupId>
+                <artifactId>primefaces</artifactId>
+                <version>${version.primefaces}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.primefaces.themes</groupId>
+                <artifactId>all-themes</artifactId>
+                <version>${version.primefaces-themes}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.omnifaces</groupId>
+                <artifactId>omnifaces</artifactId>
+                <version>${version.omnifaces}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${version.javaee-api}</version>
+                <scope>provided</scope>
             </dependency>
 
             <dependency>
@@ -214,8 +215,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${version.jdk}</source>
-                    <target>${version.jdk.target}</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>${source.encoding}</encoding>
                 </configuration>
             </plugin>

@@ -29,26 +29,22 @@
         <dependency>
             <groupId>ru.hitsl.dms</groupId>
             <artifactId>entities</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>5.3</version>
         </dependency>
 
         <dependency>
             <groupId>org.omnifaces</groupId>
             <artifactId>omnifaces</artifactId>
-            <version>2.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.primefaces.themes</groupId>
             <artifactId>all-themes</artifactId>
-            <version>1.0.10</version>
         </dependency>
 
         <dependency>
