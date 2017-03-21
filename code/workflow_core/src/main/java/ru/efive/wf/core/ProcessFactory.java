@@ -1,7 +1,7 @@
 package ru.efive.wf.core;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.efive.wf.core.activity.InvokeMethodActivity;
 import ru.efive.wf.core.activity.ParametrizedPropertyLocalActivity;
 import ru.efive.wf.core.activity.SendMailActivity;

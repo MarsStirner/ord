@@ -1,6 +1,6 @@
 package ru.hitsl.sql.dao.user;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.*;
 import ru.entity.model.user.Group;
 import ru.entity.model.user.User;

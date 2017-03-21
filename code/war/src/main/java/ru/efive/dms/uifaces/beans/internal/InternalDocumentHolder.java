@@ -2,7 +2,7 @@ package ru.efive.dms.uifaces.beans.internal;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;

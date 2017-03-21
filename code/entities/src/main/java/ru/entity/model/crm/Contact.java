@@ -1,6 +1,6 @@
 package ru.entity.model.crm;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.util.Descriptionable;

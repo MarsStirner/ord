@@ -1,6 +1,6 @@
 package ru.efive.wf.core.data.impl;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.efive.wf.core.ActionResult;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.efive.wf.core.data.EditableProperty;

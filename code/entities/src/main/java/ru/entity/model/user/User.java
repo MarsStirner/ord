@@ -1,6 +1,6 @@
 package ru.entity.model.user;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Nomenclature;

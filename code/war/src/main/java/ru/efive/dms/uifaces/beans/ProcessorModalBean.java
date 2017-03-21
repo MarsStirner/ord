@@ -1,6 +1,6 @@
 package ru.efive.dms.uifaces.beans;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.*;
 import ru.efive.wf.core.activity.enums.ProcessState;

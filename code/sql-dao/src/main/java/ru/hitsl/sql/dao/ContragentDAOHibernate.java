@@ -1,6 +1,6 @@
 package ru.hitsl.sql.dao;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.*;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.ContragentType;
