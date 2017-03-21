@@ -18,13 +18,18 @@
     </parent>
 
     <dependencies>
-
         <dependency>
             <groupId>javax.faces</groupId>
             <artifactId>javax.faces-api</artifactId>
-            <version>2.2</version>
             <scope>provided</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>ru.hitsl.dms</groupId>
@@ -48,25 +53,27 @@
         </dependency>
 
         <dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-api</artifactId>
+            <groupId>logback.config</groupId>
+            <artifactId>config</artifactId>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
             <groupId>ru.efive.workflow</groupId>
             <artifactId>workflow-core</artifactId>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
             <groupId>ru.efive.dao</groupId>
             <artifactId>sql-dao</artifactId>
-            <scope>provided</scope>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
             <groupId>ru.efive.dao</groupId>
             <artifactId>alfresco-dao</artifactId>
-            <scope>provided</scope>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
@@ -119,23 +126,6 @@
             </exclusions>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-config</artifactId>
-            <version>3.0.6.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>3.0.6.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security.extensions</groupId>
-            <artifactId>spring-security-kerberos-core</artifactId>
-            <version>1.0.0.M2</version>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
@@ -158,11 +148,7 @@
             <artifactId>commons-digester</artifactId>
             <version>1.7</version>
         </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>1.0.2</version>
-        </dependency>
+      
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>batik-bridge</artifactId>
@@ -183,11 +169,6 @@
         </dependency>
 
     </dependencies>
-
-    <properties>
-    	<timestamp>${maven.build.timestamp}</timestamp>    
-        <maven.build.timestamp.format>dd.MM.yyyy</maven.build.timestamp.format>
-    </properties>
 
     <build>
         <resources>

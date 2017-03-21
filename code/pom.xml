@@ -44,8 +44,11 @@
 
         <!-- Library Versions -->
         <version.javaee-api>7.0</version.javaee-api>
+        <version.jsf>2.2</version.jsf>
+
         <version.logback>1.2.2</version.logback>
         <version.slf4j>1.7.25</version.slf4j>
+        <version.commons-logging>1.0.2</version.commons-logging>
         
         <version.primefaces>6.0</version.primefaces>
         <version.primefaces-themes>1.0.10</version.primefaces-themes>
@@ -74,43 +77,28 @@
     </properties>
 
     <dependencyManagement>
-        <dependencies>  
-            <dependency>
-                <groupId>ru.efive.dao</groupId>
-                <artifactId>sql-dao</artifactId>
-                <version>LATEST</version>
-            </dependency>
-
-            <dependency>
-                <groupId>ru.efive.dao</groupId>
-                <artifactId>alfresco-dao</artifactId>
-                <version>LATEST</version>
-            </dependency>
-
-            <dependency>
-                <groupId>ru.efive.workflow</groupId>
-                <artifactId>workflow-core</artifactId>
-                <version>LATEST</version>
-            </dependency>
-
-            <dependency>
-                <groupId>ru.efive.dms</groupId>
-                <artifactId>dms</artifactId>
-                <version>LATEST</version>
-            </dependency>
-
-
+        <dependencies>             
+            <!-- (I) Compile dependencies-->
+            <!-- Logging -->
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback}</version>
             </dependency>
+            
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${version.slf4j}</version>
             </dependency>
 
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>${version.commons-logging}</version>
+            </dependency>
+
+            <!-- JSF extensions -->
             <dependency>
                 <groupId>org.primefaces</groupId>
                 <artifactId>primefaces</artifactId>
@@ -129,6 +117,7 @@
                 <version>${version.omnifaces}</version>
             </dependency>
 
+            <!-- Provided JEE runtime-->
             <dependency>
                 <groupId>javax</groupId>
                 <artifactId>javaee-api</artifactId>
@@ -136,6 +125,14 @@
                 <scope>provided</scope>
             </dependency>
 
+            <dependency>
+                <groupId>javax.faces</groupId>
+                <artifactId>javax.faces-api</artifactId>
+                <version>${version.jsf}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- (II) TEST dependencies-->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

@@ -33,7 +33,7 @@
         <dependency>
             <groupId>ru.efive.dao</groupId>
             <artifactId>sql-dao</artifactId>
-            <scope>provided</scope>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
