@@ -150,7 +150,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     public void addVersionForAttachment(final Attachment attachment){
         if (attachment != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AttachmentVersionDialogHolder.DIALOG_SESSION_KEY, attachment);
-            final Map<String, List<String>> params = ImmutableMap.of(AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY, (List<String>) ImmutableList.of(getDocument().getUniqueId()));
+            final Map<String, List<String>> params = ImmutableMap.of(AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY, ImmutableList.of(getDocument().getUniqueId()));
             RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params );
         } else {
             addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);

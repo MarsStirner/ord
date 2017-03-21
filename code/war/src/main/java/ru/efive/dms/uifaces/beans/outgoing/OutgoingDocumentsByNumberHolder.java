@@ -37,7 +37,7 @@ public class OutgoingDocumentsByNumberHolder  extends AbstractDocumentLazyDataMo
                 viewFactDao,
                 sessionManagement.getAuthData()
         );
-        lazyDataModelForOutgoingDocument.setFilters(ImmutableMap.of("registrationNumber", (Object)"%"));
+        lazyDataModelForOutgoingDocument.setFilters(ImmutableMap.of("registrationNumber", "%"));
         setLazyModel(lazyDataModelForOutgoingDocument);
     }
 }

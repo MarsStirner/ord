@@ -33,7 +33,7 @@ public class OutgoingDocumentsOnConsiderationHolder  extends AbstractDocumentLaz
         dao = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO);
         viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
         final LazyDataModelForOutgoingDocument lazyDM = new LazyDataModelForOutgoingDocument(dao, viewFactDao, sessionManagement.getAuthData());
-        lazyDM.setFilters(ImmutableMap.of("statusId", (Object) "2"));
+        lazyDM.setFilters(ImmutableMap.of("statusId", "2"));
         setLazyModel(lazyDM);
     }
 }

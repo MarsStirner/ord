@@ -152,7 +152,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AttachmentVersionDialogHolder.DIALOG_SESSION_KEY, attachment);
             final Map<String, List<String>> params = ImmutableMap.of(
                     AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY,
-                    (List<String>) ImmutableList.of(getDocument().getUniqueId())
+                    ImmutableList.of(getDocument().getUniqueId())
             );
             RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params );
         } else {
