@@ -1,11 +1,12 @@
 package ru.efive.wf.core.util;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-
-import javax.net.SocketFactory;
-import javax.net.ssl.*;
 
 public class DummySSLSocketFactory extends SSLSocketFactory {
     private SSLSocketFactory factory;

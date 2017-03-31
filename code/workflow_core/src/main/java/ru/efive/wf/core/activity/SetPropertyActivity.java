@@ -11,6 +11,11 @@ import java.util.Map;
 
 public class SetPropertyActivity implements IActivity {
 
+    Class<? extends ProcessedData> class_;
+    private ProcessedData processedData;
+    private Map<String, Object> propertyChanges;
+    private String resultMessage;
+
     public SetPropertyActivity() {
 
     }
@@ -69,12 +74,4 @@ public class SetPropertyActivity implements IActivity {
     public String getResult() {
         return resultMessage;
     }
-
-
-    Class<? extends ProcessedData> class_;
-    private ProcessedData processedData;
-
-    private Map<String, Object> propertyChanges;
-
-    private String resultMessage;
 }

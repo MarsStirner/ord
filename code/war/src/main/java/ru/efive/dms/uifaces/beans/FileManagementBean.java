@@ -1,18 +1,20 @@
 package ru.efive.dms.uifaces.beans;
 
+import com.github.javaplugs.jsf.SpringScopeSession;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dao.alfresco.Revision;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -20,20 +22,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Named("fileManagement")
-@SessionScoped
+@Controller("fileManagement")
+@SpringScopeSession
 public class FileManagementBean implements java.io.Serializable {
     private static final Logger logger = LoggerFactory.getLogger("ALFRESCO");
     private static final String CONTENT_TYPE = "application/octet-stream;charset=UTF-8";
+    private static final long serialVersionUID = -4470091321891731494L;
 
 
     // file operations
+    @Autowired
+    @Qualifier("alfrescoDao")
+    private AlfrescoDAO<Attachment> alfrescoDao;
+
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
+
 
     public synchronized Attachment getFileById(String id) {
         Attachment result;
         AlfrescoDAO<Attachment> dao = null;
         try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            dao = alfrescoDao;
             if (dao == null) {
                 return null;
             }
@@ -51,7 +62,7 @@ public class FileManagementBean implements java.io.Serializable {
         List<Attachment> result = Collections.synchronizedList(new ArrayList<Attachment>());
         AlfrescoDAO<Attachment> dao = null;
         try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            dao = alfrescoDao;
             if (dao == null) {
                 return result;
             }
@@ -72,7 +83,7 @@ public class FileManagementBean implements java.io.Serializable {
         boolean result = false;
         AlfrescoDAO<Attachment> dao = null;
         try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            dao = alfrescoDao;
             if (dao == null) {
                 return false;
             }
@@ -89,7 +100,7 @@ public class FileManagementBean implements java.io.Serializable {
         boolean result = false;
         AlfrescoDAO<Attachment> dao = null;
         try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            dao = alfrescoDao;
             if (dao == null) {
                 return false;
             }
@@ -102,19 +113,19 @@ public class FileManagementBean implements java.io.Serializable {
         return result;
     }
 
-    public StreamedContent download(String id){
+    public StreamedContent download(String id) {
         final byte[] result;
         AlfrescoDAO<Attachment> dao = null;
         if (StringUtils.isNotEmpty(id)) {
             try {
-                dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+                dao = alfrescoDao;
                 if (dao == null) {
                     logger.error("DAO IS NULL");
                     return null;
                 }
                 final Attachment attachment = dao.getDataById(id);
                 result = dao.getContent(attachment);
-                final String fileName=StringUtils.defaultIfEmpty(attachment.getCurrentRevision().getFileName(), attachment.getFileName());
+                final String fileName = StringUtils.defaultIfEmpty(attachment.getCurrentRevision().getFileName(), attachment.getFileName());
                 return new DefaultStreamedContent(new ByteArrayInputStream(result), CONTENT_TYPE, URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll(
                         "\\+", "%20"));
             } catch (Exception e) {
@@ -128,19 +139,19 @@ public class FileManagementBean implements java.io.Serializable {
         }
     }
 
-    public StreamedContent download(String id, String version){
+    public StreamedContent download(String id, String version) {
         byte[] result;
         AlfrescoDAO<Attachment> dao = null;
         if (StringUtils.isNotEmpty(id)) {
-            if(StringUtils.isNotEmpty(version)) {
+            if (StringUtils.isNotEmpty(version)) {
                 try {
-                    dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+                    dao = alfrescoDao;
                     if (dao == null) {
                         logger.error("DAO IS NULL");
                         return null;
                     }
                     final Attachment attachment = dao.getDataById(id);
-                    String downloadFileName=null;
+                    String downloadFileName = null;
                     if (attachment.isVersionable()) {
                         for (Revision revision : attachment.getRevisions()) {
                             if (revision.getVersion().equals(version)) {
@@ -156,8 +167,8 @@ public class FileManagementBean implements java.io.Serializable {
                     return new DefaultStreamedContent(
                             new ByteArrayInputStream(result), CONTENT_TYPE,
                             URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8.name()).replaceAll(
-                            "\\+", "%20"
-                    )
+                                    "\\+", "%20"
+                            )
                     );
                 } catch (Exception e) {
                     logger.error("", e);
@@ -178,7 +189,7 @@ public class FileManagementBean implements java.io.Serializable {
         boolean result = false;
         AlfrescoDAO<Attachment> dao = null;
         try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            dao = alfrescoDao;
             if (dao == null) {
                 return false;
             }
@@ -191,17 +202,15 @@ public class FileManagementBean implements java.io.Serializable {
         return result;
     }
 
-
-
     public synchronized boolean createVersion(Attachment file, byte[] bytes, boolean majorVersion, String fileName) {
         boolean result = false;
         AlfrescoDAO<Attachment> dao = null;
         try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            dao = alfrescoDao;
             if (dao == null) {
                 return false;
             }
-            result = dao.createVersion(file, bytes, sessionManagementBean.getLoggedUser().getId(), fileName, majorVersion);
+            result = dao.createVersion(file, bytes, authData.getAuthorized().getId(), fileName, majorVersion);
         } catch (Exception e) {
             logger.error("", e);
         } finally {
@@ -214,7 +223,7 @@ public class FileManagementBean implements java.io.Serializable {
         List<Revision> result = new ArrayList<>();
         AlfrescoDAO<Attachment> dao = null;
         try {
-            dao = sessionManagementBean.getAlfrescoDAO(Attachment.class);
+            dao = alfrescoDao;
             if (dao == null) {
                 return result;
             }
@@ -226,11 +235,4 @@ public class FileManagementBean implements java.io.Serializable {
         }
         return result;
     }
-
-
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagementBean;
-
-    private static final long serialVersionUID = -4470091321891731494L;
 }

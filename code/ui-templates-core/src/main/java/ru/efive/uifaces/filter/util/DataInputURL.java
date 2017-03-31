@@ -1,18 +1,14 @@
 package ru.efive.uifaces.filter.util;
 
+import ru.efive.uifaces.filter.util.org.apache.tools.ant.util.ReaderInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.net.URLStreamHandler;
-import ru.efive.uifaces.filter.util.org.apache.tools.ant.util.ReaderInputStream;
+import java.net.*;
 
 /**
- *
  * @author Pavel Porubov
  */
 public class DataInputURL {

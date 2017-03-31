@@ -1,17 +1,17 @@
 package ru.efive.wf.core;
 
+import ru.efive.wf.core.data.EditableProperty;
+import ru.efive.wf.core.util.EngineHelper;
+import ru.entity.model.enums.DocumentAction;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.entity.model.enums.DocumentAction;
-import ru.efive.wf.core.data.EditableProperty;
-import ru.efive.wf.core.util.EngineHelper;
-
 public abstract class UserAction implements IAction {
-    private DocumentAction action;
     protected boolean autoCommit = true;
     protected boolean historyAction = true;
     protected Transaction transaction;
+    private DocumentAction action;
     private List<IActivity> localActivities = new ArrayList<>();
     private String evaluationMessage;
     private boolean isCommentNecessary = false;
@@ -54,19 +54,13 @@ public abstract class UserAction implements IAction {
         return tresult;
     }
 
-
-    public void setPreActionActivities(List<IActivity> preActionActivities) {
-        this.preActionActivities = preActionActivities;
-    }
-
     @Override
     public List<IActivity> getPreActionActivities() {
         return preActionActivities;
     }
 
-
-    public void setPostActionActivities(List<IActivity> postActionActivities) {
-        this.postActionActivities = postActionActivities;
+    public void setPreActionActivities(List<IActivity> preActionActivities) {
+        this.preActionActivities = preActionActivities;
     }
 
     @Override
@@ -74,13 +68,17 @@ public abstract class UserAction implements IAction {
         return postActionActivities;
     }
 
-    public void setLocalActivities(List<IActivity> localActivities) {
-        this.localActivities = localActivities;
+    public void setPostActionActivities(List<IActivity> postActionActivities) {
+        this.postActionActivities = postActionActivities;
     }
 
     @Override
     public List<IActivity> getLocalActivities() {
         return localActivities;
+    }
+
+    public void setLocalActivities(List<IActivity> localActivities) {
+        this.localActivities = localActivities;
     }
 
     public String getEvaluationMessage() {
@@ -91,20 +89,20 @@ public abstract class UserAction implements IAction {
         this.evaluationMessage = evaluationMessage;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
     public String getComment() {
         return comment;
     }
 
-    public void setCommentNecessary(boolean isCommentNecessary) {
-        this.isCommentNecessary = isCommentNecessary;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public boolean isCommentNecessary() {
         return isCommentNecessary;
+    }
+
+    public void setCommentNecessary(boolean isCommentNecessary) {
+        this.isCommentNecessary = isCommentNecessary;
     }
 
     public boolean isHistoryAction() {
@@ -186,12 +184,12 @@ public abstract class UserAction implements IAction {
         transaction.rollback();
     }
 
-    public void setProperties(List<EditableProperty> properties) {
-        this.properties = properties;
-    }
-
     public List<EditableProperty> getProperties() {
         return properties;
+    }
+
+    public void setProperties(List<EditableProperty> properties) {
+        this.properties = properties;
     }
 
     public void addProperty(EditableProperty property) throws Exception {

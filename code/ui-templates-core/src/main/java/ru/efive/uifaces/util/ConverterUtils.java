@@ -1,7 +1,6 @@
 package ru.efive.uifaces.util;
 
 /**
- *
  * @author Denis Kotegov
  */
 public final class ConverterUtils {
@@ -11,12 +10,11 @@ public final class ConverterUtils {
     }
 
     /**
-     *
      * @param object
      * @param defaultValue
      * @return
      * @throws NumberFormatException when object is a not a {@link Number} and {@link Strign} representation
-     * contains invalid integer inside.
+     *                               contains invalid integer inside.
      */
     public static Integer objectAsInteger(Object object) {
         return objectAsInteger(object, null);
@@ -31,16 +29,15 @@ public final class ConverterUtils {
     }
 
     /**
-     *
      * @param object
-     * @param defaultValue 
+     * @param defaultValue
      * @return
      * @throws NumberFormatException when object is a not a {@link Number} and {@link Strign} representation
-     * contains invalid integer inside.
+     *                               contains invalid integer inside.
      */
     public static Integer objectAsInteger(Object object, Integer defaultValue) {
         Integer result;
-        
+
         if (object == null) {
             result = defaultValue;
         } else if (object.getClass() == Integer.class) {
@@ -72,7 +69,7 @@ public final class ConverterUtils {
         Boolean result;
 
         if (object == null) {
-            result =  defaultValue;
+            result = defaultValue;
         } else if (object.getClass() == Boolean.class) {
             result = (Boolean) object;
         } else {

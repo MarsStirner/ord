@@ -16,7 +16,7 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(name = "Substitutions.getAll", query = "SELECT a FROM Substitution a")
 })
-public class Substitution extends DeletableEntity{
+public class Substitution extends DeletableEntity {
 
     @Column(name = "startDate")
     @Temporal(TemporalType.DATE)
@@ -98,13 +98,13 @@ public class Substitution extends DeletableEntity{
         sb.append(", endDate=").append(endDate);
         sb.append(", deleted=").append(deleted);
         sb.append(", person=");
-        if(person != null) {
+        if (person != null) {
             sb.append('[').append(person.getId()).append(' ').append(person.getDescription()).append(']');
         } else {
             sb.append("NULL");
         }
         sb.append(", substitution=");
-        if(substitution != null) {
+        if (substitution != null) {
             sb.append('[').append(substitution.getId()).append(' ').append(substitution.getDescription()).append(']');
         } else {
             sb.append("NULL");

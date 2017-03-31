@@ -1,8 +1,12 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.SortOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.interfaces.UserDao;
 
 import java.util.List;
 import java.util.Map;
@@ -13,9 +17,17 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+@Component("userLDM")
+@SpringScopeView
 public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> {
-    private UserDAOHibernate dao;
+
     private boolean showFired = false;
+
+    @Autowired
+    public LazyDataModelForUser(
+            @Qualifier("userDao") UserDao userDao) {
+        super(userDao);
+    }
 
     public boolean isShowFired() {
         return showFired;
@@ -23,21 +35,6 @@ public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> 
 
     public void setShowFired(final boolean showFired) {
         this.showFired = showFired;
-    }
-
-    public LazyDataModelForUser(UserDAOHibernate daoHibernate) {
-        dao = daoHibernate;
-    }
-
-    @Override
-    public User getRowData(String rowKey) {
-        final Integer identifier;
-        try {
-            identifier = Integer.valueOf(rowKey);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return dao.getItemByIdForListView(identifier);
     }
 
     @Override
@@ -48,11 +45,12 @@ public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> 
             SortOrder sortOrder,
             Map<String, Object> filters
     ) {
-        setRowCount(((Long) dao.countUsers(filter, false, showFired)).intValue());
-        if(getRowCount() < first){
+        final UserDao dao = (UserDao) this.dao;
+        setRowCount(dao.countItems(filter, false, showFired));
+        if (getRowCount() < first) {
             first = 0;
         }
-        return dao.findUsers(filter, false, showFired, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
+        return dao.getItems(filter, false, showFired, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
     }
 
 }

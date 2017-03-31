@@ -20,18 +20,22 @@ import java.util.Date;
 import java.util.Properties;
 
 public class SendMailActivity implements IActivity {
+    public MailSettings mailSettings;
     Class<? extends ProcessedData> class_;
     private ProcessedData processedData;
     private MailMessage message;
     private String resultMessage;
-    public MailSettings mailSettings;
 
-    public void setMessage(MailMessage message) {
-        this.message = message;
+    public SendMailActivity() {
+
     }
 
     public MailMessage getMessage() {
         return message;
+    }
+
+    public void setMessage(MailMessage message) {
+        this.message = message;
     }
 
     @Override
@@ -41,10 +45,6 @@ public class SendMailActivity implements IActivity {
 
     public String getResult() {
         return resultMessage;
-    }
-
-    public SendMailActivity() {
-
     }
 
     @Override
@@ -73,7 +73,7 @@ public class SendMailActivity implements IActivity {
                 for (Address address : mimeMessage.getAllRecipients()) {
                     System.out.println("####DEBUG MESSAGE:\"" + mimeMessage.getSubject() + "\" TO: " + ((InternetAddress) address).getAddress());
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 //TODO
             }
             Transport.send(mimeMessage);
@@ -116,7 +116,7 @@ public class SendMailActivity implements IActivity {
             Properties properties = new Properties();
             properties.put("mail.smtp.host", mailSettings.getSmtpHost());
             properties.put("mail.debug", "true");
-           // properties.put("mail.pop3.socketFactory.class", "ru.efive.wf.core.util.DummySSLSocketFactory");
+            // properties.put("mail.pop3.socketFactory.class", "ru.efive.wf.core.util.DummySSLSocketFactory");
             return Session.getDefaultInstance(properties, new Authenticator() {
                 @Override
                 protected PasswordAuthentication getPasswordAuthentication() {

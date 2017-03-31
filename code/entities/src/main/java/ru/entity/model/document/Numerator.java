@@ -19,7 +19,7 @@ public class Numerator extends DeletableEntity {
     /**
      * Дата создания документа
      */
-    @Column(name="creationDate")
+    @Column(name = "creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date creationDate;
     /**
@@ -29,9 +29,9 @@ public class Numerator extends DeletableEntity {
     @JoinColumn(name = "author_id")
     private User author;
 
-     /**
+    /**
      * Тип документа (Входящий|Исходящий|Внутренний|Обращение граждан)
-      * */
+     */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "documentType_id")
     private DocumentType documentType;
@@ -41,13 +41,13 @@ public class Numerator extends DeletableEntity {
      * Номенклатура документа (NULL - wildcard)
      */
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="nomenclature_id", nullable = true)
+    @JoinColumn(name = "nomenclature_id", nullable = true)
     private Nomenclature nomenclature;
 
     /**
      * Текущее значение счетчика
      */
-    @Column(name="value")
+    @Column(name = "value")
     private Integer value;
 
     /**
@@ -59,14 +59,14 @@ public class Numerator extends DeletableEntity {
     /**
      * Дата начала действия нумератора
      */
-    @Column(name="startDate")
+    @Column(name = "startDate")
     @Temporal(value = TemporalType.DATE)
     private Date startDate;
 
     /**
      * Дата окончания действия нумератора
      */
-    @Column(name="endDate")
+    @Column(name = "endDate")
     @Temporal(value = TemporalType.DATE)
     private Date endDate;
 

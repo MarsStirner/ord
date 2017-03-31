@@ -1,16 +1,15 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.referenceBook.Position;
-import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -20,13 +19,14 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
  */
 @FacesConverter("positionConverter")
 public class PositionConverter implements Converter {
+    @Autowired
+    @Qualifier("positionDao")
+    private PositionDao positionDao;
 
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uiComponent, String value) {
         if (value != null && value.trim().length() > 0) {
-            SessionManagementBean sessionManagement = fc.getApplication().evaluateExpressionGet(fc, "#{sessionManagement}", SessionManagementBean.class);
-            PositionDAOImpl service = sessionManagement.getDAO(PositionDAOImpl.class, POSITION_DAO);
-            final List<Position> resultList = service.getByValue(value);
+            final List<Position> resultList = positionDao.getByValue(value);
             if (resultList.isEmpty()) {
                 return null;
             }

@@ -1,6 +1,9 @@
 package ru.efive.dms.uifaces.beans;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.*;
 import ru.efive.wf.core.activity.enums.ProcessState;
@@ -9,13 +12,19 @@ import ru.efive.wf.core.util.EngineHelper;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.Person;
 import ru.external.ProcessedData;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
-import javax.faces.context.FacesContext;
+import org.springframework.stereotype.Controller;
 import java.util.*;
 
+@Controller("processorModal")
+@SpringScopeView
 public class ProcessorModalBean extends ModalWindowHolderBean {
-    private static final long serialVersionUID = 8956219164518339475L;
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
+
 
     private ProcessState state;
     private ProcessedData processedData;
@@ -27,14 +36,13 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
     private int processedActivityIndex;
     private HistoryEntry historyEntry;
     private String actionResult;
-    private SessionManagementBean sessionManagement;
-
-    public void setProcessedData(ProcessedData processedData) {
-        this.processedData = processedData;
-    }
 
     public ProcessedData getProcessedData() {
         return processedData;
+    }
+
+    public void setProcessedData(ProcessedData processedData) {
+        this.processedData = processedData;
     }
 
     public List<IAction> getAvailableActions() {
@@ -45,16 +53,16 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
         this.selectedAction = selectedAction;
     }
 
-    public void setSelectedAction(IAction selectedAction){
-        this.selectedAction = selectedAction;
-    }
-
     public boolean selected(IAction action) {
         return this.selectedAction != null && this.selectedAction.equals(action);
     }
 
     public IAction getSelectedAction() {
         return selectedAction;
+    }
+
+    public void setSelectedAction(IAction selectedAction) {
+        this.selectedAction = selectedAction;
     }
 
     public LocalActivity getProcessedActivity() {
@@ -91,9 +99,8 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                 System.out.println(EngineHelper.WRONG_PROCESSED_DATA);
                 state = ProcessState.FAILURE;
             }
-            FacesContext context = FacesContext.getCurrentInstance();
-            sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-            if (sessionManagement == null) {
+
+            if (authData == null) {
                 actionResult = EngineHelper.DEFAULT_ERROR_MESSAGE;
                 System.out.println(EngineHelper.WRONG_SESSION_BEAN);
                 state = ProcessState.FAILURE;
@@ -103,10 +110,10 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
             processedActivity = null;
             engine = new Engine();
             Person person;
-            if (!sessionManagement.isSubstitution()) {
-                person = new Person(sessionManagement.getLoggedUser());
+            if (!authData.isSubstitution()) {
+                person = new Person(authData.getAuthorized());
             } else {
-                person = new Person(sessionManagement.getLoggedUser(), sessionManagement.getSubstitutedUsers());
+                person = new Person(authData.getAuthorized(), authData.getSubstitutedUsers());
             }
             engine.initialize(getProcessedData(), person);
             for (IAction action : engine.getActions()) {
@@ -137,7 +144,7 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                 Date date = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
                 historyEntry.setCreated(date);
                 historyEntry.setStartDate(date);
-                historyEntry.setOwner(sessionManagement.getLoggedUser());
+                historyEntry.setOwner(authData.getAuthorized());
                 historyEntry.setDocType(getProcessedData().getDocumentType().getName());
                 historyEntry.setParentId(getProcessedData().getId());
                 historyEntry.setActionId(selectedAction.getAction().getId());
@@ -188,10 +195,10 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                     if (engine == null) {
                         engine = new Engine();
                         Person person;
-                        if (!sessionManagement.isSubstitution()) {
-                            person = new Person(sessionManagement.getLoggedUser());
+                        if (!authData.isSubstitution()) {
+                            person = new Person(authData.getAuthorized());
                         } else {
-                            person = new Person(sessionManagement.getLoggedUser(), sessionManagement.getSubstitutedUsers());
+                            person = new Person(authData.getAuthorized(), authData.getSubstitutedUsers());
                         }
                         new Engine().initialize(getProcessedData(), person);
                     }

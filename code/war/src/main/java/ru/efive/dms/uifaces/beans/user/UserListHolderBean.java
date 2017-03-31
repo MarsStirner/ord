@@ -1,30 +1,30 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import org.springframework.context.ApplicationContext;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.util.ldap.LDAPImportService;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
-import ru.hitsl.sql.dao.util.ApplicationDAONames;
+import ru.hitsl.sql.dao.interfaces.UserDao;
 
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.List;
 
-@Named("userList")
-@ViewScoped
+@Controller("userList")
+@SpringScopeView
 public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
 
-    private static final long serialVersionUID = 8282506863686518183L;
+    @Autowired
+    @Qualifier("userDao")
+    private UserDao userDao;
+    @Autowired
+    @Qualifier("ldapImportService")
+    private LDAPImportService ldapImportService;
 
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
+
     private String filter;
-
 
     @Override
     protected Pagination initPagination() {
@@ -46,29 +46,25 @@ public class UserListHolderBean extends AbstractDocumentListHolderBean<User> {
 
     @Override
     protected int getTotalCount() {
-            return new Long(sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).countUsers(filter, false, false)).intValue();
+        return new Long(userDao.countItems(filter, false, false)).intValue();
 
     }
 
     @Override
     protected List<User> loadDocuments() {
-            return sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO)
-                    .findUsers(filter, false, false,
-                            getPagination().getOffset(), getPagination().getPageSize(),
-                            getSorting().getColumnId(), getSorting().isAsc()
-                    );
+        return userDao.getItems(filter, false, false, getPagination().getOffset(), getPagination().getPageSize(),
+                getSorting().getColumnId(), getSorting().isAsc()
+        );
     }
 
     public void importLDAPUsers() throws Exception {
-        ApplicationContext context = sessionManagement.getIndexManagement().getContext();
-        LDAPImportService service = (LDAPImportService) context.getBean("ldapImportService");
-        service.run();
+        ldapImportService.run();
     }
 
     //TODO выпилить к черту из @ConversationScoped бина
     public String getUserFullNameById(int id) {
         try {
-            User user = sessionManagement.getDAO(UserDAOHibernate.class, ApplicationDAONames.USER_DAO).get(id);
+            User user = userDao.get(id);
             if (user != null) {
                 return user.getDescription();
             }

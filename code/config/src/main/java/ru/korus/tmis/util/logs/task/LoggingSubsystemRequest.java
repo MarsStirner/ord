@@ -39,44 +39,6 @@ public class LoggingSubsystemRequest implements Runnable {
         this.number = number;
     }
 
-    @Override
-    public void run() {
-        final HttpClient httpClient = new DefaultHttpClient();
-        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), timeout);
-        HttpConnectionParams.setSoTimeout(httpClient.getParams(), timeout);
-        if (event != null && event.getMessage() != null && event.getMessage().length() > 1) {
-            final HttpPost request = new HttpPost(uri);
-            final String data = layout.doLayout(event);
-            try {
-                request.setHeaders(headers);
-                request.setEntity(new StringEntity(data, charset));
-                final HttpResponse response = httpClient.execute(request);
-                if(200 != response.getStatusLine().getStatusCode()){
-                    parent.addError(String.format("#%d Message:\"%s\" return \"%s\" ResponseContent:\"%s\"",
-                            number,
-                            data,
-                            response.toString(),
-                            convertStreamToString(response.getEntity().getContent()) )
-                    );
-                }
-            } catch (UnsupportedEncodingException e) {
-                parent.addError(String.format("#%d UnsupportedEncodingException for message:\"%s\"", number, data), e);
-                parent.submitError();
-            } catch (ClientProtocolException e) {
-                parent.addError(String.format("#%d ClientProtocolException for message:\"%s\"", number, data), e);
-                parent.submitError();
-            } catch (IOException e) {
-                parent.addError(String.format("#%d IOException for message:\"%s\"", number, data), e);
-                parent.submitError();
-            } catch (Exception e) {
-                parent.addError(String.format("#%d Unknown Exception for message:\"%s\"", number, data), e);
-                parent.submitError();
-            } finally {
-                httpClient.getConnectionManager().shutdown();
-            }
-        }
-    }
-
     public static void setUri(final URI uri) {
         LoggingSubsystemRequest.uri = uri;
     }
@@ -104,5 +66,43 @@ public class LoggingSubsystemRequest implements Runnable {
     private static String convertStreamToString(final java.io.InputStream is) {
         final java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
+    }
+
+    @Override
+    public void run() {
+        final HttpClient httpClient = new DefaultHttpClient();
+        HttpConnectionParams.setConnectionTimeout(httpClient.getParams(), timeout);
+        HttpConnectionParams.setSoTimeout(httpClient.getParams(), timeout);
+        if (event != null && event.getMessage() != null && event.getMessage().length() > 1) {
+            final HttpPost request = new HttpPost(uri);
+            final String data = layout.doLayout(event);
+            try {
+                request.setHeaders(headers);
+                request.setEntity(new StringEntity(data, charset));
+                final HttpResponse response = httpClient.execute(request);
+                if (200 != response.getStatusLine().getStatusCode()) {
+                    parent.addError(String.format("#%d Message:\"%s\" return \"%s\" ResponseContent:\"%s\"",
+                            number,
+                            data,
+                            response.toString(),
+                            convertStreamToString(response.getEntity().getContent()))
+                    );
+                }
+            } catch (UnsupportedEncodingException e) {
+                parent.addError(String.format("#%d UnsupportedEncodingException for message:\"%s\"", number, data), e);
+                parent.submitError();
+            } catch (ClientProtocolException e) {
+                parent.addError(String.format("#%d ClientProtocolException for message:\"%s\"", number, data), e);
+                parent.submitError();
+            } catch (IOException e) {
+                parent.addError(String.format("#%d IOException for message:\"%s\"", number, data), e);
+                parent.submitError();
+            } catch (Exception e) {
+                parent.addError(String.format("#%d Unknown Exception for message:\"%s\"", number, data), e);
+                parent.submitError();
+            } finally {
+                httpClient.getConnectionManager().shutdown();
+            }
+        }
     }
 }

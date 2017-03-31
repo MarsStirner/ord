@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- *
  * @author Denis Kotegov
  */
 @FacesRenderer(
@@ -26,10 +25,10 @@ public class HtmlDataTableRenderer extends AbstractTableRenderer {
 
     public static final Iterable<HtmlAttribute> ATTRIBUTES_TO_PASS_THRU = Collections.unmodifiableList(Arrays.asList(
             HtmlAttribute.BORDER, HtmlAttribute.CELLPADDING, HtmlAttribute.CELLSPACING, HtmlAttribute.WIDTH));
-    
+
     @Override
     protected Iterable<HtmlAttribute> getAttributesToPassThru() {
         return ATTRIBUTES_TO_PASS_THRU;
     }
-    
+
 }

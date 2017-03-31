@@ -1,8 +1,7 @@
 package ru.entity.model.referenceBook;
 
 
-
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +15,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rbContactInfoType")
-public class ContactInfoType extends DictionaryEntity {
+public class ContactInfoType extends ReferenceBookEntity {
 
     public static final String RB_CODE_MOBILE_PHONE = "mobilePhone";
     public static final String RB_CODE_WORK_PHONE = "workPhone";

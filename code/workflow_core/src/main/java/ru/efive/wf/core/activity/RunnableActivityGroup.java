@@ -1,14 +1,18 @@
 package ru.efive.wf.core.activity;
 
+import ru.efive.wf.core.IActivity;
+import ru.external.ProcessedData;
+
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import ru.efive.wf.core.IActivity;
-import ru.external.ProcessedData;
-
 public final class RunnableActivityGroup implements IActivity {
+
+    private List<IActivity> activities;
+    private ExecutorService threadExecutor;
+    private String resultMessage;
 
     public RunnableActivityGroup() {
 
@@ -58,12 +62,13 @@ public final class RunnableActivityGroup implements IActivity {
         return result;
     }
 
-
     public String getResult() {
         return resultMessage;
     }
 
     private class RunnableActivity implements Runnable {
+
+        private IActivity activity;
 
         public RunnableActivity(IActivity activity) {
             this.activity = activity;
@@ -74,14 +79,5 @@ public final class RunnableActivityGroup implements IActivity {
             activity.execute();
             activity.dispose();
         }
-
-        private IActivity activity;
     }
-
-
-    private List<IActivity> activities;
-
-    private ExecutorService threadExecutor;
-
-    private String resultMessage;
 }

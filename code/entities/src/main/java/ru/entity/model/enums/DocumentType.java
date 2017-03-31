@@ -9,7 +9,6 @@ import java.util.List;
  * @author Nastya Peshekhonova
  *         TODO: Временное решение, следует перевести это в таблицe базы данных и использовать ее
  *         TODO как же вы ска меня достали, руки ваши бы из зада переткнуть повыше, на курсы запишитесь хотя-бы, или книжки почитайте
- *
  */
 
 public enum DocumentType {
@@ -24,18 +23,6 @@ public enum DocumentType {
     private final String name;
     private final List<DocumentStatus> statuses;
     private final List<DocumentAction> actions;
-
-    public String getName() {
-        return name;
-    }
-
-    public List<DocumentStatus> getStatuses() {
-        return statuses;
-    }
-
-    public List<DocumentAction> getActions() {
-        return actions;
-    }
 
     DocumentType(String name, List<DocumentStatus> statuses, List<DocumentAction> actions) {
         this.name = name;
@@ -60,7 +47,6 @@ public enum DocumentType {
         }
         return DocumentStatus.NEW;
     }
-
 
     public synchronized static String getActionName(String documentName, int id) {
         DocumentType documentType = valueOf(documentName);
@@ -215,5 +201,17 @@ public enum DocumentType {
                 DocumentAction.RETURN_TO_ARCHIVE,
                 DocumentAction.REDIRECT_IN_OTHER_ARCHIVE_135,
                 DocumentAction.CREATE);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<DocumentStatus> getStatuses() {
+        return statuses;
+    }
+
+    public List<DocumentAction> getActions() {
+        return actions;
     }
 }

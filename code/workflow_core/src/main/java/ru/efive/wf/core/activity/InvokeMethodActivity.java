@@ -10,6 +10,14 @@ import java.util.List;
 
 public class InvokeMethodActivity implements IActivity {
 
+    Class<? extends ProcessedData> class_;
+    private ProcessedData processedData;
+    private String className;
+    private String methodName;
+    private List<Serializable> parameters = new ArrayList<>();
+    private String resultMessage;
+
+
     public InvokeMethodActivity() {
 
     }
@@ -76,15 +84,4 @@ public class InvokeMethodActivity implements IActivity {
     public String getResult() {
         return resultMessage;
     }
-
-
-    Class<? extends ProcessedData> class_;
-    private ProcessedData processedData;
-
-    private String className;
-    private String methodName;
-    private List<Serializable> parameters = new ArrayList<>();
-
-
-    private String resultMessage;
 }

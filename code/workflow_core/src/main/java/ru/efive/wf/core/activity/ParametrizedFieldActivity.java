@@ -2,10 +2,15 @@ package ru.efive.wf.core.activity;
 
 import ru.efive.wf.core.IAction;
 import ru.efive.wf.core.IActivity;
-import ru.external.ProcessedData;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.external.ProcessedData;
 
 public abstract class ParametrizedFieldActivity implements IActivity {
+
+    Class<? extends ProcessedData> class_;
+    private IAction parentAction;
+    private ProcessedData processedData;
+    private String resultMessage;
 
     @Override
     public <T extends ProcessedData> boolean initialize(T t) {
@@ -22,12 +27,12 @@ public abstract class ParametrizedFieldActivity implements IActivity {
         return result;
     }
 
-    public void setParentAction(IAction parentAction) {
-        this.parentAction = parentAction;
-    }
-
     public IAction getParentAction() {
         return parentAction;
+    }
+
+    public void setParentAction(IAction parentAction) {
+        this.parentAction = parentAction;
     }
 
     @Override
@@ -43,19 +48,11 @@ public abstract class ParametrizedFieldActivity implements IActivity {
         return processedData;
     }
 
-    public void setResult(String resultMessage) {
-        this.resultMessage = resultMessage;
-    }
-
     public String getResult() {
         return resultMessage;
     }
 
-
-    private IAction parentAction;
-
-    Class<? extends ProcessedData> class_;
-    private ProcessedData processedData;
-
-    private String resultMessage;
+    public void setResult(String resultMessage) {
+        this.resultMessage = resultMessage;
+    }
 }

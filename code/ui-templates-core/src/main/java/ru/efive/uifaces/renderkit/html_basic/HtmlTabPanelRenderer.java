@@ -4,6 +4,7 @@ import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.component.html.HtmlTabPage;
 import ru.efive.uifaces.component.html.HtmlTabPage.ActionBehavior;
 import ru.efive.uifaces.component.html.HtmlTabPanel;
+import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
 import ru.efive.uifaces.renderkit.html_basic.base.*;
 
 import javax.faces.application.ResourceDependencies;
@@ -37,31 +38,47 @@ import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.
         @ResourceDependency(name = "tabPanel.css", target = "head", library = "e5ui/css")})
 public class HtmlTabPanelRenderer extends HtmlBasicRenderer {
 
-    /** <code>Renderer</code> type for component */
+    /**
+     * <code>Renderer</code> type for component
+     */
     public static final String RENDERER = "ru.efive.uifaces.TabPanel";
-
-    private static final String WRONG_COMPONENT = "Can not render component of class %s";
-
-    /** The surrounding div's class. */
+    /**
+     * The surrounding div's class.
+     */
     public static final String TAB_PANEL_CLASS = "e5uiTabPanel";
-    /** The header's div's class. */
+    /**
+     * The header's div's class.
+     */
     public static final String TAB_PANEL_HEADER_CLASS = "e5uiTabPanelHeader";
-    /** The page button's div's class. */
+    /**
+     * The page button's div's class.
+     */
     public static final String TAB_PANEL_HEADER_PAGE_CLASS = "e5uiTabPanelHeaderPage";
-    /** The content's div's class. */
+    /**
+     * The content's div's class.
+     */
     public static final String TAB_PANEL_CONTENT_CLASS = "e5uiTabPanelContent";
-    /** The content page's div's class. */
+    /**
+     * The content page's div's class.
+     */
     public static final String TAB_PANEL_CONTENT_PAGE_CLASS = "e5uiTabPanelContentPage";
-    /** The marker class that assumes selected page. */
+    /**
+     * The marker class that assumes selected page.
+     */
     public static final String TAB_PANEL_SELECTED_PAGE_CLASS = "selected";
-    /** The marker class that assumes disabled page. */
+    /**
+     * The marker class that assumes disabled page.
+     */
     public static final String TAB_PANEL_DISABLED_PAGE_CLASS = "disabled";
-
-    /** The header's div's id suffix. */
+    /**
+     * The header's div's id suffix.
+     */
     public static final String TAB_PANEL_HEADER_ID_SUFFIX = "-header";
-    /** The content's div's id suffix. */
+    /**
+     * The content's div's id suffix.
+     */
     public static final String TAB_PANEL_PAGE_ID_SUFFIX = "-content";
-    
+    private static final String WRONG_COMPONENT = "Can not render component of class %s";
     private static final String TAB_PANEL_ONCLICK = "e5ui_tabPanel.selectTab(this);";
     private static final String TAB_PANEL_SET_SELECTED_TAB = "document.getElementById('%s').value='%s';";
     private static final String FORM_BY_ID_SUBMIT = "document.getElementById('%s').submit();";
@@ -106,7 +123,9 @@ public class HtmlTabPanelRenderer extends HtmlBasicRenderer {
         return tabPageIndex[0] == tabPageIndex[1];
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeBegin(AdvancedResponseWriter writer) throws IOException {
         UIComponent component = writer.getComponent();
@@ -190,8 +209,8 @@ public class HtmlTabPanelRenderer extends HtmlBasicRenderer {
                                         if (cbl != null && !cbl.isEmpty()) {
                                             ClientBehaviorContext cbCtx =
                                                     ClientBehaviorContext.createClientBehaviorContext(
-                                                    writer.getContext(), tabPage, HtmlTabPage.DEFAULT_EVENT_NAME,
-                                                    null, null);
+                                                            writer.getContext(), tabPage, HtmlTabPage.DEFAULT_EVENT_NAME,
+                                                            null, null);
                                             for (ClientBehavior cb : cbl) {
                                                 if (cb instanceof AjaxBehavior) {
                                                     String cbs = cb.getScript(cbCtx);
@@ -264,10 +283,12 @@ public class HtmlTabPanelRenderer extends HtmlBasicRenderer {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeChildren(AdvancedResponseWriter writer,
-            List<UIComponent> children) throws IOException {
+                                  List<UIComponent> children) throws IOException {
         UIComponent component = writer.getComponent();
         if (!component.isRendered()) {
             return;
@@ -288,7 +309,9 @@ public class HtmlTabPanelRenderer extends HtmlBasicRenderer {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeEnd(AdvancedResponseWriter writer) throws IOException {
         UIComponent component = writer.getComponent();
@@ -308,7 +331,9 @@ public class HtmlTabPanelRenderer extends HtmlBasicRenderer {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void decode(FacesContext context, UIComponent component) {
         super.decode(context, component);

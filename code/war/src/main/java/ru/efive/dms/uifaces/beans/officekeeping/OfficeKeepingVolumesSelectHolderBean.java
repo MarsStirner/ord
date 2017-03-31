@@ -1,22 +1,35 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import com.github.javaplugs.jsf.SpringScopeSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.enums.DocumentStatus;
-import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
+import ru.hitsl.sql.dao.interfaces.OfficeKeepingVolumeDao;
 
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
-
-@Named("officeKeepingVolumesSelect")
-@SessionScoped
+@Controller("officeKeepingVolumesSelect")
+@SpringScopeSession
 public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHolderBean<OfficeKeepingVolume> {
+
+    static private Map<String, Object> filters = new HashMap<>();
+
+    static {
+        filters.put("statusId", DocumentStatus.OPEN.getId());
+    }
+
+    @Autowired
+    @Qualifier("officeKeepingVolumeDao")
+    private OfficeKeepingVolumeDao officeKeepingVolumeDao;
+
+    private String filter;
 
     @Override
     protected Pagination initPagination() {
@@ -25,14 +38,12 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
 
     @Override
     protected int getTotalCount() {
-        int in_result;
-        in_result = new Long(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).countAllDocuments(filters, filter, false, false)).intValue();
-        return in_result;
+        return officeKeepingVolumeDao.countItems(filter, filters, false);
     }
 
     @Override
     protected List<OfficeKeepingVolume> loadDocuments() {
-        return new ArrayList<>(new HashSet<>(sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllDocuments(filters, filter, false, false)));
+        return officeKeepingVolumeDao.getItems(filter, filters, getSorting().getColumnId(), getSorting().isAsc(), getPagination().getOffset(), getPagination().getPageSize(), false);
     }
 
     @Override
@@ -44,7 +55,7 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
         List<OfficeKeepingVolume> result = new ArrayList<>();
         try {
             if (parentId != null && !parentId.equals("")) {
-                result = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findAllVolumesByParentId(parentId);
+                result = officeKeepingVolumeDao.findAllVolumesByParentId(parentId);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,10 +71,6 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
         this.filter = filter;
     }
 
-    public void setFilters(Map<String, Object> filters) {
-        OfficeKeepingVolumesSelectHolderBean.filters = filters;
-    }
-
     public void setOfficeKeepingVolume(OfficeKeepingVolume volume) {
         filters.put("officeKeepingVolume", volume);
     }
@@ -72,16 +79,9 @@ public class OfficeKeepingVolumesSelectHolderBean extends AbstractDocumentListHo
         return filters;
     }
 
-    private String filter;
-    static private Map<String, Object> filters = new HashMap<>();
-
-    static {
-        filters.put("statusId", DocumentStatus.OPEN.getId());
+    public void setFilters(Map<String, Object> filters) {
+        OfficeKeepingVolumesSelectHolderBean.filters = filters;
     }
 
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
 
-    private static final long serialVersionUID = 1426067769816981240L;
 }

@@ -17,14 +17,13 @@
 </h:head>
 <h:body id="main_body">
     <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
-    <c:set var="isAdministrator" value="#{sessionManagement.isAdministrator()}" scope="session"/>
-    <c:set var="isRecorder" value="#{sessionManagement.isRecorder()}" scope="session"/>
-    <c:set var="isOfficeManager" value="#{sessionManagement.isOfficeManager()}" scope="session"/>
-    <c:set var="isRequestManager" value="#{sessionManagement.isRequestManager()}" scope="session"/>
-    <c:set var="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}" scope="session"/>
-    <c:set var="isOuter" value="#{sessionManagement.isOuter()}" scope="session"/>
-    <c:set var="isHr" value="#{sessionManagement.isHr()}" scope="session"/>
-    <c:set var="isFilling" value="#{sessionManagement.isFilling()}" scope="session"/>
+    <c:set var="isAdministrator" value="#{authData.isAdministrator()}" scope="session"/>
+    <c:set var="isRecorder" value="#{authData.isRecorder()}" scope="session"/>
+    <c:set var="isOfficeManager" value="#{authData.isOfficeManager()}" scope="session"/>
+    <c:set var="isRequestManager" value="#{authData.isRequestManager()}" scope="session"/>
+    <c:set var="isOuter" value="#{authData.isOuter()}" scope="session"/>
+    <c:set var="isHr" value="#{authData.isHr()}" scope="session"/>
+    <c:set var="isFilling" value="#{authData.isFilling()}" scope="session"/>
     <h:form>
         <ui:insert name="header">
             <div id="form_header">

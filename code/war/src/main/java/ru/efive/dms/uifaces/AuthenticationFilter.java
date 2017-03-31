@@ -12,18 +12,41 @@ import java.io.IOException;
 
 
 public class AuthenticationFilter implements Filter {
+    private static final String LOGIN_PAGE = "index.xhtml";
+    private static final Logger LOGGER = LoggerFactory.getLogger("FILTER");
+
+    public static String getClientIpAddr(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+    }
+
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         final HttpServletRequest request = (HttpServletRequest) req;
         //1 Проверяем требуется ли наличие контроля сессисии (по ходу он не нужен только для страницы логина =))
         if (isSessionControlRequiredForThisResource(request)) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("{} || {}://{}{}{}{}",
-                             request.getMethod(),
-                             request.getScheme(),
-                             request.getServerName(),
-                             ("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443 ? "" : ":" + request.getServerPort()),
-                             request.getRequestURI(),
-                             (request.getQueryString() != null ? "?" + request.getQueryString() : "")
+                        request.getMethod(),
+                        request.getScheme(),
+                        request.getServerName(),
+                        ("http".equals(request.getScheme()) && request.getServerPort() == 80 || "https".equals(request.getScheme()) && request.getServerPort() == 443 ? "" : ":" + request.getServerPort()),
+                        request.getRequestURI(),
+                        (request.getQueryString() != null ? "?" + request.getQueryString() : "")
                 );
             }
             //Проверяем авторизацию
@@ -70,27 +93,6 @@ public class AuthenticationFilter implements Filter {
         return (httpServletRequest.getRequestedSessionId() != null) && !httpServletRequest.isRequestedSessionIdValid();
     }
 
-
-    public static String getClientIpAddr(HttpServletRequest request) {
-        String ip = request.getHeader("X-Forwarded-For");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_CLIENT_IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();
-        }
-        return ip;
-    }
-
     @Override
     public void destroy() {
     }
@@ -98,8 +100,4 @@ public class AuthenticationFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
-
-    private static final String LOGIN_PAGE = "index.xhtml";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger("FILTER");
 }

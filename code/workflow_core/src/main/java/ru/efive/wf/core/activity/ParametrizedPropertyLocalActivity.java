@@ -1,18 +1,20 @@
 package ru.efive.wf.core.activity;
 
-import java.beans.BeanInfo;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
-import java.util.HashMap;
-import java.util.Map;
-
 import ru.efive.wf.core.LocalActivity;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.data.LocalBackingBean;
 import ru.efive.wf.core.util.EngineHelper;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ParametrizedPropertyLocalActivity extends ParametrizedFieldActivity implements LocalActivity {
+
+    private LocalBackingBean document;
 
     @Override
     public LocalBackingBean getDocument() {
@@ -65,7 +67,4 @@ public class ParametrizedPropertyLocalActivity extends ParametrizedFieldActivity
         }
         return result;
     }
-
-
-    private LocalBackingBean document;
 }

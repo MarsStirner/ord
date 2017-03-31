@@ -1,9 +1,9 @@
 package ru.efive.wf.core;
 
-import java.util.List;
-
-import ru.entity.model.enums.DocumentAction;
 import ru.efive.wf.core.data.EditableProperty;
+import ru.entity.model.enums.DocumentAction;
+
+import java.util.List;
 
 public interface IAction {
 

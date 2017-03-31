@@ -1,14 +1,17 @@
 package ru.efive.dms.uifaces.beans.roles;
 
+import ru.efive.uifaces.bean.ModalWindowHolderBean;
+import ru.entity.model.referenceBook.Role;
+
+import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
-
-import ru.entity.model.user.Role;
-import ru.efive.uifaces.bean.ModalWindowHolderBean;
-
 public class RoleListSelectModalBean extends ModalWindowHolderBean {
+
+    private static final long serialVersionUID = -9107594037615723746L;
+    private RoleListHolderBean roleList;
+    private List<Role> roles = new ArrayList<>();
 
     public RoleListHolderBean getRoleList() {
         if (roleList == null) {
@@ -51,17 +54,10 @@ public class RoleListSelectModalBean extends ModalWindowHolderBean {
     protected void doShow() {
         super.doShow();
     }
+    //private List<role> roles;
 
     @Override
     protected void doHide() {
         super.doHide();
     }
-
-
-    private RoleListHolderBean roleList;
-
-    private List<Role> roles = new ArrayList<>();
-    //private List<role> roles;
-
-    private static final long serialVersionUID = -9107594037615723746L;
 }

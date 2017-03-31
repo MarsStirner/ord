@@ -7,51 +7,52 @@ package ru.efive.dms.uifaces.beans.contragent;
  * Description: <br>
  */
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.ContragentType;
-import ru.hitsl.sql.dao.ContragentDAOHibernate;
-import ru.hitsl.sql.dao.referenceBook.ContragentTypeDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.ContragentDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.ContragentTypeDao;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.io.IOException;
 import java.util.List;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.CONTRAGENT_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_CONTRAGENT_TYPE_DAO;
 
-@Named("contragentType")
-@ViewScoped
+@Controller("contragentType")
+@SpringScopeView
 public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<ContragentType> {
 
     private static final Logger logger = LoggerFactory.getLogger("RB_CONTRAGENT_TYPE");
 
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
+    @Autowired
+    @Qualifier("contragentDao")
+    private ContragentDao contragentDao;
+    @Autowired
+    @Qualifier("contragentTypeDao")
+    private ContragentTypeDao contragentTypeDao;
 
     @Override
     protected boolean deleteDocument() {
         final ContragentType document = getDocument();
-        final List<Contragent> contragentsWithThisContragentType =  sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).getByType(document);
-        if(contragentsWithThisContragentType.isEmpty()){
+        final List<Contragent> contragentsWithThisContragentType = contragentDao.getByType(document);
+        if (contragentsWithThisContragentType.isEmpty()) {
             document.setDeleted(true);
-            final ContragentType afterDelete = sessionManagement.getDAO(ContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).save(document);
-            if(afterDelete != null){
+            final ContragentType afterDelete = contragentTypeDao.save(document);
+            if (afterDelete != null) {
                 try {
                     FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
                 } catch (IOException e) {
                     logger.error("Error in redirect ", e);
                 }
                 return true;
-            } else{
+            } else {
                 addMessage(null, MSG_CANT_DELETE);
                 return false;
             }
@@ -71,7 +72,7 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
     @Override
     protected void initDocument(Integer id) {
         try {
-            final ContragentType document = sessionManagement.getDAO(ContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).get(id);
+            final ContragentType document = contragentTypeDao.get(id);
             if (document == null) {
                 setDocumentNotFound();
             } else {
@@ -86,7 +87,7 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
     @Override
     protected boolean saveNewDocument() {
         try {
-            final ContragentType document = sessionManagement.getDAO(ContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).save(getDocument());
+            final ContragentType document = contragentTypeDao.save(getDocument());
             if (document == null) {
                 addMessage(null, MSG_CANT_SAVE);
                 return false;
@@ -102,7 +103,7 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
     @Override
     protected boolean saveDocument() {
         try {
-            ContragentType document = sessionManagement.getDAO(ContragentTypeDAOImpl.class, RB_CONTRAGENT_TYPE_DAO).save(getDocument());
+            ContragentType document = contragentTypeDao.save(getDocument());
             if (document == null) {
                 addMessage(null, MSG_CANT_SAVE);
                 return false;

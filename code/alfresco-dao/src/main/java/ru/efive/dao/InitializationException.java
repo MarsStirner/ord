@@ -2,6 +2,8 @@ package ru.efive.dao;
 
 public class InitializationException extends Exception {
 
+    private static final long serialVersionUID = -3001352053090875884L;
+
     public InitializationException() {
         super();
     }
@@ -10,6 +12,4 @@ public class InitializationException extends Exception {
     public String getMessage() {
         return "Failed to initialize DAO session";
     }
-
-    private static final long serialVersionUID = -3001352053090875884L;
 }

@@ -1,8 +1,8 @@
 package ru.efive.uifaces.filter;
 
-import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
 
 /**
  * The information bean about the upload event.
@@ -33,11 +33,12 @@ public class UploadInfo {
 
     /**
      * Constructs the bean with specified information about upload event.
-     * @param request the request for that the upload event occurs
-     * @param response the response for that the upload event occurs
+     *
+     * @param request   the request for that the upload event occurs
+     * @param response  the response for that the upload event occurs
      * @param fieldName the form's file filed name
-     * @param fileName the uploading file name
-     * @param data the live stream with file's data than acquired from the request
+     * @param fileName  the uploading file name
+     * @param data      the live stream with file's data than acquired from the request
      */
     public UploadInfo(HttpServletRequest request, HttpServletResponse response, String fieldName, String fileName, InputStream data) {
         this.request = request;

@@ -1,23 +1,26 @@
 package ru.efive.uifaces.renderkit.html_basic.base;
 
-import java.io.IOException;
-import java.util.List;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.render.Renderer;
+import java.io.IOException;
+import java.util.List;
 
 /**
- *
  * @author Denis Kotegov
  */
 public class HtmlBasicRenderer extends Renderer {
 
-    /** <code>clientId</code> component property. */
+    /**
+     * <code>clientId</code> component property.
+     */
     public static final String CP_CLIENT_ID = "clientId";
 
-    /** <code>value</code> component property. */
+    /**
+     * <code>value</code> component property.
+     */
     public static final String CP_VALUE = "value";
-    
+
     // TODO: if component class will be replaced by component attribute then should be removed.
     public static final ComponentEvaluator<String> CE_CSS_CLASS = new ComponentEvaluator<String>() {
         @Override
@@ -33,7 +36,7 @@ public class HtmlBasicRenderer extends Renderer {
                     }
                 }
             }
-            
+
             for (Object param : params) {
                 if (param != null) {
                     String pv = param.toString();
@@ -46,18 +49,18 @@ public class HtmlBasicRenderer extends Renderer {
             if (sb.length() > 0) {
                 sb.setLength(sb.length() - 1);
             }
-            
+
             String result = sb.toString();
             return result.isEmpty() ? null : result;
         }
     };
-    
+
     // ----------------------------------------------------------------------------------------------------------------
-    
+
     protected boolean shouldEncodeComponent(FacesContext context, UIComponent component) throws IOException {
         return component.isRendered();
     }
-    
+
     protected boolean shouldEncodeChildren(FacesContext context, UIComponent component) throws IOException {
         return shouldEncodeComponent(context, component);
     }
@@ -65,14 +68,14 @@ public class HtmlBasicRenderer extends Renderer {
     protected boolean shouldEncodeIdAttribute(FacesContext context, UIComponent component) throws IOException {
         return false;
     }
-    
+
     // ----------------------------------------------------------------------------------------------------------------
-    
+
     /**
-     * Encodes <code>id</code> HTML attribute if 
+     * Encodes <code>id</code> HTML attribute if
      * {@link #shouldEncodeIdAttribute(javax.faces.context.FacesContext, javax.faces.component.UIComponent)}
      * returns <code>true</code>
-     * 
+     *
      * @param writer advanced response writer.
      * @return <code>true</code> if attribute was rendered and <code>false</code> otherwise.
      * @throws IOException on rendering exceptions.
@@ -86,9 +89,9 @@ public class HtmlBasicRenderer extends Renderer {
         }
         return result;
     }
-    
+
     // ----------------------------------------------------------------------------------------------------------------
-    
+
     protected void encodeBegin(AdvancedResponseWriter writer) throws IOException {
         // Do Nothing before overriding.
     }
@@ -103,9 +106,9 @@ public class HtmlBasicRenderer extends Renderer {
     protected void encodeEnd(AdvancedResponseWriter writer) throws IOException {
         // Do Nothing before overriding.
     }
-    
+
     // ----------------------------------------------------------------------------------------------------------------
-    
+
     @Override
     public String convertClientId(FacesContext context, String clientId) {
         return clientId;

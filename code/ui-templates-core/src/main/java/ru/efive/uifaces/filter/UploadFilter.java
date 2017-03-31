@@ -1,27 +1,20 @@
 package ru.efive.uifaces.filter;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.fileupload.util.Streams;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * The filter processes multipart/form-data requests for uploading files.
@@ -46,9 +39,8 @@ public class UploadFilter extends AbstractFilter {
     public static final long DEFAULT_MAX_SIZE = 1073741824;
     private static final Pattern FILE_FIELD_PATTERN = Pattern.compile("^(.+)-\\d+$");
     private static final String FILE_TOO_LARGE = "Uploaded file too large";
-    private long maxSize = DEFAULT_MAX_SIZE;
-
     private static final String DEFAULT_ENCODING = "UTF-8";
+    private long maxSize = DEFAULT_MAX_SIZE;
 
     /**
      * Constructs uninitialized filter.
@@ -158,7 +150,9 @@ public class UploadFilter extends AbstractFilter {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -177,7 +171,9 @@ public class UploadFilter extends AbstractFilter {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void init(FilterConfig filterConfig) {
         super.init(filterConfig);

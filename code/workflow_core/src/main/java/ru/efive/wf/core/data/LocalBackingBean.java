@@ -1,8 +1,8 @@
 package ru.efive.wf.core.data;
 
-import java.util.List;
-
 import ru.efive.wf.core.ActionResult;
+
+import java.util.List;
 
 public interface LocalBackingBean {
 

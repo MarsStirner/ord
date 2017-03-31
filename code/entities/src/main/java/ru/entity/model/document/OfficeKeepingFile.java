@@ -21,6 +21,71 @@ import java.util.Set;
 @Table(name = "dms_office_keeping_files")
 public class OfficeKeepingFile extends DeletableEntity implements ProcessedData {
 
+    private static final long serialVersionUID = -638563758311092558L;
+    /**
+     * Индекс дела
+     */
+    @Column(columnDefinition = "text")
+    private String fileIndex;
+    /**
+     * Заголовок
+     */
+    @Column(columnDefinition = "text")
+    private String shortDescription;
+    /**
+     * Примечания
+     */
+    @Column(columnDefinition = "text")
+    private String comments;
+    /**
+     * Срок хранения и статьи
+     */
+    private String keepingPeriodReasons;
+    /**
+     * Количество единиц хранения
+     */
+    private int unitsCount;
+    /**
+     * Номер фонда
+     */
+    private String fundNumber;
+    /**
+     * Номер стеллажа
+     */
+    private String standNumber;
+    /**
+     * Номер полки
+     */
+    private String shelfNumber;
+    /**
+     * Номер короба
+     */
+    private String boxNumber;
+    /**
+     * Текущий статус документа в процессе
+     */
+    @Column(name = "status_id")
+    private int statusId;
+    /**
+     * Номенклатура дел
+     */
+    //@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    //@Cascade({ org.hibernate.annotations.CascadeType.ALL })
+    //@JoinTable(name="dms_office_keeping_volumes_by_files")
+    //@LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "parentFile")
+    private Set<OfficeKeepingVolume> volumes;
+    /**
+     * История
+     */
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "dms_office_keeping_file_history",
+            joinColumns = {@JoinColumn(name = "file_id")},
+            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
+    private Set<HistoryEntry> history;
+    @Transient
+    private String WFResultDescription;
+
     @Transient
     public DocumentType getDocumentType() {
         return DocumentType.OfficeKeepingFile;
@@ -73,20 +138,20 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
         this.unitsCount = unitsCount;
     }
 
-    public void setFileIndex(String fileIndex) {
-        this.fileIndex = fileIndex;
-    }
-
     public String getFileIndex() {
         return fileIndex;
     }
 
-    public void setVolumes(Set<OfficeKeepingVolume> volumes) {
-        this.volumes = volumes;
+    public void setFileIndex(String fileIndex) {
+        this.fileIndex = fileIndex;
     }
 
     public Set<OfficeKeepingVolume> getVolumes() {
         return volumes;
+    }
+
+    public void setVolumes(Set<OfficeKeepingVolume> volumes) {
+        this.volumes = volumes;
     }
 
     @Transient
@@ -111,12 +176,12 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
         return result;
     }
 
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
     public Set<HistoryEntry> getHistory() {
         return history;
+    }
+
+    public void setHistory(Set<HistoryEntry> history) {
+        this.history = history;
     }
 
     @Transient
@@ -161,92 +226,12 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
         this.boxNumber = boxNumber;
     }
 
-    public void setWFResultDescription(String wFResultDescription) {
-        WFResultDescription = wFResultDescription;
-    }
-
     public String getWFResultDescription() {
         return WFResultDescription;
     }
 
-    /**
-     * Индекс дела
-     */
-    @Column(columnDefinition = "text")
-    private String fileIndex;
-
-    /**
-     * Заголовок
-     */
-    @Column(columnDefinition = "text")
-    private String shortDescription;
-
-    /**
-     * Примечания
-     */
-    @Column(columnDefinition = "text")
-    private String comments;
-
-
-    /**
-     * Срок хранения и статьи
-     */
-    private String keepingPeriodReasons;
-
-    /**
-     * Количество единиц хранения
-     */
-    private int unitsCount;
-
-    /**
-     * Номер фонда
-     */
-    private String fundNumber;
-
-    /**
-     * Номер стеллажа
-     */
-    private String standNumber;
-
-    /**
-     * Номер полки
-     */
-    private String shelfNumber;
-
-    /**
-     * Номер короба
-     */
-    private String boxNumber;
-
-
-    /**
-     * Текущий статус документа в процессе
-     */
-    @Column(name = "status_id")
-    private int statusId;
-
-    /**
-     * Номенклатура дел
-     */
-    //@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    //@Cascade({ org.hibernate.annotations.CascadeType.ALL })
-    //@JoinTable(name="dms_office_keeping_volumes_by_files")
-    //@LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY, mappedBy = "parentFile")
-    private Set<OfficeKeepingVolume> volumes;
-
-    /**
-     * История
-     */
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "dms_office_keeping_file_history",
-            joinColumns = {@JoinColumn(name = "file_id")},
-            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    private Set<HistoryEntry> history;
-
-    @Transient
-    private String WFResultDescription;
-
-    private static final long serialVersionUID = -638563758311092558L;
+    public void setWFResultDescription(String wFResultDescription) {
+        WFResultDescription = wFResultDescription;
+    }
 
 }

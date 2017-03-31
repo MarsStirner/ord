@@ -11,6 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DocumentSelectModal extends ModalWindowHolderBean {
+    private static final long serialVersionUID = 8811191935540534357L;
+    private String viewType;
+    private IncomingDocumentListHolder incomingDocuments;
+    private IncomingDocument incomingDocument;
+    private RequestDocumentListHolder requestDocuments;
+    private RequestDocument requestDocument;
+    //--------------------------------------------------------------------------------------------------------------
+    private boolean isViewTypesAlreadySelected = false;
+
     //--------------------------------------------------------------------------------------------------------------
     public IncomingDocumentListHolder getIncomingDocuments() {
         if (incomingDocuments == null) {
@@ -44,7 +53,6 @@ public class DocumentSelectModal extends ModalWindowHolderBean {
     public void setRequestDocument(RequestDocument requestDocument) {
         this.requestDocument = requestDocument;
     }
-    //--------------------------------------------------------------------------------------------------------------
 
     public List<String> getViewsType() {
         List<String> in_results = new ArrayList<>();
@@ -103,23 +111,12 @@ public class DocumentSelectModal extends ModalWindowHolderBean {
         super.doHide();
     }
 
-    public void setViewTypesAlreadySelected(boolean isViewTypesAlreadySelected) {
-        this.isViewTypesAlreadySelected = isViewTypesAlreadySelected;
-    }
-
     public boolean isViewTypesAlreadySelected() {
         return isViewTypesAlreadySelected;
     }
 
-    private String viewType;
-    private IncomingDocumentListHolder incomingDocuments;
-    private IncomingDocument incomingDocument;
-
-    private RequestDocumentListHolder requestDocuments;
-    private RequestDocument requestDocument;
-
-    private boolean isViewTypesAlreadySelected = false;
-
-    private static final long serialVersionUID = 8811191935540534357L;
+    public void setViewTypesAlreadySelected(boolean isViewTypesAlreadySelected) {
+        this.isViewTypesAlreadySelected = isViewTypesAlreadySelected;
+    }
 
 }

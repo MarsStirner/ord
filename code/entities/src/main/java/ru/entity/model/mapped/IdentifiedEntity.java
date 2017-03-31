@@ -12,10 +12,10 @@ import java.io.Serializable;
 @MappedSuperclass
 public abstract class IdentifiedEntity implements Serializable {
 
+    private static final long serialVersionUID = -5373498855516075305L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
-
 
     public Integer getId() {
         return id;
@@ -41,6 +41,4 @@ public abstract class IdentifiedEntity implements Serializable {
         final IdentifiedEntity that = (IdentifiedEntity) o;
         return !(id != null ? !id.equals(that.id) : that.id != null);
     }
-
-    private static final long serialVersionUID = -5373498855516075305L;
 }

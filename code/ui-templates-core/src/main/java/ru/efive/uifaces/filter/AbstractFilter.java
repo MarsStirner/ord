@@ -16,6 +16,26 @@ public abstract class AbstractFilter implements Filter {
 
     protected FilterConfig filterConfig = null;
 
+    /**
+     * Returns stacktrace as string.
+     *
+     * @param t {@link Throwable} for which stacktrace should be returned
+     * @return stacktrace for {@code t}
+     */
+    public static String getStackTrace(Throwable t) {
+        String stackTrace = null;
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            t.printStackTrace(pw);
+            pw.close();
+            sw.close();
+            stackTrace = sw.getBuffer().toString();
+        } catch (Exception ex) {
+        }
+        return stackTrace;
+    }
+
     public FilterConfig getFilterConfig() {
         return (this.filterConfig);
     }
@@ -24,29 +44,36 @@ public abstract class AbstractFilter implements Filter {
         this.filterConfig = filterConfig;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void destroy() {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String toString() {
         if (filterConfig == null) {
             return (this.getClass().getName() + "()");
         }
-        return this.getClass().getName() + "(" + filterConfig +")";
+        return this.getClass().getName() + "(" + filterConfig + ")";
     }
 
     /**
      * Outputs error message to response.
-     * @param t the error
+     *
+     * @param t        the error
      * @param response response used to output error
      */
     protected void sendProcessingError(Throwable t, ServletResponse response) {
@@ -81,25 +108,8 @@ public abstract class AbstractFilter implements Filter {
     }
 
     /**
-     * Returns stacktrace as string.
-     * @param t {@link Throwable} for which stacktrace should be returned
-     * @return stacktrace for {@code t}
-     */
-    public static String getStackTrace(Throwable t) {
-        String stackTrace = null;
-        try {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            t.printStackTrace(pw);
-            pw.close();
-            sw.close();
-            stackTrace = sw.getBuffer().toString();
-        } catch (Exception ex) {
-        }
-        return stackTrace;
-    }
-
-    /** Writes the specified message to a servlet log file.
+     * Writes the specified message to a servlet log file.
+     *
      * @param msg message
      */
     public void log(String msg) {

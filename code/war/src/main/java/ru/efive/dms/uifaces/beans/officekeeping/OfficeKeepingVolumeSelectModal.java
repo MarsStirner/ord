@@ -7,6 +7,10 @@ import javax.faces.context.FacesContext;
 
 public class OfficeKeepingVolumeSelectModal extends ModalWindowHolderBean {
 
+    private static final long serialVersionUID = 8811191935540534357L;
+    private OfficeKeepingVolumesSelectHolderBean officeKeepingVolumes;
+    private OfficeKeepingVolume officeKeepingVolume;
+
     public OfficeKeepingVolumesSelectHolderBean getOfficeKeepingVolumes() {
         if (officeKeepingVolumes == null) {
             FacesContext context = FacesContext.getCurrentInstance();
@@ -45,10 +49,5 @@ public class OfficeKeepingVolumeSelectModal extends ModalWindowHolderBean {
     protected void doHide() {
         super.doHide();
     }
-
-    private OfficeKeepingVolumesSelectHolderBean officeKeepingVolumes;
-    private OfficeKeepingVolume officeKeepingVolume;
-
-    private static final long serialVersionUID = 8811191935540534357L;
 
 }

@@ -22,29 +22,28 @@ public class InputDateForm implements LocalBackingBean {
     private String formTitle;
     private String dateTitle;
 
-
-    public void setActionDate(Date actionDate) {
-        this.actionDate = actionDate;
-    }
-
     public Date getActionDate() {
         return actionDate;
     }
 
-    public void setScope(EditablePropertyScope scope) {
-        this.scope = scope;
+    public void setActionDate(Date actionDate) {
+        this.actionDate = actionDate;
     }
 
     public EditablePropertyScope getScope() {
         return scope;
     }
 
-    public void setActionDateField(String actionDateField) {
-        this.actionDateField = actionDateField;
+    public void setScope(EditablePropertyScope scope) {
+        this.scope = scope;
     }
 
     public String getActionDateField() {
         return actionDateField;
+    }
+
+    public void setActionDateField(String actionDateField) {
+        this.actionDateField = actionDateField;
     }
 
     public String getFormTitle() {
@@ -63,33 +62,28 @@ public class InputDateForm implements LocalBackingBean {
         this.dateTitle = dateTitle;
     }
 
+    public String getBeanName() {
+        return beanName;
+    }
 
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
 
-    public String getBeanName() {
-        return beanName;
+    public String getActionCommentary() {
+        return actionCommentary;
     }
-
 
     public void setActionCommentary(String actionCommentary) {
         this.actionCommentary = actionCommentary;
     }
 
-
-    public String getActionCommentary() {
-        return actionCommentary;
+    public String getActionCommentaryField() {
+        return actionCommentaryField;
     }
-
 
     public void setActionCommentaryField(String actionCommentaryField) {
         this.actionCommentaryField = actionCommentaryField;
-    }
-
-
-    public String getActionCommentaryField() {
-        return actionCommentaryField;
     }
 
     @Override

@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import com.google.common.collect.ImmutableList;
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
@@ -15,53 +15,41 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForOutgoingDocu
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
-import ru.entity.model.user.Group;
+import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.OutgoingDocumentDAOImpl;
-import ru.hitsl.sql.dao.ViewFactDaoImpl;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.OUTGOING_DOCUMENT_FORM_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
-@Named("outgoing_search")
-@ViewScoped
+@Controller("outgoing_search")
+@SpringScopeView
 public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<OutgoingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
+    @Autowired
+    private LazyDataModelForOutgoingDocument lazyDataModelForOutgoingDocument;
 
     /**
      * Выполнить поиск с текущим фильтром
      *
      * @return Список документов, удовлетворяющих поиску
-     * */
+     */
     @Override
     public void performSearch() {
         logger.info("OUTGOING: Perform Search with map : {}", filters);
         try {
-            final OutgoingDocumentDAOImpl dao = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO);
-            final ViewFactDaoImpl viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
-            final LazyDataModelForOutgoingDocument lazyDataModelForOutgoingDocument = new LazyDataModelForOutgoingDocument(
-                    dao,
-                    viewFactDao,
-                    sessionManagement.getAuthData()
-            );
             lazyDataModelForOutgoingDocument.setFilters(filters);
             setLazyModel(lazyDataModelForOutgoingDocument);
-            searchPerformed= true;
+            searchPerformed = true;
         } catch (Exception e) {
             searchPerformed = false;
             logger.error("OUTGOING: Error while search", e);
@@ -77,8 +65,8 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     // Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Stream.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER).collect(Collectors.toList()));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, Stream.of(Group.RB_CODE_MANAGERS).collect(Collectors.toList()));
         final User preselected = getController();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
@@ -90,7 +78,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     public void onControllerChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         logger.info("Choose controller: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             if (selected != null) {
                 setController(selected);
@@ -99,13 +87,14 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             }
         }
     }
+
     // Выбора контрагента //////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseContragent() {
         final Contragent preselected = getContragent();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(
                     ContragentDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+                            .DIALOG_SESSION_KEY, preselected);
         }
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewOptions(), null);
     }
@@ -113,7 +102,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     public void onContragentChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         logger.info("Choose contragent: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final Contragent selected = (Contragent) result.getResult();
             if (selected != null) {
                 setContragent(selected);
@@ -126,8 +115,8 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseExecutors() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder
-                .DIALOG_TITLE_VALUE_EXECUTORS));
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Stream.of(MultipleUserDialogHolder
+                .DIALOG_TITLE_VALUE_EXECUTORS).collect(Collectors.toList()));
         final List<User> preselected = getExecutors();
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder
@@ -139,7 +128,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     public void onExecutorsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         logger.info("Choose executors: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final List<User> selected = (List<User>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
                 setExecutors(selected);
@@ -153,13 +142,17 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     // Параметры поиска ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public User getController() {
+        return (User) filters.get(CONTROLLER_KEY);
+    }
+
     // Руководитель
     public void setController(final User value) {
         putNotNullToFilters(CONTROLLER_KEY, value);
     }
 
-    public User getController() {
-        return (User) filters.get(CONTROLLER_KEY);
+    public Date getStartSignatureDate() {
+        return (Date) filters.get(START_SIGNATURE_DATE_KEY);
     }
 
     // Дата подписания ОТ
@@ -167,17 +160,13 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
         putNotNullToFilters(START_SIGNATURE_DATE_KEY, value);
     }
 
-    public Date getStartSignatureDate() {
-        return (Date) filters.get(START_SIGNATURE_DATE_KEY);
+    public Date getEndSignatureDate() {
+        return (Date) filters.get(END_SIGNATURE_DATE_KEY);
     }
 
     // Дата подписания ДО
     public void setEndSignatureDate(Date value) {
         putNotNullToFilters(END_SIGNATURE_DATE_KEY, value);
-    }
-
-    public Date getEndSignatureDate() {
-        return (Date) filters.get(END_SIGNATURE_DATE_KEY);
     }
 //
 //    //Дата отправки ОТ
@@ -198,13 +187,17 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
 //        return (Date) filters.get(END_SENDING_DATE_KEY);
 //    }
 
+    public DeliveryType getDeliveryType() {
+        return (DeliveryType) filters.get(DELIVERY_TYPE_KEY);
+    }
+
     // Тип доставки
     public void setDeliveryType(DeliveryType value) {
         putNotNullToFilters(DELIVERY_TYPE_KEY, value);
     }
 
-    public DeliveryType getDeliveryType() {
-        return (DeliveryType) filters.get(DELIVERY_TYPE_KEY);
+    public Contragent getContragent() {
+        return (Contragent) filters.get(CONTRAGENT_KEY);
     }
 
     // Контрагент (адресат)
@@ -212,8 +205,8 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
         putNotNullToFilters(CONTRAGENT_KEY, value);
     }
 
-    public Contragent getContragent() {
-        return (Contragent) filters.get(CONTRAGENT_KEY);
+    public List<User> getExecutors() {
+        return (List<User>) filters.get(EXECUTORS_KEY);
     }
 
     // Исполнители
@@ -221,14 +214,10 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
         putNotNullToFilters(EXECUTORS_KEY, value);
     }
 
-    public List<User> getExecutors() {
-        return (List<User>) filters.get(EXECUTORS_KEY);
-    }
-
     public void removeExecutor(User executor) {
         final List<User> executors = getExecutors();
         executors.remove(executor);
-        if(executors.isEmpty()){
+        if (executors.isEmpty()) {
             filters.remove(EXECUTORS_KEY);
         }
     }

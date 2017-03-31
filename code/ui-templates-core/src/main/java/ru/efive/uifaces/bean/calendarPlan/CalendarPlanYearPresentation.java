@@ -1,91 +1,33 @@
 package ru.efive.uifaces.bean.calendarPlan;
 
-import java.util.ArrayList;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
 import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttributeValue;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
 
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CAPTION_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.WIDGET_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SPACE_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.LINK_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.YEAR_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.MONTH_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.BUTTON_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_YEAR_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_YEAR_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.HEADER_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CELL_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAY_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.WEEK_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.MONTH_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.YEAR_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAY_DATE_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.WEEKEND_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.HOLYDAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAYOFF_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.EXCLUDED_DAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NOW_DAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.WITH_EVENTS_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.UPDATE_PRESENTATION_SCRIPT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_MONTH_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_WEEK_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CHANGE_YEAR_LAYOUT_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_DAY_EVENT;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.getPeriodEvents;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.getEventTitle;
+import java.io.IOException;
+import java.util.*;
 
 import static java.lang.String.format;
+import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.getEventTitle;
+import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.getPeriodEvents;
+import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.*;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
- *
  * @author Pavel Porubov
  */
 public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
 
-    @Override
-    public String getName() {
-        return "year";
-    }
-
     public static final int ID = 1;
-
-    @Override
-    public int getId() {
-        return ID;
-    }
-
-    public enum Layout {
-        vertical3x4, vertical6x2, vertical2x6,
-        horizontal3x4, horizontal6x2, horizontal2x6
-    }
+    public static final String START_OF_WEEK_FMT = "'%04d-%02d-%02d'";
+    public static final String START_OF_MONTH_FMT = "'%04d-%02d'";
+    public static final int DAY_OF_WEEK_NAMES = 0;
+    public static final int MONTH_NAMES = 1;
     private Layout layout = Layout.vertical3x4;
 
-    public Layout getLayout() {
-        return layout;
-    }
-
-    public void setLayout(Layout layout) {
-        this.layout = layout;
-    }
-
     public static Set<String> getSpecialDaysClassesForPeriod(CalendarPlanSpecialDaysComposition specialDays,
-            Collection<CalendarPlanEvent> events, Date start, Date stop) {
+                                                             Collection<CalendarPlanEvent> events, Date start, Date stop) {
         Set<String> res = new HashSet<>();
         if (specialDays != null && specialDays.getDays() != null) {
             for (CalendarPlanSpecialDay d : specialDays.getDays()) {
@@ -118,7 +60,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
     }
 
     public static Set<String> getSpecialDaysClassesForDay(CalendarPlanSpecialDaysComposition specialDays,
-            Collection<CalendarPlanEvent> events, Calendar calendar) {
+                                                          Collection<CalendarPlanEvent> events, Calendar calendar) {
         Date start = calendar.getTime();
         calendar.add(Calendar.DAY_OF_MONTH, 1);
         Date stop = calendar.getTime();
@@ -127,7 +69,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
     }
 
     private static void renderDay(AdvancedResponseWriter writer, int month, int nowDayOfYear, Calendar viewCalendar,
-            CalendarPlanSpecialDaysComposition specialDays, Collection<CalendarPlanEvent> events) throws IOException {
+                                  CalendarPlanSpecialDaysComposition specialDays, Collection<CalendarPlanEvent> events) throws IOException {
         writer.startElement(HtmlElement.TD);
         Set<String> specialDaysClasses = getSpecialDaysClassesForDay(specialDays, events, viewCalendar);
         int currentMonth = viewCalendar.get(Calendar.MONTH);
@@ -151,7 +93,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
                 writeStyleClass(null, writer, SELECT_CLASS, DAY_DATE_CLASS);
                 writer.writeAttribute(HtmlAttribute.ONCLICK,
                         format(UPDATE_PRESENTATION_SCRIPT, writer.getComponent().getClientId(), SELECT_DAY_EVENT,
-                        format(START_OF_WEEK_FMT, viewCalendar.get(Calendar.YEAR), month, day)), null);
+                                format(START_OF_WEEK_FMT, viewCalendar.get(Calendar.YEAR), month, day)), null);
             }
             writer.writeText(Integer.toString(day), null);
             writer.endElement(HtmlElement.DIV);
@@ -180,9 +122,6 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
         writer.endElement(HtmlElement.TD);
     }
 
-    public static final String START_OF_WEEK_FMT = "'%04d-%02d-%02d'";
-    public static final String START_OF_MONTH_FMT = "'%04d-%02d'";
-
     private static void renderWeekLink(AdvancedResponseWriter writer, Calendar viewCalendar) throws IOException {
         writer.startElement(HtmlElement.TD);
         writeStyleClass(null, writer, CELL_CLASS, SPACE_CLASS);
@@ -191,8 +130,8 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
         writeStyleClass(null, writer, SELECT_CLASS, WEEK_NAME_CLASS);
         writer.writeAttribute(HtmlAttribute.ONCLICK,
                 format(UPDATE_PRESENTATION_SCRIPT, writer.getComponent().getClientId(), SELECT_WEEK_EVENT,
-                format(START_OF_WEEK_FMT, viewCalendar.get(Calendar.YEAR), viewCalendar.get(Calendar.MONTH),
-                viewCalendar.get(Calendar.DAY_OF_MONTH))), null);
+                        format(START_OF_WEEK_FMT, viewCalendar.get(Calendar.YEAR), viewCalendar.get(Calendar.MONTH),
+                                viewCalendar.get(Calendar.DAY_OF_MONTH))), null);
         writer.writeText("+", null);
         writer.endElement(HtmlElement.DIV);
 
@@ -211,13 +150,13 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
     }
 
     public static void renderLayoutLink(AdvancedResponseWriter writer, Enum layout,
-            String cmd, String kind) throws IOException {
+                                        String cmd, String kind) throws IOException {
         String id = writer.getComponent().getClientId();
 
         writer.startElement(HtmlElement.TD);
         writeStyleClass(null, writer, LINK_CLASS);
         writer.startElement(HtmlElement.DIV);
-        String yId = id + "-select" + kind +"Layout";
+        String yId = id + "-select" + kind + "Layout";
         writer.writeAttribute(HtmlAttribute.ID, yId, null);
 
         ResourceBundle strs = getStrs(writer.getContext().getViewRoot().getLocale());
@@ -274,14 +213,14 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
     }
 
     public static void renderMonthWidget(AdvancedResponseWriter writer, CalendarPlanHolder holder,
-            Calendar viewCalendar, int month, boolean vertical,
-            Map<Integer, String> dayOfWeekNames) throws IOException {
+                                         Calendar viewCalendar, int month, boolean vertical,
+                                         Map<Integer, String> dayOfWeekNames) throws IOException {
         Date tm = viewCalendar.getTime();
         int year = viewCalendar.get(Calendar.YEAR);
         viewCalendar.set(year, month, 1, 0, 0, 0);
         viewCalendar.set(Calendar.MILLISECOND, 0);
         Date startOfMonthWidget = viewCalendar.getTime();
-        
+
         Date start = viewCalendar.getTime();
         viewCalendar.add(Calendar.MONTH, 1);
         Date stop = viewCalendar.getTime();
@@ -352,7 +291,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
             writeStyleClass(null, writer, HEADER_CLASS, SPACE_CLASS);
             writer.endElement(HtmlElement.TD);
         }
-        
+
         writer.endElement(HtmlElement.TR);
 
         if (!vertical) {
@@ -395,15 +334,12 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
     }
 
     private static void renderMonth(AdvancedResponseWriter writer, CalendarPlanHolder holder,
-            Calendar viewCalendar, int month, boolean vertical,
-            Map<Integer, String>[] names) throws IOException {
+                                    Calendar viewCalendar, int month, boolean vertical,
+                                    Map<Integer, String>[] names) throws IOException {
         renderSelect(writer, names[MONTH_NAMES].get(month), MONTH_NAME_CLASS, SELECT_MONTH_EVENT,
                 format(START_OF_MONTH_FMT, viewCalendar.get(Calendar.YEAR), month));
         renderMonthWidget(writer, holder, viewCalendar, month, vertical, names[DAY_OF_WEEK_NAMES]);
     }
-
-    public static final int DAY_OF_WEEK_NAMES = 0;
-    public static final int MONTH_NAMES = 1;
 
     public static Map<Integer, String>[] getDisplayNames(Calendar calendar, Locale locale) {
         Map<Integer, String> dayOfWeekNames = new HashMap<>();
@@ -422,7 +358,7 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
     }
 
     private static void renderMonthsTable(AdvancedResponseWriter writer, CalendarPlanHolder holder,
-            int rows, boolean vertical) throws IOException {
+                                          int rows, boolean vertical) throws IOException {
         Locale locale = writer.getContext().getViewRoot().getLocale();
         Calendar viewCalendar = (Calendar) holder.getViewCalendar().clone();
 
@@ -442,6 +378,24 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
             }
             writer.endElement(HtmlElement.TR);
         }
+    }
+
+    @Override
+    public String getName() {
+        return "year";
+    }
+
+    @Override
+    public int getId() {
+        return ID;
+    }
+
+    public Layout getLayout() {
+        return layout;
+    }
+
+    public void setLayout(Layout layout) {
+        this.layout = layout;
     }
 
     @Override
@@ -504,5 +458,10 @@ public class CalendarPlanYearPresentation extends CalendarPlanPresentation {
         writer.endElement(HtmlElement.TR);
         writer.endElement(HtmlElement.TBODY);
         writer.endElement(HtmlElement.TABLE);
+    }
+
+    public enum Layout {
+        vertical3x4, vertical6x2, vertical2x6,
+        horizontal3x4, horizontal6x2, horizontal2x6
     }
 }

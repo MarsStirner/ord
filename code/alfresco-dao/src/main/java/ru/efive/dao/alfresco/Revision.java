@@ -2,6 +2,10 @@ package ru.efive.dao.alfresco;
 
 public class Revision {
 
+    private String version;
+    private int authorId;
+    private String fileName;
+
     public Revision() {
 
     }
@@ -35,9 +39,4 @@ public class Revision {
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
-
-
-    private String version;
-    private int authorId;
-    private String fileName;
 }

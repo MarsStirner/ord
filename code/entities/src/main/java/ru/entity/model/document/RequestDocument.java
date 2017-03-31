@@ -5,8 +5,6 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.*;
-import ru.entity.model.user.Group;
-import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
@@ -169,7 +167,7 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
     /**
      * Дата создания документа
      */
-    @Column(name="creationDate")
+    @Column(name = "creationDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date creationDate;
 
@@ -197,19 +195,19 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
     /**
      * Номер поступившего
      */
-    @Column(name="receivedDocumentNumber")
+    @Column(name = "receivedDocumentNumber")
     private String receivedDocumentNumber;
 
     /**
      * Номер ERP
      */
-    @Column(name="erpNumber")
+    @Column(name = "erpNumber")
     private String erpNumber;
 
     /**
      * Дата регистрации поступившего документа у корреспондента
      */
-    @Column(name="receivedDocumentDate")
+    @Column(name = "receivedDocumentDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date receivedDocumentDate;
 
@@ -617,7 +615,7 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
         this.roleReaders = roleReaders;
     }
 
-    public List<Role> getRoleReadersList(){
+    public List<Role> getRoleReadersList() {
         if (roleReaders != null && !roleReaders.isEmpty()) {
             return new ArrayList<>(roleReaders);
         }

@@ -2,8 +2,8 @@ package ru.efive.wf.core.activity;
 
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.LocalActivity;
-import ru.external.ProcessedData;
 import ru.efive.wf.core.data.LocalBackingBean;
+import ru.external.ProcessedData;
 
 public class LocalValidateActivity implements IActivity, LocalActivity {
 

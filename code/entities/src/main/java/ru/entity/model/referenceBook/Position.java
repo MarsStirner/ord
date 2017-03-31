@@ -1,7 +1,7 @@
 package ru.entity.model.referenceBook;
 
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -14,7 +14,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rbPosition")
-public class Position extends DictionaryEntity {
+public class Position extends ReferenceBookEntity {
     /**
      * code = UUID
      */

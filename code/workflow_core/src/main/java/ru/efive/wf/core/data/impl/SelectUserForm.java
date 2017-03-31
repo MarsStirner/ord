@@ -1,15 +1,22 @@
 package ru.efive.wf.core.data.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ru.entity.model.user.User;
 import ru.efive.wf.core.ActionResult;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.data.LocalBackingBean;
+import ru.entity.model.user.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SelectUserForm implements LocalBackingBean {
+
+    private List<EditableProperty> properties;
+    private String beanName;
+    private String userListBeanName;
+    private User selectedUser;
+    private EditablePropertyScope scope;
+    private String selectedUserField;
 
     @Override
     public String getForm() {
@@ -66,12 +73,12 @@ public class SelectUserForm implements LocalBackingBean {
         return selectedUser != null && selectedUser.equals(user);
     }
 
-    public void setScope(EditablePropertyScope scope) {
-        this.scope = scope;
-    }
-
     public EditablePropertyScope getScope() {
         return scope;
+    }
+
+    public void setScope(EditablePropertyScope scope) {
+        this.scope = scope;
     }
 
     public String getSelectedUserField() {
@@ -107,12 +114,12 @@ public class SelectUserForm implements LocalBackingBean {
         return result;
     }
 
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
     public String getBeanName() {
         return beanName;
+    }
+
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
     }
 
     public String getUserListBeanName() {
@@ -122,14 +129,4 @@ public class SelectUserForm implements LocalBackingBean {
     public void setUserListBeanName(String userListBeanName) {
         this.userListBeanName = userListBeanName;
     }
-
-
-    private List<EditableProperty> properties;
-
-    private String beanName;
-    private String userListBeanName;
-
-    private User selectedUser;
-    private EditablePropertyScope scope;
-    private String selectedUserField;
 }

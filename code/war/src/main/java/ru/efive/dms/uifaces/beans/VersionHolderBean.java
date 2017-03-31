@@ -2,31 +2,27 @@ package ru.efive.dms.uifaces.beans;
 
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.Serializable;
 import java.net.URLClassLoader;
 import java.util.Properties;
 
 
-@Named("versionHolderBean")
+@Controller("versionHolderBean")
 @ApplicationScoped
 public class VersionHolderBean implements Serializable {
 
     private static final String BUILD_PROP_FILE = "/build.properties";
     private static final String VERSION = "application.version";
     private static final String BUILDTIME = "application.build.date";
-    
-    
+
+
     private String version;
     private String buildDate;
 
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
 
     @PostConstruct
     public void updateVersionInfo() {

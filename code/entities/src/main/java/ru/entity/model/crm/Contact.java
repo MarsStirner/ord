@@ -14,24 +14,22 @@ import javax.persistence.*;
 @Entity
 @Table(name = "contacts")
 public class Contact extends IdentifiedEntity implements Descriptionable {
+    private static final long serialVersionUID = 2676252421021362937L;
     /**
      * имя
      */
     @Column(name = "firstName")
     private String firstName;
-
     /**
      * фамилия
      */
     @Column(name = "lastName")
     private String lastName;
-
     /**
      * отчество
      */
     @Column(name = "middleName")
     private String middleName;
-
     /**
      * Организация
      */
@@ -39,12 +37,12 @@ public class Contact extends IdentifiedEntity implements Descriptionable {
     @JoinColumn(name = "contragent_id", nullable = true)
     private Contragent contragent;
 
-    public Contact() {
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // GETTERS & SETTERS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public Contact() {
+    }
 
     public String getFirstName() {
         return firstName;
@@ -74,29 +72,28 @@ public class Contact extends IdentifiedEntity implements Descriptionable {
         return contragent;
     }
 
-    public void setContragent(Contragent contragent) {
-        this.contragent = contragent;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Interface Descriptionable
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public void setContragent(Contragent contragent) {
+        this.contragent = contragent;
+    }
 
     @Override
     public String getDescription() {
         final StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotEmpty(lastName)){
+        if (StringUtils.isNotEmpty(lastName)) {
             sb.append(lastName);
         }
-        if(StringUtils.isNotEmpty(firstName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(firstName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
-           sb.append(firstName);
+            sb.append(firstName);
         }
-        if(StringUtils.isNotEmpty(middleName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(middleName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(middleName);
@@ -110,25 +107,21 @@ public class Contact extends IdentifiedEntity implements Descriptionable {
      */
     public String getDescriptionShort() {
         final StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotEmpty(lastName)){
+        if (StringUtils.isNotEmpty(lastName)) {
             sb.append(lastName);
         }
-        if(StringUtils.isNotEmpty(firstName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(firstName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(firstName.charAt(0)).append('.');
         }
-        if(StringUtils.isNotEmpty(middleName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(middleName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(middleName.charAt(0)).append('.');
         }
         return sb.toString();
     }
-
-
-
-    private static final long serialVersionUID = 2676252421021362937L;
 }

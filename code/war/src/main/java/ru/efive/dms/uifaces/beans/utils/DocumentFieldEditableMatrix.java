@@ -2,19 +2,17 @@ package ru.efive.dms.uifaces.beans.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.util.DocumentTypeField;
 import ru.entity.model.util.EditableFieldMatrix;
-import ru.hitsl.sql.dao.EditableMatrixDaoImpl;
-import ru.hitsl.sql.dao.util.ApplicationDAONames;
+import ru.hitsl.sql.dao.interfaces.EditableMatrixDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,24 +24,16 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Named("editableMatrix")
-@ApplicationScoped
+@Controller("editableMatrix")
 public class DocumentFieldEditableMatrix {
     private static final Logger logger = LoggerFactory.getLogger("EDITABLE_MATRIX");
-    @Inject
-    @Named("indexManagement")
-    private IndexManagementBean indexManagement;
 
-    /**
-     * Yes, we can inject @SessionScoped in @ApplicationScoped
-     * deal with it!
-     * http://docs.jboss.org/weld/reference/latest/en-US/html/injection.html#d0e1429 (4.9 Client proxies)
-     */
-    @Inject
-    @Named("sessionManagement")
-    private SessionManagementBean sessionManagement;
 
-    private EditableMatrixDaoImpl dao = null;
+    @Autowired
+    @Qualifier("editableMatrixDao")
+    private EditableMatrixDao dao;
+
+
     private DocumentTypeMatrix incoming;
     private DocumentTypeMatrix outgoing;
     private DocumentTypeMatrix internal;
@@ -77,7 +67,6 @@ public class DocumentFieldEditableMatrix {
     @PostConstruct
     public void load() {
         logger.info("Start initialize ({})", this);
-        dao = (EditableMatrixDaoImpl) indexManagement.getContext().getBean(ApplicationDAONames.EDITABLE_MATRIX_DAO);
         if (dao == null) {
             logger.error("DAO is not collected. Possible future errors...");
         } else {
@@ -90,7 +79,6 @@ public class DocumentFieldEditableMatrix {
             logger.info("Successful end of initialize ({})", this);
         }
     }
-
 
 
     /**
@@ -161,10 +149,11 @@ public class DocumentFieldEditableMatrix {
     /**
      * Сохранить в источник измененные записи, а затем забрать оттуда данные (reload)
      */
-    public void applyAllChanges() {
+    //@Autowired
+    public void applyAllChanges(AuthorizationData authData) {
         logger.warn("Apply matrix changes to DB");
-        if(!sessionManagement.getAuthData().isAdministrator()){
-            logger.error("TRY TO save changes by NON-admin user [{}]. ACCESS FORBIDDEN. reload matrix from source.", sessionManagement.getAuthData().getAuthorized().getId());
+        if (!authData.isAdministrator()) {
+            logger.error("TRY TO save changes by NON-admin user [{}]. ACCESS FORBIDDEN. reload matrix from source.", authData.getAuthorized().getId());
             reload();
             return;
         }
@@ -209,7 +198,7 @@ public class DocumentFieldEditableMatrix {
                 }
                 statusFields.put(item.getField().getFieldCode(), item.isEditable() && item.getField().isEditable());
             }
-            if(!statusFields.isEmpty()){
+            if (!statusFields.isEmpty()) {
                 fastAccessMap.put(lastStatus, statusFields);
             }
         }
@@ -262,16 +251,16 @@ public class DocumentFieldEditableMatrix {
 
         public EditableFieldMatrix getItem(int statusId, String fieldName) {
             for (EditableFieldMatrix item : matrix) {
-                if(item.getStatusId() == statusId && item.getField().getFieldCode().equals(fieldName)){
+                if (item.getStatusId() == statusId && item.getField().getFieldCode().equals(fieldName)) {
                     return item;
                 }
             }
             return null;
         }
 
-        public boolean isStateEditable(int status){
+        public boolean isStateEditable(int status) {
             final Map<String, Boolean> editableMap = getEditableMap(status);
-            if(editableMap != null && !editableMap.isEmpty()) {
+            if (editableMap != null && !editableMap.isEmpty()) {
                 for (Map.Entry<String, Boolean> entry : editableMap.entrySet()) {
                     if (entry.getValue()) {
                         return true;

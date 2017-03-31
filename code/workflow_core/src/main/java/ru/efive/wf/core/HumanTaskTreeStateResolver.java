@@ -14,12 +14,10 @@ import java.util.Set;
 
 public class HumanTaskTreeStateResolver implements java.io.Serializable {
 
+    private static final long serialVersionUID = 6677966431502017205L;
     private ProcessedData data;
     private HumanTaskTree tree;
-
     private List<HumanTask> currentTaskList;
-
-    private static final long serialVersionUID = 6677966431502017205L;
 
     public HumanTaskTreeStateResolver() {
 

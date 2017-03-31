@@ -1,36 +1,30 @@
 package ru.efive.dms.uifaces.beans.request;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForRequestDocument;
 import ru.entity.model.document.RequestDocument;
-import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
-import ru.hitsl.sql.dao.ViewFactDaoImpl;
 import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.*;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
-
-@Named("request_documents")
-@ViewScoped
+@Controller("request_documents")
+@SpringScopeView
 public class RequestDocumentListHolder extends AbstractDocumentLazyDataModelBean<RequestDocument> {
 
     private static final Logger logger = LoggerFactory.getLogger("REQUEST_DOCUMENT");
     private Map<String, Object> filters = new HashMap<>();
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
-    private RequestDocumentDAOImpl dao;
-    private ViewFactDaoImpl viewFactDao;
+
+    @Autowired
+    @Qualifier("requestDocumentLDM")
+    private LazyDataModelForRequestDocument requestDocumentLDM;
 
     /**
      * При каждом запросе страницы (нового view) инициализировать список фильтров
@@ -68,12 +62,7 @@ public class RequestDocumentListHolder extends AbstractDocumentLazyDataModelBean
             }
 
         }
-        dao = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO);
-        viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
-        final LazyDataModelForRequestDocument lazyDataModel = new LazyDataModelForRequestDocument(
-                dao, viewFactDao, sessionManagement.getAuthData()
-        );
-        lazyDataModel.setFilters(filters);
-        setLazyModel(lazyDataModel);
+        requestDocumentLDM.setFilters(filters);
+        setLazyModel(requestDocumentLDM);
     }
 }

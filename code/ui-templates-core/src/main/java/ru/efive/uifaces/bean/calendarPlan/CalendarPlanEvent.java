@@ -3,7 +3,6 @@ package ru.efive.uifaces.bean.calendarPlan;
 import java.util.Date;
 
 /**
- *
  * @author Pavel Porubov
  */
 public class CalendarPlanEvent implements Comparable<CalendarPlanEvent> {
@@ -11,6 +10,15 @@ public class CalendarPlanEvent implements Comparable<CalendarPlanEvent> {
     private String title;
     private Date start;
     private Date stop;
+
+    public CalendarPlanEvent() {
+    }
+
+    public CalendarPlanEvent(String title, Date start, Date stop) {
+        this.title = title;
+        this.start = start;
+        this.stop = stop;
+    }
 
     public String getTitle() {
         return title;
@@ -42,8 +50,9 @@ public class CalendarPlanEvent implements Comparable<CalendarPlanEvent> {
 
     /**
      * Tests if the given period satisfies the entity.
+     *
      * @param start The beginning of the period, inclusive. {@code null} means unbound.
-     * @param stop The ending of the period, exclusive. {@code null} means unbound.
+     * @param stop  The ending of the period, exclusive. {@code null} means unbound.
      * @return {@code true} if the entity occurs in the given period otherwise {@code false}
      */
     public boolean isOccurs(Date start, Date stop) {
@@ -70,8 +79,9 @@ public class CalendarPlanEvent implements Comparable<CalendarPlanEvent> {
 
     /**
      * Tests if the entity satisfying period contains the given period.
+     *
      * @param start The beginning of the period, inclusive. {@code null} means unbound.
-     * @param stop The ending of the period, exclusive. {@code null} means unbound.
+     * @param stop  The ending of the period, exclusive. {@code null} means unbound.
      * @return {@code true} if the entity satisfying period contains the given period otherwise {@code false}
      */
     public boolean isContains(Date start, Date stop) {
@@ -86,15 +96,6 @@ public class CalendarPlanEvent implements Comparable<CalendarPlanEvent> {
 
     public Long getDuration() {
         return getStart() != null && getStop() != null ? getStop().getTime() - getStart().getTime() : null;
-    }
-
-    public CalendarPlanEvent() {
-    }
-
-    public CalendarPlanEvent(String title, Date start, Date stop) {
-        this.title = title;
-        this.start = start;
-        this.stop = stop;
     }
 
     @Override

@@ -1,9 +1,10 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.OfficeKeepingFile;
-import ru.hitsl.sql.dao.OfficeKeepingFileDAOImpl;
+import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,19 +12,18 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
-
 
 @FacesConverter("OfficeKeepingFileConverter")
 public class OfficeKeepingFileConverter implements Converter {
 
+    @Autowired
+    @Qualifier("officeKeepingFileDao")
+    private OfficeKeepingFileDao officeKeepingFileDao;
+
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement =
-                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
-                            SessionManagementBean.class);
-            List<OfficeKeepingFile> list = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocuments(false);
+            List<OfficeKeepingFile> list = officeKeepingFileDao.getItems();
             if (list.size() != 0) {
                 for (OfficeKeepingFile in_record : list) {
                     if (in_record != null) {

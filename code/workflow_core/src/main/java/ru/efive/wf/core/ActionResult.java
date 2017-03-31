@@ -4,6 +4,10 @@ import ru.external.ProcessedData;
 
 public class ActionResult {
 
+    private ProcessedData processedData;
+    private boolean isProcessed;
+    private String description;
+
     public ActionResult() {
 
     }
@@ -31,9 +35,4 @@ public class ActionResult {
     public void setDescription(String description) {
         this.description = description;
     }
-
-
-    private ProcessedData processedData;
-    private boolean isProcessed;
-    private String description;
 }

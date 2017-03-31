@@ -19,18 +19,133 @@ import java.util.Collections;
 @FacesComponent(FileUpload.COMPONENT)
 public class FileUpload extends UICommand implements ClientBehaviorHolder, Serializable {
 
-    /** Component name */
+    /**
+     * Component name
+     */
     public static final String COMPONENT = "ru.efive.uifaces.FileUpload";
+    /**
+     * The name of default and only event of the component.
+     */
+    public static final String DEFAULT_EVENT_NAME = "upload";
+    private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(
+            Collections.singletonList(DEFAULT_EVENT_NAME));
 
-    /** Default constructor. */
+    /**
+     * Default constructor.
+     */
     public FileUpload() {
         setRendererType(FileUploadRenderer.RENDERER);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getFamily() {
         return ComponentFamily.FILE_UPLOAD;
+    }
+
+    /**
+     * Returns the value of {@code multiple} property.
+     *
+     * @return value of {@code multiple} property
+     * @see PropertyKeys
+     */
+    public boolean isMultiple() {
+        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.multiple, false);
+
+    }
+
+    /**
+     * Sets the value of property {@code multiple}.
+     *
+     * @param multiple value of {@code multiple} property
+     * @see PropertyKeys
+     */
+    public void setMultiple(boolean multiple) {
+        getStateHelper().put(PropertyKeys.multiple, multiple);
+    }
+
+    /**
+     * Returns the value of {@code maxFilesCount} property.
+     *
+     * @return value of {@code maxFilesCount} property
+     * @see PropertyKeys
+     */
+    public Integer getMaxFilesCount() {
+        return (Integer) getStateHelper().eval(PropertyKeys.maxFilesCount);
+    }
+
+    /**
+     * Sets the value of property {@code maxFilesCount}.
+     *
+     * @param maxFilesCount value of {@code maxFilesCount} property
+     * @see PropertyKeys
+     */
+    public void setMaxFilesCount(Integer maxFilesCount) {
+        if (maxFilesCount != null && maxFilesCount > 0) {
+            getStateHelper().put(PropertyKeys.maxFilesCount, maxFilesCount);
+        } else {
+            getStateHelper().remove(PropertyKeys.maxFilesCount);
+        }
+    }
+
+    /**
+     * Returns the value of {@code actionBehavior} property.
+     *
+     * @return value of {@code actionBehavior} property
+     * @see PropertyKeys
+     * @see ActionBehavior
+     */
+    public ActionBehavior getActionBehavior() {
+        return (ActionBehavior) getStateHelper().eval(PropertyKeys.actionBehavior, ActionBehavior.form);
+    }
+
+    /**
+     * Sets the value of property {@code actionBehavior}.
+     *
+     * @param actionBehavior value of {@code actionBehavior} property
+     * @see PropertyKeys
+     * @see ActionBehavior
+     */
+    public void setActionBehavior(ActionBehavior actionBehavior) {
+        getStateHelper().put(PropertyKeys.actionBehavior, actionBehavior);
+    }
+
+    /**
+     * Returns the value of {@code uploadHandler} property.
+     *
+     * @return value of {@code uploadHandler} property
+     * @see PropertyKeys
+     */
+    public UploadHandler getUploadHandler() {
+        return (UploadHandler) getStateHelper().eval(PropertyKeys.uploadHandler);
+    }
+
+    /**
+     * Sets the value of property {@code uploadHandler}.
+     *
+     * @param uploadHandler value of {@code uploadHandler} property
+     * @see PropertyKeys
+     */
+    public void setUploadHandler(UploadHandler uploadHandler) {
+        getStateHelper().put(PropertyKeys.uploadHandler, uploadHandler);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<String> getEventNames() {
+        return EVENT_NAMES;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDefaultEventName() {
+        return DEFAULT_EVENT_NAME;
     }
 
     /**
@@ -46,6 +161,7 @@ public class FileUpload extends UICommand implements ClientBehaviorHolder, Seria
      * <li>{@code actionBehavior} - determines the components's behavior when it is activated.</li>
      * <li>{@code uploadHandler} - stores upload handler which is invoked when upload event occurs.</li>
      * </ul>
+     *
      * @see ActionBehavior
      */
     public enum PropertyKeys {
@@ -54,47 +170,6 @@ public class FileUpload extends UICommand implements ClientBehaviorHolder, Seria
         actionBehavior,
         uploadHandler,
         onuploading, onuploaded
-    }
-
-    /**
-     * Returns the value of {@code multiple} property.
-     * @return value of {@code multiple} property
-     * @see PropertyKeys
-     */
-    public boolean isMultiple() {
-        return (java.lang.Boolean) getStateHelper().eval(PropertyKeys.multiple, false);
-
-    }
-
-    /**
-     * Sets the value of property {@code multiple}.
-     * @param multiple value of {@code multiple} property
-     * @see PropertyKeys
-     */
-    public void setMultiple(boolean multiple) {
-        getStateHelper().put(PropertyKeys.multiple, multiple);
-    }
-
-    /**
-     * Returns the value of {@code maxFilesCount} property.
-     * @return value of {@code maxFilesCount} property
-     * @see PropertyKeys
-     */
-    public Integer getMaxFilesCount() {
-        return (Integer) getStateHelper().eval(PropertyKeys.maxFilesCount);
-    }
-
-    /**
-     * Sets the value of property {@code maxFilesCount}.
-     * @param maxFilesCount value of {@code maxFilesCount} property
-     * @see PropertyKeys
-     */
-    public void setMaxFilesCount(Integer maxFilesCount) {
-        if (maxFilesCount != null && maxFilesCount > 0) {
-            getStateHelper().put(PropertyKeys.maxFilesCount, maxFilesCount);
-        } else {
-            getStateHelper().remove(PropertyKeys.maxFilesCount);
-        }
     }
 
     /**
@@ -107,63 +182,7 @@ public class FileUpload extends UICommand implements ClientBehaviorHolder, Seria
      * </ul>
      * The default behavior is {@code form}.
      */
-    public enum ActionBehavior implements Serializable{
+    public enum ActionBehavior implements Serializable {
         form, separate
-    }
-
-    /**
-     * Returns the value of {@code actionBehavior} property.
-     * @return value of {@code actionBehavior} property
-     * @see PropertyKeys
-     * @see ActionBehavior
-     */
-    public ActionBehavior getActionBehavior() {
-        return (ActionBehavior) getStateHelper().eval(PropertyKeys.actionBehavior, ActionBehavior.form);
-    }
-
-    /**
-     * Sets the value of property {@code actionBehavior}.
-     * @param actionBehavior value of {@code actionBehavior} property
-     * @see PropertyKeys
-     * @see ActionBehavior
-     */
-    public void setActionBehavior(ActionBehavior actionBehavior) {
-        getStateHelper().put(PropertyKeys.actionBehavior, actionBehavior);
-    }
-
-    /**
-     * Returns the value of {@code uploadHandler} property.
-     * @return value of {@code uploadHandler} property
-     * @see PropertyKeys
-     */
-    public UploadHandler getUploadHandler() {
-        return (UploadHandler) getStateHelper().eval(PropertyKeys.uploadHandler);
-    }
-
-    /**
-     * Sets the value of property {@code uploadHandler}.
-     * @param uploadHandler value of {@code uploadHandler} property
-     * @see PropertyKeys
-     */
-    public void setUploadHandler(UploadHandler uploadHandler) {
-        getStateHelper().put(PropertyKeys.uploadHandler, uploadHandler);
-    }
-
-    /** The name of default and only event of the component. */
-    public static final String DEFAULT_EVENT_NAME = "upload";
-
-    private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(
-            Collections.singletonList(DEFAULT_EVENT_NAME));
-
-    /** {@inheritDoc} */
-    @Override
-    public Collection<String> getEventNames() {
-        return EVENT_NAMES;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getDefaultEventName() {
-        return DEFAULT_EVENT_NAME;
     }
 }

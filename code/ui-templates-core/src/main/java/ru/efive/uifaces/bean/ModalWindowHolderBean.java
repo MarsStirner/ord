@@ -46,7 +46,7 @@ public class ModalWindowHolderBean implements Serializable {
     }
 
     protected void doShow() {
-        
+
     }
 
     protected void doHide() {

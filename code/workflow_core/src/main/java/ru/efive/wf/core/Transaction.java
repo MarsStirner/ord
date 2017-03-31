@@ -4,6 +4,9 @@ import java.util.List;
 
 public class Transaction {
 
+    private IAction action;
+    private List<IActivity> processedActivities;
+
     protected Transaction() {
 
     }
@@ -20,7 +23,6 @@ public class Transaction {
         this.action = action;
     }
 
-
     //TODO: commit action result
     public void commit() throws ProcessingException {
 
@@ -30,8 +32,4 @@ public class Transaction {
     public void rollback() throws ProcessingException {
 
     }
-
-
-    private IAction action;
-    private List<IActivity> processedActivities;
 }

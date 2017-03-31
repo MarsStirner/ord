@@ -1,21 +1,18 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForGroup;
-import ru.entity.model.user.Group;
-import ru.hitsl.sql.dao.user.GroupDAOHibernate;
+import ru.entity.model.referenceBook.Group;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.*;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -23,8 +20,8 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Named("multipleGroupDialog")
-@ViewScoped
+@Controller("multipleGroupDialog")
+@SpringScopeView
 public class MultipleGroupDialogHolder extends AbstractDialog<List<Group>> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_GROUP_LIST";
@@ -32,21 +29,18 @@ public class MultipleGroupDialogHolder extends AbstractDialog<List<Group>> {
 
     public static final String DIALOG_TITLE_VALUE_RECIPIENTS = "RECIPIENTS_TITLE";
 
-    @EJB(name = "indexManagement")
-    private IndexManagementBean indexManagementBean;
-
+    @Autowired
+    @Qualifier("groupLDM")
     private LazyDataModelForGroup lazyModel;
 
 
     @PostConstruct
     public void init() {
         logger.info("Initialize new MultiplePersonSelectDialog");
-        final GroupDAOHibernate groupDao = (GroupDAOHibernate) indexManagementBean.getContext().getBean(GROUP_DAO);
         final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForGroup(groupDao);
     }
 
     /**
@@ -72,8 +66,8 @@ public class MultipleGroupDialogHolder extends AbstractDialog<List<Group>> {
     @Override
     public void confirmSelection() {
         final DialogResult result;
-        if(selected != null && !selected.isEmpty()) {
-           result= new DialogResult(Button.CONFIRM, new HashSet<>(selected));
+        if (selected != null && !selected.isEmpty()) {
+            result = new DialogResult(Button.CONFIRM, new HashSet<>(selected));
         } else {
             result = new DialogResult(Button.CONFIRM, null);
         }

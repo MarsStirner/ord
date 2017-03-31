@@ -1,5 +1,9 @@
 package ru.efive.uifaces.filter;
 
+import ru.efive.uifaces.filter.util.ModifyHeadersHttpServletRequestWrapper;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -7,13 +11,6 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import ru.efive.uifaces.filter.util.ModifyHeadersHttpServletRequestWrapper;
 
 /**
  * The filter controls of caching of resources by generating or suppressing cache-control HTTP-headers.
@@ -51,27 +48,29 @@ public class ResourceCacheControlFilter extends AbstractFilter {
      * {@code build.time} property then equals the class's load time.
      */
     public static final Date BUILD_TIME;
+    public static final String HTTP_DATE = "EEE, dd MMM yyyy HH:mm:ss zzz";
+    private static final String IF_MODIFIED_SINCE_HEADER = "if-modified-since";
+    private static final String CACHE_CONTROL_HEADER = "cache-control";
+    private static final String PRAGMA_HEADER = "pragma";
+    private static final String NO_CACHE = "no-cache";
+
     static {
-       BUILD_TIME = new Date();
+        BUILD_TIME = new Date();
 
         //TODO: исправить хак
     }
-    public static final String HTTP_DATE = "EEE, dd MMM yyyy HH:mm:ss zzz";
+
     private Pattern queryStringPattern;
     private boolean forceNoCache;
-
     /**
      * Constructs uninitialized filter.
      */
     public ResourceCacheControlFilter() {
     }
 
-    private static final String IF_MODIFIED_SINCE_HEADER = "if-modified-since";
-    private static final String CACHE_CONTROL_HEADER = "cache-control";
-    private static final String PRAGMA_HEADER = "pragma";
-    private static final String NO_CACHE = "no-cache";
-
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
@@ -118,7 +117,9 @@ public class ResourceCacheControlFilter extends AbstractFilter {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void init(FilterConfig filterConfig) {
         super.init(filterConfig);

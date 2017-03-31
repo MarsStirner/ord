@@ -22,7 +22,7 @@ import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.
 
 /**
  * Renderer class for {@link HtmlMarker} component class.
- * 
+ *
  * @author Ramil_Habirov
  */
 @FacesRenderer(renderKitId = "HTML_BASIC", rendererType = HtmlMarker.RENDERER_TYPE, componentFamily = ComponentFamily.MARKER)
@@ -49,6 +49,71 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
     private static final String CLOSE_BUTTON_CLICK = "jQuery('#%s').remove();";
 
     private boolean encoded;
+
+    /**
+     * Finds child component of parent component.
+     *
+     * @param component   parent component
+     * @param componentId identifier of child component.
+     * @return child component.
+     */
+    // TODO May be need move to AdvancedResponseWriter.
+    protected static UIComponent findComponentBelow(UIComponent component,
+                                                    String componentId) {
+        UIComponent retComp = null;
+        if (component.getChildCount() > 0) {
+            List<UIComponent> children = component.getChildren();
+            for (UIComponent comp : children) {
+                if (comp instanceof NamingContainer) {
+                    try {
+                        retComp = comp.findComponent(componentId);
+                    } catch (IllegalArgumentException iae) {
+                        continue;
+                    }
+                }
+                if (retComp == null) {
+                    if (comp.getChildCount() > 0) {
+                        retComp = findComponentBelow(comp, componentId);
+                    }
+                }
+                if (retComp != null) {
+                    break;
+                }
+            }
+        }
+        return retComp;
+    }
+
+    /**
+     * Escapes HTML string.
+     *
+     * @param string HTML string.
+     * @return escaped HTML string.
+     */
+    protected static String htmlEscape(String string) {
+        if (string == null) {
+            return null;
+        } else {
+            StringBuilder htmlEscapedStringBuilder = new StringBuilder();
+            for (int i = 0; i < string.length(); i++) {
+                char charAt = string.charAt(i);
+                if (charAt == '&') {
+                    htmlEscapedStringBuilder.append("&amp;");
+                } else if (charAt == '"') {
+                    htmlEscapedStringBuilder.append("&quot;");
+                } else if (charAt == '>') {
+                    htmlEscapedStringBuilder.append("&gt;");
+                } else if (charAt == '<') {
+                    htmlEscapedStringBuilder.append("&lt;");
+                } else if (charAt == '\'') {
+                    htmlEscapedStringBuilder.append("&#39;");
+                } else {
+                    htmlEscapedStringBuilder.append(charAt);
+                }
+            }
+            return htmlEscapedStringBuilder.toString();
+        }
+    }
 
     @Override
     protected void encodeBegin(AdvancedResponseWriter writer)
@@ -94,7 +159,7 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
         encoded = true;
 
         HtmlMultiMarker.DisplayMode displayMode = component instanceof HtmlMultiMarker ?
-                ((HtmlMultiMarker)component).getDisplayMode() : HtmlMultiMarker.DisplayMode.hint;
+                ((HtmlMultiMarker) component).getDisplayMode() : HtmlMultiMarker.DisplayMode.hint;
         switch (displayMode) {
             case hint:
                 writer.startElement(HtmlElement.SPAN);
@@ -240,7 +305,7 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
         super.encodeEnd(writer);
 
         HtmlMultiMarker.DisplayMode displayMode = component instanceof HtmlMultiMarker ?
-                ((HtmlMultiMarker)component).getDisplayMode() : HtmlMultiMarker.DisplayMode.hint;
+                ((HtmlMultiMarker) component).getDisplayMode() : HtmlMultiMarker.DisplayMode.hint;
         switch (displayMode) {
             case hint:
                 writer.endElement(HtmlElement.DIV);
@@ -272,15 +337,14 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     @Override
     protected boolean shouldEncodeIdAttribute(FacesContext context,
-            UIComponent component) throws IOException {
+                                              UIComponent component) throws IOException {
         return true;
     }
 
     /**
      * Returns identifier of component messages belongs to.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return identifier of component.
      */
     protected String getFor(AdvancedResponseWriter writer) {
@@ -290,9 +354,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class when there are info messages only.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getInfoStyleClass(AdvancedResponseWriter writer) {
@@ -302,9 +365,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class when there are warn messages.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getWarnStyleClass(AdvancedResponseWriter writer) {
@@ -314,9 +376,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class when there are error messages.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getErrorStyleClass(AdvancedResponseWriter writer) {
@@ -326,9 +387,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class when there are fatal messages.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getFatalStyleClass(AdvancedResponseWriter writer) {
@@ -338,9 +398,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class of hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getHintWindowStyleClass(AdvancedResponseWriter writer) {
@@ -350,9 +409,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class of info messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getHintWindowInfoStyleClass(AdvancedResponseWriter writer) {
@@ -362,9 +420,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class of warn messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getHintWindowWarnStyleClass(AdvancedResponseWriter writer) {
@@ -374,9 +431,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class of error messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getHintWindowErrorStyleClass(AdvancedResponseWriter writer) {
@@ -386,9 +442,8 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns CSS class of fatal messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     protected String getHintWindowFatalStyleClass(AdvancedResponseWriter writer) {
@@ -399,18 +454,15 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
     /**
      * Returns component attribute value if it is not null, unless default value
      * is returned.
-     * 
-     * @param writer
-     *            writer.
-     * @param componentAttr
-     *            attribute.
-     * @param defaultValue
-     *            default value.
+     *
+     * @param writer        writer.
+     * @param componentAttr attribute.
+     * @param defaultValue  default value.
      * @return attribute value or default value.
      */
     // TODO May be need move to AdvancedResponseWriter.
     protected Object getComponentAttributeValue(AdvancedResponseWriter writer,
-            String componentAttr, Object defaultValue) {
+                                                String componentAttr, Object defaultValue) {
         if (componentAttr == null) {
             throw new NullPointerException("'componentAttr' is null");
         }
@@ -424,26 +476,22 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns component attribute value.
-     * 
-     * @param writer
-     *            writer.
-     * @param componentAttr
-     *            attribute.
+     *
+     * @param writer        writer.
+     * @param componentAttr attribute.
      * @return attribute value.
      */
     // TODO May be need move to AdvancedResponseWriter.
     protected Object getComponentAttributeValue(AdvancedResponseWriter writer,
-            String componentAttr) {
+                                                String componentAttr) {
         return getComponentAttributeValue(writer, componentAttr, null);
     }
 
     /**
      * Returns message iterator.
-     * 
-     * @param writer
-     *            writer.
-     * @param forComponentId
-     *            identifier of component messages belongs to.
+     *
+     * @param writer         writer.
+     * @param forComponentId identifier of component messages belongs to.
      * @return message iterator.
      */
     protected Iterator<FacesMessage> getMessageIterator(
@@ -472,18 +520,15 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
 
     /**
      * Finds component.
-     * 
-     * @param writer
-     *            writer.
-     * @param componentId
-     *            identifier of component.
-     * @param parentComponent
-     *            parent of component.
+     *
+     * @param writer          writer.
+     * @param componentId     identifier of component.
+     * @param parentComponent parent of component.
      * @return component.
      */
     // TODO May be need move to AdvancedResponseWriter.
     protected UIComponent findComponent(AdvancedResponseWriter writer,
-            String componentId, UIComponent parentComponent) {
+                                        String componentId, UIComponent parentComponent) {
         if (null == componentId || componentId.length() == 0) {
             return null;
         }
@@ -504,73 +549,5 @@ public class HtmlMarkerRenderer extends HtmlBasicRenderer {
         } catch (Exception e) {
         }
         return result;
-    }
-
-    /**
-     * Finds child component of parent component.
-     * 
-     * @param component
-     *            parent component
-     * @param componentId
-     *            identifier of child component.
-     * @return child component.
-     */
-    // TODO May be need move to AdvancedResponseWriter.
-    protected static UIComponent findComponentBelow(UIComponent component,
-            String componentId) {
-        UIComponent retComp = null;
-        if (component.getChildCount() > 0) {
-            List<UIComponent> children = component.getChildren();
-            for (UIComponent comp : children) {
-                if (comp instanceof NamingContainer) {
-                    try {
-                        retComp = comp.findComponent(componentId);
-                    } catch (IllegalArgumentException iae) {
-                        continue;
-                    }
-                }
-                if (retComp == null) {
-                    if (comp.getChildCount() > 0) {
-                        retComp = findComponentBelow(comp, componentId);
-                    }
-                }
-                if (retComp != null) {
-                    break;
-                }
-            }
-        }
-        return retComp;
-    }
-
-    /**
-     * Escapes HTML string.
-     * 
-     * @param string
-     *            HTML string.
-     * @return escaped HTML string.
-     */
-    protected static String htmlEscape(String string) {
-        if (string == null) {
-            return null;
-        } else {
-            StringBuilder htmlEscapedStringBuilder = new StringBuilder();
-            for (int i = 0; i < string.length(); i++) {
-                char charAt = string.charAt(i);
-                if (charAt == '&') {
-                    htmlEscapedStringBuilder.append("&amp;");
-                } else if (charAt == '"') {
-                    htmlEscapedStringBuilder.append("&quot;");
-                } else if (charAt == '>') {
-                    htmlEscapedStringBuilder.append("&gt;");
-                } else if (charAt == '<') {
-                    htmlEscapedStringBuilder.append("&lt;");
-                } else if (charAt == '\'') {
-                    htmlEscapedStringBuilder.append("&#39;");
-                } else {
-                    htmlEscapedStringBuilder.append(charAt);
-                }
-            }
-            return htmlEscapedStringBuilder.toString();
-        }
     }
 }

@@ -1,24 +1,21 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.io.IOException;
-import javax.faces.render.FacesRenderer;
 import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.component.html.HtmlNavigationMenu;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.ComponentAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
+import ru.efive.uifaces.renderkit.html_basic.base.*;
+
+import javax.faces.render.FacesRenderer;
+import java.io.IOException;
 
 /**
  * Renderer class for {@link HtmlNavigationMenu} component class.
- * 
+ *
  * @author Denis Kotegov
  */
 @FacesRenderer(
-        renderKitId="HTML_BASIC", 
-        rendererType=HtmlNavigationMenu.RENDERER_TYPE, 
-        componentFamily=ComponentFamily.NAVIGATION_MENU)
+        renderKitId = "HTML_BASIC",
+        rendererType = HtmlNavigationMenu.RENDERER_TYPE,
+        componentFamily = ComponentFamily.NAVIGATION_MENU)
 public class HtmlNavigationMenuRenderer extends HtmlBasicRenderer {
 
     public static final String FACET_HEADER = "header";

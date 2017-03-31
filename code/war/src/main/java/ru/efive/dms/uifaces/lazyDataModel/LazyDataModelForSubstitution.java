@@ -1,11 +1,12 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.SortOrder;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.user.Substitution;
-import ru.hitsl.sql.dao.SubstitutionDaoImpl;
+import ru.hitsl.sql.dao.interfaces.SubstitutionDao;
 
-import java.util.List;
-import java.util.Map;
+import javax.inject.Named;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,25 +14,11 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+@Named("substitutions")
+@SpringScopeView
 public class LazyDataModelForSubstitution extends AbstractFilterableLazyDataModel<Substitution> {
-    private SubstitutionDaoImpl dao;
-
-    public LazyDataModelForSubstitution(SubstitutionDaoImpl dao) {
-        this.dao = dao;
-    }
-
-    @Override
-    public Substitution getRowData(String rowKey) {
-        return dao.get(Integer.valueOf(rowKey));
-    }
-
-    @Override
-    public List<Substitution> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,
-            Object> filters) {
-        setRowCount(dao.getDocumentsCount(filter, false));
-        if(getRowCount() < first){
-            first = 0;
-        }
-        return dao.getDocuments(filter, false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
+    @Autowired
+    public LazyDataModelForSubstitution(@Qualifier("substitutionDao")SubstitutionDao substitutionDao) {
+        super(substitutionDao);
     }
 }

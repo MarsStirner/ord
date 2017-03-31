@@ -24,7 +24,7 @@ public class MarkerFilter extends AbstractMatcherFilter<ILoggingEvent> {
 
     @Override
     public void start() {
-        if (!markerList.isEmpty())  {
+        if (!markerList.isEmpty()) {
             super.start();
         } else {
             addError("MarkerFilter: No one marker is set.");
@@ -35,22 +35,22 @@ public class MarkerFilter extends AbstractMatcherFilter<ILoggingEvent> {
     @Override
     public FilterReply decide(final ILoggingEvent event) {
         final Marker marker = event.getMarker();
-        if (!isStarted()){
+        if (!isStarted()) {
             return FilterReply.NEUTRAL;
         }
-        if(marker == null){
+        if (marker == null) {
             return onMismatch;
         }
-        if (markerList.contains(marker)){
+        if (markerList.contains(marker)) {
             return onMatch;
         }
         return onMismatch;
     }
 
     public void setMarker(final String markerString) {
-        if(null != markerString && !markerString.isEmpty()) {
-           markerList.add(MarkerFactory.getMarker(markerString));
-        }  else {
+        if (null != markerString && !markerString.isEmpty()) {
+            markerList.add(MarkerFactory.getMarker(markerString));
+        } else {
             addWarn(String.format("MarkerFilter: Incorrect markerString \"%s\"", markerString));
         }
     }

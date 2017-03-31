@@ -1,8 +1,7 @@
 package ru.efive.wf.core.util;
 
-import java.security.cert.X509Certificate;
-
 import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
 
 public class DummyTrustManager implements X509TrustManager {
     public void checkClientTrusted(X509Certificate[] cert, String authType) {

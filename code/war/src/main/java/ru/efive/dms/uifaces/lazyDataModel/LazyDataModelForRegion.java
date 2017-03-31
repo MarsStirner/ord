@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.SortOrder;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.entity.model.referenceBook.Region;
-import ru.hitsl.sql.dao.referenceBook.RegionDAOImpl;
-
-import java.util.List;
-import java.util.Map;
+import ru.hitsl.sql.dao.interfaces.referencebook.RegionDao;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,24 +13,11 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForRegion extends AbstractFilterableLazyDataModel<Region>{
-
-    private final RegionDAOImpl dao;
-
-    public LazyDataModelForRegion(final RegionDAOImpl dao) {
-        this.dao = dao;
-    }
-    @Override
-    public Region getRowData(String rowKey) {
-        return dao.get(Integer.valueOf(rowKey));
-    }
-
-    @Override
-    public List<Region> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        setRowCount(dao.countItems(filter));
-        if(getRowCount() < first){
-            first = 0;
-        }
-        return dao.getItems(filter, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
+@Component("regionLDM")
+@SpringScopeView
+public class LazyDataModelForRegion extends AbstractFilterableLazyDataModel<Region> {
+    @Autowired
+    public LazyDataModelForRegion(@Qualifier("regionDao")RegionDao regionDao) {
+        super(regionDao);
     }
 }

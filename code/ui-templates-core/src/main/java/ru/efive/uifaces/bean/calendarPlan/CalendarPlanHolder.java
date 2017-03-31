@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 /**
- *
  * @author Pavel Porubov
  */
 public abstract class CalendarPlanHolder {

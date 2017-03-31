@@ -49,12 +49,12 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
 
     /**
      * Удаление документа (из БД или только флаг решается в реализации)
+     *
      * @return упсешность удаления
      */
     protected abstract boolean deleteDocument();
 
     /**
-     *
      * @return
      */
     protected Integer getDocumentId() {
@@ -78,7 +78,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
     protected boolean doAfterDelete() {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("/component/delete_document.xhtml");
-        } catch (IOException e){
+        } catch (IOException e) {
             logger.error("Error on redirect", e);
             return false;
         }
@@ -291,7 +291,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
     /**
      * Стандартные действия когда документ не был найден
      */
-    protected void setDocumentNotFound(){
+    protected void setDocumentNotFound() {
         setState(State.ERROR);
         addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
     }
@@ -299,7 +299,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
     /**
      * Стандартные действия когда документ не был найден
      */
-    protected void setDocumentDeleted(){
+    protected void setDocumentDeleted() {
         setState(State.ERROR);
         addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
     }

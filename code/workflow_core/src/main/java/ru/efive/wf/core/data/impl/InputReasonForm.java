@@ -13,6 +13,12 @@ import java.util.List;
 
 public class InputReasonForm implements LocalBackingBean {
 
+    private List<EditableProperty> properties;
+    private String beanName;
+    private String actionCommentary;
+    private EditablePropertyScope scope;
+    private String actionCommentaryField;
+
     @Override
     public String getForm() {
         return "<?xml version='1.0' encoding='UTF-8' ?>\n"
@@ -28,28 +34,28 @@ public class InputReasonForm implements LocalBackingBean {
                 + "</html>";
     }
 
-    public void setActionCommentary(String actionCommentary) {
-        this.actionCommentary = actionCommentary;
-    }
-
     public String getActionCommentary() {
         return actionCommentary;
     }
 
-    public void setScope(EditablePropertyScope scope) {
-        this.scope = scope;
+    public void setActionCommentary(String actionCommentary) {
+        this.actionCommentary = actionCommentary;
     }
 
     public EditablePropertyScope getScope() {
         return scope;
     }
 
-    public void setActionCommentaryField(String actionCommentaryField) {
-        this.actionCommentaryField = actionCommentaryField;
+    public void setScope(EditablePropertyScope scope) {
+        this.scope = scope;
     }
 
     public String getActionCommentaryField() {
         return actionCommentaryField;
+    }
+
+    public void setActionCommentaryField(String actionCommentaryField) {
+        this.actionCommentaryField = actionCommentaryField;
     }
 
     @Override
@@ -77,20 +83,11 @@ public class InputReasonForm implements LocalBackingBean {
         return result;
     }
 
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
     public String getBeanName() {
         return beanName;
     }
 
-
-    private List<EditableProperty> properties;
-
-    private String beanName;
-
-    private String actionCommentary;
-    private EditablePropertyScope scope;
-    private String actionCommentaryField;
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 }

@@ -1,18 +1,24 @@
 package ru.efive.wf.core.data.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-
-//import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.wf.core.ActionResult;
 import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.data.LocalBackingBean;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.util.ArrayList;
+import java.util.List;
+
+//import ru.efive.dms.uifaces.beans.SessionManagementBean;
+
 public class InputRegistrationNumberForm implements LocalBackingBean {
+
+    private List<EditableProperty> properties;
+    private String beanName;
+    private String actionCommentary;
+    private EditablePropertyScope scope;
+    private String actionCommentaryField;
 
     @Override
     public String getForm() {
@@ -30,28 +36,28 @@ public class InputRegistrationNumberForm implements LocalBackingBean {
                 + "</html>";
     }
 
-    public void setActionCommentary(String actionCommentary) {
-        this.actionCommentary = actionCommentary;
-    }
-
     public String getActionCommentary() {
         return actionCommentary;
     }
 
-    public void setScope(EditablePropertyScope scope) {
-        this.scope = scope;
+    public void setActionCommentary(String actionCommentary) {
+        this.actionCommentary = actionCommentary;
     }
 
     public EditablePropertyScope getScope() {
         return scope;
     }
 
-    public void setActionCommentaryField(String actionCommentaryField) {
-        this.actionCommentaryField = actionCommentaryField;
+    public void setScope(EditablePropertyScope scope) {
+        this.scope = scope;
     }
 
     public String getActionCommentaryField() {
         return actionCommentaryField;
+    }
+
+    public void setActionCommentaryField(String actionCommentaryField) {
+        this.actionCommentaryField = actionCommentaryField;
     }
 
     @Override
@@ -79,20 +85,11 @@ public class InputRegistrationNumberForm implements LocalBackingBean {
         return result;
     }
 
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
     public String getBeanName() {
         return beanName;
     }
 
-
-    private List<EditableProperty> properties;
-
-    private String beanName;
-
-    private String actionCommentary;
-    private EditablePropertyScope scope;
-    private String actionCommentaryField;
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 }

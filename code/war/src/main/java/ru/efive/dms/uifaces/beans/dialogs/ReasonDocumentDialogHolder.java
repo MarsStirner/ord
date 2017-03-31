@@ -1,23 +1,20 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.RequestDocument;
-import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
-import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
+import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
+import ru.hitsl.sql.dao.interfaces.document.RequestDocumentDao;
 import ru.util.ApplicationHelper;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.io.Serializable;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -25,12 +22,9 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DA
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Named("reasonDocumentDialog")
-@ViewScoped
+@Controller("reasonDocumentDialog")
+@SpringScopeView
 public class ReasonDocumentDialogHolder implements Serializable {
-
-    @EJB(name = "indexManagement")
-    private IndexManagementBean indexManagementBean;
 
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_REASON_DOCUMENT";
@@ -38,6 +32,12 @@ public class ReasonDocumentDialogHolder implements Serializable {
     private boolean isIncoming = true;
     private IncomingDocument incomingSelection;
     private RequestDocument requestSelection;
+    @Autowired
+    @Qualifier("incomingDocumentDao")
+    private IncomingDocumentDao incomingDocumentDao;
+    @Autowired
+    @Qualifier("requestDocumentDao")
+    private RequestDocumentDao requestDocumentDao;
 
     @PostConstruct
     public void init() {
@@ -53,11 +53,9 @@ public class ReasonDocumentDialogHolder implements Serializable {
         if (StringUtils.isNotEmpty(preselected)) {
             final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(preselected);
             if (preselected.contains("incoming_")) {
-                incomingSelection = ((IncomingDocumentDAOImpl)indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO))
-                        .getItemByIdForSimpleView(rootDocumentId);
+                incomingSelection = incomingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
             } else if (preselected.contains("request_")) {
-                requestSelection = ((RequestDocumentDAOImpl)indexManagementBean.getContext().getBean(REQUEST_DOCUMENT_FORM_DAO))
-                        .getItemByIdForSimpleView(rootDocumentId);
+                requestSelection = requestDocumentDao.getItemBySimpleCriteria(rootDocumentId);
             }
         }
     }
@@ -109,13 +107,13 @@ public class ReasonDocumentDialogHolder implements Serializable {
      * @param withResult флаг указывающий передавать ли результат работы диалога
      */
     public void closeDialog(boolean withResult) {
-        String result=null;
-        if(isIncoming)     {
-            if(incomingSelection != null){
+        String result = null;
+        if (isIncoming) {
+            if (incomingSelection != null) {
                 result = incomingSelection.getUniqueId();
             }
-        }  else {
-            if(requestSelection != null){
+        } else {
+            if (requestSelection != null) {
                 result = requestSelection.getUniqueId();
             }
         }

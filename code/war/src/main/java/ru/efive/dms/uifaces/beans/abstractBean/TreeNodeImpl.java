@@ -21,30 +21,31 @@ public class TreeNodeImpl extends DefaultTreeNode {
     }
 
     public TreeNodeImpl(Object data) {
-       this();
+        this();
         setData(data);
     }
 
     public TreeNodeImpl(Object data, TreeNode parent) {
-       this(data);
-        if(parent != null) {
+        this(data);
+        if (parent != null) {
             parent.getChildren().add(this);
         }
     }
 
     public TreeNodeImpl(String type, Object data, TreeNode parent) {
-      this(data, parent);
+        this(data, parent);
         setType(type);
     }
-        @Override
-        public List<TreeNode> getChildren() {
-            return children;
-        }
 
     @Override
-        public void setChildren(List<TreeNode> children) {
-            this.children = children;
-        }
-
+    public List<TreeNode> getChildren() {
+        return children;
     }
+
+    @Override
+    public void setChildren(List<TreeNode> children) {
+        this.children = children;
+    }
+
+}
 

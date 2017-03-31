@@ -12,7 +12,6 @@ import javax.faces.render.FacesRenderer;
 import java.io.IOException;
 
 /**
- *
  * @author Denis Kotegov
  */
 @FacesRenderer(
@@ -36,8 +35,8 @@ public class HtmlFacesViewMenuItemRenderer extends AbstractNavigationMenuItemRen
     protected void encodeCurrent(AdvancedResponseWriter writer) throws IOException {
         Object current = writer.getComponent().getAttributes().get(ComponentAttribute.CURRENT);
         writer.writeAttribute(
-                HtmlAttribute.E5UI_CURRENT, 
-                current instanceof String && writer.getContext().getViewRoot().getViewId().startsWith((String) current), 
+                HtmlAttribute.E5UI_CURRENT,
+                current instanceof String && writer.getContext().getViewRoot().getViewId().startsWith((String) current),
                 null);
     }
 
@@ -45,8 +44,8 @@ public class HtmlFacesViewMenuItemRenderer extends AbstractNavigationMenuItemRen
     protected void encodeSelected(AdvancedResponseWriter writer) throws IOException {
         Object value = writer.getComponent().getAttributes().get(ComponentAttribute.VALUE);
         writer.writeAttribute(
-                HtmlAttribute.E5UI_SELECTED, 
-                writer.getContext().getViewRoot().getViewId().equals(value), 
+                HtmlAttribute.E5UI_SELECTED,
+                writer.getContext().getViewRoot().getViewId().equals(value),
                 null);
     }
 

@@ -1,25 +1,27 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.interfaces.UserDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
-
 @FacesConverter("PersonConverter")
 public class PersonConverter implements Converter {
+
+    @Autowired
+    @Qualifier("userDao")
+    private UserDao userDao;
+
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}", SessionManagementBean.class);
-
-            User in_user = (sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO)).getByLogin(value);
+            User in_user = userDao.getByLogin(value);
             if (in_user != null) {
                 result = in_user;
                 System.out.println("login: " + in_user.getDescription());

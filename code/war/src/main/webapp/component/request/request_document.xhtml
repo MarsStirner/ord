@@ -342,7 +342,7 @@
             <p:tab id="tab_relation" title="Связи">
                 <p:dataTable id="table_relation" value="#{request_doc.getRelatedDocuments()}"
                              var="outgoing_document_row"
-                             emptyMessage="#{props['EMPTY_RESULT']}"
+                             emptyMessage="#{ui['emptyMessage']}"
                              selectionMode="single"
                              resizableColumns="true"
                              widgetVar="relationDocumentTableVar"
@@ -448,7 +448,7 @@
                 <my:historyTable id="historyTable" value="#{request_doc.document.historyList}"/>
             </p:tab>
             <p:tab id="tab_files" title="Файлы" rendered="#{not request_doc.createState}">
-                <p:dataTable id="table_attachment" value="#{request_doc.attachments}" var="attachment" rowExpandMode="single" emptyMessage="#{props.EMPTY_ATTACHMENTS}">
+                <p:dataTable id="table_attachment" value="#{request_doc.attachments}" var="attachment" rowExpandMode="single" emptyMessage="#{ui['attachments.empty']}">
                     <p:column style="width:1em" styleClass="outputText">
                         <p:rowToggler rendered="#{not empty attachment.revisions}"/>
                     </p:column>

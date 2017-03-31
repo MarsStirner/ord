@@ -2,10 +2,7 @@ package ru.entity.model.user;
 
 import org.apache.commons.lang3.StringUtils;
 import ru.entity.model.mapped.DeletableEntity;
-import ru.entity.model.referenceBook.Department;
-import ru.entity.model.referenceBook.Nomenclature;
-import ru.entity.model.referenceBook.Position;
-import ru.entity.model.referenceBook.UserAccessLevel;
+import ru.entity.model.referenceBook.*;
 import ru.util.ApplicationHelper;
 import ru.util.Descriptionable;
 import ru.util.StoredCodes;
@@ -19,114 +16,99 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_system_persons")
-public class User extends DeletableEntity implements Descriptionable, Comparable<User>{
+public class User extends DeletableEntity implements Descriptionable, Comparable<User> {
 
     /**********************************************************************
      * DATABASE FIELD MAPPING START
      */
 
+    private static final long serialVersionUID = -7649892958713448678L;
     /**
      * дата создания учетной записи
      */
     @Column(name = "created")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date created;
-
     /**
      * фамилия
      */
     @Column(name = "lastName")
     private String lastName;
-
     /**
      * имя
      */
     @Column(name = "firstName")
     private String firstName;
-
     /**
      * отчество
      */
     @Column(name = "middleName")
     private String middleName;
-
     /**
      * Адрес почты
      */
     //TODO перенести в contacts
     @Column(name = "email")
     private String email;
-
     /**
      * Табельный номер сотрудника
      */
     @Column(name = "unid")
     private String UNID;
-
     /**
      * учетная запись
      */
     @Column(name = "login", unique = true)
     private String login;
-
     /**
      * пароль (md5 Hash)
      */
     @Column(name = "password")
     private String password;
-
     /**
      * Соостветствующий идентификатор из AD
      */
     @Column(name = "GUID", unique = true)
     private String GUID;
-
     /**
      * Признак уволенного сотрудника
      * TRUE - уволен
      */
     @Column(name = "fired", nullable = false)
     private boolean fired;
-
     /**
      * Дата увольнения сотрудника
      */
     @Column(name = "firedDate")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date firedDate;
-
     /**
      * Максимальный уровень допуска
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "maxUserAccessLevel_id")
     private UserAccessLevel maxUserAccessLevel;
-
     /**
      * Текущий уровень допуска
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "currentUserAccessLevel_id")
     private UserAccessLevel currentUserAccessLevel;
-
     /**
      * Контактные данные пользователя (почта, телефон, итд)
      * При сохранении пользователя - добавлять\удалять и обновлять записи
      */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.ALL}, orphanRemoval = true)
     private Set<PersonContact> contacts;
-
     /**
      * группы
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name="mmPersonToGroup",
-            joinColumns = {@JoinColumn(name="member_id")},
-            inverseJoinColumns = {@JoinColumn(name="group_id")}
+    @JoinTable(name = "mmPersonToGroup",
+            joinColumns = {@JoinColumn(name = "member_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")}
     )
     private Set<Group> groups;
-
-
     /**
      * роли
      */
@@ -135,37 +117,30 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
             joinColumns = {@JoinColumn(name = "person_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Set<Role> roles;
-
     /**
      * Время последней модификации
      */
     @Column(name = "lastModified")
     @Temporal(value = TemporalType.TIMESTAMP)
     private Date lastModified;
-
-
     /**
      * должность
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jobPosition_id", nullable = true)
     private Position jobPosition;
-
-    @Column(name="jobPosition")
+    @Column(name = "jobPosition")
     private String jobPositionString;
-
     /**
      * подразделение
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "jobDepartment_id", nullable = true)
     private Department jobDepartment;
-
-    @Column(name="jobDepartment")
+    @Column(name = "jobDepartment")
     private String jobDepartmentString;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="defaultNomeclature_id", nullable = true)
+    @JoinColumn(name = "defaultNomeclature_id", nullable = true)
     private Nomenclature defaultNomenclature;
 
     /**
@@ -187,7 +162,8 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
 
     /**
      * Выставляет пароль, преобразуя его в хеш
-     * @param password  пароль, хэш которого надо сохранить в модель
+     *
+     * @param password пароль, хэш которого надо сохранить в модель
      */
     public void setPassword(String password) {
         this.password = ApplicationHelper.getMD5(password);
@@ -230,16 +206,17 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         return middleName;
     }
 
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Interface Descriptionable
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
     /**
      * Получение полного ФИО в виде строки
+     *
      * @return Строка с полным ФИО
      * "Иванов Иван Иванович"
      * если нету части ФИО - то выводится без нее
@@ -248,17 +225,17 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
     @Override
     public String getDescription() {
         final StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotEmpty(lastName)){
+        if (StringUtils.isNotEmpty(lastName)) {
             sb.append(lastName);
         }
-        if(StringUtils.isNotEmpty(firstName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(firstName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(firstName);
         }
-        if(StringUtils.isNotEmpty(middleName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(middleName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(middleName);
@@ -272,17 +249,17 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
     @Override
     public String getDescriptionShort() {
         final StringBuilder sb = new StringBuilder();
-        if(StringUtils.isNotEmpty(lastName)){
+        if (StringUtils.isNotEmpty(lastName)) {
             sb.append(lastName);
         }
-        if(StringUtils.isNotEmpty(firstName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(firstName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(firstName.charAt(0)).append('.');
         }
-        if(StringUtils.isNotEmpty(middleName)){
-            if(sb.length()!=0){
+        if (StringUtils.isNotEmpty(middleName)) {
+            if (sb.length() != 0) {
                 sb.append(' ');
             }
             sb.append(middleName.charAt(0)).append('.');
@@ -377,6 +354,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         }
         return false;
     }
+
     public Date getCreated() {
         return created;
     }
@@ -401,28 +379,28 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         this.jobDepartment = jobDepartment;
     }
 
-    public void setGroups(Set<Group> groups) {
-        this.groups = groups;
-    }
-
     public Set<Group> getGroups() {
         return groups;
     }
 
-    public void setMaxUserAccessLevel(UserAccessLevel maxUserAccessLevel) {
-        this.maxUserAccessLevel = maxUserAccessLevel;
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
     }
 
     public UserAccessLevel getMaxUserAccessLevel() {
         return maxUserAccessLevel;
     }
 
-    public void setCurrentUserAccessLevel(UserAccessLevel currentUserAccessLevel) {
-        this.currentUserAccessLevel = currentUserAccessLevel;
+    public void setMaxUserAccessLevel(UserAccessLevel maxUserAccessLevel) {
+        this.maxUserAccessLevel = maxUserAccessLevel;
     }
 
     public UserAccessLevel getCurrentUserAccessLevel() {
         return currentUserAccessLevel;
+    }
+
+    public void setCurrentUserAccessLevel(UserAccessLevel currentUserAccessLevel) {
+        this.currentUserAccessLevel = currentUserAccessLevel;
     }
 
     public String getGUID() {
@@ -493,29 +471,31 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         return jobDepartmentString;
     }
 
+    //Collections *****************************
+
     public void setJobDepartmentString(final String jobDepartmentString) {
         this.jobDepartmentString = jobDepartmentString;
     }
 
-    //Collections *****************************
+    public Set<PersonContact> getContacts() {
+        return contacts;
+    }
 
-    public Set<PersonContact> getContacts() {return contacts;}
+    public void setContacts(Set<PersonContact> contacts) {
+        this.contacts = contacts;
+    }
 
-    public String getContact(final String type){
+    public String getContact(final String type) {
         final StringBuilder sb = new StringBuilder();
-        for(PersonContact contact : contacts){
-            if(contact.getType().getCode().equalsIgnoreCase(type)){
-                if(sb.length() != 0){
+        for (PersonContact contact : contacts) {
+            if (contact.getType().getCode().equalsIgnoreCase(type)) {
+                if (sb.length() != 0) {
                     sb.append(", ");
                 }
                 sb.append(contact.getValue());
             }
         }
         return sb.toString();
-    }
-
-    public void setContacts(Set<PersonContact> contacts) {
-        this.contacts = contacts;
     }
 
     public boolean addToContacts(final PersonContact contact) {
@@ -531,8 +511,6 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         }
         return contacts.addAll(newContacts);
     }
-
-    private static final long serialVersionUID = -7649892958713448678L;
 
     /**
      * Объекты равны, когда оба объекта - Пользователи и у них одинаковый идентификатор
@@ -551,6 +529,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
 
     /**
      * Принять сотрудника на работу начиная от даты !не меняет содержимое БД, только модель!
+     *
      * @param date дата приема на работу
      */
     public void hire(final Date date) {
@@ -560,11 +539,12 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
 
     /**
      * Уволить сотрудника с даты !не меняет содержимое БД, только модель!
+     *
      * @param date дата увольнения
      */
     public void fire(final Date date) {
-       fired = true;
-       firedDate = date;
-       lastModified = date;
+        fired = true;
+        firedDate = date;
+        lastModified = date;
     }
 }

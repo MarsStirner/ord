@@ -19,14 +19,13 @@
 <h:body id="pageBody">
     <!-- Блок объявления параметров -->
     <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
-    <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
-    <ui:param name="isRecorder" value="#{sessionManagement.isRecorder()}"/>
-    <ui:param name="isOfficeManager" value="#{sessionManagement.isOfficeManager()}"/>
-    <ui:param name="isRequestManager" value="#{sessionManagement.isRequestManager()}"/>
-    <ui:param name="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
-    <ui:param name="isOuter" value="#{sessionManagement.isOuter()}"/>
-    <ui:param name="isHr" value="#{sessionManagement.isHr()}"/>
-    <ui:param name="isFilling" value="#{sessionManagement.isFilling()}"/>
+    <ui:param name="isAdministrator" value="#{authData.isAdministrator()}"/>
+    <ui:param name="isRecorder" value="#{authData.isRecorder()}"/>
+    <ui:param name="isOfficeManager" value="#{authData.isOfficeManager()}"/>
+    <ui:param name="isRequestManager" value="#{authData.isRequestManager()}"/>
+    <ui:param name="isOuter" value="#{authData.isOuter()}"/>
+    <ui:param name="isHr" value="#{authData.isHr()}"/>
+    <ui:param name="isFilling" value="#{authData.isFilling()}"/>
     <!-- Блок настройки верстки -->
     <p:layout fullPage="true" collapseTitle="Скрыть" expandTitle="Показать">
         <p:layoutUnit position="west" size="15%" collapsible="true" collapseSize="30" effect="drop" gutter="3" style="width:100%; padding:0; margin:0; border:0; border-radius:0;">
@@ -49,11 +48,11 @@
                             </div>
                         </p:toolbarGroup>
                         <p:toolbarGroup align="right">
-                            <p:menuButton value="#{sessionManagement.loggedUser.getDescription()}" style="float:right; white-space: nowrap;">
+                            <p:menuButton value="#{authData.authorized.getDescription()}" style="float:right; white-space: nowrap;">
                                 <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
                             </p:menuButton>
                             <p:commandButton id="accessMenuButton" type="button"
-                                             value="#{sessionManagement.authData.currentAccessLevel.value}" style="float:right;"/>
+                                             value="#{authData.currentAccessLevel.value}" style="float:right;"/>
                             <p:menu id = "accessMenu" overlay="true" model="#{dictionaryManagement.accessLevelsMenuModel}"
                                     trigger="accessMenuButton" my="left top" at="left bottom"/>
                         </p:toolbarGroup>

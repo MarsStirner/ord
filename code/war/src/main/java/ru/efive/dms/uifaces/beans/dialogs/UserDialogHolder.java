@@ -1,23 +1,19 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.LazyDataModel;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
-import ru.entity.model.user.Group;
+import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.user.GroupDAOHibernate;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.interfaces.referencebook.GroupDao;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.Map;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.GROUP_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -25,8 +21,8 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Named("userDialog")
-@ViewScoped
+@Controller("userDialog")
+@SpringScopeView
 public class UserDialogHolder extends AbstractDialog<User> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON";
@@ -39,21 +35,23 @@ public class UserDialogHolder extends AbstractDialog<User> {
     public static final String DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION = "PERSON_SUBSTITUTION_TITLE";
     public static final String DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR = "PERSON_SUBSTITUTOR_TITLE";
 
-    @EJB(name = "indexManagement")
-    private IndexManagementBean indexManagementBean;
 
+    @Autowired
+    @Qualifier("userDialogLDM")
     private LazyDataModelForUserInDialogs lazyModel;
+
+    @Autowired
+    @Qualifier("groupDao")
+    private GroupDao groupDao;
 
     @PostConstruct
     public void init() {
         logger.info("Initialize new UserSelectDialog");
-        final UserDAOHibernate userDao = (UserDAOHibernate) indexManagementBean.getContext().getBean(USER_DAO);
         final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestParameterMap();
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForUserInDialogs(userDao);
         initializeGroup(requestParameterMap);
     }
 
@@ -61,8 +59,8 @@ public class UserDialogHolder extends AbstractDialog<User> {
         final String code = requestParameterMap.get(DIALOG_GROUP_KEY);
         if (StringUtils.isNotEmpty(code)) {
             logger.info("UserSelectDialog: initialized with group code=\'{}\'", code);
-            final Group group = ((GroupDAOHibernate)indexManagementBean.getContext().getBean(GROUP_DAO)).getByCode(code);
-            if(group != null){
+            final Group group = groupDao.getByCode(code);
+            if (group != null) {
                 logger.info("UserSelectDialog: initialized with group [{}]", group);
                 lazyModel.setFilterGroup(group);
             } else {
@@ -85,11 +83,11 @@ public class UserDialogHolder extends AbstractDialog<User> {
                 return "Выберите руководителя";
             } else if (DIALOG_TITLE_VALUE_AUTHOR.equalsIgnoreCase(title)) {
                 return "Выберите автора";
-            } else if(DIALOG_TITLE_VALUE_RESPONSIBLE.equalsIgnoreCase(title)){
+            } else if (DIALOG_TITLE_VALUE_RESPONSIBLE.equalsIgnoreCase(title)) {
                 return "Выберите ответственного исполнителя";
-            } else if(DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION.equalsIgnoreCase(title)){
+            } else if (DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION.equalsIgnoreCase(title)) {
                 return "Выберите замещаемого пользователя";
-            } else if(DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR.equalsIgnoreCase(title)){
+            } else if (DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR.equalsIgnoreCase(title)) {
                 return "Выберите замещающего пользователя";
             }
         }

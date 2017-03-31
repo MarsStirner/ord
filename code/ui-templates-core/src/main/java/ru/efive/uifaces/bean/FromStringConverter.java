@@ -3,7 +3,6 @@ package ru.efive.uifaces.bean;
 import java.io.Serializable;
 
 /**
- *
  * @author Denis Kotegov
  */
 public abstract class FromStringConverter<I extends Serializable> {

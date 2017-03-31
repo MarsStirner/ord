@@ -1,6 +1,6 @@
 package ru.entity.model.referenceBook;
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -12,8 +12,8 @@ import javax.persistence.Table;
  * Description: Справочник типов контрагентов<br>
  */
 @Entity
-@Table(name="rbContragentType")
-public class ContragentType extends DictionaryEntity {
+@Table(name = "rbContragentType")
+public class ContragentType extends ReferenceBookEntity {
     public ContragentType() {
     }
 }

@@ -9,17 +9,14 @@ import java.util.List;
 
 public class AlfrescoNode extends ru.efive.dao.Data {
 
+    private static final long serialVersionUID = 8499097170887955380L;
     private List<String> path = new ArrayList<>();
     private String nodeType;
     private String namespace;
     private String namespacePrefix;
-
     private String displayName;
-
     private boolean versionable;
     private List<Revision> revisions;
-
-    private static final long serialVersionUID = 8499097170887955380L;
 
     public AlfrescoNode() {
         nodeType = "content";
@@ -67,20 +64,20 @@ public class AlfrescoNode extends ru.efive.dao.Data {
         this.displayName = displayName;
     }
 
-    public void setVersionable(boolean versionable) {
-        this.versionable = versionable;
-    }
-
     public boolean isVersionable() {
         return versionable;
     }
 
-    public void setRevisions(List<Revision> revisions) {
-        this.revisions = revisions;
+    public void setVersionable(boolean versionable) {
+        this.versionable = versionable;
     }
 
     public List<Revision> getRevisions() {
         return revisions;
+    }
+
+    public void setRevisions(List<Revision> revisions) {
+        this.revisions = revisions;
     }
 
     public String getNamedNodeType() {

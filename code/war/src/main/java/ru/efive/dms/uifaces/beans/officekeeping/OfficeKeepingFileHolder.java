@@ -1,121 +1,36 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.OfficeKeepingFile;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.RoleType;
-import ru.hitsl.sql.dao.OfficeKeepingFileDAOImpl;
+import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_FILE_DAO;
 
-@Named("officeKeepingFile")
-@ViewScoped
+@Controller("officeKeepingFile")
+@SpringScopeView
 public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKeepingFile> {
 
-    @Override
-    protected boolean deleteDocument() {
-        boolean result = false;
-        try {
-            sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).delete(getDocument());
-            result = true;
-        } catch (Exception e) {
-           addMessage(null, MSG_CANT_DELETE);
-        }
-        return result;
-    }
+    private static final long serialVersionUID = 5947443099767481905L;
+    @Autowired
+    @Qualifier("officeKeepingFileDao")
+    private OfficeKeepingFileDao officeKeepingFileDao;
 
-    @Override
-    protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).findDocumentById(id));
-        if (getDocument() == null) {
-           setDocumentNotFound();
-        }
-    }
-
-    @Override
-    protected void initNewDocument() {
-        OfficeKeepingFile document = new OfficeKeepingFile();
-        document.setDocumentStatus(DocumentStatus.NEW);
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-        //document.setCreationDate(created);
-        //document.setAuthor(sessionManagement.getLoggedUser());
-
-        HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(sessionManagement.getLoggedUser());
-        historyEntry.setDocType(document.getDocumentType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
-        Set<HistoryEntry> history = new HashSet<>();
-        history.add(historyEntry);
-        document.setHistory(history);
-
-        setDocument(document);
-    }
-
-    @Override
-    protected boolean saveDocument() {
-        boolean result = false;
-        try {
-            OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).update(getDocument());
-            if (record == null) {
-                addMessage(null, MSG_CANT_SAVE);
-            } else {
-                setDocument(record);
-                result = true;
-            }
-        } catch (Exception e) {
-            result = false;
-            addMessage(null, MSG_ERROR_ON_SAVE);
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    @Override
-    protected boolean saveNewDocument() {
-        boolean result = false;
-        try {
-            OfficeKeepingFile record = sessionManagement.getDAO(OfficeKeepingFileDAOImpl.class, OFFICE_KEEPING_FILE_DAO).save(getDocument());
-            if (record == null) {
-               addMessage(null, MSG_CANT_SAVE);
-            } else {
-                setDocument(record);
-                result = true;
-            }
-        } catch (Exception e) {
-            result = false;
-            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    public List<RoleType> getTypes() {
-        List<RoleType> result = new ArrayList<>();
-        Collections.addAll(result, RoleType.values());
-        return result;
-    }
-
-    public ProcessorModalBean getProcessorModal() {
-        return processorModal;
-    }
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
 
     private ProcessorModalBean processorModal = new ProcessorModalBean() {
 
@@ -151,9 +66,97 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         }
     };
 
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
+    @Override
+    protected boolean deleteDocument() {
+        boolean result = false;
+        try {
+            officeKeepingFileDao.delete(getDocument());
+            result = true;
+        } catch (Exception e) {
+            addMessage(null, MSG_CANT_DELETE);
+        }
+        return result;
+    }
 
-    private static final long serialVersionUID = 5947443099767481905L;
+    @Override
+    protected void initDocument(Integer id) {
+        setDocument(officeKeepingFileDao.get(id));
+        if (getDocument() == null) {
+            setDocumentNotFound();
+        }
+    }
+
+    @Override
+    protected void initNewDocument() {
+        OfficeKeepingFile document = new OfficeKeepingFile();
+        document.setDocumentStatus(DocumentStatus.NEW);
+        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+        //document.setCreationDate(created);
+        //document.setAuthor(authData.getAuthorized());
+
+        HistoryEntry historyEntry = new HistoryEntry();
+        historyEntry.setCreated(created);
+        historyEntry.setStartDate(created);
+        historyEntry.setOwner(authData.getAuthorized());
+        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setParentId(document.getId());
+        historyEntry.setActionId(0);
+        historyEntry.setFromStatusId(1);
+        historyEntry.setEndDate(created);
+        historyEntry.setProcessed(true);
+        historyEntry.setCommentary("");
+        Set<HistoryEntry> history = new HashSet<>();
+        history.add(historyEntry);
+        document.setHistory(history);
+
+        setDocument(document);
+    }
+
+    @Override
+    protected boolean saveDocument() {
+        boolean result = false;
+        try {
+            OfficeKeepingFile record = officeKeepingFileDao.update(getDocument());
+            if (record == null) {
+                addMessage(null, MSG_CANT_SAVE);
+            } else {
+                setDocument(record);
+                result = true;
+            }
+        } catch (Exception e) {
+            result = false;
+            addMessage(null, MSG_ERROR_ON_SAVE);
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    @Override
+    protected boolean saveNewDocument() {
+        boolean result = false;
+        try {
+            OfficeKeepingFile record = officeKeepingFileDao.save(getDocument());
+            if (record == null) {
+                addMessage(null, MSG_CANT_SAVE);
+            } else {
+                setDocument(record);
+                result = true;
+            }
+        } catch (Exception e) {
+            result = false;
+            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public List<RoleType> getTypes() {
+        List<RoleType> result = new ArrayList<>();
+        Collections.addAll(result, RoleType.values());
+        return result;
+    }
+
+    public ProcessorModalBean getProcessorModal() {
+        return processorModal;
+    }
 }

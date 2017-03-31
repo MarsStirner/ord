@@ -11,11 +11,11 @@
     <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectPersonTable"
                      paginator="true"
-                     rows="25"
-                     currentPageReportTemplate="#{props.CURRENT_PAGE_PAGINATOR_TEMPLATE}"
-                     paginatorTemplate="#{props.PAGINATOR_TEMPLATE}"
-                     rowsPerPageTemplate="#{props.ROWS_PER_PAGE_DROPDOWN}"
-                     paginatorPosition="#{props.PAGINATOR_POSITION}"
+                     rows="#{ui['dialog.rows']}"
+                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
+                     paginatorPosition = "#{ui['paginator.position']}"
                      value="#{multipleUserDialog.lazyModel}"
                      var="person_row"
                      selectionMode="multiple"
@@ -28,7 +28,7 @@
                      sortBy="#{person_row.lastName}"
                      sortOrder="ascending"
                      sortField="lastName"
-                     pageLinks="#{props.DIALOG_PAGE_LINKS}"
+                     pageLinks="#{ui['dialog.pageLinks']}"
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{multipleUserDialog.filter}" styleClass="searchTextBox"/>

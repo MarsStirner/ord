@@ -1,40 +1,35 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.io.IOException;
+import ru.efive.uifaces.component.html.AbstractNavigationMenuItem;
+import ru.efive.uifaces.component.html.HtmlNavigationMenu;
+import ru.efive.uifaces.renderkit.html_basic.base.*;
+
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.Cookie;
-import ru.efive.uifaces.component.html.AbstractNavigationMenuItem;
-import ru.efive.uifaces.component.html.HtmlNavigationMenu;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.ComponentAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.ComponentEvaluator;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
+import java.io.IOException;
 
 import static java.lang.String.format;
 import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.getCookie;
 
 /**
- *
  * @author Denis Kotegov
  */
 public abstract class AbstractNavigationMenuItemRenderer extends HtmlBasicRenderer {
 
     public static final String CSS_COMPONENT = "e5ui-menuItem";
-    
+
     public static final String CSS_COMPONENT_CONTENT = "e5ui-menuItem-content";
-    
+
     public static final String CSS_COMPONENT_CHILDREN = "e5ui-menuItem-children";
-    
+
     public static final String FACET_LABEL = "label";
-    
+
     public static final String COLLAPSED_COOKIE = "e5ui-menuItem-collapsed-%s";
     public static final String CSS_COLLAPSED_MARKER_LEFT = "e5ui-menuItem-collapsed-left";
     public static final String CSS_COLLAPSED_MARKER_RIGHT = "e5ui-menuItem-collapsed-right";
     public static final String CSS_COLLAPSABLE_EMPTY = "empty";
-    
+
     private static final String TOGGLE_COLLAPSED_ONCLICK = "e5ui_menu.toggleCollapsed('%s');";
     private static final String CSS_TABLE =
             "border-width: 0px; border-spacing: 0px; border-collapse: collapse; table-layout: auto;";
@@ -55,11 +50,11 @@ public abstract class AbstractNavigationMenuItemRenderer extends HtmlBasicRender
             return level;
         }
     };
-    
+
     protected abstract boolean encodeContent(AdvancedResponseWriter writer) throws IOException;
-    
+
     protected abstract void encodeHref(AdvancedResponseWriter writer) throws IOException;
-    
+
     protected abstract void encodeCurrent(AdvancedResponseWriter writer) throws IOException;
 
     protected abstract void encodeSelected(AdvancedResponseWriter writer) throws IOException;

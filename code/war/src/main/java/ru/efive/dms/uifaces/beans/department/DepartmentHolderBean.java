@@ -1,18 +1,18 @@
 package ru.efive.dms.uifaces.beans.department;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Department;
-import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
-import javax.enterprise.context.ConversationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.Serializable;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -21,10 +21,22 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
  * Description: Бин для работы с Подразделением<br>
  */
 
-@Named("department")
-@ConversationScoped
+@Controller("department")
+@SpringScopeView
 public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("DEPARTMENT");
+
+
+    @Autowired
+    @Qualifier("departmentDao")
+    private DepartmentDao departmentDao;
+
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
+    @Autowired
+    @Qualifier("sessionManagement")
+    private transient SessionManagementBean sessionManagementBean;
 
     /**
      * Меняет значение флажка Deleted и сохраняет это в БД
@@ -38,15 +50,15 @@ public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department>
     }
 
     public boolean isCanCreate() {
-        return sessionManagementBean.isAdministrator();
+        return authData.isAdministrator();
     }
 
     public boolean isCanDelete() {
-        return sessionManagementBean.isAdministrator();
+        return authData.isAdministrator();
     }
 
     public boolean isCanEdit() {
-        return sessionManagementBean.isAdministrator();
+        return authData.isAdministrator();
     }
 
     @Override
@@ -65,13 +77,13 @@ public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department>
 
     @Override
     protected void initDocument(Integer documentId) {
-        setDocument(sessionManagementBean.getDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO).get(documentId));
+        setDocument(departmentDao.get(documentId));
     }
 
     @Override
     protected boolean saveNewDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO).save(getDocument()));
+            setDocument(departmentDao.save(getDocument()));
             return true;
         } catch (Exception e) {
             LOGGER.error("CANT SAVE NEW:", e);
@@ -82,15 +94,11 @@ public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department>
     @Override
     protected boolean saveDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO).update(getDocument()));
+            setDocument(departmentDao.update(getDocument()));
             return true;
         } catch (Exception e) {
             LOGGER.error("CANT SAVE:", e);
             return false;
         }
     }
-
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagementBean;
 }

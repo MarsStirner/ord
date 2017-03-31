@@ -22,7 +22,7 @@ public class MessageHolder {
     public static final FacesMessage MSG_ERROR_ON_INITIALIZE = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка при инициализации.", "");
     public static final FacesMessage MSG_ERROR_ON_SAVE = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка при сохранении.", "");
     public static final FacesMessage MSG_ERROR_ON_SAVE_NEW = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка при сохранении нового документа.", "");
-    public static final FacesMessage MSG_ERROR_ON_ATTACH = new FacesMessage(SEVERITY_ERROR,"Внутренняя ошибка при вложении файла.", "");
+    public static final FacesMessage MSG_ERROR_ON_ATTACH = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка при вложении файла.", "");
 
     public static final FacesMessage MSG_CONTROLLER_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Необходимо выбрать Руководителя", "");
     public static final FacesMessage MSG_CONTRAGENT_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Необходимо выбрать Корреспондента", "");
@@ -43,7 +43,7 @@ public class MessageHolder {
 
     //ORD-42 факты просмотров документов
     public static final FacesMessage MSG_VIEW_FACT_REGISTERED = new FacesMessage(SEVERITY_INFO, "Факт просмотра документа сохранен", "");
-    public static final FacesMessage MSG_VIEW_FACT_REGISTRATION_ERROR = new FacesMessage(SEVERITY_WARN, "Ошибка при регистрации факта просмотра документа" ,"");
+    public static final FacesMessage MSG_VIEW_FACT_REGISTRATION_ERROR = new FacesMessage(SEVERITY_WARN, "Ошибка при регистрации факта просмотра документа", "");
 
     // Неизветсная внутренняя ошибка
     public static final FacesMessage MSG_INTERNAL_ERROR = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка", "");
@@ -64,7 +64,7 @@ public class MessageHolder {
     public static final FacesMessage MSG_SUBSTITUTION_PERSON_DUPLICATE = new FacesMessage("Ошибка валидации", "Замещаемое лицо и заместитель один и тот-же человек.");
 
     //Сообщения для документа и holder-бина
-    public static final FacesMessage MSG_CANT_CREATE = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на создание нового документа",  "");
+    public static final FacesMessage MSG_CANT_CREATE = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на создание нового документа", "");
     public static final FacesMessage MSG_CANT_EDIT_WITHOUT_ID = new FacesMessage(SEVERITY_ERROR, "Невозможно проводить редактирование не указав документ", "");
     public static final FacesMessage MSG_NO_DOC_ID = new FacesMessage(SEVERITY_ERROR, "Не указан идентификатор документа", "");
     public static final FacesMessage MSG_DOC_ID_CONVERSION_ERROR = new FacesMessage(SEVERITY_ERROR, "Некорректное значение идентифкатора", "");

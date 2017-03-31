@@ -1,6 +1,6 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -14,13 +14,13 @@ import javax.faces.context.FacesContext;
 public abstract class DictionaryEntityConverter extends CustomConverter {
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if(value == null){
+        if (value == null) {
             logger.error("Convert null value is not possible. Return empty string");
             return "";
         }
         try {
-            return ((DictionaryEntity) value).getCode();
-        } catch (ClassCastException e){
+            return ((ReferenceBookEntity) value).getCode();
+        } catch (ClassCastException e) {
             logger.error("Convert non-DictionaryEntity value is not possible. Return empty string. Object={}", value);
             return "";
         }

@@ -23,14 +23,13 @@
         <o:form id="main_content_form" includeRequestParams="true">
             <!-- Блок объявления параметров -->
             <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
-            <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
-            <ui:param name="isRecorder" value="#{sessionManagement.isRecorder()}"/>
-            <ui:param name="isOfficeManager" value="#{sessionManagement.isOfficeManager()}"/>
-            <ui:param name="isRequestManager" value="#{sessionManagement.isRequestManager()}"/>
-            <ui:param name="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
-            <ui:param name="isOuter" value="#{sessionManagement.isOuter()}"/>
-            <ui:param name="isHr" value="#{sessionManagement.isHr()}"/>
-            <ui:param name="isFilling" value="#{sessionManagement.isFilling()}"/>
+            <ui:param name="isAdministrator" value="#{authData.isAdministrator()}"/>
+            <ui:param name="isRecorder" value="#{authData.isRecorder()}"/>
+            <ui:param name="isOfficeManager" value="#{authData.isOfficeManager()}"/>
+            <ui:param name="isRequestManager" value="#{authData.isRequestManager()}"/>
+            <ui:param name="isOuter" value="#{authData.isOuter()}"/>
+            <ui:param name="isHr" value="#{authData.isHr()}"/>
+            <ui:param name="isFilling" value="#{authData.isFilling()}"/>
 
             <ui:insert name="left_menu">
                 <div id="leftMenu">
@@ -47,10 +46,10 @@
                     <div id="header">
                         <div class="menu">
                             <ui:insert name="header_top"/>
-                            <p:menuButton value="#{sessionManagement.loggedUser.getDescription()}" style="float:right; width:10em;">
+                            <p:menuButton value="#{authData.authorized.getDescription()}" style="float:right; width:10em;">
                                 <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
                             </p:menuButton>
-                            <p:commandButton id="accessMenuButton" type="button" value="#{sessionManagement.authData.currentAccessLevel.value}" style="float:right;"/>
+                            <p:commandButton id="accessMenuButton" type="button" value="#{authData.currentAccessLevel.value}" style="float:right;"/>
                             <p:menu id = "accessMenu" overlay="true" model="#{dictionaryManagement.accessLevelsMenuModel}" trigger="accessMenuButton" my="left top" at="left bottom"/>
                         </div>
                     </div>

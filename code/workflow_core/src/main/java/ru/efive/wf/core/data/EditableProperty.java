@@ -4,6 +4,10 @@ import ru.efive.wf.core.activity.enums.EditablePropertyScope;
 
 public class EditableProperty {
 
+    private String name;
+    private Object value;
+    private EditablePropertyScope scope = EditablePropertyScope.GLOBAL;
+
     public EditableProperty() {
 
     }
@@ -37,9 +41,4 @@ public class EditableProperty {
     public void setScope(EditablePropertyScope scope) {
         this.scope = scope;
     }
-
-
-    private String name;
-    private Object value;
-    private EditablePropertyScope scope = EditablePropertyScope.GLOBAL;
 }

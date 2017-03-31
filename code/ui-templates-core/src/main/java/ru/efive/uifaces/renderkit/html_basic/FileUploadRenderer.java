@@ -4,6 +4,7 @@ import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.component.html.FileUpload;
 import ru.efive.uifaces.filter.UploadHandler;
 import ru.efive.uifaces.filter.UploadInfo;
+import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
 import ru.efive.uifaces.renderkit.html_basic.base.*;
 
 import javax.el.ValueExpression;
@@ -44,24 +45,31 @@ import static ru.efive.uifaces.util.JSFUtils.getFacesContext;
         @ResourceDependency(name = "fileUpload.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "fileUpload.i18n.js", target = "head", library = "e5ui/js"),
         @ResourceDependency(name = "fileUpload.css", target = "head", library = "e5ui/css")})
-public class FileUploadRenderer extends HtmlBasicRenderer implements Serializable{
+public class FileUploadRenderer extends HtmlBasicRenderer implements Serializable {
 
-    /** <code>Renderer</code> type for component */
+    /**
+     * <code>Renderer</code> type for component
+     */
     public static final String RENDERER = "ru.efive.uifaces.FileUpload";
-
-    private static final String WRONG_COMPONENT = "Can not render component of class %s";
-
-    /** The surrounding div's class. */
+    /**
+     * The surrounding div's class.
+     */
     public static final String FILE_UPLOAD_CLASS = "e5uiFileUpload";
-    /** The button's class. */
+    /**
+     * The button's class.
+     */
     public static final String FILE_UPLOAD_BUTTON_CLASS = "e5uiFileUploadButton";
     public static final String FILE_UPLOAD_BUTTON_SELECT_CLASS = "select";
     public static final String FILE_UPLOAD_BUTTON_UPLOAD_CLASS = "upload";
-    /** The button's text class. */
+    /**
+     * The button's text class.
+     */
     public static final String FILE_UPLOAD_BUTTON_TEXT_CLASS = "e5uiFileUploadBtnText";
-    /** The selected files table's class. */
+    /**
+     * The selected files table's class.
+     */
     public static final String FILE_UPLOAD_LIST_CLASS = "e5uiFileUploadList";
-
+    private static final String WRONG_COMPONENT = "Can not render component of class %s";
     private static final String FRAME_ID_SUFFIX = "-e5uiFileUpload";
     private static final String BTNSEL_ID_SUFFIX = "-e5uiFileUpload-btnsel";
     private static final String BTNUPL_ID_SUFFIX = "-e5uiFileUpload-btnupl";
@@ -72,7 +80,9 @@ public class FileUploadRenderer extends HtmlBasicRenderer implements Serializabl
     private static final String ON_UPLOADED = ", onuploaded: function(params){%s}";
     private static final String AJAX_CALL = "function(){var event = {type: \"" + FileUpload.DEFAULT_EVENT_NAME + "\"};%s;}";
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeBegin(AdvancedResponseWriter writer) throws IOException {
         UIComponent component = writer.getComponent();
@@ -129,8 +139,8 @@ public class FileUploadRenderer extends HtmlBasicRenderer implements Serializabl
                     if (cbl != null && !cbl.isEmpty()) {
                         ClientBehaviorContext cbCtx =
                                 ClientBehaviorContext.createClientBehaviorContext(
-                                writer.getContext(), fileUpload, FileUpload.DEFAULT_EVENT_NAME,
-                                null, null);
+                                        writer.getContext(), fileUpload, FileUpload.DEFAULT_EVENT_NAME,
+                                        null, null);
                         for (ClientBehavior cb : cbl) {
                             if (cb instanceof AjaxBehavior) {
                                 String cbs = cb.getScript(cbCtx);
@@ -195,18 +205,24 @@ public class FileUploadRenderer extends HtmlBasicRenderer implements Serializabl
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeChildren(AdvancedResponseWriter writer,
-            List<UIComponent> childrens) throws IOException {
+                                  List<UIComponent> childrens) throws IOException {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeEnd(AdvancedResponseWriter writer) throws IOException {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void decode(FacesContext context, UIComponent component) {
         super.decode(context, component);

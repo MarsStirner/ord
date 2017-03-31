@@ -359,7 +359,7 @@
                 <my:historyTable id="historyTable" value="#{internal_doc.document.historyList}"/>
             </p:tab>
             <p:tab id="tab_files" title="Файлы" rendered="#{not internal_doc.createState}">
-                <p:dataTable id="table_attachment" value="#{internal_doc.attachments}" var="attachment" rowExpandMode="single" emptyMessage="#{props.EMPTY_ATTACHMENTS}">
+                <p:dataTable id="table_attachment" value="#{internal_doc.attachments}" var="attachment" rowExpandMode="single" emptyMessage="#{ui['attachments.empty']}">
                     <p:column style="width:1em" styleClass="outputText">
                         <p:rowToggler rendered="#{not empty attachment.revisions}"/>
                     </p:column>

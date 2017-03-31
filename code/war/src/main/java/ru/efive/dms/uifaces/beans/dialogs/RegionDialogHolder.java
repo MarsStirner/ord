@@ -1,42 +1,24 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.LazyDataModel;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForRegion;
 import ru.entity.model.referenceBook.Region;
-import ru.hitsl.sql.dao.referenceBook.RegionDAOImpl;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
-import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.Map;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.REGION_DAO;
-
-@Named("regionDialog")
-@ViewScoped
+@Controller("regionDialog")
+@SpringScopeView
 public class RegionDialogHolder extends AbstractDialog<Region> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_REGION";
 
-
-    @EJB(name = "indexManagement")
-    private IndexManagementBean indexManagementBean;
-
+    @Autowired
+    @Qualifier("regionLDM")
     private LazyDataModelForRegion lazyModel;
-
-    @PostConstruct
-    public void init() {
-        logger.info("Initialize new UserSelectDialog");
-        final RegionDAOImpl dao = (RegionDAOImpl) indexManagementBean.getContext().getBean(REGION_DAO);
-        final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-        logger.debug("With requestParams = {}", requestParameterMap);
-        initializePreSelected();
-        setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForRegion(dao);
-    }
 
     /**
      * Установить шапку по переданному ключу

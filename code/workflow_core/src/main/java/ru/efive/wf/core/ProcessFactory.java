@@ -13,8 +13,8 @@ import ru.entity.model.enums.DocumentAction;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.enums.RoleType;
-import ru.entity.model.user.Group;
-import ru.entity.model.user.Role;
+import ru.entity.model.referenceBook.Group;
+import ru.entity.model.referenceBook.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.external.ProcessUser;
@@ -1390,7 +1390,7 @@ public final class ProcessFactory {
                     if (formDescription.equals("resolution")) {
                         subject = "Поступила новая резолюция @DocumentNumber";
                         body = body.append("К вам поступила новая резолюция на исполнение \n\n");
-                    }  else {
+                    } else {
                         body = body.append("К вам поступило новое поручение на исполнение \n\n");
                     }
 
@@ -1992,7 +1992,6 @@ public final class ProcessFactory {
 
         return statuses.get(t.getDocumentStatus());
     }
-
 
 
 }

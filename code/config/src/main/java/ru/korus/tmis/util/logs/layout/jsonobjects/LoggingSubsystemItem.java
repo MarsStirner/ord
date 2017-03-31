@@ -20,15 +20,15 @@ public class LoggingSubsystemItem {
     public LoggingSubsystemItem() {
     }
 
-    public void addToTags(final String tag){
+    public void addToTags(final String tag) {
         tags.add(tag);
     }
 
-    public void addToOwner(final String key, final String value){
+    public void addToOwner(final String key, final String value) {
         owner.put(key, value);
     }
 
-    public void addToData(final String key, final String value){
+    public void addToData(final String key, final String value) {
         data.put(key, value);
     }
 

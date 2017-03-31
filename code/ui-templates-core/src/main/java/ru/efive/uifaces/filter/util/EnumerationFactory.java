@@ -13,7 +13,41 @@ import java.util.NoSuchElementException;
 public class EnumerationFactory {
 
     /**
+     * Instantiates {@code Enumeration<E>} for {@code Collection<E>}
+     *
+     * @param <E>  elements type
+     * @param data source collection
+     * @return instance of {@code Enumeration<E>} for {@code data}
+     */
+    public static <E> Enumeration<E> newInstance(Collection<? extends E> data) {
+        return new IteratorEnumeration<>(data);
+    }
+
+    /**
+     * Instantiates {@code Enumeration<E>} for {@code Iterator<E>}
+     *
+     * @param <E>  elements type
+     * @param data source iterator
+     * @return instance of {@code Enumeration<E>} for {@code data}
+     */
+    public static <E> Enumeration<E> newInstance(Iterator<? extends E> data) {
+        return new IteratorEnumeration<>(data);
+    }
+
+    /**
+     * Instantiates {@code Enumeration<E>} for array
+     *
+     * @param <E>  elements type
+     * @param data source array
+     * @return instance of {@code Enumeration<E>} for {@code data}
+     */
+    public static <E> Enumeration<E> newInstance(E[] data) {
+        return new ArrayEnumeration<>(data);
+    }
+
+    /**
      * The implementation of {@code Enumeration<E>} for {@code Iterator<E>}.
+     *
      * @param <E> elements type
      */
     private static class IteratorEnumeration<E> implements Enumeration<E> {
@@ -41,6 +75,7 @@ public class EnumerationFactory {
 
     /**
      * The implementation of {@code Enumeration<E>} for array.
+     *
      * @param <E> elements type
      */
     private static class ArrayEnumeration<E> implements Enumeration<E> {
@@ -65,35 +100,5 @@ public class EnumerationFactory {
                 throw new NoSuchElementException();
             }
         }
-    }
-
-    /**
-     * Instantiates {@code Enumeration<E>} for {@code Collection<E>} 
-     * @param <E> elements type
-     * @param data source collection
-     * @return instance of {@code Enumeration<E>} for {@code data}
-     */
-    public static <E> Enumeration<E> newInstance(Collection<? extends E> data) {
-        return new IteratorEnumeration<>(data);
-    }
-
-    /**
-     * Instantiates {@code Enumeration<E>} for {@code Iterator<E>} 
-     * @param <E> elements type
-     * @param data source iterator
-     * @return instance of {@code Enumeration<E>} for {@code data}
-     */
-    public static <E> Enumeration<E> newInstance(Iterator<? extends E> data) {
-        return new IteratorEnumeration<>(data);
-    }
-
-    /**
-     * Instantiates {@code Enumeration<E>} for array
-     * @param <E> elements type
-     * @param data source array
-     * @return instance of {@code Enumeration<E>} for {@code data}
-     */
-    public static <E> Enumeration<E> newInstance(E[] data) {
-        return new ArrayEnumeration<>(data);
     }
 }

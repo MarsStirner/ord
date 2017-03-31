@@ -12,6 +12,28 @@ import java.util.Date;
 @MappedSuperclass
 public class Document extends DeletableEntity {
 
+    private static final long serialVersionUID = -5542939516927639639L;
+    /**
+     * Дата создания
+     */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date created;
+    /**
+     * Дата последнего редактирования
+     */
+    @Temporal(value = TemporalType.TIMESTAMP)
+    private Date modified;
+    /**
+     * Автор
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User author;
+    /**
+     * Последний редактор
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User editor;
+
     public Date getCreated() {
         return created;
     }
@@ -43,34 +65,4 @@ public class Document extends DeletableEntity {
     public void setEditor(User editor) {
         this.editor = editor;
     }
-
-
-    /**
-     * Дата создания
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date created;
-
-    /**
-     * Дата последнего редактирования
-     */
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date modified;
-
-    /**
-     * Автор
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User author;
-
-    /**
-     * Последний редактор
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User editor;
-
-
-
-
-    private static final long serialVersionUID = -5542939516927639639L;
 }

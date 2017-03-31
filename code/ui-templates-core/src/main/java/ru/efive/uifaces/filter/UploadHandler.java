@@ -9,6 +9,7 @@ public interface UploadHandler {
 
     /**
      * the handler that should process upload event
+     *
      * @param uploadInfo the information about upload event
      */
     void handleUpload(UploadInfo uploadInfo);

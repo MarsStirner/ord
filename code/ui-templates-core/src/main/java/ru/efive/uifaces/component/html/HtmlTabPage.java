@@ -1,12 +1,13 @@
 package ru.efive.uifaces.component.html;
 
-import java.util.Collection;
-import java.util.Collections;
+import ru.efive.uifaces.component.ComponentFamily;
+import ru.efive.uifaces.renderkit.html_basic.HtmlTabPanelRenderer;
+
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UICommand;
 import javax.faces.component.behavior.ClientBehaviorHolder;
-import ru.efive.uifaces.component.ComponentFamily;
-import ru.efive.uifaces.renderkit.html_basic.HtmlTabPanelRenderer;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * The tab page component. Used with {@link HtmlTabPanel}. Represents content page and it's header.
@@ -16,22 +17,135 @@ import ru.efive.uifaces.renderkit.html_basic.HtmlTabPanelRenderer;
 @FacesComponent(HtmlTabPage.COMPONENT)
 public class HtmlTabPage extends UICommand implements ClientBehaviorHolder {
 
-    /** Component name */
+    /**
+     * Component name
+     */
     public static final String COMPONENT = "ru.efive.uifaces.TabPage";
+    /**
+     * Facet name for header part
+     */
+    public static final String HEADER_FACET = "header";
+    /**
+     * The name of default and only event of tab page.
+     */
+    public static final String DEFAULT_EVENT_NAME = "select";
+    private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(
+            Collections.singletonList(DEFAULT_EVENT_NAME));
 
-    /** Default constructor. */
+    /**
+     * Default constructor.
+     */
     public HtmlTabPage() {
         setRendererType(HtmlTabPanelRenderer.RENDERER);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getFamily() {
         return ComponentFamily.TAB_PANEL;
     }
-    
-    /** Facet name for header part */
-    public static final String HEADER_FACET = "header";
+
+    /**
+     * Returns {@code headerText} property if it specified otherwise null.
+     *
+     * @return header text
+     * @see PropertyKeys
+     */
+    public String getHeaderText() {
+        return (String) getStateHelper().eval(PropertyKeys.headerText);
+    }
+
+    /**
+     * Sets the value of {@code headerText} property.
+     *
+     * @param headerText value of {@code headerText} property
+     * @see PropertyKeys
+     */
+    public void setHeaderText(String headerText) {
+        getStateHelper().put(PropertyKeys.headerText, headerText);
+    }
+
+    /**
+     * Returns the value of {@code selected} property.
+     *
+     * @return {@code true} if the page is selected, otherwise {@code false}.
+     * @see PropertyKeys
+     */
+    public boolean isSelected() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.selected, false);
+
+    }
+
+    /**
+     * Sets the value of property {@code selected}.
+     *
+     * @param selected value of {@code selected} property
+     * @see PropertyKeys
+     */
+    public void setSelected(boolean selected) {
+        getStateHelper().put(PropertyKeys.selected, selected);
+    }
+
+    /**
+     * Returns the value of {@code disabled} property.
+     *
+     * @return {@code true} if the page is disabled, otherwise {@code false}.
+     * @see PropertyKeys
+     */
+    public boolean isDisabled() {
+        return (Boolean) getStateHelper().eval(PropertyKeys.disabled, false);
+
+    }
+
+    /**
+     * Sets the value of property {@code disabled}.
+     *
+     * @param disabled value of {@code disabled} property
+     * @see PropertyKeys
+     */
+    public void setDisabled(boolean disabled) {
+        getStateHelper().put(PropertyKeys.disabled, disabled);
+    }
+
+    /**
+     * Returns the value of {@code actionBehavior} property.
+     *
+     * @return value of {@code actionBehavior} property
+     * @see PropertyKeys
+     * @see ActionBehavior
+     */
+    public ActionBehavior getActionBehavior() {
+        return (ActionBehavior) getStateHelper().eval(PropertyKeys.actionBehavior, ActionBehavior.client);
+    }
+
+    /**
+     * Sets the value of property {@code actionBehavior}.
+     *
+     * @param actionBehavior value of {@code actionBehavior} property
+     * @see PropertyKeys
+     * @see ActionBehavior
+     */
+    public void setActionBehavior(ActionBehavior actionBehavior) {
+        getStateHelper().put(PropertyKeys.actionBehavior, actionBehavior);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<String> getEventNames() {
+        return EVENT_NAMES;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDefaultEventName() {
+        return DEFAULT_EVENT_NAME;
+    }
 
     /**
      * Component properties.
@@ -47,6 +161,7 @@ public class HtmlTabPage extends UICommand implements ClientBehaviorHolder {
      * <li>{@code disabled} - used for indicating that a page is disabled.
      * Each tab page can be disabled so it can not be selected.</li>
      * </ul>
+     *
      * @see ActionBehavior
      */
     public enum PropertyKeys {
@@ -54,62 +169,6 @@ public class HtmlTabPage extends UICommand implements ClientBehaviorHolder {
         selected,
         actionBehavior,
         disabled
-    }
-    
-    /**
-     * Returns {@code headerText} property if it specified otherwise null.
-     * @return header text
-     * @see PropertyKeys
-     */
-    public String getHeaderText() {
-        return (String) getStateHelper().eval(PropertyKeys.headerText);
-    }
-
-    /**
-     * Sets the value of {@code headerText} property.
-     * @param headerText value of {@code headerText} property
-     * @see PropertyKeys
-     */
-    public void setHeaderText(String headerText) {
-        getStateHelper().put(PropertyKeys.headerText, headerText);
-    }
-
-    /**
-     * Returns the value of {@code selected} property.
-     * @return {@code true} if the page is selected, otherwise {@code false}.
-     * @see PropertyKeys
-     */
-    public boolean isSelected() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.selected, false);
-
-    }
-
-    /**
-     * Sets the value of property {@code selected}.
-     * @param selected value of {@code selected} property
-     * @see PropertyKeys
-     */
-    public void setSelected(boolean selected) {
-        getStateHelper().put(PropertyKeys.selected, selected);
-    }
-
-    /**
-     * Returns the value of {@code disabled} property.
-     * @return {@code true} if the page is disabled, otherwise {@code false}.
-     * @see PropertyKeys
-     */
-    public boolean isDisabled() {
-        return (Boolean) getStateHelper().eval(PropertyKeys.disabled, false);
-
-    }
-
-    /**
-     * Sets the value of property {@code disabled}.
-     * @param disabled value of {@code disabled} property
-     * @see PropertyKeys
-     */
-    public void setDisabled(boolean disabled) {
-        getStateHelper().put(PropertyKeys.disabled, disabled);
     }
 
     /**
@@ -127,43 +186,5 @@ public class HtmlTabPage extends UICommand implements ClientBehaviorHolder {
      */
     public enum ActionBehavior {
         client, submit, ajax
-    }
-
-    /**
-     * Returns the value of {@code actionBehavior} property.
-     * @return value of {@code actionBehavior} property
-     * @see PropertyKeys
-     * @see ActionBehavior
-     */
-    public ActionBehavior getActionBehavior() {
-        return (ActionBehavior) getStateHelper().eval(PropertyKeys.actionBehavior, ActionBehavior.client);
-    }
-
-    /**
-     * Sets the value of property {@code actionBehavior}.
-     * @param actionBehavior value of {@code actionBehavior} property
-     * @see PropertyKeys
-     * @see ActionBehavior
-     */
-    public void setActionBehavior(ActionBehavior actionBehavior) {
-        getStateHelper().put(PropertyKeys.actionBehavior, actionBehavior);
-    }
-    
-    /** The name of default and only event of tab page. */
-    public static final String DEFAULT_EVENT_NAME = "select";
-
-    private static final Collection<String> EVENT_NAMES = Collections.unmodifiableCollection(
-            Collections.singletonList(DEFAULT_EVENT_NAME));
-
-    /** {@inheritDoc} */
-    @Override
-    public Collection<String> getEventNames() {
-        return EVENT_NAMES;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getDefaultEventName() {
-        return DEFAULT_EVENT_NAME;
     }
 }

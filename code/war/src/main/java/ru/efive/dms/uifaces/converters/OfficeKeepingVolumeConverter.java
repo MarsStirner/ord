@@ -1,31 +1,28 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.OfficeKeepingVolume;
-import ru.hitsl.sql.dao.OfficeKeepingVolumeDAOImpl;
+import ru.hitsl.sql.dao.interfaces.OfficeKeepingVolumeDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.OFFICE_KEEPING_VOLUME_DAO;
 
 @FacesConverter("OfficeKeepingVolumeConverter")
 public class OfficeKeepingVolumeConverter implements Converter {
 
+    @Autowired
+    @Qualifier("officeKeepingVolumeDao")
+    private OfficeKeepingVolumeDao officeKeepingVolumeDao;
+
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement =
-                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
-                            SessionManagementBean.class);
-            Map<String, Object> in_filters = new HashMap<>();
-            List<OfficeKeepingVolume> list = sessionManagement.getDAO(OfficeKeepingVolumeDAOImpl.class, OFFICE_KEEPING_VOLUME_DAO).findDocuments(in_filters, "", false);
+            List<OfficeKeepingVolume> list = officeKeepingVolumeDao.getItems();
             if (list.size() != 0) {
                 for (OfficeKeepingVolume in_record : list) {
                     if (in_record != null) {

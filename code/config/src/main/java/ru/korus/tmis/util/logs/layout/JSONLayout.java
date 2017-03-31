@@ -74,7 +74,7 @@ public class JSONLayout extends LayoutBase<ILoggingEvent> {
         item.addToOwner("LoggerName", event.getLoggerName());
         item.addToOwner("ip", ipAddress);
         item.setTags(tagList);
-        item.addToData("Number", event.getLoggerContextVO().getName() );
+        item.addToData("Number", event.getLoggerContextVO().getName());
         item.addToData("Timestamp", dateFormat.format(event.getTimeStamp()));
         item.addToData("ThreadName", event.getThreadName());
         item.addToData("FormattedMessage", event.getFormattedMessage());

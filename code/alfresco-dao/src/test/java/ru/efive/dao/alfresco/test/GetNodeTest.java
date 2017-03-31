@@ -1,9 +1,9 @@
 package ru.efive.dao.alfresco.test;
 
-import java.util.List;
-
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.AlfrescoNode;
+
+import java.util.List;
 
 public class GetNodeTest {
 

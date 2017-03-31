@@ -1,6 +1,6 @@
 package ru.entity.model.referenceBook;
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "rbUserAccessLevel")
-public class UserAccessLevel extends DictionaryEntity {
+public class UserAccessLevel extends ReferenceBookEntity {
     /**
      * Числовая характеристика уровня допуска
      */

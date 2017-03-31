@@ -1,8 +1,7 @@
 package ru.entity.model.referenceBook;
 
 
-
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -15,7 +14,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rbDepartment")
-public class Department extends DictionaryEntity {
+public class Department extends ReferenceBookEntity {
     public Department() {
     }
 

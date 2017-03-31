@@ -20,46 +20,7 @@ import java.util.Map;
  */
 public abstract class AbstractDialog<T> implements Serializable {
 
-    public enum Button {
-        CONFIRM,
-        CLOSE,
-        CLEAR
-    }
-
-    public class DialogResult implements Serializable {
-        private Button button;
-        private Object result;
-
-        public DialogResult(Button button, Object result) {
-            this.button = button;
-            this.result = result;
-        }
-
-        public Button getButton() {
-            return button;
-        }
-
-        public void setButton(final Button button) {
-            this.button = button;
-        }
-
-        public Object getResult() {
-            return result;
-        }
-
-        public void setResult(final Object result) {
-            this.result = result;
-        }
-
-        @Override
-        public String toString() {
-            return "DialogResult{" + "button=" + button +", result=" + result +'}';
-        }
-    }
-
-
     protected static final Logger logger = LoggerFactory.getLogger("DIALOG");
-
     private static Map<String, Object> viewOptions;
 
     static {
@@ -73,6 +34,15 @@ public abstract class AbstractDialog<T> implements Serializable {
         viewOptions.put("height", "80vh");
         viewOptions.put("position", "top");
     }
+
+    /**
+     * Заголовок диалога
+     */
+    protected String title;
+    /**
+     * Выбранный элемент(-ы)
+     */
+    protected T selected;
 
     public static Map<String, Object> getViewOptions() {
         return viewOptions;
@@ -121,11 +91,6 @@ public abstract class AbstractDialog<T> implements Serializable {
      */
     public abstract void initializePreSelected();
 
-    /**
-     * Заголовок диалога
-     */
-    protected String title;
-
     public String getTitle() {
         return title;
     }
@@ -133,11 +98,6 @@ public abstract class AbstractDialog<T> implements Serializable {
     public void setTitle(String title) {
         this.title = title;
     }
-
-    /**
-     * Выбранный элемент(-ы)
-     */
-    protected T selected;
 
     public T getSelected() {
         return selected;
@@ -167,5 +127,42 @@ public abstract class AbstractDialog<T> implements Serializable {
 
     protected Object getFromExternalContext(final String key) {
         return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(key);
+    }
+
+    public enum Button {
+        CONFIRM,
+        CLOSE,
+        CLEAR
+    }
+
+    public class DialogResult implements Serializable {
+        private Button button;
+        private Object result;
+
+        public DialogResult(Button button, Object result) {
+            this.button = button;
+            this.result = result;
+        }
+
+        public Button getButton() {
+            return button;
+        }
+
+        public void setButton(final Button button) {
+            this.button = button;
+        }
+
+        public Object getResult() {
+            return result;
+        }
+
+        public void setResult(final Object result) {
+            this.result = result;
+        }
+
+        @Override
+        public String toString() {
+            return "DialogResult{" + "button=" + button + ", result=" + result + '}';
+        }
     }
 }

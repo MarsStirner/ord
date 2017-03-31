@@ -2,10 +2,11 @@ package ru.efive.dms.uifaces.converters;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.referenceBook.SenderType;
-import ru.hitsl.sql.dao.referenceBook.SenderTypeDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.SenderTypeDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -13,17 +14,18 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.SENDER_TYPE_DAO;
-
 @FacesConverter("SenderTypeConverter")
 public class SenderTypeConverter implements Converter {
     private static final Logger LOGGER = LoggerFactory.getLogger("CONVERTER");
 
+    @Autowired
+    @Qualifier("senderTypeDao")
+    private SenderTypeDao senderTypeDao;
+
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         try {
-            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context,
-                    "#{sessionManagement}", SessionManagementBean.class);
-            List<SenderType> list = sessionManagement.getDictionaryDAO(SenderTypeDAOImpl.class, SENDER_TYPE_DAO).getByValue(value);
+
+            List<SenderType> list = senderTypeDao.getByValue(value);
             if (!list.isEmpty()) {
                 return list.get(0);
             } else {

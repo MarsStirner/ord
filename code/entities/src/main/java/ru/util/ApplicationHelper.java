@@ -36,7 +36,7 @@ public final class ApplicationHelper {
     }
 
     public static Integer getIdFromUniqueIdString(String uniqueId) {
-        if(StringUtils.isEmpty(uniqueId)){
+        if (StringUtils.isEmpty(uniqueId)) {
             return null;
         }
         final Matcher matcher = idPattern.matcher(uniqueId);
@@ -69,10 +69,11 @@ public final class ApplicationHelper {
 
     /**
      * Получить следующий от заданной даты день
-     * @param date  заданная дата, к которой прибавляется день
+     *
+     * @param date заданная дата, к которой прибавляется день
      * @return дата, указывающая на следующий день
      */
-    public static Date getNextDayDate(final Date date){
+    public static Date getNextDayDate(final Date date) {
         return new LocalDate(date).plusDays(1).toDate();
     }
 

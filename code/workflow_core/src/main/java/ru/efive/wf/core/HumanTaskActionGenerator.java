@@ -22,14 +22,16 @@ import java.util.*;
 
 public class HumanTaskActionGenerator {
 
+    //private static String in_serverHost = "http://10.0.1.91:9080/dms";
+    private static String in_serverHost = "http://ord.fccho-moscow.ru";
+    private Process process;
+    //private static String in_serverHost="http://10.0.200.60";
+    private HumanTaskTreeStateResolver resolver;
+
     public HumanTaskActionGenerator(Process process, HumanTaskTreeStateResolver resolver) {
         this.process = process;
         this.resolver = resolver;
     }
-
-    //private static String in_serverHost = "http://10.0.1.91:9080/dms";
-    private static String in_serverHost = "http://ord.fccho-moscow.ru";
-    //private static String in_serverHost="http://10.0.200.60";
 
     public List<IAction> generateActionsFromTask(HumanTask task) {
         List<IAction> result = new ArrayList<>();
@@ -244,8 +246,4 @@ public class HumanTaskActionGenerator {
         }
         return result;
     }
-
-
-    private Process process;
-    private HumanTaskTreeStateResolver resolver;
 }

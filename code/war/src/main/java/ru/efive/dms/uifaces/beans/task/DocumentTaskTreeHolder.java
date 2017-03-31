@@ -1,22 +1,20 @@
 package ru.efive.dms.uifaces.beans.task;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.axis.utils.StringUtils;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.Task;
-import ru.hitsl.sql.dao.TaskDAOImpl;
+import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.util.ApplicationHelper;
 
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.*;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.TASK_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -24,15 +22,15 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.TASK_DAO;
  * Company: Korus Consulting IT <br>
  * Description: Бин для содержания дерева поручений для конкретного документа<br>
  */
-@Named("documentTaskTree")
-@ViewScoped
+@Controller("documentTaskTree")
+@SpringScopeView
 public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task> {
     private static final Logger logger = LoggerFactory.getLogger("TASK");
 
 
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
+    @Autowired
+    @Qualifier("taskDao")
+    private TaskDao taskDao;
 
     private String rootDocumentId;
 
@@ -53,18 +51,18 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     protected List<Task> loadDocuments() {
         if (StringUtils.isEmpty(rootDocumentId)) {
             return new ArrayList<>(0);
-        } else if(rootDocumentId.startsWith("task")){
+        } else if (rootDocumentId.startsWith("task")) {
             logger.debug("Start loading Tasks on \"{}\"", rootDocumentId);
             final Integer parentId = ApplicationHelper.getIdFromUniqueIdString(rootDocumentId);
-            if(parentId != null) {
-                return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getChildrenTaskByParentId(parentId, false);
+            if (parentId != null) {
+                return taskDao.getChildrenTaskByParentId(parentId, false);
             } else {
                 logger.warn("ParentId is not match pattern!");
                 return new ArrayList<>(0);
             }
         }
         logger.debug("Start loading Tasks on \"{}\"", rootDocumentId);
-        return sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getTaskListByRootDocumentId(rootDocumentId, false);
+        return taskDao.getTaskListByRootDocumentId(rootDocumentId, false);
     }
 
     /**
@@ -94,7 +92,7 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
                 final Task data = (Task) node.getData();
                 if (data.getParent() != null) {
                     final TreeNode parentNode = taskMap.get(data.getParent().getId());
-                    if(parentNode != null) {
+                    if (parentNode != null) {
                         node.setParent(parentNode);
                         parentNode.getChildren().add(node);
                     } else {

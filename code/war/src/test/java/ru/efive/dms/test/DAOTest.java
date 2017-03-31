@@ -10,7 +10,7 @@ public class DAOTest {
 
     @Test
     public void testDAO() throws Exception {
-        //ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
+        //ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("deprecatedApplicationContext.xml");
         //EngineDAOImpl dao = (EngineDAOImpl) ctx.getBean("engineDao");
         //HumanTaskTree tree = dao.get(HumanTaskTree.class, 1);
         //if (tree != null) tree.loadHumanTaskTree();

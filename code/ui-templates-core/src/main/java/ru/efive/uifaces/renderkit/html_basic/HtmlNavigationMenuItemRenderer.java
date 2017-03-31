@@ -13,7 +13,7 @@ import java.io.IOException;
 
 /**
  * Renderer class for {@link HtmlNavigationMenuItem component}
- * 
+ *
  * @author Denis Kotegov
  */
 @FacesRenderer(

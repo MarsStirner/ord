@@ -1,7 +1,7 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
 
 import java.io.Serializable;
 
@@ -11,9 +11,9 @@ import java.io.Serializable;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public abstract class AbstractDocumentLazyDataModelBean<T extends IdentifiedEntity> implements Serializable{
-    private String filter;
-    private AbstractFilterableLazyDataModel<T> lazyModel;
+public abstract class AbstractDocumentLazyDataModelBean<T extends DeletableEntity> implements Serializable {
+    protected String filter;
+    protected AbstractFilterableLazyDataModel<T> lazyModel;
 
     public String getFilter() {
         return filter;
@@ -31,12 +31,8 @@ public abstract class AbstractDocumentLazyDataModelBean<T extends IdentifiedEnti
         this.lazyModel = lazyModel;
     }
 
-    public void applyFilter(){
+    public void applyFilter() {
         getLazyModel().setFilter(filter);
     }
 
-    @Deprecated
-    public void refresh(){
-       //TODO
-    }
 }

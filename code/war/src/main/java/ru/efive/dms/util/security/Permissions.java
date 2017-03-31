@@ -12,24 +12,26 @@ import java.util.Set;
  */
 public class Permissions {
 
-    public boolean hasAllPermissions(){
-        return value.size() == Permission.values().length;
-    }
-
-    public void mergePermissions(Permissions toMergeWith) {
-        if(toMergeWith != null){
-          value.addAll(toMergeWith.getValue());
-        }
-    }
-
     /**
-     * Допустимый список прав
+     * Все права RWX
      */
-    public enum Permission {
-        READ,
-        WRITE,
-        EXECUTE
-    }
+    public static final Permissions ALL_PERMISSIONS = new Permissions(true, true, true);
+    /**
+     * Права RW
+     */
+    public static final Permissions RW_PERMISSIONS = new Permissions(true, true, false);
+    /**
+     * Только R право
+     */
+    public static final Permissions R_PERMISSIONS = new Permissions(true, false, false);
+    /**
+     * Все права RWX
+     */
+    public static final Permissions EMPTY_PERMISSIONS = new Permissions();
+    /**
+     * Унутреннее хранилише прав для экземпляра класса
+     */
+    private Set<Permission> value;
 
     public Permissions() {
         this.value = new HashSet<>(3);
@@ -48,10 +50,15 @@ public class Permissions {
         }
     }
 
-    /**
-     * Унутреннее хранилише прав для экземпляра класса
-     */
-    private Set<Permission> value;
+    public boolean hasAllPermissions() {
+        return value.size() == Permission.values().length;
+    }
+
+    public void mergePermissions(Permissions toMergeWith) {
+        if (toMergeWith != null) {
+            value.addAll(toMergeWith.getValue());
+        }
+    }
 
     /**
      * Получить весь список прав
@@ -82,26 +89,6 @@ public class Permissions {
         return value.add(toAdd);
     }
 
-    /**
-     * Все права RWX
-     */
-    public static final Permissions ALL_PERMISSIONS = new Permissions(true, true, true);
-
-    /**
-     * Права RW
-     */
-    public static final Permissions RW_PERMISSIONS = new Permissions(true, true, false);
-
-    /**
-     * Только R право
-     */
-    public static final Permissions R_PERMISSIONS = new Permissions(true, false, false);
-
-    /**
-     * Все права RWX
-     */
-    public static final Permissions EMPTY_PERMISSIONS = new Permissions();
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
@@ -114,5 +101,14 @@ public class Permissions {
         }
         sb.append('}');
         return sb.toString();
+    }
+
+    /**
+     * Допустимый список прав
+     */
+    public enum Permission {
+        READ,
+        WRITE,
+        EXECUTE
     }
 }

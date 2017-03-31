@@ -15,36 +15,11 @@ import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.*;
 import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
- *
  * @author Pavel Porubov
  */
 public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
 
-    @Override
-    public String getName() {
-        return "week";
-    }
-
     public static final int ID = 3;
-
-    @Override
-    public int getId() {
-        return ID;
-    }
-
-    public enum Layout {
-        byHours, byEvents
-    }
-    private Layout layout = Layout.byEvents;
-
-    public Layout getLayout() {
-        return layout;
-    }
-
-    public void setLayout(Layout layout) {
-        this.layout = layout;
-    }
-
     private static final String DAY_DATE_OF_WEEK_FMT = "%02d.%02d";
     private static final String HOUR_DATE_OF_DAY_FMT = "%02d";
     private static final ThreadLocal<DateFormat> EVENT_OF_DAY_START_FMT = new ThreadLocal<DateFormat>() {
@@ -54,9 +29,10 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
         }
     };
     private static final String DURATION_TIME_UNIT_FMT = "%02d";
+    private Layout layout = Layout.byEvents;
 
     public static void renderYearLinkAndLayout(AdvancedResponseWriter writer, int year,
-            Enum layout, String cmd, String kind) throws
+                                               Enum layout, String cmd, String kind) throws
             IOException {
         renderSpaceCell(writer);
         renderPrevNextLink(writer, false, PREV_YEAR_CLASS, PREV_YEAR_EVENT);
@@ -68,14 +44,14 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
     }
 
     public static void renderHourOfDays(AdvancedResponseWriter writer, CalendarPlanHolder holder,
-            Calendar viewCalendar, boolean allDay,
-            CalendarPlanSpecialDaysComposition specialDays,
-            Collection<CalendarPlanEvent> events,
-            int days) throws IOException {
+                                        Calendar viewCalendar, boolean allDay,
+                                        CalendarPlanSpecialDaysComposition specialDays,
+                                        Collection<CalendarPlanEvent> events,
+                                        int days) throws IOException {
 
         writer.startElement(HtmlElement.TD);
         writeStyleClass(null, writer, HEADER_CLASS, HOUR_DATE_CLASS);
-        
+
         ResourceBundle strs = getStrs(writer.getContext().getViewRoot().getLocale());
         if (allDay) {
             writer.writeText(strs.getString("table.allDay"), null);
@@ -118,8 +94,8 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
     }
 
     public static void getPeriodEvents(Collection<CalendarPlanEvent> events,
-            Date start, Date stop,
-            List<CalendarPlanEvent> periodEvents) {
+                                       Date start, Date stop,
+                                       List<CalendarPlanEvent> periodEvents) {
         periodEvents.clear();
         for (CalendarPlanEvent e : events) {
             if (e.isOccurs(start, stop)) {
@@ -170,10 +146,10 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
     }
 
     public static void renderEventsOfDays(AdvancedResponseWriter writer, CalendarPlanHolder holder,
-            Calendar viewCalendar,
-            CalendarPlanSpecialDaysComposition specialDays,
-            Collection<CalendarPlanEvent> events,
-            int days) throws IOException {
+                                          Calendar viewCalendar,
+                                          CalendarPlanSpecialDaysComposition specialDays,
+                                          Collection<CalendarPlanEvent> events,
+                                          int days) throws IOException {
         ArrayList<CalendarPlanEvent> dayEvents = new ArrayList<>();
         Map<Integer, Integer> eventNumbers = new HashMap<>();
         int eventNumberSequence = 0;
@@ -210,9 +186,9 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
     }
 
     public static void renderDaysInWeek(AdvancedResponseWriter writer, CalendarPlanHolder holder,
-            Calendar viewCalendar, Date start, Date stop,
-            Map<Integer, String> dayOfWeekNames,
-            int firstDayOfWeek, Layout layout) throws IOException {
+                                        Calendar viewCalendar, Date start, Date stop,
+                                        Map<Integer, String> dayOfWeekNames,
+                                        int firstDayOfWeek, Layout layout) throws IOException {
         writer.startElement(HtmlElement.TABLE);
         writeStyleClass(null, writer, WIDGET_CLASS, firstDayOfWeek >= 0 ? WEEK_CLASS : DAY_CLASS);
         writer.startElement(HtmlElement.TBODY);
@@ -254,7 +230,7 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
                 writeStyleClass(null, writer, SELECT_CLASS, DAY_NAME_CLASS);
                 writer.writeAttribute(HtmlAttribute.ONCLICK,
                         format(UPDATE_PRESENTATION_SCRIPT, id, SELECT_DAY_EVENT,
-                        format(START_OF_WEEK_FMT, year, month, day)), null);
+                                format(START_OF_WEEK_FMT, year, month, day)), null);
                 writer.writeText(format(DAY_DATE_OF_WEEK_FMT, day, month + 1), null);
                 writer.endElement(HtmlElement.SPAN);
             }
@@ -288,6 +264,24 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
 
         writer.endElement(HtmlElement.TBODY);
         writer.endElement(HtmlElement.TABLE);
+    }
+
+    @Override
+    public String getName() {
+        return "week";
+    }
+
+    @Override
+    public int getId() {
+        return ID;
+    }
+
+    public Layout getLayout() {
+        return layout;
+    }
+
+    public void setLayout(Layout layout) {
+        this.layout = layout;
     }
 
     @Override
@@ -331,7 +325,7 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
         writeStyleClass(null, writer, SELECT_CLASS, MONTH_NAME_CLASS);
         writer.writeAttribute(HtmlAttribute.ONCLICK,
                 format(UPDATE_PRESENTATION_SCRIPT, id, SELECT_MONTH_EVENT,
-                format(START_OF_MONTH_FMT, viewCalendar.get(Calendar.YEAR), startMonth)), null);
+                        format(START_OF_MONTH_FMT, viewCalendar.get(Calendar.YEAR), startMonth)), null);
         writer.writeText(names[MONTH_NAMES].get(startMonth), null);
         writer.endElement(HtmlElement.SPAN);
         writer.writeText(format(" %d - ", viewCalendar.get(Calendar.DAY_OF_MONTH)), null);
@@ -345,7 +339,7 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
             writeStyleClass(null, writer, SELECT_CLASS, MONTH_NAME_CLASS);
             writer.writeAttribute(HtmlAttribute.ONCLICK,
                     format(UPDATE_PRESENTATION_SCRIPT, id, SELECT_MONTH_EVENT,
-                    format(START_OF_MONTH_FMT, viewCalendar.get(Calendar.YEAR), endMonth)), null);
+                            format(START_OF_MONTH_FMT, viewCalendar.get(Calendar.YEAR), endMonth)), null);
             writer.writeText(names[MONTH_NAMES].get(endMonth), null);
             writer.endElement(HtmlElement.SPAN);
         } else {
@@ -377,5 +371,9 @@ public class CalendarPlanWeekPresentation extends CalendarPlanPresentation {
         writer.endElement(HtmlElement.TR);
         writer.endElement(HtmlElement.TBODY);
         writer.endElement(HtmlElement.TABLE);
+    }
+
+    public enum Layout {
+        byHours, byEvents
     }
 }

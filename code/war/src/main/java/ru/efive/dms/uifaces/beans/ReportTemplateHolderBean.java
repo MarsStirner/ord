@@ -1,54 +1,53 @@
 package ru.efive.dms.uifaces.beans;
 
-import com.google.common.collect.ImmutableList;
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.RegionDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.entity.model.document.ReportTemplate;
+import ru.entity.model.referenceBook.Group;
 import ru.entity.model.referenceBook.Region;
-import ru.entity.model.user.Group;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.ReportDAOImpl;
+import ru.hitsl.sql.dao.interfaces.ReportDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_ERROR_ON_REPORT_CREATION;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.REPORT_DAO;
 
-@Named("reportTemplate")
-@ViewScoped
-public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate>{
+@Controller("reportTemplate")
+@SpringScopeView
+public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate> {
     //Именованный логгер (INCOMING_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("REPORT");
+    @Autowired
+    @Qualifier("reports")
+    private ReportsManagmentBean reportsManagement;
+
+    @Autowired
+    @Qualifier("reportDao")
+    private ReportDao reportDao;
+
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
 
     @PreDestroy
-    public void destroy(){
+    public void destroy() {
         LOGGER.info("Bean destroyed");
     }
-
-
-    @Inject
-    @Named("sessionManagement")
-    private SessionManagementBean sessionManagement;
-
-    @Inject
-    @Named("reports")
-    ReportsManagmentBean reportsManagement;
 
     @Override
     protected boolean deleteDocument() {
@@ -58,9 +57,9 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
 
     @Override
     protected void initDocument(final Integer id) {
-        final User currentUser = sessionManagement.getAuthData().getAuthorized();
+        final User currentUser = authData.getAuthorized();
         LOGGER.info("Open Report[{}] by user[{}]", id, currentUser.getId());
-        final ReportTemplate document = sessionManagement.getDAO(ReportDAOImpl.class, REPORT_DAO).get(id);
+        final ReportTemplate document = reportDao.get(id);
         if (document == null) {
             LOGGER.warn("Report[{}] not found", id);
             setDocumentNotFound();
@@ -81,7 +80,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     protected boolean saveDocument() {
         final ReportTemplate document = getDocument();
         LOGGER.info("Start generate report[{}] \'{}\'", document.getId(), document.getDisplayName());
-        if(validate(document)) {
+        if (validate(document)) {
             try {
                 reportsManagement.sqlPrintReportByRequestParams(document);
                 return true;
@@ -113,15 +112,15 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
 
     //Выбора пользователя ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void choosePerson() {
-        final ReportTemplate document  = getDocument();
+        final ReportTemplate document = getDocument();
         final Map<String, List<String>> params = new HashMap<>();
-        if(StringUtils.isNotEmpty(document.getUserGroup())) {
-            if(Group.RB_CODE_MANAGERS.equals(document.getUserGroup())) {
-                params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-                params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
+        if (StringUtils.isNotEmpty(document.getUserGroup())) {
+            if (Group.RB_CODE_MANAGERS.equals(document.getUserGroup())) {
+                params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
+                params.put(UserDialogHolder.DIALOG_GROUP_KEY, Collections.singletonList(Group.RB_CODE_MANAGERS));
             } else {
                 LOGGER.warn("Report userGroup is dynamic \'\'", document.getUserGroup());
-                params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(document.getUserGroup()));
+                params.put(UserDialogHolder.DIALOG_GROUP_KEY, Collections.singletonList(document.getUserGroup()));
             }
         }
         final User preselected = getDocument().getUser();
@@ -152,7 +151,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     public void onRegionChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         LOGGER.info("Choose region: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())){
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final Region selected = (Region) result.getResult();
             getDocument().setRegion(selected);
         }

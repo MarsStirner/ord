@@ -1,9 +1,10 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
-import ru.entity.model.user.Role;
-import ru.hitsl.sql.dao.user.RoleDAOHibernate;
+import ru.entity.model.referenceBook.Role;
+import ru.hitsl.sql.dao.interfaces.referencebook.RoleDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,18 +12,17 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
-
 @FacesConverter("RoleConverter")
 public class RoleConverter implements Converter {
+
+    @Autowired
+    @Qualifier("roleDao")
+    private RoleDao roleDao;
 
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement =
-                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
-                            SessionManagementBean.class);
-            List<Role> list = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).findByValue(value);
+            List<Role> list = roleDao.getByValue(value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {
@@ -36,7 +36,7 @@ public class RoleConverter implements Converter {
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        return ((Role) value).getName();
+        return value != null ? ((Role) value).getCode() : null;
     }
 
 }

@@ -3,7 +3,6 @@ package ru.korus.tmis.util.logs.appender;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
-
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,41 +25,33 @@ import java.util.concurrent.Executors;
  */
 public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent> {
 
+    //Размер пула потоков
+    private static final int POOL_SIZE = 8;
     //Адрес сервиса куда отправляем запросы на логирование
     private String url;
-
     //Адрес для записей новых событий в подсистему журналирования
     private URI entryURI;
     //Адрес для получения списка логируемых уровней
     private URI levelURI;
     //Адрес для проверки доступности сервиса
     private URI stateURI;
-
     //Время последнего опроса на доступность подсистемы журналирования
     private long lastStateCheck;
     //Флажок доступности сервиса подсистемы журналирования
     private boolean serviceAvailable = false;
     //Интервал сканирования доступности подсистемы журналирования
     private long checkInterval = 30000;
-
     //Указанная кодировка
     private String charset = "UTF-8";
     //Заголовок с типом содержимого
     private String contentType = "application/json";
-
     //таймаут соединения & ожидания ответа
     private Integer timeout = 3000;
-
     //Внтутренний список заголовков запроса
     private Header[] headers = new Header[2];
-
-
     //Layout возвращает строку в нужном формате
     //Layout для подсистемы журналирования: в данном случае необходимо получить строковое отображение JSON-овского объекта
     private Layout<ILoggingEvent> layout;
-
-    //Размер пула потоков
-    private static final int POOL_SIZE = 8;
     //Пул потоков
     private ExecutorService pool;
 
@@ -70,6 +61,10 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
     private long lastErrorTime;
     private int errorCount = 0;
 
+    private static String convertStreamToString(final java.io.InputStream is) {
+        final java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
+    }
 
     @Override
     public void start() {
@@ -113,7 +108,6 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
         LoggingSubsystemRequest.setCharset(charset);
     }
 
-
     /**
      * Проверка Layout-а
      */
@@ -126,7 +120,6 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
             super.stop();
         }
     }
-
 
     /**
      * Проверка заполненности ContentType
@@ -180,7 +173,6 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
         }
         LoggingSubsystemRequest.setUri(entryURI);
     }
-
 
     @Override
     protected void append(final ILoggingEvent event) {
@@ -248,12 +240,6 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
     public void setCheckInterval(long checkInterval) {
         this.checkInterval = checkInterval * 1000;
     }
-
-    private static String convertStreamToString(final java.io.InputStream is) {
-        final java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next() : "";
-    }
-
 
     public synchronized void submitError() {
         if (System.currentTimeMillis() - lastErrorTime > checkInterval) {

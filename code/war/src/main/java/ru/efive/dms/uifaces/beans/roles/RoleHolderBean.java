@@ -1,33 +1,36 @@
 package ru.efive.dms.uifaces.beans.roles;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.enums.RoleType;
-import ru.entity.model.user.Role;
-import ru.hitsl.sql.dao.user.RoleDAOHibernate;
+import ru.entity.model.referenceBook.Role;
+import ru.hitsl.sql.dao.interfaces.referencebook.RoleDao;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
 
-@Named("role")
-@ViewScoped
+@Controller("role")
+@SpringScopeView
 public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
+
+    @Autowired
+    @Qualifier("roleDao")
+    private RoleDao roleDao;
 
     @Override
     protected boolean deleteDocument() {
         boolean result = false;
         try {
-            sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).delete(getDocument());
+            roleDao.delete(getDocument());
             result = true;
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
@@ -35,10 +38,9 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
         return result;
     }
 
-
     @Override
     protected void initDocument(Integer id) {
-        setDocument(sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).get(id));
+        setDocument(roleDao.get(id));
         if (getDocument() == null) {
             setState(State.ERROR);
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
@@ -54,7 +56,7 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
     protected boolean saveDocument() {
         boolean result = false;
         try {
-            Role role = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).update(getDocument());
+            Role role = roleDao.update(getDocument());
             if (role == null) {
                 addMessage(null, MSG_CANT_SAVE);
             } else {
@@ -73,9 +75,9 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
     protected boolean saveNewDocument() {
         boolean result = false;
         try {
-            Role role = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO).save(getDocument());
+            Role role = roleDao.save(getDocument());
             if (role == null) {
-               addMessage(null,MSG_CANT_SAVE);
+                addMessage(null, MSG_CANT_SAVE);
             } else {
                 setDocument(role);
                 result = true;
@@ -93,12 +95,4 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
         Collections.addAll(result, RoleType.values());
         return result;
     }
-
-
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
-
-
-    private static final long serialVersionUID = 5947443099767481905L;
 }

@@ -4,9 +4,9 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.Group;
+import ru.entity.model.referenceBook.Role;
 import ru.entity.model.referenceBook.UserAccessLevel;
-import ru.entity.model.user.Group;
-import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
@@ -454,7 +454,7 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
         this.roleReaders = roleReaders;
     }
 
-    public List<Role> getRoleReadersList(){
+    public List<Role> getRoleReadersList() {
         if (roleReaders != null && !roleReaders.isEmpty()) {
             return new ArrayList<>(roleReaders);
         }

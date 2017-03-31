@@ -1,9 +1,10 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.referenceBook.Region;
-import ru.hitsl.sql.dao.referenceBook.RegionDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.RegionDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,18 +12,18 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.REGION_DAO;
-
 @FacesConverter("RegionConverter")
 public class RegionConverter implements Converter {
+
+    @Autowired
+    @Qualifier("regionDao")
+    private RegionDao regionDao;
 
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement =
-                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
-                            SessionManagementBean.class);
-            List<Region> list = sessionManagement.getDictionaryDAO(RegionDAOImpl.class, REGION_DAO).getByValue(value);
+
+            List<Region> list = regionDao.getByValue(value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

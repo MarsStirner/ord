@@ -1,18 +1,17 @@
 package ru.efive.dms.uifaces.beans.position;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Position;
-import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
-import javax.enterprise.context.ConversationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.io.Serializable;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -21,10 +20,18 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
  * Description: Бин для работы с должностью<br>
  */
 
-@Named("position")
-@ConversationScoped
+@Controller("position")
+@SpringScopeView
 public class PositionHolderBean extends AbstractDocumentHolderBean<Position> implements Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger("POSITION");
+
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
+
+    @Autowired
+    @Qualifier("positionDao")
+    private PositionDao positionDao;
 
     /**
      * Меняет значение флажка Deleted и сохраняет это в БД
@@ -38,15 +45,15 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position> imp
     }
 
     public boolean isCanCreate() {
-        return sessionManagementBean.isAdministrator();
+        return authData.isAdministrator();
     }
 
     public boolean isCanDelete() {
-        return sessionManagementBean.isAdministrator();
+        return authData.isAdministrator();
     }
 
     public boolean isCanEdit() {
-        return sessionManagementBean.isAdministrator();
+        return authData.isAdministrator();
     }
 
     @Override
@@ -66,13 +73,13 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position> imp
 
     @Override
     protected void initDocument(Integer documentId) {
-        setDocument(sessionManagementBean.getDAO(PositionDAOImpl.class, POSITION_DAO).get(documentId));
+        setDocument(positionDao.get(documentId));
     }
 
     @Override
     protected boolean saveNewDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(PositionDAOImpl.class, POSITION_DAO).save(getDocument()));
+            setDocument(positionDao.save(getDocument()));
             return true;
         } catch (Exception e) {
             LOGGER.error("CANT SAVE NEW:", e);
@@ -83,7 +90,7 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position> imp
     @Override
     protected boolean saveDocument() {
         try {
-            setDocument(sessionManagementBean.getDAO(PositionDAOImpl.class, POSITION_DAO).update(getDocument()));
+            setDocument(positionDao.update(getDocument()));
             return true;
         } catch (Exception e) {
             LOGGER.error("CANT SAVE:", e);
@@ -92,7 +99,4 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position> imp
     }
 
 
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagementBean;
 }

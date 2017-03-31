@@ -1,11 +1,13 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import com.google.common.collect.ImmutableList;
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
@@ -13,13 +15,11 @@ import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.SubstitutionDaoImpl;
-import ru.hitsl.sql.dao.util.ApplicationDAONames;
+import ru.hitsl.sql.dao.interfaces.SubstitutionDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,21 +32,25 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
  * Company: Korus Consulting IT <br>
  * Description: бин для отображения замещения<br>
  */
-@Named("substitution")
-@ViewScoped
+@Controller("substitution")
+@SpringScopeView
 public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution> {
 
     //Именованный логгер
     private static final Logger logger = LoggerFactory.getLogger("SUBSTITUTION");
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
+    @Autowired
+    @Qualifier("substitutionDao")
+    private SubstitutionDao substitutionDao;
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
+
 
     //Выбора замещаемого ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void choosePerson() {
         final Map<String, List<String>> params = new HashMap<>();
         params.put(
-                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION)
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION)
         );
         final User preselected = getDocument().getPerson();
         if (preselected != null) {
@@ -68,7 +72,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     public void chooseSubstitutor() {
         final Map<String, List<String>> params = new HashMap<>();
         params.put(
-                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR)
+                UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTOR)
         );
         final User preselected = getDocument().getSubstitution();
         if (preselected != null) {
@@ -95,7 +99,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         final Substitution doc = getDocument();
         doc.setDeleted(true);
         try {
-            setDocument(sessionManagement.getDAO(SubstitutionDaoImpl.class, ApplicationDAONames.SUBSTITUTION_DAO).save(doc));
+            setDocument(substitutionDao.save(doc));
             FacesContext.getCurrentInstance().getExternalContext().redirect("delete_document.xhtml");
             return true;
         } catch (Exception e) {
@@ -108,15 +112,15 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     @Override
     protected void initNewDocument() {
         final Substitution doc = new Substitution();
-        doc.setPerson(sessionManagement.getLoggedUser());
+        doc.setPerson(authData.getAuthorized());
         setDocument(doc);
     }
 
     @Override
     protected void initDocument(Integer id) {
-        final User currentUser = sessionManagement.getLoggedUser();
+        final User currentUser = authData.getAuthorized();
         logger.info("Open Document[{}] by user[{}]", id, currentUser.getId());
-        final Substitution document = sessionManagement.getDAO(SubstitutionDaoImpl.class, ApplicationDAONames.SUBSTITUTION_DAO).get(id);
+        final Substitution document = substitutionDao.get(id);
         setDocument(document);
         if (document == null) {
             setState(State.ERROR);
@@ -142,7 +146,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         final Substitution document = getDocument();
         if (validateBeforeSave(document)) {
             try {
-                setDocument(sessionManagement.getDAO(SubstitutionDaoImpl.class, ApplicationDAONames.SUBSTITUTION_DAO).save(document));
+                setDocument(substitutionDao.save(document));
                 return true;
             } catch (Exception e) {
                 logger.error("saveDocument ERROR:", e);
@@ -155,22 +159,22 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     @Override
     public boolean isCanCreate() {
-        return super.isCanCreate() && sessionManagement.isFilling();
+        return super.isCanCreate() && authData.isFilling();
     }
 
     @Override
     public boolean isCanDelete() {
-        return super.isCanDelete() && sessionManagement.isFilling();
+        return super.isCanDelete() && authData.isFilling();
     }
 
     @Override
     public boolean isCanEdit() {
-        return super.isCanEdit() && sessionManagement.isFilling();
+        return super.isCanEdit() && authData.isFilling();
     }
 
     @Override
     public boolean isCanView() {
-        return super.isCanView() && sessionManagement.isFilling();
+        return super.isCanView() && authData.isFilling();
     }
 
     /**

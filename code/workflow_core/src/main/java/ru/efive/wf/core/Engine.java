@@ -1,15 +1,18 @@
 package ru.efive.wf.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ru.entity.model.wf.HumanTask;
 import ru.efive.wf.core.util.EngineHelper;
+import ru.entity.model.wf.HumanTask;
 import ru.external.AgreementIssue;
 import ru.external.ProcessUser;
 import ru.external.ProcessedData;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class Engine {
+
+    private Process process;
+    private List<IAction> currentActions;
 
     public Engine() {
 
@@ -97,12 +100,7 @@ public final class Engine {
         return result;
     }
 
-
     public ProcessedData getProcessedData() {
         return process.getProcessedData();
     }
-
-    private Process process;
-
-    private List<IAction> currentActions;
 }

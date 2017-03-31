@@ -9,46 +9,40 @@ import java.io.Serializable;
  * @param <I> Identifier Class
  * @author Denis Kotegov
  */
-public abstract class AbstractDocumentWorkflow<D extends Serializable, I extends Serializable>  extends AbstractWorkflow {
+public abstract class AbstractDocumentWorkflow<D extends Serializable, I extends Serializable> extends AbstractWorkflow {
 
+    /**
+     * "edit" state
+     */
+    public static final State STATE_EDIT = new State("edit", false, false);
+
+    // ----------------------------------------------------------------------------------------------------------------
+    /**
+     * "create" state
+     */
+    public static final State STATE_CREATE = new State("create", false, false);
+    /**
+     * "view" state
+     */
+    public static final State STATE_VIEW = new State("view", false, false);
+    /**
+     * Apply action name.
+     */
+    public static final String ACTION_APPLY = "apply";
+
+    // ----------------------------------------------------------------------------------------------------------------
+    public static final String ACTION_CANCEL = "cancel";
+    public static final String ACTION_CANCEL_AND_VIEW = "cancelAndView";
+    public static final String ACTION_CREATE = "create";
+    public static final String ACTION_DELETE = "delete";
+    public static final String ACTION_EDIT = "edit";
+    public static final String ACTION_EDIT_BY_ID = "editById";
+    public static final String ACTION_SAVE = "save";
+    public static final String ACTION_SAVE_AND_VIEW = "saveAndView";
+    public static final String ACTION_VIEW_BY_ID = "viewById";
     private static final long serialVersionUID = 1L;
 
     // ----------------------------------------------------------------------------------------------------------------
-
-    /** "edit" state */
-    public static final State STATE_EDIT = new State("edit", false, false);
-
-    /** "create" state */
-    public static final State STATE_CREATE = new State("create", false, false);
-
-    /** "view" state */
-    public static final State STATE_VIEW = new State("view", false, false);
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    /** Apply action name. */
-    public static final String ACTION_APPLY = "apply";
-
-    public static final String ACTION_CANCEL = "cancel";
-
-    public static final String ACTION_CANCEL_AND_VIEW = "cancelAndView";
-
-    public static final String ACTION_CREATE = "create";
-
-    public static final String ACTION_DELETE = "delete";
-
-    public static final String ACTION_EDIT = "edit";
-
-    public static final String ACTION_EDIT_BY_ID = "editById";
-
-    public static final String ACTION_SAVE = "save";
-
-    public static final String ACTION_SAVE_AND_VIEW = "saveAndView";
-
-    public static final String ACTION_VIEW_BY_ID = "viewById";
-
-    // ----------------------------------------------------------------------------------------------------------------
-
     private D document;
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -142,11 +136,11 @@ public abstract class AbstractDocumentWorkflow<D extends Serializable, I extends
     protected State getActionStateDelete() {
         return STATE_FINAL;
     }
-    
+
     protected State getActionStateEdit() {
         return STATE_EDIT;
     }
-    
+
     protected State getActionStateEditById() {
         return STATE_EDIT;
     }
@@ -183,7 +177,7 @@ public abstract class AbstractDocumentWorkflow<D extends Serializable, I extends
             public boolean isAllowed() {
                 return STATE_CREATE.equals(getState()) || STATE_EDIT.equals(getState());
             }
-            
+
         };
     }
 
@@ -251,7 +245,7 @@ public abstract class AbstractDocumentWorkflow<D extends Serializable, I extends
             public boolean isAllowed() {
                 return STATE_VIEW.equals(getState()) || STATE_EDIT.equals(getState());
             }
-            
+
         };
     }
 
@@ -268,7 +262,7 @@ public abstract class AbstractDocumentWorkflow<D extends Serializable, I extends
             public boolean isAllowed() {
                 return STATE_VIEW.equals(getState());
             }
-          
+
         };
     }
 
@@ -278,9 +272,9 @@ public abstract class AbstractDocumentWorkflow<D extends Serializable, I extends
             @Override
             @SuppressWarnings("unchecked")
             public ActionResult doAction(Object... params) {
-                assert(params != null);
-                assert(params.length == 1);
-                assert(params[0] instanceof Serializable);
+                assert (params != null);
+                assert (params.length == 1);
+                assert (params[0] instanceof Serializable);
 
                 document = initDocument((I) params[0]);
                 return new ActionResult(getActionStateEditById(), getActionResultEditById());

@@ -1,9 +1,9 @@
 package ru.efive.wf.core.data;
 
+import ru.entity.model.mapped.Document;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import ru.entity.model.mapped.Document;
 
 /**
  * Базовый документ-лог транзакции

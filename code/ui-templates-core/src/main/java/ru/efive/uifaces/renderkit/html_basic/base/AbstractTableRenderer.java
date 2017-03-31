@@ -1,25 +1,20 @@
 package ru.efive.uifaces.renderkit.html_basic.base;
 
-import java.util.Collection;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import javax.faces.component.UIColumn;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
 import ru.efive.uifaces.component.html.HtmlDataTable;
 import ru.efive.uifaces.component.html.HtmlDataTableColumn;
 import ru.efive.uifaces.component.html.HtmlDataTableRow;
 import ru.efive.uifaces.util.ConverterUtils;
+
+import javax.faces.component.UIColumn;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import java.io.IOException;
+import java.util.*;
+
 import static java.lang.String.format;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyle;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.passThruAttributes;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.*;
 
 /**
- *
  * @author Denis Kotegov
  */
 public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
@@ -35,10 +30,9 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
 
     protected static final String CALL_TOGGLE_ROW_GROUP = "e5ui_dataTable.toggleRowGroup(%s);";
     protected static final String TOGGLE_ROW_GROUP = format(CALL_TOGGLE_ROW_GROUP, "this");
+    private Collection<String> collapsedIds;
 
     protected abstract Iterable<HtmlAttribute> getAttributesToPassThru();
-
-    private Collection<String> collapsedIds;
 
     @Override
     protected boolean shouldEncodeIdAttribute(FacesContext context, UIComponent component) throws IOException {
@@ -52,16 +46,16 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
         writer.writeComponentAttribute(HtmlAttribute.STYLE, ComponentAttribute.STYLE, null);
         writer.passThruAttributes(getAttributesToPassThru());
     }
-    
+
     protected void encodeComponentEnd(AdvancedResponseWriter writer) throws IOException {
         writer.endElement(HtmlElement.TABLE);
     }
-    
+
     protected void encodeCaption(AdvancedResponseWriter writer, HtmlDataTable dataTable) throws IOException {
         if (dataTable.getFacet(FACET_CAPTION) == null || !dataTable.getFacet(FACET_CAPTION).isRendered()) {
             return;
         }
-        
+
         writer.startElement(HtmlElement.CAPTION);
         writer.writeAttribute(HtmlAttribute.STYLE, dataTable.getCaptionStyle(), null);
         writer.writeAttribute(HtmlAttribute.CLASS, dataTable.getCaptionClass(), null);
@@ -80,7 +74,7 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
     }
 
     protected void encodeHeader(AdvancedResponseWriter writer, HtmlDataTable dataTable,
-            List<HtmlDataTableColumn> columns, int levelCount) throws IOException {
+                                List<HtmlDataTableColumn> columns, int levelCount) throws IOException {
 
         boolean columnHeads = false;
         boolean tableHeads = dataTable.getHeader() != null && dataTable.getHeader().isRendered();
@@ -125,15 +119,15 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
                 String cssClass = (column.getStyleClass() == null ? "" : column.getStyleClass())
                         + " "
                         + (column.getHeaderClass() == null
-                                ? (dataTable.getHeaderClass() == null? "": dataTable.getHeaderClass())
-                                : column.getHeaderClass()
-                        ).trim();
+                        ? (dataTable.getHeaderClass() == null ? "" : dataTable.getHeaderClass())
+                        : column.getHeaderClass()
+                ).trim();
 
                 if (!cssClass.isEmpty()) {
                     writer.writeAttribute(HtmlAttribute.CLASS, cssClass, null);
                 }
 
-                String cssStyle = (column.getStyle() == null? "": column.getStyle()) + " "
+                String cssStyle = (column.getStyle() == null ? "" : column.getStyle()) + " "
                         + (column.getHeaderStyle() == null ? "" : column.getHeaderStyle()).trim();
 
                 if (!cssStyle.isEmpty()) {
@@ -154,7 +148,7 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
     }
 
     protected void encodeFooter(AdvancedResponseWriter writer, HtmlDataTable dataTable,
-            List<HtmlDataTableColumn> columns, int levelCount) throws IOException {
+                                List<HtmlDataTableColumn> columns, int levelCount) throws IOException {
 
         boolean columnFooter = false;
         boolean tableFooter = dataTable.getFooter() != null && dataTable.getFooter().isRendered();
@@ -184,18 +178,18 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
                     firstColumn = false;
                 }
 
-                String cssClass = (column.getStyleClass() == null? "": column.getStyleClass())
+                String cssClass = (column.getStyleClass() == null ? "" : column.getStyleClass())
                         + " "
                         + (column.getFooterClass() == null
-                                ? (dataTable.getFooterClass() == null? "": dataTable.getFooterClass())
-                                : column.getFooterClass()
-                        ).trim();
+                        ? (dataTable.getFooterClass() == null ? "" : dataTable.getFooterClass())
+                        : column.getFooterClass()
+                ).trim();
                 if (!cssClass.isEmpty()) {
                     writer.writeAttribute(HtmlAttribute.CLASS, cssClass, null);
                 }
 
-                String cssStyle = (column.getStyle() == null? "": column.getStyle()) + " "
-                        + (column.getFooterStyle() == null? "": column.getFooterStyle()).trim();
+                String cssStyle = (column.getStyle() == null ? "" : column.getStyle()) + " "
+                        + (column.getFooterStyle() == null ? "" : column.getFooterStyle()).trim();
 
                 if (!cssStyle.isEmpty()) {
                     writer.writeAttribute(HtmlAttribute.STYLE, cssStyle, null);
@@ -226,7 +220,7 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
     }
 
     protected String encodeRow(AdvancedResponseWriter writer, HtmlDataTable dataTable, HtmlDataTableRow row,
-            List<? extends UIColumn> columns, int levelCount, int rowIndex) throws IOException {
+                               List<? extends UIColumn> columns, int levelCount, int rowIndex) throws IOException {
 
         boolean group = false;
         boolean fullRow = false;
@@ -306,14 +300,14 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
                 if (column instanceof HtmlDataTableColumn) {
                     HtmlDataTableColumn htmlDataTableColumn = (HtmlDataTableColumn) column;
 
-                    String cssClass = 
-                            htmlDataTableColumn.getStyleClass() == null? "": htmlDataTableColumn.getStyleClass().trim();
+                    String cssClass =
+                            htmlDataTableColumn.getStyleClass() == null ? "" : htmlDataTableColumn.getStyleClass().trim();
 
                     if (!cssClass.isEmpty()) {
                         writer.writeAttribute(HtmlAttribute.CLASS, cssClass, null);
                     }
 
-                    String cssStyle = htmlDataTableColumn.getStyle() == null ? "": htmlDataTableColumn.getStyle();
+                    String cssStyle = htmlDataTableColumn.getStyle() == null ? "" : htmlDataTableColumn.getStyle();
 
                     if (!cssStyle.isEmpty()) {
                         writer.writeAttribute(HtmlAttribute.STYLE, cssStyle, null);
@@ -337,12 +331,12 @@ public abstract class AbstractTableRenderer extends HtmlBasicRenderer {
         HtmlDataTableRow row = getRowToRender(childrens);
 
         boolean grouping = ConverterUtils.objectAsBoolean(dataTable.getAttributes().get("grouping"), false);
-        int levelCount = grouping?  ConverterUtils.objectAsInteger(dataTable.getAttributes().get("levelCount"), 0):0;
+        int levelCount = grouping ? ConverterUtils.objectAsInteger(dataTable.getAttributes().get("levelCount"), 0) : 0;
 
         encodeHeader(writer, dataTable, columns, levelCount);
 
         dataTable.setRowIndex(ROW_INDEX_CLEAR);
-        int lastRow = dataTable.getRows() == 0? dataTable.getRowCount() - 1: dataTable.getFirst() + dataTable.getRowCount() - 1;
+        int lastRow = dataTable.getRows() == 0 ? dataTable.getRowCount() - 1 : dataTable.getFirst() + dataTable.getRowCount() - 1;
         for (int rowIndex = dataTable.getFirst(); rowIndex <= lastRow; rowIndex++) {
             dataTable.setRowIndex(rowIndex);
             String collapsedId = encodeRow(writer, dataTable, row, columns, levelCount, rowIndex);

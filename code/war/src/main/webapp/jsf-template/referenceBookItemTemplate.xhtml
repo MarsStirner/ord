@@ -16,14 +16,13 @@
 <h:body id="pageBody" style="padding: 0; margin:0;">
     <!-- Блок объявления параметров -->
     <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
-    <ui:param name="isAdministrator" value="#{sessionManagement.isAdministrator()}"/>
-    <ui:param name="isRecorder" value="#{sessionManagement.isRecorder()}"/>
-    <ui:param name="isOfficeManager" value="#{sessionManagement.isOfficeManager()}"/>
-    <ui:param name="isRequestManager" value="#{sessionManagement.isRequestManager()}"/>
-    <ui:param name="canViewRequestDocuments" value="#{sessionManagement.isCanViewRequestDocuments()}"/>
-    <ui:param name="isOuter" value="#{sessionManagement.isOuter()}"/>
-    <ui:param name="isHr" value="#{sessionManagement.isHr()}"/>
-    <ui:param name="isFilling" value="#{sessionManagement.isFilling()}"/>
+    <ui:param name="isAdministrator" value="#{authData.isAdministrator()}"/>
+    <ui:param name="isRecorder" value="#{authData.isRecorder()}"/>
+    <ui:param name="isOfficeManager" value="#{authData.isOfficeManager()}"/>
+    <ui:param name="isRequestManager" value="#{authData.isRequestManager()}"/>
+    <ui:param name="isOuter" value="#{authData.isOuter()}"/>
+    <ui:param name="isHr" value="#{authData.isHr()}"/>
+    <ui:param name="isFilling" value="#{authData.isFilling()}"/>
     <ui:insert name="VARIABLE_DEFINITIONS"/>
     <!-- Форма документа -->
     <o:form id="documentForm" includeRequestParams="true">

@@ -21,7 +21,6 @@ import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.
 import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
- *
  * @author Pavel Porubov
  */
 @FacesRenderer(
@@ -29,24 +28,21 @@ import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.
         rendererType = DynaDataTableRenderer.RENDERER_TYPE,
         componentFamily = ComponentFamily.DATA_TABLE)
 @ResourceDependencies({
-    @ResourceDependency(name = "jquery.cookie.js", target = "head", library = "e5ui/js"),
-    //@ResourceDependency(name = "datatable.js", target = "head", library = "e5ui/js"),
-    @ResourceDependency(name = "datatable.css", target = "head", library = "e5ui/css"),
-    @ResourceDependency(name = "dynadatatable.js", target = "head", library = "e5ui/js")
+        @ResourceDependency(name = "jquery.cookie.js", target = "head", library = "e5ui/js"),
+        //@ResourceDependency(name = "datatable.js", target = "head", library = "e5ui/js"),
+        @ResourceDependency(name = "datatable.css", target = "head", library = "e5ui/css"),
+        @ResourceDependency(name = "dynadatatable.js", target = "head", library = "e5ui/js")
 })
 public class DynaDataTableRenderer extends AbstractTableRenderer {
 
-    /** <code>Renderer</code> type for component */
+    /**
+     * <code>Renderer</code> type for component
+     */
     public static final String RENDERER_TYPE = "ru.efive.uifaces.DynaDataTable";
 
     public static final Iterable<HtmlAttribute> ATTRIBUTES_TO_PASS_THRU = Collections.unmodifiableList(Arrays.asList(
             HtmlAttribute.BORDER, HtmlAttribute.CELLPADDING, HtmlAttribute.CELLSPACING, HtmlAttribute.WIDTH));
-
-    @Override
-    protected Iterable<HtmlAttribute> getAttributesToPassThru() {
-        return ATTRIBUTES_TO_PASS_THRU;
-    }
-
+    private static final int wSizeScale = 5;
     private DynaDataTable tbl;
     private String id;
     private AbstractDocumentListHolderBean bean;
@@ -54,7 +50,11 @@ public class DynaDataTableRenderer extends AbstractTableRenderer {
     private boolean partial;
     private int wOffset;
     private int wSize;
-    private static final int wSizeScale = 5;
+
+    @Override
+    protected Iterable<HtmlAttribute> getAttributesToPassThru() {
+        return ATTRIBUTES_TO_PASS_THRU;
+    }
 
     private void setTbl(UIComponent component) {
         tbl = (DynaDataTable) component;

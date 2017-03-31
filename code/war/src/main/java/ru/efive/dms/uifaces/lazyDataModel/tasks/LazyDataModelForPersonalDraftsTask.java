@@ -1,12 +1,17 @@
 package ru.efive.dms.uifaces.lazyDataModel.tasks;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
 import ru.entity.model.document.Task;
-import ru.external.AuthorizationData;
-import ru.hitsl.sql.dao.TaskDAOImpl;
+import ru.hitsl.sql.dao.impl.document.TaskDaoImpl;
+import ru.hitsl.sql.dao.interfaces.document.TaskDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import java.util.List;
 import java.util.Map;
@@ -17,32 +22,36 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForPersonalDraftsTask  extends AbstractFilterableLazyDataModel<Task> {
+
+@Component("personalTaskLDM")
+@SpringScopeView
+public class LazyDataModelForPersonalDraftsTask extends AbstractFilterableLazyDataModel<Task> {
     private static final Logger logger = LoggerFactory.getLogger("LAZY_DM_TASK");
-    // DAO доступа к БД
-    private final TaskDAOImpl dao;
-    //Авторизационные данные пользователя
+
+    @Autowired
+    @Qualifier("authData")
     private AuthorizationData authData;
 
     /**
      * Создает модель для заданного пользователя
      *
-     * @param dao      доступ к БД
-     * @param authData данные авторизации по которым будет определяться доступ
+     * @param taskDao доступ к БД
      */
-    public LazyDataModelForPersonalDraftsTask(final TaskDAOImpl dao, final AuthorizationData authData) {
-        this.dao = dao;
-        this.authData = authData;
+    @Autowired
+    public LazyDataModelForPersonalDraftsTask(
+            @Qualifier("taskDao") final TaskDaoImpl taskDao) {
+        super(taskDao);
     }
 
     @Override
     public List<Task> load(
             int first, final int pageSize, final String sortField, final SortOrder sortOrder, final Map<String, Object> filters
     ) {
+        TaskDao dao = (TaskDao) this.dao;
         //Используются фильтры извне, а не из параметров
         if (authData != null) {
             setRowCount(dao.countPersonalDraftDocumentListByFilters(authData, getFilter()));
-            if(getRowCount() < first){
+            if (getRowCount() < first) {
                 first = 0;
             }
             return dao.getPersonalDraftDocumentListByFilters(
@@ -52,18 +61,6 @@ public class LazyDataModelForPersonalDraftsTask  extends AbstractFilterableLazyD
             logger.error("NO AUTH DATA");
             return null;
         }
-    }
-
-    @Override
-    public Task getRowData(String rowKey) {
-        final Integer identifier;
-        try {
-            identifier = Integer.valueOf(rowKey);
-        } catch (NumberFormatException e) {
-            logger.error("Try to get Item by nonInteger identifier \'{}\'. Return NULL", rowKey);
-            return null;
-        }
-        return dao.getItemByIdForListView(identifier);
     }
 
 }

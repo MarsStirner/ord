@@ -82,7 +82,7 @@
                         icon="leafIcon"
                         styleClass="#{currentView eq '/component/internal/internal_garantee_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
-        <p:submenu label="Обращения граждан" styleClass="subMenuItem" rendered="#{isRequestManager or canViewRequestDocuments}">
+        <p:submenu label="Обращения граждан" styleClass="subMenuItem" rendered="#{isRequestManager}">
             <p:menuitem value="Мои проекты"
                         url="/component/personal/personal_request_documents.xhtml"
                         icon="leafIcon"

@@ -4,7 +4,6 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.*;
-import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.entity.model.wf.HumanTaskTree;
 import ru.external.AgreementIssue;
@@ -128,7 +127,7 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
      * Адресат -контрагент
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="contragent_id")
+    @JoinColumn(name = "contragent_id")
     private Contragent contragent;
 
     /**
@@ -177,8 +176,8 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_role_readers",
-            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name="roleReaders_id")}
+            joinColumns = {@JoinColumn(name = "dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleReaders_id")}
     )
     private Set<Role> roleReaders;
 
@@ -187,8 +186,8 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "dms_outgoing_documents_role_editors",
-            joinColumns = {@JoinColumn(name="dms_outgoing_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name="roleEditors_id")}
+            joinColumns = {@JoinColumn(name = "dms_outgoing_documents_id")},
+            inverseJoinColumns = {@JoinColumn(name = "roleEditors_id")}
     )
     private Set<Role> roleEditors;
 
@@ -434,7 +433,7 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
         this.roleReaders = roleReaders;
     }
 
-    public List<Role> getRoleReadersList(){
+    public List<Role> getRoleReadersList() {
         if (roleReaders != null && !roleReaders.isEmpty()) {
             return new ArrayList<>(roleReaders);
         }

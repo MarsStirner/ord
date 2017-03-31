@@ -137,7 +137,12 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
 
     @Transient
     private String WFResultDescription;
-
+    /**
+     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
+     * TODO сделать класс-обертку
+     */
+    @Transient
+    private String styleClass;
 
     public String getTaskNumber() {
         return taskNumber;
@@ -155,12 +160,12 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         this.creationDate = creationDate;
     }
 
-    public void setRegistrationDate(Date registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
     public Date getRegistrationDate() {
         return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     public String getErpNumber() {
@@ -171,13 +176,12 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         this.erpNumber = erpNumber;
     }
 
+    public Date getControlDate() {
+        return controlDate;
+    }
 
     public void setControlDate(Date controlDate) {
         this.controlDate = controlDate;
-    }
-
-    public Date getControlDate() {
-        return controlDate;
     }
 
     public Date getExecutionDate() {
@@ -220,7 +224,6 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         this.shortDescription = shortDescription;
     }
 
-
     @Transient
     public DocumentType getDocumentType() {
         return DocumentType.Task;
@@ -241,26 +244,25 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         return "task";
     }
 
-    public void setParent(Task parent) {
-        this.parent = parent;
-    }
-
     public Task getParent() {
         return parent;
     }
 
+    public void setParent(Task parent) {
+        this.parent = parent;
+    }
 
     @Transient
     public String getUniqueId() {
         return getId() == null ? "" : "task_" + getId();
     }
 
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
     public Set<HistoryEntry> getHistory() {
         return history;
+    }
+
+    public void setHistory(Set<HistoryEntry> history) {
+        this.history = history;
     }
 
     @Transient
@@ -286,53 +288,45 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         return this.history.add(historyEntry);
     }
 
-    public void setRootDocumentId(String rootDocumentId) {
-        this.rootDocumentId = rootDocumentId;
-    }
-
     public String getRootDocumentId() {
         return rootDocumentId;
     }
 
-    public void setWFResultDescription(String wFResultDescription) {
-        WFResultDescription = wFResultDescription;
+    public void setRootDocumentId(String rootDocumentId) {
+        this.rootDocumentId = rootDocumentId;
     }
 
     public String getWFResultDescription() {
         return WFResultDescription;
     }
 
-    public void setForm(DocumentForm form) {
-        this.form = form;
+    public void setWFResultDescription(String wFResultDescription) {
+        WFResultDescription = wFResultDescription;
     }
 
     public DocumentForm getForm() {
         return form;
     }
 
-    public void setController(User controller) {
-        this.controller = controller;
+    public void setForm(DocumentForm form) {
+        this.form = form;
     }
 
     public User getController() {
         return controller;
     }
 
-    public void setInitiator(User initiator) {
-        this.initiator = initiator;
+    public void setController(User controller) {
+        this.controller = controller;
     }
 
     public User getInitiator() {
         return initiator;
     }
 
-
-    /**
-     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
-     * TODO сделать класс-обертку
-     */
-    @Transient
-    private String styleClass;
+    public void setInitiator(User initiator) {
+        this.initiator = initiator;
+    }
 
     public String getStyleClass() {
         return styleClass;

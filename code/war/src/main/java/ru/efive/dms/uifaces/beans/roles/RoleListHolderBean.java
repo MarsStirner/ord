@@ -1,43 +1,21 @@
 package ru.efive.dms.uifaces.beans.roles;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForRole;
-import ru.entity.model.user.Role;
-import ru.hitsl.sql.dao.user.RoleDAOHibernate;
+import ru.entity.model.referenceBook.Role;
 
-import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.stereotype.Controller;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.ROLE_DAO;
-
-@Named("roleList")
-@ViewScoped
+@Controller("roleList")
+@SpringScopeView
 public class RoleListHolderBean extends AbstractDocumentLazyDataModelBean<Role> {
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement = new SessionManagementBean();
 
-    private RoleDAOHibernate dao;
+    @Autowired
+    @Qualifier("roleLDM")
+    private LazyDataModelForRole ldm;
 
-    @PostConstruct
-    public void init() {
-        dao = sessionManagement.getDAO(RoleDAOHibernate.class, ROLE_DAO);
-        setLazyModel(new LazyDataModelForRole(dao));
 
-    }
-
-    public List<Role> getAvailableRoles() {
-        List<Role> result = new ArrayList<>();
-        try {
-            result = dao.findRoles(-1, -1, "name", true);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
 }

@@ -18,6 +18,7 @@ public final class JSFUtils {
 
     /**
      * Constructs or acuires {@link FacesContext}.
+     *
      * @param request
      * @param response
      * @return current instance of {@link FacesContext}
@@ -41,8 +42,9 @@ public final class JSFUtils {
 
     /**
      * Evaluates the expression with specified {@link FacesContext}.
-     * @param expression expression to evaluate. Should contain only the expression self with
-     * no <code>"#{"</code> or <code>"}"</code> around.
+     *
+     * @param expression   expression to evaluate. Should contain only the expression self with
+     *                     no <code>"#{"</code> or <code>"}"</code> around.
      * @param facesContext {@link FacesContext} to be used to evaluate the expression
      * @return evaluated expression's value
      */
@@ -52,7 +54,8 @@ public final class JSFUtils {
 
     /**
      * Acquires managed bean with specified name from specified {@link FacesContext}.
-     * @param beanName the name of required bean
+     *
+     * @param beanName     the name of required bean
      * @param facesContext {@link FacesContext} used for aquiring of bean.
      * @return the reference to managed bean with specified name
      */

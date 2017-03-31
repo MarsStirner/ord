@@ -24,23 +24,27 @@ import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.
 import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
-/**
+ * /**
  * The renderer for {@link CalendarPlan}.
  *
  * @author Pavel Porubov
  */
 @FacesRenderer(renderKitId = "HTML_BASIC",
-    rendererType = CalendarPlanRenderer.RENDERER,
-    componentFamily = ComponentFamily.CALENDAR_PLAN)
+        rendererType = CalendarPlanRenderer.RENDERER,
+        componentFamily = ComponentFamily.CALENDAR_PLAN)
 @ResourceDependencies({
-    @ResourceDependency(name = "calendarPlan.js", target = "head", library = "e5ui/js"),
-    @ResourceDependency(name = "calendarPlan.css", target = "head", library = "e5ui/css")})
+        @ResourceDependency(name = "calendarPlan.js", target = "head", library = "e5ui/js"),
+        @ResourceDependency(name = "calendarPlan.css", target = "head", library = "e5ui/css")})
 public class CalendarPlanRenderer extends HtmlBasicRenderer {
 
-    /** <code>Renderer</code> type for component */
+    /**
+     * <code>Renderer</code> type for component
+     */
     public static final String RENDERER = "ru.efive.uifaces.CalendarPlan";
 
-    /** The surrounding div's class. */
+    /**
+     * The surrounding div's class.
+     */
     public static final String CALENDAR_PLAN_CLASS = "e5uiCalendar";
 
     public static final String CONTAINER_CLASS = "container";
@@ -108,7 +112,9 @@ public class CalendarPlanRenderer extends HtmlBasicRenderer {
     public static final String SELECT_DAY_EVENT = "selectDay";
     public static final String CHANGE_DAY_LAYOUT_EVENT = "changeDayLayout";
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeBegin(AdvancedResponseWriter writer) throws IOException {
         UIComponent uicomponent = writer.getComponent();
@@ -117,7 +123,7 @@ public class CalendarPlanRenderer extends HtmlBasicRenderer {
         }
         CalendarPlan component = (CalendarPlan) uicomponent;
         String id = component.getClientId();
-        
+
         CalendarPlanHolder holder = component.getHolder();
         if (holder == null) {
             return;
@@ -133,24 +139,30 @@ public class CalendarPlanRenderer extends HtmlBasicRenderer {
         presentation.render(writer, holder);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeChildren(AdvancedResponseWriter writer,
-            List<UIComponent> children) throws IOException {
+                                  List<UIComponent> children) throws IOException {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void encodeEnd(AdvancedResponseWriter writer) throws IOException {
         UIComponent component = writer.getComponent();
         if (!component.isRendered() || !(component instanceof CalendarPlan)) {
             return;
         }
-        
+
         writer.endElement(HtmlElement.DIV); //frame
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void decode(FacesContext context, UIComponent component) {
         super.decode(context, component);
@@ -183,52 +195,52 @@ public class CalendarPlanRenderer extends HtmlBasicRenderer {
                     } else if (requestParameterMap.containsKey(CHANGE_YEAR_LAYOUT_EVENT)) {
                         ((CalendarPlanYearPresentation) holder.getYearPresentation()).setLayout(
                                 CalendarPlanYearPresentation.Layout.valueOf(
-                                requestParameterMap.get(CHANGE_YEAR_LAYOUT_EVENT)));
+                                        requestParameterMap.get(CHANGE_YEAR_LAYOUT_EVENT)));
                     } else //month
-                    if (requestParameterMap.containsKey(NEXT_MONTH_EVENT)) {
-                        viewCalendar.add(Calendar.MONTH, 1);
-                    } else if (requestParameterMap.containsKey(PREV_MONTH_EVENT)) {
-                        viewCalendar.add(Calendar.MONTH, -1);
-                    } else if (requestParameterMap.containsKey(SELECT_MONTH_EVENT)) {
-                        holder.setPresentation(holder.getMonthPresentation());
-                        String[] month = requestParameterMap.get(SELECT_MONTH_EVENT).split("-");
-                        viewCalendar.set(Integer.valueOf(month[0]), Integer.valueOf(month[1]), 1, 0, 0, 0);
-                        viewCalendar.set(Calendar.MILLISECOND, 0);
-                    } else if (requestParameterMap.containsKey(CHANGE_MONTH_LAYOUT_EVENT)) {
-                        ((CalendarPlanMonthPresentation) holder.getMonthPresentation()).setLayout(
-                                CalendarPlanMonthPresentation.Layout.valueOf(
-                                requestParameterMap.get(CHANGE_MONTH_LAYOUT_EVENT)));
-                    } else //week
-                    if (requestParameterMap.containsKey(NEXT_WEEK_EVENT)) {
-                        viewCalendar.add(Calendar.DAY_OF_WEEK, 7);
-                    } else if (requestParameterMap.containsKey(PREV_WEEK_EVENT)) {
-                        viewCalendar.add(Calendar.DAY_OF_WEEK, -7);
-                    } else if (requestParameterMap.containsKey(SELECT_WEEK_EVENT)) {
-                        holder.setPresentation(holder.getWeekPresentation());
-                        String[] week = requestParameterMap.get(SELECT_WEEK_EVENT).split("-");
-                        viewCalendar.set(Integer.valueOf(week[0]), Integer.valueOf(week[1]), Integer.valueOf(week[2]),
-                                0, 0, 0);
-                        viewCalendar.set(Calendar.MILLISECOND, 0);
-                    } else if (requestParameterMap.containsKey(CHANGE_WEEK_LAYOUT_EVENT)) {
-                        ((CalendarPlanWeekPresentation) holder.getWeekPresentation()).setLayout(
-                                CalendarPlanWeekPresentation.Layout.valueOf(
-                                requestParameterMap.get(CHANGE_WEEK_LAYOUT_EVENT)));
-                    } else //day
-                    if (requestParameterMap.containsKey(NEXT_DAY_EVENT)) {
-                        viewCalendar.add(Calendar.DAY_OF_YEAR, 1);
-                    } else if (requestParameterMap.containsKey(PREV_DAY_EVENT)) {
-                        viewCalendar.add(Calendar.DAY_OF_YEAR, -1);
-                    } else if (requestParameterMap.containsKey(SELECT_DAY_EVENT)) {
-                        holder.setPresentation(holder.getDayPresentation());
-                        String[] day = requestParameterMap.get(SELECT_DAY_EVENT).split("-");
-                        viewCalendar.set(Integer.valueOf(day[0]), Integer.valueOf(day[1]), Integer.valueOf(day[2]),
-                                0, 0, 0);
-                        viewCalendar.set(Calendar.MILLISECOND, 0);
-                    } else if (requestParameterMap.containsKey(CHANGE_DAY_LAYOUT_EVENT)) {
-                        ((CalendarPlanDayPresentation) holder.getDayPresentation()).setLayout(
-                                CalendarPlanWeekPresentation.Layout.valueOf(
-                                requestParameterMap.get(CHANGE_DAY_LAYOUT_EVENT)));
-                    }
+                        if (requestParameterMap.containsKey(NEXT_MONTH_EVENT)) {
+                            viewCalendar.add(Calendar.MONTH, 1);
+                        } else if (requestParameterMap.containsKey(PREV_MONTH_EVENT)) {
+                            viewCalendar.add(Calendar.MONTH, -1);
+                        } else if (requestParameterMap.containsKey(SELECT_MONTH_EVENT)) {
+                            holder.setPresentation(holder.getMonthPresentation());
+                            String[] month = requestParameterMap.get(SELECT_MONTH_EVENT).split("-");
+                            viewCalendar.set(Integer.valueOf(month[0]), Integer.valueOf(month[1]), 1, 0, 0, 0);
+                            viewCalendar.set(Calendar.MILLISECOND, 0);
+                        } else if (requestParameterMap.containsKey(CHANGE_MONTH_LAYOUT_EVENT)) {
+                            ((CalendarPlanMonthPresentation) holder.getMonthPresentation()).setLayout(
+                                    CalendarPlanMonthPresentation.Layout.valueOf(
+                                            requestParameterMap.get(CHANGE_MONTH_LAYOUT_EVENT)));
+                        } else //week
+                            if (requestParameterMap.containsKey(NEXT_WEEK_EVENT)) {
+                                viewCalendar.add(Calendar.DAY_OF_WEEK, 7);
+                            } else if (requestParameterMap.containsKey(PREV_WEEK_EVENT)) {
+                                viewCalendar.add(Calendar.DAY_OF_WEEK, -7);
+                            } else if (requestParameterMap.containsKey(SELECT_WEEK_EVENT)) {
+                                holder.setPresentation(holder.getWeekPresentation());
+                                String[] week = requestParameterMap.get(SELECT_WEEK_EVENT).split("-");
+                                viewCalendar.set(Integer.valueOf(week[0]), Integer.valueOf(week[1]), Integer.valueOf(week[2]),
+                                        0, 0, 0);
+                                viewCalendar.set(Calendar.MILLISECOND, 0);
+                            } else if (requestParameterMap.containsKey(CHANGE_WEEK_LAYOUT_EVENT)) {
+                                ((CalendarPlanWeekPresentation) holder.getWeekPresentation()).setLayout(
+                                        CalendarPlanWeekPresentation.Layout.valueOf(
+                                                requestParameterMap.get(CHANGE_WEEK_LAYOUT_EVENT)));
+                            } else //day
+                                if (requestParameterMap.containsKey(NEXT_DAY_EVENT)) {
+                                    viewCalendar.add(Calendar.DAY_OF_YEAR, 1);
+                                } else if (requestParameterMap.containsKey(PREV_DAY_EVENT)) {
+                                    viewCalendar.add(Calendar.DAY_OF_YEAR, -1);
+                                } else if (requestParameterMap.containsKey(SELECT_DAY_EVENT)) {
+                                    holder.setPresentation(holder.getDayPresentation());
+                                    String[] day = requestParameterMap.get(SELECT_DAY_EVENT).split("-");
+                                    viewCalendar.set(Integer.valueOf(day[0]), Integer.valueOf(day[1]), Integer.valueOf(day[2]),
+                                            0, 0, 0);
+                                    viewCalendar.set(Calendar.MILLISECOND, 0);
+                                } else if (requestParameterMap.containsKey(CHANGE_DAY_LAYOUT_EVENT)) {
+                                    ((CalendarPlanDayPresentation) holder.getDayPresentation()).setLayout(
+                                            CalendarPlanWeekPresentation.Layout.valueOf(
+                                                    requestParameterMap.get(CHANGE_DAY_LAYOUT_EVENT)));
+                                }
                 }
             }
         }

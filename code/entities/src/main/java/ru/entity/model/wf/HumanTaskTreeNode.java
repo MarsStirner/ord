@@ -12,20 +12,44 @@ import java.util.*;
 @Table(name = "wf_task_tree_nodes")
 public class HumanTaskTreeNode extends Document {
 
-    public void setParentNode(HumanTaskTreeNode parentNode) {
-        this.parentNode = parentNode;
-    }
+    private static final long serialVersionUID = 4454645793646376490L;
+    /**
+     * Родительская вершина дерева согласования
+     */
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    private HumanTaskTreeNode parentNode;
+    /**
+     * Вершины дерева согласования - потомки
+     */
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "wf_task_tree_child_nodes",
+            joinColumns = {@JoinColumn(name = "node_id")},
+            inverseJoinColumns = {@JoinColumn(name = "child_id")})
+    private List<HumanTaskTreeNode> childNodes;
+    /**
+     * Задачи на согласование
+     */
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "wf_task_tree_node_tasks",
+            joinColumns = {@JoinColumn(name = "node_id")},
+            inverseJoinColumns = {@JoinColumn(name = "task_id")})
+    private Set<HumanTask> tasks;
+    /**
+     * Позиция вершины в дереве
+     */
+    @Transient
+    private int grouping;
 
     public HumanTaskTreeNode getParentNode() {
         return parentNode;
     }
 
-    public void setChildNodes(List<HumanTaskTreeNode> childNodes) {
-        this.childNodes = childNodes;
-    }
-
     public List<HumanTaskTreeNode> getChildNodes() {
         return childNodes;
+    }
+
+    public void setChildNodes(List<HumanTaskTreeNode> childNodes) {
+        this.childNodes = childNodes;
     }
 
     public List<HumanTaskTreeNode> getChildNodeList() {
@@ -49,21 +73,21 @@ public class HumanTaskTreeNode extends Document {
         childNodes.add(node);
     }
 
-    public void setTasks(List<HumanTask> tasks) {
-        if(this.tasks != null) {
-            this.tasks.clear();
-            this.tasks.addAll(tasks);
-        }       else{
-            this.tasks = new HashSet<>(tasks);
+    public List<HumanTask> getTasks() {
+        if (tasks != null && !tasks.isEmpty()) {
+            return new ArrayList<>(tasks);
+        } else {
+            return new ArrayList<>(0);
         }
     }
 
-    public List<HumanTask> getTasks() {
-       if(tasks != null && !tasks.isEmpty()){
-           return  new ArrayList<>(tasks);
-       }           else {
-           return new ArrayList<>(0);
-       }
+    public void setTasks(List<HumanTask> tasks) {
+        if (this.tasks != null) {
+            this.tasks.clear();
+            this.tasks.addAll(tasks);
+        } else {
+            this.tasks = new HashSet<>(tasks);
+        }
     }
 
     public List<HumanTask> getTaskList() {
@@ -91,12 +115,12 @@ public class HumanTaskTreeNode extends Document {
         tasks.add(task);
     }
 
-    public void setGrouping(int grouping) {
-        this.grouping = grouping;
-    }
-
     public int getGrouping() {
         return grouping;
+    }
+
+    public void setGrouping(int grouping) {
+        this.grouping = grouping;
     }
 
     @Transient
@@ -104,41 +128,12 @@ public class HumanTaskTreeNode extends Document {
         return childNodes != null && childNodes.size() > 0;
     }
 
+    public void setParentNode(HumanTaskTreeNode parentNode) {
+        this.parentNode = parentNode;
+    }
+
     @Transient
     public boolean isGroupedNode() {
         return tasks != null && tasks.size() > 1;
     }
-
-
-    /**
-     * Родительская вершина дерева согласования
-     */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    private HumanTaskTreeNode parentNode;
-
-    /**
-     * Вершины дерева согласования - потомки
-     */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "wf_task_tree_child_nodes",
-            joinColumns = {@JoinColumn(name = "node_id")},
-            inverseJoinColumns = {@JoinColumn(name = "child_id")})
-    private List<HumanTaskTreeNode> childNodes;
-
-    /**
-     * Задачи на согласование
-     */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "wf_task_tree_node_tasks",
-            joinColumns = {@JoinColumn(name = "node_id")},
-            inverseJoinColumns = {@JoinColumn(name = "task_id")})
-    private Set<HumanTask> tasks;
-
-    /**
-     * Позиция вершины в дереве
-     */
-    @Transient
-    private int grouping;
-
-    private static final long serialVersionUID = 4454645793646376490L;
 }

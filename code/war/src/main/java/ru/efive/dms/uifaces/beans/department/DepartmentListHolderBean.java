@@ -1,18 +1,15 @@
 package ru.efive.dms.uifaces.beans.department;
 
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.referenceBook.Department;
-import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
 
-import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.List;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -20,20 +17,15 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.DEPARTMENT_DAO;
  * Company: Korus Consulting IT <br>
  * Description: Бин для получения списка подразделений (ApplicationScope) <br>
  */
-@Named("departmentList")
-@ViewScoped
+@Controller("departmentList")
+@SpringScopeView
 public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Department> {
 
     private String filter;
-    private static DepartmentDAOImpl dao;
-    @Inject
-    @Named("indexManagement")
-    private IndexManagementBean indexManagement;
 
-    @PostConstruct
-    public void init() {
-        dao = indexManagement.getContext().getBean(DEPARTMENT_DAO, DepartmentDAOImpl.class);
-    }
+    @Autowired
+    @Qualifier("departmentDao")
+    private DepartmentDao departmentDao;
 
 
     public String getFilter() {
@@ -57,11 +49,11 @@ public class DepartmentListHolderBean extends AbstractDocumentListHolderBean<Dep
 
     @Override
     protected int getTotalCount() {
-        return (int) dao.countDocument(filter, false);
+        return departmentDao.countItems(filter, null, false);
     }
 
     @Override
     protected List<Department> loadDocuments() {
-        return dao.findDocuments(filter, false, getPagination().getOffset(), getPagination().getPageSize(), getSorting().getColumnId(), getSorting().isAsc());
+        return departmentDao.getItems(filter, null, getSorting().getColumnId(), getSorting().isAsc(), getPagination().getOffset(), getPagination().getPageSize(), false);
     }
 }

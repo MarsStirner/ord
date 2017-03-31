@@ -4,21 +4,20 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.document.*;
 import ru.entity.model.user.User;
-import ru.external.AuthorizationData;
-import ru.hitsl.sql.dao.*;
+import ru.hitsl.sql.dao.interfaces.document.*;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 
 import static ru.efive.dms.util.security.Permissions.*;
 import static ru.efive.dms.util.security.Permissions.Permission.READ;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -37,9 +36,27 @@ public class PermissionChecker implements Serializable {
     private static final Logger loggerInternalDocument = LoggerFactory.getLogger("INTERNAL_DOCUMENT");
     private static final Logger loggerRequestDocument = LoggerFactory.getLogger("REQUEST_DOCUMENT");
     private static final Logger loggerTask = LoggerFactory.getLogger("TASK");
-    @Inject
-    @Named("indexManagement")
-    private IndexManagementBean indexManagementBean;
+
+    @Autowired
+    @Qualifier("requestDocumentDao")
+    private RequestDocumentDao requestDocumentDao;
+
+    @Autowired
+    @Qualifier("incomingDocumentDao")
+    private IncomingDocumentDao incomingDocumentDao;
+
+    @Autowired
+    @Qualifier("outgoingDocumentDao")
+    private OutgoingDocumentDao outgoingDocumentDao;
+
+    @Autowired
+    @Qualifier("internalDocumentDao")
+    private InternalDocumentDao internalDocumentDao;
+
+    @Autowired
+    @Qualifier("taskDao")
+    private TaskDao taskDao;
+
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // По User
@@ -420,8 +437,7 @@ public class PermissionChecker implements Serializable {
         final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
         if (rootDocumentId != null) {
             if (documentKey.contains("incoming")) {
-                final IncomingDocument rootDocument = ((IncomingDocumentDAOImpl) indexManagementBean.getContext().getBean(INCOMING_DOCUMENT_FORM_DAO))
-                        .getItemById(rootDocumentId);
+                final IncomingDocument rootDocument = incomingDocumentDao.get(rootDocumentId);
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<incoming[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -431,8 +447,7 @@ public class PermissionChecker implements Serializable {
                     return Permissions.EMPTY_PERMISSIONS;
                 }
             } else if (documentKey.contains("outgoing")) {
-                final OutgoingDocument rootDocument = ((OutgoingDocumentDAOImpl) indexManagementBean.getContext().getBean(OUTGOING_DOCUMENT_FORM_DAO))
-                        .getItemById(rootDocumentId);
+                final OutgoingDocument rootDocument = outgoingDocumentDao.get(rootDocumentId);
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<outgoing[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -442,8 +457,7 @@ public class PermissionChecker implements Serializable {
                     return Permissions.EMPTY_PERMISSIONS;
                 }
             } else if (documentKey.contains("internal")) {
-                final InternalDocument rootDocument = ((InternalDocumentDAOImpl) indexManagementBean.getContext().getBean(INTERNAL_DOCUMENT_FORM_DAO))
-                        .getItemById(rootDocumentId);
+                final InternalDocument rootDocument = internalDocumentDao.get(rootDocumentId);
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<internal[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -453,8 +467,7 @@ public class PermissionChecker implements Serializable {
                     return Permissions.EMPTY_PERMISSIONS;
                 }
             } else if (documentKey.contains("request")) {
-                final RequestDocument rootDocument = ((RequestDocumentDAOImpl) indexManagementBean.getContext().getBean(REQUEST_DOCUMENT_FORM_DAO))
-                        .getItemById(rootDocumentId);
+                final RequestDocument rootDocument = requestDocumentDao.get(rootDocumentId);
                 if (rootDocument != null) {
                     final Permissions fromRootDocument = getPermissions(user, rootDocument);
                     logger.debug("ROOT_DOC<request[{}]> permissions: {}", rootDocumentId, fromRootDocument);
@@ -506,7 +519,7 @@ public class PermissionChecker implements Serializable {
         }
         if (!result.hasPermission(READ)) {
             //11) пользователи, учавствующие в согласованиях
-            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+            if (taskDao.isAccessGrantedByAssociation(auth, document.getUniqueId())) {
                 loggerIncomingDocument.debug("{}:Permission R granted: TASK", document.getId());
                 result.addPermission(READ);
             }
@@ -542,7 +555,7 @@ public class PermissionChecker implements Serializable {
         }
         if (!result.hasPermission(READ)) {
             //11) пользователи, учавствующие в согласованиях
-            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+            if (taskDao.isAccessGrantedByAssociation(auth, document.getUniqueId())) {
                 loggerTask.debug("{}:Permission R granted: TASK", document.getId());
                 result.addPermission(READ);
             }
@@ -573,7 +586,7 @@ public class PermissionChecker implements Serializable {
         }
         if (!result.hasPermission(READ)) {
             //11) пользователи, учавствующие в согласованиях
-            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+            if (taskDao.isAccessGrantedByAssociation(auth, document.getUniqueId())) {
                 loggerOutgoingDocument.debug("{}:Permission R granted: TASK", document.getId());
                 result.addPermission(READ);
             }
@@ -604,7 +617,7 @@ public class PermissionChecker implements Serializable {
         }
         if (!result.hasPermission(READ)) {
             //11) пользователи, учавствующие в согласованиях
-            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+            if (taskDao.isAccessGrantedByAssociation(auth, document.getUniqueId())) {
                 loggerInternalDocument.debug("{}:Permission R granted: TASK", document.getId());
                 result.addPermission(READ);
             }
@@ -635,7 +648,7 @@ public class PermissionChecker implements Serializable {
         }
         if (!result.hasPermission(READ)) {
             //11) пользователи, учавствующие в согласованиях
-            if (((TaskDAOImpl) indexManagementBean.getContext().getBean(TASK_DAO)).isAccessGrantedByAssociation(auth, document.getUniqueId())) {
+            if (taskDao.isAccessGrantedByAssociation(auth, document.getUniqueId())) {
                 loggerRequestDocument.debug("{}:Permission R granted: TASK", document.getId());
                 result.addPermission(READ);
             }

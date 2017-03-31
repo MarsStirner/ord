@@ -1,6 +1,6 @@
 package ru.entity.model.referenceBook;
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -13,7 +13,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rbDocumentType")
-public class DocumentType extends DictionaryEntity {
+public class DocumentType extends ReferenceBookEntity {
     /**
      * Предопределенные коды для справочника типов документов
      */

@@ -15,7 +15,7 @@ public class MailMessage {
     private String contentType;
 
     public MailMessage(List<String> sendTo, List<String> copyTo, String subject, String body) {
-        if(sendTo != null) {
+        if (sendTo != null) {
             this.sendTo = new ArrayList<>(sendTo.size());
             for (String s : sendTo) {
                 if (StringUtils.isNotEmpty(s)) {
@@ -23,7 +23,7 @@ public class MailMessage {
                 }
             }
         }
-        if(copyTo !=null) {
+        if (copyTo != null) {
             this.copyTo = new ArrayList<>(copyTo.size());
             for (String s : copyTo) {
                 if (StringUtils.isNotEmpty(s)) {
@@ -40,7 +40,7 @@ public class MailMessage {
     }
 
     public void setSendTo(List<String> sendTo) {
-        if(sendTo != null) {
+        if (sendTo != null) {
             this.sendTo = new ArrayList<>(sendTo.size());
             for (String s : sendTo) {
                 if (StringUtils.isNotEmpty(s)) {
@@ -55,7 +55,7 @@ public class MailMessage {
     }
 
     public void setCopyTo(List<String> copyTo) {
-        if(copyTo !=null) {
+        if (copyTo != null) {
             this.copyTo = new ArrayList<>(copyTo.size());
             for (String s : copyTo) {
                 if (StringUtils.isNotEmpty(s)) {

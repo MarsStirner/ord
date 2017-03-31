@@ -11,6 +11,12 @@ import java.util.List;
 
 public class SelectAccessLevelForm implements LocalBackingBean {
 
+    private List<EditableProperty> properties;
+    private String beanName;
+    private UserAccessLevel selectedAccessLevel;
+    private EditablePropertyScope scope;
+    private String selectedAccessLevelField;
+
     @Override
     public String getForm() {
         return "<?xml version='1.0' encoding='UTF-8' ?>\n"
@@ -22,7 +28,7 @@ public class SelectAccessLevelForm implements LocalBackingBean {
                 + "<div style=\"margin-top:0;\">\n"
                 + "  <div class=\"wrap\" style=\"height:200px;\">\n"
                 + "    <div class=\"inner\" style=\"height:200px;\">\n"
-                + "      <p:dataTable id=\"select_table\" value=\"#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.getAuthData().getCurrentAccessLevel().level)}\"\n"
+                + "      <p:dataTable id=\"select_table\" value=\"#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(authData.getCurrentAccessLevel().level)}\"\n"
                 + "            var=\"row\" style=\"width:100%\" selectionMode=\"single\" selection=\"#{" + getBeanName() + ".processorModal.processedActivity.document.selectedAccessLevel}\" rowKey=\"#{row.level}\">"
                 + "        <p:column headerText=\"Уровень допуска\">"
                 + "          <h:outputText value=\"#{row.value}\"/>\n"
@@ -46,12 +52,12 @@ public class SelectAccessLevelForm implements LocalBackingBean {
         return this.selectedAccessLevel != null && this.selectedAccessLevel.equals(selectedAccessLevel);
     }
 
-    public void setScope(EditablePropertyScope scope) {
-        this.scope = scope;
-    }
-
     public EditablePropertyScope getScope() {
         return scope;
+    }
+
+    public void setScope(EditablePropertyScope scope) {
+        this.scope = scope;
     }
 
     public String getSelectedAccessLevelField() {
@@ -87,20 +93,11 @@ public class SelectAccessLevelForm implements LocalBackingBean {
         return result;
     }
 
-    public void setBeanName(String beanName) {
-        this.beanName = beanName;
-    }
-
     public String getBeanName() {
         return beanName;
     }
 
-
-    private List<EditableProperty> properties;
-
-    private String beanName;
-
-    private UserAccessLevel selectedAccessLevel;
-    private EditablePropertyScope scope;
-    private String selectedAccessLevelField;
+    public void setBeanName(String beanName) {
+        this.beanName = beanName;
+    }
 }

@@ -1,27 +1,25 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.joda.time.LocalDate;
 import org.primefaces.model.DefaultTreeNode;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.IncomingDocument;
-import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
-import ru.hitsl.sql.dao.ViewFactDaoImpl;
+import ru.hitsl.sql.dao.interfaces.ViewFactDao;
+import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.INCOMING_DOCUMENT_FORM_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
-
-@Named("in_documents_by_executing_date")
-@ViewScoped
+@Controller("in_documents_by_executing_date")
+@SpringScopeView
 public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolderBean<IncomingDocument> {
 
     private final static SimpleDateFormat year_month_day = new SimpleDateFormat("yyyy,MM,dd");
@@ -29,9 +27,15 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     private String filter;
     private boolean showExpiredFlag = false;
     private LocalDate currentDate;
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
+    @Autowired
+    @Qualifier("incomingDocumentDao")
+    private IncomingDocumentDao incomingDocumentDao;
+    @Autowired
+    @Qualifier("viewFactDao")
+    private ViewFactDao viewFactDao;
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
 
     /**
      * Сменить значение флажка "Показать просроченные"
@@ -49,13 +53,13 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
 
     @Override
     protected List<IncomingDocument> loadDocuments() {
-        final List<IncomingDocument> resultList = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
+        final List<IncomingDocument> resultList = incomingDocumentDao
                 .findControlledDocumentsByUser(
-                        filter, sessionManagement.getAuthData(), showExpiredFlag ? currentDate.toDate() : null
+                        filter, authData, showExpiredFlag ? currentDate.toDate() : null
                 );
         if (!resultList.isEmpty()) {
-            sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO).applyViewFlagsOnIncomingDocumentList(
-                    resultList, sessionManagement.getAuthData().getAuthorized()
+            viewFactDao.applyViewFlagsOnIncomingDocumentList(
+                    resultList, authData.getAuthorized()
             );
         }
         return resultList;

@@ -5,7 +5,6 @@ import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
 import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import java.util.List;
 
@@ -18,8 +17,6 @@ import java.util.List;
 public class ImportCacheObject {
     //Пароль по-умолчанию для новых пользователей
     public static final String DEFAULT_PASSWORD = "12345";
-    //DAO для работы с локальными пользователями
-    private UserDAOHibernate userDAO;
     // Уровнь допуска по-умолчанию для создаваемых пользователей
     private UserAccessLevel defaultUserAccessLevel;
     //Перечень типов контактной информации
@@ -31,14 +28,6 @@ public class ImportCacheObject {
     //Перечень подразделений
     private List<Department> departments;
     private List<User> localUsers;
-
-    public UserDAOHibernate getUserDAO() {
-        return userDAO;
-    }
-
-    public void setUserDAO(final UserDAOHibernate userDAO) {
-        this.userDAO = userDAO;
-    }
 
     public UserAccessLevel getDefaultUserAccessLevel() {
         return defaultUserAccessLevel;
@@ -88,11 +77,11 @@ public class ImportCacheObject {
         this.departments = departments;
     }
 
-    public void setLocalUsers(final List<User> localUsers) {
-        this.localUsers = localUsers;
-    }
-
     public List<User> getLocalUsers() {
         return localUsers;
+    }
+
+    public void setLocalUsers(final List<User> localUsers) {
+        this.localUsers = localUsers;
     }
 }

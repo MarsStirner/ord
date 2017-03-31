@@ -7,6 +7,10 @@ import javax.faces.context.FacesContext;
 
 public class IncomingDocumentSelectModal extends ModalWindowHolderBean {
 
+    private static final long serialVersionUID = 8811191935540534357L;
+    private IncomingDocumentListHolder incomingDocumentList;
+    private IncomingDocument incomingDocument;
+
     public IncomingDocumentListHolder getIncomingDocumentList() {
         if (incomingDocumentList == null) {
             FacesContext context = FacesContext.getCurrentInstance();
@@ -45,11 +49,5 @@ public class IncomingDocumentSelectModal extends ModalWindowHolderBean {
     protected void doHide() {
         super.doHide();
     }
-
-    private IncomingDocumentListHolder incomingDocumentList;
-
-    private IncomingDocument incomingDocument;
-
-    private static final long serialVersionUID = 8811191935540534357L;
 
 }

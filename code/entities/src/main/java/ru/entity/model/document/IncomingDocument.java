@@ -4,8 +4,6 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.*;
-import ru.entity.model.user.Group;
-import ru.entity.model.user.Role;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
@@ -310,7 +308,7 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
         this.roleReaders = roleReaders;
     }
 
-    public List<Role> getRoleReadersList(){
+    public List<Role> getRoleReadersList() {
         if (roleReaders != null && !roleReaders.isEmpty()) {
             return new ArrayList<>(roleReaders);
         }
@@ -585,7 +583,6 @@ public class IncomingDocument extends DeletableEntity implements ProcessedData {
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }
-
 
 
 }

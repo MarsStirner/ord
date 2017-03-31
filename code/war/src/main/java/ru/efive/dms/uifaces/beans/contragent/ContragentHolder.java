@@ -1,41 +1,57 @@
 package ru.efive.dms.uifaces.beans.contragent;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.referenceBook.Contragent;
-import ru.hitsl.sql.dao.ContragentDAOHibernate;
-import ru.hitsl.sql.dao.IncomingDocumentDAOImpl;
-import ru.hitsl.sql.dao.OutgoingDocumentDAOImpl;
-import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
+import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
+import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
+import ru.hitsl.sql.dao.interfaces.document.RequestDocumentDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.ContragentDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
-@Named("contragent")
-@ViewScoped
-public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
+@Controller("contragent")
+@SpringScopeView
+public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> {
     private static final Logger logger = LoggerFactory.getLogger("CONTRAGENT");
+
+    @Autowired
+    @Qualifier("contragentDao")
+    private ContragentDao contragentDao;
+    @Autowired
+    @Qualifier("incomingDocumentDao")
+    private IncomingDocumentDao incomingDocumentDao;
+    @Autowired
+    @Qualifier("requestDocumentDao")
+    private RequestDocumentDao requestDocumentDao;
+    @Autowired
+    @Qualifier("outgoingDocumentDao")
+    private OutgoingDocumentDao outgoingDocumentDao;
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
 
     @Override
     public boolean doAfterDelete() {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("delete_contragent.xhtml");
-        } catch (IOException e){
+        } catch (IOException e) {
             logger.error("Error on redirect", e);
             return false;
         }
@@ -49,17 +65,17 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
             boolean hasDocuments;
             final Map<String, Object> in_map = new HashMap<>();
             in_map.put(DocumentSearchMapKeys.CONTRAGENT_KEY, contragent);
-            List<IncomingDocument> incomingDocuments = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO).getDocumentListByFilters(sessionManagement.getAuthData(), null, in_map, null, true, 0, -1, false, false);
+            List<IncomingDocument> incomingDocuments = incomingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
             if (incomingDocuments.isEmpty()) {
-                List<RequestDocument> requestDocuments = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO).getDocumentListByFilters(
-                        sessionManagement.getAuthData(),
+                List<RequestDocument> requestDocuments = requestDocumentDao.getItems(
+                        authData,
                         null,
                         in_map,
                         null,
                         true,
                         0, -1, false, false);
                 if (requestDocuments.isEmpty()) {
-                    List<OutgoingDocument> outgoingDocuments = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getDocumentListByFilters(sessionManagement.getAuthData(), null, in_map, null, true, 0, -1, false, false);
+                    List<OutgoingDocument> outgoingDocuments = outgoingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
                     hasDocuments = !outgoingDocuments.isEmpty();
                 } else {
                     hasDocuments = true;
@@ -69,7 +85,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
             }
             if (!hasDocuments) {
                 contragent.setDeleted(true);
-                contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(contragent);
+                contragent = contragentDao.save(contragent);
                 if (contragent == null) {
                     addMessage(null, MSG_CANT_DELETE);
                     return false;
@@ -88,9 +104,9 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
     @Override
     protected void initDocument(Integer id) {
         try {
-            setDocument(sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).getItemById(id));
+            setDocument(contragentDao.get(id));
             if (getDocument() == null) {
-              setDocumentNotFound();
+                setDocumentNotFound();
             }
         } catch (Exception e) {
             addMessage(null, MSG_ERROR_ON_INITIALIZE);
@@ -108,9 +124,9 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
     @Override
     protected boolean saveDocument() {
         try {
-            Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(getDocument());
+            Contragent contragent = contragentDao.save(getDocument());
             if (contragent == null) {
-               addMessage(null, MSG_CANT_SAVE);
+                addMessage(null, MSG_CANT_SAVE);
                 return false;
             }
             return true;
@@ -124,9 +140,9 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
     @Override
     protected boolean saveNewDocument() {
         try {
-            final Contragent contragent = sessionManagement.getDAO(ContragentDAOHibernate.class, CONTRAGENT_DAO).save(getDocument());
+            final Contragent contragent = contragentDao.save(getDocument());
             if (contragent == null) {
-               addMessage(null, MSG_CANT_SAVE);
+                addMessage(null, MSG_CANT_SAVE);
                 return false;
             }
             return true;
@@ -137,10 +153,4 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent>  {
         }
     }
 
-
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
-
-    private static final long serialVersionUID = 4716264614655470705L;
 }

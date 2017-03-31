@@ -1,9 +1,13 @@
 package ru.efive.wf.core.activity;
 
-import ru.external.ProcessedData;
 import ru.entity.model.wf.HumanTask;
+import ru.external.ProcessedData;
 
 public class SetHumanTaskStatus extends BlankActivity {
+
+    Class<? extends ProcessedData> class_;
+    private ProcessedData processedData;
+    private HumanTask task;
 
     public SetHumanTaskStatus() {
 
@@ -23,12 +27,12 @@ public class SetHumanTaskStatus extends BlankActivity {
         return result;
     }
 
-    public void setTask(HumanTask task) {
-        this.task = task;
-    }
-
     public HumanTask getTask() {
         return task;
+    }
+
+    public void setTask(HumanTask task) {
+        this.task = task;
     }
 
     @Override
@@ -48,9 +52,4 @@ public class SetHumanTaskStatus extends BlankActivity {
     public boolean dispose() {
         return true;
     }
-
-
-    Class<? extends ProcessedData> class_;
-    private ProcessedData processedData;
-    private HumanTask task;
 }

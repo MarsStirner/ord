@@ -1,11 +1,11 @@
 package ru.efive.uifaces.bean.workflow;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Conversation;
 import javax.inject.Inject;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base workflow functionality.
@@ -13,6 +13,177 @@ import javax.inject.Inject;
  * @author Denis Kotegov
  */
 public abstract class AbstractWorkflow implements Serializable {
+
+    /**
+     * Default "new" state
+     */
+    public static final State STATE_NEW = new State("new", true, false, false);
+    /**
+     * Default "final" state
+     */
+    public static final State STATE_FINAL = new State("final", false, true, false);
+    /**
+     * Default "error" state
+     */
+    public static final State STATE_ERROR = new State("error", false, true, true);
+    private static final long serialVersionUID = 1L;
+    private State state;
+    private Map<String, Action> actions;
+    @Inject
+    private Conversation conversation;
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    protected void doInit() {
+
+    }
+
+    protected void listActions(ActionCollection actionLister) {
+
+    }
+
+    private void startConversation() {
+        if (conversation.isTransient()) {
+            conversation.begin();
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------------------------------
+
+    private void stopConversation() {
+        if (!conversation.isTransient()) {
+            conversation.end();
+        }
+    }
+
+    @PostConstruct
+    private void postConstruct() {
+        state = STATE_NEW;
+        actions = new HashMap<>();
+
+        doInit();
+        listActions(new ActionCollection() {
+            @Override
+            public void addAction(String name, Action action) {
+                actions.put(name, action);
+            }
+        });
+    }
+
+    protected String getViewKeyFinal() {
+        return null;
+    }
+
+    protected String getViewKeyError() {
+        return null;
+    }
+
+    /**
+     * @param action
+     * @return
+     */
+    private String doActionInternal(String name, Object... params) {
+        Action action = actions.get(name);
+        String result = null;
+
+        if (action != null && action.isAllowed() && action.isEnabled()) {
+            ActionResult actionResult = null;
+
+            boolean wasNewState = state != null && state.isStateNew();
+
+            try {
+                if (action.actionChecks()) {
+                    actionResult = action.doAction(params);
+                }
+            } catch (RuntimeException ex) {
+                actionResult = action.handleException(ex);
+            }
+
+            if (actionResult != null && actionResult.getState() != null) {
+                state = actionResult.getState();
+                result = actionResult.getResult();
+
+                action.onSuccess();
+            }
+
+            boolean becomeFinalState = state != null && state.isStateFinal();
+
+            if (wasNewState && !becomeFinalState) {
+                startConversation();
+            } else if (!wasNewState && becomeFinalState) {
+                stopConversation();
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Starts action execution.
+     *
+     * @param actionName name of action to be started.
+     * @return view which is should to be activated (if any).
+     */
+    public String doAction(String actionName) {
+        return doActionInternal(actionName);
+    }
+
+    /**
+     * Starts action execution.
+     *
+     * @param actionName name of action to be started.
+     * @param param      action parameter
+     * @return view which is should to be activated (if any).
+     */
+    public String doAction(String actionName, Object param) {
+        return doActionInternal(actionName, param);
+    }
+
+    /**
+     * Starts action execution.
+     *
+     * @param actionName name of action to be started.
+     * @param param1     first action parameter.
+     * @param param2     second action parameter.
+     * @return view which is should to be activated (if any).
+     */
+    public String doAction(String actionName, Object param1, Object param2) {
+        return doActionInternal(actionName, param1, param2);
+    }
+
+    /**
+     * @param name name of action.
+     * @return is the action with given name allowed.
+     */
+    public boolean actionAllowed(String name) {
+        Action action = actions.get(name);
+        return action != null && action.isAllowed();
+    }
+
+    /**
+     * @param name name of action.
+     * @return is the action with given name enabled.
+     */
+    public boolean actionEnabled(String name) {
+        Action action = actions.get(name);
+        return action != null && action.isEnabled();
+    }
+
+    /**
+     * @return current state.
+     */
+    public State getState() {
+        return state;
+    }
+
+    /**
+     * Collection which is stores all possible actions for bean.
+     */
+    protected interface ActionCollection {
+
+        void addAction(String name, Action action);
+
+    }
 
     /**
      * Single workflow state.
@@ -30,7 +201,7 @@ public abstract class AbstractWorkflow implements Serializable {
         /**
          * Creates workflow state.
          *
-         * @param name name of state.
+         * @param name    name of state.
          * @param isFinal is this state an final state.
          * @param isError is this state an error state. If so, it is should be and final too.
          */
@@ -92,7 +263,7 @@ public abstract class AbstractWorkflow implements Serializable {
         /**
          * Creates action result.
          *
-         * @param state state to go.
+         * @param state  state to go.
          * @param result view to apply.
          */
         public ActionResult(State state, String result) {
@@ -118,7 +289,7 @@ public abstract class AbstractWorkflow implements Serializable {
 
     /**
      * Single workflow action.
-     *
+     * <p>
      * Action execution should be processed by scheme:
      * <ul>
      * <li>Allowance and enabled checks - should produce no user messages.</li>
@@ -152,7 +323,7 @@ public abstract class AbstractWorkflow implements Serializable {
          * Successful action execution (postpone) handler.
          */
         public void onSuccess() {
-            
+
         }
 
         /**
@@ -229,15 +400,6 @@ public abstract class AbstractWorkflow implements Serializable {
 
     }
 
-    /**
-     * Collection which is stores all possible actions for bean.
-     */
-    protected interface ActionCollection {
-
-        void addAction(String name, Action action);
-
-    }
-
     protected class WorkflowException extends RuntimeException {
 
         private static final long serialVersionUID = 1L;
@@ -256,171 +418,7 @@ public abstract class AbstractWorkflow implements Serializable {
 
         public WorkflowException() {
         }
-        
-    }
 
-    private static final long serialVersionUID = 1L;
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    /** Default "new" state */
-    public static final State STATE_NEW = new State("new", true, false, false);
-
-    /** Default "final" state */
-    public static final State STATE_FINAL = new State("final", false, true, false);
-
-    /** Default "error" state */
-    public static final State STATE_ERROR = new State("error", false, true, true);
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    private State state;
-
-    private Map<String, Action> actions;
-
-    @Inject
-    private Conversation conversation;
-
-    protected void doInit() {
-        
-    }
-
-    protected void listActions(ActionCollection actionLister) {
-        
-    }
-
-    private void startConversation() {
-        if (conversation.isTransient()) {
-            conversation.begin();
-        }
-    }
-
-    private void stopConversation() {
-        if (!conversation.isTransient()) {
-            conversation.end();
-        }
-    }
-
-    @PostConstruct
-    private void postConstruct() {
-        state = STATE_NEW;
-        actions = new HashMap<>();
-
-        doInit();
-        listActions(new ActionCollection() {
-            @Override
-            public void addAction(String name, Action action) {
-                actions.put(name, action);
-            }
-        });
-    }
-
-    protected String getViewKeyFinal() {
-        return null;
-    }
-
-    protected String getViewKeyError() {
-        return null;
-    }
-
-    /**
-     *
-     *
-     * @param action
-     * @return
-     */
-    private String doActionInternal(String name, Object... params) {
-        Action action = actions.get(name);
-        String result = null;
-
-        if (action != null && action.isAllowed() && action.isEnabled()) {
-            ActionResult actionResult = null;
-
-            boolean wasNewState = state != null && state.isStateNew();
-
-            try {
-                if (action.actionChecks()) {
-                    actionResult = action.doAction(params);
-                }
-            } catch (RuntimeException ex) {
-                actionResult = action.handleException(ex);
-            }
-
-            if (actionResult != null && actionResult.getState() != null) {
-                state = actionResult.getState();
-                result = actionResult.getResult();
-
-                action.onSuccess();
-            }
-
-            boolean becomeFinalState = state != null && state.isStateFinal();
-
-            if (wasNewState && !becomeFinalState) {
-                startConversation();
-            } else if (!wasNewState && becomeFinalState) {
-                stopConversation();
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Starts action execution.
-     * 
-     * @param actionName name of action to be started.
-     * @return view which is should to be activated (if any).
-     */
-    public String doAction(String actionName) {
-        return doActionInternal(actionName);
-    }
-
-    /**
-     * Starts action execution.
-     *
-     * @param actionName name of action to be started.
-     * @param param action parameter
-     * @return view which is should to be activated (if any).
-     */
-    public String doAction(String actionName, Object param) {
-        return doActionInternal(actionName, param);
-    }
-
-    /**
-     * Starts action execution.
-     *
-     * @param actionName name of action to be started.
-     * @param param1 first action parameter.
-     * @param param2 second action parameter.
-     * @return view which is should to be activated (if any).
-     */
-    public String doAction(String actionName, Object param1, Object param2) {
-        return doActionInternal(actionName, param1, param2);
-    }
-
-    /**
-     * @param name name of action.
-     * @return is the action with given name allowed.
-     */
-    public boolean actionAllowed(String name) {
-        Action action = actions.get(name);
-        return action != null && action.isAllowed();
-    }
-
-    /**
-     * @param name name of action.
-     * @return is the action with given name enabled.
-     */
-    public boolean actionEnabled(String name) {
-        Action action = actions.get(name);
-        return action != null && action.isEnabled();
-    }
-
-    /**
-     * @return current state.
-     */
-    public State getState() {
-        return state;
     }
 
 }

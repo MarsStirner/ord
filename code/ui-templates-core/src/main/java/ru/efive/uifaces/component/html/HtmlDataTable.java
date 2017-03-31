@@ -5,20 +5,19 @@ import ru.efive.uifaces.component.ComponentFamily;
 import javax.faces.component.FacesComponent;
 
 /**
- *
  * @author Denis Kotegov
  */
 @FacesComponent("ru.efive.uifaces.DataTable")
 public class HtmlDataTable extends javax.faces.component.html.HtmlDataTable {
-    
-    private enum PropertyKeys {
-        GROUPING, MAX_LEVEL
-    }
 
-    /** <code>Renderer</code> type for component */
+    /**
+     * <code>Renderer</code> type for component
+     */
     public static final String RENDERER_TYPE = "ru.efive.uifaces.DataTable";
 
-    /** Default constructor. */
+    /**
+     * Default constructor.
+     */
     public HtmlDataTable() {
         setRendererType(RENDERER_TYPE);
     }
@@ -26,6 +25,10 @@ public class HtmlDataTable extends javax.faces.component.html.HtmlDataTable {
     @Override
     public String getFamily() {
         return ComponentFamily.DATA_TABLE;
+    }
+
+    private enum PropertyKeys {
+        GROUPING, MAX_LEVEL
     }
 
     // ----------------------------------------------------------------------------------------------------------------

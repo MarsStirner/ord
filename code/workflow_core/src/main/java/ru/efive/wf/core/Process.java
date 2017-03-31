@@ -8,6 +8,11 @@ import java.util.List;
 
 public final class Process {
 
+    private ProcessedData processedData;
+    private ProcessUser processUser;
+    private Status<? extends ProcessedData> currentStatus;
+    private List<NoStatusAction> noStatusActions = new ArrayList<>();
+
     protected Process() {
 
     }
@@ -20,13 +25,13 @@ public final class Process {
         this.noStatusActions = noStatusActions;
     }
 
+    public Status<? extends ProcessedData> getCurrentStatus() {
+        return currentStatus;
+    }
+
     public void setCurrentStatus(Status<? extends ProcessedData> currentStatus) {
         this.currentStatus = currentStatus;
         this.getProcessedData().setDocumentStatus(currentStatus.getStatus());
-    }
-
-    public Status<? extends ProcessedData> getCurrentStatus() {
-        return currentStatus;
     }
 
     public ProcessedData getProcessedData() {
@@ -44,11 +49,4 @@ public final class Process {
     public void setProcessUser(ProcessUser processUser) {
         this.processUser = processUser;
     }
-
-
-    private ProcessedData processedData;
-    private ProcessUser processUser;
-    private Status<? extends ProcessedData> currentStatus;
-
-    private List<NoStatusAction> noStatusActions = new ArrayList<>();
 }

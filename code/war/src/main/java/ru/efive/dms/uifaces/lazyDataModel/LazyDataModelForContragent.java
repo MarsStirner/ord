@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.SortOrder;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.entity.model.referenceBook.Contragent;
-import ru.hitsl.sql.dao.ContragentDAOHibernate;
-
-import java.util.List;
-import java.util.Map;
+import ru.hitsl.sql.dao.interfaces.referencebook.ContragentDao;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,26 +13,11 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+@Component("contragentLDM")
+@SpringScopeView
 public class LazyDataModelForContragent extends AbstractFilterableLazyDataModel<Contragent> {
-
-    private ContragentDAOHibernate dao;
-
-    public LazyDataModelForContragent(ContragentDAOHibernate daoHibernate) {
-        dao = daoHibernate;
-    }
-
-    @Override
-    public Contragent getRowData(String rowKey) {
-        return dao.get(Integer.valueOf(rowKey));
-    }
-
-    @Override
-    public List<Contragent> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object>
-            filters) {
-        setRowCount(dao.countItems(filter, false));
-        if(getRowCount() < first){
-            first = 0;
-        }
-        return dao.findItems(filter, false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
+    @Autowired
+    public LazyDataModelForContragent(@Qualifier("contragentDao") ContragentDao contragentDao) {
+        super(contragentDao);
     }
 }

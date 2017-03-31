@@ -1,11 +1,11 @@
 package ru.efive.wf.core;
 
+import ru.efive.wf.core.activity.SetPropertyActivity;
+import ru.external.ProcessedData;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ru.efive.wf.core.activity.SetPropertyActivity;
-import ru.external.ProcessedData;
 
 public class StatusChangeAction extends UserAction {
 

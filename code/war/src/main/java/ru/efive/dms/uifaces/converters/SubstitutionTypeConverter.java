@@ -30,20 +30,20 @@ public class SubstitutionTypeConverter implements Converter {
     @Override
     public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object o) {
         if (o != null) {
-            try{
+            try {
                 final Integer item = (Integer) o;
-                switch (item){
-                    case 1:{
+                switch (item) {
+                    case 1: {
                         return helper;
                     }
                     case 2: {
                         return io;
                     }
-                    default:{
+                    default: {
                         return "";
                     }
                 }
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 return "";
             }
         }

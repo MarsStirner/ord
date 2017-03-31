@@ -1,61 +1,37 @@
 package ru.efive.uifaces.bean.calendarPlan;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.Layout;
 import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
 import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
-import ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.Layout;
 
-import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CAPTION_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.LINK_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAY_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.DAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.MONTH_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_DAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_DAY_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.UPDATE_PRESENTATION_SCRIPT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_DAY_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_DAY_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CHANGE_DAY_LAYOUT_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_MONTH_EVENT;
-
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.getDisplayNames;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.MONTH_NAMES;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.START_OF_MONTH_FMT;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderSpaceCell;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderPrevNextLink;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.renderDaysInWeek;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.renderYearLinkAndLayout;
+import java.io.IOException;
+import java.util.*;
 
 import static java.lang.String.format;
+import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.renderDaysInWeek;
+import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanWeekPresentation.renderYearLinkAndLayout;
+import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.*;
+import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.*;
+import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
 
 /**
- *
  * @author Pavel Porubov
  */
 public class CalendarPlanDayPresentation extends CalendarPlanPresentation {
+
+    public static final int ID = 4;
+    private Layout layout = Layout.byEvents;
 
     @Override
     public String getName() {
         return "day";
     }
 
-    public static final int ID = 4;
-
     @Override
     public int getId() {
         return ID;
     }
-
-    private Layout layout = Layout.byEvents;
 
     public Layout getLayout() {
         return layout;
@@ -101,7 +77,7 @@ public class CalendarPlanDayPresentation extends CalendarPlanPresentation {
         writeStyleClass(null, writer, SELECT_CLASS, MONTH_NAME_CLASS);
         writer.writeAttribute(HtmlAttribute.ONCLICK,
                 format(UPDATE_PRESENTATION_SCRIPT, id, SELECT_MONTH_EVENT,
-                format(START_OF_MONTH_FMT, viewCalendar.get(Calendar.YEAR), month)), null);
+                        format(START_OF_MONTH_FMT, viewCalendar.get(Calendar.YEAR), month)), null);
         writer.writeText(names[MONTH_NAMES].get(month), null);
         writer.endElement(HtmlElement.SPAN);
         writer.writeText(format(" %d", viewCalendar.get(Calendar.DAY_OF_MONTH)), null);

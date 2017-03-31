@@ -28,7 +28,7 @@ public class HumanTaskTree extends Document {
     private List<HumanTaskTreeNode> humanTaskTree;
 
     public List<HumanTaskTreeNode> getRootNodes() {
-        if(rootNodes != null) {
+        if (rootNodes != null) {
             return new ArrayList<>(rootNodes);
         } else {
             return new ArrayList<>(0);

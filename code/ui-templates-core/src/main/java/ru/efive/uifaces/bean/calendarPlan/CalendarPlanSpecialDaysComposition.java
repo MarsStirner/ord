@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
- *
  * @author Pavel Porubov
  */
 public class CalendarPlanSpecialDaysComposition {
@@ -20,16 +19,8 @@ public class CalendarPlanSpecialDaysComposition {
         this.days = days;
     }
 
-    public Collection<CalendarPlanSpecialDay> getDays() {
-        return days;
-    }
-
-    public CalendarPlanSpecialDaysComposition slice(Date start, Date stop) {
-        return newSlice(this, start, stop);
-    }
-
     public static CalendarPlanSpecialDaysComposition newSlice(CalendarPlanSpecialDaysComposition days, Date start,
-            Date stop) {
+                                                              Date stop) {
         final Collection<CalendarPlanSpecialDay> ndays = new ArrayList<>();
         for (CalendarPlanSpecialDay d : days.days) {
             if (d.isOccurs(start, stop)) {
@@ -40,7 +31,7 @@ public class CalendarPlanSpecialDaysComposition {
     }
 
     public static CalendarPlanSpecialDaysComposition newDisplacement(CalendarPlanSpecialDay day,
-            CalendarPlanSpecialDay... days) {
+                                                                     CalendarPlanSpecialDay... days) {
         Collection<CalendarPlanSpecialDay> rdays = new ArrayList<>();
         rdays.add(day);
         if (days != null && days.length != 0) {
@@ -65,7 +56,7 @@ public class CalendarPlanSpecialDaysComposition {
     }
 
     public static CalendarPlanSpecialDaysComposition newDisplacement(CalendarPlanSpecialDay day,
-            Collection<CalendarPlanSpecialDay> days) {
+                                                                     Collection<CalendarPlanSpecialDay> days) {
         return newDisplacement(day, days.toArray(new CalendarPlanSpecialDay[0]));
     }
 
@@ -87,5 +78,13 @@ public class CalendarPlanSpecialDaysComposition {
             }
         }
         return new CalendarPlanSpecialDaysComposition(ndays);
+    }
+
+    public Collection<CalendarPlanSpecialDay> getDays() {
+        return days;
+    }
+
+    public CalendarPlanSpecialDaysComposition slice(Date start, Date stop) {
+        return newSlice(this, start, stop);
     }
 }

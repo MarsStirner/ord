@@ -1,12 +1,12 @@
 package ru.efive.uifaces.component.html;
 
+import ru.efive.uifaces.component.ComponentFamily;
+
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIComponentBase;
-import ru.efive.uifaces.component.ComponentFamily;
 
 /**
- *
  * @author Denis Kotegov
  */
 @FacesComponent("ru.efive.uifaces.DataTableRow")
@@ -15,12 +15,6 @@ public class HtmlDataTableRow extends UIComponentBase {
     public static final String FACET_GROUP_PREFIX = "fullRowLevel";
 
     public static final String FACET_GROUP_DEFAULT = "fullRowDefault";
-
-    public enum PropertyKeys {
-        group, level, collapsed
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
 
     @Override
     public String getFamily() {
@@ -31,24 +25,26 @@ public class HtmlDataTableRow extends UIComponentBase {
 
     /**
      * Returns grouping line facet for given level.
-     * 
+     *
      * @param level 0-based level of the group.
      * @return facet for group.
      */
     public UIComponent getFacetForGroup(int level) {
         UIComponent facet = getFacet(FACET_GROUP_PREFIX + level);
-        return facet == null? getDefaultFacetForGroup(): facet;
+        return facet == null ? getDefaultFacetForGroup() : facet;
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
     public UIComponent getDefaultFacetForGroup() {
         return getFacet(FACET_GROUP_DEFAULT);
     }
 
-    // ----------------------------------------------------------------------------------------------------------------
-
     public Object getGroup() {
         return getStateHelper().eval(PropertyKeys.group);
     }
+
+    // ----------------------------------------------------------------------------------------------------------------
 
     public void setGroup(Object group) {
         getStateHelper().put(PropertyKeys.group, group);
@@ -68,5 +64,9 @@ public class HtmlDataTableRow extends UIComponentBase {
 
     public void setCollapsed(boolean collapsed) {
         getStateHelper().put(PropertyKeys.collapsed, collapsed);
+    }
+
+    public enum PropertyKeys {
+        group, level, collapsed
     }
 }

@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class EditableFieldMatrixPK implements Serializable{
+public class EditableFieldMatrixPK implements Serializable {
     private DocumentTypeField field;
     private int statusId;
 

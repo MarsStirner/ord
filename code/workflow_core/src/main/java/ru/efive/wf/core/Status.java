@@ -18,30 +18,28 @@ public final class Status<T extends ProcessedData> {
 
     }
 
-    public void setPreStatusActivities(List<IActivity> preStatusActivities) {
-        this.preStatusActivities = preStatusActivities;
-    }
-
     public List<IActivity> getPreStatusActivities() {
         return preStatusActivities;
     }
 
-
-    public void setPostStatusActivities(List<IActivity> postStatusActivities) {
-        this.postStatusActivities = postStatusActivities;
+    public void setPreStatusActivities(List<IActivity> preStatusActivities) {
+        this.preStatusActivities = preStatusActivities;
     }
 
     public List<IActivity> getPostStatusActivities() {
         return postStatusActivities;
     }
 
-
-    public void setAvailableActions(List<StatusChangeAction> actions) {
-        this.actions = actions;
+    public void setPostStatusActivities(List<IActivity> postStatusActivities) {
+        this.postStatusActivities = postStatusActivities;
     }
 
     public List<StatusChangeAction> getAvailableActions() {
         return actions;
+    }
+
+    public void setAvailableActions(List<StatusChangeAction> actions) {
+        this.actions = actions;
     }
 
     public T getProcessedData() {
@@ -52,13 +50,12 @@ public final class Status<T extends ProcessedData> {
         this.processedData = processedData;
     }
 
+    public boolean isAgreementEnabled() {
+        return agreementEnabled;
+    }
 
     public void setAgreementEnabled(boolean agreementEnabled) {
         this.agreementEnabled = agreementEnabled;
-    }
-
-    public boolean isAgreementEnabled() {
-        return agreementEnabled;
     }
 
     public DocumentStatus getStatus() {

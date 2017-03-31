@@ -1,7 +1,6 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.primefaces.context.RequestContext;
@@ -10,10 +9,12 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.dialogs.*;
@@ -23,76 +24,65 @@ import ru.efive.dms.util.security.Permissions;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.referenceBook.Contragent;
-import ru.entity.model.referenceBook.DocumentForm;
-import ru.entity.model.referenceBook.DocumentType;
-import ru.entity.model.referenceBook.UserAccessLevel;
-import ru.entity.model.user.Group;
-import ru.entity.model.user.Role;
+import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.*;
-import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
-import ru.hitsl.sql.dao.util.ApplicationDAONames;
+import ru.hitsl.sql.dao.interfaces.ViewFactDao;
+import ru.hitsl.sql.dao.interfaces.document.*;
+import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
-@Named("out_doc")
-@ViewScoped
+@Controller("out_doc")
+@SpringScopeView
 public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingDocument> {
     //Именованный логгер (OUTGOING_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("OUTGOING_DOCUMENT");
 
-    @PreDestroy
-    public void destroy(){
-        LOGGER.info("Bean destroyed");
-    }
+    @Autowired
+    @Qualifier("outgoingDocumentDao")
+    private OutgoingDocumentDao outgoingDocumentDao;
+    @Autowired
+    @Qualifier("viewFactDao")
+    private ViewFactDao viewFactDao;
+    @Autowired
+    @Qualifier("documentFormDao")
+    private DocumentFormDao documentFormDao;
+    @Autowired
+    @Qualifier("incomingDocumentDao")
+    private IncomingDocumentDao incomingDocumentDao;
+    @Autowired
+    @Qualifier("taskDao")
+    private TaskDao taskDao;
+    @Autowired
+    @Qualifier("requestDocumentDao")
+    private RequestDocumentDao requestDocumentDao;
+    @Autowired
+    @Qualifier("internalDocumentDao")
+    private InternalDocumentDao internalDocumentDao;
 
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
     //TODO ACL
     private Permissions permissions;
-    @Inject
-    @Named("sessionManagement")
-    private SessionManagementBean sessionManagement;
-    @Inject
-    @Named("fileManagement")
+    @Autowired
+    @Qualifier("fileManagement")
     private FileManagementBean fileManagement;
     //Для проверки прав доступа
-    @Inject
-    @Named("permissionChecker")
+    @Autowired
+    @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
-
     private List<Attachment> attachments = new ArrayList<>();
-
-    public void handleFileUpload(FileUploadEvent event) {
-        final UploadedFile file = event.getFile();
-        if (file != null) {
-            LOGGER.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
-            final Attachment attachment = new Attachment();
-            attachment.setFileName(file.getFileName());
-            attachment.setCreated(new LocalDateTime().toDate());
-            attachment.setAuthorId(sessionManagement.getAuthData().getAuthorized().getId());
-            attachment.setParentId(getDocument().getUniqueId());
-            final boolean result = fileManagement.createFile(attachment, file.getContents());
-            LOGGER.info("After alfresco call Attachment.id={}", attachment.getId());
-            if(result){
-                attachments.add(attachment);
-            }
-            addMessage(new FacesMessage("Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
-        } else {
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-        }
-    }
-
     private ProcessorModalBean processorModal = new ProcessorModalBean() {
         @Override
         protected void doInit() {
@@ -127,6 +117,31 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
     };
 
+    @PreDestroy
+    public void destroy() {
+        LOGGER.info("Bean destroyed");
+    }
+
+    public void handleFileUpload(FileUploadEvent event) {
+        final UploadedFile file = event.getFile();
+        if (file != null) {
+            LOGGER.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
+            final Attachment attachment = new Attachment();
+            attachment.setFileName(file.getFileName());
+            attachment.setCreated(new LocalDateTime().toDate());
+            attachment.setAuthorId(authData.getAuthorized().getId());
+            attachment.setParentId(getDocument().getUniqueId());
+            final boolean result = fileManagement.createFile(attachment, file.getContents());
+            LOGGER.info("After alfresco call Attachment.id={}", attachment.getId());
+            if (result) {
+                attachments.add(attachment);
+            }
+            addMessage(new FacesMessage("Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
+        } else {
+            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  ////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,20 +163,21 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         LOGGER.info("Choose reasonDocument From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
     }
 
-    public void addVersionForAttachment(final Attachment attachment){
+    public void addVersionForAttachment(final Attachment attachment) {
         if (attachment != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AttachmentVersionDialogHolder.DIALOG_SESSION_KEY, attachment);
-            final Map<String, List<String>> params = ImmutableMap.of(
+            final Map<String, List<String>> params = new HashMap<>();
+            params.put(
                     AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY,
-                    ImmutableList.of(getDocument().getUniqueId())
+                    Collections.singletonList(getDocument().getUniqueId())
             );
-            RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params );
+            RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params);
         } else {
             addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
         }
     }
 
-    public void handleAddVersionDialogResult(final SelectEvent event){
+    public void handleAddVersionDialogResult(final SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         LOGGER.info("Add version dialog: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
@@ -173,8 +189,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     //Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, ImmutableList.of(Group.RB_CODE_MANAGERS));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
+        params.put(UserDialogHolder.DIALOG_GROUP_KEY, Collections.singletonList(Group.RB_CODE_MANAGERS));
         final User preselected = getDocument().getController();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -212,7 +228,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     //Выбора исполнителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseExecutor() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder.DIALOG_TITLE_VALUE_RESPONSIBLE));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_RESPONSIBLE));
         final User preselected = getDocument().getExecutor();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -232,7 +248,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     // Выбора пользователей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
     public void choosePersonReaders() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_PERSON_READERS));
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_PERSON_READERS));
         final List<User> preselected = getDocument().getPersonReadersList();
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -256,7 +272,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     // Выбора пользователей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
     public void choosePersonEditors() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_PERSON_EDITORS));
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Stream.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_PERSON_EDITORS).collect(Collectors.toList()));
         final List<User> preselected = getDocument().getPersonEditorsList();
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -280,7 +296,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     // Выбора ролей-читателей /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseRoleReaders() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(MultipleRoleDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleRoleDialogHolder.DIALOG_TITLE_VALUE_READERS));
+        params.put(MultipleRoleDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Stream.of(MultipleRoleDialogHolder.DIALOG_TITLE_VALUE_READERS).collect(Collectors.toList()));
         final Set<Role> preselected = getDocument().getRoleReaders();
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleRoleDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -304,7 +320,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     // Выбора ролей-редакторов /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseRoleEditors() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(MultipleRoleDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleRoleDialogHolder.DIALOG_TITLE_VALUE_EDITORS));
+        params.put(MultipleRoleDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Stream.of(MultipleRoleDialogHolder.DIALOG_TITLE_VALUE_EDITORS).collect(Collectors.toList()));
         final Set<Role> preselected = getDocument().getRoleEditors();
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleRoleDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -341,7 +357,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     protected boolean deleteDocument() {
         try {
-            final boolean result = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).delete(getDocumentId());
+            final boolean result = outgoingDocumentDao.delete(getDocument());
             if (!result) {
                 FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
             }
@@ -357,37 +373,37 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     protected void initNewDocument() {
         permissions = Permissions.ALL_PERMISSIONS;
         final Date created = new LocalDateTime().toDate();
-        final User currentUser = sessionManagement.getAuthData().getAuthorized();
+        final User currentUser = authData.getAuthorized();
         LOGGER.info("Start initialize new document by USER[{}]", currentUser.getId());
         final OutgoingDocument document = new OutgoingDocument();
         document.setDocumentStatus(DocumentStatus.NEW);
         document.setCreationDate(created);
-        document.setAuthor(sessionManagement.getLoggedUser());
+        document.setAuthor(authData.getAuthorized());
         document.setForm(getDefaultForm());
-        document.setUserAccessLevel(sessionManagement.getAuthData().getCurrentAccessLevel());
+        document.setUserAccessLevel(authData.getCurrentAccessLevel());
         setDocument(document);
     }
 
     @Override
     protected void initDocument(Integer id) {
-        final User currentUser = sessionManagement.getAuthData().getAuthorized();
+        final User currentUser = authData.getAuthorized();
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
-            final OutgoingDocument document = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).getItemById(id);
+            final OutgoingDocument document = outgoingDocumentDao.get(id);
             setDocument(document);
             if (!checkState(document, currentUser)) {
                 return;
             }
             //Проверка прав на открытие
-            permissions = permissionChecker.getPermissions(sessionManagement.getAuthData(), document);
+            permissions = permissionChecker.getPermissions(authData, document);
             if (isReadPermission()) {
                 //Простановка факта просмотра записи
-                if (sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser)) {
+                if (viewFactDao.registerViewFact(document, currentUser)) {
                     addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
                 }
                 try {
                     updateAttachments();
-                } catch (Exception e){
+                } catch (Exception e) {
                     LOGGER.warn("Exception while check upload files", e);
                     addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
                 }
@@ -400,7 +416,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     @Override
     protected boolean saveNewDocument() {
-        final User currentUser = sessionManagement.getAuthData().getAuthorized();
+        final User currentUser = authData.getAuthorized();
         final Date created = new LocalDateTime().toDate();
         LOGGER.info("Save new document by USER[{}]", currentUser.getId());
         // Сохранение дока в БД и создание записи в истории о создании
@@ -427,7 +443,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         historyEntry.setCommentary("");
         document.addToHistory(historyEntry);
         try {
-            sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
+            outgoingDocumentDao.save(document);
         } catch (Exception e) {
             LOGGER.error("saveNewDocument: on save document", e);
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
@@ -435,7 +451,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
         //Простановка факта просмотра записи
         try {
-            sessionManagement.getDAO(ViewFactDaoImpl.class, ApplicationDAONames.VIEW_FACT_DAO).registerViewFact(document, currentUser);
+            viewFactDao.registerViewFact(document, currentUser);
         } catch (Exception e) {
             LOGGER.error("saveNewDocument: on viewFact register", e);
             addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
@@ -445,11 +461,11 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     @Override
     protected boolean saveDocument() {
-        final User currentUser = sessionManagement.getAuthData().getAuthorized();
+        final User currentUser = authData.getAuthorized();
         LOGGER.info("Save document by USER[{}]", currentUser.getId());
         final OutgoingDocument document = getDocument();
         try {
-            sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
+            outgoingDocumentDao.save(document);
             return true;
         } catch (Exception e) {
             LOGGER.error("saveDocument ERROR:", e);
@@ -460,7 +476,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     @Override
     protected boolean doAfterSave() {
-        final UserAccessLevel accessLevel = sessionManagement.getAuthData().getCurrentAccessLevel();
+        final UserAccessLevel accessLevel = authData.getCurrentAccessLevel();
         if (getDocument().getUserAccessLevel().getLevel() > accessLevel.getLevel()) {
             setState(State.ERROR);
             final FacesMessage msg = MessageHolder.MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL;
@@ -480,7 +496,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     public boolean isCanDelete() {
         if (!permissions.hasPermission(WRITE)) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
@@ -489,7 +505,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
@@ -498,19 +514,18 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     public boolean isCanView() {
         if (permissions == null || !permissions.hasPermission(READ)) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", sessionManagement.getLoggedUser().getId(), getDocumentId());
+            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
             return false;
         }
         return true;
     }
 
     public DocumentForm getDefaultForm() {
-        final DocumentFormDAOImpl dao = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO);
-        final DocumentForm form = dao.getByCode(DocumentForm.RB_CODE_OUTGOING_LETTER);
+        final DocumentForm form = documentFormDao.getByCode(DocumentForm.RB_CODE_OUTGOING_LETTER);
         if (form != null) {
             return form;
         } else {
-            final List<DocumentForm> formList = dao.findByDocumentTypeCode(DocumentType.RB_CODE_OUTGOING);
+            final List<DocumentForm> formList = documentFormDao.findByDocumentTypeCode(DocumentType.RB_CODE_OUTGOING);
             if (!formList.isEmpty()) {
                 return formList.get(0);
             } else {
@@ -540,7 +555,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
-        final UserAccessLevel accessLevel = sessionManagement.getAuthData().getCurrentAccessLevel();
+        final UserAccessLevel accessLevel = authData.getCurrentAccessLevel();
         if (docAccessLevel.getLevel() > accessLevel.getLevel()) {
             setState(State.ERROR);
             final FacesMessage msg = MessageHolder.MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL;
@@ -564,8 +579,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         if (!documentKey.isEmpty()) {
             final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
             if (documentKey.contains("incoming")) {
-                final  IncomingDocument in_doc = sessionManagement.getDAO(IncomingDocumentDAOImpl.class, INCOMING_DOCUMENT_FORM_DAO)
-                        .getItemByIdForSimpleView(rootDocumentId);
+                final IncomingDocument in_doc = incomingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (in_doc != null) {
                     return (in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ? "Черновик входщяего документа от " + ApplicationHelper
                             .formatDate(in_doc.getCreationDate()) : "Входящий документ № " + in_doc
@@ -575,9 +589,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 }
 
             } else if (documentKey.contains("outgoing")) {
-                final OutgoingDocument out_doc = sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO)
-                        .getItemByIdForSimpleView(rootDocumentId);
-                if(out_doc != null) {
+                final OutgoingDocument out_doc = outgoingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
+                if (out_doc != null) {
                     return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ? "Черновик исходящего документа от " + ApplicationHelper
                             .formatDate(out_doc.getCreationDate()) : "Исходящий документ № " + out_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(out_doc.getRegistrationDate()));
                 } else {
@@ -585,9 +598,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 }
 
             } else if (documentKey.contains("internal")) {
-                final InternalDocument internal_doc = sessionManagement.getDAO(InternalDocumentDAOImpl.class, INTERNAL_DOCUMENT_FORM_DAO)
-                        .getItemByIdForSimpleView(rootDocumentId);
-                if(internal_doc != null) {
+                final InternalDocument internal_doc = internalDocumentDao.getItemBySimpleCriteria(rootDocumentId);
+                if (internal_doc != null) {
                     return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ? "Черновик внутреннего документа от " + ApplicationHelper.formatDate(
                             internal_doc.getCreationDate()
                     ) : "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(
@@ -598,9 +610,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 }
 
             } else if (documentKey.contains("request")) {
-                final RequestDocument request_doc = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO)
-                        .getItemByIdForSimpleView(rootDocumentId);
-                if(request_doc != null) {
+                final RequestDocument request_doc = requestDocumentDao.getItemBySimpleCriteria(rootDocumentId);
+                if (request_doc != null) {
                     return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ? "Черновик обращения граждан от " + ApplicationHelper.formatDate(
                             request_doc.getCreationDate()
                     ) : "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(
@@ -611,8 +622,8 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
                 }
 
             } else if (documentKey.contains("task")) {
-                final Task task_doc = sessionManagement.getDAO(TaskDAOImpl.class, TASK_DAO).getItemByIdForSimpleView(rootDocumentId);
-                if(task_doc != null) {
+                final Task task_doc = taskDao.getItemBySimpleCriteria(rootDocumentId);
+                if (task_doc != null) {
                     return (task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ? "Черновик поручения от " + ApplicationHelper
                             .formatDate(task_doc.getCreationDate()) : "Поручение № " + task_doc.getTaskNumber() + " от " + ApplicationHelper.formatDate(
                             task_doc.getCreationDate()
@@ -666,7 +677,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             HistoryEntry historyEntry = new HistoryEntry();
             historyEntry.setCreated(created);
             historyEntry.setStartDate(created);
-            historyEntry.setOwner(sessionManagement.getLoggedUser());
+            historyEntry.setOwner(authData.getAuthorized());
             historyEntry.setDocType(document.getDocumentType().getName());
             historyEntry.setParentId(document.getId());
             historyEntry.setActionId(0);
@@ -679,7 +690,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             if (fileManagement.deleteFile(attachment)) {
                 updateAttachments();
             }
-            sessionManagement.getDAO(OutgoingDocumentDAOImpl.class, OUTGOING_DOCUMENT_FORM_DAO).save(document);
+            outgoingDocumentDao.save(document);
         }
     }
 

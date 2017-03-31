@@ -10,6 +10,10 @@ import java.util.Objects;
 
 public class HumanTaskProcessAction extends UserAction implements Serializable {
 
+    private static final long serialVersionUID = 5604144630908029259L;
+    private HumanTask task;
+    private HumanTaskTreeStateResolver resolver;
+
     public HumanTaskProcessAction(Process process) {
         super(process);
     }
@@ -20,20 +24,20 @@ public class HumanTaskProcessAction extends UserAction implements Serializable {
         setResolver(resolver);
     }
 
-    public void setTask(HumanTask task) {
-        this.task = task;
-    }
-
     public HumanTask getTask() {
         return task;
     }
 
-    public void setResolver(HumanTaskTreeStateResolver resolver) {
-        this.resolver = resolver;
+    public void setTask(HumanTask task) {
+        this.task = task;
     }
 
     public HumanTaskTreeStateResolver getResolver() {
         return resolver;
+    }
+
+    public void setResolver(HumanTaskTreeStateResolver resolver) {
+        this.resolver = resolver;
     }
 
     @Override
@@ -53,11 +57,4 @@ public class HumanTaskProcessAction extends UserAction implements Serializable {
         }
         return result;
     }
-
-
-    private HumanTask task;
-    private HumanTaskTreeStateResolver resolver;
-
-
-    private static final long serialVersionUID = 5604144630908029259L;
 }

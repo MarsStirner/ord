@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.SortOrder;
-import ru.entity.model.user.Role;
-import ru.hitsl.sql.dao.user.RoleDAOHibernate;
-
-import java.util.List;
-import java.util.Map;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import ru.entity.model.referenceBook.Role;
+import ru.hitsl.sql.dao.interfaces.referencebook.RoleDao;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,34 +13,12 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+
+@Component("roleLDM")
+@SpringScopeView
 public class LazyDataModelForRole extends AbstractFilterableLazyDataModel<Role> {
-
-    private final RoleDAOHibernate dao;
-
-    public LazyDataModelForRole(final RoleDAOHibernate dao) {
-        this.dao = dao;
+    @Autowired
+    public LazyDataModelForRole(@Qualifier("roleDao")RoleDao roleDao) {
+        super(roleDao);
     }
-
-    @Override
-    public List<Role> load(
-            int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters
-    ) {
-        setRowCount((int) dao.countRoles());
-        if(getRowCount() < first){
-            first = 0;
-        }
-        return dao.findRoles(first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
-    }
-
-    @Override
-    public Role getRowData(String rowKey) {
-        final Integer identifier;
-        try {
-            identifier = Integer.valueOf(rowKey);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return dao.get(identifier);
-    }
-
 }

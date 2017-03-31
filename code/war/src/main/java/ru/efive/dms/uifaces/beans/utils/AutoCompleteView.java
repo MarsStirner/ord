@@ -1,21 +1,18 @@
 package ru.efive.dms.uifaces.beans.utils;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
-import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.interfaces.UserDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -23,35 +20,32 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Named("autoCompleteView")
+@Controller("autoCompleteView")
 @ApplicationScoped
 public class AutoCompleteView {
     private final static int MIN_SEARCH_STRING_LENGTH = 2;
     private final static int MAX_SEARCH_RESULTS = 10;
 
-    @Inject
-    @Named("sessionManagement")
-    SessionManagementBean sessionManagement;
+    @Autowired
+    @Qualifier("departmentDao")
+    private DepartmentDao departmentDao;
 
-    private DepartmentDAOImpl departmentDAOImpl;
+    @Autowired
+    @Qualifier("positionDao")
+    private PositionDao positionDao;
+
+    @Autowired
+    @Qualifier("userDao")
+    private UserDao userDao;
+
+
     private List<Department> allDepartments;
-
-    private PositionDAOImpl positionDAO;
     private List<Position> allPositions;
 
-    private UserDAOHibernate userDao;
-
-
-    @PostConstruct
-    public void init() {
-        departmentDAOImpl = sessionManagement.getDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO);
-        positionDAO = sessionManagement.getDAO(PositionDAOImpl.class, POSITION_DAO);
-        userDao = sessionManagement.getDAO(UserDAOHibernate.class, USER_DAO);
-    }
 
     public List<Department> completeDepartment(final String query) {
         if (allDepartments == null) {
-            allDepartments = departmentDAOImpl.findDocuments();
+            allDepartments = departmentDao.getItems();
         }
         final List<Department> result = new ArrayList<>(MAX_SEARCH_RESULTS);
         int i = 0;
@@ -85,7 +79,7 @@ public class AutoCompleteView {
 
     public List<Position> completePosition(final String query) {
         if (allPositions == null) {
-            allPositions = positionDAO.findDocuments();
+            allPositions = positionDao.getItems();
         }
         final List<Position> result = new ArrayList<>(MAX_SEARCH_RESULTS);
         int i = 0;
@@ -113,7 +107,7 @@ public class AutoCompleteView {
     }
 
 
-    public List<User> completeUser(final String query){
-        return userDao.findUsers(query, false,false, 0, 100, "lastName", true);
+    public List<User> completeUser(final String query) {
+        return userDao.getItems(query, false, false, 0, 100, "lastName", true);
     }
 }

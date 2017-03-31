@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Renderer class for {@link HtmlMultiMarker} component class.
- * 
+ *
  * @author Ramil_Habirov
  */
 @FacesRenderer(renderKitId = "HTML_BASIC", rendererType = HtmlMultiMarker.RENDERER_TYPE, componentFamily = ComponentFamily.MULTI_MARKER)
@@ -41,9 +41,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class when there are info messages only.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -54,9 +53,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class when there are warn messages.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -67,9 +65,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class when there are error messages.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -80,9 +77,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class when there are fatal messages.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -93,9 +89,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class of hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -106,9 +101,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class of info messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -119,9 +113,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class of warn messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -132,9 +125,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class of error messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -145,9 +137,8 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns CSS class of fatal messages on the hint window.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return CSS class.
      */
     @Override
@@ -158,11 +149,9 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
 
     /**
      * Returns message iterator.
-     * 
-     * @param writer
-     *            writer.
-     * @param forComponentId
-     *            identifier of component messages belongs to.
+     *
+     * @param writer         writer.
+     * @param forComponentId identifier of component messages belongs to.
      * @return message iterator.
      */
     @Override
@@ -186,7 +175,7 @@ public class HtmlMultiMarkerRenderer extends HtmlMarkerRenderer {
     }
 
     private List<FacesMessage> getMessages(FacesContext context,
-            UIComponent component) {
+                                           UIComponent component) {
         List<FacesMessage> messages = new ArrayList<>();
         if (component != null) {
             Iterator<FacesMessage> messageIterator = context

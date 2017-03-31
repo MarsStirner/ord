@@ -1,19 +1,20 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.Map;
 
 /**
@@ -23,17 +24,20 @@ import java.util.Map;
  * Description: <br>
  */
 
-@Named("attachmentVersionDialog")
-@ViewScoped
+@Controller("attachmentVersionDialog")
+@SpringScopeView
 public class AttachmentVersionDialogHolder extends AbstractDialog<Attachment> {
     public static final String DIALOG_SESSION_KEY = "DIALOG_ATTACHMENT_VERSION";
     public static final String DIALOG_DOCUMENT_KEY = "documentId";
-    @Inject
-    @Named("sessionManagement")
-    private SessionManagementBean sessionManagement;
-    @Inject
-    @Named("fileManagement")
+
+    @Autowired
+    @Qualifier("authData")
+    private AuthorizationData authData;
+
+    @Autowired
+    @Qualifier("fileManagement")
     private FileManagementBean fileManagement;
+    
     private String documentId;
 
     /**
@@ -66,7 +70,7 @@ public class AttachmentVersionDialogHolder extends AbstractDialog<Attachment> {
         UploadedFile file = event.getFile();
         logger.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
         final boolean uploadResult = fileManagement.createVersion(
-                selected, file.getContents(), false, file.getFileName(), sessionManagement.getAuthData().getAuthorized()
+                selected, file.getContents(), false, file.getFileName(), authData.getAuthorized()
         );
         if (uploadResult) {
             final DialogResult result = new DialogResult(

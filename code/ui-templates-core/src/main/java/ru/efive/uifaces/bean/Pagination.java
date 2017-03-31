@@ -23,7 +23,7 @@ public class Pagination implements Serializable {
     private final int pageOffset;
 
     public Pagination(int offset, int totalCount, int pageSize) {
-        this.offset = Math.max(0, offset < totalCount? offset: totalCount - totalCount % pageSize);
+        this.offset = Math.max(0, offset < totalCount ? offset : totalCount - totalCount % pageSize);
         this.totalCount = totalCount;
         this.pageSize = pageSize;
 

@@ -11,16 +11,23 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 /**
  * Вложение
  *
  * @author Alexey Vagizov
  */
 public class Attachment extends AlfrescoNode implements Serializable {
+    private static final long serialVersionUID = -2722742909627205138L;
     public static String STORE_NAME = "E5 DMS";
     public static String NAMESPACE = "http://www.efive.ru/model/dictionary/1.0";
     public static String NAMESPACE_PREFIX = "e5-dms";
     public static String TYPE_FILE = "File";
+    private int authorId;
+    private String parentId;
+    private String fileName;
+    private String displayName;
+    private Date created;
 
     /**
      * Конструктор по умолчанию
@@ -36,12 +43,12 @@ public class Attachment extends AlfrescoNode implements Serializable {
         setPath(path);
     }
 
-    public void setAuthorId(int authorId) {
-        this.authorId = authorId;
-    }
-
     public int getAuthorId() {
         return authorId;
+    }
+
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
     }
 
     public String getParentId() {
@@ -68,12 +75,12 @@ public class Attachment extends AlfrescoNode implements Serializable {
         this.displayName = displayName;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
     public Date getCreated() {
         return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     public Revision getCurrentRevision() {
@@ -156,13 +163,4 @@ public class Attachment extends AlfrescoNode implements Serializable {
             return false;
         return true;
     }
-
-
-    private int authorId;
-    private String parentId;
-    private String fileName;
-    private String displayName;
-    private Date created;
-
-    private static final long serialVersionUID = -2722742909627205138L;
 }

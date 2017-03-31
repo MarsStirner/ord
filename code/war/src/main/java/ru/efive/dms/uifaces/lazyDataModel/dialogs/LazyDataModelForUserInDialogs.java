@@ -1,10 +1,14 @@
 package ru.efive.dms.uifaces.lazyDataModel.dialogs;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.SortOrder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
-import ru.entity.model.user.Group;
+import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.interfaces.UserDao;
 
 import java.util.List;
 import java.util.Map;
@@ -15,10 +19,17 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+@Component("userDialogLDM")
+@SpringScopeView
 public class LazyDataModelForUserInDialogs extends AbstractFilterableLazyDataModel<User> {
-    private UserDAOHibernate dao;
+
     private Group filterGroup;
     private boolean showFired = false;
+    @Autowired
+    public LazyDataModelForUserInDialogs(
+            @Qualifier("userDao")UserDao userDao) {
+        super(userDao);
+    }
 
     public boolean isShowFired() {
         return showFired;
@@ -36,20 +47,6 @@ public class LazyDataModelForUserInDialogs extends AbstractFilterableLazyDataMod
         this.filterGroup = filterGroup;
     }
 
-    public LazyDataModelForUserInDialogs(UserDAOHibernate daoHibernate) {
-        dao = daoHibernate;
-    }
-
-    @Override
-    public User getRowData(String rowKey) {
-        final Integer identifier;
-        try {
-            identifier = Integer.valueOf(rowKey);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return dao.getItemByIdForListView(identifier);
-    }
 
     @Override
     public List<User> load(
@@ -59,18 +56,19 @@ public class LazyDataModelForUserInDialogs extends AbstractFilterableLazyDataMod
             SortOrder sortOrder,
             Map<String, Object> filters
     ) {
+        final UserDao userDao = (UserDao) this.dao;
         if (filterGroup == null) {
-            setRowCount(((Long) dao.countUsersForDialog(filter, false, showFired)).intValue());
-            if(getRowCount() < first){
+            setRowCount(userDao.countItems(filter, false, showFired));
+            if (getRowCount() < first) {
                 first = 0;
             }
-            return dao.findUsersForDialog(filter, false, showFired, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
+            return userDao.getItemsForDialog(filter, false, showFired, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
         } else {
-            setRowCount(((Long) dao.countUsersForDialogByGroup(filter, false, showFired, filterGroup)).intValue());
-            if(getRowCount() < first){
+            setRowCount(userDao.countItemsForDialogByGroup(filter, false, showFired, filterGroup));
+            if (getRowCount() < first) {
                 first = 0;
             }
-            return dao.findUsersForDialogByGroup(filter, false, showFired, filterGroup, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
+            return userDao.getItemsForDialogByGroup(filter, false, showFired, filterGroup, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
         }
     }
 }

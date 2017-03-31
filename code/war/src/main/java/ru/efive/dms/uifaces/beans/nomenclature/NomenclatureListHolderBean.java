@@ -7,30 +7,19 @@ package ru.efive.dms.uifaces.beans.nomenclature;
  * Description: <br>
  */
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForNomenclature;
 import ru.entity.model.referenceBook.Nomenclature;
-import ru.hitsl.sql.dao.referenceBook.NomenclatureDAOImpl;
 
-import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.RB_NOMENCLATURE_DAO;
-
-@Named("nomenclatureList")
-@ViewScoped
-public class NomenclatureListHolderBean extends AbstractDocumentLazyDataModelBean<Nomenclature>{
-    private NomenclatureDAOImpl dao;
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
-
-    @PostConstruct
-    public void init() {
-        dao = sessionManagement.getDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO);
-        setLazyModel(new LazyDataModelForNomenclature(dao));
-    }
+@Controller("nomenclatures")
+@SpringScopeView
+public class NomenclatureListHolderBean extends AbstractDocumentLazyDataModelBean<Nomenclature> {
+    @Autowired
+    @Qualifier("nomenclatureLDM")
+    private LazyDataModelForNomenclature ldm;
 }

@@ -1,21 +1,15 @@
 package ru.entity.model.document;
 
-import ru.entity.model.user.Role;
+import ru.entity.model.referenceBook.Role;
 import ru.entity.model.user.User;
 import ru.external.ProcessUser;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Person extends User implements ProcessUser {
+    private static final long serialVersionUID = -6200882661231446726L;
     private Set<Role> totalRoles;
-
-
-    @Override
-    public Set<Role> getRoles(){
-        return totalRoles;
-    }
 
 
     public Person(User user) {
@@ -31,7 +25,7 @@ public class Person extends User implements ProcessUser {
         totalRoles = new HashSet<>(user.getRoles());
     }
 
-    public Person(User user, List<User> substitutedUsers) {
+    public Person(User user, Set<User> substitutedUsers) {
         setCreated(user.getCreated());
         setDeleted(user.isDeleted());
         setEmail(user.getEmail());
@@ -42,10 +36,13 @@ public class Person extends User implements ProcessUser {
         setMiddleName(user.getMiddleName());
         setPassword(user.getPassword());
         totalRoles = new HashSet<>(user.getRoles());
-        for(User currentUser : substitutedUsers){
-           totalRoles.addAll(currentUser.getRoles());
+        for (User currentUser : substitutedUsers) {
+            totalRoles.addAll(currentUser.getRoles());
         }
     }
 
-    private static final long serialVersionUID = -6200882661231446726L;
+    @Override
+    public Set<Role> getRoles() {
+        return totalRoles;
+    }
 }

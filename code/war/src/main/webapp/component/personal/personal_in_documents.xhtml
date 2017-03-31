@@ -19,7 +19,7 @@
             <p:commandButton action="#{personal_in_documents.refresh()}" value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{props['LIST_VIEW_SEARCH_PLACEHOLDER_TEXT']}" style="width:25em;" id="filterString" value="#{personal_in_documents.filter}" title="Поиск"/>
+            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString" value="#{personal_in_documents.filter}" title="Поиск"/>
             <p:commandButton value="Найти" action="#{personal_in_documents.applyFilter()}" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
             <p:button target="_blank" outcome="/component/in/in_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
             <p:defaultCommand target="searchButton" />
@@ -29,13 +29,13 @@
     <ui:define name="contentTable">
         <p:dataTable id="documentTable"
                      paginator="true"
-                     rows="100"
-                     currentPageReportTemplate="#{props['CURRENT_PAGE_PAGINATOR_TEMPLATE']}"
-                     paginatorTemplate="#{props['PAGINATOR_TEMPLATE']}"
-                     rowsPerPageTemplate="#{props['ROWS_PER_PAGE_DROPDOWN']}"
-                     paginatorPosition = "#{props['PAGINATOR_POSITION']}"
+                     rows="#{ui['paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
+                     paginatorPosition = "#{ui['paginator.position']}"
                      value="#{personal_in_documents.lazyModel}"
-                     emptyMessage="#{props['EMPTY_RESULT']}"
+                     emptyMessage="#{ui['emptyMessage']}"
                      var="row"
                      lazy="true"
                      widgetVar="documentTableVar"

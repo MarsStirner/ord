@@ -1,21 +1,18 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
-import com.google.common.collect.ImmutableList;
+
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
 
 import javax.faces.context.FacesContext;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
@@ -25,7 +22,7 @@ import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
  * Company: Korus Consulting IT <br>
  * Description: Абстрактный класс для поисковых бинов <br>
  */
-public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> extends AbstractDocumentLazyDataModelBean<T> {
+public abstract class AbstractDocumentSearchBean<T extends DeletableEntity> extends AbstractDocumentLazyDataModelBean<T> {
 
     /**
      * Набор фильтров в виде "Ключ"->"Значения"
@@ -38,32 +35,34 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
     /**
      * Очистка текущего фильтра
      */
-    public void clearFilter(){
+    public void clearFilter() {
         filters.clear();
     }
 
     /**
      * Добавить в фильтры ненелувое значение с ключом
-     * @param KEY  ключ
+     *
+     * @param KEY   ключ
      * @param value значение (если NULL -> добавления не произойдет, а вот старое значение удалим)
      */
     protected void putNotNullToFilters(String KEY, Object value) {
-        if(value != null){
+        if (value != null) {
             filters.put(KEY, value);
-        }  else {
+        } else {
             filters.remove(KEY);
         }
     }
 
     /**
      * Добавить в фильтры ненелувое значение с ключом
-     * @param KEY  ключ
+     *
+     * @param KEY   ключ
      * @param value значение (если NULL -> добавления не произойдет, а вот старое значение удалим)
      */
     protected void putNotNullToFilters(String KEY, String value) {
         if (StringUtils.isNotEmpty(value)) {
             filters.put(KEY, value);
-        }  else {
+        } else {
             filters.remove(KEY);
         }
     }
@@ -77,10 +76,10 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
     }
 
 
-
     /**
      * Выполнить поиск с текущим фильтром
-     * @return  Список документов, удовлетворяющих поиску
+     *
+     * @return Список документов, удовлетворяющих поиску
      */
     public abstract void performSearch();
 
@@ -90,7 +89,7 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
     //Выбора автора ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseAuthors() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_AUTHOR));
         final List<User> preselected = getAuthors();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -100,7 +99,7 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
 
     public void onAuthorsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final List<User> selected = (List<User>) result.getResult();
             if (selected != null) {
                 setAuthors(selected);
@@ -114,13 +113,17 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
     // Параметры поиска *** ОБЩИЕ для всех типов документов *****  /////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    public String getStatus() {
+        return (String) filters.get(STATUS_KEY);
+    }
+
     // Статус
     public void setStatus(final String value) {
         putNotNullToFilters(STATUS_KEY, value);
     }
 
-    public String getStatus() {
-        return (String) filters.get(STATUS_KEY);
+    public DocumentForm getForm() {
+        return (DocumentForm) filters.get(FORM_KEY);
     }
 
     //  Вид документа
@@ -128,8 +131,8 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         putNotNullToFilters(FORM_KEY, value);
     }
 
-    public DocumentForm getForm() {
-        return (DocumentForm) filters.get(FORM_KEY);
+    public List<User> getAuthors() {
+        return (List<User>) filters.get(AUTHORS_KEY);
     }
 
     // Автор
@@ -137,16 +140,16 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         putNotNullToFilters(AUTHORS_KEY, value);
     }
 
-    public List<User> getAuthors() {
-        return (List<User>) filters.get(AUTHORS_KEY);
-    }
-
     public void removeAuthor(User author) {
         final List<User> authors = getAuthors();
         authors.remove(author);
-        if(authors.isEmpty()){
+        if (authors.isEmpty()) {
             filters.remove(AUTHORS_KEY);
         }
+    }
+
+    public String getRegistrationNumber() {
+        return (String) filters.get(REGISTRATION_NUMBER_KEY);
     }
 
     // Регистрационный номер
@@ -154,8 +157,8 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         putNotNullToFilters(REGISTRATION_NUMBER_KEY, value);
     }
 
-    public String getRegistrationNumber() {
-        return (String) filters.get(REGISTRATION_NUMBER_KEY);
+    public Date getStartCreationDate() {
+        return (Date) filters.get(START_CREATION_DATE_KEY);
     }
 
     // Дата создания ОТ
@@ -163,8 +166,8 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         putNotNullToFilters(START_CREATION_DATE_KEY, value);
     }
 
-    public Date getStartCreationDate() {
-        return (Date) filters.get(START_CREATION_DATE_KEY);
+    public Date getEndCreationDate() {
+        return (Date) filters.get(END_CREATION_DATE_KEY);
     }
 
     // Дата создания ДО
@@ -172,8 +175,8 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         putNotNullToFilters(END_CREATION_DATE_KEY, value);
     }
 
-    public Date getEndCreationDate() {
-        return (Date) filters.get(END_CREATION_DATE_KEY);
+    public Date getStartRegistrationDate() {
+        return (Date) filters.get(START_REGISTRATION_DATE_KEY);
     }
 
     // Дата регистрации ОТ
@@ -181,8 +184,8 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         putNotNullToFilters(START_REGISTRATION_DATE_KEY, value);
     }
 
-    public Date getStartRegistrationDate() {
-        return (Date) filters.get(START_REGISTRATION_DATE_KEY);
+    public Date getEndRegistrationDate() {
+        return (Date) filters.get(END_REGISTRATION_DATE_KEY);
     }
 
     // Дата регистрации ДО
@@ -190,17 +193,13 @@ public abstract class AbstractDocumentSearchBean<T extends IdentifiedEntity> ext
         putNotNullToFilters(END_REGISTRATION_DATE_KEY, value);
     }
 
-    public Date getEndRegistrationDate() {
-        return (Date) filters.get(END_REGISTRATION_DATE_KEY);
+    public String getShortDescription() {
+        return (String) filters.get(SHORT_DESCRIPTION_KEY);
     }
 
     // Краткое содержание
     public void setShortDescription(final String value) {
         putNotNullToFilters(SHORT_DESCRIPTION_KEY, value);
-    }
-
-    public String getShortDescription() {
-        return (String) filters.get(SHORT_DESCRIPTION_KEY);
     }
 
 }

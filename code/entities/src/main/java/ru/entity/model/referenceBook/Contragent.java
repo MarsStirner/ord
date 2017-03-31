@@ -1,6 +1,6 @@
 package ru.entity.model.referenceBook;
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 import ru.util.Descriptionable;
 
 import javax.persistence.*;
@@ -13,15 +13,15 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "rbContragent")
-public class Contragent extends DictionaryEntity implements Descriptionable{
+public class Contragent extends ReferenceBookEntity implements Descriptionable {
 
 
+    private static final long serialVersionUID = 1123233260758669450L;
     /**
      * Краткое наименование
      */
-    @Column(name="shortName")
+    @Column(name = "shortName")
     private String shortName;
-
     /**
      * Тип контрагента
      */
@@ -29,12 +29,12 @@ public class Contragent extends DictionaryEntity implements Descriptionable{
     @JoinColumn(name = "type_id")
     private ContragentType type;
 
-    public Contragent() {
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // GETTERS & SETTERS
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public Contragent() {
+    }
 
     public String getShortName() {
         return shortName;
@@ -51,8 +51,6 @@ public class Contragent extends DictionaryEntity implements Descriptionable{
     public void setType(ContragentType type) {
         this.type = type;
     }
-
-    private static final long serialVersionUID = 1123233260758669450L;
 
     /**
      * Получить полное описание сущности

@@ -4,53 +4,23 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- *
  * @author Denis Kotegov
  */
 public abstract class AbstractDocumentListHolderBean<D extends Serializable> implements Serializable {
 
-    public static class Sorting implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private final String columnId;
-
-        private final boolean asc;
-
-        public Sorting(String columnId, boolean asc) {
-            this.columnId = columnId;
-            this.asc = asc;
-        }
-
-        public boolean isAsc() {
-            return asc;
-        }
-
-        public String getColumnId() {
-            return columnId;
-        }
-
-    }
-
-    // Changeable state -----------------------------------------------------------------------------------------------
-
     private List<D> documents;
 
+    // Changeable state -----------------------------------------------------------------------------------------------
     private Pagination pagination;
-
     private Sorting sorting;
-
     private boolean needRefresh = false;
-
     private String pageToGo;
-
     private int pageSizeToSelect;
-
     private boolean initialized = false;
 
-    // Can be overrided -----------------------------------------------------------------------------------------------
-
     protected abstract int getTotalCount();
+
+    // Can be overrided -----------------------------------------------------------------------------------------------
 
     protected abstract List<D> loadDocuments();
 
@@ -66,12 +36,12 @@ public abstract class AbstractDocumentListHolderBean<D extends Serializable> imp
         return doGetDocuments();
     }
 
-    // Should not be overrided ----------------------------------------------------------------------------------------
-
     private void adjustUserInputs() {
         pageToGo = String.valueOf(pagination.getPageOffset() + 1);
         pageSizeToSelect = pagination.getPageSize();
     }
+
+    // Should not be overrided ----------------------------------------------------------------------------------------
 
     private List<D> doGetDocuments() {
         if (!initialized) {
@@ -181,6 +151,29 @@ public abstract class AbstractDocumentListHolderBean<D extends Serializable> imp
     // 1-based
     public void setPageToGo(String pageToGo) {
         this.pageToGo = pageToGo;
+    }
+
+    public static class Sorting implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private final String columnId;
+
+        private final boolean asc;
+
+        public Sorting(String columnId, boolean asc) {
+            this.columnId = columnId;
+            this.asc = asc;
+        }
+
+        public boolean isAsc() {
+            return asc;
+        }
+
+        public String getColumnId() {
+            return columnId;
+        }
+
     }
 
 }

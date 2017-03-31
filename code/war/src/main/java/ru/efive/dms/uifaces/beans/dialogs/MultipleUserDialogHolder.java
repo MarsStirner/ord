@@ -1,21 +1,18 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.LazyDataModel;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.List;
 import java.util.Map;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -23,8 +20,8 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_DAO;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Named("multipleUserDialog")
-@ViewScoped
+@Controller("multipleUserDialog")
+@SpringScopeView
 public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON_LIST";
@@ -36,22 +33,18 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
     public static final String DIALOG_TITLE_VALUE_PERSON_READERS = "PERSON_READERS_TITLE";
     public static final String DIALOG_TITLE_VALUE_PERSON_EDITORS = "PERSON_EDITORS_TITLE";
 
-    @EJB(name = "indexManagement")
-    private IndexManagementBean indexManagementBean;
-
+    @Autowired
+    @Qualifier("userDialogLDM")
     private LazyDataModelForUserInDialogs lazyModel;
-
 
 
     @PostConstruct
     public void init() {
         logger.info("Initialize new MultiplePersonSelectDialog");
-        final UserDAOHibernate userDao = (UserDAOHibernate) indexManagementBean.getContext().getBean(USER_DAO);
         final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForUserInDialogs(userDao);
     }
 
     /**
@@ -101,7 +94,6 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
     public void setFilter(String filter) {
         lazyModel.setFilter(filter);
     }
-
 
 
 }

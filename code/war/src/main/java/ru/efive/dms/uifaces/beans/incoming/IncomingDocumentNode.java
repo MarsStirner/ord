@@ -14,20 +14,13 @@ public class IncomingDocumentNode {
     private String header;
     private DOC_TYPE type;
 
-    public enum DOC_TYPE{
-        YEAR,
-        MONTH,
-        DAY,
-        DOCUMENT
-    }
-
-    public IncomingDocumentNode(IncomingDocument doc, String header){
+    public IncomingDocumentNode(IncomingDocument doc, String header) {
         this.type = DOC_TYPE.DOCUMENT;
         this.document = doc;
         this.header = header;
     }
 
-    public IncomingDocumentNode(DOC_TYPE type, String header){
+    public IncomingDocumentNode(DOC_TYPE type, String header) {
         this.header = header;
         this.type = type;
     }
@@ -54,5 +47,12 @@ public class IncomingDocumentNode {
 
     public void setType(DOC_TYPE type) {
         this.type = type;
+    }
+
+    public enum DOC_TYPE {
+        YEAR,
+        MONTH,
+        DAY,
+        DOCUMENT
     }
 }

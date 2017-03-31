@@ -1,9 +1,10 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.referenceBook.UserAccessLevel;
-import ru.hitsl.sql.dao.referenceBook.UserAccessLevelDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.UserAccessLevelDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -11,18 +12,17 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.USER_ACCESS_LEVEL_DAO;
-
 @FacesConverter("UserAccessLevelConverter")
 public class UserAccessLevelConverter implements Converter {
+
+    @Autowired
+    @Qualifier("userAccessLevelDao")
+    private UserAccessLevelDao userAccessLevelDao;
 
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(context,
-                    "#{sessionManagement}", SessionManagementBean.class);
-            List<UserAccessLevel> list = sessionManagement.getDictionaryDAO(UserAccessLevelDAOImpl.class,
-                    USER_ACCESS_LEVEL_DAO).getByValue(value);
+            List<UserAccessLevel> list = userAccessLevelDao.getByValue(value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

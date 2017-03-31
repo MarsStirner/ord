@@ -17,6 +17,30 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
     //////////////////////// ABSTRACT METHODS START ///////////////////////////////////////////////////////////////////
 
     /**
+     * Ограничение на максимальную глубину узла при сворачивании\разворачивании
+     */
+    private static final int MAX_RECURSIVE_DEPTH = 10;
+    /**
+     * Флаг иницаилизации бина
+     */
+    private boolean initialized = false;
+
+
+    ////////////////////// ABSTRACT METHODS END ////////////////////////////////////////////////////////////////////////
+    /**
+     * корневой элемент дерева
+     */
+    private TreeNode rootNode;
+    /**
+     * Документы, которые используются в дереве
+     */
+    private List<D> documents;
+    /**
+     * Текущая глубина узла при сворачивании\ разворачивании дерева
+     */
+    private int depth = 0;
+
+    /**
      * Переопределяемый метод для загрузки списка документов, которые будут использоваться при построении дерева
      *
      * @return список документов
@@ -30,35 +54,6 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * @return корневой элемент дерева
      */
     protected abstract TreeNode constructTreeFromDocumentList(final List<D> documents);
-
-
-    ////////////////////// ABSTRACT METHODS END ////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Флаг иницаилизации бина
-     */
-    private boolean initialized = false;
-
-    /**
-     * корневой элемент дерева
-     */
-    private TreeNode rootNode;
-
-    /**
-     * Документы, которые используются в дереве
-     */
-    private List<D> documents;
-
-    /**
-     * Текущая глубина узла при сворачивании\ разворачивании дерева
-     */
-    private int depth = 0;
-
-    /**
-     * Ограничение на максимальную глубину узла при сворачивании\разворачивании
-     */
-    private static final int MAX_RECURSIVE_DEPTH = 10;
-
 
     @PostConstruct
     private void init() {

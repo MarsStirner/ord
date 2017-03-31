@@ -1,22 +1,17 @@
 package ru.efive.uifaces.renderkit.html_basic;
 
-import java.io.IOException;
-import java.util.Map;
-
-import javax.faces.render.FacesRenderer;
-
 import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.component.html.HtmlDocumentContainer;
 import ru.efive.uifaces.data.Document;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.ComponentAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlAttribute;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlBasicRenderer;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
+import ru.efive.uifaces.renderkit.html_basic.base.*;
+
+import javax.faces.render.FacesRenderer;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Renderer class for {@link HtmlDocumentContainer} component class.
- * 
+ *
  * @author Ramil_Habirov
  */
 @FacesRenderer(
@@ -139,11 +134,10 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Is the document could be created.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return <code>true</code> if document could be created, else
-     *         <code>false</code>.
+     * <code>false</code>.
      */
     private Boolean getCanCreate(AdvancedResponseWriter writer) {
         return (Boolean) getComponentAttributeValue(writer,
@@ -152,11 +146,10 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Is the document could be edited.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return <code>true</code> if document could be edited, else
-     *         <code>false</code>.
+     * <code>false</code>.
      */
     private Boolean getCanEdit(AdvancedResponseWriter writer) {
         return (Boolean) getComponentAttributeValue(writer,
@@ -165,11 +158,10 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Is the document could be viewed.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return <code>true</code> if document could be viewed, else
-     *         <code>false</code>.
+     * <code>false</code>.
      */
     private Boolean getCanView(AdvancedResponseWriter writer) {
         return (Boolean) getComponentAttributeValue(writer,
@@ -178,9 +170,8 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns request parameter name indicating document identifier.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return request parameter name indicating document identifier.
      */
     private String getIdParam(AdvancedResponseWriter writer) {
@@ -190,9 +181,8 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns request parameter name indicating that document is in edit mode.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return request parameter name indicating that document is in edit mode.
      */
     private String getEditParam(AdvancedResponseWriter writer) {
@@ -202,9 +192,8 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns a control type to switch document to the edit mode.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return a control type to switch document to the edit mode.
      */
     private String getEditModeControl(AdvancedResponseWriter writer) {
@@ -214,7 +203,7 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns caption of control to switch document to the edit mode.
-     * 
+     *
      * @param writer
      *            writer.
      * @return caption of control to switch document to the edit mode.
@@ -226,9 +215,8 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns document.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return document.
      */
     private Object getDocument(AdvancedResponseWriter writer) {
@@ -237,21 +225,16 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns component attribute or default value if it is <code>null</code>.
-     * 
-     * @param writer
-     *            writer.
-     * @param htmlAttr
-     *            HTML attribute.
-     * @param componentAttr
-     *            component attribute.
-     * @param defaultValue
-     *            default value.
-     * @throws IOException
-     *             when can't return component attribute.
+     *
+     * @param writer        writer.
+     * @param htmlAttr      HTML attribute.
+     * @param componentAttr component attribute.
+     * @param defaultValue  default value.
+     * @throws IOException when can't return component attribute.
      */
     // TODO May be need move to AdvancedResponseWriter.
     private void writeComponentAttribute(AdvancedResponseWriter writer,
-            HtmlAttribute htmlAttr, String componentAttr, Object defaultValue)
+                                         HtmlAttribute htmlAttr, String componentAttr, Object defaultValue)
             throws IOException {
         if (htmlAttr == null || componentAttr == null) {
             throw new NullPointerException(
@@ -266,19 +249,15 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Writes attribute as text or default value if it is <code>null</code>.
-     * 
-     * @param writer
-     *            writer.
-     * @param componentAttr
-     *            component attribute.
-     * @param defaultValue
-     *            default value.
-     * @throws IOException
-     *             when can't write.
+     *
+     * @param writer        writer.
+     * @param componentAttr component attribute.
+     * @param defaultValue  default value.
+     * @throws IOException when can't write.
      */
     // TODO May be need move to AdvancedResponseWriter.
     private void writeAttributeText(AdvancedResponseWriter writer,
-            String componentAttr, Object defaultValue) throws IOException {
+                                    String componentAttr, Object defaultValue) throws IOException {
         if (componentAttr == null) {
             throw new NullPointerException("'componentAttr' is null");
         }
@@ -292,19 +271,16 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
     /**
      * Returns component attribute value or default value if it is
      * <code>null</code>.
-     * 
-     * @param writer
-     *            writer.
-     * @param componentAttr
-     *            component attribute.
-     * @param defaultValue
-     *            default value.
+     *
+     * @param writer        writer.
+     * @param componentAttr component attribute.
+     * @param defaultValue  default value.
      * @return component attribute value of default value if it is
-     *         <code>null</code>.
+     * <code>null</code>.
      */
     // TODO May be need move to AdvancedResponseWriter.
     private Object getComponentAttributeValue(AdvancedResponseWriter writer,
-            String componentAttr, Object defaultValue) {
+                                              String componentAttr, Object defaultValue) {
         if (componentAttr == null) {
             throw new NullPointerException("'componentAttr' is null");
         }
@@ -318,26 +294,22 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns component attribute value.
-     * 
-     * @param writer
-     *            writer.
-     * @param componentAttr
-     *            component attribute.
+     *
+     * @param writer        writer.
+     * @param componentAttr component attribute.
      * @return component attribute value.
      */
     // TODO May be need move to AdvancedResponseWriter.
     private Object getComponentAttributeValue(AdvancedResponseWriter writer,
-            String componentAttr) {
+                                              String componentAttr) {
         return getComponentAttributeValue(writer, componentAttr, null);
     }
 
     /**
      * Writes when edit.
-     * 
-     * @param writer
-     *            writer.
-     * @throws IOException
-     *             when can't write.
+     *
+     * @param writer writer.
+     * @throws IOException when can't write.
      */
     private void writeEdit(AdvancedResponseWriter writer) throws IOException {
         writer.writeFacet(FACET_EDIT);
@@ -345,11 +317,9 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Writes when view.
-     * 
-     * @param writer
-     *            writer.
-     * @throws IOException
-     *             when can't write.
+     *
+     * @param writer writer.
+     * @throws IOException when can't write.
      */
     private void writeView(AdvancedResponseWriter writer) throws IOException {
         writer.writeFacet(FACET_VIEW);
@@ -357,11 +327,9 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Writes when forbidden.
-     * 
-     * @param writer
-     *            writer.
-     * @throws IOException
-     *             when can't write.
+     *
+     * @param writer writer.
+     * @throws IOException when can't write.
      */
     private void writeForbidden(AdvancedResponseWriter writer)
             throws IOException {
@@ -372,11 +340,9 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Writes when not found.
-     * 
-     * @param writer
-     *            writer.
-     * @throws IOException
-     *             when can't write.
+     *
+     * @param writer writer.
+     * @throws IOException when can't write.
      */
     private void writeNotFound(AdvancedResponseWriter writer)
             throws IOException {
@@ -387,11 +353,9 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Writes edit link.
-     * 
-     * @param writer
-     *            writer.
-     * @throws IOException
-     *             when can't write edit link.
+     *
+     * @param writer writer.
+     * @throws IOException when can't write edit link.
      */
     private void writeEditLink(AdvancedResponseWriter writer)
             throws IOException {
@@ -410,11 +374,9 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Writes edit button.
-     * 
-     * @param writer
-     *            writer.
-     * @throws IOException
-     *             when can't write edit button.
+     *
+     * @param writer writer.
+     * @throws IOException when can't write edit button.
      */
     private void writeEditButton(AdvancedResponseWriter writer)
             throws IOException {
@@ -435,12 +397,10 @@ public class HtmlDocumentContainerRenderer extends HtmlBasicRenderer {
 
     /**
      * Returns edit HTML reference.
-     * 
-     * @param writer
-     *            writer.
+     *
+     * @param writer writer.
      * @return edit HTML reference.
-     * @throws IOException
-     *             when can't return edit HTML reference.
+     * @throws IOException when can't return edit HTML reference.
      */
     private String getEditHref(AdvancedResponseWriter writer)
             throws IOException {

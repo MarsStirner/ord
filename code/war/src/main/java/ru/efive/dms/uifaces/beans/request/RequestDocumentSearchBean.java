@@ -1,11 +1,12 @@
 package ru.efive.dms.uifaces.beans.request;
 
-import com.google.common.collect.ImmutableList;
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
@@ -14,30 +15,22 @@ import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForRequestDocum
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.RequestDocumentDAOImpl;
-import ru.hitsl.sql.dao.ViewFactDaoImpl;
 
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.springframework.stereotype.Controller;
+import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.REQUEST_DOCUMENT_FORM_DAO;
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.VIEW_FACT_DAO;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
-@Named("request_search")
-@ViewScoped
+@Controller("request_search")
+@SpringScopeView
 public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<RequestDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
-    @Inject
-    @Named("sessionManagement")
-    private transient SessionManagementBean sessionManagement;
+
+    @Autowired
+    @Qualifier("requestDocumentLDM")
+    private LazyDataModelForRequestDocument lazyDataModel;
 
     /**
      * Выполнить поиск с текущим фильтром
@@ -48,13 +41,8 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
     public void performSearch() {
         logger.info("REQUEST: Perform Search with map : {}", filters);
         try {
-            final RequestDocumentDAOImpl dao = sessionManagement.getDAO(RequestDocumentDAOImpl.class, REQUEST_DOCUMENT_FORM_DAO);
-            final ViewFactDaoImpl viewFactDao = sessionManagement.getDAO(ViewFactDaoImpl.class, VIEW_FACT_DAO);
-            final LazyDataModelForRequestDocument lazyDataModelForIncomingDocument = new LazyDataModelForRequestDocument(
-                    dao, viewFactDao, sessionManagement.getAuthData()
-            );
-            lazyDataModelForIncomingDocument.setFilters(filters);
-            setLazyModel(lazyDataModelForIncomingDocument);
+            lazyDataModel.setFilters(filters);
+            setLazyModel(lazyDataModel);
             searchPerformed = true;
         } catch (Exception e) {
             searchPerformed = false;
@@ -70,12 +58,12 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
     // Выбора ответственного исполнителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseResponsible() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(UserDialogHolder
-                                                                                         .DIALOG_TITLE_VALUE_RESPONSIBLE));
+        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder
+                .DIALOG_TITLE_VALUE_RESPONSIBLE));
         final User preselected = getResponsible();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
-                                                                                               .DIALOG_SESSION_KEY, preselected);
+                    .DIALOG_SESSION_KEY, preselected);
         }
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
@@ -83,7 +71,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
     public void onResponsibleChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         logger.info("Choose responsible: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             if (selected != null) {
                 setResponsible(selected);
@@ -96,7 +84,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
     // Выбора адресатов /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseRecipients() {
         final Map<String, List<String>> params = new HashMap<>();
-        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, ImmutableList.of(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_RECIPIENTS));
+        params.put(MultipleUserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(MultipleUserDialogHolder.DIALOG_TITLE_VALUE_RECIPIENTS));
         final List<User> preselected = getRecipients();
         if (preselected != null && !preselected.isEmpty()) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(MultipleUserDialogHolder.DIALOG_SESSION_KEY, preselected);
@@ -107,7 +95,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
     public void onRecipientsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
         logger.info("Choose recipients: {}", result);
-        if(AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
+        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final List<User> selected = (List<User>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
                 setRecipients(selected);
@@ -116,7 +104,6 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
             }
         }
     }
-
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

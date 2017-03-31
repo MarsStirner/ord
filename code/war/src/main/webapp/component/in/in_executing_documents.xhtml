@@ -58,7 +58,7 @@
 
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{props['LIST_VIEW_SEARCH_PLACEHOLDER_TEXT']}" style="width:20em;" id="filterString" value="#{in_documents_by_executing_date.filter}" title="Поиск"/>
+            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:20em;" id="filterString" value="#{in_documents_by_executing_date.filter}" title="Поиск"/>
             <p:commandButton value="Найти" id="searchButton" process="@this filterString" action="#{in_documents_by_executing_date.refresh()}" update="documentTable" icon="ui-icon-search"/>
             <p:button target="_blank" outcome="/component/in/in_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
             <p:defaultCommand target="searchButton" />
@@ -71,7 +71,7 @@
                      value="#{in_documents_by_executing_date.root}"
                      var="node"
                      style="width:100%; overflow-x:hidden;"
-                     emptyMessage="#{props['EMPTY_RESULT']}"
+                     emptyMessage="#{ui['emptyMessage']}"
                      widgetVar="treeTableVar"
                      selectionMode="single"
                      rowStyleClass="#{node.document.styleClass}"

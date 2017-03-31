@@ -1,10 +1,11 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.DocumentType;
-import ru.hitsl.sql.dao.referenceBook.DocumentFormDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -12,18 +13,16 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import java.util.List;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.DOCUMENT_FORM_DAO;
-
 @FacesConverter("RequestDocumentFormConverter")
 public class RequestDocumentFormConverter implements Converter {
+    @Autowired
+    @Qualifier("documentFormDao")
+    private DocumentFormDao documentFormDao;
 
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            SessionManagementBean sessionManagement =
-                    context.getApplication().evaluateExpressionGet(context, "#{sessionManagement}",
-                            SessionManagementBean.class);
-            List<DocumentForm> list = sessionManagement.getDictionaryDAO(DocumentFormDAOImpl.class, DOCUMENT_FORM_DAO).findByDocumentTypeCodeAndValue(
+            List<DocumentForm> list = documentFormDao.findByDocumentTypeCodeAndValue(
                     DocumentType.RB_CODE_REQUEST, value);
             if (list.size() > 0) {
                 result = list.get(0);
@@ -38,7 +37,7 @@ public class RequestDocumentFormConverter implements Converter {
     }
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {
-        if(value == null){
+        if (value == null) {
             return "";
         }
         return ((DocumentForm) value).getValue();

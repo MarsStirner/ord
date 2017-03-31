@@ -1,15 +1,15 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.referenceBook.ContragentType;
-import ru.hitsl.sql.dao.referenceBook.ContragentTypeDAOImpl;
-import ru.hitsl.sql.dao.util.ApplicationDAONames;
+import ru.hitsl.sql.dao.interfaces.referencebook.ContragentTypeDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
-import java.util.List;
+import javax.inject.Named;
 
 /**
  * Author: Upatov Egor <br>
@@ -17,28 +17,19 @@ import java.util.List;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@FacesConverter("ContragentTypeConverter")
+@Named("ContragentTypeConverter")
 public class ContragentTypeConverter implements Converter {
+    @Autowired
+    @Qualifier("contragentTypeDao")
+    private ContragentTypeDao contragentTypeDao;
+
     @Override
     public Object getAsObject(FacesContext fc, UIComponent uiComponent, String value) {
-        if (value != null && value.trim().length() > 0) {
-            SessionManagementBean sessionManagement = fc.getApplication().evaluateExpressionGet(fc, "#{sessionManagement}", SessionManagementBean.class);
-            ContragentTypeDAOImpl service = sessionManagement.getDAO(ContragentTypeDAOImpl.class, ApplicationDAONames.RB_CONTRAGENT_TYPE_DAO);
-            final List<ContragentType> resultList = service.getByValue(value);
-            if (resultList.isEmpty()) {
-                return null;
-            }
-            return resultList.get(0);
-        } else {
-            return null;
-        }
+        return StringUtils.isNotEmpty(value) ? contragentTypeDao.getByValue(value).stream().findFirst().orElse(null) : null;
     }
 
     @Override
     public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object o) {
-        if (o != null && o instanceof ContragentType) {
-            return ((ContragentType)o).getValue();
-        }
-        return null;
+        return o != null && o instanceof ContragentType ? ((ContragentType) o).getValue() : null;
     }
 }

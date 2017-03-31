@@ -68,155 +68,14 @@ public class LDAPUser {
                 setLastModified(current);
             } else if (LDAPUserAttribute.FIO_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
                 setFIO(current);
-            } else if(LDAPUserAttribute.DN_ATTR.getName().equalsIgnoreCase(current.getID())) {
+            } else if (LDAPUserAttribute.DN_ATTR.getName().equalsIgnoreCase(current.getID())) {
                 setDN(current);
-            } else if(LDAPUserAttribute.LOGIN_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())){
+            } else if (LDAPUserAttribute.LOGIN_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
                 setLogin(current);
-            } else if(LDAPUserAttribute.UAC_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())){
+            } else if (LDAPUserAttribute.UAC_ATTR_VALUE.getName().equalsIgnoreCase(current.getID())) {
                 setBlocked(current);
             }
         }
-    }
-
-    private void setBlocked(final Attribute blocked) throws NamingException {
-        if(blocked !=null){
-            this.fired = BLOCKED_ACCOUNT_MARKER.equals(blocked.get());
-        }
-    }
-
-    private void setLogin(Attribute login) throws NamingException {
-       if(login!=null){
-           this.login = (String) login.get();
-       }
-        if(mail == null || mail.isEmpty()){
-            this.mail = this.login +"@fccho-moscow.ru";
-        }
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    private void setDN(Attribute dn) throws NamingException {
-        this.DN = (String)dn.get();
-    }
-    public String getDN(){
-        return DN;
-    }
-
-    /**
-     * Фамилия
-     * @return
-     */
-    public String getLastName() {
-        return lastName;
-    }
-
-    private void setLastName(Attribute lastName) throws NamingException {
-        if (lastName != null) {
-            this.lastName = ((String) lastName.get()).trim();
-        }
-    }
-
-    /**
-     * Имя
-     * @return
-     */
-    public String getFirstName() {
-        return firstName;
-    }
-
-    private void setFirstName(Attribute firstName) throws NamingException {
-        if (firstName != null) {
-            this.firstName = ((String) firstName.get()).trim();
-        }
-    }
-
-    /**
-     * Подразделение
-     * @return
-     */
-    public String getJobDepartment() {
-        return jobDepartment;
-    }
-
-    private void setJobDepartment(Attribute jobDepartment) throws NamingException {
-        if (jobDepartment != null) {
-            this.jobDepartment = ((String) jobDepartment.get()).trim();
-        }
-    }
-
-    /**
-     * Должность
-     * @return
-     */
-    public String getJobPosition() {
-        return jobPosition;
-    }
-
-    private void setJobPosition(Attribute jobPosition) throws NamingException {
-        if (jobPosition != null) {
-            this.jobPosition = ((String) jobPosition.get()).trim();
-        }
-    }
-
-    /**
-     * Email
-     * @return
-     */
-    public String getMail() {
-        return mail;
-    }
-
-    private void setUserMail(Attribute mail) throws NamingException {
-        if (mail != null) {
-            this.mail = (String) mail.get();
-        }
-    }
-
-    /**
-     * Мобильный телефон
-     * @return
-     */
-    public String getMobile() {
-        return mobile;
-    }
-
-    private void setMobile(Attribute mobile) throws NamingException {
-        if (mobile != null) {
-            final String value = ((String) mobile.get()).trim();
-            if(!value.contains(".")){
-                this.mobile = value;
-            }
-        }
-    }
-
-    /**
-     * Номер телефона
-     * @return
-     */
-    public String getPhone() {
-        return phone;
-    }
-
-    private void setPhone(Attribute phone) throws NamingException {
-        if (phone != null) {
-            this.phone = ((String) phone.get()).trim();
-        }
-    }
-
-
-    /**
-     * GUID
-     * @return
-     */
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(Attribute objectGUID) throws NamingException {
-        //Не может быть null
-        this.guid = convertToDashedString((byte[]) objectGUID.get());
     }
 
     public static String convertToDashedString(byte[] objectGUID) {
@@ -245,8 +104,159 @@ public class LDAPUser {
     private static String prefixZeros(int value) {
         return value <= 0xF ? "0" + Integer.toHexString(value) : Integer.toHexString(value);
     }
+
+    private void setBlocked(final Attribute blocked) throws NamingException {
+        if (blocked != null) {
+            this.fired = BLOCKED_ACCOUNT_MARKER.equals(blocked.get());
+        }
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    private void setLogin(Attribute login) throws NamingException {
+        if (login != null) {
+            this.login = (String) login.get();
+        }
+        if (mail == null || mail.isEmpty()) {
+            this.mail = this.login + "@fccho-moscow.ru";
+        }
+    }
+
+    public String getDN() {
+        return DN;
+    }
+
+    private void setDN(Attribute dn) throws NamingException {
+        this.DN = (String) dn.get();
+    }
+
+    /**
+     * Фамилия
+     *
+     * @return
+     */
+    public String getLastName() {
+        return lastName;
+    }
+
+    private void setLastName(Attribute lastName) throws NamingException {
+        if (lastName != null) {
+            this.lastName = ((String) lastName.get()).trim();
+        }
+    }
+
+    /**
+     * Имя
+     *
+     * @return
+     */
+    public String getFirstName() {
+        return firstName;
+    }
+
+    private void setFirstName(Attribute firstName) throws NamingException {
+        if (firstName != null) {
+            this.firstName = ((String) firstName.get()).trim();
+        }
+    }
+
+    /**
+     * Подразделение
+     *
+     * @return
+     */
+    public String getJobDepartment() {
+        return jobDepartment;
+    }
+
+    private void setJobDepartment(Attribute jobDepartment) throws NamingException {
+        if (jobDepartment != null) {
+            this.jobDepartment = ((String) jobDepartment.get()).trim();
+        }
+    }
+
+    /**
+     * Должность
+     *
+     * @return
+     */
+    public String getJobPosition() {
+        return jobPosition;
+    }
+
+    private void setJobPosition(Attribute jobPosition) throws NamingException {
+        if (jobPosition != null) {
+            this.jobPosition = ((String) jobPosition.get()).trim();
+        }
+    }
+
+    /**
+     * Email
+     *
+     * @return
+     */
+    public String getMail() {
+        return mail;
+    }
+
+    private void setUserMail(Attribute mail) throws NamingException {
+        if (mail != null) {
+            this.mail = (String) mail.get();
+        }
+    }
+
+    /**
+     * Мобильный телефон
+     *
+     * @return
+     */
+    public String getMobile() {
+        return mobile;
+    }
+
+    private void setMobile(Attribute mobile) throws NamingException {
+        if (mobile != null) {
+            final String value = ((String) mobile.get()).trim();
+            if (!value.contains(".")) {
+                this.mobile = value;
+            }
+        }
+    }
+
+    /**
+     * Номер телефона
+     *
+     * @return
+     */
+    public String getPhone() {
+        return phone;
+    }
+
+    private void setPhone(Attribute phone) throws NamingException {
+        if (phone != null) {
+            this.phone = ((String) phone.get()).trim();
+        }
+    }
+
+    /**
+     * GUID
+     *
+     * @return
+     */
+    public String getGuid() {
+        return guid;
+    }
+
+    public void setGuid(Attribute objectGUID) throws NamingException {
+        //Не может быть null
+        this.guid = convertToDashedString((byte[]) objectGUID.get());
+    }
+
     /**
      * Дата последнего изменения
+     *
      * @return
      */
     public Date getLastModified() {
@@ -256,17 +266,9 @@ public class LDAPUser {
     private void setLastModified(Attribute lastModified) throws NamingException, ParseException {
         if (lastModified != null) {
             this.lastModified = lastModifiedFormat.parse((String) lastModified.get());
-        }   else {
+        } else {
             this.lastModified = new Date();
         }
-    }
-
-    /**
-     * Уволен
-     * @param fired
-     */
-    public void setFired(boolean fired) {
-        this.fired = fired;
     }
 
     public boolean isFired() {
@@ -274,46 +276,56 @@ public class LDAPUser {
     }
 
     /**
+     * Уволен
+     *
+     * @param fired
+     */
+    public void setFired(boolean fired) {
+        this.fired = fired;
+    }
+
+    /**
      * ФИО
+     *
      * @param fio
      */
     private void setFIO(Attribute fio) throws NamingException {
-          if(fio != null){
-              final String value = ((String)fio.get()).trim();
-              final String[] fioParts = value.split(" ");
-              switch (fioParts.length){
-                  case 1:{
-                      if(lastName == null || lastName.isEmpty() ) {
-                          lastName = fioParts[0];
-                      }
-                      break;
-                  }
-                  case 2: {
-                      if(lastName == null || lastName.isEmpty() ) {
-                          lastName = fioParts[0];
-                      }
-                      if(firstName == null || firstName.isEmpty()){
-                          firstName = fioParts[1];
-                      }
-                      break;
-                  }
-                  case 3: {
-                      if(lastName == null || lastName.isEmpty() ) {
-                          lastName = fioParts[0];
-                      }
-                      if(firstName == null || firstName.isEmpty()){
-                          firstName = fioParts[1];
-                      }
-                      if(patrName == null || patrName.isEmpty()){
-                         patrName = fioParts[2];
-                      }
-                      break;
-                  }
-                  default:{
-                      break;
-                  }
-              }
-          }
+        if (fio != null) {
+            final String value = ((String) fio.get()).trim();
+            final String[] fioParts = value.split(" ");
+            switch (fioParts.length) {
+                case 1: {
+                    if (lastName == null || lastName.isEmpty()) {
+                        lastName = fioParts[0];
+                    }
+                    break;
+                }
+                case 2: {
+                    if (lastName == null || lastName.isEmpty()) {
+                        lastName = fioParts[0];
+                    }
+                    if (firstName == null || firstName.isEmpty()) {
+                        firstName = fioParts[1];
+                    }
+                    break;
+                }
+                case 3: {
+                    if (lastName == null || lastName.isEmpty()) {
+                        lastName = fioParts[0];
+                    }
+                    if (firstName == null || firstName.isEmpty()) {
+                        firstName = fioParts[1];
+                    }
+                    if (patrName == null || patrName.isEmpty()) {
+                        patrName = fioParts[2];
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
     }
 
     public String getPatrName() {

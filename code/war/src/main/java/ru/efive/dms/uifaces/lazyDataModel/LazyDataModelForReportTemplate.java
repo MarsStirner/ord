@@ -1,11 +1,11 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.SortOrder;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 import ru.entity.model.document.ReportTemplate;
-import ru.hitsl.sql.dao.ReportDAOImpl;
-
-import java.util.List;
-import java.util.Map;
+import ru.hitsl.sql.dao.interfaces.ReportDao;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,25 +13,13 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForReportTemplate extends AbstractFilterableLazyDataModel<ReportTemplate>{
+@Component("reportTemplateLDM")
+@SpringScopeView
+public class LazyDataModelForReportTemplate extends AbstractFilterableLazyDataModel<ReportTemplate> {
 
-    private final ReportDAOImpl dao;
-
-    public LazyDataModelForReportTemplate(final ReportDAOImpl dao) {
-        this.dao = dao;
-    }
-    @Override
-    public ReportTemplate getRowData(String rowKey) {
-        return dao.get(Integer.valueOf(rowKey));
-    }
-
-    @Override
-    public List<ReportTemplate> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String,
-            Object> filters) {
-        setRowCount((int) dao.countDocument(false));
-        if(getRowCount() < first){
-            first = 0;
-        }
-        return dao.findDocuments(false, first, pageSize, sortField, sortOrder == SortOrder.ASCENDING);
+    @Autowired
+    public LazyDataModelForReportTemplate(
+            @Qualifier("reportDao") final ReportDao reportDao) {
+        super(reportDao);
     }
 }

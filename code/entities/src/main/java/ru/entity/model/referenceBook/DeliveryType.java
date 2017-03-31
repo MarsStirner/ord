@@ -1,6 +1,6 @@
 package ru.entity.model.referenceBook;
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -10,7 +10,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "rbDeliveryType")
-public class DeliveryType extends DictionaryEntity {
+public class DeliveryType extends ReferenceBookEntity {
     /**
      * Предопределенные коды для справочника типов доставки
      */

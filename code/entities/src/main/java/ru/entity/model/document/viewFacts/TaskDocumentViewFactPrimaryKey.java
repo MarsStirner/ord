@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class TaskDocumentViewFactPrimaryKey implements Serializable{
+public class TaskDocumentViewFactPrimaryKey implements Serializable {
     private Task document;
     private User user;
 

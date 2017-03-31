@@ -1,20 +1,17 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
 
+import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.LazyDataModel;
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForContragent;
 import ru.entity.model.referenceBook.Contragent;
-import ru.hitsl.sql.dao.ContragentDAOHibernate;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.Map;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.CONTRAGENT_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -22,30 +19,26 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.CONTRAGENT_DAO;
  * Company: Korus Consulting IT <br>
  * Description: Бин, который обслуживает диалоги по выбору контраегентов<br>
  */
-@Named("contragentDialog")
-@ViewScoped
+@Controller("contragentDialog")
+@SpringScopeView
 public class ContragentDialogHolder extends AbstractDialog<Contragent> {
 
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_CONTRAGENT";
 
-    @EJB(name = "indexManagement")
-    private IndexManagementBean indexManagementBean;
-
+    @Autowired
+    @Qualifier("contragentLDM")
     private LazyDataModelForContragent lazyModel;
 
 
     @PostConstruct
     public void init() {
         logger.info("Initialize new ContragentSelectDialog");
-        final ContragentDAOHibernate dao = (ContragentDAOHibernate) indexManagementBean.getContext().getBean
-                (CONTRAGENT_DAO);
         final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext()
                 .getRequestParameterMap();
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        lazyModel = new LazyDataModelForContragent(dao);
     }
 
     public LazyDataModel<Contragent> getLazyModel() {

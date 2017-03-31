@@ -1,22 +1,17 @@
 package ru.efive.uifaces.component.html;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.faces.component.ContextCallback;
-import javax.faces.component.FacesComponent;
-import javax.faces.component.UICommand;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIComponentBase;
-import javax.faces.component.UIForm;
-import javax.faces.component.UINamingContainer;
+import ru.efive.uifaces.component.ComponentFamily;
+
+import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ComponentSystemEvent;
 import javax.faces.event.ListenerFor;
 import javax.faces.event.PostRestoreStateEvent;
-import ru.efive.uifaces.component.ComponentFamily;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Component provides partial form submission.
@@ -24,7 +19,7 @@ import ru.efive.uifaces.component.ComponentFamily;
  * @author Denis Kotegov
  */
 @FacesComponent("ru.efive.uifaces.FormPart")
-@ListenerFor(systemEventClass=PostRestoreStateEvent.class)
+@ListenerFor(systemEventClass = PostRestoreStateEvent.class)
 public class HtmlFormPart extends UIComponentBase {
 
     private List<UICommand> formCommands = new ArrayList<>();
@@ -131,7 +126,7 @@ public class HtmlFormPart extends UIComponentBase {
             String yValue = builder.append(".y").toString();
             return params.get(xValue) != null && params.get(yValue) != null;
         }
-        
+
         return true;
     }
 
@@ -173,7 +168,7 @@ public class HtmlFormPart extends UIComponentBase {
             result = parent.getClass() == HtmlFormPartTarget.class
                     && parent.isRendered()
                     && this.getId().equals(((HtmlFormPartTarget) parent).getFormPart());
-            
+
             parent = parent.getParent();
         }
 

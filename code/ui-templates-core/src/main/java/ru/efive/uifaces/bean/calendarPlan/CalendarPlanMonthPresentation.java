@@ -1,69 +1,25 @@
 package ru.efive.uifaces.bean.calendarPlan;
 
+import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
+import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Map;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
-import ru.efive.uifaces.renderkit.html_basic.base.HtmlElement;
 
+import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.*;
+import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.*;
 import static ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter.writeStyleClass;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CAPTION_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.LAYOUT_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_MONTH_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_MONTH_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_YEAR_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_YEAR_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.MONTH_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.MONTH_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.YEAR_NAME_CLASS;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_MONTH_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_MONTH_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.NEXT_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.PREV_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.SELECT_YEAR_EVENT;
-import static ru.efive.uifaces.renderkit.html_basic.CalendarPlanRenderer.CHANGE_MONTH_LAYOUT_EVENT;
-
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.getDisplayNames;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.DAY_OF_WEEK_NAMES;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.MONTH_NAMES;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderMonthWidget;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderLayoutLink;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderSpaceCell;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderPrevNextLink;
-import static ru.efive.uifaces.bean.calendarPlan.CalendarPlanYearPresentation.renderSelectLink;
 
 
 /**
- *
  * @author Pavel Porubov
  */
 public class CalendarPlanMonthPresentation extends CalendarPlanPresentation {
 
-    @Override
-    public String getName() {
-        return "month";
-    }
-
     public static final int ID = 2;
-
-    @Override
-    public int getId() {
-        return ID;
-    }
-
-    public enum Layout {
-        one, vertical3, horizontal3
-    }
     private Layout layout = Layout.one;
-
-    public Layout getLayout() {
-        return layout;
-    }
-
-    public void setLayout(Layout layout) {
-        this.layout = layout;
-    }
 
     private static void renderTableTrStart(AdvancedResponseWriter writer, boolean caption) throws IOException {
         writer.startElement(HtmlElement.TABLE);
@@ -76,6 +32,24 @@ public class CalendarPlanMonthPresentation extends CalendarPlanPresentation {
         writer.endElement(HtmlElement.TR);
         writer.endElement(HtmlElement.TBODY);
         writer.endElement(HtmlElement.TABLE);
+    }
+
+    @Override
+    public String getName() {
+        return "month";
+    }
+
+    @Override
+    public int getId() {
+        return ID;
+    }
+
+    public Layout getLayout() {
+        return layout;
+    }
+
+    public void setLayout(Layout layout) {
+        this.layout = layout;
     }
 
     @Override
@@ -198,5 +172,9 @@ public class CalendarPlanMonthPresentation extends CalendarPlanPresentation {
         writer.endElement(HtmlElement.TR);
         writer.endElement(HtmlElement.TBODY);
         writer.endElement(HtmlElement.TABLE);
+    }
+
+    public enum Layout {
+        one, vertical3, horizontal3
     }
 }

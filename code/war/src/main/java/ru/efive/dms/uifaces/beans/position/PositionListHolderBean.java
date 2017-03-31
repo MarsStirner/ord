@@ -1,18 +1,15 @@
 package ru.efive.dms.uifaces.beans.position;
 
-import ru.efive.dms.uifaces.beans.IndexManagementBean;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.uifaces.bean.AbstractDocumentListHolderBean;
 import ru.efive.uifaces.bean.Pagination;
 import ru.entity.model.referenceBook.Position;
-import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
 
-import javax.annotation.PostConstruct;
-import javax.faces.view.ViewScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
+import org.springframework.stereotype.Controller;
 import java.util.List;
-
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
 
 /**
  * Author: Upatov Egor <br>
@@ -20,21 +17,14 @@ import static ru.hitsl.sql.dao.util.ApplicationDAONames.POSITION_DAO;
  * Company: Korus Consulting IT <br>
  * Description: Бин для получения списка должностей (ApplicationScope) <br>
  */
-@Named("positionList")
-@ViewScoped
+@Controller("positionList")
+@SpringScopeView
 public class PositionListHolderBean extends AbstractDocumentListHolderBean<Position> {
 
+    @Autowired
+    @Qualifier("positionDao")
+    private static PositionDao positionDao;
     private String filter;
-    private static PositionDAOImpl dao;
-    @Inject
-    @Named("indexManagement")
-    private IndexManagementBean indexManagement;
-
-    @PostConstruct
-    public void init() {
-        dao = indexManagement.getContext().getBean(POSITION_DAO, PositionDAOImpl.class);
-    }
-
 
     public String getFilter() {
         return filter;
@@ -57,12 +47,12 @@ public class PositionListHolderBean extends AbstractDocumentListHolderBean<Posit
 
     @Override
     protected int getTotalCount() {
-        return (int) dao.countDocument(filter, false);
+        return positionDao.countItems(filter, null, false);
     }
 
     @Override
     protected List<Position> loadDocuments() {
-        return dao.findDocuments(filter, false, getPagination().getOffset(), getPagination().getPageSize(),
-                getSorting().getColumnId(), getSorting().isAsc());
+        return positionDao.getItems(filter, null,
+                getSorting().getColumnId(), getSorting().isAsc(), getPagination().getOffset(), getPagination().getPageSize(), false);
     }
 }

@@ -1,11 +1,9 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
-import org.primefaces.model.SortOrder;
-import ru.entity.model.document.Numerator;
-import ru.hitsl.sql.dao.NumeratorDAOImpl;
+import com.github.javaplugs.jsf.SpringScopeView;
+import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,30 +11,18 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public class LazyDataModelForNumerator extends AbstractFilterableLazyDataModel<Numerator> {
-    private final NumeratorDAOImpl dao;
 
-    public LazyDataModelForNumerator(final NumeratorDAOImpl dao) {
-        this.dao = dao;
-    }
-
-    @Override
-    public Numerator getRowData(String rowKey) {
-        final Integer identifier;
-        try {
-            identifier = Integer.valueOf(rowKey);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-        return dao.get(identifier);
-    }
-
-    @Override
-    public List<Numerator> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-        setRowCount((int) dao.countDocument(false));
-        if(getRowCount() < first){
-            first = 0;
-        }
-        return dao.findDocuments(false, first, pageSize, sortField, SortOrder.ASCENDING.equals(sortOrder));
-    }
+@Component("numeratorLDM")
+@SpringScopeView
+public class LazyDataModelForNumerator implements Serializable {
 }
+// extends AbstractFilterableLazyDataModel<Numerator> {
+//
+//
+//    @Autowired
+//    public LazyDataModelForNumerator(final NumeratorDaoImpl dao) {
+//        super(dao);
+//    }
+//
+//
+//}

@@ -1,6 +1,6 @@
 package ru.entity.model.referenceBook;
 
-import ru.entity.model.mapped.DictionaryEntity;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.*;
 
@@ -9,19 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "rbDocumentForm")
-public class DocumentForm extends DictionaryEntity {
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "documentType_id", nullable = false)
-    private DocumentType documentType;
-
-    public DocumentType getDocumentType() {
-        return documentType;
-    }
-
-    public void setDocumentType(final DocumentType documentType) {
-        this.documentType = documentType;
-    }
+public class DocumentForm extends ReferenceBookEntity {
 
     /**
      * Договор
@@ -195,5 +183,16 @@ public class DocumentForm extends DictionaryEntity {
      * Запрос
      **/
     public static final String RB_CODE_REQUEST_REQUEST = "REQUEST_REQUEST";
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "documentType_id", nullable = false)
+    private DocumentType documentType;
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(final DocumentType documentType) {
+        this.documentType = documentType;
+    }
 
 }

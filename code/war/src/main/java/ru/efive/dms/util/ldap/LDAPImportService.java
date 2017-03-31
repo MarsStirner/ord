@@ -3,21 +3,22 @@ package ru.efive.dms.util.ldap;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import ru.entity.model.referenceBook.ContactInfoType;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
 import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.PersonContact;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.referenceBook.ContactInfoTypeDAOImpl;
-import ru.hitsl.sql.dao.referenceBook.DepartmentDAOImpl;
-import ru.hitsl.sql.dao.referenceBook.PositionDAOImpl;
-import ru.hitsl.sql.dao.referenceBook.UserAccessLevelDAOImpl;
-import ru.hitsl.sql.dao.user.UserDAOHibernate;
+import ru.hitsl.sql.dao.interfaces.UserDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.ContactInfoTypeDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.UserAccessLevelDao;
 import ru.util.ApplicationHelper;
 
-import javax.faces.context.FacesContext;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -27,16 +28,29 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.*;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
-import static ru.hitsl.sql.dao.util.ApplicationDAONames.*;
 
+@Service("ldapImportService")
 public class LDAPImportService {
     //Именованный логгер (LDAP)
     private static final Logger LOGGER = LoggerFactory.getLogger("LDAP");
+
+    @Autowired
+    @Qualifier("userDao")
+    private UserDao userDao;
+    @Autowired
+    @Qualifier("userAccessLevelDao")
+    private UserAccessLevelDao userAccessLevelDao;
+    @Autowired
+    @Qualifier("contactInfoTypeDao")
+    private ContactInfoTypeDao contactInfoTypeDao;
+    @Autowired
+    @Qualifier("positionDao")
+    private PositionDao positionDao;
+    @Autowired
+    @Qualifier("departmentDao")
+    private DepartmentDao departmentDao;
 
     private String ldapAddressValue;
     private String loginValue;
@@ -44,6 +58,7 @@ public class LDAPImportService {
     private String baseValue;
     private String firedBaseValue;
     private String filterValue;
+
 
     public void setLdapAddressValue(String ldapAddressValue) {
         this.ldapAddressValue = ldapAddressValue;
@@ -93,7 +108,7 @@ public class LDAPImportService {
         for (LDAPUser currentLdapUser : userList) {
             i++;
             LOGGER.debug("#{} Start processing [{}]", i, currentLdapUser.getDN());
-            if(currentLdapUser.getDN().contains("Глушкова Светлана Юрьевна")){
+            if (currentLdapUser.getDN().contains("Глушкова Светлана Юрьевна")) {
                 i++;
                 i--;
             }
@@ -102,7 +117,7 @@ public class LDAPImportService {
             for (User currentLocalUser : cache.getLocalUsers()) {
                 if (currentLdapUser.getGuid().equalsIgnoreCase(currentLocalUser.getGUID())) {
                     foundedByGuid = true;
-                    LOGGER.debug("#{} Founded by GUID. localID={}", i,  currentLocalUser.getId());
+                    LOGGER.debug("#{} Founded by GUID. localID={}", i, currentLocalUser.getId());
                     synchronizeUser(currentLdapUser, currentLocalUser, cache);
                     break;
                 }
@@ -139,7 +154,7 @@ public class LDAPImportService {
                     //Не нашли пользователя ни по ФИО ни по GUID
                     case 0: {
                         //Не было найдено ни одного совпадения
-                        if(!currentLdapUser.isFired()) {
+                        if (!currentLdapUser.isFired()) {
                             createNewUser(currentLdapUser, cache);
                         } else {
                             LOGGER.debug("#{} Skip  because FIRED", i);
@@ -282,7 +297,7 @@ public class LDAPImportService {
             user.addToContacts(new PersonContact(user, cache.getMobileContactType(), ldapUser.getMobile()));
         }
         try {
-            cache.getUserDAO().save(user);
+            userDao.save(user);
             LOGGER.debug("Created");
         } catch (Exception e) {
             LOGGER.error("Cannot INSERT new ROW : ", e);
@@ -367,7 +382,7 @@ public class LDAPImportService {
                 if (!foundedMobile) {
                     localUser.addToContacts(new PersonContact(localUser, cache.getMobileContactType(), ldapUser.getMobile()));
                 }
-                cache.getUserDAO().save(localUser);
+                userDao.save(localUser);
                 LOGGER.debug("Updated");
             }
         } catch (Exception e) {
@@ -378,30 +393,15 @@ public class LDAPImportService {
     private ImportCacheObject createImportCache() throws Exception {
         LOGGER.debug("Start creating cache");
         final ImportCacheObject result = new ImportCacheObject();
-        final FacesContext facesContext = FacesContext.getCurrentInstance();
-        final SessionManagementBean injectionPoint = facesContext.getApplication().evaluateExpressionGet(
-                facesContext, "#{sessionManagement}", SessionManagementBean.class
-        );
-        final UserDAOHibernate userDao = injectionPoint.getDAO(UserDAOHibernate.class, USER_DAO);
-        if (userDao == null) {
-            LOGGER.error("CACHE_ERROR: Upload not started: cause not founded USER_DAO");
-            throw new Exception("CACHE_ERROR: Upload not started: cause not founded USER_DAO");
+        final Optional<UserAccessLevel> defaultUserAccessLevel = userAccessLevelDao.getItems().stream().filter(x -> x.getLevel() == 1).findFirst();
+        if (defaultUserAccessLevel.isPresent()) {
+            result.setDefaultUserAccessLevel(defaultUserAccessLevel.get());
         } else {
-            result.setUserDAO(userDao);
-        }
-        final List<UserAccessLevel> userAccessLevels = injectionPoint.getDictionaryDAO(UserAccessLevelDAOImpl.class, USER_ACCESS_LEVEL_DAO)
-                .findDocuments();
-        for (UserAccessLevel current : userAccessLevels) {
-            if (current.getLevel() == 1) {
-                result.setDefaultUserAccessLevel(current);
-                break;
-            }
-        }
-        if (result.getDefaultUserAccessLevel() == null) {
             LOGGER.error("CACHE_ERROR: Upload not started: cause not founded default UserAccessLevel = 1");
             throw new Exception("CACHE_ERROR: Upload not started: cause not founded default UserAccessLevel = 1");
         }
-        final List<ContactInfoType> contactTypes = injectionPoint.getDictionaryDAO(ContactInfoTypeDAOImpl.class, RB_CONTACT_TYPE_DAO).findDocuments();
+
+        final List<ContactInfoType> contactTypes = contactInfoTypeDao.getItems();
         for (ContactInfoType contactType : contactTypes) {
             if (ContactInfoType.RB_CODE_EMAIL.equals(contactType.getCode())) {
                 result.setEmailContactType(contactType);
@@ -421,8 +421,8 @@ public class LDAPImportService {
             LOGGER.error("CACHE_ERROR: NOT FOUNDED MOBILE_CONTACT_TYPE, UPLOAD NOT Started");
             throw new Exception("CACHE_ERROR: NOT FOUNDED MOBILE_CONTACT_TYPE, UPLOAD NOT Started");
         }
-        result.setPositions(injectionPoint.getDictionaryDAO(PositionDAOImpl.class, POSITION_DAO).findDocuments());
-        result.setDepartments(injectionPoint.getDictionaryDAO(DepartmentDAOImpl.class, DEPARTMENT_DAO).findDocuments());
+        result.setPositions(positionDao.getItems());
+        result.setDepartments(departmentDao.getItems());
         if (result.getDepartments() == null || result.getDepartments().isEmpty()) {
             LOGGER.warn("CACHE_WARNING: NO JOB_DEPARTMENTS founded");
         }
@@ -431,7 +431,7 @@ public class LDAPImportService {
         }
         // Create ORD users cache
         LOGGER.debug("Start caching local users");
-        result.setLocalUsers(userDao.findAllUsers());
+        result.setLocalUsers(userDao.getItems());
         LOGGER.debug("Cached {} users", result.getLocalUsers() != null ? result.getLocalUsers().size() : -1);
         LOGGER.debug("Cache constructed successfully");
         return result;
@@ -459,7 +459,7 @@ public class LDAPImportService {
         searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
         result.setSearchControls(searchControls);
         result.setPageSize(100);
-       result.setLdapContext(getLdapContext());
+        result.setLdapContext(getLdapContext());
         return result;
     }
 

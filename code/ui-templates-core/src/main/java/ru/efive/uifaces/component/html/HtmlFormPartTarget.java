@@ -1,8 +1,9 @@
 package ru.efive.uifaces.component.html;
 
+import ru.efive.uifaces.component.ComponentFamily;
+
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
-import ru.efive.uifaces.component.ComponentFamily;
 
 /**
  * Component provides <code>formPart</code> that should be processed by enclosed UICommand component.
@@ -11,12 +12,6 @@ import ru.efive.uifaces.component.ComponentFamily;
  */
 @FacesComponent("ru.efive.uifaces.FormPartTarget")
 public class HtmlFormPartTarget extends UIComponentBase {
-
-    private enum PropertyKeys {
-        FORM_PART
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
 
     public HtmlFormPartTarget() {
         super();
@@ -30,12 +25,18 @@ public class HtmlFormPartTarget extends UIComponentBase {
         return ComponentFamily.FORM_PART;
     }
 
+    // ----------------------------------------------------------------------------------------------------------------
+
     public String getFormPart() {
         return (String) getStateHelper().get(PropertyKeys.FORM_PART);
     }
 
     public void setFormPart(String formPart) {
         getStateHelper().put(PropertyKeys.FORM_PART, formPart);
+    }
+
+    private enum PropertyKeys {
+        FORM_PART
     }
 
 }

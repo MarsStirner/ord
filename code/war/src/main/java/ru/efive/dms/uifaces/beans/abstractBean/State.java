@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-public enum State  implements Serializable{
+public enum State implements Serializable {
     VIEW,
     EDIT,
     CREATE,

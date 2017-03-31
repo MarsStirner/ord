@@ -15,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "rbDocumentTypeField")
 @NamedQueries(
-        @NamedQuery(name="DocumentTypeField.getByDocumentTypeCode",
+        @NamedQuery(name = "DocumentTypeField.getByDocumentTypeCode",
                 query = "SELECT a FROM DocumentTypeField a JOIN FETCH a.documentType dt WHERE dt.code = :documentTypeCode"
         )
 )

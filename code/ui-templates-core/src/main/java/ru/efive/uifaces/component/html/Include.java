@@ -16,58 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
  * @author Pavel Porubov
  */
 public class Include extends TagHandler {
 
-    public enum Attributes {
-
-        src, url, data
-    }
-
-    public static class VariableMapperWrapper extends VariableMapper {
-
-        private final VariableMapper target;
-        private Map vars;
-
-        public VariableMapperWrapper(VariableMapper orig) {
-            super();
-            this.target = orig;
-        }
-
-        public ValueExpression resolveVariable(String variable) {
-            ValueExpression ve = null;
-            try {
-                if (this.vars != null) {
-                    ve = (ValueExpression) this.vars.get(variable);
-                }
-                if (ve == null) {
-                    return this.target.resolveVariable(variable);
-                }
-                return ve;
-            }
-            catch (StackOverflowError e) {
-                throw new ELException("Could not Resolve Variable [Overflow]: "
-                        + variable, e);
-            }
-        }
-
-        public ValueExpression setVariable(String variable,
-                ValueExpression expression) {
-            if (this.vars == null) {
-                this.vars = new HashMap();
-            }
-            return (ValueExpression) this.vars.put(variable, expression);
-        }
-    }
+    private String data;
+    private URL dataUrl;
 
     public Include(TagConfig config) {
         super(config);
     }
-
-    private String data;
-    private URL dataUrl;
 
     @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
@@ -112,7 +70,7 @@ public class Include extends TagHandler {
                             pgdr = (Reader) av;
                         }
                         char[] buf = new char[1024];
-                        for (;;) {
+                        for (; ; ) {
                             int rsz = pgdr.read(buf);
                             if (rsz < 0) {
                                 break;
@@ -133,6 +91,45 @@ public class Include extends TagHandler {
             throw new TagAttributeException(this.tag, ta);
         } finally {
             ctx.setVariableMapper(orig);
+        }
+    }
+    public enum Attributes {
+
+        src, url, data
+    }
+
+    public static class VariableMapperWrapper extends VariableMapper {
+
+        private final VariableMapper target;
+        private Map vars;
+
+        public VariableMapperWrapper(VariableMapper orig) {
+            super();
+            this.target = orig;
+        }
+
+        public ValueExpression resolveVariable(String variable) {
+            ValueExpression ve = null;
+            try {
+                if (this.vars != null) {
+                    ve = (ValueExpression) this.vars.get(variable);
+                }
+                if (ve == null) {
+                    return this.target.resolveVariable(variable);
+                }
+                return ve;
+            } catch (StackOverflowError e) {
+                throw new ELException("Could not Resolve Variable [Overflow]: "
+                        + variable, e);
+            }
+        }
+
+        public ValueExpression setVariable(String variable,
+                                           ValueExpression expression) {
+            if (this.vars == null) {
+                this.vars = new HashMap();
+            }
+            return (ValueExpression) this.vars.put(variable, expression);
         }
     }
 }

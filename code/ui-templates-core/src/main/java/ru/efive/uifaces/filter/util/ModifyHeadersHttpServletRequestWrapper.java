@@ -1,15 +1,8 @@
 package ru.efive.uifaces.filter.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import java.util.*;
 
 /**
  * The HttpServletRequestWrapper for easier modifying of request's headers.
@@ -25,12 +18,13 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
     /**
      * Constructs a request object wrapping the given {@code request}
      * with removed headers secified by {@code removedHeaders} and added headers specified by {@code addedHeaders}.
+     *
      * @param removedHeaders headers to remove
-     * @param addedHeaders headers to add
-     * @param request the request to wrap
+     * @param addedHeaders   headers to add
+     * @param request        the request to wrap
      */
     public ModifyHeadersHttpServletRequestWrapper(Collection<String> removedHeaders,
-            Map<String, Collection<String>> addedHeaders, HttpServletRequest request) {
+                                                  Map<String, Collection<String>> addedHeaders, HttpServletRequest request) {
         super(request);
         this.removedHeaders = new HashSet<>(removedHeaders.size());
         for (String hn : removedHeaders) {
@@ -51,25 +45,27 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
     /**
      * Constructs a request object wrapping the given {@code request}
      * with removed headers secified by {@code removedHeaders} and added headers specified by {@code addedHeaders}.
+     *
      * @param removedHeaders headers to remove
-     * @param addedHeaders headers to add
-     * @param request the request to wrap
+     * @param addedHeaders   headers to add
+     * @param request        the request to wrap
      */
     public ModifyHeadersHttpServletRequestWrapper(String[] removedHeaders,
-            Map<String, Collection<String>> addedHeaders, HttpServletRequest request) {
+                                                  Map<String, Collection<String>> addedHeaders, HttpServletRequest request) {
         this(Arrays.asList(removedHeaders), addedHeaders, request);
     }
 
     /**
      * Constructs a request object wrapping the given {@code request}
      * with removed headers secified by {@code removedHeaders} and added headers specified by {@code addedHeaders}.
+     *
      * @param removedHeaders headers to remove
-     * @param addedHeaders headers to add. The even elements of the array should contain header's names,
-     * the odd elements of the array should contain header's values.
-     * @param request the request to wrap
+     * @param addedHeaders   headers to add. The even elements of the array should contain header's names,
+     *                       the odd elements of the array should contain header's values.
+     * @param request        the request to wrap
      */
     public ModifyHeadersHttpServletRequestWrapper(String[] removedHeaders, String[] addedHeaders,
-            HttpServletRequest request) {
+                                                  HttpServletRequest request) {
         super(request);
         this.removedHeaders = new HashSet<>(removedHeaders.length);
         for (String hn : removedHeaders) {
@@ -88,7 +84,9 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Enumeration<String> getHeaderNames() {
         Enumeration<String> headerNames = super.getHeaderNames();
@@ -103,7 +101,9 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
         return EnumerationFactory.newInstance(res);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Enumeration<String> getHeaders(String name) {
         name = name.toLowerCase();
@@ -118,7 +118,9 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getHeader(String name) {
         name = name.toLowerCase();
@@ -133,7 +135,9 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getDateHeader(String name) {
         name = name.toLowerCase();
@@ -144,7 +148,9 @@ public class ModifyHeadersHttpServletRequestWrapper extends HttpServletRequestWr
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getIntHeader(String name) {
         name = name.toLowerCase();
