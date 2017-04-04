@@ -1,7 +1,6 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
 import com.github.javaplugs.jsf.SpringScopeView;
-import org.joda.time.LocalDate;
 import org.primefaces.model.DefaultTreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,6 +14,7 @@ import ru.util.ApplicationHelper;
 import org.springframework.stereotype.Controller;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,7 +26,6 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     private DateFormatSymbols dateFormatSymbols;
     private String filter;
     private boolean showExpiredFlag = false;
-    private LocalDate currentDate;
     @Autowired
     @Qualifier("incomingDocumentDao")
     private IncomingDocumentDao incomingDocumentDao;
@@ -44,9 +43,6 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
      */
     public boolean changeExpiredFlag() {
         showExpiredFlag = !showExpiredFlag;
-        if (showExpiredFlag) {
-            currentDate = new LocalDate();
-        }
         refresh();
         return showExpiredFlag;
     }
@@ -55,10 +51,10 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     protected List<IncomingDocument> loadDocuments() {
         final List<IncomingDocument> resultList = incomingDocumentDao
                 .findControlledDocumentsByUser(
-                        filter, authData, showExpiredFlag ? currentDate.toDate() : null
+                        filter, authData, showExpiredFlag ? LocalDateTime.now() : null
                 );
         if (!resultList.isEmpty()) {
-            viewFactDao.applyViewFlagsOnIncomingDocumentList(
+            viewFactDao.applyViewFlagsOnDocumentList(
                     resultList, authData.getAuthorized()
             );
         }

@@ -3,7 +3,9 @@ package ru.entity.model.user;
 import ru.entity.model.mapped.DeletableEntity;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+
+
 
 /**
  * Author: Upatov Egor <br>
@@ -19,12 +21,11 @@ import java.util.Date;
 public class Substitution extends DeletableEntity {
 
     @Column(name = "startDate")
-    @Temporal(TemporalType.DATE)
-    private Date startDate;
+    private LocalDate startDate;
 
     @Column(name = "endDate")
     @Temporal(TemporalType.DATE)
-    private Date endDate;
+    private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id", nullable = false)
@@ -40,7 +41,7 @@ public class Substitution extends DeletableEntity {
     public Substitution() {
     }
 
-    public Substitution(Date startDate, Date endDate, User person, User substitution, int type) {
+    public Substitution(LocalDate startDate, LocalDate endDate, User person, User substitution, int type) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.person = person;
@@ -49,19 +50,19 @@ public class Substitution extends DeletableEntity {
     }
     //Getters & Setters
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

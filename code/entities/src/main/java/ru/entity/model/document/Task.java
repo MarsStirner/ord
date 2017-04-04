@@ -2,13 +2,13 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
-import ru.util.ApplicationHelper;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -18,7 +18,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_tasks")
-public class Task extends DeletableEntity implements ProcessedData, Cloneable {
+public class Task extends DocumentEntity implements ProcessedData, Cloneable {
 
     private static final long serialVersionUID = -1414080814402194966L;
 
@@ -26,22 +26,13 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
      * Контрольная дата исполнения
      */
     @Column(name = "controlDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date controlDate;
+    private LocalDateTime controlDate;
 
     /**
      * Дата создания
      */
     @Column(name = "creationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
-
-    /**
-     * Автор поручения
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+    private LocalDateTime creationDate;
 
 
     /**
@@ -62,8 +53,7 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
      * Дата создания документа
      */
     @Column(name = "executionDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date executionDate;
+    private LocalDateTime executionDate;
 
     /**
      * id родительского поручения
@@ -76,8 +66,7 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
      * Дата регистрации
      */
     @Column(name = "registrationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
 
     /**
      * Краткое описание
@@ -152,19 +141,19 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         this.taskNumber = taskNumber;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Date getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(Date registrationDate) {
+    public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
@@ -176,28 +165,20 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         this.erpNumber = erpNumber;
     }
 
-    public Date getControlDate() {
+    public LocalDateTime getControlDate() {
         return controlDate;
     }
 
-    public void setControlDate(Date controlDate) {
+    public void setControlDate(LocalDateTime controlDate) {
         this.controlDate = controlDate;
     }
 
-    public Date getExecutionDate() {
+    public LocalDateTime getExecutionDate() {
         return executionDate;
     }
 
-    public void setExecutionDate(Date executionDate) {
+    public void setExecutionDate(LocalDateTime executionDate) {
         this.executionDate = executionDate;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
     }
 
     public List<User> getExecutorsList() {
@@ -341,7 +322,7 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
         super.clone();
         final Task clone = new Task();
         clone.setId(getId());
-        clone.setAuthor(author);
+        clone.setAuthor(getAuthor());
         clone.setControlDate(controlDate);
         clone.setController(controller);
         clone.setCreationDate(creationDate);
@@ -364,13 +345,13 @@ public class Task extends DeletableEntity implements ProcessedData, Cloneable {
     @Override
     public String toString() {
         return new StringBuilder().append("Task[").append(getId())
-                .append("]{ controlDate=").append(ApplicationHelper.formatDate(controlDate))
-                .append(", creationDate=").append(ApplicationHelper.formatDate(creationDate))
-                .append(", author=").append(author.getDescription())
+                .append("]{ controlDate=").append(controlDate)
+                .append(", creationDate=").append(creationDate)
+                .append(", author=").append(getAuthor().getDescription())
                 .append(", initiator=").append(initiator != null ? initiator.getDescription() : "null")
                 .append(", controller=").append(controller != null ? controller.getDescription() : "null")
                 .append(", parent=").append(parent != null ? parent.getId() : "null")
-                .append(", registrationDate=").append(ApplicationHelper.formatDate(registrationDate))
+                .append(", registrationDate=").append(registrationDate)
                 .append(", shortDescription='").append(shortDescription).append('\'')
                 .append(", statusId=").append(statusId)
                 .append(", taskNumber='").append(taskNumber).append('\'')

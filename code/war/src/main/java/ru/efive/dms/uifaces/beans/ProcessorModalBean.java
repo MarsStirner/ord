@@ -16,6 +16,8 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
 import org.springframework.stereotype.Controller;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller("processorModal")
@@ -141,7 +143,7 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
             state = ProcessState.PROCESSING;
             if (selectedAction.isHistoryAction()) {
                 historyEntry = new HistoryEntry();
-                Date date = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+                LocalDateTime date = LocalDateTime.now();
                 historyEntry.setCreated(date);
                 historyEntry.setStartDate(date);
                 historyEntry.setOwner(authData.getAuthorized());
@@ -219,7 +221,7 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                         }
                         if (selectedAction.isHistoryAction()) {
                             try {
-                                historyEntry.setEndDate(Calendar.getInstance(ApplicationHelper.getLocale()).getTime());
+                                historyEntry.setEndDate(LocalDateTime.now());
                                 historyEntry.setProcessed(actionResult.isProcessed());
                                 if (actionResult.getDescription() == null || actionResult.getDescription().equals("")) {
                                     for (EditableProperty property : selectedAction.getProperties()) {

@@ -9,6 +9,7 @@ import ru.util.StoredCodes;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -27,8 +28,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      * дата создания учетной записи
      */
     @Column(name = "created")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date created;
+    private LocalDateTime created;
     /**
      * фамилия
      */
@@ -80,8 +80,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      * Дата увольнения сотрудника
      */
     @Column(name = "firedDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date firedDate;
+    private LocalDateTime firedDate;
     /**
      * Максимальный уровень допуска
      */
@@ -121,8 +120,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      * Время последней модификации
      */
     @Column(name = "lastModified")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date lastModified;
+    private LocalDateTime lastModified;
     /**
      * должность
      */
@@ -355,11 +353,11 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         return false;
     }
 
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
@@ -411,11 +409,11 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         this.GUID = GUID;
     }
 
-    public Date getLastModified() {
+    public LocalDateTime getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(Date lastModified) {
+    public void setLastModified(LocalDateTime lastModified) {
         this.lastModified = lastModified;
     }
 
@@ -427,11 +425,11 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         this.fired = fired;
     }
 
-    public Date getFiredDate() {
+    public LocalDateTime getFiredDate() {
         return firedDate;
     }
 
-    public void setFiredDate(Date firedDate) {
+    public void setFiredDate(LocalDateTime firedDate) {
         this.firedDate = firedDate;
     }
 
@@ -532,7 +530,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      *
      * @param date дата приема на работу
      */
-    public void hire(final Date date) {
+    public void hire(final LocalDateTime date) {
         fired = false;
         lastModified = date;
     }
@@ -542,7 +540,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      *
      * @param date дата увольнения
      */
-    public void fire(final Date date) {
+    public void fire(final LocalDateTime date) {
         fired = true;
         firedDate = date;
         lastModified = date;

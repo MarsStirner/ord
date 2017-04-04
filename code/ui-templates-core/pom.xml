@@ -9,14 +9,16 @@
     <groupId>ru.efive.ui-templates</groupId>
     <artifactId>ui-templates-core</artifactId>
     <packaging>jar</packaging>
+    <version>${version.build}</version>
 	
     <name>UI Templates Core Library</name>
     <description>JSF2-based framework for quick building applications. Core components library.</description>
-    
+
     <parent>
-        <groupId>ru.efive.dms</groupId>
-        <artifactId>dms-app</artifactId>
-        <version>0.3.9</version>
+        <groupId>ru.bars_open.medvtr.ord</groupId>
+        <artifactId>app</artifactId>
+        <version>${version.build}</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <dependencies>
@@ -34,7 +36,6 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>5.3</version>
         </dependency>
 
         <dependency>
@@ -50,39 +51,4 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-    
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.1</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <mkdir dir="${project.build.directory}/classes/META-INF"/>
-                                <tstamp>
-                                    <format property="last.updated" pattern="yyyy-MM-dd HH:mm:ss.SSS"/>
-                                </tstamp>
-                                <echo file="${basedir}/target/classes/META-INF/version.properties" message="build.time=${last.updated}"/>
-                            </tasks>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

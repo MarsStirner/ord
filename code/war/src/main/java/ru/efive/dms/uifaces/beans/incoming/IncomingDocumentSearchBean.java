@@ -9,14 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.*;
-import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForIncomingDocument;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -26,18 +24,15 @@ import java.util.*;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
-@Controller("incoming_search")
+@Controller("incomingSearch")
 @SpringScopeView
 public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<IncomingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Autowired
-    @Qualifier("incomingDocumentDao")
-    private IncomingDocumentDao incomingDocumentDao;
-
-    @Autowired
-    @Qualifier("incomingDocumentLDM")
-    private LazyDataModelForIncomingDocument ldm;
+    public void setLazyModel(@Qualifier("incomingDocumentLDM") IncomingDocumentLazyDataModel lazyModel) {
+        this.lazyModel = lazyModel;
+    }
 
     public boolean validate() {
         if (filters.isEmpty()) {
@@ -70,8 +65,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         logger.info("INCOMING: Perform Search with map : {}", filters);
         if (validate()) {
             try {
-                ldm.setFilters(filters);
-                setLazyModel(ldm);
+                getLazyModel().setFilters(filters);
                 searchPerformed = true;
             } catch (Exception e) {
                 searchPerformed = false;

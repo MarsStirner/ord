@@ -23,6 +23,7 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_ERROR_ON_REPORT_CREATION;
@@ -64,8 +65,8 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
             LOGGER.warn("Report[{}] not found", id);
             setDocumentNotFound();
         } else {
-            document.setStartDate(new Date());
-            document.setEndDate(new Date());
+            document.setStartDate(LocalDateTime.now());
+            document.setEndDate(LocalDateTime.now());
             setDocument(document);
             setState(State.EDIT);
         }

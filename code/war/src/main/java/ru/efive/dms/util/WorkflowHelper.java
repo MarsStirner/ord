@@ -30,6 +30,7 @@ import ru.util.ApplicationHelper;
 import javax.faces.context.FacesContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,9 +57,11 @@ public final class WorkflowHelper {
     @Autowired
     @Qualifier("requestDocumentDao")
     private RequestDocumentDao requestDocumentDao;
+
     @Autowired
     @Qualifier("taskDao")
     private TaskDao taskDao;
+
     @Autowired
     @Qualifier("nomenclatureDao")
     private NomenclatureDao nomenclatureDao;
@@ -161,16 +164,14 @@ public final class WorkflowHelper {
     public boolean changeTaskExecutionDateAction(NoStatusAction changeDateAction, Task task) {
         boolean result = false;
         try {
-            Date currentDate = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
-
-            Date choosenDate = null;
+            LocalDateTime choosenDate = null;
             for (EditableProperty property : changeDateAction.getProperties()) {
                 if (property.getName().equals("executionDate")) {
-                    choosenDate = (Date) property.getValue();
+                    choosenDate = (LocalDateTime) property.getValue();
                 }
             }
             if (choosenDate != null) {
-                final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
+                final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(LocalDateTime.now());
                 task.setWFResultDescription(String.format(delegateReason, task.getExecutors().iterator().next().getDescription()));
                 task.setExecutionDate(choosenDate);
                 result = true;
@@ -187,7 +188,6 @@ public final class WorkflowHelper {
     public boolean doTaskDelegateAction(NoStatusAction delegateAction, Task task) {
         boolean result = false;
         try {
-            Date currentDate = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
             User selectedUser = null;
             for (EditableProperty property : delegateAction.getProperties()) {
                 if (property.getName().equals(EngineHelper.PROP_DELEGATION_USER)) {
@@ -206,7 +206,7 @@ public final class WorkflowHelper {
                         sendMailActivity.setMessage(message);
                     }
                 }
-                final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(currentDate);
+                final String delegateReason = "Делегирован %s " + new java.text.SimpleDateFormat("dd.MM.yyyy HH:mm").format(LocalDateTime.now());
                 task.setWFResultDescription(String.format(delegateReason, task.getExecutors().iterator().next().getDescription()));
                 final HashSet<User> users = new HashSet<>(1);
                 users.add(selectedUser);
@@ -221,32 +221,6 @@ public final class WorkflowHelper {
             e.printStackTrace();
         }
         return result;
-    }
-
-    public boolean addToDocumentAgreementUsers(OutgoingDocument document, ArrayList<User> usersList) {
-        if (usersList.size() > 0) {
-            Set<User> currentUsers = document.getAgreementUsers();
-            if (currentUsers == null) {
-                document.setAgreementUsers(new HashSet<>(usersList));
-            } else {
-                currentUsers.addAll(new HashSet<>(usersList));
-                document.setAgreementUsers(currentUsers);
-            }
-        }
-        return true;
-    }
-
-    public boolean addToDocumentAgreementUsers(InternalDocument document, ArrayList<User> usersList) {
-        if (usersList.size() > 0) {
-            Set<User> currentUsers = document.getAgreementUsers();
-            if (currentUsers == null) {
-                document.setAgreementUsers(new HashSet<>(usersList));
-            } else {
-                currentUsers.addAll(new HashSet<>(usersList));
-                document.setAgreementUsers(currentUsers);
-            }
-        }
-        return true;
     }
 
     public boolean setOutgoingRegistrationNumber(OutgoingDocument doc) {
@@ -299,8 +273,8 @@ public final class WorkflowHelper {
                     doc.setRegistrationNumber(in_number.toString());
 
 
-                    Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                    doc.setRegistrationDate(calendar.getTime());
+
+                    doc.setRegistrationDate(LocalDateTime.now());
                     result = true;
                 }
 
@@ -376,8 +350,7 @@ public final class WorkflowHelper {
                     );
                     doc.setRegistrationNumber(in_number.toString());
 
-                    Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                    doc.setRegistrationDate(calendar.getTime());
+                    doc.setRegistrationDate(LocalDateTime.now());
                     result = true;
                 }
             } catch (Exception e) {
@@ -617,8 +590,8 @@ public final class WorkflowHelper {
                     doc.setRegistrationNumber(in_number.toString());
 
 
-                    Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                    doc.setRegistrationDate(calendar.getTime());
+
+                    doc.setRegistrationDate(LocalDateTime.now());
                     result = true;
                 }
 
@@ -815,8 +788,7 @@ public final class WorkflowHelper {
                     in_number.append(in_count);
                     document.setRegistrationNumber(in_number.toString());
 
-                    Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                    document.setRegistrationDate(calendar.getTime());
+                    document.setRegistrationDate(LocalDateTime.now());
                     Set<Role> in_roles = new HashSet<>();
                     Role in_office = roleDao.findRoleByType(RoleType.REQUEST_MANAGER);
                     in_roles.add(in_office);
@@ -908,8 +880,7 @@ public final class WorkflowHelper {
                     in_number.append(in_count);
                     doc.setTaskNumber(in_number.toString());
 
-                    Calendar calendar = Calendar.getInstance(ApplicationHelper.getLocale());
-                    doc.setRegistrationDate(calendar.getTime());
+                    doc.setRegistrationDate(LocalDateTime.now());
                     result = true;
                 } else {
                     //Номер задан - > Нихера не делаем?!
@@ -971,7 +942,7 @@ public final class WorkflowHelper {
                     Set<HistoryEntry> history = new HashSet<>(1);
                     final HistoryEntry entry = new HistoryEntry();
                     entry.setActionId(DocumentAction.REDIRECT_TO_EXECUTION_1.getId());
-                    entry.setCreated(new Date());
+                    entry.setCreated(LocalDateTime.now());
                     entry.setCommentary("Создано из группового поручения");
                     entry.setFromStatusId(1);
                     entry.setToStatusId(DocumentStatus.ON_EXECUTION_2.getId());

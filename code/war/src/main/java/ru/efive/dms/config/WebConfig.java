@@ -39,9 +39,6 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
         final AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
         rootContext.register(ApplicationConfig.class);
 
-
-
-
         final DispatcherServlet dispatcherServlet = new DispatcherServlet(rootContext);
         // throw NoHandlerFoundException to controller ExceptionHandler.class. Used for <error-page> analogue
         dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
@@ -52,11 +49,9 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
         dispatcher.setLoadOnStartup(1);
         dispatcher.addMapping("/");
 
-
         final ServletRegistration.Dynamic facesServlet = servletContext.addServlet("Faces Servlet", new FacesServlet());
         facesServlet.setLoadOnStartup(1);
         facesServlet.addMapping("*.xhtml");
-
 
         final FilterRegistration.Dynamic encodingFilter = servletContext.addFilter("encoding-filter", new CharacterEncodingFilter());
         encodingFilter.setInitParameter("encoding", "UTF-8");
@@ -67,7 +62,7 @@ public class WebConfig extends AbstractAnnotationConfigDispatcherServletInitiali
         authorizationFilter.addMappingForUrlPatterns(null, true, "/component/*");
 
         final FilterRegistration.Dynamic fileUploadFilter = servletContext.addFilter("PrimeFaces FileUpload Filter", new FileUploadFilter());
-        authorizationFilter.addMappingForUrlPatterns(null, true, "/component/*");
+        fileUploadFilter.addMappingForUrlPatterns(null, true, "/component/*");
 
 
         servletContext.addListener(new ContextLoaderListener(rootContext));

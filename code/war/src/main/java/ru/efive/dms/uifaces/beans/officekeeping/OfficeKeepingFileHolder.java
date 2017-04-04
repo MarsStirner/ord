@@ -15,6 +15,8 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
 import org.springframework.stereotype.Controller;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
@@ -90,7 +92,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     protected void initNewDocument() {
         OfficeKeepingFile document = new OfficeKeepingFile();
         document.setDocumentStatus(DocumentStatus.NEW);
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+        LocalDateTime created = LocalDateTime.now();
         //document.setCreationDate(created);
         //document.setAuthor(authData.getAuthorized());
 

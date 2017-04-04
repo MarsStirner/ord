@@ -2,17 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
     <parent>
-        <artifactId>dms-app</artifactId>
-        <groupId>ru.efive.dms</groupId>
-        <version>0.3.9</version>
+        <groupId>ru.bars_open.medvtr.ord</groupId>
+        <artifactId>app</artifactId>
+        <version>${version.build}</version>
         <relativePath>../</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.hitsl.dms</groupId>
+    <groupId>ru.bars_open.medvtr.ord</groupId>
     <artifactId>entities</artifactId>
-    <version>1.0</version>
+    <version>${version.build}</version>
     <name>Entities jar for ORD</name>
     <packaging>jar</packaging>
 
@@ -21,30 +22,14 @@
             <groupId>javax</groupId>
             <artifactId>javaee-api</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>logback.config</groupId>
-            <artifactId>config</artifactId>
-            <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>joda-time</groupId>
-            <artifactId>joda-time</artifactId>
-            <version>2.5</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>commons-beanutils</groupId>
-            <artifactId>commons-beanutils</artifactId>
-            <version>1.8.3</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
-
     </dependencies>
 
 

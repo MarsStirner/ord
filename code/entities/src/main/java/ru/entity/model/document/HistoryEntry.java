@@ -5,7 +5,7 @@ import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Запись истории workflow
@@ -31,8 +31,7 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
      * Дата создания
      */
     @Column(name = "created")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date created;
+    private LocalDateTime created;
 
     /**
      * Тип документа
@@ -44,8 +43,7 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
      * Время завершения
      */
     @Column(name = "endDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     /**
      * Идентификатор начального статуса
@@ -71,8 +69,7 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
      * Время начала
      */
     @Column(name = "startDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     /**
      * Идентификатор конечного статуса
@@ -111,11 +108,11 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
         this.commentary = commentary;
     }
 
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
@@ -127,11 +124,11 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
         this.docType = docType;
     }
 
-    public Date getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
@@ -159,11 +156,11 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
         this.processed = processed;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 

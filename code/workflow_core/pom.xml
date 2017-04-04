@@ -8,15 +8,18 @@
     <groupId>ru.efive.workflow</groupId>
     <artifactId>workflow-core</artifactId>
     <packaging>jar</packaging>
+    <version>${version.build}</version>
 
     <name>E5 WorkFlow Core Library</name>
     <description>E5 WorkFlow Core Library</description>
 
     <parent>
-        <groupId>ru.efive.dms</groupId>
-        <artifactId>dms-app</artifactId>
-        <version>0.3.9</version>
+        <groupId>ru.bars_open.medvtr.ord</groupId>
+        <artifactId>app</artifactId>
+        <version>${version.build}</version>
+        <relativePath>../</relativePath>
     </parent>
+
 
     <dependencies>
         <dependency>
@@ -31,9 +34,26 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.efive.dao</groupId>
-            <artifactId>sql-dao</artifactId>
+            <groupId>ru.bars_open.medvtr.ord</groupId>
+            <artifactId>dao</artifactId>
             <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.bars_open.medvtr.ord</groupId>
+            <artifactId>entities</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>LATEST</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
 
         <dependency>

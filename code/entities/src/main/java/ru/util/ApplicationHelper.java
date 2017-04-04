@@ -1,13 +1,12 @@
 package ru.util;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDate;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,7 +27,7 @@ public final class ApplicationHelper {
         return DATE_FORMAT;
     }
 
-    public static String formatDate(Date date) {
+    public static String formatDate(LocalDateTime date) {
         if (date == null) {
             return "NULL";
         }
@@ -66,15 +65,4 @@ public final class ApplicationHelper {
             throw new RuntimeException(e);
         }
     }
-
-    /**
-     * Получить следующий от заданной даты день
-     *
-     * @param date заданная дата, к которой прибавляется день
-     * @return дата, указывающая на следующий день
-     */
-    public static Date getNextDayDate(final Date date) {
-        return new LocalDate(date).plusDays(1).toDate();
-    }
-
 }

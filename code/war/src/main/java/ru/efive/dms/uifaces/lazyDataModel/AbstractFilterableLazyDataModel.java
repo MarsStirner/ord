@@ -24,7 +24,7 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     protected String filter;
     protected Map<String, Object> filters;
 
-    public AbstractFilterableLazyDataModel(CommonDao<T> dao) {
+    public AbstractFilterableLazyDataModel(final CommonDao<T> dao) {
         this.dao = dao;
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
         return filter;
     }
 
-    public void setFilter(String filter) {
+    public void setFilter(final String filter) {
         this.filter = filter;
     }
 
@@ -40,8 +40,16 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
         return filters;
     }
 
-    public void setFilters(Map<String, Object> filters) {
+    public void setFilters(final Map<String, Object> filters) {
         this.filters = filters;
+    }
+
+
+    public void addFilter(final String key, final Object value) {
+        if (filters == null) {
+            filters = new HashMap<>();
+        }
+        filters.put(key, value);
     }
 
     @Override
@@ -54,7 +62,7 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
         try {
             return dao.getItemByListCriteria(Integer.valueOf(rowKey));
         } catch (NumberFormatException e) {
-            log.error("Try to get Item by nonInteger identifier \'{}\'. Return NULL", rowKey);
+            log.error("Try to get Item by non-integer identifier \'{}\'. Return NULL", rowKey);
             return null;
         }
     }
@@ -66,12 +74,5 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
             first = 0;
         }
         return dao.getItems(filter, filters, sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize, false);
-    }
-
-    public void addFilter(String key, Object value) {
-        if (filters == null) {
-            filters = new HashMap<>();
-        }
-        filters.put(key, value);
     }
 }

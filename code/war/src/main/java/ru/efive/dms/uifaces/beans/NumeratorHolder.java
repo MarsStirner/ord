@@ -36,7 +36,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> {
 //    @Override
 //    protected void initNewDocument() {
 //        final Numerator doc = new Numerator();
-//        final Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+//        final Date created = LocalDateTime.now();;
 //        doc.setCreationDate(created);
 //        doc.setAuthor(authData.getAuthorized());
 //        doc.setDeleted(false);

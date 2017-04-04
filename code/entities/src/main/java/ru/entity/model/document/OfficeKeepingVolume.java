@@ -7,6 +7,7 @@ import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -42,7 +43,7 @@ public class OfficeKeepingVolume extends DeletableEntity implements ProcessedDat
     /**
      * Предполагаемая дата возврата
      */
-    private Date returnDate;
+    private LocalDate returnDate;
     /**
      * Индекс дела
      */
@@ -227,11 +228,11 @@ public class OfficeKeepingVolume extends DeletableEntity implements ProcessedDat
         this.collector = collector;
     }
 
-    public Date getReturnDate() {
+    public LocalDate getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(Date returnDate) {
+    public void setReturnDate(LocalDate returnDate) {
         this.returnDate = returnDate;
     }
 

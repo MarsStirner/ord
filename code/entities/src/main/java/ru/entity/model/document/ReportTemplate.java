@@ -1,6 +1,6 @@
 package ru.entity.model.document;
 
-import org.apache.commons.beanutils.PropertyUtils;
+
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.Region;
@@ -10,15 +10,13 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
 @Entity
 @Table(name = "report_templates")
 public class ReportTemplate extends DeletableEntity {
-
-    private static final long serialVersionUID = -5877947826192366106L;
     /**
      * Отображаемое в списке название
      */
@@ -35,11 +33,11 @@ public class ReportTemplate extends DeletableEntity {
      */
     private byte type;
     @Transient
-    private Date startDate;
+    private LocalDateTime startDate;
     private String startAlias;
     private String startDescription;
     @Transient
-    private Date endDate;
+    private LocalDateTime endDate;
     private String endAlias;
     private String endDescription;
     @Transient
@@ -84,11 +82,11 @@ public class ReportTemplate extends DeletableEntity {
         this.type = type;
     }
 
-    public Date getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
@@ -114,11 +112,11 @@ public class ReportTemplate extends DeletableEntity {
         this.startDescription = startDescription;
     }
 
-    public Date getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 
@@ -154,15 +152,15 @@ public class ReportTemplate extends DeletableEntity {
         }
 
         if ((type == 100) || (type == 101)) {
-            result.put(userAlias, PropertyUtils.getProperty(user, userProperty).toString());
+            result.put(userAlias, user.getId());
         }
 
         if (documentForm != null) {
-            result.put(documentFormAlias, PropertyUtils.getProperty(documentForm, documentFormProperty).toString());
+            result.put(documentFormAlias, documentForm.getId());
         }
 
         if (region != null) {
-            result.put(regionAlias, PropertyUtils.getProperty(region, regionProperty).toString());
+            result.put(regionAlias, region.getId());
         }
 
         return result;

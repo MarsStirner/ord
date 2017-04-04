@@ -21,6 +21,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import org.springframework.stereotype.Controller;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
@@ -127,7 +128,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
             }
         }
         document.setDocumentStatus(DocumentStatus.NEW);
-        Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+        LocalDateTime created = LocalDateTime.now();
 
         HistoryEntry historyEntry = new HistoryEntry();
         historyEntry.setCreated(created);

@@ -16,7 +16,6 @@ import ru.entity.model.enums.RoleType;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.referenceBook.Role;
 import ru.entity.model.user.User;
-import ru.entity.model.wf.HumanTaskTree;
 import ru.external.ProcessUser;
 import ru.external.ProcessedData;
 
@@ -396,25 +395,6 @@ public final class ProcessFactory {
         sendTo = new ArrayList<>();
 
         if (agreementTree != null) {
-            HumanTaskTree tree = (HumanTaskTree) agreementTree;
-            //List<String> sendTo = EngineHelper.doGenerateAgreementPrimaryNotificationList(tree);
-            //List<String> blindCopyTo = new ArrayList<String>();
-            InvokeMethodActivity addAgreementUsersActivity;
-            Set<User> executors = EngineHelper.doGenerateAgreementPrimaryExecutors(tree);
-            if (executors.size() > 0) {
-                addAgreementUsersActivity = new InvokeMethodActivity();
-                list = new ArrayList<>();
-                list.add(t);
-                list.add(new ArrayList(executors));
-                addAgreementUsersActivity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "addToDocumentAgreementUsers", list);
-                activites.add(addAgreementUsersActivity);
-            }
-
-            for (User executor : executors) {
-                if ((executor.getEmail() != null) && (!executor.getEmail().isEmpty())) {
-                    sendTo.add(executor.getEmail());
-                }
-            }
         }
 
         if (!recipients.isEmpty()) sendTo.addAll(recipients);
@@ -1526,33 +1506,6 @@ public final class ProcessFactory {
         activites = new ArrayList<>();
         Object agreementTree = PropertyUtils.getProperty(t, "agreementTree");
         if (agreementTree != null) {
-            HumanTaskTree tree = (HumanTaskTree) agreementTree;
-            InvokeMethodActivity addAgreementUsersActivity = null;
-            Set<User> executors = EngineHelper.doGenerateAgreementPrimaryExecutors(tree);
-            if (executors.size() > 0) {
-                addAgreementUsersActivity = new InvokeMethodActivity();
-                list = new ArrayList<>();
-                list.add(t);
-                list.add(new ArrayList(executors));
-                addAgreementUsersActivity.setInvokeInformation("ru.efive.dms.util.WorkflowHelper", "addToDocumentAgreementUsers", list);
-                activites.add(addAgreementUsersActivity);
-            }
-
-            List<String> sendTo = new ArrayList<>();
-            for (User executor : executors) {
-                if ((executor.getEmail() != null) && (!executor.getEmail().isEmpty())) {
-                    sendTo.add(executor.getEmail());
-                }
-            }
-            MailMessage message = new MailMessage(sendTo, null, "Новый запрос на согласование",
-                    "Новый запрос на согласование\n\n" + "<a href=\"" + getHost() + "/component/out/out_document.xhtml?docId=" +
-                            process.getProcessedData().getId() + "\" >Ссылка на документ</a>");
-            //message.setBlindCopyTo(blindCopyTo);
-            message.setContentType("text/html");
-            SendMailActivity mailActivity = new SendMailActivity();
-            mailActivity.setMessage(message);
-            if (sendTo.size() > 0) activites.add(mailActivity);
-            agreeStatus.setPreStatusActivities(activites);
         }
         toStatusAction.setDestinationStatus(agreeStatus);
 

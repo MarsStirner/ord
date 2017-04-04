@@ -186,7 +186,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     private boolean validateBeforeSave(Substitution document) {
         boolean result = true;
         if (document.getStartDate() != null && document.getEndDate() != null) {
-            if (document.getStartDate().after(document.getEndDate())) {
+            if (document.getStartDate().isAfter(document.getEndDate())) {
                 logger.error("Save cancelled: startDate[{}] is not before endDate[{}]", document.getStartDate(), document.getEndDate());
                 addMessage(MSG_SUBSTITUTION_DATE_MISMATCH);
                 result = false;

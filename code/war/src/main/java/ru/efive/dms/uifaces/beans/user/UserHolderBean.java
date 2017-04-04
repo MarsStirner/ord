@@ -18,6 +18,8 @@ import ru.util.ApplicationHelper;
 
 import javax.faces.event.ValueChangeEvent;
 import org.springframework.stereotype.Controller;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller("user")
@@ -99,7 +101,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
      */
     public boolean changeFired() {
         final User user = getDocument();
-        final Date now = new Date();
+        final LocalDateTime now = LocalDateTime.now();
         if (user.isFired()) {
             //Восстанавливаем уволенного сотрудника
             user.hire(now);
@@ -173,7 +175,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     protected void initNewDocument() {
         LOGGER.info("Create new user");
         final User user = new User();
-        user.setCreated(Calendar.getInstance(ApplicationHelper.getLocale()).getTime());
+        user.setCreated(LocalDateTime.now());
         user.setDeleted(false);
         user.setFired(false);
         setDocument(user);
@@ -203,13 +205,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
      * @param contacts список контактных данных
      */
     private void removeEmptyContacts(Collection<PersonContact> contacts) {
-        final Iterator<PersonContact> contactIterator = contacts.iterator();
-        while (contactIterator.hasNext()) {
-            final PersonContact item = contactIterator.next();
-            if (StringUtils.isEmpty(item.getValue())) {
-                contactIterator.remove();
-            }
-        }
+        contacts.removeIf(item -> StringUtils.isEmpty(item.getValue()));
     }
 
     @Override

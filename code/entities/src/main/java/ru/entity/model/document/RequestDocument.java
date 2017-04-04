@@ -3,12 +3,13 @@ package ru.entity.model.document;
 import org.apache.commons.lang3.StringUtils;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -19,8 +20,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_request_documents")
-public class RequestDocument extends DeletableEntity implements ProcessedData {
-    private static final long serialVersionUID = -5522881582616193416L;
+public class RequestDocument extends DocumentEntity implements ProcessedData {
 
     /**
      * Номер входящего
@@ -32,29 +32,19 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
      * Дата регистрации
      */
     @Column(name = "registrationDate", nullable = true)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
 
     /**
      * Дата поступления
      */
     @Column(name = "deliveryDate", nullable = true)
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date deliveryDate;
-
-    /**
-     * Автор документа
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+    private LocalDateTime deliveryDate;
 
     /**
      * Срок исполнения
      */
     @Column(name = "executionDate", nullable = true)
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date executionDate;
+    private LocalDateTime executionDate;
 
     /**
      * Руководитель
@@ -168,8 +158,7 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
      * Дата создания документа
      */
     @Column(name = "creationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
     /**
      * Регион
@@ -208,8 +197,7 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
      * Дата регистрации поступившего документа у корреспондента
      */
     @Column(name = "receivedDocumentDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date receivedDocumentDate;
+    private LocalDateTime receivedDocumentDate;
 
     /**
      * Количество приложений
@@ -287,14 +275,6 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
         return "request_doc";
     }
 
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
     public String getRegistrationNumber() {
         return registrationNumber;
     }
@@ -311,27 +291,27 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
         this.erpNumber = erpNumber;
     }
 
-    public Date getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(Date registrationDate) {
+    public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
-    public Date getExecutionDate() {
+    public LocalDateTime getExecutionDate() {
         return executionDate;
     }
 
-    public void setExecutionDate(Date executionDate) {
+    public void setExecutionDate(LocalDateTime executionDate) {
         this.executionDate = executionDate;
     }
 
-    public Date getDeliveryDate() {
+    public LocalDateTime getDeliveryDate() {
         return deliveryDate;
     }
 
-    public void setDeliveryDate(Date deliveryDate) {
+    public void setDeliveryDate(LocalDateTime deliveryDate) {
         this.deliveryDate = deliveryDate;
     }
 
@@ -434,11 +414,11 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
         this.nomenclature = nomenclature;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -466,11 +446,11 @@ public class RequestDocument extends DeletableEntity implements ProcessedData {
         this.receivedDocumentNumber = receivedDocumentNumber;
     }
 
-    public Date getReceivedDocumentDate() {
+    public LocalDateTime getReceivedDocumentDate() {
         return receivedDocumentDate;
     }
 
-    public void setReceivedDocumentDate(Date receivedDocumentDate) {
+    public void setReceivedDocumentDate(LocalDateTime receivedDocumentDate) {
         this.receivedDocumentDate = receivedDocumentDate;
     }
 

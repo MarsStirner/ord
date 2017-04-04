@@ -28,6 +28,7 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.*;
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -241,7 +242,7 @@ public class LDAPImportService {
 
     private void createNewUser(final LDAPUser ldapUser, final ImportCacheObject cache) {
         final User user = new User();
-        user.setCreated(Calendar.getInstance(ApplicationHelper.getLocale()).getTime());
+        user.setCreated(LocalDateTime.now());
         user.setDeleted(false);
         //При создании указывать пароль по умолчанию "12345")
         user.setPassword(ImportCacheObject.DEFAULT_PASSWORD);
@@ -311,7 +312,7 @@ public class LDAPImportService {
     private void synchronizeUser(LDAPUser ldapUser, User localUser, ImportCacheObject cache) {
         LOGGER.debug("Synchronize with localID=" + localUser.getId());
         try {
-            if (localUser.getLastModified() != null && localUser.getLastModified().getTime() == ldapUser.getLastModified().getTime() && localUser
+            if (localUser.getLastModified() != null && Objects.equals(localUser.getLastModified(), ldapUser.getLastModified()) && localUser
                     .getGUID() != null) {
                 LOGGER.debug("Already Up to Date");
             } else {

@@ -4,7 +4,6 @@ import ru.efive.uifaces.component.ComponentFamily;
 import ru.efive.uifaces.component.html.HtmlTabPage;
 import ru.efive.uifaces.component.html.HtmlTabPage.ActionBehavior;
 import ru.efive.uifaces.component.html.HtmlTabPanel;
-import ru.efive.uifaces.renderkit.html_basic.base.AdvancedResponseWriter;
 import ru.efive.uifaces.renderkit.html_basic.base.*;
 
 import javax.faces.application.ResourceDependencies;

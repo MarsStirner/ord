@@ -6,6 +6,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -13,7 +15,7 @@ import java.util.Date;
  */
 public class LDAPUser {
 
-    private static final SimpleDateFormat lastModifiedFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    private static final DateTimeFormatter lastModifiedFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private static final String BLOCKED_ACCOUNT_MARKER = "514";
 
     //Distinguished Name (DN)
@@ -40,7 +42,7 @@ public class LDAPUser {
     //GUID
     private String guid;
     // Дата последнего изменения
-    private Date lastModified;
+    private LocalDateTime lastModified;
     //Логин
     private String login;
 
@@ -259,15 +261,15 @@ public class LDAPUser {
      *
      * @return
      */
-    public Date getLastModified() {
+    public LocalDateTime getLastModified() {
         return lastModified;
     }
 
     private void setLastModified(Attribute lastModified) throws NamingException, ParseException {
         if (lastModified != null) {
-            this.lastModified = lastModifiedFormat.parse((String) lastModified.get());
+            this.lastModified = LocalDateTime.parse( (String)lastModified.get(), lastModifiedFormat);
         } else {
-            this.lastModified = new Date();
+            this.lastModified = LocalDateTime.now();
         }
     }
 

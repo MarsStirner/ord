@@ -5,22 +5,24 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>ru.bars_open.medvtr.ord</groupId>
     <artifactId>dms-ear</artifactId>
     <packaging>ear</packaging>
-
+    <version>${version.build}</version>
     <name>E5 Documents management system Enterprise Application</name>
     <description>E5 Documents management system Enterprise Application</description>
 
     <parent>
-        <groupId>ru.efive.dms</groupId>
-        <artifactId>dms-app</artifactId>
-        <version>0.3.9</version>
+        <groupId>ru.bars_open.medvtr.ord</groupId>
+        <artifactId>app</artifactId>
+        <version>${version.build}</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>ru.efive.dms</groupId>
-            <artifactId>dms</artifactId>
+            <groupId>ru.bars_open.medvtr.ord</groupId>
+            <artifactId>war</artifactId>
             <version>LATEST</version>
             <type>war</type>
         </dependency>
@@ -36,8 +38,8 @@
                     <version>${version.app.ear}</version>
                     <modules>
                         <webModule>
-                            <groupId>ru.efive.dms</groupId>
-                            <artifactId>dms</artifactId>
+                            <groupId>ru.bars_open.medvtr.ord</groupId>
+                            <artifactId>war</artifactId>
                             <bundleDir>/</bundleDir>
                             <context-root>/</context-root>
                         </webModule>

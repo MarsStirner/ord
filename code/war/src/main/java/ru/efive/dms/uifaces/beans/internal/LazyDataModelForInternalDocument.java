@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import ru.efive.dms.uifaces.lazyDataModel.AbstractDocumentableLazyDataModel;
 import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
 import ru.entity.model.document.InternalDocument;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
@@ -27,22 +28,15 @@ import java.util.Map;
 
 @Controller("internal_documents")
 @SpringScopeView
-public class LazyDataModelForInternalDocument extends AbstractFilterableLazyDataModel<InternalDocument> {
-    private static final Logger logger = LoggerFactory.getLogger("LAZY_DM_INTERNAL");
-
-    @Autowired
-    @Qualifier("viewFactDao")
-    private ViewFactDao viewFactDao;
-    @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-
+public class LazyDataModelForInternalDocument extends AbstractDocumentableLazyDataModel<InternalDocument> {
     @Autowired
     public LazyDataModelForInternalDocument(
-            @Qualifier("internalDocumentDao") final InternalDocumentDao internalDocumentDao
-    ) {
-        super(internalDocumentDao);
+            @Qualifier("internalDocumentDao") final InternalDocumentDao internalDocumentDao,
+            @Qualifier("authData") AuthorizationData authData,
+            @Qualifier("viewFactDao") ViewFactDao viewFactDao) {
+        super(internalDocumentDao, authData, viewFactDao);
     }
+
 
     /**
      * При каждом запросе страницы (нового view) инициализировать список фильтров
@@ -52,10 +46,10 @@ public class LazyDataModelForInternalDocument extends AbstractFilterableLazyData
         if (!FacesContext.getCurrentInstance().isPostback()) {
             final Map<String, String> parameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
             if (!parameterMap.isEmpty()) {
-                logger.info("List initialize with {} params", parameterMap.size());
+                log.info("List initialize with {} params", parameterMap.size());
                 filters.clear();
                 for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-                    logger.info("{} = {}", entry.getKey(), entry.getValue());
+                    log.info("{} = {}", entry.getKey(), entry.getValue());
                     filters.put(entry.getKey(), entry.getValue());
                 }
             } else {
@@ -63,44 +57,4 @@ public class LazyDataModelForInternalDocument extends AbstractFilterableLazyData
             }
         }
     }
-
-    @Override
-    public List<InternalDocument> load(
-            int first,
-            final int pageSize,
-            final String sortField,
-            final SortOrder sortOrder,
-            final Map<String, Object> filters
-    ) {
-
-        InternalDocumentDao internalDocumentDao = (InternalDocumentDao) this.dao;
-        //Используются фильтры извне, а не из параметров
-        if (authData != null) {
-            setRowCount(internalDocumentDao.countItems(authData, getFilter(), getFilters(), false, false));
-            if (getRowCount() < first) {
-                first = 0;
-            }
-            final List<InternalDocument> resultList = internalDocumentDao.getItems(
-                    authData,
-                    getFilter(),
-                    this.filters,
-                    sortField,
-                    SortOrder.ASCENDING.equals(sortOrder),
-                    first,
-                    pageSize,
-                    false,
-                    false
-            );
-            //Проверка и выставленние классов просмотра документов пользователем
-            if (!resultList.isEmpty()) {
-                viewFactDao.applyViewFlagsOnInternalDocumentList(resultList, authData.getAuthorized());
-            }
-            return resultList;
-        } else {
-            logger.error("NO AUTH DATA");
-            return null;
-        }
-    }
-
-
 }

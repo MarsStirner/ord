@@ -5,20 +5,22 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>dms</artifactId>
+    <artifactId>war</artifactId>
     <packaging>war</packaging>
+    <version>${version.build}</version>
 
     <name>E5 Documents management system WebApp</name>
     <description>E5 Documents management system WebApp</description>
 
     <parent>
-        <groupId>ru.efive.dms</groupId>
-        <artifactId>dms-app</artifactId>
-        <version>0.3.9</version>
+        <groupId>ru.bars_open.medvtr.ord</groupId>
+        <artifactId>app</artifactId>
+        <version>${version.build}</version>
+        <relativePath>../</relativePath>
     </parent>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.sun.faces/jsf-impl -->
+              <!-- https://mvnrepository.com/artifact/com.sun.faces/jsf-impl -->
         <dependency>
             <groupId>com.sun.faces</groupId>
             <artifactId>jsf-impl</artifactId>
@@ -39,9 +41,12 @@
         </dependency>
 
         <dependency>
-            <groupId>logback.config</groupId>
-            <artifactId>config</artifactId>
-            <version>LATEST</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <dependency>
@@ -51,27 +56,21 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.efive.dao</groupId>
-            <artifactId>sql-dao</artifactId>
+            <groupId>ru.bars_open.medvtr.ord</groupId>
+            <artifactId>dao</artifactId>
             <version>LATEST</version>
         </dependency>
 
         <dependency>
-            <groupId>ru.efive.dao</groupId>
-            <artifactId>alfresco-dao</artifactId>
-            <version>LATEST</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ru.hitsl.dms</groupId>
-            <artifactId>entities</artifactId>
+            <groupId>ru.bars_open.medvtr.ord</groupId>
+            <artifactId>alfresco</artifactId>
             <version>LATEST</version>
         </dependency>
 
         <dependency>
             <groupId>ru.efive.ui-templates</groupId>
             <artifactId>ui-templates-core</artifactId>
-            <version>${project.version}</version>
+            <version>LATEST</version>
         </dependency>
 
         <dependency>
@@ -176,7 +175,7 @@
             <artifactId>spring-jsf</artifactId>
             <version>0.1.1</version>
         </dependency>
-        
+
 
     </dependencies>
 

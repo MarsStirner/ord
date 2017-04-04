@@ -6,7 +6,8 @@ import ru.entity.model.referenceBook.Nomenclature;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * Нумератор
@@ -20,8 +21,7 @@ public class Numerator extends DeletableEntity {
      * Дата создания документа
      */
     @Column(name = "creationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
+    private LocalDateTime creationDate;
     /**
      * Автор документа
      */
@@ -60,24 +60,22 @@ public class Numerator extends DeletableEntity {
      * Дата начала действия нумератора
      */
     @Column(name = "startDate")
-    @Temporal(value = TemporalType.DATE)
-    private Date startDate;
+    private LocalDate startDate;
 
     /**
      * Дата окончания действия нумератора
      */
     @Column(name = "endDate")
-    @Temporal(value = TemporalType.DATE)
-    private Date endDate;
+    private LocalDate endDate;
 
     public Numerator() {
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -87,6 +85,14 @@ public class Numerator extends DeletableEntity {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 
     public Nomenclature getNomenclature() {
@@ -113,27 +119,19 @@ public class Numerator extends DeletableEntity {
         this.shortDescription = shortDescription;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
-    }
-
-    public DocumentType getDocumentType() {
-        return documentType;
-    }
-
-    public void setDocumentType(DocumentType documentType) {
-        this.documentType = documentType;
     }
 }

@@ -4,9 +4,9 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.efive.dms</groupId>
-    <artifactId>dms-app</artifactId>
-    <version>0.3.9</version>
+    <groupId>ru.bars_open.medvtr.ord</groupId>
+    <artifactId>app</artifactId>
+    <version>${version.build}</version>
     <packaging>pom</packaging>
 
     <name>E5 Documents management system</name>
@@ -30,12 +30,11 @@
 
 
     <modules>
-        <module>config</module>
         <module>entities</module>
-        <module>sql-dao</module>
+        <module>dao</module>
 
         <module>ui-templates-core</module>
-        <module>alfresco-dao</module>
+        <module>alfresco</module>
         <module>workflow_core</module>
 
         <module>war</module>
@@ -45,6 +44,7 @@
     <properties>
         <java.version>1.8</java.version>
         <source.encoding>UTF-8</source.encoding>
+        <version.build>1.0.1</version.build>
 
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS 'UTC'</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
@@ -64,6 +64,7 @@
         <version.jsf>2.2</version.jsf>
         <!-- Spring -->
         <version.spring-framework>4.3.7.RELEASE</version.spring-framework>
+        <version.spring-jsf-scope-lib>0.1.1</version.spring-jsf-scope-lib>
 
         <version.jdbc-mysql>6.0.5</version.jdbc-mysql>
         <version.hikari>2.6.0</version.hikari>
@@ -100,13 +101,11 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${version.slf4j}</version>
             </dependency>
-
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
@@ -119,13 +118,11 @@
                 <artifactId>primefaces</artifactId>
                 <version>${version.primefaces}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.primefaces.themes</groupId>
                 <artifactId>all-themes</artifactId>
                 <version>${version.primefaces-themes}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.omnifaces</groupId>
                 <artifactId>omnifaces</artifactId>
@@ -139,7 +136,6 @@
                 <version>${version.javaee-api}</version>
                 <scope>provided</scope>
             </dependency>
-
             <dependency>
                 <groupId>javax.faces</groupId>
                 <artifactId>javax.faces-api</artifactId>
@@ -177,7 +173,7 @@
             <dependency>
                 <groupId>com.github.javaplugs</groupId>
                 <artifactId>spring-jsf</artifactId>
-                <version>0.1.1</version>
+                <version>${version.spring-jsf-scope-lib}</version>
             </dependency>
 
 

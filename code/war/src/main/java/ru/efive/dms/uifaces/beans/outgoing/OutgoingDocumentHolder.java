@@ -2,7 +2,6 @@ package ru.efive.dms.uifaces.beans.outgoing;
 
 import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
@@ -35,6 +34,7 @@ import ru.util.ApplicationHelper;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -128,7 +128,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             LOGGER.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
             final Attachment attachment = new Attachment();
             attachment.setFileName(file.getFileName());
-            attachment.setCreated(new LocalDateTime().toDate());
+            attachment.setCreated(LocalDateTime.now());
             attachment.setAuthorId(authData.getAuthorized().getId());
             attachment.setParentId(getDocument().getUniqueId());
             final boolean result = fileManagement.createFile(attachment, file.getContents());
@@ -372,7 +372,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     protected void initNewDocument() {
         permissions = Permissions.ALL_PERMISSIONS;
-        final Date created = new LocalDateTime().toDate();
+        final LocalDateTime created = LocalDateTime.now();
         final User currentUser = authData.getAuthorized();
         LOGGER.info("Start initialize new document by USER[{}]", currentUser.getId());
         final OutgoingDocument document = new OutgoingDocument();
@@ -417,7 +417,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     protected boolean saveNewDocument() {
         final User currentUser = authData.getAuthorized();
-        final Date created = new LocalDateTime().toDate();
+        final LocalDateTime created = LocalDateTime.now();
         LOGGER.info("Save new document by USER[{}]", currentUser.getId());
         // Сохранение дока в БД и создание записи в истории о создании
         final OutgoingDocument document = getDocument();
@@ -673,7 +673,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     public void deleteAttachment(Attachment attachment) {
         if (attachment != null && isCanEdit()) {
             final OutgoingDocument document = getDocument();
-            final Date created = Calendar.getInstance(ApplicationHelper.getLocale()).getTime();
+            final LocalDateTime created = LocalDateTime.now();
             HistoryEntry historyEntry = new HistoryEntry();
             historyEntry.setCreated(created);
             historyEntry.setStartDate(created);

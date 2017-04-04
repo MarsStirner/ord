@@ -2,14 +2,13 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
-import ru.entity.model.wf.HumanTaskTree;
-import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -20,7 +19,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_outgoing_documents")
-public class OutgoingDocument extends DeletableEntity implements ProcessedData, AgreementIssue {
+public class OutgoingDocument extends DocumentEntity implements ProcessedData {
     private static final long serialVersionUID = -3273628760848307048L;
 
     /**
@@ -39,22 +38,13 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
      * Дата создания документа
      */
     @Column(name = "creationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
-
-    /**
-     * Автор
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private User author;
+    private LocalDateTime creationDate;
 
     /**
      * Дата регистрации
      */
     @Column(name = "registrationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
 
     /**
      * Номер исходящего
@@ -79,8 +69,7 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
      * Дата подписания
      */
     @Column(name = "signatureDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date signatureDate;
+    private LocalDateTime signatureDate;
 
     /**
      * Текущий статус документа в процессе
@@ -162,14 +151,6 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
             inverseJoinColumns = {@JoinColumn(name = "personEditors_id")})
     private Set<User> personEditors;
 
-    /**
-     * Пользователи-согласующие
-     * TODO выпилить или переделать нормально
-     */
-    @Deprecated
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_outgoing_documents_agreementUsers")
-    private Set<User> agreementUsers;
 
     /**
      * Роли-читатели
@@ -206,18 +187,6 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
 
 
     /**
-     * Дерево согласования
-     * TODO выпилить или переделать
-     */
-    @Deprecated
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "dms_outgoing_document_agreement_tree",
-            joinColumns = @JoinColumn(name = "document_id"),
-            inverseJoinColumns = @JoinColumn(name = "tree_id"))
-    private HumanTaskTree agreementTree;
-
-
-    /**
      * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
      * TODO сделать класс-обертку
      */
@@ -229,11 +198,11 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
         return getId() == null ? "" : "outgoing_" + getId();
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return this.creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -261,11 +230,11 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
         this.nomenclature = nomenclature;
     }
 
-    public Date getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return this.registrationDate;
     }
 
-    public void setRegistrationDate(Date registrationDate) {
+    public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
@@ -325,20 +294,12 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
         this.controller = controller;
     }
 
-    public Date getSignatureDate() {
+    public LocalDateTime getSignatureDate() {
         return signatureDate;
     }
 
-    public void setSignatureDate(Date signatureDate) {
+    public void setSignatureDate(LocalDateTime signatureDate) {
         this.signatureDate = signatureDate;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
     }
 
     public String getShortDescription() {
@@ -480,23 +441,6 @@ public class OutgoingDocument extends DeletableEntity implements ProcessedData, 
         this.reasonDocumentId = reasonDocumentId;
     }
 
-    @Override
-    public HumanTaskTree getAgreementTree() {
-        return agreementTree;
-    }
-
-    @Override
-    public void setAgreementTree(HumanTaskTree agreementTree) {
-        this.agreementTree = agreementTree;
-    }
-
-    public Set<User> getAgreementUsers() {
-        return agreementUsers;
-    }
-
-    public void setAgreementUsers(Set<User> agreementUsers) {
-        this.agreementUsers = agreementUsers;
-    }
 
     public UserAccessLevel getUserAccessLevel() {
         return userAccessLevel;

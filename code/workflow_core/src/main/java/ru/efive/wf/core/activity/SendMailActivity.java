@@ -1,7 +1,9 @@
 package ru.efive.wf.core.activity;
 
+
 import org.apache.commons.beanutils.PropertyUtils;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.MailSettings;
 import ru.efive.wf.core.data.MailMessage;
@@ -19,7 +21,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.Properties;
 
+@Component("sendMailActivity")
 public class SendMailActivity implements IActivity {
+    @Autowired
     public MailSettings mailSettings;
     Class<? extends ProcessedData> class_;
     private ProcessedData processedData;
@@ -64,10 +68,7 @@ public class SendMailActivity implements IActivity {
     @Override
     public boolean execute() {
         boolean result = false;
-        //java.security.Security.setProperty("ssl.SocketFactory.provider", "ru.efive.wf.core.util.DummySSLSocketFactory");
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-        try {
-            mailSettings = (MailSettings) context.getBean("mailSettings");
+       try{
             MimeMessage mimeMessage = getMimeMessage();
             try {
                 for (Address address : mimeMessage.getAllRecipients()) {
@@ -81,8 +82,6 @@ public class SendMailActivity implements IActivity {
         } catch (Exception e) {
             resultMessage = e.getMessage();
             e.printStackTrace();
-        } finally {
-            context.destroy();
         }
         return result;
     }

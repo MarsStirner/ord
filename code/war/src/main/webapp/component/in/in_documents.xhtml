@@ -22,8 +22,8 @@
             <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString" value="#{in_documents.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" action="#{in_documents.applyFilter}" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
+            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString" value="#{incomingDocumentLDM.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
             <p:button target="_blank" outcome="/component/in/in_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
             <p:defaultCommand target="searchButton" />
         </p:toolbarGroup>
@@ -38,7 +38,7 @@
                      rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
                      paginatorPosition = "#{ui['paginator.position']}"
                      emptyMessage="#{ui['emptyMessage']}"
-                     value="#{in_documents.lazyModel}"
+                     value="#{incomingDocumentLDM}"
                      var="row"
                      lazy="true"
                      widgetVar="documentTableWidget"

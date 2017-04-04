@@ -2,17 +2,17 @@ package ru.entity.model.document;
 
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
-import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.referenceBook.Role;
 import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.User;
-import ru.entity.model.wf.HumanTaskTree;
-import ru.external.AgreementIssue;
 import ru.external.ProcessedData;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -22,8 +22,7 @@ import java.util.*;
  */
 @Entity
 @Table(name = "dms_internal_documents")
-public class InternalDocument extends DeletableEntity implements ProcessedData, AgreementIssue {
-    private static final long serialVersionUID = -7971345050896379926L;
+public class InternalDocument extends DocumentEntity implements ProcessedData {
 
     /**
      * Количество приложений
@@ -41,15 +40,13 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
      * Дата создания документа
      */
     @Column(name = "creationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date creationDate;
+    private LocalDateTime creationDate;
 
     /**
      * Срок исполнения
      */
     @Column(name = "executionDate")
-    @Temporal(value = TemporalType.DATE)
-    private Date executionDate;
+    private LocalDateTime executionDate;
 
     /**
      * регистрационный номер документа
@@ -82,12 +79,6 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
     @JoinColumn(name = "form_id", nullable = true)
     private DocumentForm form;
 
-    /**
-     * Инциатор документа (автор)
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
 
     /**
      * Ответственный , следит за сроками исполнения документов и пинает, если исполнители не успевают.
@@ -101,15 +92,13 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
      * Дата регистрации
      */
     @Column(name = "registrationDate")
-    @Temporal(value = TemporalType.TIMESTAMP)
-    private Date registrationDate;
+    private LocalDateTime registrationDate;
 
     /**
      * Дата подписания
      */
     @Column(name = "signatureDate")
-    @Temporal(value = TemporalType.DATE)
-    private Date signatureDate;
+    private LocalDate signatureDate;
 
     /**
      * Руководитель
@@ -222,14 +211,6 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
             joinColumns = {@JoinColumn(name = "document_id")},
             inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
     private Set<HistoryEntry> history;
-    /**
-     * Дерево согласования
-     */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "dms_incoming_document_agreement_tree",
-            joinColumns = {@JoinColumn(name = "document_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tree_id")})
-    private HumanTaskTree agreementTree;
 
     public boolean isClosePeriodRegistrationFlag() {
         return closePeriodRegistrationFlag;
@@ -245,14 +226,6 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     public void setWFResultDescription(String WFResultDescription) {
         this.WFResultDescription = WFResultDescription;
-    }
-
-    public User getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(User author) {
-        this.author = author;
     }
 
     public String getRegistrationNumber() {
@@ -286,27 +259,27 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
         return new ArrayList<>(0);
     }
 
-    public Date getRegistrationDate() {
+    public LocalDateTime getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(Date registrationDate) {
+    public void setRegistrationDate(LocalDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
-    public Date getExecutionDate() {
+    public LocalDateTime getExecutionDate() {
         return executionDate;
     }
 
-    public void setExecutionDate(Date executionDate) {
+    public void setExecutionDate(LocalDateTime executionDate) {
         this.executionDate = executionDate;
     }
 
-    public Date getSignatureDate() {
+    public LocalDate getSignatureDate() {
         return signatureDate;
     }
 
-    public void setSignatureDate(Date signatureDate) {
+    public void setSignatureDate(LocalDate signatureDate) {
         this.signatureDate = signatureDate;
     }
 
@@ -334,11 +307,11 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
         this.shortDescription = shortDescription;
     }
 
-    public Date getCreationDate() {
+    public LocalDateTime getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDateTime creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -443,7 +416,7 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
         if (personReaders != null && !personReaders.isEmpty()) {
             return new ArrayList<>(personReaders);
         }
-        return new ArrayList<>(0);
+        return Collections.emptyList();
     }
 
     public Set<Role> getRoleReaders() {
@@ -458,7 +431,7 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
         if (roleReaders != null && !roleReaders.isEmpty()) {
             return new ArrayList<>(roleReaders);
         }
-        return new ArrayList<>(0);
+        return Collections.emptyList();
     }
 
     public Set<Role> getRoleEditors() {
@@ -499,16 +472,6 @@ public class InternalDocument extends DeletableEntity implements ProcessedData, 
 
     public void setAgreementUsers(Set<User> agreementUsers) {
         this.agreementUsers = agreementUsers;
-    }
-
-    @Override
-    public HumanTaskTree getAgreementTree() {
-        return agreementTree;
-    }
-
-    @Override
-    public void setAgreementTree(HumanTaskTree agreementTree) {
-        this.agreementTree = agreementTree;
     }
 
     public UserAccessLevel getUserAccessLevel() {

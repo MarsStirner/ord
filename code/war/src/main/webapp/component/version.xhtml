@@ -6,10 +6,9 @@
     <ui:define name="contentTable">
         <h:outputText value="Организационно-распорядительный документооборот"/>
         <br/>
-        <h:outputText value="Версия #{versionHolderBean.version}"/>
+        <h:outputText value="Версия #{config.getString('build.version')}"/>
         <br/>
-        <h:outputText value="от #{versionHolderBean.buildDate} г."/>
-        <h:outputText value="#{versionHolderBean.classpathInfo}" style="display:none"/>
+        <h:outputText value="от #{config.getString('build.date')}"/>
     </ui:define>
 </ui:composition>
 </html>

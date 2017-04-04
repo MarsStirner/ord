@@ -4,7 +4,7 @@ import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * Author: Upatov Egor <br>
@@ -14,54 +14,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "incoming_documents_views")
-@IdClass(IncomingDocumentViewFactPrimaryKey.class)
-public class IncomingDocumentViewFact {
-
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "document_id")
-    private IncomingDocument document;
-
-    @Id
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(name = "viewDateTime")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date viewDateTime;
-
-    public IncomingDocumentViewFact() {
+public class IncomingDocumentViewFact extends DocumentViewFact<IncomingDocument>{
+    public IncomingDocumentViewFact(IncomingDocument document, User user, LocalDateTime date) {
+        super(document, user, date);
     }
-
-    public IncomingDocumentViewFact(IncomingDocument document, User user, Date viewDateTime) {
-        this.document = document;
-        this.user = user;
-        this.viewDateTime = viewDateTime;
-    }
-
-    public IncomingDocument getDocument() {
-        return document;
-    }
-
-    public void setDocument(IncomingDocument document) {
-        this.document = document;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Date getViewDateTime() {
-        return viewDateTime;
-    }
-
-    public void setViewDateTime(Date viewDateTime) {
-        this.viewDateTime = viewDateTime;
-    }
-
 }
