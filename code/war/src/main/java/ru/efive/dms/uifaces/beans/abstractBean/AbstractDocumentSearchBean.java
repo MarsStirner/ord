@@ -12,7 +12,11 @@ import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
 
 import javax.faces.context.FacesContext;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
@@ -157,39 +161,39 @@ public abstract class AbstractDocumentSearchBean<T extends DeletableEntity> exte
         putNotNullToFilters(REGISTRATION_NUMBER_KEY, value);
     }
 
-    public Date getStartCreationDate() {
-        return (Date) filters.get(START_CREATION_DATE_KEY);
+    public LocalDateTime getStartCreationDate() {
+        return (LocalDateTime) filters.get(START_CREATION_DATE_KEY);
     }
 
     // Дата создания ОТ
-    public void setStartCreationDate(Date value) {
+    public void setStartCreationDate(LocalDateTime value) {
         putNotNullToFilters(START_CREATION_DATE_KEY, value);
     }
 
-    public Date getEndCreationDate() {
-        return (Date) filters.get(END_CREATION_DATE_KEY);
+    public LocalDateTime getEndCreationDate() {
+        return (LocalDateTime) filters.get(END_CREATION_DATE_KEY);
     }
 
     // Дата создания ДО
-    public void setEndCreationDate(Date value) {
+    public void setEndCreationDate(LocalDateTime value) {
         putNotNullToFilters(END_CREATION_DATE_KEY, value);
     }
 
-    public Date getStartRegistrationDate() {
-        return (Date) filters.get(START_REGISTRATION_DATE_KEY);
+    public LocalDateTime getStartRegistrationDate() {
+        return (LocalDateTime) filters.get(START_REGISTRATION_DATE_KEY);
     }
 
     // Дата регистрации ОТ
-    public void setStartRegistrationDate(Date value) {
+    public void setStartRegistrationDate(LocalDateTime value) {
         putNotNullToFilters(START_REGISTRATION_DATE_KEY, value);
     }
 
-    public Date getEndRegistrationDate() {
-        return (Date) filters.get(END_REGISTRATION_DATE_KEY);
+    public LocalDateTime getEndRegistrationDate() {
+        return (LocalDateTime) filters.get(END_REGISTRATION_DATE_KEY);
     }
 
     // Дата регистрации ДО
-    public void setEndRegistrationDate(Date value) {
+    public void setEndRegistrationDate(LocalDateTime value) {
         putNotNullToFilters(END_REGISTRATION_DATE_KEY, value);
     }
 

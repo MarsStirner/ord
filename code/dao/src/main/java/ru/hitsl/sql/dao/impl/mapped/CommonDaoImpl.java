@@ -16,12 +16,10 @@ public abstract class CommonDaoImpl<T extends DeletableEntity> extends Deletable
 
     @Override
     public void applyFilter(DetachedCriteria criteria, Map<String, Object> filter) {
-        log.warn("No implementation of filterMap");
     }
 
     @Override
     public void applyFilter(DetachedCriteria criteria, String filter) {
-        log.warn("No implementation of filter");
     }
 
 }

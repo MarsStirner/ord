@@ -358,4 +358,9 @@ public class Task extends DocumentEntity implements ProcessedData, Cloneable {
                 .append(", rootDocumentId='").append(rootDocumentId).append('\'')
                 .append('}').toString();
     }
+
+    @Override
+    public String getType() {
+        return ru.entity.model.referenceBook.DocumentType.RB_CODE_TASK;
+    }
 }

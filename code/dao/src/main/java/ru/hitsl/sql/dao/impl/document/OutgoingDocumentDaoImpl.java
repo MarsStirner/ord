@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -26,6 +28,7 @@ import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
 
 
 @Repository("outgoingDocumentDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> implements OutgoingDocumentDao {
 
     @Override
@@ -95,7 +98,6 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
         result.createAlias("deliveryType", "deliveryType", LEFT_OUTER_JOIN);
         result.createAlias("personReaders", "personReaders", LEFT_OUTER_JOIN);
         result.createAlias("personEditors", "personEditors", LEFT_OUTER_JOIN);
-        result.createAlias("agreementUsers", "agreementUsers", LEFT_OUTER_JOIN);
         result.createAlias("roleReaders", "roleReaders", LEFT_OUTER_JOIN);
         result.createAlias("roleEditors", "roleEditors", LEFT_OUTER_JOIN);
         result.createAlias("userAccessLevel", "userAccessLevel", INNER_JOIN);
@@ -252,8 +254,6 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
             criteria.createAlias("personEditors", "personEditors", LEFT_OUTER_JOIN);
             disjunction.add(Restrictions.in("personEditors.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("agreementUsers", "agreementUsers", LEFT_OUTER_JOIN);
-            disjunction.add(Restrictions.in("agreementUsers.id", userIds));
             if (!auth.getRoles().isEmpty()) {
                 //NOTE  Добавляются алиасы с fetch
                 criteria.createAlias("roleReaders", "roleReaders", LEFT_OUTER_JOIN);

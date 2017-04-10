@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import ru.efive.dao.InitializationException;
 import ru.efive.dao.alfresco.AlfrescoDAO;
 import ru.efive.dao.alfresco.Attachment;
@@ -20,16 +21,14 @@ import ru.efive.wf.core.MailSettings;
  */
 @Configuration
 @ComponentScan({"ru.efive.dms", "ru.hitsl.sql.dao"})
+@Import({PersistenceConfig.class})
 public class ApplicationConfig {
 
     private static final Logger log = LoggerFactory.getLogger("CONFIG");
 
     @Bean("config")
     public Config config() {
-        final Config result = ConfigFactory.parseResources(
-                "application.conf",
-                ConfigParseOptions.defaults().setSyntax(ConfigSyntax.CONF)
-        );
+        final Config result = ConfigFactory.parseResources("application.conf",ConfigParseOptions.defaults().setSyntax(ConfigSyntax.CONF));
         log.info("Configuration parsed:\n{}", result.root().render(ConfigRenderOptions.defaults().setOriginComments(false).setJson(false)));
         return result;
     }

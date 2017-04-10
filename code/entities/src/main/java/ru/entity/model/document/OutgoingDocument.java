@@ -450,12 +450,9 @@ public class OutgoingDocument extends DocumentEntity implements ProcessedData {
         this.userAccessLevel = userAccessLevel;
     }
 
-    public String getStyleClass() {
-        return styleClass;
-    }
-
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
+    @Override
+    public String getType() {
+        return ru.entity.model.referenceBook.DocumentType.RB_CODE_OUTGOING;
     }
 
 }

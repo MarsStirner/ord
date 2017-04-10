@@ -1,6 +1,7 @@
 package ru.efive.dms.uifaces.lazyDataModel;
 
 import org.primefaces.model.SortOrder;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.mapped.DocumentDao;
@@ -24,6 +25,7 @@ public abstract class AbstractDocumentableLazyDataModel<T extends DocumentEntity
     }
 
     @Override
+    @Transactional("ordTransactionManager")
     public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> unusedPrimefacesFilters) {
         final DocumentDao documentDao = (DocumentDao) this.dao;
         //Используются фильтры извне, а не из параметров

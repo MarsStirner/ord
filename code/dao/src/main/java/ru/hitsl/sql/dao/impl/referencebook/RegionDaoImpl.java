@@ -6,10 +6,13 @@ import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Region;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 
 @Repository("regionDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class RegionDaoImpl extends ReferenceBookDaoImpl<Region> {
 
     @Override

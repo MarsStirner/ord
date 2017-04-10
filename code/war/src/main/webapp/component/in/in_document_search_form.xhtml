@@ -7,7 +7,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
-        >
+>
 
 <ui:composition template="/jsf-template/searchFormTemplate.xhtml">
 
@@ -32,7 +32,7 @@
             <h:commandLink id="searchBtn" action="#{incomingSearch.performSearch}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-search.png']}"/>
                 <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
-                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse();  PF('searchResultsPanelVar').expand();}}"/>
+                        onevent="function a(data) { if(data.status === 'success') { PF('searchParametersPanelVar').collapse();  PF('searchResultsPanelVar').expand();}}"/>
                 Найти
             </h:commandLink>
         </div>
@@ -43,7 +43,7 @@
             <h:commandLink action="#{incomingSearch.clearFilter}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 <f:ajax render="searchParametersPanel"
-                        onevent="function (data) {if(data.status == 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}"/>
+                        onevent="function a(data) {if(data.status === 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}"/>
                 Очистить
             </h:commandLink>
         </div>
@@ -82,12 +82,13 @@
                         <span class="title">Вид документа:</span>
                     </label>
                 </p:column>
-                <p:column colspan="3">
+                <p:column>
                     <p:selectOneMenu id="form" value="#{incomingSearch.form}" converter="IncomingDocumentFormConverter">
                         <f:selectItem itemLabel="" noSelectionOption="true"/>
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('INCOMING')}"/>
+                        <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('INCOMING')}"/>
                     </p:selectOneMenu>
                 </p:column>
+                <p:column colspan="2"/>
             </p:row>
             <p:row>
                 <p:column>
@@ -155,9 +156,9 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="startCreationDate" value="#{incomingSearch.startCreationDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="startCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endCreationDate">
@@ -166,9 +167,9 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="endCreationDate" value="#{incomingSearch.endCreationDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="endCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row>
@@ -178,11 +179,10 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="startRegistrationDate"
-                                value="#{incomingSearch.startRegistrationDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="startRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                    <p:calendar id="startRegistrationDate" value="#{incomingSearch.startRegistrationDate}"
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endRegistrationDate">
@@ -191,9 +191,9 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="endRegistrationDate" value="#{incomingSearch.endRegistrationDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="endRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row>
@@ -204,9 +204,9 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="startDeliveryDate" value="#{incomingSearch.startDeliveryDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="startDeliveryDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endDeliveryDate">
@@ -215,9 +215,9 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="endDeliveryDate" value="#{incomingSearch.endDeliveryDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="endDeliveryDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row>
@@ -228,9 +228,9 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="startExecutionDate" value="#{incomingSearch.startExecutionDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="startExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endExecutionDate">
@@ -239,9 +239,9 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="endExecutionDate" value="#{incomingSearch.endExecutionDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="endExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row>
@@ -251,11 +251,10 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="startReceivedDocDate"
-                                value="#{incomingSearch.startReceivedDocumentDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="startReceivedDocDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                    <p:calendar id="startReceivedDocDate" value="#{incomingSearch.startReceivedDocumentDate}"
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endReceivedDocDate">
@@ -263,11 +262,10 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="endReceivedDocDate"
-                                value="#{incomingSearch.endReceivedDocumentDate}"
-                                lang="ru"
-                                locale="ru"
-                                widgetVar="endReceivedDocDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                    <p:calendar id="endReceivedDocDate" value="#{incomingSearch.endReceivedDocumentDate}"
+                                lang="ru" locale="ru" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row>
@@ -277,7 +275,8 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <my:deliveryTypeSelectOneMenu id="deliveryType" value="#{incomingSearch.deliveryType}" withNoSelectOption="true"/>
+                    <my:deliveryTypeSelectOneMenu id="deliveryType" value="#{incomingSearch.deliveryType}"
+                                                  withNoSelectOption="true"/>
 
                 </p:column>
             </p:row>
@@ -302,7 +301,8 @@
                     <label>
                         <span class="title">
                             <p:commandButton value="Исполнители" actionListener="#{incomingSearch.chooseExecutors}">
-                                <p:ajax event="dialogReturn" listener="#{incomingSearch.onExecutorsChosen}" update="executors"/>
+                                <p:ajax event="dialogReturn" listener="#{incomingSearch.onExecutorsChosen}"
+                                        update="executors"/>
                             </p:commandButton>
                         </span>
                     </label>
@@ -384,7 +384,7 @@
                      currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
                      paginatorTemplate="#{ui['paginator.template.total']}"
                      rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
+                     paginatorPosition="#{ui['paginator.position']}"
                      value="#{incomingSearch.lazyModel}"
                      var="row"
                      lazy="true"
@@ -398,38 +398,43 @@
                      sortOrder="descending"
                      rendered="#{incomingSearch.searchPerformed}"
                      emptyMessage="Документов не найдено"
-                >
-            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+        >
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}"
+                      field="registrationNumber">
                 <h:outputText value="#{row.registrationNumber}"/>
             </p:column>
-            <p:column headerText="Дата" style="width:5em;" sortBy="#{row.registrationDate}" field = "registrationDate">
+            <p:column headerText="Дата" style="width:5em;" sortBy="#{row.registrationDate}" field="registrationDate">
                 <h:outputText value="#{row.registrationDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}" field = "contragent.shortName">
+            <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}"
+                      field="contragent.shortName">
                 <h:outputText value="#{row.contragent.shortName}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
                 <ui:repeat value="#{row.executorsList}" var="element">
-                        <h:outputText value="#{element.getDescriptionShort()}"/><br/>
+                    <h:outputText value="#{element.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>
-            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
                 <h:outputText value="#{row.form.value}"/>
             </p:column>
-            <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
+            <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field="executionDate">
                 <h:outputText value="#{row.executionDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
+            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
                 <h:outputText value="#{row.getDocumentStatus().getName()}"/>
             </p:column>
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+            <p:ajax event="rowSelect"
+                    onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
         </p:dataTable>
 
     </ui:define>

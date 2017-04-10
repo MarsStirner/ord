@@ -4,6 +4,7 @@ import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.hitsl.sql.dao.interfaces.mapped.CommonDao;
 
@@ -58,6 +59,7 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     }
 
     @Override
+    @Transactional("ordTransactionManager")
     public T getRowData(String rowKey) {
         try {
             return dao.getItemByListCriteria(Integer.valueOf(rowKey));
@@ -68,6 +70,7 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     }
 
     @Override
+    @Transactional("ordTransactionManager")
     public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> unusedPrimefacesFilters) {
         setRowCount(dao.countItems(filter, filters, false));
         if (getRowCount() < first) {

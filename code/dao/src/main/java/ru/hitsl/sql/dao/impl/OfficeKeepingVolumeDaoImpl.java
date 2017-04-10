@@ -3,6 +3,8 @@ package ru.hitsl.sql.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.impl.mapped.CommonDaoImpl;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Repository("officeKeepingVolumeDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class OfficeKeepingVolumeDaoImpl extends CommonDaoImpl<OfficeKeepingVolume> implements OfficeKeepingVolumeDao {
 
     @Override

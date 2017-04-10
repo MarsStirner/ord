@@ -5,6 +5,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.ContragentType;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
@@ -16,6 +18,7 @@ import static org.hibernate.criterion.MatchMode.ANYWHERE;
 import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
 
 @Repository("contragentDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class ContragentDaoImpl extends ReferenceBookDaoImpl<Contragent> implements ContragentDao{
 
     @Override

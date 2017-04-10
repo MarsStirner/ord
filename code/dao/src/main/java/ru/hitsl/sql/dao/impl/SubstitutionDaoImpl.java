@@ -5,6 +5,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.impl.mapped.CommonDaoImpl;
@@ -24,6 +26,7 @@ import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
  * Description: <br>
  */
 @Repository("substitutionDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class SubstitutionDaoImpl extends CommonDaoImpl<Substitution> implements SubstitutionDao{
 
     @Override

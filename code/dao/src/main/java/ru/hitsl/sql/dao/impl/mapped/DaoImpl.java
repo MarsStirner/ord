@@ -3,31 +3,37 @@ package ru.hitsl.sql.dao.impl.mapped;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
+import org.hibernate.Session;
 import org.hibernate.criterion.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.hitsl.sql.dao.interfaces.mapped.AbstractDao;
+import ru.util.ApplicationHelper;
 
 import javax.annotation.PostConstruct;
-import java.io.Serializable;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
-@Transactional("ordTransactionManager")
 public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao<T> {
 
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    protected SessionFactory sessionFactory;
+    @PersistenceContext(unitName = ApplicationHelper.ORD_PERSISTENCE_UNIT_NAME)
+    protected EntityManager em;
+
 
     @PostConstruct
     public void init() {
-        log.info("Init for work with [{}] and SessionFactory[@{}]", getEntityClass().getSimpleName(), Integer.toHexString(sessionFactory.hashCode()));
+        log.info("Init[{}] for work with [{}] and EntityManager[{}]",
+                Integer.toHexString(hashCode()),
+                getEntityClass().getSimpleName(),
+                Integer.toHexString(em.hashCode())
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,16 +62,19 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
 
 
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getItemByFullCriteria(Integer id) {
         return getFirstItem(getFullCriteria().add(Restrictions.idEq(id)));
     }
 
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getItemByListCriteria(Integer id) {
         return getFirstItem(getListCriteria().add(Restrictions.idEq(id)));
     }
 
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getItemBySimpleCriteria(Integer id) {
         return getFirstItem(getSimpleCriteria().add(Restrictions.idEq(id)));
     }
@@ -75,17 +84,19 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY)
     public T save(T entity) {
         log.trace("Save {}", entity);
-        final Serializable assignedId = sessionFactory.getCurrentSession().save(entity);
-        log.debug("Saved with ID[{}] {}", assignedId, entity);
+        em.persist(entity);
+        log.debug("Saved with ID[{}]", entity.getId());
         return entity;
     }
 
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY)
     public T update(T entity) {
         log.trace("Update {}.", entity);
-        sessionFactory.getCurrentSession().update(entity);
+        em.merge(entity);
         log.debug("Updated {}.", entity);
         return entity;
     }
@@ -95,15 +106,16 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public int countItems(DetachedCriteria criteria) {
-        return ((Number)criteria.setProjection(Projections.countDistinct("id"))
-                .getExecutableCriteria(sessionFactory.getCurrentSession()).uniqueResult()).intValue();
+        return ((Number) criteria.setProjection(Projections.countDistinct("id"))
+                .getExecutableCriteria(em.unwrap(Session.class)).uniqueResult()).intValue();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public List<T> getItems(DetachedCriteria criteria, int offset, int limit) {
-        final Criteria executableCriteria = criteria.getExecutableCriteria(sessionFactory.getCurrentSession());
+        final Criteria executableCriteria = criteria.getExecutableCriteria(em.unwrap(Session.class));
         if (offset > 0) {
             executableCriteria.setFirstResult(offset);
         }
@@ -124,7 +136,7 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
      * @param pageSize  макс размер бвыбираемого списка
      * @return список документов заданного размера
      */
-    @SuppressWarnings("unchecked")
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public List<T> getWithCorrectLimitings(
             final DetachedCriteria criteria, final String sortField, final boolean sortOrder, final int first, final int pageSize
     ) {
@@ -146,6 +158,7 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
      * @param orderAsc направление сортировки
      * @return запрос, с ограничениями на идентификаторы документов и сортировки
      */
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     protected DetachedCriteria getIDListCriteria(List ids, String orderBy, boolean orderAsc) {
         final DetachedCriteria result = getListCriteria().add(Restrictions.in("id", ids));
         if (StringUtils.isNotEmpty(orderBy)) {

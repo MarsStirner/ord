@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.*;
 import org.hibernate.type.StringType;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.enums.DocumentStatus;
@@ -28,6 +30,7 @@ import static org.hibernate.sql.JoinType.INNER_JOIN;
 
 
 @Repository("incomingDocumentDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class IncomingDocumentDaoImpl extends DocumentDaoImpl<IncomingDocument> implements IncomingDocumentDao{
 
 
@@ -134,7 +137,6 @@ public class IncomingDocumentDaoImpl extends DocumentDaoImpl<IncomingDocument> i
     @Override
     public void applyFilter(DetachedCriteria criteria, Map<String, Object> filters) {
         if (filters == null || filters.isEmpty()) {
-            log.debug("FilterMapCriteria: null or empty. Skip.");
             return;
         }
         final Conjunction conjunction = Restrictions.conjunction();

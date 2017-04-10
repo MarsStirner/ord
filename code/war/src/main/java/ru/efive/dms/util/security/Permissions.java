@@ -106,9 +106,12 @@ public class Permissions {
     /**
      * Допустимый список прав
      */
+    //TODO справочник в БД и привязка к пользоветлям \ ролям
     public enum Permission {
+        CREATE,
         READ,
         WRITE,
-        EXECUTE
+        EXECUTE,
+        DELETE
     }
 }

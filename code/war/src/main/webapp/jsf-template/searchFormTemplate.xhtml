@@ -9,9 +9,9 @@
         >
 <h:head>
     <h:outputStylesheet library="css" name="style.css"/>
-    <title>
-        <ui:insert name="pageTitle">Документооборот ННПЦ ДГОИ</ui:insert>
-    </title>
+    <ui:insert name="pageTitle">
+        <title>#{ui['listView.pageTitle']}</title>
+    </ui:insert>
     <ui:insert name="running_head"/>
     <h:outputStylesheet library="css" name="searchFormStyles.css"/>
 </h:head>

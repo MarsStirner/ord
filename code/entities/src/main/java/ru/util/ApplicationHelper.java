@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
 
 public final class ApplicationHelper {
 
+    public static final String ORD_PERSISTENCE_UNIT_NAME = "ordPersistenceUnit";
+
 
     private static final Locale locale = new Locale("ru", "RU");
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy", locale);

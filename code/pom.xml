@@ -44,10 +44,13 @@
     <properties>
         <java.version>1.8</java.version>
         <source.encoding>UTF-8</source.encoding>
+
         <version.build>1.0.1</version.build>
 
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS 'UTC'</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
+
+        <log.format>[%date{ISO8601}][%level][%thread][%logger{0}]: %message%n</log.format>
 
         <!-- #################### Library Versions #################### -->
         <!-- (I) Compile dependencies-->

@@ -5,6 +5,8 @@ import org.hibernate.criterion.*;
 import org.hibernate.sql.JoinType;
 import org.hibernate.type.StringType;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
@@ -25,6 +27,7 @@ import static org.hibernate.criterion.CriteriaSpecification.INNER_JOIN;
 
 
 @Repository("requestDocumentDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class RequestDocumentDaoImpl extends DocumentDaoImpl<RequestDocument> implements RequestDocumentDao{
 
     @Override

@@ -6,14 +6,17 @@ import net.sf.jasperreports.engine.export.JRPrintServiceExporter;
 import net.sf.jasperreports.engine.export.JRPrintServiceExporterParameter;
 import net.sf.jasperreports.engine.query.JRHibernateQueryExecuterFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.Session;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.ReportTemplate;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import org.springframework.stereotype.Controller;
+import ru.util.ApplicationHelper;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.print.DocPrintJob;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
@@ -39,8 +42,9 @@ import java.util.Map;
 @Transactional("ordTransactionManager")
 public class ReportsManagmentBean {
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext(unitName = ApplicationHelper.ORD_PERSISTENCE_UNIT_NAME)
+    private EntityManager em;
+
 
     public void previewSqlReportByRequestParams() throws IOException, ClassNotFoundException, SQLException, JRException {
         Map<String, String> requestProperties = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
@@ -69,7 +73,8 @@ public class ReportsManagmentBean {
                 in_map.put(entry.getKey(), entry.getValue());
             }
         }
-        in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, sessionFactory.getCurrentSession());
+
+        in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, em.unwrap(Session.class));
         print = JasperFillManager.fillReport(report, in_map);
 
         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
@@ -122,7 +127,7 @@ public class ReportsManagmentBean {
                 in_map.put(entry.getKey(), entry.getValue());
             }
             //Session session = HibernateUtil.getSessionFactory().openSession();
-            in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, sessionFactory.getCurrentSession());
+            in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, em.unwrap(Session.class));
             print = JasperFillManager.fillReport(report, in_map);
 
             HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
@@ -226,7 +231,7 @@ public class ReportsManagmentBean {
                 in_map.put(entry.getKey(), entry.getValue());
             }
         }
-        in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, sessionFactory.getCurrentSession());
+        in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION,  em.unwrap(Session.class));
         print = JasperFillManager.fillReport(report, in_map);
 
         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
@@ -256,7 +261,7 @@ public class ReportsManagmentBean {
             in_map.put("_" + entry.getKey(), entry.getValue());
             in_map.put(entry.getKey(), entry.getValue());
         }
-        in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION, sessionFactory.getCurrentSession());
+        in_map.put(JRHibernateQueryExecuterFactory.PARAMETER_HIBERNATE_SESSION,  em.unwrap(Session.class));
         print = JasperFillManager.fillReport(report, in_map);
 
         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();

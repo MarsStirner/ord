@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
 @SpringScopeView
 public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolderBean<IncomingDocument> {
 
-    private final static SimpleDateFormat year_month_day = new SimpleDateFormat("yyyy,MM,dd");
+    private final static DateTimeFormatter year_month_day = DateTimeFormatter.ofPattern("yyyy,MM,dd");
     private DateFormatSymbols dateFormatSymbols;
     private String filter;
     private boolean showExpiredFlag = false;
@@ -75,7 +76,7 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
         while (iterator.hasNext()) {
             boolean samePeriod = true;
             IncomingDocument current = iterator.next();
-            String[] date = year_month_day.format(current.getExecutionDate()).split(",");
+            String[] date = current.getExecutionDate().format(year_month_day).split(",");
             if (!lastYear.equals(date[0])) {
                 lastYearNode = new DefaultTreeNode(
                         "year", new IncomingDocumentNode(

@@ -12,6 +12,9 @@
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
     <ui:define name="VARIABLE_DEFINITIONS">
+        <f:metadata>
+            <f:viewAction action="#{in_doc.init}" />
+        </f:metadata>
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{in_doc.createState or in_doc.editState}" scope="view"/>
         <c:set var="statusId" value="#{in_doc.document.documentStatus.id}" scope="view"/>
@@ -75,7 +78,8 @@
             <h:outputText value="#{in_doc.document.form.value}"/>
             <h:outputText value=" № #{in_doc.document.registrationNumber} от " rendered="#{in_doc.editState or in_doc.viewState}"/>
             <h:outputText value="#{in_doc.document.registrationDate}" rendered="#{in_doc.editState or in_doc.viewState}">
-                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                <f:converter  converterId="LocalDateTimeConverter"/>
+                <f:attribute name="pattern" value="dd.MM.yyyy"/>
             </h:outputText>
             <div style="float: right; padding-right:1.5em;">
                 <h:outputText id="v_author" value="Зарегистрировал: #{in_doc.document.author.description}" styleClass="outputText"/>
@@ -126,7 +130,8 @@
                         </p:column>
                         <p:column styleClass="ui-grid-col-4">
                             <h:outputText id="v_registrationDate" value="#{in_doc.document.registrationDate}" lang="ru" styleClass="outputText">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                <f:converter  converterId="LocalDateTimeConverter"/>
+                                <f:attribute name="pattern" value="dd.MM.yyyy"/>
                             </h:outputText>
                         </p:column>
                         <p:column styleClass="ui-grid-col-2">
@@ -135,10 +140,13 @@
                         <p:column styleClass="ui-grid-col-4">
                             <h:outputText id="v_executionDate" value="#{in_doc.document.executionDate}" lang="ru" styleClass="outputText"
                                           rendered="#{not editable_ExecutionDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                <f:converter  converterId="LocalDateTimeConverter"/>
+                                <f:attribute name="pattern" value="dd.MM.yyyy"/>
                             </h:outputText>
                             <p:calendar id="e_executionDate" value="#{in_doc.document.executionDate}" lang="ru" locale="ru"
-                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_ExecutionDate}"/>
+                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_ExecutionDate}">
+                                <f:converter  converterId="LocalDateTimeConverter"/>
+                            </p:calendar>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -157,10 +165,13 @@
                         <p:column styleClass="ui-grid-col-4">
                             <h:outputText id="v_receivedDocumentDate" value="#{in_doc.document.receivedDocumentDate}" lang="ru"
                                           styleClass="outputText" rendered="#{not editable_ReceivedDocumentDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                <f:converter  converterId="LocalDateTimeConverter"/>
+                                <f:attribute name="pattern" value="dd.MM.yyyy"/>
                             </h:outputText>
                             <p:calendar id="e_receivedDocumentDate" value="#{in_doc.document.receivedDocumentDate}" lang="ru" locale="ru"
-                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_ReceivedDocumentDate}"/>
+                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_ReceivedDocumentDate}">
+                                <f:converter  converterId="LocalDateTimeConverter"/>
+                        </p:calendar>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -257,7 +268,8 @@
                              widgetVar="taskTableVar">
                     <p:column headerText="Дата создания" style="width:7em;" styleClass="outputText">
                         <h:outputText value="#{row_task.creationDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            <f:converter  converterId="LocalDateTimeConverter"/>
+                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Номер" style="width:7em;" styleClass="outputText">
@@ -273,7 +285,8 @@
                     </p:column>
                     <p:column headerText="Срок исполнения" style="width:9em;" styleClass="outputText">
                         <h:outputText value="#{row_task.controlDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            <f:converter  converterId="LocalDateTimeConverter"/>
+                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Содержание" style="width:100%; white-space: normal;" styleClass="outputText">
@@ -337,7 +350,8 @@
                     </f:facet>
                     <p:column headerText="Дата регистрации" style="width:9em;" styleClass="outputText">
                         <h:outputText value="#{outgoing_document_row.registrationDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            <f:converter  converterId="LocalDateTimeConverter"/>
+                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Номер" style="width:5em;" styleClass="outputText">
@@ -421,7 +435,7 @@
                         <p:column styleClass="ui-grid-col-9">
                             <h:panelGroup id="v_role_readers">
                                 <ui:repeat value="#{in_doc.document.roleReadersList}" var="roleReader">
-                                    <h:outputText value="#{roleReader.name}" styleClass="outputText"/><br/>
+                                    <h:outputText value="#{roleReader.value}" styleClass="outputText"/><br/>
                                 </ui:repeat>
                             </h:panelGroup>
                         </p:column>
@@ -437,7 +451,7 @@
                         <p:column styleClass="ui-grid-col-9">
                             <h:panelGroup id="v_role_editors">
                                 <ui:repeat value="#{in_doc.document.roleEditorsList}" var="roleEditor">
-                                    <h:outputText value="#{roleEditor.name}" styleClass="outputText"/><br/>
+                                    <h:outputText value="#{roleEditor.value}" styleClass="outputText"/><br/>
                                 </ui:repeat>
                             </h:panelGroup>
                         </p:column>

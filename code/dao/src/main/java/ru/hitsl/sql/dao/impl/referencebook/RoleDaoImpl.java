@@ -2,6 +2,8 @@ package ru.hitsl.sql.dao.impl.referencebook;
 
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.referenceBook.Role;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
@@ -14,6 +16,7 @@ import ru.hitsl.sql.dao.interfaces.referencebook.RoleDao;
  * Description:
  */
 @Repository("roleDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class RoleDaoImpl extends ReferenceBookDaoImpl<Role> implements RoleDao{
     @Override
     public Class<Role> getEntityClass() {

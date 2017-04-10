@@ -1,6 +1,8 @@
 package ru.hitsl.sql.dao.impl.referencebook;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.ContactInfoType;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 import ru.hitsl.sql.dao.interfaces.referencebook.ContactInfoTypeDao;
@@ -12,6 +14,7 @@ import ru.hitsl.sql.dao.interfaces.referencebook.ContactInfoTypeDao;
  * Description: <br>
  */
 @Repository("contactInfoTypeDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class ContactInfoTypeDaoImpl extends ReferenceBookDaoImpl<ContactInfoType> implements ContactInfoTypeDao {
     @Override
     public Class<ContactInfoType> getEntityClass() {

@@ -3,6 +3,8 @@ package ru.hitsl.sql.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.impl.mapped.CommonDaoImpl;
@@ -20,6 +22,7 @@ import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
  * Description:
  */
 @Repository("userDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class UserDaoImpl extends CommonDaoImpl<User> implements UserDao {
     @Override
     public Class<User> getEntityClass() {

@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.abstractBean;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.mapped.IdentifiedEntity;
 
@@ -17,6 +18,7 @@ import java.io.Serializable;
  *
  * @param <D> тип документа (должен наследовать от IdentifiedEntity)
  */
+@Transactional("ordTransactionManager")
 public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> implements Serializable {
     /**
      * Название GET-параметра, определяющего идентифкатор документа
@@ -224,7 +226,6 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
     }
 
 
-    @PostConstruct
     public void init() {
         logger.info("Initialize new HolderBean");
         final String action = getRequestParamByName(REQUEST_PARAM_DOC_ACTION);

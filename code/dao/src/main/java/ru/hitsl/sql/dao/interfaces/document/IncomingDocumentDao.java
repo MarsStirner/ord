@@ -5,7 +5,6 @@ import ru.hitsl.sql.dao.interfaces.mapped.DocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**

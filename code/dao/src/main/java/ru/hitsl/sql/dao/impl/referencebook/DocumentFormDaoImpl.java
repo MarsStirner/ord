@@ -3,6 +3,8 @@ package ru.hitsl.sql.dao.impl.referencebook;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
@@ -12,6 +14,7 @@ import java.util.List;
 import static org.hibernate.sql.JoinType.INNER_JOIN;
 
 @Repository("documentFormDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class DocumentFormDaoImpl extends ReferenceBookDaoImpl<DocumentForm> implements DocumentFormDao{
     @Override
     public Class<DocumentForm> getEntityClass() {

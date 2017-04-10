@@ -1,5 +1,7 @@
 package ru.hitsl.sql.dao.impl.mapped;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.hitsl.sql.dao.interfaces.mapped.criteria.Deletable;
 
@@ -11,6 +13,7 @@ import ru.hitsl.sql.dao.interfaces.mapped.criteria.Deletable;
  */
 public abstract class DeletableDaoImpl<T extends DeletableEntity> extends DaoImpl<T> implements Deletable<T> {
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY)
     public boolean delete(T entity) {
         log.trace("Delete {}", entity);
         entity.setDeleted(true);

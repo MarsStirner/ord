@@ -14,7 +14,8 @@
         <p:dataTable id="#{cc.attrs.id}" value="#{cc.attrs.value}" var="history_entry" style="width:100%;" emptyMessage="У документа нет записей в истории">
             <p:column headerText="Дата" styleClass="outputText">
                 <h:outputText value="#{history_entry.startDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy HH:mm:ss"/>
+                    <f:converter  converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="dd.MM.yyyy HH:mm:ss"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="Статус" styleClass="outputText">

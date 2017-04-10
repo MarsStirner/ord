@@ -18,5 +18,5 @@ public interface ViewFactDao {
 
     boolean registerViewFact(DocumentEntity document, User user);
 
-    List<DocumentViewFact> getDocumentsViewFacts(User loggedUser, List<Integer> idList, Class<? extends DocumentEntity> clazz);
+    List<DocumentViewFact> getDocumentsViewFacts(User loggedUser, List<Integer> idList, Class<? extends DocumentViewFact> clazz);
 }

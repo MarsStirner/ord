@@ -168,15 +168,6 @@ public class InternalDocument extends DocumentEntity implements ProcessedData {
 
 
     /**
-     * Пользователи-согласующие
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_internal_documents_agreementUsers",
-            joinColumns = {@JoinColumn(name = "dms_internal_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "agreementUsers_id")})
-    private Set<User> agreementUsers;
-
-    /**
      * Роли-читатели
      */
     @ManyToMany(fetch = FetchType.LAZY)
@@ -466,13 +457,6 @@ public class InternalDocument extends DocumentEntity implements ProcessedData {
         }
     }
 
-    public Set<User> getAgreementUsers() {
-        return agreementUsers;
-    }
-
-    public void setAgreementUsers(Set<User> agreementUsers) {
-        this.agreementUsers = agreementUsers;
-    }
 
     public UserAccessLevel getUserAccessLevel() {
         return userAccessLevel;
@@ -506,5 +490,10 @@ public class InternalDocument extends DocumentEntity implements ProcessedData {
 
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
+    }
+
+    @Override
+    public String getType() {
+        return ru.entity.model.referenceBook.DocumentType.RB_CODE_INTERNAL;
     }
 }

@@ -47,6 +47,10 @@ public abstract class DocumentDaoImpl<T extends DocumentEntity> extends CommonDa
             final boolean showDeleted,
             final boolean showDrafts
     ) {
+        log.debug(
+                "Search documents[{}-{}] order by[{} {}] with filter='{}', filterMap={}",
+                offset, limit, orderBy, isAscending, filter, filters
+        );
         final DetachedCriteria criteria = getListCriteria();
         applyDeletedRestriction(criteria, showDeleted);
         applyDraftRestriction(criteria, showDrafts);

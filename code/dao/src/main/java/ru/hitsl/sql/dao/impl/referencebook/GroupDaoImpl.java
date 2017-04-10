@@ -3,6 +3,8 @@ package ru.hitsl.sql.dao.impl.referencebook;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.*;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Group;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 import ru.hitsl.sql.dao.interfaces.referencebook.GroupDao;
@@ -10,6 +12,7 @@ import ru.hitsl.sql.dao.interfaces.referencebook.GroupDao;
 import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
 
 @Repository("groupDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class GroupDaoImpl extends ReferenceBookDaoImpl<Group> implements GroupDao{
 
     @Override

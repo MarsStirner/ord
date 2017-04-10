@@ -24,7 +24,6 @@ public class Substitution extends DeletableEntity {
     private LocalDate startDate;
 
     @Column(name = "endDate")
-    @Temporal(TemporalType.DATE)
     private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)

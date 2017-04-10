@@ -1,6 +1,8 @@
 package ru.hitsl.sql.dao.impl.referencebook;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Department;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
@@ -12,6 +14,7 @@ import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
  * Description: <br>
  */
 @Repository("departmentDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class DepartmentDaoImpl extends ReferenceBookDaoImpl<Department> implements DepartmentDao{
     @Override
     public Class<Department> getEntityClass() {

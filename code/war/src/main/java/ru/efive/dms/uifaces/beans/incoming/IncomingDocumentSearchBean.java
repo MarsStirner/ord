@@ -19,6 +19,8 @@ import ru.entity.model.user.User;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import org.springframework.stereotype.Controller;
+
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
@@ -51,8 +53,8 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         return result;
     }
 
-    private boolean checkDateRange(Date startInterval, Date endInterval) {
-        return startInterval == null || endInterval == null || startInterval.before(endInterval) || startInterval.equals(endInterval);
+    private boolean checkDateRange(LocalDateTime startInterval, LocalDateTime endInterval) {
+        return startInterval == null || endInterval == null || startInterval.isBefore(endInterval) || startInterval.isEqual(endInterval);
     }
 
     /**
@@ -221,57 +223,57 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         putNotNullToFilters(CONTROLLER_KEY, value);
     }
 
-    public Date getStartDeliveryDate() {
-        return (Date) filters.get(START_DELIVERY_DATE_KEY);
+    public LocalDateTime getStartDeliveryDate() {
+        return (LocalDateTime) filters.get(START_DELIVERY_DATE_KEY);
     }
 
     // Дата доставки ОТ
-    public void setStartDeliveryDate(Date value) {
+    public void setStartDeliveryDate(LocalDateTime value) {
         putNotNullToFilters(START_DELIVERY_DATE_KEY, value);
     }
 
-    public Date getEndDeliveryDate() {
-        return (Date) filters.get(END_DELIVERY_DATE_KEY);
+    public LocalDateTime getEndDeliveryDate() {
+        return (LocalDateTime) filters.get(END_DELIVERY_DATE_KEY);
     }
 
     // Дата доставки ДО
-    public void setEndDeliveryDate(Date value) {
+    public void setEndDeliveryDate(LocalDateTime value) {
         putNotNullToFilters(END_DELIVERY_DATE_KEY, value);
     }
 
-    public Date getStartExecutionDate() {
-        return (Date) filters.get(START_EXECUTION_DATE_KEY);
+    public LocalDateTime getStartExecutionDate() {
+        return (LocalDateTime) filters.get(START_EXECUTION_DATE_KEY);
     }
 
     // Срок исполнения ОТ
-    public void setStartExecutionDate(Date value) {
+    public void setStartExecutionDate(LocalDateTime value) {
         putNotNullToFilters(START_EXECUTION_DATE_KEY, value);
     }
 
-    public Date getEndExecutionDate() {
-        return (Date) filters.get(END_EXECUTION_DATE_KEY);
+    public LocalDateTime getEndExecutionDate() {
+        return (LocalDateTime) filters.get(END_EXECUTION_DATE_KEY);
     }
 
     // Срок исполнения ДО
-    public void setEndExecutionDate(Date value) {
+    public void setEndExecutionDate(LocalDateTime value) {
         putNotNullToFilters(END_EXECUTION_DATE_KEY, value);
     }
 
-    public Date getStartReceivedDocumentDate() {
-        return (Date) filters.get(START_RECEIVED_DATE_KEY);
+    public LocalDateTime getStartReceivedDocumentDate() {
+        return (LocalDateTime) filters.get(START_RECEIVED_DATE_KEY);
     }
 
     // Дата поступившего ОТ
-    public void setStartReceivedDocumentDate(Date value) {
+    public void setStartReceivedDocumentDate(LocalDateTime value) {
         putNotNullToFilters(START_RECEIVED_DATE_KEY, value);
     }
 
-    public Date getEndReceivedDocumentDate() {
-        return (Date) filters.get(END_RECEIVED_DATE_KEY);
+    public LocalDateTime getEndReceivedDocumentDate() {
+        return (LocalDateTime) filters.get(END_RECEIVED_DATE_KEY);
     }
 
     // дата поступившего ДО
-    public void setEndReceivedDocumentDate(Date value) {
+    public void setEndReceivedDocumentDate(LocalDateTime value) {
         putNotNullToFilters(END_RECEIVED_DATE_KEY, value);
     }
 

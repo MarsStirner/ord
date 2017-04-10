@@ -491,10 +491,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         return DocumentType.getStatusName(getType(), getStatusId());
     }
 
-    @Transient
-    public String getType() {
-        return DocumentType.RequestDocument.getName();
-    }
 
     public String getWFResultDescription() {
         return this.WFResultDescription;
@@ -666,11 +662,8 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         this.templateFlag = templateFlag;
     }
 
-    public String getStyleClass() {
-        return styleClass;
-    }
-
-    public void setStyleClass(String styleClass) {
-        this.styleClass = styleClass;
+    @Override
+    public String getType() {
+        return ru.entity.model.referenceBook.DocumentType.RB_CODE_REQUEST;
     }
 }

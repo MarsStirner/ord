@@ -4,6 +4,8 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.sql.JoinType;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.OfficeKeepingFile;
 import ru.entity.model.enums.DocumentStatus;
 import ru.hitsl.sql.dao.impl.mapped.CommonDaoImpl;
@@ -12,6 +14,7 @@ import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 import java.util.List;
 
 @Repository("officeKeepingFileDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class OfficeKeepingFileDaoImpl extends CommonDaoImpl<OfficeKeepingFile>
         implements OfficeKeepingFileDao {
 

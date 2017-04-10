@@ -12,7 +12,7 @@
     <h:outputStylesheet library="css" name="listView.css"/>
     <ui:insert name="headContent"/>
     <ui:insert name="pageTitle">
-        <title>Документооборот ННПЦ ДГОИ</title>
+        <title>#{ui['listView.pageTitle']}</title>
     </ui:insert>
 </h:head>
 
@@ -30,7 +30,7 @@
     <p:layout fullPage="true" collapseTitle="Скрыть" expandTitle="Показать">
         <p:layoutUnit position="west" size="15%" collapsible="true" collapseSize="30" effect="drop" gutter="3" style="width:100%; padding:0; margin:0; border:0; border-radius:0;">
             <f:facet name="header">
-                <div style="display:inline; margin-right:16px;">Документооборот ННПЦ ДГОИ</div>
+                <div style="display:inline; margin-right:16px;">#{ui['leftMenu.title']}</div>
             </f:facet>
             <!-- Левое меню -->
             <ui:insert name="leftMenu">
@@ -53,7 +53,7 @@
                             </p:menuButton>
                             <p:commandButton id="accessMenuButton" type="button"
                                              value="#{authData.currentAccessLevel.value}" style="float:right;"/>
-                            <p:menu id = "accessMenu" overlay="true" model="#{dictionaryManagement.accessLevelsMenuModel}"
+                            <p:menu id = "accessMenu" overlay="true" model="#{sessionManagement.accessLevelsMenuModel}"
                                     trigger="accessMenuButton" my="left top" at="left bottom"/>
                         </p:toolbarGroup>
                     </p:toolbar>

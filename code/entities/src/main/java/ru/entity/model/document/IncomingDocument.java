@@ -52,7 +52,6 @@ public class IncomingDocument extends DocumentEntity implements ProcessedData {
      * Дата поступления
      */
     @Column(name = "deliveryDate", nullable = true)
-    @Temporal(value = TemporalType.TIMESTAMP)
     private LocalDateTime deliveryDate;
 
     /**
@@ -549,5 +548,10 @@ public class IncomingDocument extends DocumentEntity implements ProcessedData {
 
     public void setParentNumeratorId(String parentNumeratorId) {
         this.parentNumeratorId = parentNumeratorId;
+    }
+
+    @Override
+    public String getType() {
+        return ru.entity.model.referenceBook.DocumentType.RB_CODE_INCOMING;
     }
 }

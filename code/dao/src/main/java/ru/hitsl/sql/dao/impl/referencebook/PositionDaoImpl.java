@@ -1,6 +1,8 @@
 package ru.hitsl.sql.dao.impl.referencebook;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Position;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
@@ -12,6 +14,7 @@ import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
  * Description: <br>
  */
 @Repository("positionDao")
+@Transactional(propagation = Propagation.MANDATORY)
 public class PositionDaoImpl extends ReferenceBookDaoImpl<Position> implements PositionDao{
     @Override
     public Class<Position> getEntityClass() {

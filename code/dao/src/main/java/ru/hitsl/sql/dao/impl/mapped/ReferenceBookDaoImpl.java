@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.mapped.ReferenceBookEntity;
 import ru.hitsl.sql.dao.interfaces.mapped.ReferenceBookDao;
 
@@ -25,6 +27,7 @@ public abstract class ReferenceBookDaoImpl<T extends ReferenceBookEntity> extend
      * @return запись справочника (в том числе и удаленную)\ NULL
      */
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getByCode(final String code) {
         final DetachedCriteria criteria = getFullCriteria();
         criteria.add(Restrictions.eq("code", code));
@@ -39,6 +42,7 @@ public abstract class ReferenceBookDaoImpl<T extends ReferenceBookEntity> extend
      * @return записи справочника (только не удаленные) \ NULL
      */
     @Override
+    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public List<T> getByValue(final String value) {
         final DetachedCriteria criteria = getFullCriteria();
         criteria.add(Restrictions.eq("value", value));

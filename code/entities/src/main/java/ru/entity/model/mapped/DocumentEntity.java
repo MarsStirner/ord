@@ -39,4 +39,7 @@ public abstract class DocumentEntity extends DeletableEntity {
         this.styleClass = styleClass;
     }
 
+    @Transient
+    public abstract String getType();
+
 }

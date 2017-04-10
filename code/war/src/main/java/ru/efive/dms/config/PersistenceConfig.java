@@ -4,21 +4,25 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import org.hibernate.SessionFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jndi.JndiTemplate;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.naming.NamingException;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Map;
 import java.util.Properties;
+
+import static ru.util.ApplicationHelper.ORD_PERSISTENCE_UNIT_NAME;
 
 /**
  * Author: Upatov Egor <br>
@@ -31,6 +35,7 @@ import java.util.Properties;
 public class PersistenceConfig {
     public static final String SESSION_FACTORY = "ordSessionFactory";
     private static final Logger log = LoggerFactory.getLogger("CONFIG");
+
 
     @Bean(value = "ordDataSource", destroyMethod = "")
     public DataSource lookupOrdDatasource(final Config cfg) {
@@ -76,27 +81,39 @@ public class PersistenceConfig {
         return result;
     }
 
-    @Bean(SESSION_FACTORY)
-    public LocalSessionFactoryBean ordSessionFactory(
+
+    @Bean(name = "entityManagerFactory")
+    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(
             @Qualifier("ordDataSource") final DataSource dataSource,
             @Qualifier("ordHibernateProperties") final Properties props
     ) {
-        final LocalSessionFactoryBean result = new LocalSessionFactoryBean();
+        final LocalContainerEntityManagerFactoryBean result = new LocalContainerEntityManagerFactoryBean();
         result.setDataSource(dataSource);
         result.setPackagesToScan("ru.entity.model");
-        result.setHibernateProperties(props);
-        log.info("Initialized 'hospitalSessionFactory'[@{}]", Integer.toHexString(result.hashCode()));
+        result.setJpaProperties(props);
+        result.setPersistenceUnitName(ORD_PERSISTENCE_UNIT_NAME);
+        result.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        log.info("Initialized 'EntityManagerFactory'[@{}]: with DataSource[@{}]",
+                Integer.toHexString(result.hashCode()),
+                Integer.toHexString(dataSource.hashCode())
+        );
         return result;
     }
 
-    @Bean("ordTransactionManager")
-    public HibernateTransactionManager ordTransactionManager(
-            @Qualifier(SESSION_FACTORY) final SessionFactory sessionFactory
+    @Bean(name = "ordTransactionManager")
+    public JpaTransactionManager transactionManager(
+            @Qualifier("entityManagerFactory") final EntityManagerFactory emf
     ) {
-        final HibernateTransactionManager result = new HibernateTransactionManager(sessionFactory);
-        log.info("Initialized 'ordTransactionManager'[@{}]", Integer.toHexString(result.hashCode()));
+        final JpaTransactionManager result = new JpaTransactionManager(emf);
+        result.setDefaultTimeout(36000);
+        log.info("Initialized 'transactionManager'[@{}]: with EntityManagerFactory[@{}]",
+                Integer.toHexString(result.hashCode()),
+                Integer.toHexString(emf.hashCode())
+        );
         return result;
     }
+
+
 
 
 }

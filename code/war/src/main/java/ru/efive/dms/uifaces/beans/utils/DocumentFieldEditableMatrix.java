@@ -4,6 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.util.DocumentTypeField;
@@ -12,7 +16,9 @@ import ru.hitsl.sql.dao.interfaces.EditableMatrixDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PostConstruct;
+
 import org.springframework.stereotype.Controller;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +31,7 @@ import java.util.Map;
  * Description: <br>
  */
 @Controller("editableMatrix")
+@Transactional("ordTransactionManager")
 public class DocumentFieldEditableMatrix {
     private static final Logger logger = LoggerFactory.getLogger("EDITABLE_MATRIX");
 
@@ -32,6 +39,9 @@ public class DocumentFieldEditableMatrix {
     @Autowired
     @Qualifier("editableMatrixDao")
     private EditableMatrixDao dao;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
 
     private DocumentTypeMatrix incoming;
@@ -67,16 +77,21 @@ public class DocumentFieldEditableMatrix {
     @PostConstruct
     public void load() {
         logger.info("Start initialize ({})", this);
-        if (dao == null) {
-            logger.error("DAO is not collected. Possible future errors...");
-        } else {
-            logger.info("DAO collected [{}]", dao);
-            loadIncoming();
-            loadOutgoing();
-            loadInternal();
-            loadRequest();
-            loadTask();
-            logger.info("Successful end of initialize ({})", this);
+        final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+        try {
+            if (dao == null) {
+                logger.error("DAO is not collected. Possible future errors...");
+            } else {
+                logger.info("DAO collected [{}]", dao);
+                loadIncoming();
+                loadOutgoing();
+                loadInternal();
+                loadRequest();
+                loadTask();
+                logger.info("Successful end of initialize ({})", this);
+            }
+        } finally {
+            transactionManager.commit(transaction);
         }
     }
 
@@ -94,7 +109,7 @@ public class DocumentFieldEditableMatrix {
         logger.info("reload complete ({})", this);
     }
 
-    private void loadTask() {
+    public void loadTask() {
         logger.debug("start loading task");
         final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_TASK);
         final List<DocumentStatus> statuses = ru.entity.model.enums.DocumentType.getTaskStatuses();
@@ -103,7 +118,7 @@ public class DocumentFieldEditableMatrix {
         task.toLog();
     }
 
-    private void loadRequest() {
+    public void loadRequest() {
         logger.debug("start loading request");
         final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_REQUEST);
         final List<DocumentStatus> statuses = ru.entity.model.enums.DocumentType.getRequestDocumentStatuses();
@@ -112,7 +127,7 @@ public class DocumentFieldEditableMatrix {
         request.toLog();
     }
 
-    private void loadInternal() {
+    public void loadInternal() {
         logger.debug("start loading internal");
         final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_INTERNAL);
         final List<DocumentStatus> statuses = new ArrayList<>(ru.entity.model.enums.DocumentType.getInternalDocumentStatuses());
@@ -123,7 +138,7 @@ public class DocumentFieldEditableMatrix {
         internal.toLog();
     }
 
-    private void loadOutgoing() {
+    public void loadOutgoing() {
         logger.debug("start loading outgoing");
         final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_OUTGOING);
         final List<DocumentStatus> statuses = ru.entity.model.enums.DocumentType.getOutgoingDocumentStatuses();

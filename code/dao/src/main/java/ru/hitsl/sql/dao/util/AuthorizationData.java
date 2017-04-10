@@ -11,6 +11,7 @@ import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
 import ru.util.StoredCodes;
 
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
@@ -69,6 +70,7 @@ public class AuthorizationData implements Serializable {
      * @param authorized авторизованный пользователь
      */
     public void init(final User authorized) {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionId(false);
         this.authorized = authorized;
         this.userIds.add(authorized.getId());
         final Set<Role> authorizedRoles = authorized.getRoles();
@@ -271,7 +273,7 @@ public class AuthorizationData implements Serializable {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("AuthorizationData[");
-        sb.append("\n\t AuthorizedUser: [").append(authorized.getId()).append("] ").append(authorized.getDescription());
+        sb.append("\n\t").append(getLogString());
         sb.append("\n\t AccessLevels: ").append("current=").append(currentAccessLevel.getLevel()).append(" ; max=").append(maxAccessLevel.getLevel());
         sb.append("\n\t SubstitutedUsers: ");
         if (isSubstitution) {
@@ -296,5 +298,9 @@ public class AuthorizationData implements Serializable {
 
     public String getDefaultPage() {
         return "/component/in/in_documents.xhtml";
+    }
+
+    public String getLogString() {
+        return "AuthorizedUser: [" + authorized.getId() + "] " + authorized.getDescription();
     }
 }

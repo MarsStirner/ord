@@ -4,6 +4,7 @@ import com.typesafe.config.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.util.HashMap;
@@ -18,17 +19,23 @@ import java.util.HashMap;
 @ApplicationScoped
 public class UIPropertiesHolder extends HashMap<String, String> {
 
-    private final Config config;
-
     @Autowired
-    public UIPropertiesHolder(
-            @Qualifier("config") Config config
-    ) {
-        this.config = config.getConfig("ui");
+    @Qualifier("config")
+    private Config config;
+
+    //Used config
+    private Config uiConfig;
+
+    public UIPropertiesHolder() {
+    }
+
+    @PostConstruct
+    public void init(){
+        this.uiConfig = config.getConfig("ui");
     }
 
     @Override
     public String get(Object key) {
-        return config.getString((String) key);
+        return uiConfig.hasPath(key.toString()) ? uiConfig.getString(key.toString()) : "TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
     }
 }

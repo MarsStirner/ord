@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
@@ -48,6 +50,7 @@ import static ru.efive.dms.util.security.Permissions.Permission.*;
 @Controller("in_doc")
 @SpringScopeView
 @SuppressWarnings("unchecked")
+@Transactional("ordTransactionManager")
 public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument> {
     //Именованный логгер (INCOMING_DOCUMENT)
     private static final Logger LOGGER = LoggerFactory.getLogger("INCOMING_DOCUMENT");
@@ -407,6 +410,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     @Override
+    @Transactional("ordTransactionManager")
     protected void initNewDocument() {
         permissions = Permissions.ALL_PERMISSIONS;
         final LocalDateTime created = LocalDateTime.now();
@@ -423,7 +427,9 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         relatedDocuments = new ArrayList<>(0);
     }
 
+
     @Override
+    @Transactional(value = "ordTransactionManager")
     protected void initDocument(final Integer id) {
         final User currentUser = authData.getAuthorized();
         LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
@@ -470,6 +476,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     @Override
+    @Transactional("ordTransactionManager")
     protected boolean saveNewDocument() {
         final User currentUser = authData.getAuthorized();
         final LocalDateTime created = LocalDateTime.now();
@@ -517,12 +524,13 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     @Override
+    @Transactional("ordTransactionManager")
     protected boolean saveDocument() {
         final User currentUser = authData.getAuthorized();
         LOGGER.info("Save document by USER[{}]", currentUser.getId());
         final IncomingDocument document = getDocument();
         try {
-            incomingDocumentDao.save(document);
+            incomingDocumentDao.update(document);
             //Установка идшника для поиска поручений
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             return true;
