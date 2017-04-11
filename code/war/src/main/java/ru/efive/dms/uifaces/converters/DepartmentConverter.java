@@ -3,12 +3,15 @@ package ru.efive.dms.uifaces.converters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.referenceBook.Department;
+import ru.hitsl.sql.dao.interfaces.mapped.ReferenceBookDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+
+import ru.efive.dms.uifaces.beans.annotations.FacesConverter;
+
 import java.util.List;
 
 /**
@@ -18,30 +21,10 @@ import java.util.List;
  * Description: <br>
  */
 @FacesConverter("departmentConverter")
-public class DepartmentConverter implements Converter {
+public class DepartmentConverter extends AbstractReferenceBookConverter<Department> {
 
     @Autowired
-    @Qualifier("departmentDao")
-    private DepartmentDao departmentDao;
-
-    @Override
-    public Object getAsObject(FacesContext fc, UIComponent uiComponent, String value) {
-        if (value != null && value.trim().length() > 0) {
-            final List<Department> departmentList = departmentDao.getByValue(value);
-            if (departmentList.isEmpty()) {
-                return null;
-            }
-            return departmentList.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object o) {
-        if (o != null) {
-            return o.toString();
-        }
-        return null;
+    public DepartmentConverter(@Qualifier("departmentDao") final DepartmentDao departmentDao) {
+        super(departmentDao);
     }
 }

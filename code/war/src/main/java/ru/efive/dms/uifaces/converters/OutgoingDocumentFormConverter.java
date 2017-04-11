@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.converters;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.efive.dms.uifaces.beans.annotations.FacesConverter;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.DocumentType;
@@ -10,7 +11,7 @@ import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+
 import java.util.List;
 
 @FacesConverter("OutgoingDocumentFormConverter")

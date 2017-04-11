@@ -1,11 +1,12 @@
 package ru.efive.dms.uifaces.converters;
 
+import ru.efive.dms.uifaces.beans.annotations.FacesConverter;
 import ru.entity.model.document.IncomingDocument;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+
 
 @FacesConverter("IncomingDocumentConverter")
 public class IncomingDocumentConverter implements Converter {

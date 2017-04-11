@@ -10,10 +10,11 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Region;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
+import ru.hitsl.sql.dao.interfaces.referencebook.RegionDao;
 
 @Repository("regionDao")
 @Transactional(propagation = Propagation.MANDATORY)
-public class RegionDaoImpl extends ReferenceBookDaoImpl<Region> {
+public class RegionDaoImpl extends ReferenceBookDaoImpl<Region> implements RegionDao{
 
     @Override
     public void applyFilter(DetachedCriteria criteria, String filter) {
