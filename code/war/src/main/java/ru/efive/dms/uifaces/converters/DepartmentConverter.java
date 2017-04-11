@@ -3,16 +3,9 @@ package ru.efive.dms.uifaces.converters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.referenceBook.Department;
-import ru.hitsl.sql.dao.interfaces.mapped.ReferenceBookDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
 
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
-
-import ru.efive.dms.uifaces.beans.annotations.FacesConverter;
-
-import java.util.List;
+import ru.efive.dms.uifaces.beans.annotations.FacesConverterWithSpringSupport;
 
 /**
  * Author: Upatov Egor <br>
@@ -20,7 +13,7 @@ import java.util.List;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@FacesConverter("departmentConverter")
+@FacesConverterWithSpringSupport("departmentConverter")
 public class DepartmentConverter extends AbstractReferenceBookConverter<Department> {
 
     @Autowired

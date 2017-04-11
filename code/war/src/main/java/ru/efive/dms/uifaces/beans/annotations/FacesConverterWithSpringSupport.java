@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Transactional
-public @interface FacesConverter {
+public @interface FacesConverterWithSpringSupport {
     @AliasFor("name")
     String value() default "";
     @AliasFor(annotation = Component.class, attribute = "value")

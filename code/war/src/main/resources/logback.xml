@@ -21,7 +21,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ldap/ldap.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>${logs.maxHistory}</maxHistory>
+            <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -51,7 +51,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${com.sun.aas.instanceRoot}/logs/config/config.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>${logs.maxHistory}</maxHistory>
+            <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -63,7 +63,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${com.sun.aas.instanceRoot}/logs/dao/dao.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>${logs.maxHistory}</maxHistory>
+            <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -75,7 +75,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${com.sun.aas.instanceRoot}/logs/alfresco/alfresco.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>${logs.maxHistory}</maxHistory>
+            <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
@@ -87,7 +87,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${com.sun.aas.instanceRoot}/logs/util/util.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-            <maxHistory>${logs.maxHistory}</maxHistory>
+            <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 

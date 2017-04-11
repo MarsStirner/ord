@@ -2,7 +2,7 @@ package ru.efive.dms.uifaces.converters;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.beans.annotations.FacesConverter;
+import ru.efive.dms.uifaces.beans.annotations.FacesConverterWithSpringSupport;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.document.OfficeKeepingFile;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
@@ -14,7 +14,7 @@ import javax.faces.convert.Converter;
 import java.util.List;
 
 
-@FacesConverter("OfficeKeepingFileConverter")
+@FacesConverterWithSpringSupport("OfficeKeepingFileConverter")
 public class OfficeKeepingFileConverter implements Converter {
 
     @Autowired

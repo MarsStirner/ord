@@ -44,7 +44,7 @@
     </filter>
     <filter-mapping>
         <filter-name>authentication-filter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/component/*</url-pattern>
     </filter-mapping>
 
     <listener>
@@ -110,7 +110,6 @@
         <param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
         <param-value>true</param-value>
     </context-param>
-
 
 
 </web-app>

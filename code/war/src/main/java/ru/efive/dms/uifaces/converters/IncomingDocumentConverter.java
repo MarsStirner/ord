@@ -1,6 +1,6 @@
 package ru.efive.dms.uifaces.converters;
 
-import ru.efive.dms.uifaces.beans.annotations.FacesConverter;
+import ru.efive.dms.uifaces.beans.annotations.FacesConverterWithSpringSupport;
 import ru.entity.model.document.IncomingDocument;
 
 import javax.faces.component.UIComponent;
@@ -8,7 +8,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
 
-@FacesConverter("IncomingDocumentConverter")
+@FacesConverterWithSpringSupport("IncomingDocumentConverter")
 public class IncomingDocumentConverter implements Converter {
 
     public String getAsString(FacesContext context, UIComponent component, Object value) {

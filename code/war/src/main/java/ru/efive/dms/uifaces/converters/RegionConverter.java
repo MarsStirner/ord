@@ -2,7 +2,7 @@ package ru.efive.dms.uifaces.converters;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.beans.annotations.FacesConverter;
+import ru.efive.dms.uifaces.beans.annotations.FacesConverterWithSpringSupport;
 import ru.entity.model.referenceBook.Region;
 import ru.hitsl.sql.dao.interfaces.referencebook.RegionDao;
 
@@ -10,7 +10,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 
-@FacesConverter("RegionConverter")
+@FacesConverterWithSpringSupport("RegionConverter")
 public class RegionConverter extends AbstractReferenceBookConverter<Region> {
 
     @Autowired

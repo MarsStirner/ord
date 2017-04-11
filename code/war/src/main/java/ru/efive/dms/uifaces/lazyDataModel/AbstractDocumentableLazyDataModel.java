@@ -10,26 +10,56 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by EUpatov on 03.04.2017.
- */
+
 public abstract class AbstractDocumentableLazyDataModel<T extends DocumentEntity> extends AbstractFilterableLazyDataModel<T> {
 
     private final AuthorizationData authData;
     private final ViewFactDao viewFactDao;
+    private boolean personalMode = false;
 
     public AbstractDocumentableLazyDataModel(final DocumentDao<T> dao, final AuthorizationData authData, final ViewFactDao viewFactDao) {
         super(dao);
         this.authData = authData;
-        this.viewFactDao  = viewFactDao;
+        this.viewFactDao = viewFactDao;
     }
 
+    /**
+     * Загрузить порцию списка
+     *
+     * @param first     начальное смещение порции списка
+     * @param pageSize  размер старницы выборки
+     * @param sortField поле сортировки
+     * @param sortOrder порядок сортировки
+     * @param filters   - @deprecated Primefaces filters (unsued)
+     * @return список документов (страница)
+     */
     @Override
     @Transactional("ordTransactionManager")
-    public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> unusedPrimefacesFilters) {
+    @SuppressWarnings("unchecked")
+    public List<T> load(
+            int first,
+            final int pageSize,
+            final String sortField,
+            final SortOrder sortOrder,
+            @Deprecated final  Map<String, Object> filters) {
         final DocumentDao documentDao = (DocumentDao) this.dao;
         //Используются фильтры извне, а не из параметров
-        if (authData != null) {
+        if (personalMode) {
+            //Режим работы с собственными проектами
+            setRowCount(documentDao.countPersonalDraftDocumentListByFilters(authData, getFilter()));
+            if (getRowCount() < first) {
+                first = 0;
+            }
+            return documentDao.getPersonalDraftDocumentListByFilters(
+                    authData,
+                    getFilter(),
+                    sortField,
+                    SortOrder.ASCENDING.equals(sortOrder),
+                    first,
+                    pageSize
+            );
+        } else {
+            //Режим работы с общим списком
             setRowCount(documentDao.countDocumentListByFilters(authData, getFilter(), getFilters(), false, false));
             if (getRowCount() < first) {
                 first = 0;
@@ -37,7 +67,7 @@ public abstract class AbstractDocumentableLazyDataModel<T extends DocumentEntity
             final List resultList = documentDao.getItems(
                     authData,
                     getFilter(),
-                    this.filters,
+                    getFilters(),
                     sortField,
                     SortOrder.ASCENDING.equals(sortOrder),
                     first,
@@ -50,9 +80,11 @@ public abstract class AbstractDocumentableLazyDataModel<T extends DocumentEntity
                 viewFactDao.applyViewFlagsOnDocumentList(resultList, authData.getAuthorized());
             }
             return resultList;
-        } else {
-            log.error("NO AUTH DATA");
-            return null;
         }
+    }
+
+
+    public void setPersonalMode() {
+        this.personalMode = true;
     }
 }

@@ -28,7 +28,7 @@ public class ApplicationConfig {
 
     @Bean("config")
     public Config config() {
-        final Config result = ConfigFactory.parseResources("application.conf",ConfigParseOptions.defaults().setSyntax(ConfigSyntax.CONF));
+        final Config result = ConfigFactory.parseResources("application.conf",ConfigParseOptions.defaults().setSyntax(ConfigSyntax.CONF)).resolve();
         log.info("Configuration parsed:\n{}", result.root().render(ConfigRenderOptions.defaults().setOriginComments(false).setJson(false)));
         return result;
     }
