@@ -12,19 +12,19 @@
         <h:outputStylesheet library="css" name="viewfact.css"/>
     </ui:define>
 
-    <ui:define name="contentLabel">Исходящие документы на согласовании</ui:define>
+    <ui:define name="contentLabel">Исходящие документы по номеру</ui:define>
 
     <ui:define name="contentButtonsPanel">
         <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="/component/out/out_document.xhtml" target="_blank" icon="ui-icon-plusthick">
+            <p:button value="Новый документ" outcome="/component/outgoing/document.xhtml" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
             <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString" value="#{outDocumentsOnAgreement.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" id="searchButton" action="#{outDocumentsOnAgreement.applyFilter()}" process="filterString @this" update="documentTable" icon="ui-icon-search"/>
-            <p:button target="_blank" outcome="/component/out/out_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
+            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString" value="#{outgoingDocumentLDM.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" id="searchButton" process="filterString @this" update="documentTable" icon="ui-icon-search"/>
+            <p:button target="_blank" outcome="/component/outgoing/search.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
             <p:defaultCommand target="searchButton" />
         </p:toolbarGroup>
     </ui:define>
@@ -37,22 +37,26 @@
                      paginatorTemplate="#{ui['paginator.template.total']}"
                      rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
                      paginatorPosition = "#{ui['paginator.position']}"
+                     value="#{outgoingDocumentLDM}"
                      emptyMessage="#{ui['emptyMessage']}"
-                     value="#{outDocumentsOnAgreement.lazyModel}"
                      var="row"
                      lazy="true"
                      widgetVar="documentTableVar"
                      scrollable="true"
                      scrollHeight="100%"
-                     selectionMode="single"
                      rowStyleClass="#{row.styleClass}"
-                     sortBy="#{row.creationDate}"
-                     sortField="creationDate"
+                     selectionMode="single"
+                     sortBy="#{row.registrationDate}"
+                     sortField="registrationDate"
                      sortOrder="descending"
                 >
-            <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field="creationDate">
-                <h:outputText value="#{row.creationDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+                <h:outputText value="#{row.registrationNumber}"/>
+            </p:column>
+            <p:column headerText="Дата регистрации" style="width:9em;" sortBy="#{row.registrationDate}" field = "registrationDate">
+                <h:outputText value="#{row.registrationDate}">
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="#{ui['listView.registrationDate.pattern']}"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
@@ -61,14 +65,18 @@
             <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.value}" field="contragent.value">
                 <h:outputText value="#{row.contragent.value}"/>
             </p:column>
-            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
+            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
                 <h:outputText value="#{row.form.value}"/>
+            </p:column>
+            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
+                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
             </p:column>
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
             <p:ajax event="rowSelect" onstart="goToOutgoingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
         </p:dataTable>
+
     </ui:define>
 
 </ui:composition>

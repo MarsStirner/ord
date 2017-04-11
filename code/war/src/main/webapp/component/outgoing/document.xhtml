@@ -10,6 +10,10 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core"
         >
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{out_doc.init}"/>
+    </f:metadata>
+
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{out_doc.createState or out_doc.editState}" scope="view"/>
@@ -48,7 +52,7 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/out/out_documents_by_number.xhtml"/>
+        <my:homeButton outcome="/component/outgoing/list.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{out_doc.errorState}"/>
         <p:commandButton value="Редактировать" action="#{out_doc.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{out_doc.viewState and out_doc.editPermission and editableMatrix.outgoing.isStateEditable(statusId)}"/>
@@ -68,7 +72,8 @@
             <h:outputText value="#{out_doc.document.form.value}"/>
             <h:outputText value=" № #{out_doc.document.registrationNumber} от " rendered="#{out_doc.editState or out_doc.viewState}"/>
             <h:outputText value="#{out_doc.document.registrationDate}" rendered="#{out_doc.editState or out_doc.viewState}">
-                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                <f:converter converterId="LocalDateTimeConverter"/>
+                <f:attribute name="pattern" value="dd.MM.yyyy"/>
             </h:outputText>
             <div style="float: right; padding-right:1.5em;">
                 <h:outputText id="v_author" value="Зарегистрировал: #{out_doc.document.author.description}" styleClass="outputText"/>
@@ -121,10 +126,13 @@
                         <p:column colspan="3" styleClass="ui-grid-col-10">
                             <h:outputText id="v_signDate" value="#{out_doc.document.signatureDate}" lang="ru" styleClass="outputText"
                                           rendered="#{not editable_SignDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                <f:converter converterId="LocalDateTimeConverter"/>
+                                <f:attribute name="pattern" value="dd.MM.yyyy"/>
                             </h:outputText>
                             <p:calendar id="e_signDate" value="#{out_doc.document.signatureDate}" lang="ru" locale="ru"
-                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_SignDate}"/>
+                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_SignDate}">
+                                <f:converter converterId="LocalDateTimeConverter"/>
+                            </p:calendar>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -184,9 +192,9 @@
                             <h:outputText id="v_docAccessLevel" value="#{out_doc.document.userAccessLevel.value}" rendered="#{out_doc.viewState}"
                                           styleClass="outputText"/>
                             <p:selectOneMenu id="e_docAccessLevel" value="#{out_doc.document.userAccessLevel}"
-                                             converter="UserAccessLevelConverter" rendered="#{stateEditable}">
+                                             converter="#{UserAccessLevelConverter}" rendered="#{stateEditable}">
                                 <f:selectItems var="level"
-                                               value="#{dictionaryManagement.getUserAccessLevelsGreaterOrEqualMaxValue(sessionManagement.authData.currentAccessLevel.level)}"
+                                               value="#{refBookHelper.getUserAccessLevelsGreaterOrEqualMaxValue(authData.currentAccessLevel.level)}"
                                                itemLabel="#{level.value}"/>
                             </p:selectOneMenu>
                         </p:column>
@@ -234,7 +242,7 @@
                         <p:column styleClass="ui-grid-col-9">
                             <h:panelGroup id="v_role_readers">
                                 <ui:repeat value="#{out_doc.document.roleReadersList}" var="roleReader">
-                                    <h:outputText value="#{roleReader.name}" styleClass="outputText"/><br/>
+                                    <h:outputText value="#{roleReader.value}" styleClass="outputText"/><br/>
                                 </ui:repeat>
                             </h:panelGroup>
                         </p:column>
@@ -250,7 +258,7 @@
                         <p:column styleClass="ui-grid-col-9">
                             <h:panelGroup id="v_role_editors">
                                 <ui:repeat value="#{out_doc.document.roleEditorsList}" var="roleEditor">
-                                    <h:outputText value="#{roleEditor.name}" styleClass="outputText"/><br/>
+                                    <h:outputText value="#{roleEditor.value}" styleClass="outputText"/><br/>
                                 </ui:repeat>
                             </h:panelGroup>
                         </p:column>

@@ -11,7 +11,6 @@ import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForOutgoingDocument;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
@@ -36,7 +35,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
     @Autowired
-    private LazyDataModelForOutgoingDocument lazyDataModelForOutgoingDocument;
+    private OutgoingDocumentLazyDataModel lazyDataModelForOutgoingDocument;
 
     /**
      * Выполнить поиск с текущим фильтром
