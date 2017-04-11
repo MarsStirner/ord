@@ -21,7 +21,7 @@
     <!--Кнопки верхнего меню-->
     <ui:define name="headerHomeButton">
         <div class="defbutton">
-            <h:outputLink value="/component/in/in_documents.xhtml">
+            <h:outputLink value="/component/incoming/list.xhtml">
                 <h:graphicImage value="#{resource['images:home.png']}"/>
             </h:outputLink>
         </div>
@@ -83,7 +83,7 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:selectOneMenu id="form" value="#{incomingSearch.form}" converter="IncomingDocumentFormConverter">
+                    <p:selectOneMenu id="form" value="#{incomingSearch.form}" converter="#{IncomingDocumentFormConverter}">
                         <f:selectItem itemLabel="" noSelectionOption="true"/>
                         <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('INCOMING')}"/>
                     </p:selectOneMenu>
@@ -360,7 +360,7 @@
                 </p:column>
                 <p:column colspan="3">
                     <h:outputText id="office_keeping_Volume" value="#{incomingSearch.officeKeepingVolume}"
-                                  converter="OfficeKeepingVolumeConverter" class="wide"/>
+                                  converter="#{OfficeKeepingVolumeConverter}" class="wide"/>
                 </p:column>
             </p:row>
             <p:row>

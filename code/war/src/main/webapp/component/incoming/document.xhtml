@@ -12,10 +12,11 @@
 >
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{in_doc.init}"/>
+    </f:metadata>
+
     <ui:define name="VARIABLE_DEFINITIONS">
-        <f:metadata>
-            <f:viewAction action="#{in_doc.init}"/>
-        </f:metadata>
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{in_doc.createState or in_doc.editState}" scope="view"/>
         <c:set var="statusId" value="#{in_doc.document.documentStatus.id}" scope="view"/>
@@ -76,7 +77,7 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/in/in_documents.xhtml"/>
+        <my:homeButton outcome="/component/incoming/list.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{in_doc.errorState}"/>
         <p:commandButton value="Редактировать" action="#{in_doc.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{in_doc.viewState and in_doc.editPermission and editableMatrix.incoming.isStateEditable(statusId)}"/>
@@ -134,8 +135,7 @@
                             <p:selectOneMenu id="e_documentForm" value="#{in_doc.document.form}"
                                              converter="#{IncomingDocumentFormConverter}"
                                              required="true" styleClass="inputText" rendered="#{editable_DocumentForm}">
-                                <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('INCOMING')}" var="x"
-                                               itemValue="#{x.code}"/>
+                                <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('INCOMING')}"/>
                             </p:selectOneMenu>
                         </p:column>
                     </p:row>
@@ -447,10 +447,9 @@
                                           styleClass="outputText"/>
                             <p:selectOneMenu id="e_docAccessLevel" value="#{in_doc.document.userAccessLevel}"
                                              converter="#{UserAccessLevelConverter}" rendered="#{stateEditable}">
-                                <f:selectItems var="x"
-                                               value="#{refBookHelper.getUserAccessLevelsGreaterOrEqualMaxValue(authData.currentAccessLevel.level)}"
-                                               itemLabel="#{x.value}"
-                                               itemValue="#{x.code}"/>
+                                <f:selectItems
+                                        value="#{refBookHelper.getUserAccessLevelsGreaterOrEqualMaxValue(authData.currentAccessLevel.level)}"
+                                />
                             </p:selectOneMenu>
                         </p:column>
                     </p:row>

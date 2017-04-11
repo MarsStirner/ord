@@ -8,21 +8,28 @@
       xmlns:h="http://java.sun.com/jsf/html">
 
 <ui:composition template="/jsf-template/listViewTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{incomingDocumentLDM.setPersonalMode}"/>
+    </f:metadata>
 
     <ui:define name="contentLabel">Мои проекты входящих документов</ui:define>
 
     <ui:define name="contentButtonsPanel">
         <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="/component/in/in_document.xhtml" target="_blank" icon="ui-icon-plusthick">
+            <p:button value="Новый документ" outcome="/component/incoming/document.xhtml" target="_blank"
+                      icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
-            <p:commandButton action="#{personal_in_documents.refresh()}" value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString" value="#{personal_in_documents.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" action="#{personal_in_documents.applyFilter()}" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
-            <p:button target="_blank" outcome="/component/in/in_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
-            <p:defaultCommand target="searchButton" />
+            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString"
+                         value="#{incomingDocumentLDM.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable"
+                             icon="ui-icon-search"/>
+            <p:button target="_blank" outcome="/component/incoming/search.xhtml" value="Расширенный поиск"
+                      icon="ui-icon-star"/>
+            <p:defaultCommand target="searchButton"/>
         </p:toolbarGroup>
     </ui:define>
 
@@ -33,8 +40,8 @@
                      currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
                      paginatorTemplate="#{ui['paginator.template.total']}"
                      rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
-                     value="#{personal_in_documents.lazyModel}"
+                     paginatorPosition="#{ui['paginator.position']}"
+                     value="#{incomingDocumentLDM}"
                      emptyMessage="#{ui['emptyMessage']}"
                      var="row"
                      lazy="true"
@@ -45,18 +52,20 @@
                      sortBy="#{row.creationDate}"
                      sortField="creationDate"
                      sortOrder="descending"
-                >
+        >
             <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field="creationDate">
                 <h:outputText value="#{row.creationDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}" field="contragent.shortName">
+            <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}"
+                      field="contragent.shortName">
                 <h:outputText value="#{row.contragent.shortName}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
                 <ui:repeat value="#{row.executorsList}" var="element">
-                        <h:outputText value="#{element.getDescriptionShort()}"/><br/>
+                    <h:outputText value="#{element.getDescriptionShort()}"/><br/>
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
@@ -64,13 +73,15 @@
             </p:column>
             <p:column headerText="Срок" style="width:6em;" sortBy="#{row.executionDate}" field="executionDate">
                 <h:outputText value="#{row.executionDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+            <p:ajax event="rowSelect"
+                    onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
         </p:dataTable>
     </ui:define>
 

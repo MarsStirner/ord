@@ -23,9 +23,9 @@ function goToDocument(docType, id) {
     if (id != "") {
         if (docType != "") {
             if (docType.indexOf('incoming') != -1) {
-                componentType = 'in/in_document';
+                componentType = 'incoming/document';
             } else if (docType.indexOf('outgoing') != -1) {
-                componentType = 'out/out_document';
+                componentType = 'outgoing/document';
             } else if (docType.indexOf('internal') != -1) {
                 componentType = 'internal/internal_document';
             } else if (docType.indexOf('request') != -1) {
@@ -50,7 +50,7 @@ function goToTask(id) {
 // К входящим документам
 function goToIncomingDocument(id) {
     if (id != 0) {
-        window.open('/component/in/in_document.xhtml?docId=' + id, '_blank');
+        window.open('/component/incoming/document.xhtml?docId=' + id, '_blank');
     }
 }
 // К томам дел
@@ -110,7 +110,7 @@ function goToInternalDocument(id) {
 // К исходящим докам
 function goToOutgoingDocument(id) {
     if (id != 0) {
-        window.open('/component/out/out_document.xhtml?docId=' + id, '_blank');
+        window.open('/component/outgoing/document.xhtml?docId=' + id, '_blank');
     }
 }
 //  К обращениям

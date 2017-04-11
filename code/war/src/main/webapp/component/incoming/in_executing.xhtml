@@ -6,10 +6,13 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-        >
+>
 
 
 <ui:composition template="/jsf-template/listViewTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{in_documents_by_executing_date.refresh}"/>
+    </f:metadata>
 
     <ui:define name="contentLabel">
         <h:outputText id="viewTitleText" value="Входящие документы
@@ -32,15 +35,18 @@
                 color: yellow !important;
                 text-shadow: 1px 1px 1px black, 0 0 1px red; /* Параметры тени */
             }
+
             .month {
                 color: red !important;
                 text-shadow: 1px 1px 1px black, 0 0 1px red; /* Параметры тени */
                 text-transform: uppercase;
             }
+
             .ui-treetable tbody td {
                 white-space: normal !important;
             }
-            .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default{
+
+            .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
                 cursor: inherit;
             }
         </style>
@@ -48,20 +54,30 @@
 
     <ui:define name="contentButtonsPanel">
         <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="/component/in/in_document.xhtml" target="_blank" icon="ui-icon-plusthick">
+            <p:button value="Новый документ" outcome="/component/incoming/document.xhtml" target="_blank"
+                      icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
-            <p:commandButton action="#{in_documents_by_executing_date.refresh()}" value="Обновить" update="documentTable" onsuccess="addRowHandlers();" icon="ui-icon-refresh" ajax="true"/>
-            <p:commandButton value ="Свернуть" action="#{in_documents_by_executing_date.collapseAll()}" icon="ui-icon-minusthick" update="documentTable"/>
-            <p:commandButton value ="Развернуть" action="#{in_documents_by_executing_date.expandAll()}" icon="ui-icon-plusthick" update="documentTable"/>
-            <p:commandButton value ="#{in_documents_by_executing_date.showExpiredFlag ? 'Показать все':'Показать только просроченные'}" action="#{in_documents_by_executing_date.changeExpiredFlag}" update=" @this documentTable"/>
+            <p:commandButton action="#{in_documents_by_executing_date.refresh}" value="Обновить"
+                             update="documentTable" onsuccess="addRowHandlers();" icon="ui-icon-refresh" ajax="true"/>
+            <p:commandButton value="Свернуть" action="#{in_documents_by_executing_date.collapseAll}"
+                             icon="ui-icon-minusthick" update="documentTable"/>
+            <p:commandButton value="Развернуть" action="#{in_documents_by_executing_date.expandAll}"
+                             icon="ui-icon-plusthick" update="documentTable"/>
+            <p:commandButton
+                    value="#{in_documents_by_executing_date.showExpiredFlag ? 'Показать все':'Показать только просроченные'}"
+                    action="#{in_documents_by_executing_date.changeExpiredFlag}" update=" @this documentTable"/>
 
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:20em;" id="filterString" value="#{in_documents_by_executing_date.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" id="searchButton" process="@this filterString" action="#{in_documents_by_executing_date.refresh()}" update="documentTable" icon="ui-icon-search"/>
-            <p:button target="_blank" outcome="/component/in/in_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
-            <p:defaultCommand target="searchButton" />
+            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:20em;" id="filterString"
+                         value="#{in_documents_by_executing_date.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" id="searchButton" process="@this filterString"
+                             action="#{in_documents_by_executing_date.refresh}" update="documentTable"
+                             icon="ui-icon-search"/>
+            <p:button target="_blank" outcome="/component/incoming/search.xhtml" value="Расширенный поиск"
+                      icon="ui-icon-star"/>
+            <p:defaultCommand target="searchButton"/>
         </p:toolbarGroup>
 
     </ui:define>
@@ -75,7 +91,7 @@
                      widgetVar="treeTableVar"
                      selectionMode="single"
                      rowStyleClass="#{node.document.styleClass}"
-                >
+        >
             <p:column headerText="Срок исполнения">
                 <h:outputText value="#{node.header}"/>
             </p:column>

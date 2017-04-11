@@ -297,7 +297,7 @@ public class AuthorizationData implements Serializable {
     }
 
     public String getDefaultPage() {
-        return "/component/in/in_documents.xhtml";
+        return "/component/incoming/list.xhtml";
     }
 
     public String getLogString() {

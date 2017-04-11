@@ -1,9 +1,11 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.DefaultTreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.IncomingDocument;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
@@ -13,14 +15,14 @@ import ru.util.ApplicationHelper;
 
 import org.springframework.stereotype.Controller;
 import java.text.DateFormatSymbols;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
 @Controller("in_documents_by_executing_date")
-@SpringScopeView
+@Scope("view")
+@Transactional(value = "ordTransactionManager", propagation = Propagation.REQUIRED)
 public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolderBean<IncomingDocument> {
 
     private final static DateTimeFormatter year_month_day = DateTimeFormatter.ofPattern("yyyy,MM,dd");
@@ -49,6 +51,16 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
     }
 
     @Override
+    @Transactional(value = "ordTransactionManager", propagation = Propagation.REQUIRED)
+    public void refresh() {
+        super.refresh();
+    }
+
+
+
+
+    @Override
+    @Transactional(value = "ordTransactionManager", propagation = Propagation.REQUIRED)
     protected List<IncomingDocument> loadDocuments() {
         final List<IncomingDocument> resultList = incomingDocumentDao
                 .findControlledDocumentsByUser(

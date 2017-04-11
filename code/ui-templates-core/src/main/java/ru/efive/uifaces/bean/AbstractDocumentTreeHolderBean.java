@@ -2,7 +2,6 @@ package ru.efive.uifaces.bean;
 
 import org.primefaces.model.TreeNode;
 
-import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.util.List;
 
@@ -20,10 +19,6 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * Ограничение на максимальную глубину узла при сворачивании\разворачивании
      */
     private static final int MAX_RECURSIVE_DEPTH = 10;
-    /**
-     * Флаг иницаилизации бина
-     */
-    private boolean initialized = false;
 
 
     ////////////////////// ABSTRACT METHODS END ////////////////////////////////////////////////////////////////////////
@@ -55,13 +50,6 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      */
     protected abstract TreeNode constructTreeFromDocumentList(final List<D> documents);
 
-    @PostConstruct
-    private void init() {
-        this.documents = loadDocuments();
-        this.rootNode = constructTreeFromDocumentList(documents);
-        this.initialized = true;
-    }
-
 
     /////////////////// PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////////
 
@@ -69,12 +57,8 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * Обновление данных в бине - новая загрузка документов и построение дерева
      */
     public void refresh() {
-        if (!initialized) {
-            init();
-        } else {
-            this.documents = loadDocuments();
-            this.rootNode = constructTreeFromDocumentList(documents);
-        }
+        this.documents = loadDocuments();
+        this.rootNode = constructTreeFromDocumentList(documents);
     }
 
     /**
