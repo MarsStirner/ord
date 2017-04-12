@@ -4,6 +4,7 @@ import com.github.javaplugs.jsf.SpringScopeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
 import ru.entity.model.document.OfficeKeepingFile;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 
@@ -13,8 +14,7 @@ import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Component("officeKeepingFileLDM")
-@SpringScopeView
+@ViewScopedLazyDataModel("officeKeepingFileLDM")
 public class LazyDataModelForOfficeKeepingFile extends AbstractFilterableLazyDataModel<OfficeKeepingFile> {
     @Autowired
     public LazyDataModelForOfficeKeepingFile(@Qualifier("officeKeepingFileDao") OfficeKeepingFileDao officeKeepingFileDao) {

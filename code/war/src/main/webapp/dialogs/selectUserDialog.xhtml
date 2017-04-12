@@ -7,17 +7,21 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
         >
 <ui:composition template="/jsf-template/dialogTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{userDialog.init}"/>
+    </f:metadata>
     <ui:define name="PAGE_TITLE">
         <h:outputText value="#{userDialog.title}"/>
     </ui:define>
     <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectPersonTable"
                      paginator="true"
-                     rows="#{ui['dialog.rows']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
+                     rows="#{ui['dialog.paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['dialog.paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['dialog.paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['dialog.paginator.rows.dropDown']}"
+                     paginatorPosition = "#{ui['dialog.paginator.position']}"
+                     pageLinks="#{ui['dialog.paginator.pageLinks']}"
                      value="#{userDialog.lazyModel}"
                      var="person_row"
                      selectionMode="single"
@@ -29,7 +33,6 @@
                      sortBy="#{person_row.lastName}"
                      sortOrder="ascending"
                      sortField="lastName"
-                     pageLinks="#{ui['dialog.pageLinks']}"
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{userDialog.filter}" styleClass="searchTextBox"/>

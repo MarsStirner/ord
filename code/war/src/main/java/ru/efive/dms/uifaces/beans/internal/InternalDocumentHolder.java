@@ -1,22 +1,18 @@
 package ru.efive.dms.uifaces.beans.internal;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
-import java.time.LocalDateTime;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
@@ -34,21 +30,18 @@ import ru.hitsl.sql.dao.interfaces.document.InternalDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
-import ru.util.ApplicationHelper;
 
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_ERROR_ON_DELETE;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
-@Controller("internal_doc")
-@SpringScopeView
+@ViewScopedController(value = "internal_doc", transactionManager = "ordTransactionManager")
 public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalDocument> {
-    //Именованный логгер (INTERNAL_DOCUMENT)
-    private static final Logger LOGGER = LoggerFactory.getLogger("INTERNAL_DOCUMENT");
+
     //TODO ACL
     private Permissions permissions;
 
@@ -125,23 +118,19 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             }
         }
     };
-
-    @PreDestroy
-    public void destroy() {
-        LOGGER.info("Bean destroyed");
-    }
+    
 
     public void handleFileUpload(FileUploadEvent event) {
         final UploadedFile file = event.getFile();
         if (file != null) {
-            LOGGER.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
+            log.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
             final Attachment attachment = new Attachment();
             attachment.setFileName(file.getFileName());
             attachment.setCreated(LocalDateTime.now());
             attachment.setAuthorId(authData.getAuthorized().getId());
             attachment.setParentId(getDocument().getUniqueId());
             final boolean result = fileManagement.createFile(attachment, file.getContents());
-            LOGGER.info("After alfresco call Attachment.id={}", attachment.getId());
+            log.info("After alfresco call Attachment.id={}", attachment.getId());
             if (result) {
                 attachments.add(attachment);
             }
@@ -171,7 +160,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void handleAddVersionDialogResult(final SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Add version dialog: {}", result);
+        log.info("Add version dialog: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final FacesMessage msg = (FacesMessage) result.getResult();
             addMessage(MessageHolder.MSG_KEY_FOR_FILES, msg);
@@ -193,7 +182,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onControllerChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose controller: {}", result);
+        log.info("Choose controller: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setController(selected);
@@ -213,7 +202,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onResponsibleChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose responsible: {}", result);
+        log.info("Choose responsible: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setResponsible(selected);
@@ -233,7 +222,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onRecipientsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose recipients: {}", result);
+        log.info("Choose recipients: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final List<User> selected = (List<User>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
@@ -257,7 +246,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onRecipientGroupsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose recipientGroups: {}", result);
+        log.info("Choose recipientGroups: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final Set<Group> selected = (Set<Group>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
@@ -281,7 +270,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onPersonReadersChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose personReaders: {}", result);
+        log.info("Choose personReaders: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final List<User> selected = (List<User>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
@@ -305,7 +294,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onPersonEditorsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose personEditors: {}", result);
+        log.info("Choose personEditors: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final List<User> selected = (List<User>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
@@ -329,7 +318,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onRoleReadersChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose roleReaders: {}", result);
+        log.info("Choose roleReaders: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final Set<Role> selected = (Set<Role>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
@@ -353,7 +342,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void onRoleEditorsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose roleEditors: {}", result);
+        log.info("Choose roleEditors: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final Set<Role> selected = (Set<Role>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
@@ -385,7 +374,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             }
             return result;
         } catch (Exception e) {
-            LOGGER.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
+            log.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
             FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
             return false;
         }
@@ -396,7 +385,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         permissions = Permissions.ALL_PERMISSIONS;
         final LocalDateTime created = LocalDateTime.now();
         final User currentUser = authData.getAuthorized();
-        LOGGER.info("Start initialize new document by USER[{}]", currentUser.getId());
+        log.info("Start initialize new document by USER[{}]", currentUser.getId());
         final InternalDocument doc = new InternalDocument();
         doc.setDocumentStatus(DocumentStatus.DOC_PROJECT_1);
         doc.setAuthor(currentUser);
@@ -409,7 +398,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     @Override
     protected void initDocument(Integer id) {
         final User currentUser = authData.getAuthorized();
-        LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
+        log.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         try {
             final InternalDocument document = internalDocumentDao.get(id);
             setDocument(document);
@@ -430,13 +419,13 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                 try {
                     updateAttachments();
                 } catch (Exception e) {
-                    LOGGER.warn("Exception while check upload files", e);
+                    log.warn("Exception while check upload files", e);
                     addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
                 }
             }
         } catch (Exception e) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
-            LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
+            log.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
 
@@ -444,15 +433,15 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     protected boolean saveNewDocument() {
         final User currentUser = authData.getAuthorized();
         final LocalDateTime created = LocalDateTime.now();
-        LOGGER.info("Save new document by USER[{}]", currentUser.getId());
+        log.info("Save new document by USER[{}]", currentUser.getId());
         // Сохранение дока в БД и создание записи в истории о создании
         final InternalDocument document = getDocument();
         if (document.getCreationDate() == null) {
-            LOGGER.warn("creationDate not set. Set it to NOW");
+            log.warn("creationDate not set. Set it to NOW");
             document.setCreationDate(created);
         }
         if (document.getAuthor() == null || !document.getAuthor().equals(currentUser)) {
-            LOGGER.warn("Author[{}] not set or not equals with currentUser[{}]. Set it to currentUser", document.getAuthor(), currentUser);
+            log.warn("Author[{}] not set or not equals with currentUser[{}]. Set it to currentUser", document.getAuthor(), currentUser);
             document.setAuthor(currentUser);
         }
 
@@ -472,7 +461,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         try {
             internalDocumentDao.save(document);
         } catch (Exception e) {
-            LOGGER.error("saveNewDocument: on save document", e);
+            log.error("saveNewDocument: on save document", e);
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
@@ -480,7 +469,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         try {
             viewFactDao.registerViewFact(document, currentUser);
         } catch (Exception e) {
-            LOGGER.error("saveNewDocument: on viewFact register", e);
+            log.error("saveNewDocument: on viewFact register", e);
             addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
         //Установка идшника для поиска поручений
@@ -491,7 +480,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     @Override
     protected boolean saveDocument() {
         final User currentUser = authData.getAuthorized();
-        LOGGER.info("Save document by USER[{}]", currentUser.getId());
+        log.info("Save document by USER[{}]", currentUser.getId());
         final InternalDocument document = getDocument();
         try {
             internalDocumentDao.save(document);
@@ -499,7 +488,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             taskTreeHolder.setRootDocumentId(document.getUniqueId());
             return true;
         } catch (Exception e) {
-            LOGGER.error("saveDocument ERROR:", e);
+            log.error("saveDocument ERROR:", e);
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
         }
@@ -527,7 +516,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public boolean isCanDelete() {
         if (!permissions.hasPermission(WRITE)) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
+            log.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
@@ -536,7 +525,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
+            log.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
@@ -545,7 +534,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     public boolean isCanView() {
         if (permissions == null || !permissions.hasPermission(READ)) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
+            log.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
             return false;
         }
         return true;
@@ -575,13 +564,13 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     private boolean checkState(final InternalDocument document, final User user) {
         if (document == null) {
             setState(State.ERROR);
-            LOGGER.warn("Document NOT FOUND");
+            log.warn("Document NOT FOUND");
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
             return false;
         }
         if (document.isDeleted()) {
             setState(State.ERROR);
-            LOGGER.warn("Document[{}] IS DELETED", document.getId());
+            log.warn("Document[{}] IS DELETED", document.getId());
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
             return false;
         }
@@ -597,7 +586,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
                     )
             );
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, msg);
-            LOGGER.warn(
+            log.warn(
                     "Document[{}] has higher accessLevel[{}] then user[{}]", document.getId(), docAccessLevel.getValue(), accessLevel.getValue()
             );
             return false;
@@ -610,11 +599,11 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     }
 
     public void updateAttachments() {
-        LOGGER.debug("Start updating attachments");
+        log.debug("Start updating attachments");
         if (getDocument() != null && getDocumentId() != 0) {
             attachments = fileManagement.getFilesByParentId(getDocument().getUniqueId());
         }
-        LOGGER.debug("Finish updating attachments");
+        log.debug("Finish updating attachments");
     }
 
     public void deleteAttachment(Attachment attachment) {

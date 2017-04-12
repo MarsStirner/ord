@@ -399,7 +399,7 @@
             <p:tab id="tab_relation" title="Связи">
                 <p:dataTable id="table_relation" value="#{in_doc.getRelatedDocuments()}"
                              var="outgoing_document_row"
-                             emptyMessage="#{ui['emptyMessage']}"
+                             emptyMessage="#{ui['document.default.list.emptyMessage']}"
                              selectionMode="single"
                              resizableColumns="true"
                              widgetVar="relationDocumentTableVar"

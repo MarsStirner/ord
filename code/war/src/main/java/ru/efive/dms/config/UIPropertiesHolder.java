@@ -36,6 +36,6 @@ public class UIPropertiesHolder extends HashMap<String, String> {
 
     @Override
     public String get(Object key) {
-        return uiConfig.hasPath(key.toString()) ? uiConfig.getString(key.toString()) : "TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+        return uiConfig.getString(key.toString());
     }
 }

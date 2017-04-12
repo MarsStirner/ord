@@ -481,53 +481,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         return null;
     }
 
-    public String getLinkDescriptionById(String key) {
-        if (!key.isEmpty()) {
-            final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(key);
-            if (rootDocumentId == null) {
-                return "";
-            }
-            final SimpleDateFormat sdf = ApplicationHelper.getDateFormat();
-            if (key.contains("incoming")) {
-                final IncomingDocument in_doc = incomingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                return (in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ? "Черновик входщяего документа от " + sdf
-                        .format(in_doc.getCreationDate()) : "Входящий документ № " + in_doc.getRegistrationNumber() + " от " + sdf.format(
-                        in_doc.getRegistrationDate()
-                ));
-
-            } else if (key.contains("outgoing")) {
-                OutgoingDocument out_doc = outgoingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber()
-                        .equals("") ? "Черновик исходящего документа от " + sdf.format(out_doc.getCreationDate()) : "Исходящий документ № " + out_doc
-                        .getRegistrationNumber() + " от " + sdf.format(
-                        out_doc.getRegistrationDate()
-                ));
-
-            } else if (key.contains("internal")) {
-                InternalDocument internal_doc = internalDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber()
-                        .equals("") ? "Черновик внутреннего документа от " + sdf.format(
-                        internal_doc.getCreationDate()
-                ) : "Внутренний документ № " + internal_doc.getRegistrationNumber() + " от " + sdf.format(internal_doc.getRegistrationDate()));
-
-            } else if (key.contains("request")) {
-                RequestDocument request_doc = requestDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber()
-                        .equals("") ? "Черновик обращения граждан от " + sdf.format(
-                        request_doc.getCreationDate()
-                ) : "Обращение граждан № " + request_doc.getRegistrationNumber() + " от " + sdf.format(request_doc.getRegistrationDate()));
-
-            } else if (key.contains("task")) {
-                Task task_doc = taskDao.getItemBySimpleCriteria(rootDocumentId);
-                return (task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ? "Черновик поручения от " + sdf
-                        .format(task_doc.getCreationDate()) : "Поручение № " + task_doc.getTaskNumber() + " от " + sdf
-                        .format(task_doc.getCreationDate()));
-            }
-        }
-
-        return "";
-    }
-
     protected void initDefaultInitiator() {
         Task task = getDocument();
         User initiator = null;

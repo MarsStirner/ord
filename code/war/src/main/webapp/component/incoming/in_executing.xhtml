@@ -70,14 +70,12 @@
 
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:20em;" id="filterString"
-                         value="#{in_documents_by_executing_date.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" id="searchButton" process="@this filterString"
-                             action="#{in_documents_by_executing_date.refresh}" update="documentTable"
-                             icon="ui-icon-search"/>
-            <p:button target="_blank" outcome="/component/incoming/search.xhtml" value="Расширенный поиск"
-                      icon="ui-icon-star"/>
+            <p:inputText id="filterString" value="#{in_documents_by_executing_date.filter}" title="Поиск"
+                         placeholder="#{ui['document.incoming.list.search.placeholder']}" style="width:25em;" />
+            <p:commandButton value="Найти" id="searchButton" action="#{in_documents_by_executing_date.refresh}"
+                             process="@this filterString" update="documentTable" icon="ui-icon-search"/>
             <p:defaultCommand target="searchButton"/>
+            <p:button target="_blank" outcome="#{ui['document.incoming.search.link']}" value="Расширенный поиск" icon="ui-icon-star"/>
         </p:toolbarGroup>
 
     </ui:define>
@@ -87,7 +85,7 @@
                      value="#{in_documents_by_executing_date.root}"
                      var="node"
                      style="width:100%; overflow-x:hidden;"
-                     emptyMessage="#{ui['emptyMessage']}"
+                     emptyMessage="#{ui['document.incoming.list.emptyMessage']}"
                      widgetVar="treeTableVar"
                      selectionMode="single"
                      rowStyleClass="#{node.document.styleClass}"
@@ -103,8 +101,7 @@
             </p:column>
             <p:column headerText="Исполнитель">
                 <ui:repeat value="#{node.document.executorsList}" var="executor">
-                    <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
-                </ui:repeat>
+                    <h:outputText value="#{executor}" converter="#{PersonConverter}"/><br/>             </ui:repeat>
             </p:column>
             <p:column headerText="Вид">
                 <h:outputText value="#{node.document.form}"/>

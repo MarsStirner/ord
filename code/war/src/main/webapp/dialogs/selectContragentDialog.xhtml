@@ -13,11 +13,12 @@
     <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectContragentTable"
                      paginator="true"
-                     rows="#{ui['dialog.rows']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
+                     rows="#{ui['dialog.paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['dialog.paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['dialog.paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['dialog.paginator.rows.dropDown']}"
+                     paginatorPosition = "#{ui['dialog.paginator.position']}"
+                     pageLinks="#{ui['dialog.paginator.pageLinks']}"
                      value="#{contragentDialog.lazyModel}"
                      var="contragent_row"
                      selectionMode="single"
@@ -29,7 +30,6 @@
                      sortBy="#{contragent_row.shortName}"
                      sortOrder="ascending"
                      sortField="shortName"
-                     pageLinks="#{ui['dialog.pageLinks']}"
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{contragentDialog.filter}" styleClass="searchTextBox"/>

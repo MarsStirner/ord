@@ -23,7 +23,7 @@ public class InternalDocumentViewFact  implements DocumentViewFact<InternalDocum
     @JoinColumn(name = "document_id")
     private InternalDocument document;
 
-    @Id
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

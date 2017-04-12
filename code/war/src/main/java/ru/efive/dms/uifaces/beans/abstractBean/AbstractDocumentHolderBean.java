@@ -8,6 +8,7 @@ import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.mapped.IdentifiedEntity;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
@@ -20,6 +21,8 @@ import java.io.Serializable;
  */
 @Transactional("ordTransactionManager")
 public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> implements Serializable {
+
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
     /**
      * Название GET-параметра, определяющего идентифкатор документа
      */
@@ -36,10 +39,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
      * Значение GET-параметра REQUEST_PARAM_DOC_ACTION, означающее редактирование документа
      */
     public static final String REQUEST_PVALUE_DOC_ACTION_EDIT = "edit";
-    /**
-     * Абстрактный логгер для документа
-     */
-    private static final Logger logger = LoggerFactory.getLogger("DOCUMENT");
+
     /**
      * Поле, где будет храниться сам документ
      */
@@ -81,7 +81,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("/component/delete_document.xhtml");
         } catch (IOException e) {
-            logger.error("Error on redirect", e);
+            log.error("Error on redirect", e);
             return false;
         }
         return true;
@@ -109,12 +109,12 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
             try {
                 return Integer.valueOf(docId);
             } catch (NumberFormatException ex) {
-                logger.error("Cannot convert docId[{}] to integer", docId);
+                log.error("Cannot convert docId[{}] to integer", docId);
                 addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOC_ID_CONVERSION_ERROR);
                 return null;
             }
         } else {
-            logger.error("docId is empty or null");
+            log.error("docId is empty or null");
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_NO_DOC_ID);
             return null;
         }
@@ -225,9 +225,13 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
         }
     }
 
+    @PreDestroy
+    public void destroy() {
+        log.info("Bean destroyed");
+    }
 
     public void init() {
-        logger.info("Initialize new HolderBean");
+        log.info("Initialize new HolderBean");
         final String action = getRequestParamByName(REQUEST_PARAM_DOC_ACTION);
         //CREATE
         if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
@@ -285,7 +289,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
     }
 
     protected void setState(final State state) {
-        logger.info("Document state changed from {} to {}", this.state, state);
+        log.info("Document state changed from {} to {}", this.state, state);
         this.state = state;
     }
 

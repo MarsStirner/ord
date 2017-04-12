@@ -5,7 +5,7 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
-        >
+>
 
 <h:head>
     <title><h:outputText value="#{reasonDocumentDialog.title}"/></title>
@@ -34,24 +34,29 @@
                             border-style: solid;
                             font-size: 14px;
                         }
+
                         .ui-paginator.ui-paginator-bottom {
                             border-top: 0 none;
                             font-size: smaller;
                         }
+
                         .ui-panel .ui-panel-footer {
                             border-width: 1px 0 0;
                             margin: 0.1em 0 0;
                             padding: 0.3em 0.5em;
                             text-align: left;
                         }
+
                         .ui-panel .ui-panel-content {
                             border: 0;
                             background: none;
                             padding: 0.1em 0;
                         }
+
                         .ui-wizard-content {
                             margin: 1px 0;
                         }
+
                         .ui-panel .ui-panel-titlebar {
                             padding: 0;
                         }
@@ -60,24 +65,25 @@
                         <f:facet name="header">
                             <c:choose>
                                 <c:when test="#{reasonDocumentDialog.incoming}">
-                                    <p:inputText id="filterStringIncoming"  value="#{in_documents.filter}" style="width:80%;" title="Поиск"/>
-                                    <p:commandButton action="#{in_documents.applyFilter()}" value="Найти" process="@this filterStringIncoming incomingDocumentTable" update="incomingDocumentTable"/>
+                                    <p:inputText id="filterStringIncoming" value="#{incomingDocumentLDM.filter}" style="width:80%;" title="Поиск"/>
+                                    <p:commandButton value="Найти" process="@this filterStringIncoming incomingDocumentTable" update="incomingDocumentTable"/>
                                 </c:when>
-                            <c:otherwise>
-                                <p:inputText id="filterStringRequest" value="#{request_documents.filter}" style="width:80%;" title="Поиск"/>
-                                <p:commandButton action="#{request_documents.applyFilter()}" value="Найти" process="@this filterStringRequest requestDocumentTable" update="requestDocumentTable"/>
-                            </c:otherwise>
+                                <c:otherwise>
+                                    <p:inputText id="filterStringRequest" value="#{requestDocumentLDM.filter}" style="width:80%;" title="Поиск"/>
+                                    <p:commandButton value="Найти" process="@this filterStringRequest requestDocumentTable" update="requestDocumentTable"/>
+                                </c:otherwise>
                             </c:choose>
                         </f:facet>
                         <p:dataTable id="incomingDocumentTable"
                                      rendered="#{reasonDocumentDialog.incoming}"
                                      paginator="true"
-                                     rows="100"
-                                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                                     paginatorTemplate="#{ui['paginator.template.total']}"
-                                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                                     paginatorPosition = "#{ui['paginator.position']}"
-                                     value="#{in_documents.lazyModel}"
+                                     rows="#{ui['document.incoming.list.paginator.rows.default']}"
+                                     currentPageReportTemplate="#{ui['document.incoming.list.paginator.template.currentPage']}"
+                                     paginatorTemplate="#{ui['document.incoming.list.paginator.template.total']}"
+                                     rowsPerPageTemplate="#{ui['document.incoming.list.paginator.rows.dropDown']}"
+                                     paginatorPosition="#{ui['document.incoming.list.paginator.position']}"
+                                     emptyMessage="#{ui['document.incoming.list.emptyMessage']}"
+                                     value="#{incomingDocumentLDM}"
                                      var="row"
                                      lazy="true"
                                      widgetVar="INdocumentTableWidget"
@@ -88,10 +94,11 @@
                                      sortBy="#{row.registrationDate}"
                                      sortField="registrationDate"
                                      sortOrder="descending"
-                                >
+                        >
                             <p:column headerText="Дата регистрации" style="width:10.5em;" sortBy="#{row.registrationDate}" field="registrationDate">
                                 <h:outputText value="#{row.registrationDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                    <f:converter converterId="LocalDateTimeConverter"/>
+                                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
                                 </h:outputText>
                             </p:column>
                             <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
@@ -110,12 +117,13 @@
                         <p:dataTable id="requestDocumentTable"
                                      rendered="#{not reasonDocumentDialog.incoming}"
                                      paginator="true"
-                                     rows="#{ui['dialog.rows']}"
-                                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                                     paginatorTemplate="#{ui['paginator.template.total']}"
-                                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                                     paginatorPosition = "#{ui['paginator.position']}"
-                                     value="#{request_documents.lazyModel}"
+                                     rows="#{ui['document.request.list.paginator.rows.default']}"
+                                     currentPageReportTemplate="#{ui['document.request.list.paginator.template.currentPage']}"
+                                     paginatorTemplate="#{ui['document.request.list.paginator.template.total']}"
+                                     rowsPerPageTemplate="#{ui['document.request.list.paginator.rows.dropDown']}"
+                                     paginatorPosition="#{ui['document.request.list.paginator.position']}"
+                                     emptyMessage="#{ui['document.request.list.emptyMessage']}"
+                                     value="#{requestDocumentLDM}"
                                      var="row"
                                      lazy="true"
                                      widgetVar="REQdocumentTableWidget"
@@ -126,19 +134,20 @@
                                      sortBy="#{row.registrationDate}"
                                      sortField="deliveryDate"
                                      sortOrder="descending"
-                                >
-                            <p:column headerText="Дата поступления" style="width:10.5em;" sortBy="#{row.deliveryDate}" field = "deliveryDate">
+                        >
+                            <p:column headerText="Дата поступления" style="width:10.5em;" sortBy="#{row.deliveryDate}" field="deliveryDate">
                                 <h:outputText value="#{row.deliveryDate}">
-                                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                    <f:converter converterId="LocalDateTimeConverter"/>
+                                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
                                 </h:outputText>
                             </p:column>
-                            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+                            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
                                 <h:outputText value="#{row.registrationNumber}"/>
                             </p:column>
                             <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field="form.value">
                                 <h:outputText value="#{row.form.value}"/>
                             </p:column>
-                            <p:column headerText="Статус"  style="width:8em;" sortBy="#{row.status}" field="statusId">
+                            <p:column headerText="Статус" style="width:8em;" sortBy="#{row.status}" field="statusId">
                                 <h:outputText value="#{row.getDocumentStatus().getName()}"/>
                             </p:column>
                             <p:column headerText="Краткое содержание">
@@ -153,7 +162,6 @@
                     </p:panel>
                 </p:tab>
             </p:wizard>
-
 
 
         </h:form>

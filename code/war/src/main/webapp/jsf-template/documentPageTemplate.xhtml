@@ -11,14 +11,14 @@
     <h:outputScript library="js" name="primefacesLocale_ru.js"/>
     <h:outputStylesheet library="css" name="document.css"/>
     <ui:insert name="HEAD_CONTENT"/>
-    <ui:insert name="PAGE_TITLE">
-        <title>#{ui['listView.pageTitle']}</title>
-    </ui:insert>
-
+    <title>
+        <ui:insert name="PAGE_TITLE">
+            <h:outputText value="#{ui['common.title']}"/>
+        </ui:insert>
+    </title>
 </h:head>
 <h:body id="pageBody" style="padding: 0; margin:0;">
     <!-- Блок объявления параметров -->
-    <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
     <ui:param name="isAdministrator" value="#{authData.isAdministrator()}"/>
     <ui:param name="isRecorder" value="#{authData.isRecorder()}"/>
     <ui:param name="isOfficeManager" value="#{authData.isOfficeManager()}"/>

@@ -27,11 +27,11 @@ function goToDocument(docType, id) {
             } else if (docType.indexOf('outgoing') != -1) {
                 componentType = 'outgoing/document';
             } else if (docType.indexOf('internal') != -1) {
-                componentType = 'internal/internal_document';
+                componentType = 'internal/document';
             } else if (docType.indexOf('request') != -1) {
-                componentType = 'request/request_document';
+                componentType = 'request/document';
             } else if (parentId.indexOf('task') != -1) {
-                componentType = 'task/task';
+                componentType = 'task/document';
             }
             window.open('/component/' + componentType + '.xhtml?docId=' + id, '_blank');
         }
@@ -104,7 +104,7 @@ function goToGroup(id) {
 // К внутренним документам
 function goToInternalDocument(id) {
     if (id != 0) {
-        window.open('/component/internal/internal_document.xhtml?docId=' + id, '_blank')
+        window.open('/component/internal/document.xhtml?docId=' + id, '_blank')
     }
 }
 // К исходящим докам
@@ -116,7 +116,7 @@ function goToOutgoingDocument(id) {
 //  К обращениям
 function goToRequestDocument(id) {
     if (id != 0) {
-        window.open('/component/request/request_document.xhtml?docId=' + id, '_blank');
+        window.open('/component/request/document.xhtml?docId=' + id, '_blank');
     }
 }
 // К нумераторам
@@ -131,12 +131,6 @@ function goToUser(id) {
         window.open('/component/user.xhtml?docId=' + id, '_blank');
     }
 }
-// К заметкам
-function goToRecordBook(id) {
-    if (id != 0) {
-        window.open('/component/record_book_document.xhtml?docId=' + id, '_blank');
-    }
-}
 // К шаблонам печати
 function goToReportTemplate(id) {
     if (id != 0) {
@@ -147,12 +141,6 @@ function goToReportTemplate(id) {
 function goToRole(id) {
     if (id != 0) {
         window.open('/component/role.xhtml?docId=' + id, '_blank');
-    }
-}
-//К шаблонам согласований
-function goToRouteTemplate(id) {
-    if (id != 0) {
-        window.open('/component/admin/route_template.xhtml?docId=' + id, '_blank');
     }
 }
 // К замещениям

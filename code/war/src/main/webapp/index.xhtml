@@ -21,7 +21,7 @@
                 <h1>Организационно-распорядительный документооборот</h1>
             </div>
 
-            <h:form id="main_content" onkeypress="if (event.keyCode == 13) this.submit();">
+            <h:form id="main_content" onkeypress="if (event.keyCode === 13) this.submit();">
                 <div class="main_content">
                     <h:panelGroup rendered="#{not(sessionManagement.loggedIn)}">
                         <h2>Вход в систему</h2>

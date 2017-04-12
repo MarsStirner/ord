@@ -22,8 +22,6 @@
     <div id="main_global">
 
         <o:form id="main_content_form" includeRequestParams="true">
-            <!-- Блок объявления параметров -->
-            <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
             <ui:param name="isAdministrator" value="#{authData.isAdministrator()}"/>
             <ui:param name="isRecorder" value="#{authData.isRecorder()}"/>
             <ui:param name="isOfficeManager" value="#{authData.isOfficeManager()}"/>
@@ -51,7 +49,7 @@
                                 <p:menuitem value="Выход" action="#{sessionManagement.logOut}" />
                             </p:menuButton>
                             <p:commandButton id="accessMenuButton" type="button" value="#{authData.currentAccessLevel.value}" style="float:right;"/>
-                            <p:menu id = "accessMenu" overlay="true" model="#{dictionaryManagement.accessLevelsMenuModel}" trigger="accessMenuButton" my="left top" at="left bottom"/>
+                            <p:menu id = "accessMenu" overlay="true" model="#{refBookHelper.accessLevelsMenuModel}" trigger="accessMenuButton" my="left top" at="left bottom"/>
                         </div>
                     </div>
                     <div class="actionbar">

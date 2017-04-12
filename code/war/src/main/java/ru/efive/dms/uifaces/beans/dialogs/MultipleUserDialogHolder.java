@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
+import ru.efive.dms.uifaces.lazyDataModel.dialogs.UserInDialogLazyDataModel;
 import ru.entity.model.user.User;
 
 import javax.annotation.PostConstruct;
@@ -35,7 +35,7 @@ public class MultipleUserDialogHolder extends AbstractDialog<List<User>> {
 
     @Autowired
     @Qualifier("userDialogLDM")
-    private LazyDataModelForUserInDialogs lazyModel;
+    private UserInDialogLazyDataModel lazyModel;
 
 
     @PostConstruct

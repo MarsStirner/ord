@@ -254,7 +254,6 @@ public class IncomingDocumentDaoImpl extends DocumentDaoImpl<IncomingDocument> i
     @Override
     public void applyFilter(final DetachedCriteria criteria, final String filter) {
         if (StringUtils.isEmpty(filter)) {
-            log.debug("FilterCriteria: empty or null filter. Skip.");
             return;
         }
         final Disjunction disjunction = Restrictions.disjunction();

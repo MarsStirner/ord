@@ -17,7 +17,7 @@
             <c:if test="#{cc.attrs.withNoSelectOption}">
                 <f:selectItem itemLabel="" noSelectionOption="true"/>
             </c:if>
-            <f:selectItems value="#{dictionaryManagement.getDeliveryTypes()}"/>
+            <f:selectItems value="#{refBookHelper.getDeliveryTypes()}"/>
         </p:selectOneMenu>
     </cc:implementation>
 

@@ -5,6 +5,8 @@ import org.primefaces.model.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.UserDao;
 
@@ -17,8 +19,7 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Component("userLDM")
-@SpringScopeView
+@ViewScopedLazyDataModel("userLDM")
 public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> {
 
     private boolean showFired = false;
@@ -38,6 +39,7 @@ public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> 
     }
 
     @Override
+    @Transactional(value="ordTransactionManager", readOnly = true)
     public List<User> load(
             int first,
             int pageSize,

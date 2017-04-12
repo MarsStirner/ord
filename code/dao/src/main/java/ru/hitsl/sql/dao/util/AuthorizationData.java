@@ -292,6 +292,7 @@ public class AuthorizationData implements Serializable {
         for (Group current : groups) {
             sb.append("\n\t\t\t").append(current.getCode());
         }
+        sb.append("SessionID=").append(FacesContext.getCurrentInstance().getExternalContext().getSessionId(false));
         sb.append("\n]");
         return sb.toString();
     }

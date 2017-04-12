@@ -1,18 +1,17 @@
 package ru.efive.dms.uifaces.beans.dialogs;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.dialogs.LazyDataModelForUserInDialogs;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
+import ru.efive.dms.uifaces.lazyDataModel.dialogs.UserInDialogLazyDataModel;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.referencebook.GroupDao;
 
 import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
-import org.springframework.stereotype.Controller;
 import java.util.Map;
 
 /**
@@ -21,8 +20,7 @@ import java.util.Map;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Controller("userDialog")
-@SpringScopeView
+@ViewScopedController("userDialog")
 public class UserDialogHolder extends AbstractDialog<User> {
 
     public static final String DIALOG_SESSION_KEY = "DIALOG_PERSON";
@@ -38,13 +36,12 @@ public class UserDialogHolder extends AbstractDialog<User> {
 
     @Autowired
     @Qualifier("userDialogLDM")
-    private LazyDataModelForUserInDialogs lazyModel;
+    private UserInDialogLazyDataModel lazyModel;
 
     @Autowired
     @Qualifier("groupDao")
     private GroupDao groupDao;
 
-    @PostConstruct
     public void init() {
         logger.info("Initialize new UserSelectDialog");
         final Map<String, String> requestParameterMap = FacesContext.getCurrentInstance().getExternalContext()

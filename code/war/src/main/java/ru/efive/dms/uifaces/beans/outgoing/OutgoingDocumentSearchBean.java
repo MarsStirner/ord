@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
@@ -29,8 +30,7 @@ import java.util.stream.Stream;
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
-@Controller("outgoing_search")
-@SpringScopeView
+@ViewScopedController(name = "outgoingSearch", transactionManager = "ordTransactionManager")
 public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<OutgoingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 

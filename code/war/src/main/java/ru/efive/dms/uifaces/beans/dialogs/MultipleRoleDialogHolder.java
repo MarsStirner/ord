@@ -6,7 +6,7 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForRole;
+import ru.efive.dms.uifaces.lazyDataModel.referencebook.RoleLazyDataModel;
 import ru.entity.model.referenceBook.Role;
 
 import javax.annotation.PostConstruct;
@@ -32,7 +32,7 @@ public class MultipleRoleDialogHolder extends AbstractDialog<List<Role>> {
 
     @Autowired
     @Qualifier("roleLDM")
-    private LazyDataModelForRole lazyModel;
+    private RoleLazyDataModel lazyModel;
 
 
     @PostConstruct

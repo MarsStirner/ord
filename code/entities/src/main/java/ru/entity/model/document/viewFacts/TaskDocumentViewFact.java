@@ -17,7 +17,6 @@ public class TaskDocumentViewFact implements DocumentViewFact<Task>{
     @JoinColumn(name = "document_id")
     private Task document;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

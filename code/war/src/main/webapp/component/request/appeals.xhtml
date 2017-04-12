@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:f="http://xmlns.jcp.org/jsf/core">
+<ui:composition template="/jsf-template/listViewRequestByType.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{requestDocumentLDM.addFilter('formCategory', 'REQUEST')}"/>
+        <f:viewAction action="#{requestDocumentLDM.addFilter('formValue', 'Жалоба')}"/>
+    </f:metadata>
+    <ui:define name="contentLabel">Жалобы граждан</ui:define>
+</ui:composition>
+</html>
+

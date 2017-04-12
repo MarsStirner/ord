@@ -18,7 +18,6 @@ public class RequestDocumentViewFact implements DocumentViewFact<RequestDocument
     @JoinColumn(name = "document_id")
     private RequestDocument document;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

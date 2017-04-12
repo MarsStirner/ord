@@ -6,7 +6,7 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForGroup;
+import ru.efive.dms.uifaces.lazyDataModel.referencebook.GroupLazyDataModel;
 import ru.entity.model.referenceBook.Group;
 
 import javax.annotation.PostConstruct;
@@ -31,7 +31,7 @@ public class MultipleGroupDialogHolder extends AbstractDialog<List<Group>> {
 
     @Autowired
     @Qualifier("groupLDM")
-    private LazyDataModelForGroup lazyModel;
+    private GroupLazyDataModel lazyModel;
 
 
     @PostConstruct

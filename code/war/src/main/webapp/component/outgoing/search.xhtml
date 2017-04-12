@@ -20,7 +20,7 @@
     <!--Кнопки верхнего меню-->
     <ui:define name="headerHomeButton">
         <div class="defbutton">
-            <h:outputLink value="/component/out/out_documents_by_number.xhtml">
+            <h:outputLink value="/component/outgoing/list.xhtml">
                 <h:graphicImage value="#{resource['images:home.png']}"/>
             </h:outputLink>
         </div>
@@ -28,10 +28,10 @@
 
     <ui:define name="headerSearchButton">
         <div class="defbutton">
-            <h:commandLink id="searchBtn" action="#{outgoing_search.performSearch}" styleClass="searchbutton">
+            <h:commandLink id="searchBtn" action="#{outgoingSearch.performSearch}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-search.png']}"/>
                 <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
-                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); PF('searchResultsPanelVar').expand();}}"/>
+                        onevent="function a(data) { if(data.status === 'success') { PF('searchParametersPanelVar').collapse(); PF('searchResultsPanelVar').expand();}}"/>
                 Найти
             </h:commandLink>
         </div>
@@ -39,10 +39,10 @@
 
     <ui:define name="headerClearButton">
         <div class="defbutton">
-            <h:commandLink action="#{outgoing_search.clearFilter}" styleClass="searchbutton">
+            <h:commandLink action="#{outgoingSearch.clearFilter}" styleClass="searchbutton">
                 <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
                 <f:ajax render="searchParametersPanel"
-                        onevent="function (data) {if(data.status == 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}"/>
+                        onevent="function a(data) {if(data.status === 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}"/>
                 Очистить
             </h:commandLink>
         </div>
@@ -64,7 +64,7 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="statusId" value="#{outgoing_search.status}">
+                    <p:selectOneMenu id="statusId" value="#{outgoingSearch.status}">
                         <f:selectItem itemLabel="" itemValue=""/>
                         <f:selectItem itemLabel="На рассмотрении" itemValue="2"/>
                         <f:selectItem itemLabel="Согласование" itemValue="3"/>
@@ -84,9 +84,9 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{outgoing_search.form}" converter="OutgoingDocumentFormConverter">
+                    <p:selectOneMenu id="form" value="#{outgoingSearch.form}" converter="#{OutgoingDocumentFormConverter}">
                         <f:selectItem itemLabel="" noSelectionOption="true"/>
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('OUTGOING')}"/>
+                        <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('OUTGOING')}"/>
                     </p:selectOneMenu>
                 </p:column>
             </p:row>
@@ -94,19 +94,19 @@
                 <p:column>
                     <label>
                     <span class="title">
-                       <p:commandButton value="Авторы" actionListener="#{outgoing_search.chooseAuthors}">
-                           <p:ajax event="dialogReturn" listener="#{outgoing_search.onAuthorsChosen}" update="authors"/>
+                       <p:commandButton value="Авторы" actionListener="#{outgoingSearch.chooseAuthors}">
+                           <p:ajax event="dialogReturn" listener="#{outgoingSearch.onAuthorsChosen}" update="authors"/>
                        </p:commandButton>
                     </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
                     <p:panel styleClass="userListPanel">
-                        <p:dataList id="authors" value="#{outgoing_search.authors}" var="row_author" type="none"
+                        <p:dataList id="authors" value="#{outgoingSearch.authors}" var="row_author" type="none"
                                     emptyMessage="">
                             <div class="userListItem">
                                 <h:outputText value="#{row_author.descriptionShort}"/>
-                                <p:commandLink action="#{outgoing_search.removeAuthor(row_author)}" ajax="true"
+                                <p:commandLink action="#{outgoingSearch.removeAuthor(row_author)}" ajax="true"
                                                update="authors" styleClass="ui-icon ui-icon-closethick"
                                                style="display:inline-block"/>
                             </div>
@@ -118,15 +118,15 @@
                 <p:column>
                     <label>
                     <span class="title">
-                       <p:commandButton value="Руководитель" actionListener="#{outgoing_search.chooseController}">
-                           <p:ajax event="dialogReturn" listener="#{outgoing_search.onControllerChosen}"
+                       <p:commandButton value="Руководитель" actionListener="#{outgoingSearch.chooseController}">
+                           <p:ajax event="dialogReturn" listener="#{outgoingSearch.onControllerChosen}"
                                    update="controller"/>
                        </p:commandButton>
                     </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="controller" value="#{outgoing_search.controller.descriptionShort}" class="wide"/>
+                    <h:outputText id="controller" value="#{outgoingSearch.controller.descriptionShort}" class="wide"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -136,7 +136,7 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:inputText id="registrationNumber" value="#{outgoing_search.registrationNumber}"/>
+                    <p:inputText id="registrationNumber" value="#{outgoingSearch.registrationNumber}"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -146,10 +146,12 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="startCreationDate" value="#{outgoing_search.startCreationDate}"
+                    <p:calendar id="startCreationDate" value="#{outgoingSearch.startCreationDate}"
                                 lang="ru"
                                 locale="ru"
-                                widgetVar="startCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                widgetVar="startCreationDateVar" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endCreationDate">
@@ -157,10 +159,12 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="endCreationDate" value="#{outgoing_search.endCreationDate}"
+                    <p:calendar id="endCreationDate" value="#{outgoingSearch.endCreationDate}"
                                 lang="ru"
                                 locale="ru"
-                                widgetVar="endCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                widgetVar="endCreationDateVar" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row>
@@ -171,10 +175,12 @@
                 </p:column>
                 <p:column>
                     <p:calendar id="startRegistrationDate"
-                                value="#{outgoing_search.startRegistrationDate}"
+                                value="#{outgoingSearch.startRegistrationDate}"
                                 lang="ru"
                                 locale="ru"
-                                widgetVar="startRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                widgetVar="startRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endRegistrationDate">
@@ -182,10 +188,12 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="endRegistrationDate" value="#{outgoing_search.endRegistrationDate}"
+                    <p:calendar id="endRegistrationDate" value="#{outgoingSearch.endRegistrationDate}"
                                 lang="ru"
                                 locale="ru"
-                                widgetVar="endRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                widgetVar="endRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row>
@@ -195,10 +203,12 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="startSignatureDate" value="#{outgoing_search.startSignatureDate}"
+                    <p:calendar id="startSignatureDate" value="#{outgoingSearch.startSignatureDate}"
                                 lang="ru"
                                 locale="ru"
-                                widgetVar="startSignatureDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                widgetVar="startSignatureDateVar" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
                 <p:column>
                     <label for="endSignatureDate">
@@ -206,10 +216,12 @@
                     </label>
                 </p:column>
                 <p:column>
-                    <p:calendar id="endSignatureDate" value="#{outgoing_search.endSignatureDate}"
+                    <p:calendar id="endSignatureDate" value="#{outgoingSearch.endSignatureDate}"
                                 lang="ru"
                                 locale="ru"
-                                widgetVar="endSignatureDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                                widgetVar="endSignatureDateVar" pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <!-- Сейчас не используется
@@ -220,7 +232,7 @@
                         </label>
                     </p:column>
                     <p:column>
-                        <p:calendar id="startSendingDate" value="#{outgoing_search.startSendingDate}"
+                        <p:calendar id="startSendingDate" valueoutgoing_searcharch.startSendingDate}"
                                     lang="ru"
                                     locale="ru"
                                     widgetVar="startSendingDateVar" pattern="dd.MM.yyyy" showOn="both"/>
@@ -231,7 +243,7 @@
                         </label>
                     </p:column>
                     <p:column>
-                        <p:calendar id="endSendingDate" value="#{outgoing_search.endSendingDate}" lang="ru"
+                        <p:calendar id="endSendingDate" valueoutgoing_searcharch.endSendingDate}" lang="ru"
                                     locale="ru"
                                     widgetVar="endSendingDateVar" pattern="dd.MM.yyyy" showOn="both"/>
                     </p:column>
@@ -244,7 +256,7 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <my:deliveryTypeSelectOneMenu id="deliveryType" value="#{outgoing_search.deliveryType}" withNoSelectOption="true"/>
+                    <my:deliveryTypeSelectOneMenu id="deliveryType" value="#{outgoingSearch.deliveryType}" withNoSelectOption="true"/>
                 </p:column>
             </p:row>
             <p:row>
@@ -252,23 +264,23 @@
                     <label>
                     <span class="title">
                          <p:commandButton value="Адресат (контрагент)"
-                                          actionListener="#{outgoing_search.chooseContragent}">
-                             <p:ajax event="dialogReturn" listener="#{outgoing_search.onContragentChosen}"
+                                          actionListener="#{outgoingSearch.chooseContragent}">
+                             <p:ajax event="dialogReturn" listener="#{outgoingSearch.onContragentChosen}"
                                      update="contragent"/>
                          </p:commandButton>
                     </span>
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <h:outputText id="contragent" value="#{outgoing_search.contragent.value}"/>
+                    <h:outputText id="contragent" value="#{outgoingSearch.contragent.value}"/>
                 </p:column>
             </p:row>
             <p:row>
                 <p:column>
                     <label>
                     <span class="title">
-                        <p:commandButton value="Исполнители" actionListener="#{outgoing_search.chooseExecutors}">
-                            <p:ajax event="dialogReturn" listener="#{outgoing_search.onExecutorsChosen}"
+                        <p:commandButton value="Исполнители" actionListener="#{outgoingSearch.chooseExecutors}">
+                            <p:ajax event="dialogReturn" listener="#{outgoingSearch.onExecutorsChosen}"
                                     update="executors"/>
                         </p:commandButton>
                     </span>
@@ -276,11 +288,11 @@
                 </p:column>
                 <p:column colspan="3">
                     <p:panel styleClass="userListPanel">
-                        <p:dataList id="executors" value="#{outgoing_search.executors}" var="row_executor" type="none"
+                        <p:dataList id="executors" value="#{outgoingSearch.executors}" var="row_executor" type="none"
                                     emptyMessage="">
                             <div class="userListItem">
                                 <h:outputText value="#{row_executor.descriptionShort}"/>
-                                <p:commandLink action="#{outgoing_search.removeExecutor(row_executor)}" ajax="true"
+                                <p:commandLink action="#{outgoingSearch.removeExecutor(row_executor)}" ajax="true"
                                                update="executors" styleClass="ui-icon ui-icon-closethick"
                                                style="display:inline-block"/>
                             </div>
@@ -295,7 +307,7 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:inputText id="shortDescription" value="#{outgoing_search.shortDescription}"/>
+                    <p:inputText id="shortDescription" value="#{outgoingSearch.shortDescription}"/>
                 </p:column>
             </p:row>
 
@@ -311,7 +323,7 @@
                      paginatorTemplate="#{ui['paginator.template.total']}"
                      rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
                      paginatorPosition = "#{ui['paginator.position']}"
-                     value="#{outgoing_search.lazyModel}"
+                     value="#{outgoingSearch.lazyModel}"
                      var="row_result"
                      lazy="true"
                      widgetVar="documentTableVar"
@@ -322,7 +334,7 @@
                      sortBy="#{row_result.registrationNumber}"
                      sortField="registrationNumber"
                      sortOrder="descending"
-                     rendered="#{outgoing_search.searchPerformed}"
+                     rendered="#{outgoingSearch.searchPerformed}"
                      emptyMessage="Документов не найдено"
                 >
             <p:column style="width:5em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field="registrationNumber">
@@ -330,14 +342,15 @@
             </p:column>
             <p:column style="width:5em;" headerText="Дата" sortBy="#{row_result.registrationDate}" field="registrationDate">
                 <h:outputText value="#{row_result.registrationDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
             <p:column style="width:12em;" headerText="Адресаты" sortBy="#{row_result.contragent}" field="contragent.value">
                     <h:outputText value="#{row_result.contragent.value}"/>
             </p:column>
             <p:column style="width:10em;" headerText="Руководитель" sortBy="#{row_result.controller}" field="controller.lastName">
-                <h:outputText value="#{row_result.controller}" converter="PersonConverter"/>
+                <h:outputText value="#{row_result.controller}" converter="#{PersonConverter}"/>
             </p:column>
             <p:column style="width:8em;" headerText="Вид" sortBy="#{row_result.form}" field="form.value">
                 <h:outputText value="#{row_result.form}"/>

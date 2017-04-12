@@ -4,7 +4,7 @@ import com.github.javaplugs.jsf.SpringScopeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyDataModelBean;
-import ru.efive.dms.uifaces.lazyDataModel.referencebook.LazyDataModelForContragentType;
+import ru.efive.dms.uifaces.lazyDataModel.referencebook.ContragentTypeLazyDataModel;
 import ru.entity.model.referenceBook.ContragentType;
 
 import org.springframework.stereotype.Controller;
@@ -21,6 +21,6 @@ public class ContragentTypeListHolderBean extends AbstractDocumentLazyDataModelB
 
     @Autowired
     @Qualifier("contragentTypeLDM")
-    private LazyDataModelForContragentType lazyModel;
+    private ContragentTypeLazyDataModel lazyModel;
 
 }

@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -8,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
@@ -18,16 +18,16 @@ import ru.entity.model.user.User;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import org.springframework.stereotype.Controller;
-
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
-@Controller("incomingSearch")
-@SpringScopeView
+@ViewScopedController(name = "incomingSearch", transactionManager = "ordTransactionManager")
 public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<IncomingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 

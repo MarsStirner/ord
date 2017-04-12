@@ -15,7 +15,7 @@ public class AuthenticationFilter implements Filter {
     private static final String LOGIN_PAGE = "index.xhtml";
     private static final Logger LOGGER = LoggerFactory.getLogger("FILTER");
 
-    public static String getClientIpAddr(HttpServletRequest request) {
+    private static String getClientIpAddr(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
@@ -40,7 +40,8 @@ public class AuthenticationFilter implements Filter {
         //1 Проверяем требуется ли наличие контроля сессисии (по ходу он не нужен только для страницы логина =))
         if (isSessionControlRequiredForThisResource(request)) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("{} || {}://{}{}{}{}",
+                LOGGER.debug("[{}] {} || {}://{}{}{}{}",
+                        request.getSession().getId(),
                         request.getMethod(),
                         request.getScheme(),
                         request.getServerName(),
@@ -80,7 +81,6 @@ public class AuthenticationFilter implements Filter {
         if (requestPath.contains("/component/")) {
             request.getSession().setAttribute(SessionManagementBean.BACK_URL, redirectTo.toString());
         }
-        HttpServletResponse httpServletResponse = (HttpServletResponse) resp;
         ((HttpServletResponse) resp).sendRedirect(request.getContextPath().concat("/").concat(LOGIN_PAGE));
     }
 

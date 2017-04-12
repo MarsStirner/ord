@@ -3,11 +3,12 @@ fix();
 
 function fix() {
     console.log("Start adding fixes to PF components");
-    fixDialogPosition();
+  //  fixDialogPosition();
     fixDataTableMultipleSelection();
 }
 
 function fixDialogPosition(){
+    //TODO WARN DEPRECATED NOT WORK WITH 6.0 (WORKED AT 5.3) IF YOU HAD TIME MAKE OPENSOURCE FIX!!!!!
     console.log("Fix DialogFramework openDialog method (add option \'position\' (JQUERY)");
     PrimeFaces.dialog.DialogHandler.openDialog = function (e) {
         var d = e.sourceComponentId + "_dlg";

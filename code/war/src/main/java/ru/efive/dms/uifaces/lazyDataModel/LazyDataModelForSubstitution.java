@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.lazyDataModel;
 import com.github.javaplugs.jsf.SpringScopeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
 import ru.entity.model.user.Substitution;
 import ru.hitsl.sql.dao.interfaces.SubstitutionDao;
 
@@ -14,8 +15,7 @@ import javax.inject.Named;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Named("substitutions")
-@SpringScopeView
+@ViewScopedLazyDataModel("substitutions")
 public class LazyDataModelForSubstitution extends AbstractFilterableLazyDataModel<Substitution> {
     @Autowired
     public LazyDataModelForSubstitution(@Qualifier("substitutionDao")SubstitutionDao substitutionDao) {

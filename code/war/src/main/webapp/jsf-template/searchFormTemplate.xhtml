@@ -9,14 +9,15 @@
         >
 <h:head>
     <h:outputStylesheet library="css" name="style.css"/>
-    <ui:insert name="pageTitle">
-        <title>#{ui['listView.pageTitle']}</title>
+    <title>
+    <ui:insert name="PAGE_TITLE">
+        <h:outputText value="#{ui['common.title']}"/>
     </ui:insert>
+    </title>
     <ui:insert name="running_head"/>
     <h:outputStylesheet library="css" name="searchFormStyles.css"/>
 </h:head>
 <h:body id="main_body">
-    <c:set var="currentView" value="#{facesContext.viewRoot.viewId}"/>
     <c:set var="isAdministrator" value="#{authData.isAdministrator()}" scope="session"/>
     <c:set var="isRecorder" value="#{authData.isRecorder()}" scope="session"/>
     <c:set var="isOfficeManager" value="#{authData.isOfficeManager()}" scope="session"/>

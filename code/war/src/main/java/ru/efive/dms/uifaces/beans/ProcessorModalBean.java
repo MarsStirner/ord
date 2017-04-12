@@ -1,9 +1,8 @@
 package ru.efive.dms.uifaces.beans;
 
-import com.github.javaplugs.jsf.SpringScopeView;
+
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.*;
 import ru.efive.wf.core.activity.enums.ProcessState;
@@ -13,18 +12,12 @@ import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.Person;
 import ru.external.ProcessedData;
 import ru.hitsl.sql.dao.util.AuthorizationData;
-import ru.util.ApplicationHelper;
-
-import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Controller("processorModal")
-@SpringScopeView
 public class ProcessorModalBean extends ModalWindowHolderBean {
-    @Autowired
-    @Qualifier("authData")
+
     private AuthorizationData authData;
 
 
@@ -38,6 +31,10 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
     private int processedActivityIndex;
     private HistoryEntry historyEntry;
     private String actionResult;
+
+    public void setAuthData(AuthorizationData authData){
+        this.authData = authData;
+    }
 
     public ProcessedData getProcessedData() {
         return processedData;

@@ -223,7 +223,7 @@
                         <p:column colspan="3" styleClass="ui-grid-col-10">
                             <h:outputLink id="v_rootDocument" onclick="goToDocumentByUniqueId('#{task.document.rootDocumentId}');">
                                 <h:graphicImage value="#{resource['images:link.png']}"/>
-                                <h:outputText value="#{task.getLinkDescriptionById(task.document.rootDocumentId)}"/>
+                                <h:outputText value="#{refBookHelper.getLinkDescriptionByUniqueId(task.document.rootDocumentId)}"/>
                             </h:outputLink>
                         </p:column>
                     </p:row>
@@ -234,7 +234,7 @@
                         <p:column colspan="3" styleClass="ui-grid-col-10">
                             <h:outputLink id="v_parentTask" onclick="goToDocumentByParentId('#{task.document.parent.uniqueId}');">
                                 <h:graphicImage value="#{resource['images:link.png']}"/>
-                                <h:outputText value="#{task.getLinkDescriptionById(task.document.parent.uniqueId)}"/>
+                                <h:outputText value="#{refBookHelper.getLinkDescriptionByUniqueId(task.document.parent.uniqueId)}"/>
                             </h:outputLink>
                         </p:column>
                     </p:row>

@@ -11,11 +11,12 @@
     <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectOfficeKeepingVolumeTable"
                      paginator="true"
-                     rows="10"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
+                     rows="#{ui['dialog.paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['dialog.paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['dialog.paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['dialog.paginator.rows.dropDown']}"
+                     paginatorPosition = "#{ui['dialog.paginator.position']}"
+                     pageLinks="#{ui['dialog.paginator.pageLinks']}"
                      value="#{officeKeepingVolumeDialog.lazyModel}"
                      var="officeKeepingVolume_row"
                      selectionMode="single"
@@ -27,7 +28,6 @@
                      sortBy="#{officeKeepingVolume_row.shortDescription}"
                      sortOrder="ascending"
                      sortField="shortDescription"
-                     pageLinks="#{ui['dialog.pageLinks']}"
                 >
             <f:facet name="header">
                 <p:inputText id="filter" value="#{officeKeepingVolumeDialog.filter}" styleClass="searchTextBox"/>

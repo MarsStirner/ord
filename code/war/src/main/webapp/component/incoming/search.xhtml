@@ -415,7 +415,7 @@
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
                 <ui:repeat value="#{row.executorsList}" var="element">
-                    <h:outputText value="#{element.getDescriptionShort()}"/><br/>
+                    <h:outputText value="#{element}" converter="#{PersonConverter}"/>
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">

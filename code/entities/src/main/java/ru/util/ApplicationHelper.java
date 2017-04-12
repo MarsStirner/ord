@@ -7,6 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,24 +18,16 @@ public final class ApplicationHelper {
 
 
     private static final Locale locale = new Locale("ru", "RU");
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy", locale);
+
 
     private static final Pattern idPattern = Pattern.compile(".*_(\\d+)");
+
+    public static final DateTimeFormatter PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public static Locale getLocale() {
         return locale;
     }
 
-    public static SimpleDateFormat getDateFormat() {
-        return DATE_FORMAT;
-    }
-
-    public static String formatDate(LocalDateTime date) {
-        if (date == null) {
-            return "NULL";
-        }
-        return DATE_FORMAT.format(date);
-    }
 
     public static Integer getIdFromUniqueIdString(String uniqueId) {
         if (StringUtils.isEmpty(uniqueId)) {
@@ -66,5 +59,9 @@ public final class ApplicationHelper {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String formatDate(LocalDateTime date) {
+        return date != null ? date.format(PATTERN) : null;
     }
 }

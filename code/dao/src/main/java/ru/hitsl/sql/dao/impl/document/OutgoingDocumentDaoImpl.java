@@ -118,7 +118,6 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
     @Override
     public void applyFilter(final DetachedCriteria criteria, final Map<String, Object> filters) {
         if (filters == null || filters.isEmpty()) {
-            log.debug("FilterMapCriteria: null or empty. Skip.");
             return;
         }
         final Conjunction conjunction = Restrictions.conjunction();
@@ -202,7 +201,6 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
     @Override
     public void applyFilter(final DetachedCriteria criteria, final String filter) {
         if (StringUtils.isEmpty(filter)) {
-            log.debug("FilterCriteria: empty or null filter. Skip.");
             return;
         }
         final Disjunction disjunction = Restrictions.disjunction();

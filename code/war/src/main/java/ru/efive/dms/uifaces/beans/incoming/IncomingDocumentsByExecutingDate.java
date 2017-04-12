@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.IncomingDocument;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
@@ -20,9 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
-@Controller("in_documents_by_executing_date")
-@Scope("view")
-@Transactional(value = "ordTransactionManager", propagation = Propagation.REQUIRED)
+@ViewScopedController(name = "in_documents_by_executing_date", transactionManager = "ordTransactionManager")
 public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolderBean<IncomingDocument> {
 
     private final static DateTimeFormatter year_month_day = DateTimeFormatter.ofPattern("yyyy,MM,dd");

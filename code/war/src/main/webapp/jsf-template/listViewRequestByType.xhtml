@@ -8,35 +8,32 @@
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/listViewTemplate.xhtml">
-
-    <ui:define name="headContent">
-        <h:outputStylesheet library="css" name="viewfact.css"/>
-    </ui:define>
-
     <ui:define name="contentButtonsPanel">
         <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="/component/request/request_document.xhtml" target="_blank" icon="ui-icon-plusthick">
+            <p:button value="Новый документ" outcome="#{ui['document.request.page.link']}" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
             <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString" value="#{request_documents.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" action="#{request_documents.applyFilter()}" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
-            <p:button target="_blank" outcome="/component/request/request_document_search_form.xhtml" value="Расширенный поиск" icon="ui-icon-star"/>
-            <p:defaultCommand target="searchButton" />
+            <p:inputText id="filterString" value="#{requestDocumentLDM.filter}" title="Поиск"
+                         placeholder="#{ui['document.request.list.search.placeholder']}" style="width:25em;" />
+            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
+            <p:defaultCommand target="searchButton"/>
+            <p:button target="_blank" outcome="#{ui['document.request.search.link']}" value="Расширенный поиск" icon="ui-icon-star"/>
         </p:toolbarGroup>
     </ui:define>
+    
     <ui:define name="contentTable">
         <p:dataTable id="documentTable"
                      paginator="true"
-                     rows="#{ui['paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
-                     emptyMessage="#{ui['emptyMessage']}"
-                     value="#{request_documents.lazyModel}"
+                     rows="#{ui['document.request.list.paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['document.request.list.paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['document.request.list.paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['document.request.list.paginator.rows.dropDown']}"
+                     paginatorPosition="#{ui['document.request.list.paginator.position']}"
+                     emptyMessage="#{ui['document.request.list.emptyMessage']}"
+                     value="#{requestDocumentLDM}"
                      var="row"
                      lazy="true"
                      widgetVar="documentTableVar"
@@ -53,7 +50,8 @@
             </p:column>
             <p:column headerText="Дата регистрации" style="width:8em;" sortBy="#{row.registrationDate}" field = "registrationDate">
                 <h:outputText value="#{row.registrationDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="#{ui['document.request.list.registrationDate.pattern']}"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="ФИО отправителя" style="width:12em;" sortBy="#{row.senderLastName}" field = "senderLastName">
@@ -61,7 +59,8 @@
             </p:column>
             <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
                 <h:outputText value="#{row.executionDate}">
-                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                    <f:converter converterId="LocalDateTimeConverter"/>
+                    <f:attribute name="pattern" value="#{ui['document.request.list.executionDate.pattern']}"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">

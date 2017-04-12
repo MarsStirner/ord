@@ -4,7 +4,7 @@ import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForRegion;
+import ru.efive.dms.uifaces.lazyDataModel.referencebook.RegionLazyDataModel;
 import ru.entity.model.referenceBook.Region;
 
 import org.springframework.stereotype.Controller;
@@ -18,7 +18,7 @@ public class RegionDialogHolder extends AbstractDialog<Region> {
 
     @Autowired
     @Qualifier("regionLDM")
-    private LazyDataModelForRegion lazyModel;
+    private RegionLazyDataModel lazyModel;
 
     /**
      * Установить шапку по переданному ключу

@@ -13,11 +13,12 @@
     <ui:define name="DIALOG_CONTENT">
         <p:dataTable id="selectRoleTable"
                      paginator="true"
-                     rows="#{ui['dialog.rows']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
+                     rows="#{ui['dialog.paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['dialog.paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['dialog.paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['dialog.paginator.rows.dropDown']}"
+                     paginatorPosition = "#{ui['dialog.paginator.position']}"
+                     pageLinks="#{ui['dialog.paginator.pageLinks']}"
                      value="#{multipleRoleDialog.lazyModel}"
                      var="role_row"
                      selectionMode="multiple"
@@ -27,13 +28,12 @@
                      widgetVar="selectRoleTableVar"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{role_row.name}"
+                     sortBy="#{role_row.value}"
                      sortOrder="ascending"
-                     sortField="name"
-                     pageLinks="#{ui['dialog.pageLinks']}"
+                     sortField="value"
                 >
-            <p:column headerText="Наименование" sortBy="#{role_row.name}" field = "name">
-                <h:outputText value="#{role_row.name}"/>
+            <p:column headerText="Наименование" sortBy="#{role_row.value}" field = "name">
+                <h:outputText value="#{role_row.value}"/>
             </p:column>
             <f:facet name="footer">
                 <p:commandButton value="Выбрать" action="#{multipleRoleDialog.confirmSelection}" styleClass="confirmButton"/>

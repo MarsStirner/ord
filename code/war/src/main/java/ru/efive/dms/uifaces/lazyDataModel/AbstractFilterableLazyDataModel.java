@@ -7,11 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.hitsl.sql.dao.interfaces.mapped.CommonDao;
+import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -46,11 +45,29 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     }
 
 
-    public void addFilter(final String key, final Object value) {
+    public void addFilter(final String key, final String value) {
         if (filters == null) {
             filters = new HashMap<>();
         }
-        filters.put(key, value);
+        if (value.startsWith("{") && value.endsWith("}")) {
+            // Список
+            final List<String> strings = Arrays.asList(value.substring(1, value.length() - 1).split("\\s*,\\s*"));
+            if (!strings.isEmpty()) {
+                //Для некоторых парметров надо приводить типы
+                if (DocumentSearchMapKeys.STATUS_LIST_KEY.equals(key)) {
+                    final Set<Integer> ints = new HashSet<>(strings.size());
+                    for (String string : strings) {
+                        ints.add(Integer.valueOf(string));
+                    }
+                    filters.put(key, ints);
+                } else {
+                    filters.put(key, new ArrayList<>(strings));
+                }
+            }
+        } else {
+            //Одиночное значение
+            filters.put(key, value);
+        }
     }
 
     @Override
@@ -59,7 +76,7 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     }
 
     @Override
-    @Transactional("ordTransactionManager")
+    @Transactional(value = "ordTransactionManager", readOnly = true)
     public T getRowData(String rowKey) {
         try {
             return dao.getItemByListCriteria(Integer.valueOf(rowKey));

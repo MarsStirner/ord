@@ -9,41 +9,32 @@
 >
 
 <ui:composition template="/jsf-template/listViewTemplate.xhtml">
-
-    <ui:define name="headContent">
-        <h:outputStylesheet library="css" name="viewfact.css"/>
-    </ui:define>
-
-    <ui:define name="contentLabel"><h:outputText value="Входящие документы по номеру"/></ui:define>
-
+    <ui:define name="contentLabel">Входящие документы по номеру</ui:define>
     <ui:define name="contentButtonsPanel">
         <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="/component/incoming/document.xhtml" target="_blank"
-                      icon="ui-icon-plusthick">
+            <p:button value="Новый документ" outcome="#{ui['document.incoming.page.link']}" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
             <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="#{ui['search.placeholder']}" style="width:25em;" id="filterString"
-                         value="#{incomingDocumentLDM.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable"
-                             icon="ui-icon-search"/>
-            <p:button target="_blank" outcome="/component/incoming/search.xhtml" value="Расширенный поиск"
-                      icon="ui-icon-star"/>
+            <p:inputText id="filterString" value="#{incomingDocumentLDM.filter}" title="Поиск"
+                         placeholder="#{ui['document.incoming.list.search.placeholder']}" style="width:25em;" />
+            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
             <p:defaultCommand target="searchButton"/>
+            <p:button target="_blank" outcome="#{ui['document.incoming.search.link']}" value="Расширенный поиск" icon="ui-icon-star"/>
         </p:toolbarGroup>
     </ui:define>
 
     <ui:define name="contentTable">
         <p:dataTable id="documentTable"
                      paginator="true"
-                     rows="#{ui['paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition="#{ui['paginator.position']}"
-                     emptyMessage="#{ui['emptyMessage']}"
+                     rows="#{ui['document.incoming.list.paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['document.incoming.list.paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['document.incoming.list.paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['document.incoming.list.paginator.rows.dropDown']}"
+                     paginatorPosition="#{ui['document.incoming.list.paginator.position']}"
+                     emptyMessage="#{ui['document.incoming.list.emptyMessage']}"
                      value="#{incomingDocumentLDM}"
                      var="row"
                      lazy="true"
@@ -56,24 +47,21 @@
                      sortField="registrationDate"
                      sortOrder="descending"
         >
-            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}"
-                      field="registrationNumber">
+            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
                 <h:outputText value="#{row.registrationNumber}"/>
             </p:column>
-            <p:column headerText="Дата регистрации" style="width:6em;" sortBy="#{row.registrationDate}"
-                      field="registrationDate">
+            <p:column headerText="Дата регистрации" style="width:6em;" sortBy="#{row.registrationDate}" field="registrationDate">
                 <h:outputText value="#{row.registrationDate}">
                     <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['listView.registrationDate.pattern']}"/>
+                    <f:attribute name="pattern" value="#{ui['document.incoming.list.registrationDate.pattern']}"/>
                 </h:outputText>
             </p:column>
-            <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}"
-                      field="contragent.shortName">
+            <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}" field="contragent.shortName">
                 <h:outputText value="#{row.contragent.shortName}"/>
             </p:column>
             <p:column headerText="Исполнитель" style="width:12em;">
                 <ui:repeat value="#{row.executorsList}" var="executor">
-                    <h:outputText value="#{executor.getDescriptionShort()}"/><br/>
+                    <h:outputText value="#{executor}" converter="#{PersonConverter}"/><br/>
                 </ui:repeat>
             </p:column>
             <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
@@ -82,7 +70,7 @@
             <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field="executionDate">
                 <h:outputText value="#{row.executionDate}">
                     <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['listView.executionDate.pattern']}"/>
+                    <f:attribute name="pattern" value="#{ui['document.incoming.list.executionDate.pattern']}"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
@@ -91,8 +79,7 @@
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:ajax event="rowSelect"
-                    onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
+            <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>
     </ui:define>
 

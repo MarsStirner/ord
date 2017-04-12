@@ -49,7 +49,7 @@ public abstract class DocumentDaoImpl<T extends DocumentEntity> extends CommonDa
     ) {
         log.debug(
                 "Search documents[{}-{}] order by[{} {}] with filter='{}', filterMap={}",
-                offset, limit, orderBy, isAscending, filter, filters
+                offset, offset + limit, orderBy, isAscending ? "ASC" : "DESC", filter, filters
         );
         final DetachedCriteria criteria = getListCriteria();
         applyDeletedRestriction(criteria, showDeleted);

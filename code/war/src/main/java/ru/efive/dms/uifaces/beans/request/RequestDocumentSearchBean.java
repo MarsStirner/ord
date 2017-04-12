@@ -11,7 +11,6 @@ import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.efive.dms.uifaces.lazyDataModel.documents.LazyDataModelForRequestDocument;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.user.User;
@@ -30,7 +29,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
 
     @Autowired
     @Qualifier("requestDocumentLDM")
-    private LazyDataModelForRequestDocument lazyDataModel;
+    private RequestDocumentLazyDataModel lazyDataModel;
 
     /**
      * Выполнить поиск с текущим фильтром

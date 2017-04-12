@@ -23,7 +23,6 @@ public class OutgoingDocumentViewFact implements DocumentViewFact<OutgoingDocume
     @JoinColumn(name = "document_id")
     private OutgoingDocument document;
 
-    @Id
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
