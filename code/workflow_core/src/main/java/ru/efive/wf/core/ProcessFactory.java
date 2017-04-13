@@ -1,5 +1,9 @@
 package ru.efive.wf.core;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigParseOptions;
+import com.typesafe.config.ConfigSyntax;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import ru.efive.wf.core.activity.InvokeMethodActivity;
@@ -26,14 +30,10 @@ import java.util.*;
 
 public final class ProcessFactory {
 
+    private final static Config cfg = ConfigFactory.parseResources("application.conf", ConfigParseOptions.defaults().setSyntax(ConfigSyntax.CONF)).resolve();
+
     private static String getHost() {
-        Properties properties = new Properties();
-        try {
-            properties.load(ProcessFactory.class.getClassLoader().getResourceAsStream("app.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return properties.getProperty("app.host");
+       return cfg.getString("host");
     }
 
     public static <T extends ProcessedData> Process getProcessByType(T t) {
