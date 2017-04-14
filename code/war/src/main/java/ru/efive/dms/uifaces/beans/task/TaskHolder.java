@@ -38,7 +38,6 @@ import ru.util.ApplicationHelper;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -337,7 +336,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         final User currentUser = authData.getAuthorized();
         final LocalDateTime created = LocalDateTime.now();
         LOGGER.info("Save new document by USER[{}]", currentUser.getId());

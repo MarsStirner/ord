@@ -81,7 +81,7 @@ public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department>
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         try {
             setDocument(departmentDao.save(getDocument()));
             return true;

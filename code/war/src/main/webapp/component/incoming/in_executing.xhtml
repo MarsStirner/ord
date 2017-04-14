@@ -9,27 +9,12 @@
 >
 
 
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
     <f:metadata>
         <f:viewAction action="#{in_documents_by_executing_date.refresh}"/>
     </f:metadata>
 
-    <ui:define name="contentLabel">
-        <h:outputText id="viewTitleText" value="Входящие документы
-                #{in_documents_by_executing_date.showExpiredFlag ? 'с просроченной датой исполнения' : 'по сроку исполнения'}"/>
-        <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" showDelay="1000" hideDelay="500">
-            Просмотр входящих документов, у которых:
-            <br/>1) пользователь является руководителем.
-            <br/>2) Уровень доступа документа ниже или равен ТЕКУЩЕМУ уровню допуска пользователя
-            <br/>3) Дата исполнения указана
-            <br/>4) Документ находится в одном из статусов (На регистрации\ На исполнении\ Зарегистрирован)
-            <br/>5) Документ не удален
-            <br/>6) Если выбран флаг "Просроченные", то дата исполнения должна быть в прошлом
-        </p:tooltip>
-    </ui:define>
-
-    <ui:define name="headContent">
-        <h:outputStylesheet library="css" name="viewfact.css"/>
+    <ui:define name="HEAD">
         <style type="text/css">
             .year {
                 color: yellow !important;
@@ -52,35 +37,46 @@
         </style>
     </ui:define>
 
-    <ui:define name="contentButtonsPanel">
+    <ui:define name="CONTENT.VIEWTITLE">
+        <h:outputText id="viewTitleText" value="Входящие документы
+                #{in_documents_by_executing_date.showExpiredFlag ? 'с просроченной датой исполнения' : 'по сроку исполнения'}"/>
+        <p:tooltip id="toolTipForViewTitleText" for="viewTitleText" showDelay="1000" hideDelay="500">
+            Просмотр входящих документов, у которых:
+            <br/>1) пользователь является руководителем.
+            <br/>2) Уровень доступа документа ниже или равен ТЕКУЩЕМУ уровню допуска пользователя
+            <br/>3) Дата исполнения указана
+            <br/>4) Документ находится в одном из статусов (На регистрации\ На исполнении\ Зарегистрирован)
+            <br/>5) Документ не удален
+            <br/>6) Если выбран флаг "Просроченные", то дата исполнения должна быть в прошлом
+        </p:tooltip>
+    </ui:define>
+
+
+    <ui:define name="CONTENT.TOOLBAR">
         <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="/component/incoming/document.xhtml" target="_blank"
-                      icon="ui-icon-plusthick">
+            <p:button value="Новый документ" outcome="#{ui['document.incoming.page.link']}" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
-            <p:commandButton action="#{in_documents_by_executing_date.refresh}" value="Обновить"
-                             update="documentTable" onsuccess="addRowHandlers();" icon="ui-icon-refresh" ajax="true"/>
-            <p:commandButton value="Свернуть" action="#{in_documents_by_executing_date.collapseAll}"
-                             icon="ui-icon-minusthick" update="documentTable"/>
-            <p:commandButton value="Развернуть" action="#{in_documents_by_executing_date.expandAll}"
-                             icon="ui-icon-plusthick" update="documentTable"/>
-            <p:commandButton
-                    value="#{in_documents_by_executing_date.showExpiredFlag ? 'Показать все':'Показать только просроченные'}"
-                    action="#{in_documents_by_executing_date.changeExpiredFlag}" update=" @this documentTable"/>
+            <p:commandButton action="#{in_documents_by_executing_date.refresh}" value="Обновить" update="documentTable" onsuccess="addRowHandlers();"
+                             icon="ui-icon-refresh" ajax="true"/>
+            <p:commandButton value="Свернуть" action="#{in_documents_by_executing_date.collapseAll}" icon="ui-icon-minusthick" update="documentTable"/>
+            <p:commandButton value="Развернуть" action="#{in_documents_by_executing_date.expandAll}" icon="ui-icon-plusthick" update="documentTable"/>
+            <p:commandButton value="#{in_documents_by_executing_date.showExpiredFlag ? 'Показать все':'Показать только просроченные'}"
+                             action="#{in_documents_by_executing_date.changeExpiredFlag}" update=" @this documentTable viewTitleText"/>
 
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
             <p:inputText id="filterString" value="#{in_documents_by_executing_date.filter}" title="Поиск"
-                         placeholder="#{ui['document.incoming.list.search.placeholder']}" style="width:25em;" />
-            <p:commandButton value="Найти" id="searchButton" action="#{in_documents_by_executing_date.refresh}"
-                             process="@this filterString" update="documentTable" icon="ui-icon-search"/>
+                         placeholder="#{ui['document.incoming.list.search.placeholder']}" style="width:25em;"/>
+            <p:commandButton value="Найти" id="searchButton" action="#{in_documents_by_executing_date.refresh}" process="@this filterString"
+                             update="documentTable" icon="ui-icon-search"/>
             <p:defaultCommand target="searchButton"/>
             <p:button target="_blank" outcome="#{ui['document.incoming.search.link']}" value="Расширенный поиск" icon="ui-icon-star"/>
         </p:toolbarGroup>
 
     </ui:define>
 
-    <ui:define name="contentTable">
+    <ui:define name="CONTENT.TABLE">
         <p:treeTable id="documentTable"
                      value="#{in_documents_by_executing_date.root}"
                      var="node"
@@ -101,7 +97,8 @@
             </p:column>
             <p:column headerText="Исполнитель">
                 <ui:repeat value="#{node.document.executorsList}" var="executor">
-                    <h:outputText value="#{executor}" converter="#{PersonConverter}"/><br/>             </ui:repeat>
+                    <h:outputText value="#{executor}" converter="#{PersonConverter}"/><br/>
+                </ui:repeat>
             </p:column>
             <p:column headerText="Вид">
                 <h:outputText value="#{node.document.form}"/>
@@ -136,5 +133,4 @@
         </script>
     </ui:define>
 </ui:composition>
-
 </html>

@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.uifaces.beans.SessionManagementBean;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.NoStatusAction;
@@ -36,12 +37,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public final class WorkflowHelper {
-
-
+@Transactional
+public class WorkflowHelper {
     private static final Logger taskLogger = LoggerFactory.getLogger("TASK");
     private static final int LEFT_PAD_COUNT = 5;
     private static final char LEFT_PAD_CHAR = '0';
+
     @Autowired
     @Qualifier("roleDao")
     private RoleDao roleDao;
@@ -303,7 +304,6 @@ public final class WorkflowHelper {
 
     public boolean setIncomingRegistrationNumber(IncomingDocument doc) {
         boolean result = false;
-        final FacesContext context = FacesContext.getCurrentInstance();
         final StringBuilder in_result = new StringBuilder("");
         if (doc.getController() == null) {
             in_result.append("Необходимо выбрать Руководителя;").append(System.getProperty("line.separator"));

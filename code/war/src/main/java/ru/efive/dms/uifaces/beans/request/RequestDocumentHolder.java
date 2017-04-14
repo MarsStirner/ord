@@ -458,7 +458,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         final User currentUser = authData.getAuthorized();
         final LocalDateTime created = LocalDateTime.now();
         log.info("Save new document by USER[{}]", currentUser.getId());

@@ -15,7 +15,6 @@ import ru.entity.model.enums.RoleType;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingVolumeDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
-import ru.util.ApplicationHelper;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -168,7 +167,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         try {
             OfficeKeepingVolume document = getDocument();
             OfficeKeepingFile file = document.getParentFile();

@@ -1,7 +1,6 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FileUploadEvent;
@@ -9,11 +8,9 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dms.uifaces.beans.FileManagementBean;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
@@ -22,7 +19,6 @@ import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
@@ -31,7 +27,6 @@ import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
-import ru.hitsl.sql.dao.interfaces.document.InternalDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
@@ -60,9 +55,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Autowired
     @Qualifier("outgoingDocumentDao")
     private OutgoingDocumentDao outgoingDocumentDao;
-    @Autowired
-    @Qualifier("internalDocumentDao")
-    private InternalDocumentDao internalDocumentDao;
+
     @Autowired
     @Qualifier("viewFactDao")
     private ViewFactDao viewFactDao;
@@ -81,41 +74,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
      * Связанные с этим входящим письмом исходящие документы
      */
     private List<OutgoingDocument> relatedDocuments;
-
-    private ProcessorModalBean processorModal = new ProcessorModalBean() {
-        @Override
-        protected void doInit() {
-            setProcessedData(getDocument());
-            if (getDocumentId() == null || getDocumentId() == 0) {
-                saveNewDocument();
-            }
-        }
-
-        @Override
-        protected void doPostProcess(ActionResult actionResult) {
-            IncomingDocument document = (IncomingDocument) actionResult.getProcessedData();
-            HistoryEntry historyEntry = getHistoryEntry();
-            if (getSelectedAction().isHistoryAction()) {
-                Set<HistoryEntry> history = document.getHistory();
-                if (history == null) {
-                    history = new HashSet<>();
-                }
-                history.add(historyEntry);
-                document.setHistory(history);
-            }
-            setDocument(document);
-            IncomingDocumentHolder.this.save();
-        }
-
-        @Override
-        protected void doProcessException(ActionResult actionResult) {
-            IncomingDocument document = (IncomingDocument) actionResult.getProcessedData();
-            String in_result = document.getWFResultDescription();
-            if (StringUtils.isNotEmpty(in_result)) {
-                setActionResult(in_result);
-            }
-        }
-    };  
 
     public void handleFileUpload(FileUploadEvent event) {
         final UploadedFile file = event.getFile();
@@ -412,7 +370,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         doc.setUserAccessLevel(authData.getCurrentAccessLevel());
         setDocument(doc);
         relatedDocuments = new ArrayList<>(0);
-        processorModal.setAuthData(authData);
     }
 
 
@@ -456,7 +413,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                     log.warn("Exception while check upload files", e);
                     addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
                 }
-                processorModal.setAuthData(authData);
             }
         } catch (Exception e) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
@@ -466,7 +422,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
     @Override
     @Transactional("ordTransactionManager")
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         final User currentUser = authData.getAuthorized();
         final LocalDateTime created = LocalDateTime.now();
         log.info("Save new document by USER[{}]", currentUser.getId());
@@ -712,7 +668,4 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         this.taskTreeHolder = taskTreeHolder;
     }
 
-    public ProcessorModalBean getProcessorModal() {
-        return processorModal;
-    }
 }

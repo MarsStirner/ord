@@ -101,7 +101,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         LOGGER.warn("Try to save NEW reportTemplate. Operation not allowed");
         return false;
     }

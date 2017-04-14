@@ -72,7 +72,7 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         boolean result = false;
         try {
             Role role = roleDao.save(getDocument());

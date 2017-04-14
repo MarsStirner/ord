@@ -43,7 +43,7 @@ public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclat
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
 //        try {
 //            setDocument(sessionManagementBean.getDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).save(getDocument()));
 //            return true;

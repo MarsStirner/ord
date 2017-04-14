@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.uifaces.beans.utils.MessageHolder;
 import ru.entity.model.mapped.IdentifiedEntity;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -67,7 +66,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
 
     protected abstract void initDocument(Integer documentId);
 
-    protected abstract boolean saveNewDocument();
+    public abstract boolean saveNewDocument();
 
     protected abstract boolean saveDocument();
 

@@ -1,9 +1,11 @@
 package ru.entity.model.mapped;
 
 
+import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
+import java.util.Set;
 
 /**
  * Базовый класс - документ
@@ -42,4 +44,6 @@ public abstract class DocumentEntity extends DeletableEntity {
     @Transient
     public abstract String getType();
 
+    public abstract Set<HistoryEntry> getHistory();
+    public abstract void setHistory(Set<HistoryEntry> history);
 }

@@ -14,7 +14,6 @@ import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.UserDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.ContactInfoTypeDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
-import ru.util.ApplicationHelper;
 
 import javax.faces.event.ValueChangeEvent;
 import org.springframework.stereotype.Controller;
@@ -209,7 +208,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         LOGGER.info("Save new User");
         try {
             //Удаляем пустые контактные данные, введенные пользователем

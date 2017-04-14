@@ -3,6 +3,13 @@ package ru.efive.dms.uifaces.beans;
 
 import org.apache.commons.lang3.StringUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.uifaces.bean.ModalWindowHolderBean;
 import ru.efive.wf.core.*;
 import ru.efive.wf.core.activity.enums.ProcessState;
@@ -10,15 +17,33 @@ import ru.efive.wf.core.data.EditableProperty;
 import ru.efive.wf.core.util.EngineHelper;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.Person;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.external.ProcessedData;
 import ru.hitsl.sql.dao.util.AuthorizationData;
+
 
 import java.time.LocalDateTime;
 import java.util.*;
 
+@ViewScopedController("processorModal")
 public class ProcessorModalBean extends ModalWindowHolderBean {
+    private static final Logger log = LoggerFactory.getLogger(ProcessorModalBean.class);
 
+    @Autowired
+    @Qualifier("authData")
     private AuthorizationData authData;
+
+    private AbstractDocumentHolderBean holderBean;
+
+    public void open(AbstractDocumentHolderBean holderBean){
+        log.info("Start open");
+        this.holderBean = holderBean;
+        setProcessedData((ProcessedData) holderBean.getDocument());
+        if (getProcessedData().getId() == null || getProcessedData().getId() == 0) {
+            holderBean.saveNewDocument();
+        }
+        show();
+    }
 
 
     private ProcessState state;
@@ -31,10 +56,6 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
     private int processedActivityIndex;
     private HistoryEntry historyEntry;
     private String actionResult;
-
-    public void setAuthData(AuthorizationData authData){
-        this.authData = authData;
-    }
 
     public ProcessedData getProcessedData() {
         return processedData;
@@ -98,12 +119,6 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                 System.out.println(EngineHelper.WRONG_PROCESSED_DATA);
                 state = ProcessState.FAILURE;
             }
-
-            if (authData == null) {
-                actionResult = EngineHelper.DEFAULT_ERROR_MESSAGE;
-                System.out.println(EngineHelper.WRONG_SESSION_BEAN);
-                state = ProcessState.FAILURE;
-            }
             availableActions = Collections.synchronizedList(new ArrayList<IAction>());
             localPreActionActivities = Collections.synchronizedList(new ArrayList<LocalActivity>());
             processedActivity = null;
@@ -115,9 +130,7 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
                 person = new Person(authData.getAuthorized(), authData.getSubstitutedUsers());
             }
             engine.initialize(getProcessedData(), person);
-            for (IAction action : engine.getActions()) {
-                availableActions.add(action);
-            }
+            availableActions.addAll(engine.getActions());
             if (!availableActions.isEmpty()) {
                 state = ProcessState.ACTIONS_AVAILABLE;
             } else {
@@ -272,14 +285,28 @@ public class ProcessorModalBean extends ModalWindowHolderBean {
      * Завершение работы WF engine
      */
     protected void doPostProcess(ActionResult actionResult) {
-
+        DocumentEntity document = (DocumentEntity) actionResult.getProcessedData();
+        HistoryEntry historyEntry = getHistoryEntry();
+        if (getSelectedAction().isHistoryAction()) {
+            Set<HistoryEntry> history = document.getHistory();
+            if (history == null) {
+                history = new HashSet<>();
+            }
+            history.add(historyEntry);
+            document.setHistory(history);
+        }
+        holderBean.save();
     }
 
     /**
      * Обработка ошибок
      */
     protected void doProcessException(ActionResult actionResult) {
-
+        ProcessedData document = actionResult.getProcessedData();
+        String in_result = document.getWFResultDescription();
+        if (StringUtils.isNotEmpty(in_result)) {
+            setActionResult(in_result);
+        }
     }
 
 }

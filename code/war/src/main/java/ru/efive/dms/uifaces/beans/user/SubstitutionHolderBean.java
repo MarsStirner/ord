@@ -137,7 +137,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         return saveDocument();
     }
 

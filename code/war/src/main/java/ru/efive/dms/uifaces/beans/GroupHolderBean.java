@@ -79,7 +79,7 @@ public class GroupHolderBean extends AbstractDocumentHolderBean<Group> {
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         try {
             Group group = groupDao.save(getDocument());
             if (group == null) {

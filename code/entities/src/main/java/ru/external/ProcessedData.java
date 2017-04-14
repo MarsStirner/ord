@@ -16,4 +16,5 @@ public interface ProcessedData extends Serializable {
 
     String getBeanName();
 
+    String getWFResultDescription();
 }

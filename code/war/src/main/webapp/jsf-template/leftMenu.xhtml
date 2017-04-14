@@ -1,15 +1,16 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
     <!-- Блок объявления параметров -->
-    <ui:param name="currentView" value="#{facesContext.viewRoot.viewId}"/>
-    <ui:param name="isAdministrator" value="#{authData.isAdministrator()}"/>
-    <ui:param name="isRecorder" value="#{authData.isRecorder()}"/>
-    <ui:param name="isOfficeManager" value="#{authData.isOfficeManager()}"/>
-    <ui:param name="isRequestManager" value="#{authData.isRequestManager()}"/>
-    <ui:param name="isOuter" value="#{authData.isOuter()}"/>
-    <ui:param name="isHr" value="#{authData.isHr()}"/>
-    <ui:param name="isFilling" value="#{authData.isFilling()}"/>
+    <c:set var="currentView" value="#{facesContext.viewRoot.viewId}" scope="request"/>
+    <c:set var="isAdministrator" value="#{authData.isAdministrator()}" scope="session"/>
+    <c:set var="isRecorder" value="#{authData.isRecorder()}" scope="session"/>
+    <c:set var="isOfficeManager" value="#{authData.isOfficeManager()}" scope="session"/>
+    <c:set var="isRequestManager" value="#{authData.isRequestManager()}" scope="session"/>
+    <c:set var="isOuter" value="#{authData.isOuter()}" scope="session"/>
+    <c:set var="isHr" value="#{authData.isHr()}" scope="session"/>
+    <c:set var="isFilling" value="#{authData.isFilling()}" scope="session"/>
 
     <p:menu id="navigationMenu" toggleable="true" widgetVar="navigationMenuVar"
             style="width:100%; border-radius:0; border:0; padding:0; margin:0;">
@@ -52,7 +53,7 @@
                         styleClass="#{currentView eq '/component/internal/instructions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="Методические пособия" url="/component/internal/manuals.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/internal/manuals.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Правила внутреннего распорядка"  url="/component/internal/rules.xhtml" icon="leafIcon"
+            <p:menuitem value="Правила внутреннего распорядка" url="/component/internal/rules.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/internal/rules.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="Положения" url="/component/internal/positions.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/internal/positions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>

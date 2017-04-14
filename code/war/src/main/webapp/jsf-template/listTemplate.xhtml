@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+>
+<!--
+NOTE:
+Необходимо передавать параметрами две переменные
+String prefix - префикс к настройкам отображения
+SelectableLazyDataTable lazyDataModel - бин который содержит в себе ленивую модель
+-->
+<h:head>
+    <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
+    <h:outputStylesheet library="css" name="listView.css"/>
+    <h:outputStylesheet library="css" name="viewfact.css"/>
+    <ui:insert name="HEAD"/>
+    <title>
+        <ui:insert name="HEAD.TITLE">
+            <h:outputText value="#{ui['common.title']}"/>
+        </ui:insert>
+    </title>
+</h:head>
+<h:body id="pageBody">
+    <!-- Блок настройки верстки -->
+    <p:layout fullPage="true" collapseTitle="Скрыть" expandTitle="Показать">
+        <!-- Левое меню -->
+        <p:layoutUnit position="west" size="15%" collapsible="true" collapseSize="30" header="#{ui['leftMenu.title']}"
+                      style="padding:0; margin:0; border:0; border-radius:0;" gutter="0">
+            <ui:insert name="BODY.LEFT_MENU">
+                <ui:include src="/jsf-template/leftMenu.xhtml"/>
+            </ui:insert>
+        </p:layoutUnit>
+        <!-- Центральный блок с информацией -->
+        <p:layoutUnit position="center" gutter="0" style="padding:0; margin:0; border:0; border-radius:0;">
+            <h:form id="pageForm">
+                <ui:insert name="CONTENT">
+                    <p:toolbar id="contentHeader">
+                        <p:toolbarGroup>
+                            <div class="viewtitle">
+                                <ui:insert name="CONTENT.VIEWTITLE"/>
+                            </div>
+                        </p:toolbarGroup>
+                        <p:toolbarGroup align="right">
+                            <p:commandButton id="accessMenuButton" value="#{authData.currentAccessLevel.value}" type="button"/>
+                            <p:menu id="accessMenu" overlay="true" model="#{sessionManagement.accessLevelsMenuModel}" trigger="accessMenuButton" my="left top" at="left bottom"/>
+                            <p:menuButton value="#{authData.authorized.description}">
+                                <p:menuitem value="Выход" action="#{sessionManagement.logOut}"/>
+                            </p:menuButton>
+                        </p:toolbarGroup>
+                    </p:toolbar>
+                    <p:toolbar id="contentButtons">
+                        <ui:insert name="CONTENT.TOOLBAR">
+
+                            <p:toolbarGroup align="left">
+                                <p:button value="Новый документ" outcome="#{ui[prefix.concat('.page.link')]}" target="_blank" icon="ui-icon-plusthick">
+                                    <f:param name="docAction" value="create"/>
+                                </p:button>
+                                <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+                            </p:toolbarGroup>
+                            <p:toolbarGroup align="right">
+                                <p:inputText id="filterString" value="#{lazyDataModel.filter}" title="Поиск" placeholder="#{ui[prefix.concat('.list.search.placeholder')]}" style="width:25em;" />
+                                <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
+                                <p:defaultCommand target="searchButton"/>
+                                <p:button target="_blank" outcome="#{ui[prefix.concat('.search.link')]}" value="Расширенный поиск" icon="ui-icon-star"/>
+                            </p:toolbarGroup>
+                        </ui:insert>
+                    </p:toolbar>
+                    <div id="tableWrapper">
+                        <ui:insert name="CONTENT.TABLE">
+                            <p:dataTable id="documentTable"
+                                         paginator="true"
+                                         rows="#{ui[prefix.concat('.list.paginator.rows.default')]}"
+                                         currentPageReportTemplate="#{ui[prefix.concat('.list.paginator.template.currentPage')]}"
+                                         paginatorTemplate="#{ui[prefix.concat('.list.paginator.template.total')]}"
+                                         rowsPerPageTemplate="#{ui[prefix.concat('.list.paginator.rows.dropDown')]}"
+                                         paginatorPosition="#{ui[prefix.concat('.list.paginator.position')]}"
+                                         emptyMessage="#{ui[prefix.concat('.list.emptyMessage')]}"
+                                         value="#{lazyDataModel}"
+                                         var="row"
+                                         lazy="true"
+                                         widgetVar="documentTableWidget"
+                                         scrollable="true"
+                                         scrollHeight="100%"
+                                         selectionMode="single"
+                                         rowStyleClass="#{row.styleClass}"
+                                         sortBy="#{null}"
+                                         sortField="#{defaultSortField}"
+                                         sortOrder="#{defaultSortOrder}"
+                            >
+                                <ui:insert name="CONTENT.TABLE.COLUMNS"/>
+                            </p:dataTable>
+                        </ui:insert>
+                    </div>
+                    <script type="text/javascript">
+                        console.log("Bind resizeFunction to calculate height");
+                        var $window = $(window).on('resize', function () {
+                            console.log("window:" + $(window).height());
+                            console.log("contentHeader:" + document.getElementById("pageForm:contentHeader").offsetHeight || 0);
+                            console.log("contentButtons:" + document.getElementById("pageForm:contentButtons").offsetHeight || 0);
+                            var height = $(window).height() - (document.getElementById("pageForm:contentHeader").offsetHeight || 0) - (document.getElementById("pageForm:contentButtons").offsetHeight || 0);
+                            console.log("tableHeight:" + height);
+                            $('#tableWrapper').height(height);
+                        }).trigger('resize');
+                    </script>
+                </ui:insert>
+            </h:form>
+        </p:layoutUnit>
+    </p:layout>
+
+    <!-- Диалоговое окошко ожидания -->
+    <ui:insert name="waitDialog">
+        <p:ajaxStatus onstart="PF('statusDialog').show()" oncomplete="PF('statusDialog').hide()"/>
+        <p:dialog widgetVar="statusDialog" modal="true" draggable="false" closable="false" resizable="false"
+                  showHeader="false" position="center center">
+            Пожалуйста, подождите...
+        </p:dialog>
+    </ui:insert>
+</h:body>
+
+</html>

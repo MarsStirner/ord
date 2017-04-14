@@ -85,7 +85,7 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         try {
             final ContragentType document = contragentTypeDao.save(getDocument());
             if (document == null) {

@@ -77,7 +77,7 @@ public class PositionHolderBean extends AbstractDocumentHolderBean<Position> imp
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         try {
             setDocument(positionDao.save(getDocument()));
             return true;

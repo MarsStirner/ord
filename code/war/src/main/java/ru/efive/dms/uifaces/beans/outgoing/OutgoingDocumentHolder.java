@@ -26,7 +26,6 @@ import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.*;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
-import ru.util.ApplicationHelper;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -393,7 +392,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         final User currentUser = authData.getAuthorized();
         final LocalDateTime created = LocalDateTime.now();
         log.info("Save new document by USER[{}]", currentUser.getId());

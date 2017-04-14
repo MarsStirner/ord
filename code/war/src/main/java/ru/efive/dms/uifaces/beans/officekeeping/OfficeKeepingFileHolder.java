@@ -12,7 +12,6 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.RoleType;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
-import ru.util.ApplicationHelper;
 
 import org.springframework.stereotype.Controller;
 
@@ -134,7 +133,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         boolean result = false;
         try {
             OfficeKeepingFile record = officeKeepingFileDao.save(getDocument());

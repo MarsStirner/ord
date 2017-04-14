@@ -109,7 +109,7 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> {
     }
 
     @Override
-    protected boolean saveNewDocument() {
+    public boolean saveNewDocument() {
         return false;
     }
 
