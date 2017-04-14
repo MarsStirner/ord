@@ -14,7 +14,6 @@
     <ui:param name="defaultSortField" value="creationDate"/>
     <ui:param name="defaultSortOrder" value="descending"/>
 
-
     <ui:define name="HEAD.TITLE">Мои проекты входящих документов</ui:define>
     <ui:define name="CONTENT.VIEWTITLE">Мои проекты входящих документов</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
@@ -45,7 +44,7 @@
         <p:column headerText="Краткое содержание">
             <h:outputText value="#{row.shortDescription}"/>
         </p:column>
-        <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+        <p:ajax event="rowSelect" onstart="goToIncomingDocument(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
     </ui:define>
 </ui:composition>
 </html>

@@ -1,85 +1,50 @@
 ﻿<?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{requestDocumentLDM.setPersonalMode}"/>
+    </f:metadata>
+    <ui:param name="prefix" value="document.request"/>
+    <ui:param name="lazyDataModel" value="#{requestDocumentLDM}"/>
+    <ui:param name="defaultSortField" value="creationDate"/>
+    <ui:param name="defaultSortOrder" value="descending"/>
 
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
-
-    <ui:define name="contentLabel">Мои проекты обращений граждан</ui:define>
-
-    <ui:define name="contentButtonsPanel">
-        <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="#{ui['document.request.page.link']}" target="_blank" icon="ui-icon-plusthick">
-                <f:param name="docAction" value="create"/>
-            </p:button>
-            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
-        </p:toolbarGroup>
-        <p:toolbarGroup align="right">
-            <p:inputText id="filterString" value="#{requestDocumentLDM.filter}" title="Поиск"
-                         placeholder="#{ui['document.request.list.search.placeholder']}" style="width:25em;" />
-            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
-            <p:defaultCommand target="searchButton"/>
-            <p:button target="_blank" outcome="#{ui['document.request.search.link']}" value="Расширенный поиск" icon="ui-icon-star"/>
-        </p:toolbarGroup>
+    <ui:define name="HEAD.TITLE">Мои проекты обращений граждан</ui:define>
+    <ui:define name="CONTENT.VIEWTITLE">Мои проекты обращений граждан</ui:define>
+    <ui:define name="CONTENT.TABLE.COLUMNS">
+        <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field="creationDate">
+            <h:outputText value="#{row.creationDate}">
+                <f:converter converterId="LocalDateTimeConverter"/>
+                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.creationDate.pattern')]}"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Дата поступления" style="width:8em;" sortBy="#{row.deliveryDate}" field = "deliveryDate">
+            <h:outputText value="#{row.deliveryDate}">
+                <f:converter converterId="LocalDateTimeConverter"/>
+                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.deliveryDate.pattern')]}"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="ФИО отправителя" style="width:12em;" sortBy="#{row.senderLastName}" field = "senderLastName">
+            <h:outputText value="#{row.getSenderDescription()}"/>
+        </p:column>
+        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+            <h:outputText value="#{row.form.value}"/>
+        </p:column>
+        <p:column headerText="Срок исполнения" style="width:12em;" sortBy="#{row.executionDate}" field = "executionDate">
+            <h:outputText value="#{row.executionDate}">
+                <f:converter converterId="LocalDateTimeConverter"/>
+                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Краткое содержание">
+            <h:outputText value="#{row.shortDescription}"/>
+        </p:column>
+        <p:ajax event="rowSelect" onstart="goToRequestDocument(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
     </ui:define>
-
-    <ui:define name="contentTable">
-        <p:dataTable id="documentTable"
-                     paginator="true"
-                     rows="#{ui['document.request.list.paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['document.request.list.paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['document.request.list.paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['document.request.list.paginator.rows.dropDown']}"
-                     paginatorPosition="#{ui['document.request.list.paginator.position']}"
-                     emptyMessage="#{ui['document.request.list.emptyMessage']}"
-                     value="#{requestDocumentLDM}"
-                     var="row"
-                     lazy="true"
-                     widgetVar="documentTableVar"
-                     scrollable="true"
-                     scrollHeight="100%"
-                     selectionMode="single"
-                     sortBy="#{row.creationDate}"
-                     sortField="creationDate"
-                     sortOrder="descending"
-                >
-            <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field = "creationDate">
-                <h:outputText value="#{row.creationDate}">
-                    <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['document.request.list.creationDate.pattern']}"/>
-                </h:outputText>
-            </p:column>
-            <p:column headerText="Дата поступления" style="width:8em;" sortBy="#{row.deliveryDate}" field = "deliveryDate">
-                <h:outputText value="#{row.deliveryDate}">
-                    <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['document.request.list.deliveryDate.pattern']}"/>
-                </h:outputText>
-            </p:column>
-            <p:column headerText="ФИО отправителя" style="width:12em;" sortBy="#{row.senderLastName}" field = "senderLastName">
-                <h:outputText value="#{row.getSenderDescription()}"/>
-            </p:column>
-            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                <h:outputText value="#{row.form.value}"/>
-            </p:column>
-            <p:column headerText="Срок исполнения" style="width:12em;" sortBy="#{row.executionDate}" field = "executionDate">
-                <h:outputText value="#{row.executionDate}">
-                    <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['document.request.list.executionDate.pattern']}"/>
-                </h:outputText>
-            </p:column>
-            <p:column headerText="Краткое содержание">
-                <h:outputText value="#{row.shortDescription}"/>
-            </p:column>
-            <p:ajax event="rowSelect" onstart="goToRequestDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
-        </p:dataTable>
-
-    </ui:define>
-
 </ui:composition>
-
 </html>
-

@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.List;
 
-@ViewScopedController(name = "in_documents_by_executing_date", transactionManager = "ordTransactionManager")
+@ViewScopedController(value = "in_documents_by_executing_date", transactionManager = "ordTransactionManager")
 public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolderBean<IncomingDocument> {
 
     private final static DateTimeFormatter year_month_day = DateTimeFormatter.ofPattern("yyyy,MM,dd");

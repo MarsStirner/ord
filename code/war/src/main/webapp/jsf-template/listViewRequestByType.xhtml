@@ -1,57 +1,24 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
+    <ui:param name="prefix" value="document.request"/>
+    <ui:param name="lazyDataModel" value="#{requestDocumentLDM}"/>
+    <ui:param name="defaultSortField" value="registrationDate"/>
+    <ui:param name="defaultSortOrder" value="descending"/>
 
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
-    <ui:define name="contentButtonsPanel">
-        <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="#{ui['document.request.page.link']}" target="_blank" icon="ui-icon-plusthick">
-                <f:param name="docAction" value="create"/>
-            </p:button>
-            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
-        </p:toolbarGroup>
-        <p:toolbarGroup align="right">
-            <p:inputText id="filterString" value="#{requestDocumentLDM.filter}" title="Поиск"
-                         placeholder="#{ui['document.request.list.search.placeholder']}" style="width:25em;" />
-            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
-            <p:defaultCommand target="searchButton"/>
-            <p:button target="_blank" outcome="#{ui['document.request.search.link']}" value="Расширенный поиск" icon="ui-icon-star"/>
-        </p:toolbarGroup>
-    </ui:define>
-    
-    <ui:define name="contentTable">
-        <p:dataTable id="documentTable"
-                     paginator="true"
-                     rows="#{ui['document.request.list.paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['document.request.list.paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['document.request.list.paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['document.request.list.paginator.rows.dropDown']}"
-                     paginatorPosition="#{ui['document.request.list.paginator.position']}"
-                     emptyMessage="#{ui['document.request.list.emptyMessage']}"
-                     value="#{requestDocumentLDM}"
-                     var="row"
-                     lazy="true"
-                     widgetVar="documentTableVar"
-                     scrollable="true"
-                     scrollHeight="100%"
-                     selectionMode="single"
-                     rowStyleClass="#{row.styleClass}"
-                     sortBy="#{row.registrationDate}"
-                     sortField="registrationDate"
-                     sortOrder="descending"
-                >
+    <ui:define name="CONTENT.TABLE.COLUMNS">
             <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
                 <h:outputText value="#{row.registrationNumber}"/>
             </p:column>
             <p:column headerText="Дата регистрации" style="width:8em;" sortBy="#{row.registrationDate}" field = "registrationDate">
                 <h:outputText value="#{row.registrationDate}">
                     <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['document.request.list.registrationDate.pattern']}"/>
+                    <f:attribute name="pattern" value="#{ui[prefix.concat('.list.registrationDate.pattern')]}"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="ФИО отправителя" style="width:12em;" sortBy="#{row.senderLastName}" field = "senderLastName">
@@ -60,7 +27,7 @@
             <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field = "executionDate">
                 <h:outputText value="#{row.executionDate}">
                     <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['document.request.list.executionDate.pattern']}"/>
+                    <f:attribute name="pattern" value="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
                 </h:outputText>
             </p:column>
             <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
@@ -69,10 +36,7 @@
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:ajax event="rowSelect" onstart="goToRequestDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
-        </p:dataTable>
+            <p:ajax event="rowSelect" onstart="goToRequestDocument(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
     </ui:define>
-
 </ui:composition>
-
 </html>

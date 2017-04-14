@@ -5,81 +5,40 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
+    <ui:param name="prefix" value="document.outgoing"/>
+    <ui:param name="lazyDataModel" value="#{outgoingDocumentLDM}"/>
+    <ui:param name="defaultSortField" value="registrationDate"/>
+    <ui:param name="defaultSortOrder" value="descending"/>
 
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
-
-    <ui:define name="headContent">
-        <h:outputStylesheet library="css" name="viewfact.css"/>
+    <ui:define name="HEAD.TITLE">Исходящие документы по номеру</ui:define>
+    <ui:define name="CONTENT.VIEWTITLE">Исходящие документы по номеру</ui:define>
+    <ui:define name="CONTENT.TABLE.COLUMNS">
+        <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+            <h:outputText value="#{row.registrationNumber}"/>
+        </p:column>
+        <p:column headerText="Дата регистрации" style="width:9em;" sortBy="#{row.registrationDate}" field = "registrationDate">
+            <h:outputText value="#{row.registrationDate}">
+                <f:converter converterId="LocalDateTimeConverter"/>
+                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.registrationDate.pattern')]}"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
+            <h:outputText value="#{row.executor}" converter="#{PersonConverter}"/>
+        </p:column>
+        <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.value}" field="contragent.value">
+            <h:outputText value="#{row.contragent.value}"/>
+        </p:column>
+        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+            <h:outputText value="#{row.form.value}"/>
+        </p:column>
+        <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
+            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+        </p:column>
+        <p:column headerText="Краткое содержание">
+            <h:outputText value="#{row.shortDescription}"/>
+        </p:column>
+        <p:ajax event="rowSelect" onstart="goToOutgoingDocument(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
     </ui:define>
-
-    <ui:define name="contentLabel">Исходящие документы по номеру</ui:define>
-
-    <ui:define name="contentButtonsPanel">
-        <p:toolbarGroup align="left">
-            <p:button value="Новый документ" outcome="#{ui['document.outgoing.page.link']}" target="_blank" icon="ui-icon-plusthick">
-                <f:param name="docAction" value="create"/>
-            </p:button>
-            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
-        </p:toolbarGroup>
-        <p:toolbarGroup align="right">
-            <p:inputText id="filterString" value="#{outgoingDocumentLDM.filter}" title="Поиск"
-                         placeholder="#{ui['document.outgoing.list.search.placeholder']}" style="width:25em;" />
-            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
-            <p:defaultCommand target="searchButton"/>
-            <p:button target="_blank" outcome="#{ui['document.outgoing.search.link']}" value="Расширенный поиск" icon="ui-icon-star"/>
-        </p:toolbarGroup>
-    </ui:define>
-
-    <ui:define name="contentTable">
-        <p:dataTable id="documentTable"
-                     paginator="true"
-                     rows="#{ui['document.outgoing.list.paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['document.outgoing.list.paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['document.outgoing.list.paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['document.outgoing.list.paginator.rows.dropDown']}"
-                     paginatorPosition="#{ui['document.outgoing.list.paginator.position']}"
-                     emptyMessage="#{ui['document.outgoing.list.emptyMessage']}"
-                     value="#{outgoingDocumentLDM}"
-                     var="row"
-                     lazy="true"
-                     widgetVar="documentTableVar"
-                     scrollable="true"
-                     scrollHeight="100%"
-                     selectionMode="single"
-                     rowStyleClass="#{row.styleClass}"
-                     sortBy="#{row.registrationDate}"
-                     sortField="registrationDate"
-                     sortOrder="descending"
-                >
-            <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
-                <h:outputText value="#{row.registrationNumber}"/>
-            </p:column>
-            <p:column headerText="Дата регистрации" style="width:9em;" sortBy="#{row.registrationDate}" field = "registrationDate">
-                <h:outputText value="#{row.registrationDate}">
-                    <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="#{ui['document.outgoing.list.registrationDate.pattern']}"/>
-                </h:outputText>
-            </p:column>
-            <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
-                <h:outputText value="#{row.executor}" converter="#{PersonConverter}"/>
-            </p:column>
-            <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.value}" field="contragent.value">
-                <h:outputText value="#{row.contragent.value}"/>
-            </p:column>
-            <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
-                <h:outputText value="#{row.form.value}"/>
-            </p:column>
-            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
-                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
-            </p:column>
-            <p:column headerText="Краткое содержание">
-                <h:outputText value="#{row.shortDescription}"/>
-            </p:column>
-            <p:ajax event="rowSelect" onstart="goToOutgoingDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
-        </p:dataTable>
-
-    </ui:define>
-
 </ui:composition>
-
 </html>

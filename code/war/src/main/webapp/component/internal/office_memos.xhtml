@@ -3,16 +3,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
-
 <ui:composition template="/jsf-template/listViewInternalByType.xhtml">
     <f:metadata>
         <f:viewAction action="#{internalDocumentLDM.addFilter('formValue', 'Служебная записка')}"/>
         <f:viewAction action="#{internalDocumentLDM.addFilter('formCategory', 'INTERNAL')}"/>
         <f:viewAction action="#{internalDocumentLDM.addFilter('registrationNumber', '%')}"/>
     </f:metadata>
-    <ui:define name="contentLabel">Внутренние служебные записки</ui:define>
+    <ui:define name="HEAD.TITLE">Внутренние служебные записки</ui:define>
+    <ui:define name="CONTENT.VIEWTITLE">Внутренние служебные записки</ui:define>
 </ui:composition>
-
 </html>
-
-
