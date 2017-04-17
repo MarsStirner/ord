@@ -61,8 +61,7 @@
         <p:commandButton value="Отменить" action="#{request_doc.view}" rendered="#{request_doc.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{request_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{request_doc.delete}" rendered="#{request_doc.editState}" icon="ui-icon-trash" update="@form"/>
-        <p:commandButton value="Действия" action="#{request_doc.processorModal.show}"
-                         rendered="#{request_doc.viewState and request_doc.executePermission}"
+        <p:commandButton value="Действия" action="#{requestWorkflow.init(request_doc.document)}" rendered="#{request_doc.viewState and request_doc.executePermission}"
                          icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
     </ui:define>
 
@@ -568,41 +567,36 @@
             <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
         </p:confirmDialog>
         <!-- Диалог работы с действиями -->
-        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false"
-                  resizable="false" width="50%" closeOnEscape="true" fitViewport="true">
-            <h:panelGroup id="actionForm" rendered="#{request_doc.processorModal.modalVisible}">
-                <h:panelGroup rendered="#{request_doc.processorModal.actionsAvailable}">
-                    <p:dataTable id="action_select_table"
-                                 value="#{request_doc.processorModal.availableActions}"
-                                 var="row_action"
-                                 width="100%"
-                                 emptyMessage="Доступных действий нет"
-                                 rowKey="#{row_action.action.name}"
-                                 selectionMode="single"
-                                 selection="#{request_doc.processorModal.selectedAction}">
-                        <p:column headerText="Доступные действия">
-                            <h:outputText value="#{row_action.action.name}"/>
-                        </p:column>
-                    </p:dataTable>
+        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
+                  closeOnEscape="true" fitViewport="true">
+            <h:panelGroup id="actionForm" rendered="#{requestWorkflow.state != 'HIDDEN'}">
+                <p:dataTable id="action_select_table"
+                             rendered="#{requestWorkflow.state == 'OPENED'}"
+                             value="#{requestWorkflow.actions}"
+                             var="row_action"
+                             width="100%"
+                             emptyMessage="Доступных действий нет"
+                             rowKey="#{row_action.action.name}"
+                             selectionMode="single"
+                             selection="#{requestWorkflow.selectedAction}"
+                >
+                    <p:column headerText="Доступные действия">
+                        <h:outputText value="#{row_action.action.name}"/>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGroup id="processedMessage" rendered="#{requestWorkflow.state == 'PROCESSED'}">
+                    <h:outputText style="padding-left:10px;" value="#{requestWorkflow.processedMessage}"/>
                 </h:panelGroup>
-                <h:panelGroup id="actiopResult"
-                              rendered="#{request_doc.processorModal.noActionsAvailable or request_doc.processorModal.failureState or request_doc.processorModal.processedState}">
-                    <h:outputText style="padding-left:10px;" value="#{request_doc.processorModal.actionResult}"/>
+                <h:panelGroup id="customUi" rendered="#{requestWorkflow.state == 'WAIT_FOR_USER_INPUT'}">
+                    <ui:include src="#{requestWorkflow.selectedAction.ui}">
+                        <ui:param name="documentHolder" value="#{in_doc}"/>
+                    </ui:include>
                 </h:panelGroup>
-                <h:panelGroup id="actionActivity" rendered="#{request_doc.processorModal.processingState}">
-                    <e5ui:include data="#{request_doc.processorModal.processedActivity.document.form}"/>
-                </h:panelGroup>
-                <p:commandButton action="#{request_doc.processorModal.process()}"
-                                 rendered="#{request_doc.processorModal.actionsAvailable or request_doc.processorModal.processingState}"
-                                 value="Выполнить" update="actionForm">
-                </p:commandButton>
-                <p:commandButton rendered="#{request_doc.processorModal.actionsAvailable or request_doc.processorModal.processingState}"
-                                 onclick="PF('actionDialogVar').close(); return false;"
-                                 value="Отмена"/>
-                <p:commandButton
-                        rendered="#{request_doc.processorModal.noActionsAvailable or request_doc.processorModal.failureState or request_doc.processorModal.processedState}"
-                        onclick="PF('actionDialogVar').close(); return false;"
-                        value="Закрыть"/>
+                <p:commandButton action="#{requestWorkflow.process}" value="Выполнить" process="action_select_table @this" update="actionForm"
+                                 rendered="#{requestWorkflow.state == 'OPENED'}"/>
+                <p:commandButton action="#{requestWorkflow.finish}" value="Завершить" process="customUi @this" update="actionForm"
+                                 rendered="#{requestWorkflow.state == 'WAIT_FOR_USER_INPUT'}"/>
+                <p:commandButton onclick="PF('actionDialogVar').close(); return false;" value="Закрыть"/>
             </h:panelGroup>
         </p:dialog>
     </ui:define>
