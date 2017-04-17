@@ -5,12 +5,14 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:p="http://primefaces.org/ui"
       xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:c="http://java.sun.com/jsp/jstl/core">
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{task.init}"/>
+    </f:metadata>
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{task.createState or task.editState}" scope="view"/>
@@ -41,7 +43,7 @@
         <p:commandButton value="Отменить" action="#{task.view}" rendered="#{task.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{task.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{task.delete}" rendered="#{task.editState}" icon="ui-icon-trash" update="@form"/>
-        <p:commandButton value="Действия" action="#{task.processorModal.show}" rendered="#{task.viewState and task.executePermission}"
+        <p:commandButton value="Действия" action="#{taskWorkflow.init(task.document)}" rendered="#{task.viewState and task.executePermission}"
                          icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
     </ui:define>
 
@@ -53,7 +55,8 @@
             <h:outputText value="#{task.document.form.value}"/>
             <h:outputText value=" № #{task.document.taskNumber} от " rendered="#{task.editState or task.viewState}"/>
             <h:outputText value="#{task.document.registrationDate}" rendered="#{task.editState or task.viewState}">
-                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                <f:converter converterId="LocalDateTimeConverter"/>
+                <f:attribute name="pattern" value="dd.MM.yyyy"/>
             </h:outputText>
             <div style="float: right; padding-right:1.5em;">
                 <h:outputText id="v_author" value="Зарегистрировал: #{task.document.author.description}" styleClass="outputText"/>
@@ -80,7 +83,7 @@
                                           rendered="#{not editable_DocumentForm}"/>
                             <p:selectOneMenu id="e_documentForm" value="#{task.document.form}" converter="#{DocumentFormConverter}"
                                              required="true" styleClass="inputText" rendered="#{editable_DocumentForm}">
-                                <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('TASK')}"/>
+                                <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('TASK')}"/>
                             </p:selectOneMenu>
                         </p:column>
                     </p:row>
@@ -108,11 +111,14 @@
                         <p:column styleClass="ui-grid-col-3">
                             <h:outputText id="v_executionDate" value="#{task.document.executionDate}" lang="ru" styleClass="outputText"
                                           rendered="#{not editable_ExecutionDate}">
-                                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                                <f:converter converterId="LocalDateTimeConverter"/>
+                                <f:attribute name="pattern" value="dd.MM.yyyy"/>
                             </h:outputText>
                             <p:calendar id="e_executionDate" value="#{task.document.executionDate}" lang="ru" locale="ru"
                                         pattern="dd.MM.yyyy" showOn="both" styleClass="inputText"
-                                        rendered="#{editable_ExecutionDate}"/>
+                                        rendered="#{editable_ExecutionDate}">
+                                <f:converter converterId="LocalDateTimeConverter"/>
+                        </p:calendar>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -152,7 +158,8 @@
                              widgetVar="taskTableVar">
                     <p:column headerText="Дата создания" style="width:7em;" styleClass="outputText">
                         <h:outputText value="#{row_task.creationDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            <f:converter converterId="LocalDateTimeConverter"/>
+                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Номер" style="width:7em;" styleClass="outputText">
@@ -168,7 +175,8 @@
                     </p:column>
                     <p:column headerText="Срок исполнения" style="width:9em;" styleClass="outputText">
                         <h:outputText value="#{row_task.controlDate}">
-                            <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                            <f:converter converterId="LocalDateTimeConverter"/>
+                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
                         </h:outputText>
                     </p:column>
                     <p:column headerText="Содержание" style="width:100%; white-space: normal;" styleClass="outputText">
@@ -232,7 +240,7 @@
                             <p:outputLabel for="v_parentTask" value="Родительское поручение:"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputLink id="v_parentTask" onclick="goToDocumentByParentId('#{task.document.parent.uniqueId}');">
+                            <h:outputLink id="v_parentTask" onclick="goToDocumentByUniqueId('#{task.document.parent.uniqueId}');">
                                 <h:graphicImage value="#{resource['images:link.png']}"/>
                                 <h:outputText value="#{refBookHelper.getLinkDescriptionByUniqueId(task.document.parent.uniqueId)}"/>
                             </h:outputLink>
@@ -349,41 +357,36 @@
             <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
         </p:confirmDialog>
         <!-- Диалог работы с действиями -->
-        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false"
-                  resizable="false" width="50%" closeOnEscape="true" fitViewport="true">
-            <h:panelGroup id="actionForm" rendered="#{task.processorModal.modalVisible}">
-                <h:panelGroup rendered="#{task.processorModal.actionsAvailable}">
-                    <p:dataTable id="action_select_table"
-                                 value="#{task.processorModal.availableActions}"
-                                 var="row_action"
-                                 width="100%"
-                                 emptyMessage="Доступных действий нет"
-                                 rowKey="#{row_action.action.name}"
-                                 selectionMode="single"
-                                 selection="#{task.processorModal.selectedAction}">
-                        <p:column headerText="Доступные действия">
-                            <h:outputText value="#{row_action.action.name}"/>
-                        </p:column>
-                    </p:dataTable>
+        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
+                  closeOnEscape="true" fitViewport="true">
+            <h:panelGroup id="actionForm" rendered="#{taskWorkflow.state != 'HIDDEN'}">
+                <p:dataTable id="action_select_table"
+                             rendered="#{taskWorkflow.state == 'OPENED'}"
+                             value="#{taskWorkflow.actions}"
+                             var="row_action"
+                             width="100%"
+                             emptyMessage="Доступных действий нет"
+                             rowKey="#{row_action.action.name}"
+                             selectionMode="single"
+                             selection="#{taskWorkflow.selectedAction}"
+                >
+                    <p:column headerText="Доступные действия">
+                        <h:outputText value="#{row_action.action.name}"/>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGroup id="processedMessage" rendered="#{taskWorkflow.state == 'PROCESSED'}">
+                    <h:outputText style="padding-left:10px;" value="#{taskWorkflow.processedMessage}"/>
                 </h:panelGroup>
-                <h:panelGroup id="actiopResult"
-                              rendered="#{task.processorModal.noActionsAvailable or task.processorModal.failureState or task.processorModal.processedState}">
-                    <h:outputText style="padding-left:10px;" value="#{task.processorModal.actionResult}"/>
+                <h:panelGroup id="customUi" rendered="#{taskWorkflow.state == 'WAIT_FOR_USER_INPUT'}">
+                    <ui:include src="#{taskWorkflow.selectedAction.ui}">
+                        <ui:param name="documentHolder" value="#{in_doc}"/>
+                    </ui:include>
                 </h:panelGroup>
-                <h:panelGroup id="actionActivity" rendered="#{task.processorModal.processingState}">
-                    <e5ui:include data="#{task.processorModal.processedActivity.document.form}"/>
-                </h:panelGroup>
-                <p:commandButton action="#{task.processorModal.process()}"
-                                 rendered="#{task.processorModal.actionsAvailable or task.processorModal.processingState}"
-                                 value="Выполнить" update="actionForm">
-                </p:commandButton>
-                <p:commandButton rendered="#{task.processorModal.actionsAvailable or task.processorModal.processingState}"
-                                 onclick="PF('actionDialogVar').close(); return false;"
-                                 value="Отмена"/>
-                <p:commandButton
-                        rendered="#{task.processorModal.noActionsAvailable or task.processorModal.failureState or task.processorModal.processedState}"
-                        onclick="PF('actionDialogVar').close(); return false;"
-                        value="Закрыть"/>
+                <p:commandButton action="#{taskWorkflow.process}" value="Выполнить" process="action_select_table @this" update="actionForm"
+                                 rendered="#{taskWorkflow.state == 'OPENED'}"/>
+                <p:commandButton action="#{taskWorkflow.finish}" value="Завершить" process="customUi @this" update="actionForm"
+                                 rendered="#{taskWorkflow.state == 'WAIT_FOR_USER_INPUT'}"/>
+                <p:commandButton onclick="PF('actionDialogVar').close(); return false;" value="Закрыть"/>
             </h:panelGroup>
         </p:dialog>
     </ui:define>

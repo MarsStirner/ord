@@ -16,6 +16,7 @@ import ru.efive.dms.uifaces.beans.FileManagementBean;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.AttachmentVersionDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
@@ -45,8 +46,7 @@ import java.util.stream.Stream;
 
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
-@Controller("task")
-@SpringScopeView
+@ViewScopedController("task")
 public class TaskHolder extends AbstractDocumentHolderBean<Task> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("TASK");
@@ -87,49 +87,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     @Qualifier("requestDocumentDao")
     private RequestDocumentDao requestDocumentDao;
     private List<Attachment> attachments = new ArrayList<>();
-    private ProcessorModalBean processorModal = new ProcessorModalBean() {
-        @Override
-        protected void doSave() {
-            Task task = getDocument();
-            Set<HistoryEntry> history = task.getHistory();
-            super.doSave();
-            task.setHistory(history);
-            setDocument(task);
-            TaskHolder.this.save();
-        }
-
-        @Override
-        protected void doInit() {
-            setProcessedData(getDocument());
-            if (getDocumentId() == null || getDocumentId() == 0) {
-                saveNewDocument();
-            }
-        }
-
-        @Override
-        protected void doPostProcess(ActionResult actionResult) {
-            Task task = (Task) actionResult.getProcessedData();
-            if (getSelectedAction().isHistoryAction()) {
-                Set<HistoryEntry> history = task.getHistory();
-                if (history == null) {
-                    history = new HashSet<>();
-                }
-                history.add(getHistoryEntry());
-                task.setHistory(history);
-            }
-            setDocument(task);
-            TaskHolder.this.save();
-        }
-
-        @Override
-        protected void doProcessException(ActionResult actionResult) {
-            Task document = (Task) actionResult.getProcessedData();
-            String in_result = document.getWFResultDescription();
-            if (StringUtils.isNotEmpty(in_result)) {
-                setActionResult(in_result);
-            }
-        }
-    };
 
     @PreDestroy
     public void destroy() {
@@ -284,6 +241,8 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         doc.setForm(getDefaultForm(formId));
         setDocument(doc);
         initDefaultInitiator();
+        taskTreeHolder.setRootDocumentId(doc.getUniqueId());
+        taskTreeHolder.refresh();
     }
 
     private Task initializeParentTask(final String parentId) {
@@ -564,7 +523,5 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         this.taskTreeHolder = taskTreeHolder;
     }
 
-    public ProcessorModalBean getProcessorModal() {
-        return processorModal;
-    }
+
 }

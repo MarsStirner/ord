@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.Task;
 import ru.hitsl.sql.dao.interfaces.document.TaskDao;
@@ -22,8 +24,7 @@ import java.util.*;
  * Company: Korus Consulting IT <br>
  * Description: Бин для содержания дерева поручений для конкретного документа<br>
  */
-@Controller("documentTaskTree")
-@SpringScopeView
+@ViewScopedController("documentTaskTree")
 public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task> {
     private static final Logger logger = LoggerFactory.getLogger("TASK");
 
@@ -48,6 +49,7 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
      * @return список документов
      */
     @Override
+    @Transactional("ordTransactionManager")
     protected List<Task> loadDocuments() {
         if (StringUtils.isEmpty(rootDocumentId)) {
             return new ArrayList<>(0);
@@ -107,5 +109,17 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
             }
         }
         return root;
+    }
+
+    @Override
+    @Transactional("ordTransactionManager")
+    public void refresh() {
+        super.refresh();
+    }
+
+    @Override
+    @Transactional("ordTransactionManager")
+    public void refresh(boolean option) {
+        super.refresh(option);
     }
 }
