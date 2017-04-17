@@ -339,6 +339,7 @@ public class InternalDocument extends DocumentEntity implements ProcessedData {
     }
 
     @Transient
+    @Override
     public DocumentType getDocumentType() {
         return DocumentType.InternalDocument;
     }

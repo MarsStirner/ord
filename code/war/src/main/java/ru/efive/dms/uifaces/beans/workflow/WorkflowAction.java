@@ -4,6 +4,8 @@ import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.enums.DocumentAction;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.mapped.DocumentEntity;
+import ru.external.ProcessedData;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import java.time.LocalDateTime;
@@ -82,7 +84,7 @@ public class WorkflowAction {
         return needHistory;
     }
 
-    public HistoryEntry getHistoryEntity(IncomingDocument document, AuthorizationData authData) {
+    public HistoryEntry getHistoryEntity(ProcessedData document, AuthorizationData authData) {
         final HistoryEntry result = new HistoryEntry();
         LocalDateTime date = LocalDateTime.now();
         result.setCreated(date);

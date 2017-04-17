@@ -11,6 +11,8 @@
     <ui:param name="defaultSortField" value="creationDate"/>
     <ui:param name="defaultSortOrder" value="descending"/>
 
+    <ui:define name="HEAD.TITLE">Все виды поручений по номеру</ui:define>
+    <ui:define name="CONTENT.VIEWTITLE">Все виды поручений по номеру</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
         <p:column headerText="Номер" style="width:9em;" sortBy="#{row.taskNumber}" field="taskNumber">
             <h:outputText value="#{row.taskNumber}"/>
@@ -25,6 +27,9 @@
             <ui:repeat value="#{row.executorsList}" var="executor">
                 <h:outputText value="#{executor}" converter="#{PersonConverter}"/><br/>
             </ui:repeat>
+        </p:column>
+        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
+            <h:outputText value="#{row.form.value}"/>
         </p:column>
         <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field="executionDate">
             <h:outputText value="#{row.executionDate}">

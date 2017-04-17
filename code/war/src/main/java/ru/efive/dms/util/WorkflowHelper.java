@@ -71,17 +71,17 @@ public class WorkflowHelper {
     @Qualifier("officeKeepingFileDao")
     private OfficeKeepingFileDao officeKeepingFileDao;
 
-    public static boolean checkInternalPropertiesForArchiving(InternalDocument doc) {
+    public boolean checkInternalPropertiesForArchiving(InternalDocument doc) {
         doc.setWFResultDescription("");
         return true;
     }
 
-    public static boolean checkRequestPropertiesForArchiving(RequestDocument doc) {
+    public boolean checkRequestPropertiesForArchiving(RequestDocument doc) {
         doc.setWFResultDescription("");
         return true;
     }
 
-    public static boolean setOfficeKeepingVolumeRegistrationNumber(OfficeKeepingVolume doc) {
+    public boolean setOfficeKeepingVolumeRegistrationNumber(OfficeKeepingVolume doc) {
         boolean result = false;
         FacesContext context = FacesContext.getCurrentInstance();
         StringBuilder in_result = new StringBuilder("");
@@ -138,7 +138,7 @@ public class WorkflowHelper {
         return result;
     }
 
-    public static boolean checkOfficeKeepingVolumePropertiesForUnfile(OfficeKeepingVolume doc) {
+    public boolean checkOfficeKeepingVolumePropertiesForUnfile(OfficeKeepingVolume doc) {
         StringBuilder in_result = new StringBuilder("");
         if (doc.getCollector() == null) {
             in_result.append("Необходимо указать кому будет выдан том дела;").append(System.getProperty("line.separator"));
@@ -155,7 +155,7 @@ public class WorkflowHelper {
         return false;
     }
 
-    public static boolean setOfficeKeepingVolumeCollectorToEmpty(OfficeKeepingVolume doc) {
+    public boolean setOfficeKeepingVolumeCollectorToEmpty(OfficeKeepingVolume doc) {
         doc.setCollector(null);
         doc.setReturnDate(null);
         doc.setWFResultDescription("");

@@ -74,48 +74,27 @@
             <p:menuitem value="Благодарности" url="/component/request/gratitudes.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/request/gratitudes.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
-
         <p:submenu label="Поручения|Задачи" styleClass="subMenuItem">
-            <p:menuitem value="Мои проекты"
-                        url="/component/personal/personal_tasks.xhtml"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/personal/personal_tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="По номеру"
-                        url="/component/task/tasks.xhtml"
-                        icon="leafIcon"
+            <p:menuitem value="Мои проекты" url="/component/task/personal.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/personal.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="По номеру" url="/component/task/list.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/list.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="На исполнении" url="/component/task/on_execution.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/on_execution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Исполненные" url="/component/task/executed.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/executed.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Резолюции" url="/component/task/resolutions.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/resolutions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Поручения" url="/component/task/tasks.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/task/tasks.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="На исполнении"
-                        url="/component/task/tasks_on_execution.xhtml?statusId=2"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_on_execution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Исполненные"
-                        url="/component/task/tasks_executed.xhtml?statusId=3"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_executed.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Резолюции"
-                        url="/component/task/tasks_eq_resolution.xhtml?formValue=Резолюция"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_eq_resolution.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Поручения"
-                        url="/component/task/tasks_eq_task.xhtml?formValue=Поручение"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_eq_task.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Задачи"
-                        url="/component/task/tasks_eq_exercise.xhtml?formValue=Задача"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_eq_exercise.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Обращения"
-                        url="/component/task/tasks_eq_request.xhtml?formValue=Обращение"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_eq_request.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Заявления"
-                        url="/component/task/tasks_eq_petition.xhtml?formValue=Заявление"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_eq_petition.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Заявки"
-                        url="/component/task/tasks_eq_claim.xhtml?formValue=Заявка"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/task/tasks_eq_claim.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Задачи" url="/component/task/exercises.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/exercises.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Обращения" url="/component/task/requests.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/requests.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Заявления" url="/component/task/petitions.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/petitions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Заявки" url="/component/task/claims.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/task/claims.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
         <p:submenu label="Пользователи" styleClass="subMenuItem" rendered="#{not isOuter}">
             <p:menuitem value="Телефонный справочник" url="/component/users.xhtml"

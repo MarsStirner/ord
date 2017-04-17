@@ -333,14 +333,14 @@
                 </script>
                 <p:toolbar id="taskToolBar">
                     <p:toolbarGroup>
-                        <p:button value="Новая резолюция" id="task_add_resolution_btn" outcome="/component/task/task.xhtml" target="_blank"
+                        <p:button value="Новая резолюция" id="task_add_resolution_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_Registered}">
                             <f:param name="docAction" value="create"/>
                             <f:param name="rootDocumentId" value="#{in_doc.document.uniqueId}"/>
                             <f:param name="formId" value="TASK_RESOLUTION"/>
                         </p:button>
                         <p:button value="Новое поручение" id="task_add_assigment_btn"
-                                  outcome="/component/task/task.xhtml" target="_blank"
+                                  outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_OnExecution}">
                             <f:param name="docAction" value="create"/>
                             <f:param name="rootDocumentId" value="#{in_doc.document.uniqueId}"/>
@@ -591,7 +591,7 @@
         </p:confirmDialog>
         <!-- Диалог работы с действиями -->
         <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
-                  closeOnEscape="true" fitViewport="true" >
+                  closeOnEscape="true" fitViewport="true">
             <h:panelGroup id="actionForm" rendered="#{incomingWorkflow.state != 'HIDDEN'}">
                 <p:dataTable id="action_select_table"
                              rendered="#{incomingWorkflow.state == 'OPENED'}"
@@ -615,8 +615,10 @@
                         <ui:param name="documentHolder" value="#{in_doc}"/>
                     </ui:include>
                 </h:panelGroup>
-                <p:commandButton action="#{incomingWorkflow.process}" value="Выполнить" process="action_select_table @this" update="actionForm"  rendered="#{incomingWorkflow.state == 'OPENED'}"/>
-                <p:commandButton action="#{incomingWorkflow.finish}" value="Завершить" process="customUi @this" update="actionForm"  rendered="#{incomingWorkflow.state == 'WAIT_FOR_USER_INPUT'}"/>
+                <p:commandButton action="#{incomingWorkflow.process}" value="Выполнить" process="action_select_table @this" update="actionForm"
+                                 rendered="#{incomingWorkflow.state == 'OPENED'}"/>
+                <p:commandButton action="#{incomingWorkflow.finish}" value="Завершить" process="customUi @this" update="actionForm"
+                                 rendered="#{incomingWorkflow.state == 'WAIT_FOR_USER_INPUT'}"/>
                 <p:commandButton onclick="PF('actionDialogVar').close(); return false;" value="Закрыть"/>
             </h:panelGroup>
         </p:dialog>

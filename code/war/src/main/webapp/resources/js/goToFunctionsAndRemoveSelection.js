@@ -44,7 +44,7 @@ function goToDocument(docType, id) {
 // К поручениям
 function goToTask(id) {
     if (id != 0) {
-        window.open('/component/task/task.xhtml?docId=' + id, '_blank');
+        window.open('/component/task/document.xhtml?docId=' + id, '_blank');
     }
 }
 // К входящим документам

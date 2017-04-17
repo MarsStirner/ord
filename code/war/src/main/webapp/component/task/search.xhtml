@@ -1,0 +1,365 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
+        >
+
+<ui:composition template="/jsf-template/searchFormTemplate.xhtml">
+
+    <ui:define name="running_head">
+        <h:outputScript library="js" name="primefacesLocale_ru.js"/>
+        <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
+        <h:outputStylesheet library="css" name="primefacesExtension/calendarIcon.css"/>
+    </ui:define>
+
+    <!--Кнопки верхнего меню-->
+    <ui:define name="headerHomeButton">
+        <div class="defbutton">
+            <h:outputLink value="/component/request/request_documents.xhtml">
+                <h:graphicImage value="#{resource['images:home.png']}"/>
+            </h:outputLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="headerSearchButton">
+        <div class="defbutton">
+            <h:commandLink id="searchBtn" action="#{request_search.performSearch}" styleClass="searchbutton">
+                <h:graphicImage value="#{resource['images:button-search.png']}"/>
+                <f:ajax execute="searchParametersPanel" render="searchResultsPanel"
+                        onevent="function (data) { if(data.status == 'success') { PF('searchParametersPanelVar').collapse(); PF('searchResultsPanelVar').expand();}}"/>
+                Найти
+            </h:commandLink>
+        </div>
+    </ui:define>
+
+    <ui:define name="headerClearButton">
+        <div class="defbutton">
+            <h:commandLink action="#{request_search.clearFilter}" styleClass="searchbutton">
+                <h:graphicImage value="#{resource['images:button-refresh.png']}"/>
+                <f:ajax render="searchParametersPanel"
+                        onevent="function (data) {if(data.status == 'success') {PF('searchParametersPanelVar').expand(); PF('searchResultsPanelVar').collapse();}}"/>
+                Очистить
+            </h:commandLink>
+        </div>
+    </ui:define>
+
+    <!--Название поисковой формы-->
+    <ui:define name="searchFormName">
+        <div class="name">Форма поиска обращений граждан</div>
+    </ui:define>
+
+    <!--Параметры поиска-->
+    <ui:define name="searchParameters">
+        <p:defaultCommand target="searchBtn"/>
+        <p:panelGrid id="searchPanelGrid" style="width:100%">
+            <p:row>
+                <p:column>
+                    <label for="statusId">
+                        <span class="title">Статус документа: </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:selectOneMenu id="statusId" value="#{request_search.status}">
+                        <f:selectItem itemLabel="" itemValue=""/>
+                        <f:selectItem itemLabel="Зарегистрирован" itemValue="2"/>
+                        <f:selectItem itemLabel="На исполнении" itemValue="80"/>
+                        <f:selectItem itemLabel="Исполнен" itemValue="90"/>
+                        <f:selectItem itemLabel="В архиве" itemValue="100"/>
+                        <f:selectItem itemLabel="Изъят из архива" itemValue="110"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="form">
+                        <span class="title">Вид документа:</span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:selectOneMenu id="form" value="#{request_search.form}" converter="RequestDocumentFormConverter">
+                        <f:selectItem itemLabel="" noSelectionOption="true"/>
+                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('REQUEST')}"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label>
+                    <span class="title">
+                       <p:commandButton value="Авторы" actionListener="#{request_search.chooseAuthors}">
+                           <p:ajax event="dialogReturn" listener="#{request_search.onAuthorsChosen}" update="authors"/>
+                       </p:commandButton>
+                    </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="authors" value="#{request_search.authors}" var="row_author" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
+                                <h:outputText value="#{row_author.descriptionShort}"/>
+                                <p:commandLink action="#{request_search.removeAuthor(row_author)}" ajax="true"
+                                               update="authors" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="registrationNumber">
+                        <span class="title">Регистрационный номер</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:inputText id="registrationNumber" value="#{request_search.registrationNumber}"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startCreationDate">
+                        <span class="title">Дата создания от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startCreationDate" value="#{request_search.startCreationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="startCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endCreationDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endCreationDate" value="#{request_search.endCreationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="endCreationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startRegistrationDate">
+                        <span class="title">Дата регистрации от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startRegistrationDate"
+                                value="#{request_search.startRegistrationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="startRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endRegistrationDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endRegistrationDate" value="#{request_search.endRegistrationDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="endRegistrationDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startDeliveryDate">
+                        <span class="title">Дата поступления от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startDeliveryDate" value="#{request_search.startDeliveryDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="startDeliveryDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endDeliveryDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endDeliveryDate" value="#{request_search.endDeliveryDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="endDeliveryDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="startExecutionDate">
+                        <span class="title">Срок исполнения от</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="startExecutionDate" value="#{request_search.startExecutionDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="startExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+                <p:column>
+                    <label for="endExecutionDate">
+                        <span class="title">до</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:calendar id="endExecutionDate" value="#{request_search.endExecutionDate}"
+                                lang="ru"
+                                locale="ru"
+                                widgetVar="endExecutionDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="deliveryType">
+                        <span class="title">Тип доставки:</span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <my:deliveryTypeSelectOneMenu id="deliveryType" value="#{request_search.deliveryType}" withNoSelectOption="true"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="senderLastName">
+                        <span class="title">Фамилия отправителя</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:inputText id="senderLastName" value="#{request_search.senderLastName}"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="senderFirstName">
+                        <span class="title">Имя отправителя</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:inputText id="senderFirstName" value="#{request_search.senderFirstName}"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="senderPatrName">
+                        <span class="title">Отчество отправителя</span>
+                    </label>
+                </p:column>
+                <p:column>
+                    <p:inputText id="senderPatrName" value="#{request_search.senderPatrName}"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label>
+                    <span class="title">
+                       <p:commandButton value="Контроль исполнения"
+                                        actionListener="#{request_search.chooseResponsible}">
+                           <p:ajax event="dialogReturn" listener="#{request_search.onResponsibleChosen}"
+                                   update="responsible"/>
+                       </p:commandButton>
+                    </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <h:outputText id="responsible" value="#{request_search.responsible.descriptionShort}"
+                                  class="wide"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label>
+                        <span class="title">
+                             <p:commandButton value="Адресаты" actionListener="#{request_search.chooseRecipients}">
+                                 <p:ajax event="dialogReturn" listener="#{request_search.onRecipientsChosen}"
+                                         update="recipients"/>
+                             </p:commandButton>
+                        </span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:panel styleClass="userListPanel">
+                        <p:dataList id="recipients" value="#{request_search.recipients}" var="row_recipient" type="none"
+                                    emptyMessage="">
+                            <div class="userListItem">
+                                <h:outputText value="#{row_recipient.descriptionShort}"/>
+                                <p:commandLink action="#{request_search.removeRecipient(row_recipient)}" ajax="true"
+                                               update="recipients" styleClass="ui-icon ui-icon-closethick"
+                                               style="display:inline-block"/>
+                            </div>
+                        </p:dataList>
+                    </p:panel>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <label for="shortDescription">
+                        <span class="title">Краткое содержание</span>
+                    </label>
+                </p:column>
+                <p:column colspan="3">
+                    <p:inputText id="shortDescription" value="#{request_search.shortDescription}"/>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </ui:define>
+
+    <ui:define name="searchResults">
+        <p:dataTable id="main_data_tbl"
+                     paginator="true"
+                     rows="#{ui['search.resultRows']}"
+                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
+                     paginatorPosition = "#{ui['paginator.position']}"
+                     value="#{request_search.lazyModel}"
+                     var="row_result"
+                     lazy="true"
+                     widgetVar="documentTableVar"
+                     scrollable="true"
+                     scrollHeight="100%"
+                     selectionMode="single"
+                     rowStyleClass="#{row_result.styleClass}"
+                     sortBy="#{row_result.registrationNumber}"
+                     sortField="registrationNumber"
+                     sortOrder="descending"
+                     rendered="#{request_search.searchPerformed}"
+                     emptyMessage="Документов не найдено"
+                >
+            <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
+            <p:column style="width:5em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field = "registrationNumber">
+                <h:outputText value="#{row_result.registrationNumber}"/>
+            </p:column>
+            <p:column style="width:5em;" headerText="Дата доставки" sortBy="#{row_result.deliveryDate}" field = "deliveryDate">
+                <h:outputText value="#{row_result.deliveryDate}">
+                    <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                </h:outputText>
+            </p:column>
+            <p:column style="width:12em;" headerText="ФИО отправителя" sortBy="#{row_result.senderLastName}" field = "senderLastName">
+                <h:outputText value="#{row_result.senderDescriptionShort}"/>
+            </p:column>
+            <p:column style="width:8em;" headerText="Вид" sortBy="#{row_result.form}" field = "form.value">
+                <h:outputText value="#{row_result.form}"/>
+            </p:column>
+            <p:column style="width:10em;" headerText="Статус" sortBy="#{row_result.statusId}" field = "statusId" >
+                <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
+            </p:column>
+            <p:column headerText="Краткое содержание">
+                <h:outputText value="#{row_result.shortDescription}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToRequestDocument(PrimeFaces.widgets.documentTableVar.selection); return false;"/>
+        </p:dataTable>
+    </ui:define>
+
+</ui:composition>
+
+</html>

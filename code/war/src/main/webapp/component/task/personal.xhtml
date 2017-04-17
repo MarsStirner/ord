@@ -2,38 +2,40 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:h="http://java.sun.com/jsf/html">
 <ui:composition template="/jsf-template/listTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{taskLDM.setPersonalMode}"/>
+    </f:metadata>
     <ui:param name="prefix" value="document.task"/>
     <ui:param name="lazyDataModel" value="#{taskLDM}"/>
     <ui:param name="defaultSortField" value="creationDate"/>
     <ui:param name="defaultSortOrder" value="descending"/>
 
+    <ui:define name="HEAD.TITLE">Мои проекты поручений</ui:define>
+    <ui:define name="CONTENT.VIEWTITLE">Мои проекты поручений</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Номер" style="width:9em;" sortBy="#{row.taskNumber}" field="taskNumber">
-            <h:outputText value="#{row.taskNumber}"/>
-        </p:column>
-        <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field="creationDate">
+        <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field="creationDate">
             <h:outputText value="#{row.creationDate}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.creationDate.pattern')]}"/>
             </h:outputText>
         </p:column>
         <p:column headerText="Исполнитель" style="width:12em;">
-            <ui:repeat value="#{row.executorsList}" var="executor">
-                <h:outputText value="#{executor}" converter="#{PersonConverter}"/><br/>
+            <ui:repeat value="#{row.executorsList}" var="element">
+                <h:outputText value="#{element}" converter="#{PersonConverter}"/><br/>
             </ui:repeat>
         </p:column>
-        <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field="executionDate">
+        <p:column headerText="Вид" style="width:9em;" sortBy="#{row.form}" field = "form.value" >
+            <h:outputText value="#{row.form.value}"/>
+        </p:column>
+        <p:column headerText="Срок исполнения" style="width:12em;" sortBy="#{row.executionDate}" field = "executionDate">
             <h:outputText value="#{row.executionDate}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
             </h:outputText>
-        </p:column>
-        <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
-            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
         </p:column>
         <p:column headerText="Краткое содержание">
             <h:outputText value="#{row.shortDescription}"/>

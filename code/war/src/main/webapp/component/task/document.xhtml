@@ -198,7 +198,7 @@
                 </script>
                 <p:toolbar id="taskToolBar">
                     <p:toolbarGroup>
-                        <p:button value="Новое поручение" id="task_add_assigment_btn" outcome="/component/task/task.xhtml" target="_blank"
+                        <p:button value="Новое поручение" id="task_add_assigment_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_OnExecution}">
                             <f:param name="docAction" value="create"/>
                             <f:param name="parentId" value="#{task.document.id}"/>

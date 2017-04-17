@@ -12,6 +12,7 @@ import ru.entity.model.enums.DocumentAction;
 import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +45,11 @@ public class IncomingDocumentWorkflow {
     private IncomingDocument document;
     private String processedMessage;
     private WorkflowAction selectedAction;
+
+    @PostConstruct
+    public void postConstruct(){
+        log.info("@PostConstruct callback");
+    }
 
 
     public void init(final IncomingDocument document) {

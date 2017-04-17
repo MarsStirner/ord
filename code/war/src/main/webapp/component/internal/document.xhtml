@@ -63,8 +63,7 @@
         <p:commandButton value="Отменить" action="#{internal_doc.view}" rendered="#{internal_doc.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{internal_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{internal_doc.delete}" rendered="#{internal_doc.editState}" icon="ui-icon-trash" update="@form"/>
-        <p:commandButton value="Действия" action="#{internal_doc.processorModal.show}"
-                         rendered="#{internal_doc.viewState and internal_doc.executePermission}"
+        <p:commandButton value="Действия" action="#{internalWorkflow.init(internal_doc.document)}" rendered="#{internal_doc.viewState and internal_doc.executePermission}"
                          icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
     </ui:define>
 
@@ -264,13 +263,13 @@
                 </script>
                 <p:toolbar id="taskToolBar">
                     <p:toolbarGroup>
-                        <p:button value="Новая резолюция" id="task_add_resolution_btn" outcome="/component/task/task.xhtml" target="_blank"
+                        <p:button value="Новая резолюция" id="task_add_resolution_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_Registered}">
                             <f:param name="docAction" value="create"/>
                             <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
                             <f:param name="formId" value="TASK_RESOLUTION"/>
                         </p:button>
-                        <p:button value="Новое поручение" id="task_add_assigment_btn" outcome="/component/task/task.xhtml" target="_blank"
+                        <p:button value="Новое поручение" id="task_add_assigment_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_OnExecution}">
                             <f:param name="docAction" value="create"/>
                             <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
@@ -479,41 +478,36 @@
             <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
         </p:confirmDialog>
         <!-- Диалог работы с действиями -->
-        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false"
-                  resizable="false" width="50%" closeOnEscape="true" fitViewport="true">
-            <h:panelGroup id="actionForm" rendered="#{internal_doc.processorModal.modalVisible}">
-                <h:panelGroup rendered="#{internal_doc.processorModal.actionsAvailable}">
-                    <p:dataTable id="action_select_table"
-                                 value="#{internal_doc.processorModal.availableActions}"
-                                 var="row_action"
-                                 width="100%"
-                                 emptyMessage="Доступных действий нет"
-                                 rowKey="#{row_action.action.name}"
-                                 selectionMode="single"
-                                 selection="#{internal_doc.processorModal.selectedAction}">
-                        <p:column headerText="Доступные действия">
-                            <h:outputText value="#{row_action.action.name}"/>
-                        </p:column>
-                    </p:dataTable>
+        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
+                  closeOnEscape="true" fitViewport="true">
+            <h:panelGroup id="actionForm" rendered="#{internalWorkflow.state != 'HIDDEN'}">
+                <p:dataTable id="action_select_table"
+                             rendered="#{internalWorkflow.state == 'OPENED'}"
+                             value="#{internalWorkflow.actions}"
+                             var="row_action"
+                             width="100%"
+                             emptyMessage="Доступных действий нет"
+                             rowKey="#{row_action.action.name}"
+                             selectionMode="single"
+                             selection="#{internalWorkflow.selectedAction}"
+                >
+                    <p:column headerText="Доступные действия">
+                        <h:outputText value="#{row_action.action.name}"/>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGroup id="processedMessage" rendered="#{internalWorkflow.state == 'PROCESSED'}">
+                    <h:outputText style="padding-left:10px;" value="#{internalWorkflow.processedMessage}"/>
                 </h:panelGroup>
-                <h:panelGroup id="actiopResult"
-                              rendered="#{internal_doc.processorModal.noActionsAvailable or internal_doc.processorModal.failureState or internal_doc.processorModal.processedState}">
-                    <h:outputText style="padding-left:10px;" value="#{internal_doc.processorModal.actionResult}"/>
+                <h:panelGroup id="customUi" rendered="#{internalWorkflow.state == 'WAIT_FOR_USER_INPUT'}">
+                    <ui:include src="#{internalWorkflow.selectedAction.ui}">
+                        <ui:param name="documentHolder" value="#{in_doc}"/>
+                    </ui:include>
                 </h:panelGroup>
-                <h:panelGroup id="actionActivity" rendered="#{internal_doc.processorModal.processingState}">
-                    <e5ui:include data="#{internal_doc.processorModal.processedActivity.document.form}"/>
-                </h:panelGroup>
-                <p:commandButton action="#{internal_doc.processorModal.process()}"
-                                 rendered="#{internal_doc.processorModal.actionsAvailable or internal_doc.processorModal.processingState}"
-                                 value="Выполнить" update="actionForm">
-                </p:commandButton>
-                <p:commandButton rendered="#{internal_doc.processorModal.actionsAvailable or internal_doc.processorModal.processingState}"
-                                 onclick="PF('actionDialogVar').close(); return false;"
-                                 value="Отмена"/>
-                <p:commandButton
-                        rendered="#{internal_doc.processorModal.noActionsAvailable or internal_doc.processorModal.failureState or internal_doc.processorModal.processedState}"
-                        onclick="PF('actionDialogVar').close(); return false;"
-                        value="Закрыть"/>
+                <p:commandButton action="#{internalWorkflow.process}" value="Выполнить" process="action_select_table @this" update="actionForm"
+                                 rendered="#{internalWorkflow.state == 'OPENED'}"/>
+                <p:commandButton action="#{internalWorkflow.finish}" value="Завершить" process="customUi @this" update="actionForm"
+                                 rendered="#{internalWorkflow.state == 'WAIT_FOR_USER_INPUT'}"/>
+                <p:commandButton onclick="PF('actionDialogVar').close(); return false;" value="Закрыть"/>
             </h:panelGroup>
         </p:dialog>
     </ui:define>

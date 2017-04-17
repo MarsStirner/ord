@@ -74,51 +74,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
     private List<Attachment> attachments = new ArrayList<>();
-    private ProcessorModalBean processorModal = new ProcessorModalBean() {
 
-        @Override
-        protected void doInit() {
-            setProcessedData(getDocument());
-            if (getDocumentId() == null || getDocumentId() == 0) {
-                saveNewDocument();
-            }
-        }
-
-        @Override
-        protected void doSave() {
-            InternalDocument document = getDocument();
-            Set<HistoryEntry> history = document.getHistory();
-            super.doSave();
-            document.setHistory(history);
-            setDocument(document);
-            InternalDocumentHolder.this.save();
-        }
-
-        @Override
-        protected void doPostProcess(ActionResult actionResult) {
-            InternalDocument document = (InternalDocument) actionResult.getProcessedData();
-            if (getSelectedAction().isHistoryAction()) {
-                Set<HistoryEntry> history = document.getHistory();
-                if (history == null) {
-                    history = new HashSet<>();
-                }
-                history.add(getHistoryEntry());
-                document.setHistory(history);
-            }
-            setDocument(document);
-            InternalDocumentHolder.this.save();
-        }
-
-        @Override
-        protected void doProcessException(ActionResult actionResult) {
-            InternalDocument document = (InternalDocument) actionResult.getProcessedData();
-            String in_result = document.getWFResultDescription();
-            if (StringUtils.isNotEmpty(in_result)) {
-                setActionResult(in_result);
-            }
-        }
-    };
-    
 
     public void handleFileUpload(FileUploadEvent event) {
         final UploadedFile file = event.getFile();
@@ -636,10 +592,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
 
     public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
         this.taskTreeHolder = taskTreeHolder;
-    }
-
-    public ProcessorModalBean getProcessorModal() {
-        return processorModal;
     }
 
 }
