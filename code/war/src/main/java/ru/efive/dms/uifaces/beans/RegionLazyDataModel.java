@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.lazyDataModel.referencebook;
+package ru.efive.dms.uifaces.beans;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

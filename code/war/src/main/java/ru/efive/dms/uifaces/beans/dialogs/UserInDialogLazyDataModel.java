@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.lazyDataModel.dialogs;
+package ru.efive.dms.uifaces.beans.dialogs;
 
 import org.primefaces.model.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;

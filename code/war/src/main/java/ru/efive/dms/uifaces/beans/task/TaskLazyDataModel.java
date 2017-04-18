@@ -16,9 +16,9 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
  * Description: <br>
  */
 @ViewScopedLazyDataModel("taskLDM")
-public class LazyDataModelForTask extends AbstractDocumentableLazyDataModel<Task> {
+public class TaskLazyDataModel extends AbstractDocumentableLazyDataModel<Task> {
     @Autowired
-    public LazyDataModelForTask(
+    public TaskLazyDataModel(
             @Qualifier("taskDao") TaskDao taskDao,
             @Qualifier("authData") AuthorizationData authData,
             @Qualifier("viewFactDao") ViewFactDao viewFactDao) {

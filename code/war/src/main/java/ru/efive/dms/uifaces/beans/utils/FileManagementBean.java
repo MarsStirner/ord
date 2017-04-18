@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.beans;
+package ru.efive.dms.uifaces.beans.utils;
 
 import com.github.javaplugs.jsf.SpringScopeSession;
 import org.apache.commons.lang3.StringUtils;
@@ -24,6 +24,7 @@ import java.util.List;
 
 @Controller("fileManagement")
 @SpringScopeSession
+@Deprecated
 public class FileManagementBean implements java.io.Serializable {
     private static final Logger logger = LoggerFactory.getLogger("ALFRESCO");
     private static final String CONTENT_TYPE = "application/octet-stream;charset=UTF-8";

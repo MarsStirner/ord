@@ -4,7 +4,7 @@ import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.referencebook.RegionLazyDataModel;
+import ru.efive.dms.uifaces.beans.RegionLazyDataModel;
 import ru.entity.model.referenceBook.Region;
 
 import org.springframework.stereotype.Controller;

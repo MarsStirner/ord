@@ -8,7 +8,7 @@ import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dao.alfresco.Attachment;
-import ru.efive.dms.uifaces.beans.FileManagementBean;
+import ru.efive.dms.uifaces.beans.utils.FileManagementBean;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;

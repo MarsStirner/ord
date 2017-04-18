@@ -5,7 +5,7 @@ import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.referencebook.ContragentLazyDataModel;
+import ru.efive.dms.uifaces.beans.contragent.ContragentLazyDataModel;
 import ru.entity.model.referenceBook.Contragent;
 
 import javax.annotation.PostConstruct;

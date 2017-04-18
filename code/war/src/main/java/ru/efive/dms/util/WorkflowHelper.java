@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.SessionManagementBean;
 import ru.efive.wf.core.IActivity;
 import ru.efive.wf.core.NoStatusAction;
 import ru.efive.wf.core.activity.SendMailActivity;

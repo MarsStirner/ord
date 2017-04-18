@@ -5,12 +5,10 @@ import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.efive.dms.uifaces.lazyDataModel.dialogs.UserInDialogLazyDataModel;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.referencebook.GroupDao;
 
-import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import java.util.Map;
 

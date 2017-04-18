@@ -5,7 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.dialogs.UserInDialogLazyDataModel;
 import ru.entity.model.user.User;
 
 import javax.annotation.PostConstruct;

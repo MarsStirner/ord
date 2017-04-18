@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.beans;
+package ru.efive.dms.uifaces.beans.utils;
 
 import com.github.javaplugs.jsf.SpringScopeSession;
 import org.apache.commons.lang3.StringUtils;

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import ru.efive.dao.alfresco.Attachment;
-import ru.efive.dms.uifaces.beans.FileManagementBean;
+import ru.efive.dms.uifaces.beans.utils.FileManagementBean;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PostConstruct;

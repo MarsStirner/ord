@@ -1,9 +1,9 @@
-package ru.efive.dms.uifaces;
+package ru.efive.dms.config;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.efive.dms.uifaces.beans.SessionManagementBean;
+import ru.efive.dms.uifaces.beans.utils.SessionManagementBean;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
