@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.ContactInfoType;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
@@ -33,6 +34,7 @@ import java.util.*;
 
 
 @Service("ldapImportService")
+@Transactional("ordTransactionManager")
 public class LDAPImportService {
     //Именованный логгер (LDAP)
     private static final Logger LOGGER = LoggerFactory.getLogger("LDAP");

@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
-import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
 import ru.entity.model.mapped.DeletableEntity;
 
 import java.io.Serializable;

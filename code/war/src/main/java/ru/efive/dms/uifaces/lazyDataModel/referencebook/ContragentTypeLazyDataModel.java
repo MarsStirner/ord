@@ -1,11 +1,9 @@
 package ru.efive.dms.uifaces.lazyDataModel.referencebook;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
-import ru.efive.dms.uifaces.lazyDataModel.AbstractFilterableLazyDataModel;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractFilterableLazyDataModel;
 import ru.entity.model.referenceBook.ContragentType;
 import ru.hitsl.sql.dao.interfaces.referencebook.ContragentTypeDao;
 

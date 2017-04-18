@@ -1,59 +1,58 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
+    <ui:param name="prefix" value="document.default"/>
+    <ui:param name="defaultSortField" value="lastName"/>
+    <ui:param name="defaultSortOrder" value="ascending"/>
 
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
-
-    <ui:define name="contentLabel">
-        <h:outputText id = "userListHeader"
-                      value="#{(users.showFired ? 'Уволенные' : 'Работающие').concat(' пользователи по фамилии')}"/>
+    <ui:define name="CONTENT.VIEWTITLE">
+        <h:outputText id="userListHeader" value="#{(userLDM.showFired ? 'Уволенные' : 'Работающие').concat(' пользователи по фамилии')}"/>
     </ui:define>
-
-    <ui:define name="contentButtonsPanel">
+    <ui:define name="CONTENT.TOOLBAR">
         <p:toolbarGroup align="left">
             <p:button value="Новый пользователь" outcome="/component/user.xhtml" target="_blank" icon="ui-icon-plusthick" rendered="#{isAdministrator or isHr}">
                 <f:param name="docAction" value="create"/>
             </p:button>
-            <p:commandButton value="Обновить" update="personTable" icon="ui-icon-refresh" ajax="true"/>
-            <p:commandButton value="Импортировать пользователей из LDAP"
-                             action="#{userList.importLDAPUsers()}"
-                             rendered="#{isAdministrator or isHr}"
-                             update="personTable"/>
-            <p:commandButton value ="#{users.showFired ? 'Показать только работающих':'Показать только уволенных'}" action="#{users.setShowFired(not users.getShowFired())}" update="personTable userListHeader"/>
+            <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
+            <p:commandButton value="Импортировать пользователей из LDAP" action="#{ldapImportService.run}" rendered="#{isAdministrator or isHr}"
+                             update="documentTable"/>
+            <p:commandButton value="#{userLDM.showFired ? 'Только работающие':'Только уволенные'}"
+                             action="#{userLDM.setShowFired(not userLDM.showFired)}" update="documentTable userListHeader @this"/>
+
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="Введите текст для поиска" style="width:25em;" id="filterString" value="#{users.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" action="#{users.applyFilter()}" id="searchButton" process="@this filterString" update="personTable" icon="ui-icon-search"/>
-            <p:defaultCommand target="searchButton" />
+            <p:inputText id="filterString" value="#{userLDM.filter}" title="Поиск" placeholder="#{ui[prefix.concat('.list.search.placeholder')]}"
+                         style="width:25em;"/>
+            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
+            <p:defaultCommand target="searchButton"/>
         </p:toolbarGroup>
     </ui:define>
-
-    <ui:define name="contentTable">
-        <p:dataTable id="personTable"
+    <ui:define name="CONTENT.TABLE">
+        <p:dataTable id="documentTable"
                      paginator="true"
-                     rows="#{ui['paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
-                     emptyMessage="#{ui['emptyMessage']}"
-                     value="#{users.lazyModel}"
+                     rows="#{ui[prefix.concat('.list.paginator.rows.default')]}"
+                     currentPageReportTemplate="#{ui[prefix.concat('.list.paginator.template.currentPage')]}"
+                     paginatorTemplate="#{ui[prefix.concat('.list.paginator.template.total')]}"
+                     rowsPerPageTemplate="#{ui[prefix.concat('.list.paginator.rows.dropDown')]}"
+                     paginatorPosition="#{ui[prefix.concat('.list.paginator.position')]}"
+                     emptyMessage="#{ui[prefix.concat('.list.emptyMessage')]}"
+                     value="#{userLDM}"
                      var="person_row"
-                     selectionMode="single"
                      lazy="true"
-                     widgetVar="personTableWidget"
+                     widgetVar="documentTableWidget"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{person_row.lastName}"
-                     sortOrder="ascending"
-                     sortField="lastName"
-                >
-            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field = "lastName">
+                     selectionMode="single"
+                     sortBy="#{null}"
+                     sortField="#{defaultSortField}"
+                     sortOrder="#{defaultSortOrder}"
+        >
+            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field="lastName">
                 <h:outputText value="#{person_row.lastName}"/>
             </p:column>
             <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
@@ -74,7 +73,7 @@
             <p:column headerText="Рабочий телефон">
                 <h:outputText value="#{person_row.getContact('workPhone')}"/>
             </p:column>
-            <p:ajax event="rowSelect" onstart="goToUser(PrimeFaces.widgets.personTableWidget.selection); return false;"/>
+            <p:ajax event="rowSelect" onstart="goToUser(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>
     </ui:define>
 </ui:composition>

@@ -1,11 +1,10 @@
-package ru.efive.dms.uifaces.lazyDataModel;
+package ru.efive.dms.uifaces.beans.user;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractFilterableLazyDataModel;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.UserDao;
@@ -20,12 +19,12 @@ import java.util.Map;
  * Description: <br>
  */
 @ViewScopedLazyDataModel("userLDM")
-public class LazyDataModelForUser extends AbstractFilterableLazyDataModel<User> {
+public class UserLazyDataModel extends AbstractFilterableLazyDataModel<User> {
 
     private boolean showFired = false;
 
     @Autowired
-    public LazyDataModelForUser(
+    public UserLazyDataModel(
             @Qualifier("userDao") UserDao userDao) {
         super(userDao);
     }

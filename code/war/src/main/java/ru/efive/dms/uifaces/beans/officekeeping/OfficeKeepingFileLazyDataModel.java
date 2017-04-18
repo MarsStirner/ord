@@ -1,9 +1,8 @@
-package ru.efive.dms.uifaces.lazyDataModel;
+package ru.efive.dms.uifaces.beans.officekeeping;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractFilterableLazyDataModel;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
 import ru.entity.model.document.OfficeKeepingFile;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
@@ -15,9 +14,9 @@ import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
  * Description: <br>
  */
 @ViewScopedLazyDataModel("officeKeepingFileLDM")
-public class LazyDataModelForOfficeKeepingFile extends AbstractFilterableLazyDataModel<OfficeKeepingFile> {
+public class OfficeKeepingFileLazyDataModel extends AbstractFilterableLazyDataModel<OfficeKeepingFile> {
     @Autowired
-    public LazyDataModelForOfficeKeepingFile(@Qualifier("officeKeepingFileDao") OfficeKeepingFileDao officeKeepingFileDao) {
+    public OfficeKeepingFileLazyDataModel(@Qualifier("officeKeepingFileDao") OfficeKeepingFileDao officeKeepingFileDao) {
         super(officeKeepingFileDao);
     }
 }

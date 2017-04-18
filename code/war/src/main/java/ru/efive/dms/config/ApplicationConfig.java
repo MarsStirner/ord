@@ -48,6 +48,11 @@ public class ApplicationConfig {
         return result;
     }
 
+    @Bean("jcr")
+    public JCR jcr(){
+        return new JCR();
+    }
+
     @Bean("alfrescoDao")
     public AlfrescoDAO<Attachment> alfrescoDAO(Config config) throws InitializationException {
         final Logger log = LoggerFactory.getLogger("ALFRESCO");

@@ -1,8 +1,5 @@
 package ru.efive.dms.uifaces.beans.utils;
 
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.MenuModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -13,6 +10,8 @@ import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.SenderType;
 import ru.entity.model.referenceBook.UserAccessLevel;
+import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.interfaces.UserDao;
 import ru.hitsl.sql.dao.interfaces.document.*;
 import ru.hitsl.sql.dao.interfaces.referencebook.DeliveryTypeDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
@@ -63,6 +62,15 @@ public class ReferenceBookHelper {
     @Autowired
     @Qualifier("outgoingDocumentDao")
     private OutgoingDocumentDao outgoingDocumentDao;
+
+    @Autowired
+    @Qualifier("userDao")
+    private UserDao userDao;
+
+    public String getUserFullNameById(int id) {
+        final User user = userDao.getItemBySimpleCriteria(id);
+        return user != null ? user.getDescription() : "";
+    }
 
     public List<DocumentForm> getDocumentFormsByCategory(String category) {
         return documentFormDao.findByDocumentTypeCode(category);

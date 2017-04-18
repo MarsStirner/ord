@@ -97,43 +97,24 @@
                         styleClass="#{currentView eq '/component/task/claims.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
         <p:submenu label="Пользователи" styleClass="subMenuItem" rendered="#{not isOuter}">
-            <p:menuitem value="Телефонный справочник" url="/component/users.xhtml"
-                        icon="leafIcon"
+            <p:menuitem value="Телефонный справочник" url="/component/users.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/users.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="Группы" url="/component/groups.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/groups.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Замещение" url="/component/user_substitutions.xhtml"
-                        rendered="#{isFilling}"
-                        icon="leafIcon"
+            <p:menuitem value="Замещение" url="/component/user_substitutions.xhtml" rendered="#{isFilling}" icon="leafIcon"
                         styleClass="#{currentView eq '/component/user_substitutions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
-        <p:submenu label="Записная книжка" styleClass="subMenuItem">
-            <p:menuitem value="По дате" url="/component/record_book_documents.xhtml"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/record_book_documents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-        </p:submenu>
-        <p:submenu label="Контрагенты" styleClass="subMenuItem"
-                   rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
-            <p:menuitem value="По названию" url="/component/contragent/contragents.xhtml"
-                        icon="leafIcon"
+        <p:submenu label="Контрагенты" styleClass="subMenuItem" rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
+            <p:menuitem value="По названию" url="/component/contragent/contragents.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/contragent/contragents.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Типы контрагентов"
-                        url="/component/contragent/contragentTypes.xhtml" icon="leafIcon"
+            <p:menuitem value="Типы контрагентов" url="/component/contragent/contragentTypes.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/contragent/contragentTypes.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
         <p:submenu label="Архивирование" styleClass="subMenuItem" rendered="#{isAdministrator or isRecorder}">
-            <p:menuitem value="Дела" url="/component/office/office_keeping_files.xhtml"
-                        icon="leafIcon"
+            <p:menuitem value="Дела" url="/component/office/office_keeping_files.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/office/office_keeping_files.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Тома дел" url="/component/office/office_keeping_volumes.xhtml"
-                        icon="leafIcon"
+            <p:menuitem value="Тома дел" url="/component/office/office_keeping_volumes.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/office/office_keeping_volumes.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-        </p:submenu>
-        <p:submenu label="Шаблоны согласования" styleClass="subMenuItem"
-                   rendered="#{isAdministrator or isOfficeManager or isRequestManager}">
-            <p:menuitem value="По названию" url="/component/admin/route_templates.xhtml"
-                        icon="leafIcon"
-                        styleClass="#{currentView eq '/component/admin/route_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
         <p:submenu label="Администрирование" styleClass="subMenuItem" rendered="#{isAdministrator}">
             <p:menuitem value="Сотрудники" url="/component/users.xhtml" icon="leafIcon"
@@ -142,19 +123,14 @@
                         styleClass="#{currentView eq '/component/roles.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="Нумератор" url="/component/numerators.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/numerators.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Номенклатуры дел" url="/component/admin/nomenclatures.xhtml"
-                        icon="leafIcon"
+            <p:menuitem value="Номенклатуры дел" url="/component/admin/nomenclatures.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/admin/nomenclatures.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Матрица редактируемости" url="/component/admin/editableMatrix.xhtml"
-                        icon="leafIcon"
-                        target="_blank"
+            <p:menuitem value="Матрица редактируемости" url="/component/admin/editableMatrix.xhtml" icon="leafIcon" target="_blank"
                         styleClass="#{currentView eq '/component/admin/editableMatrix.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="О программе" url="/component/version.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/version.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
-        <p:menuitem value="Отчеты" url="/component/report/report_templates.xhtml"
-                    rendered="#{isAdministrator or isOfficeManager or isRequestManager}"
-                    icon="leafIcon"
-                    styleClass="#{currentView eq '/component/report/report_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Отчеты" url="/component/report/report_templates.xhtml" rendered="#{isAdministrator or isOfficeManager or isRequestManager}"
+                    icon="leafIcon" styleClass="#{currentView eq '/component/report/report_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
     </p:menu>
 </ui:composition>

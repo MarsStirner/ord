@@ -165,6 +165,9 @@
     <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
         <appender-ref ref="APPENDER_SQL"/>
     </logger>
+    <logger name="org.springframework.orm.jpa" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_SQL"/>
+    </logger>
 
     <root level="${logs.level}">
         <appender-ref ref="STDOUT"/>

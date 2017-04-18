@@ -476,7 +476,7 @@
                     </p:column>
                     <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
                         <h:outputText
-                                value="#{userList.getUserFullNameById(attachment.currentRevision.authorId != 0 ? attachment.currentRevision.authorId : attachment.authorId)}"/>
+                                value="#{refBookHelper.getUserFullNameById(attachment.currentRevision.authorId != 0 ? attachment.currentRevision.authorId : attachment.authorId)}"/>
                     </p:column>
                     <p:column headerText="Скачать" style="width:7em">
                         <p:commandButton value="Скачать" ajax="false" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
@@ -502,7 +502,7 @@
                             </p:column>
                             <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
                                 <h:outputText
-                                        value="#{userList.getUserFullNameById(revision.authorId != 0 ? revision.authorId : attachment.authorId)}"/>
+                                        value="#{refBookHelper.getUserFullNameById(revision.authorId != 0 ? revision.authorId : attachment.authorId)}"/>
                             </p:column>
                             <p:column headerText="Скачать" style="width:7em">
                                 <p:commandButton value="Скачать" ajax="false" onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">

@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
+    <ui:param name="prefix" value="document.default"/>
+    <ui:param name="defaultSortField" value="code"/>
+    <ui:param name="defaultSortOrder" value="ascending"/>
+    <ui:param name="lazyDataModel" value="#{contragentTypeLDM}"/>
 
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
-
-    <ui:define name="contentLabel">Справочник типов контрагентов</ui:define>
-
-
-    <ui:define name="contentButtonsPanel">
+    <ui:define name="CONTENT.VIEWTITLE">Справочник типов контрагентов</ui:define>
+    <ui:define name="CONTENT.TOOLBAR">
         <p:toolbarGroup align="left">
             <p:button value="Новый тип контрагентов" outcome="/component/contragent/contragentType.xhtml" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
@@ -20,43 +20,40 @@
             <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
-            <p:inputText placeholder="Введите текст для поиска" style="width:25em;" id="filterString" value="#{contragentTypeList.filter}" title="Поиск"/>
-            <p:commandButton value="Найти" action="#{contragentTypeList.applyFilter()}" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
-            <p:defaultCommand target="searchButton" />
+            <p:inputText placeholder="Введите текст для поиска" style="width:25em;" id="filterString" value="#{lazyDataModel.filter}" title="Поиск"/>
+            <p:commandButton value="Найти" id="searchButton" process="@this filterString" update="documentTable" icon="ui-icon-search"/>
+            <p:defaultCommand target="searchButton"/>
         </p:toolbarGroup>
     </ui:define>
-
-    <ui:define name="contentTable">
+    <ui:define name="CONTENT.TABLE">
         <p:dataTable id="documentTable"
                      paginator="true"
-                     rows="#{ui['paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
-                     emptyMessage="#{ui['emptyMessage']}"
-                     value="#{contragentTypeList.lazyModel}"
+                     rows="#{ui[prefix.concat('.list.paginator.rows.default')]}"
+                     currentPageReportTemplate="#{ui[prefix.concat('.list.paginator.template.currentPage')]}"
+                     paginatorTemplate="#{ui[prefix.concat('.list.paginator.template.total')]}"
+                     rowsPerPageTemplate="#{ui[prefix.concat('.list.paginator.rows.dropDown')]}"
+                     paginatorPosition="#{ui[prefix.concat('.list.paginator.position')]}"
+                     emptyMessage="#{ui[prefix.concat('.list.emptyMessage')]}"
+                     value="#{lazyDataModel}"
                      var="row"
                      selectionMode="single"
                      lazy="true"
-                     widgetVar="contragentTypeTableWidget"
+                     widgetVar="documentTableWidget"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{row.code}"
-                     sortOrder="ascending"
-                     sortField="code"
-                >
+                     sortBy="#{null}"
+                     sortField="#{defaultSortField}"
+                     sortOrder="#{defaultSortOrder}"
+        >
             <p:column headerText="Наименование" sortBy="#{row.value}" field="value">
                 <h:outputText value="#{row.value}"/>
             </p:column>
             <p:column headerText="Код" sortBy="#{row.code}" field="code">
                 <h:outputText value="#{row.code}"/>
             </p:column>
-            <p:ajax event="rowSelect" onstart="goToContragentType(PrimeFaces.widgets.contragentTypeTableWidget.selection); return false;"/>
+            <p:ajax event="rowSelect" onstart="goToContragentType(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>
     </ui:define>
-
-
 </ui:composition>
-
 </html>
+

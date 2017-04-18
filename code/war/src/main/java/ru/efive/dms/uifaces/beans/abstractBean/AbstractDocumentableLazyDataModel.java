@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.lazyDataModel;
+package ru.efive.dms.uifaces.beans.abstractBean;
 
 import org.primefaces.model.SortOrder;
 import org.springframework.transaction.annotation.Transactional;

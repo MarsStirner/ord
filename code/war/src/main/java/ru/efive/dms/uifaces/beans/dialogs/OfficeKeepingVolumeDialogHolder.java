@@ -5,7 +5,7 @@ import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.model.LazyDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.lazyDataModel.LazyDataModelForOfficeKeepingVolume;
+import ru.efive.dms.uifaces.beans.officekeeping.OfficeKeepingVolumeLazyDataModel;
 import ru.entity.model.document.OfficeKeepingVolume;
 
 import javax.annotation.PostConstruct;
@@ -29,7 +29,7 @@ public class OfficeKeepingVolumeDialogHolder extends AbstractDialog<OfficeKeepin
 
     @Autowired
     @Qualifier("officeKeepingVolumeLDM")
-    private LazyDataModelForOfficeKeepingVolume lazyModel;
+    private OfficeKeepingVolumeLazyDataModel lazyModel;
 
 
     @PostConstruct

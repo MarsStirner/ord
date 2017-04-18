@@ -50,7 +50,7 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss.SSS 'UTC'</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
 
-        <log.format>[%date{ISO8601}][%level][%thread][%logger{0}]: %message%n</log.format>
+        <log.format>[%date{ISO8601}][%level][%thread][%logger]: %message%n</log.format>
         <log.maxHistory>30</log.maxHistory>
 
         <!-- #################### Library Versions #################### -->

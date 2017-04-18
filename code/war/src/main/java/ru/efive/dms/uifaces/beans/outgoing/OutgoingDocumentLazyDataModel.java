@@ -3,7 +3,7 @@ package ru.efive.dms.uifaces.beans.outgoing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
-import ru.efive.dms.uifaces.lazyDataModel.AbstractDocumentableLazyDataModel;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentableLazyDataModel;
 import ru.entity.model.document.OutgoingDocument;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dao.alfresco.Attachment;
-import ru.efive.dms.uifaces.beans.FileManagementBean;
+import ru.efive.dms.config.JCR;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
@@ -33,18 +33,21 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.jcr.RepositoryException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController(value = "in_doc", transactionManager = "ordTransactionManager")
-public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument> {   
+public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument> {
     //TODO ACL
     private Permissions permissions;
+
     @Autowired
-    @Qualifier("fileManagement")
-    private FileManagementBean fileManagement;
+    private JCR jcr;
+
     @Autowired
     @Qualifier("documentTaskTree")
     private DocumentTaskTreeHolder taskTreeHolder;
@@ -69,26 +72,16 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Qualifier("incomingDocumentDao")
     private IncomingDocumentDao incomingDocumentDao;
 
-    private List<Attachment> attachments = new ArrayList<>();
     /**
      * Связанные с этим входящим письмом исходящие документы
      */
     private List<OutgoingDocument> relatedDocuments;
 
-    public void handleFileUpload(FileUploadEvent event) {
+    public void handleFileUpload(FileUploadEvent event) throws RepositoryException, IOException {
         final UploadedFile file = event.getFile();
         if (file != null) {
             log.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
-            final Attachment attachment = new Attachment();
-            attachment.setFileName(file.getFileName());
-            attachment.setCreated(LocalDateTime.now());
-            attachment.setAuthorId(authData.getAuthorized().getId());
-            attachment.setParentId(getDocument().getUniqueId());
-            final boolean result = fileManagement.createFile(attachment, file.getContents());
-            log.info("After alfresco call Attachment.id={}", attachment.getId());
-            if (result) {
-                attachments.add(attachment);
-            }
+            jcr.createAttachment(getDocument().getUniqueId(), file.getFileName(), LocalDateTime.now(), authData, file.getContentType(), file.getContents());
             addMessage(new FacesMessage("Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
         } else {
             addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
@@ -117,7 +110,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             final FacesMessage msg = (FacesMessage) result.getResult();
             addMessage(MessageHolder.MSG_KEY_FOR_FILES, msg);
         }
-        updateAttachments();
     }
 
     //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -407,12 +399,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 taskTreeHolder.setRootDocumentId(document.getUniqueId());
                 //Поиск поручений
                 taskTreeHolder.refresh();
-                try {
-                    updateAttachments();
-                } catch (Exception e) {
-                    log.warn("Exception while check upload files", e);
-                    addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-                }
             }
         } catch (Exception e) {
             addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
@@ -604,42 +590,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             result = false;
         }
         return result;
-    }
-
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void updateAttachments() {
-        log.debug("Start updating attachments");
-        if (getDocument() != null && getDocumentId() != 0) {
-            attachments = fileManagement.getFilesByParentId(getDocument().getUniqueId());
-        }
-        log.debug("Finish updating attachments");
-    }
-
-    public void deleteAttachment(Attachment attachment) {
-        if (attachment != null && isCanEdit()) {
-            final IncomingDocument document = getDocument();
-            final LocalDateTime created = LocalDateTime.now();;
-            HistoryEntry historyEntry = new HistoryEntry();
-            historyEntry.setCreated(created);
-            historyEntry.setStartDate(created);
-            historyEntry.setOwner(authData.getAuthorized());
-            historyEntry.setDocType(document.getDocumentType().getName());
-            historyEntry.setParentId(document.getId());
-            historyEntry.setActionId(0);
-            historyEntry.setFromStatusId(1);
-            historyEntry.setEndDate(created);
-            historyEntry.setProcessed(true);
-            historyEntry.setCommentary("Файл " + attachment.getFileName() + " был удален");
-            document.addToHistory(historyEntry);
-            setDocument(document);
-            if (fileManagement.deleteFile(attachment)) {
-                updateAttachments();
-            }
-            setDocument(incomingDocumentDao.save(document));
-        }
     }
 
     /**
