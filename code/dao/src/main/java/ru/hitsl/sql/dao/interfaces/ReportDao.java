@@ -1,6 +1,6 @@
 package ru.hitsl.sql.dao.interfaces;
 
-import ru.entity.model.document.ReportTemplate;
+import ru.entity.model.report.Report;
 import ru.hitsl.sql.dao.interfaces.mapped.CommonDao;
 
 /**
@@ -9,6 +9,6 @@ import ru.hitsl.sql.dao.interfaces.mapped.CommonDao;
  * Company: Bars Group [ www.bars.open.ru ]
  * Description:
  */
-public interface ReportDao extends CommonDao<ReportTemplate> {
+public interface ReportDao extends CommonDao<Report> {
 
 }

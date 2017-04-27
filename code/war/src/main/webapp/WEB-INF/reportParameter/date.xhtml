@@ -1,0 +1,20 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+>
+    <!--@elvariable id="name" type="java.lang.String"-->
+    <!--@elvariable id="label" type="java.lang.String"-->
+    <!--@elvariable id="required" type="java.lang.Boolean"-->
+    <!--@elvariable id="settings" type="javax.json.JsonObject"-->
+    <!--@elvariable id="resultHolder" type="ru.efive.dms.uifaces.beans.ReportTemplateHolderBean"-->
+    <p:row id="parameterRow_#{name}" styleClass="ui-grid-row">
+        <p:column>
+            <h:outputLabel value="#{label}"/>
+        </p:column>
+        <p:column>
+            <p:calendar value="#{resultHolder.result[name]}" required="#{required}" requiredMessage="Обязательный параметр '#{label}' не указан"
+                        lang="ru" locale="ru" showOn="both" styleClass="inputText"
+                        pattern="#{settings != null ? settings.getString('pattern', 'dd.MM.yyyy') : 'dd.MM.yyyy'}"/>
+        </p:column>
+    </p:row>
+</ui:composition>

@@ -1,83 +1,83 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
-        >
-
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents">
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{report.init}"/>
+    </f:metadata>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <my:homeButton outcome="/component/report/report_templates.xhtml"/>
-        <h:outputText value="Ошибка" rendered="#{reportTemplate.errorState}"/>
-        <p:commandButton value="Сформировать отчет" action="#{reportTemplate.save}" rendered="#{reportTemplate.viewState}"
-                         icon="ui-icon-print" ajax="false"/>
+        <h:outputText value="Ошибка" rendered="#{report.errorState}"/>
+        <p:commandButton value="Сформировать отчет" action="#{report.save}" rendered="#{report.viewState}" icon="ui-icon-print" ajax="false"/>
     </ui:define>
 
     <ui:define name="DOCUMENT_HEADER">
-        <p:messages id="errorMessages" for="error" rendered="#{reportTemplate.errorState}"/>
-        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not reportTemplate.errorState}"
+        <p:messages id="errorMessages" for="error" rendered="#{report.errorState}"/>
+        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not report.errorState}"
                       style="font-weight: bold; display:inline-block; width:85%;">
-            <h:outputText value="Отчет: #{reportTemplate.document.displayName}"/>
+            <h:outputText value="Отчет: #{report.document.displayName}"/>
         </h:panelGroup>
     </ui:define>
 
     <ui:define name="DOCUMENT_CONTENT">
         <p:growl/>
-        <p:panelGrid rendered="#{not reportTemplate.errorState}" style="width:100%">
+        <p:panelGrid rendered="#{not report.errorState}" style="width:100%">
             <p:row styleClass="ui-grid-row">
                 <p:column styleClass="ui-grid-col-3">
-                    <p:outputLabel for="e_start" value="#{reportTemplate.document.startDescription}"/>
+                    <p:outputLabel for="e_start" value="#{report.document.startDescription}"/>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-9">
-                    <p:calendar id="e_start" value="#{reportTemplate.document.startDate}" lang="ru" locale="ru"
-                                widgetVar="startDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                    <p:calendar id="e_start" value="#{report.document.startDate}" lang="ru" locale="ru" widgetVar="startDateVar"
+                                pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
-            <p:row styleClass="ui-grid-row" rendered="#{(reportTemplate.document.type eq 1) or (reportTemplate.document.type eq 101)}">
+            <p:row styleClass="ui-grid-row" rendered="#{(report.document.type eq 1) or (report.document.type eq 101)}">
                 <p:column styleClass="ui-grid-col-3">
-                    <p:outputLabel for="e_end" value="#{reportTemplate.document.endDescription}"/>
+                    <p:outputLabel for="e_end" value="#{report.document.endDescription}"/>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-9">
-                    <p:calendar id="e_end" value="#{reportTemplate.document.endDate}" lang="ru" locale="ru"
-                                widgetVar="startDateVar" pattern="dd.MM.yyyy" showOn="both"/>
+                    <p:calendar id="e_end" value="#{report.document.endDate}" lang="ru" locale="ru" widgetVar="startDateVar"
+                                pattern="dd.MM.yyyy" showOn="both">
+                        <f:converter converterId="LocalDateTimeConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
-            <p:row styleClass="ui-grid-row" rendered="#{(reportTemplate.document.type eq 100)or(reportTemplate.document.type eq 101)}">
+            <p:row styleClass="ui-grid-row" rendered="#{(report.document.type eq 100)or(report.document.type eq 101)}">
                 <p:column styleClass="ui-grid-col-3">
-                     <p:commandButton value="#{reportTemplate.document.userDescription}"
-                                      actionListener="#{reportTemplate.choosePerson}"
-                                      styleClass="dialogButton">
-                        <p:ajax event="dialogReturn" listener="#{reportTemplate.onPersonChosen}" update="e_user"/>
-                    </p:commandButton>
-                </p:column>
-                <p:column colspan="3" styleClass="ui-grid-col-9">
-                    <h:outputText id="e_user" value="#{reportTemplate.document.user.description}"/>
-                </p:column>
-            </p:row>
-            <p:row styleClass="ui-grid-row" rendered="#{not empty reportTemplate.document.regionAlias}">
-                <p:column styleClass="ui-grid-col-3">
-                    <p:commandButton value="#{reportTemplate.document.regionAlias}"
-                                     actionListener="#{reportTemplate.chooseRegion}"
+                    <p:commandButton value="#{report.document.userDescription}" actionListener="#{report.choosePerson}"
                                      styleClass="dialogButton">
-                        <p:ajax event="dialogReturn" listener="#{reportTemplate.onRegionChosen}" update="e_region"/>
+                        <p:ajax event="dialogReturn" listener="#{report.onPersonChosen}" update="e_user"/>
                     </p:commandButton>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-9">
-                    <h:outputText id="e_region" value="#{reportTemplate.document.region.description}"/>
+                    <h:outputText id="e_user" value="#{report.document.user.description}"/>
                 </p:column>
             </p:row>
-            <p:row styleClass="ui-grid-row" rendered="#{not empty reportTemplate.document.documentFormAlias}">
+            <p:row styleClass="ui-grid-row" rendered="#{not empty report.document.regionAlias}">
                 <p:column styleClass="ui-grid-col-3">
-                    <p:outputLabel for="e_form" value="#{reportTemplate.document.documentFormDescription}"/>
+                    <p:commandButton value="#{report.document.regionAlias}" actionListener="#{report.chooseRegion}" styleClass="dialogButton">
+                        <p:ajax event="dialogReturn" listener="#{report.onRegionChosen}" update="e_region"/>
+                    </p:commandButton>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-9">
-                    <p:selectOneMenu id ="e_form" value="#{reportTemplate.document.documentForm}" converter="InternalDocumentFormConverter">
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory(reportTemplate.document.documentFormGroup)}"/>
+                    <h:outputText id="e_region" value="#{report.document.region}" converter="#{RegionConverter}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row" rendered="#{not empty report.document.documentFormAlias}">
+                <p:column styleClass="ui-grid-col-3">
+                    <p:outputLabel for="e_form" value="#{report.document.documentFormDescription}"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-9">
+                    <p:selectOneMenu id="e_form" value="#{report.document.documentForm}" converter="#{InternalDocumentFormConverter}">
+                        <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory(report.document.documentFormGroup)}"/>
                     </p:selectOneMenu>
                 </p:column>
             </p:row>

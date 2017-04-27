@@ -5,44 +5,44 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
 
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
+    <ui:param name="prefix" value="document.default"/>
+    <ui:param name="defaultSortField" value="displayName"/>
+    <ui:param name="defaultSortOrder" value="ascending"/>
+    <ui:param name="lazyDataModel" value="#{reportTemplateLDM}"/>
 
-    <ui:define name="contentLabel">Шаблоны отчетов</ui:define>
-
-    <ui:define name="contentButtonsPanel">
+    <ui:define name="CONTENT.VIEWTITLE">Шаблоны отчетов</ui:define>
+    <ui:define name="CONTENT.TOOLBAR">
         <p:toolbarGroup align="left">
             <p:commandButton value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
         </p:toolbarGroup>
     </ui:define>
 
-    <ui:define name="contentTable">
+    <ui:define name="CONTENT.TABLE">
         <p:dataTable id="documentTable"
                      paginator="true"
-                     rows="#{ui['paginator.rows.default']}"
-                     currentPageReportTemplate="#{ui['paginator.template.currentPage']}"
-                     paginatorTemplate="#{ui['paginator.template.total']}"
-                     rowsPerPageTemplate="#{ui['paginator.rows.dropDown']}"
-                     paginatorPosition = "#{ui['paginator.position']}"
-                     emptyMessage="#{ui['emptyMessage']}"
-                     value="#{reportTemplateList.lazyModel}"
+                     rows="#{ui[prefix.concat('.list.paginator.rows.default')]}"
+                     currentPageReportTemplate="#{ui[prefix.concat('.list.paginator.template.currentPage')]}"
+                     paginatorTemplate="#{ui[prefix.concat('.list.paginator.template.total')]}"
+                     rowsPerPageTemplate="#{ui[prefix.concat('.list.paginator.rows.dropDown')]}"
+                     paginatorPosition="#{ui[prefix.concat('.list.paginator.position')]}"
+                     emptyMessage="#{ui[prefix.concat('.list.emptyMessage')]}"
+                     value="#{lazyDataModel}"
                      var="row"
                      lazy="true"
-                     widgetVar="reportTableWidget"
+                     widgetVar="documentTableWidget"
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     sortBy="#{row.displayName}"
-                     sortField="displayName"
-                     sortOrder="descending"
-                >
-        <p:column headerText="Наименование" style="width:6em;" sortBy="#{row.displayName}" field="displayName">
-            <h:outputText value="#{row.displayName}"/>
-        </p:column>
-            <p:ajax event="rowSelect" onstart="goToReportTemplate(PrimeFaces.widgets.reportTableWidget.selection); return false;"/>
+                     sortBy="#{null}"
+                     sortField="#{defaultSortField}"
+                     sortOrder="#{defaultSortOrder}"
+        >
+            <p:column headerText="Наименование" style="width:6em;" sortBy="#{row.displayName}" field="displayName">
+                <h:outputText value="#{row.displayName}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToReportTemplate(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>
     </ui:define>
-
-
 </ui:composition>
-
 </html>

@@ -1,0 +1,73 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+
+>
+    <!--@elvariable id="name" type="java.lang.String"-->
+    <!--@elvariable id="label" type="java.lang.String"-->
+    <!--@elvariable id="required" type="java.lang.Boolean"-->
+    <!--@elvariable id="settings" type="javax.json.JsonObject"-->
+    <!--@elvariable id="resultHolder" type="ru.efive.dms.uifaces.beans.ReportTemplateHolderBean"-->
+    <p:row styleClass="ui-grid-row">
+        <p:column styleClass="ui-grid-col-3">
+            <p:commandButton value="#{label}" action="#{userDialogLDM.initWithSettings(settings)}"  immediate="true" onsuccess="PF('userDialog_#{name}').show();"/>
+        </p:column>
+        <p:column styleClass="ui-grid-col-9">
+            <h:outputText id="parameterValue_#{name}" value="#{resultHolder.result[name]}" converter="#{PersonConverter}"/>
+        </p:column>
+    </p:row>
+
+    <!--Диалог с выбором пользователя-->
+    <!--Выбранный пользователь хранится в карте viewScope, и при подтверждении отправляется в resultHolder -->
+    <p:dialog widgetVar="userDialog_#{name}" modal="true" dynamic="true" resizable="false"
+              width="50%" closeOnEscape="true" height="80vh" position="top"
+              header="#{settings.getString('dialogHeader', 'Выберите пользователя yf[')}">
+        <p:dataTable id="selectPersonTable_#{name}"
+                     paginator="true"
+                     rows="#{ui['dialog.paginator.rows.default']}"
+                     currentPageReportTemplate="#{ui['dialog.paginator.template.currentPage']}"
+                     paginatorTemplate="#{ui['dialog.paginator.template.total']}"
+                     rowsPerPageTemplate="#{ui['dialog.paginator.rows.dropDown']}"
+                     paginatorPosition="#{ui['dialog.paginator.position']}"
+                     pageLinks="#{ui['dialog.paginator.pageLinks']}"
+                     value="#{userDialogLDM}"
+                     var="person_row"
+                     selectionMode="single"
+                     selection="#{viewScope['_temp_reportParam_'.concat(name)]}"
+                     scrollable="true"
+                     scrollHeight="90%"
+                     lazy="true"
+                     widgetVar="selectPersonTableVar"
+                     sortBy="#{null}"
+                     sortOrder="ascending"
+                     sortField="lastName"
+        >
+            <f:facet name="header">
+                <p:inputText id="filter" value="#{userDialogLDM.filter}" styleClass="searchTextBox"/>
+                <p:commandButton id="filterButton" value="Поиск" styleClass="searchButton" process="filter selectPersonTable_#{name}"
+                                 update="selectPersonTable_#{name}"/>
+                <p:defaultCommand target="filterButton"/>
+            </f:facet>
+            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field="lastName">
+                <h:outputText value="#{person_row.lastName}"/>
+            </p:column>
+            <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
+                <h:outputText value="#{person_row.firstName}"/>
+            </p:column>
+            <p:column headerText="Отчество" sortBy="#{person_row.middleName}" field="middleName">
+                <h:outputText value="#{person_row.middleName}"/>
+            </p:column>
+            <f:facet name="footer">
+                <p:commandButton value="Выбрать"
+                                 process="selectPersonTable_#{name}"
+                                 action="#{resultHolder.result.put(name, viewScope['_temp_reportParam_'.concat(name)])}"
+                                 update="@form:parameterValue_#{name}"
+                                 onclick="PF('userDialog_#{name}').hide();"
+                                 styleClass="confirmButton"/>
+                <p:commandButton value="Отмена" onclick="PF('userDialog_#{name}').hide();" styleClass="cancelButton"/>
+            </f:facet>
+        </p:dataTable>
+    </p:dialog>
+
+</ui:composition>

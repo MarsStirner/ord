@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractFilterableLazyDataModel;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedLazyDataModel;
-import ru.entity.model.document.ReportTemplate;
+import ru.entity.model.report.Report;
 import ru.hitsl.sql.dao.interfaces.ReportDao;
 
 /**
@@ -14,11 +14,10 @@ import ru.hitsl.sql.dao.interfaces.ReportDao;
  * Description: <br>
  */
 @ViewScopedLazyDataModel("reportTemplateLDM")
-public class LazyDataModelForReportTemplate extends AbstractFilterableLazyDataModel<ReportTemplate> {
+public class ReportTemplateLazyDataModel extends AbstractFilterableLazyDataModel<Report> {
 
     @Autowired
-    public LazyDataModelForReportTemplate(
-            @Qualifier("reportDao") final ReportDao reportDao) {
+    public ReportTemplateLazyDataModel(@Qualifier("reportDao") final ReportDao reportDao) {
         super(reportDao);
     }
 }

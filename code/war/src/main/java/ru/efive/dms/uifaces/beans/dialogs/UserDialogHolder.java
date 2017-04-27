@@ -36,9 +36,6 @@ public class UserDialogHolder extends AbstractDialog<User> {
     @Qualifier("userDialogLDM")
     private UserInDialogLazyDataModel lazyModel;
 
-    @Autowired
-    @Qualifier("groupDao")
-    private GroupDao groupDao;
 
     public void init() {
         logger.info("Initialize new UserSelectDialog");
@@ -47,22 +44,10 @@ public class UserDialogHolder extends AbstractDialog<User> {
         logger.debug("With requestParams = {}", requestParameterMap);
         initializePreSelected();
         setTitle(initializeTitle(requestParameterMap));
-        initializeGroup(requestParameterMap);
+        lazyModel.initializeGroup(requestParameterMap.get(DIALOG_GROUP_KEY));
     }
 
-    private void initializeGroup(final Map<String, String> requestParameterMap) {
-        final String code = requestParameterMap.get(DIALOG_GROUP_KEY);
-        if (StringUtils.isNotEmpty(code)) {
-            logger.info("UserSelectDialog: initialized with group code=\'{}\'", code);
-            final Group group = groupDao.getByCode(code);
-            if (group != null) {
-                logger.info("UserSelectDialog: initialized with group [{}]", group);
-                lazyModel.setFilterGroup(group);
-            } else {
-                logger.error("UserSelectDialog: group not founded by code= \'{}\'", code);
-            }
-        }
-    }
+
 
     /**
      * Установить шапку по переданному ключу

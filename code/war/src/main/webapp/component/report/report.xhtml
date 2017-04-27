@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents">
+<ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{report.init}"/>
+    </f:metadata>
+
+    <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
+        <my:homeButton outcome="/component/report/report_templates.xhtml"/>
+        <h:outputText value="Ошибка" rendered="#{report.errorState}"/>
+        <p:commandButton value="Сформировать отчет" action="#{report.save}" process="@form" rendered="#{report.viewState}" icon="ui-icon-print" ajax="false"/>
+    </ui:define>
+
+    <ui:define name="DOCUMENT_HEADER">
+        <p:messages id="errorMessages" for="error" rendered="#{report.errorState}"/>
+        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not report.errorState}" style="font-weight: bold; display:inline-block; width:85%;">
+            <h:outputText value="Отчет: #{report.document.displayName}"/>
+        </h:panelGroup>
+    </ui:define>
+
+    <ui:define name="DOCUMENT_CONTENT">
+        <p:growl/>
+        <p:panelGrid>
+            <c:forEach items="#{report.reportParameterList}" var="report_parameter">
+                <ui:include src="/WEB-INF/reportParameter/#{report_parameter.template}.xhtml">
+                    <ui:param name="name" value="#{report_parameter.name}"/>
+                    <ui:param name="label" value="#{report_parameter.label}"/>
+                    <ui:param name="required" value="#{report_parameter.required}"/>
+                    <ui:param name="settings" value="#{report_parameter.settings}"/>
+                    <ui:param name="resultHolder" value="#{report}"/>
+                </ui:include>
+            </c:forEach>
+        </p:panelGrid>
+    </ui:define>
+</ui:composition>
+
+</html>

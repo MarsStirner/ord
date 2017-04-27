@@ -28,6 +28,11 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
         this.dao = dao;
     }
 
+    public void clearFilters() {
+        filter = null;
+        filters = null;
+    }
+
     public String getFilter() {
         return filter;
     }

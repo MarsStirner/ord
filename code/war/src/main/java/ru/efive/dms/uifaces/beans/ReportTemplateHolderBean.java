@@ -1,41 +1,29 @@
 package ru.efive.dms.uifaces.beans;
 
-import com.github.javaplugs.jsf.SpringScopeView;
-import org.apache.commons.lang3.StringUtils;
-import org.primefaces.context.RequestContext;
-import org.primefaces.event.SelectEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
-import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
-import ru.efive.dms.uifaces.beans.dialogs.RegionDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.entity.model.document.ReportTemplate;
-import ru.entity.model.referenceBook.Group;
-import ru.entity.model.referenceBook.Region;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageUtils;
+import ru.entity.model.report.Report;
+import ru.entity.model.report.ReportParameter;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ReportDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PreDestroy;
-import javax.faces.context.FacesContext;
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_ERROR_ON_REPORT_CREATION;
+import static ru.efive.dms.util.message.MessageHolder.MSG_ERROR_ON_REPORT_CREATION;
 
-@Controller("reportTemplate")
-@SpringScopeView
-public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportTemplate> {
-    //Именованный логгер (INCOMING_DOCUMENT)
-    private static final Logger LOGGER = LoggerFactory.getLogger("REPORT");
+@ViewScopedController("report")
+public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<Report> {
     @Autowired
-    @Qualifier("reports")
-    private ReportsManagmentBean reportsManagement;
+    @Qualifier("reportService")
+    private ReportService reportService;
 
     @Autowired
     @Qualifier("reportDao")
@@ -45,28 +33,32 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     @Qualifier("authData")
     private AuthorizationData authData;
 
+    private Map<String, Object> result = new HashMap<>();
+
+    public List<ReportParameter> getReportParameterList() {
+        return getDocument().getParameters().stream().sorted(Comparator.comparingInt(ReportParameter::getSort)).collect(Collectors.toList());
+    }
+
     @PreDestroy
     public void destroy() {
-        LOGGER.info("Bean destroyed");
+        log.info("Bean destroyed");
     }
 
     @Override
     protected boolean deleteDocument() {
-        LOGGER.warn("Try to delete reportTemplate. Operation not allowed");
+        log.warn("Try to delete reportTemplate. Operation not allowed");
         return false;
     }
 
     @Override
     protected void initDocument(final Integer id) {
         final User currentUser = authData.getAuthorized();
-        LOGGER.info("Open Report[{}] by user[{}]", id, currentUser.getId());
-        final ReportTemplate document = reportDao.get(id);
+        log.info("Open Report[{}] by user[{}]", id, currentUser.getId());
+        final Report document = reportDao.get(id);
         if (document == null) {
-            LOGGER.warn("Report[{}] not found", id);
+            log.warn("Report[{}] not found", id);
             setDocumentNotFound();
         } else {
-            document.setStartDate(LocalDateTime.now());
-            document.setEndDate(LocalDateTime.now());
             setDocument(document);
             setState(State.EDIT);
         }
@@ -74,36 +66,55 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
 
     @Override
     protected void initNewDocument() {
-        LOGGER.warn("Try to create reportTemplate. Operation not allowed");
+        log.warn("Try to create reportTemplate. Operation not allowed");
     }
 
     @Override
     protected boolean saveDocument() {
-        final ReportTemplate document = getDocument();
-        LOGGER.info("Start generate report[{}] \'{}\'", document.getId(), document.getDisplayName());
-        if (validate(document)) {
+        final Report report = getDocument();
+        Map<String, Object> reportParameters = getResult();
+        log.info("Start generate report[{}] \'{}\'", report.getId(), report.getDisplayName());
+        reportParameters.forEach((key, value) -> log.debug("ReportParameter[{}]={}", key, value));
+        if (validate(report.getParameters(), reportParameters)) {
             try {
-                reportsManagement.sqlPrintReportByRequestParams(document);
-                return true;
+                reportService.sqlPrintReportByRequestParams(report, reportParameters);
             } catch (Exception e) {
-                addMessage(null, MSG_ERROR_ON_REPORT_CREATION);
-                LOGGER.error("Error on create report:", e);
+                MessageUtils.addMessage(MSG_ERROR_ON_REPORT_CREATION);
+                log.error("Error on create report:", e);
                 return false;
             }
+            return true;
         } else {
-            LOGGER.warn("Report params is not valid!");
+            log.warn("Report params is not valid!");
             return false;
         }
     }
 
-    private boolean validate(final ReportTemplate document) {
-        return true;
+
+    private boolean validate(Set<ReportParameter> parameters, Map<String, Object> values) {
+        return parameters.stream().filter(ReportParameter::isRequired).allMatch(x -> {
+            boolean valueIsPresent = values.get(x.getName()) != null;
+            if (!valueIsPresent) {
+                log.warn("Required parameter [{}]-'{}' not present", x.getName(), x.getLabel());
+                MessageUtils.addMessage(MessageHolder.MSG_REQUIRED_PARAMETER_NOT_SET, x.getLabel());
+            }
+            return valueIsPresent;
+        });
     }
+
 
     @Override
     public boolean saveNewDocument() {
-        LOGGER.warn("Try to save NEW reportTemplate. Operation not allowed");
+        log.warn("Try to save NEW reportTemplate. Operation not allowed");
         return false;
+    }
+
+    public Map<String, Object> getResult() {
+        return result;
+    }
+
+    public void setResult(Map<String, Object> result) {
+        this.result = result;
     }
 
 
@@ -112,15 +123,15 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Выбора пользователя ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void choosePerson() {
-        final ReportTemplate document = getDocument();
+   /* public void choosePerson() {
+        final Report document = getDocument();
         final Map<String, List<String>> params = new HashMap<>();
         if (StringUtils.isNotEmpty(document.getUserGroup())) {
             if (Group.RB_CODE_MANAGERS.equals(document.getUserGroup())) {
                 params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
                 params.put(UserDialogHolder.DIALOG_GROUP_KEY, Collections.singletonList(Group.RB_CODE_MANAGERS));
             } else {
-                LOGGER.warn("Report userGroup is dynamic \'\'", document.getUserGroup());
+                log.warn("Report userGroup is dynamic \'\'", document.getUserGroup());
                 params.put(UserDialogHolder.DIALOG_GROUP_KEY, Collections.singletonList(document.getUserGroup()));
             }
         }
@@ -133,7 +144,7 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
 
     public void onPersonChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose user: {}", result);
+        log.info("Choose user: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setUser(selected);
@@ -151,12 +162,12 @@ public class ReportTemplateHolderBean extends AbstractDocumentHolderBean<ReportT
 
     public void onRegionChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose region: {}", result);
+        log.info("Choose region: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final Region selected = (Region) result.getResult();
             getDocument().setRegion(selected);
         }
     }
-
+*/
 
 }
