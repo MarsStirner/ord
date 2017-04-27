@@ -62,19 +62,16 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
 
 
     @Override
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getItemByFullCriteria(Integer id) {
         return getFirstItem(getFullCriteria().add(Restrictions.idEq(id)));
     }
 
     @Override
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getItemByListCriteria(Integer id) {
         return getFirstItem(getListCriteria().add(Restrictions.idEq(id)));
     }
 
     @Override
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getItemBySimpleCriteria(Integer id) {
         return getFirstItem(getSimpleCriteria().add(Restrictions.idEq(id)));
     }
@@ -106,14 +103,12 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public int countItems(DetachedCriteria criteria) {
         return ((Number) criteria.setProjection(Projections.countDistinct("id"))
                 .getExecutableCriteria(em.unwrap(Session.class)).uniqueResult()).intValue();
     }
 
     @Override
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public List<T> getItems(DetachedCriteria criteria, int offset, int limit) {
         final Criteria executableCriteria = criteria.getExecutableCriteria(em.unwrap(Session.class));
         if (offset > 0) {
@@ -136,7 +131,6 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
      * @param pageSize  макс размер бвыбираемого списка
      * @return список документов заданного размера
      */
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public List<T> getWithCorrectLimitings(
             final DetachedCriteria criteria, final String sortField, final boolean sortOrder, final int first, final int pageSize
     ) {
@@ -158,7 +152,6 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
      * @param orderAsc направление сортировки
      * @return запрос, с ограничениями на идентификаторы документов и сортировки
      */
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     protected DetachedCriteria getIDListCriteria(List ids, String orderBy, boolean orderAsc) {
         final DetachedCriteria result = getListCriteria().add(Restrictions.in("id", ids));
         if (StringUtils.isNotEmpty(orderBy)) {

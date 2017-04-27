@@ -27,7 +27,6 @@ public abstract class ReferenceBookDaoImpl<T extends ReferenceBookEntity> extend
      * @return запись справочника (в том числе и удаленную)\ NULL
      */
     @Override
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public T getByCode(final String code) {
         final DetachedCriteria criteria = getFullCriteria();
         criteria.add(Restrictions.eq("code", code));
@@ -42,7 +41,6 @@ public abstract class ReferenceBookDaoImpl<T extends ReferenceBookEntity> extend
      * @return записи справочника (только не удаленные) \ NULL
      */
     @Override
-    @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY, readOnly = true)
     public List<T> getByValue(final String value) {
         final DetachedCriteria criteria = getFullCriteria();
         criteria.add(Restrictions.eq("value", value));
