@@ -1,4 +1,4 @@
-package ru.efive.dms.uifaces.beans.utils;
+package ru.efive.dms.util.message;
 
 import javax.faces.application.FacesMessage;
 
@@ -11,9 +11,6 @@ import static javax.faces.application.FacesMessage.*;
  * Description: Хранилище сообщений для FACES MESSAGE<br>
  */
 public class MessageHolder {
-    public static final String MSG_KEY_FOR_VIEW_FACT = "viewFact";
-    public static final String MSG_KEY_FOR_ERROR = "error";
-    public static final String MSG_KEY_FOR_FILES = "files";
 
     public static final FacesMessage MSG_CANT_DELETE = new FacesMessage(SEVERITY_ERROR, "Невозможно удалить документ", "");
     public static final FacesMessage MSG_CANT_SAVE = new FacesMessage(SEVERITY_ERROR, "Документ не может быть сохранен. Попробуйте повторить позже.", "");
@@ -49,6 +46,8 @@ public class MessageHolder {
     public static final FacesMessage MSG_INTERNAL_ERROR = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка", "");
 
     public static final FacesMessage MSG_ERROR_ON_REPORT_CREATION = new FacesMessage(SEVERITY_ERROR, "Ошибка при формировании отчета", "");
+    public static final FacesMessage MSG_ERROR_ON_REPORT_CREATION_CAUSE_TEMPLATE =
+            new FacesMessage(SEVERITY_ERROR, "Отчет ''{0}'' не может быть сформирован из-за ошибки в шаблоне [{1}]. Текст ошибки: {2}", "");
 
     // Расширенные поиски
     public static final FacesMessage MSG_CANT_DO_SEARCH = new FacesMessage(SEVERITY_ERROR, "Невозможно осуществить поиск", "");
@@ -73,5 +72,8 @@ public class MessageHolder {
     public static final FacesMessage MSG_TRY_TO_EDIT_WITHOUT_PERMISSION = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на редактирование документа", "");
     public static final FacesMessage MSG_TRY_TO_VIEW_WITHOUT_PERMISSION = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на просмотр документа", "");
     public static final FacesMessage MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL = new FacesMessage(SEVERITY_WARN, "Уровень доступа к документу \'%s\' выше чем ваш текущий уровень доступа \'%s\'", "");
+
+    // Ошибки валидации
+    public static final FacesMessage MSG_REQUIRED_PARAMETER_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Обязательный параметр ''{0}'' не указан", "");
 
 }

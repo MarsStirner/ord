@@ -10,6 +10,8 @@ import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageKey;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.HistoryEntry;
@@ -250,12 +252,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         try {
             final boolean result = outgoingDocumentDao.delete(getDocument());
             if (!result) {
-MessageUtils.addMessage( MSG_CANT_DELETE);
+                MessageUtils.addMessage(MSG_CANT_DELETE);
             }
             return result;
         } catch (Exception e) {
             log.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
-MessageUtils.addMessage( MSG_ERROR_ON_DELETE);
+            MessageUtils.addMessage(MSG_ERROR_ON_DELETE);
             return false;
         }
     }
@@ -464,19 +466,19 @@ MessageUtils.addMessage( MSG_ERROR_ON_DELETE);
         boolean result = true;
         FacesContext context = FacesContext.getCurrentInstance();
         if (getDocument().getController() == null) {
-MessageUtils.addMessage( MSG_CONTROLLER_NOT_SET);
+            MessageUtils.addMessage(MSG_CONTROLLER_NOT_SET);
             result = false;
         }
         if (getDocument().getExecutor() == null) {
-MessageUtils.addMessage( MSG_EXECUTOR_NOT_SET);
+            MessageUtils.addMessage(MSG_EXECUTOR_NOT_SET);
             result = false;
         }
         if (getDocument().getContragent() == null) {
-MessageUtils.addMessage( MSG_RECIPIENTS_NOT_SET);
+            MessageUtils.addMessage(MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
         if (StringUtils.isEmpty(getDocument().getShortDescription())) {
-MessageUtils.addMessage( MSG_SHORT_DESCRIPTION_NOT_SET);
+            MessageUtils.addMessage(MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
         return result;

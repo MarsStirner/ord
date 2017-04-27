@@ -4,11 +4,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageKey;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.mapped.IdentifiedEntity;
 
 import javax.annotation.PreDestroy;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
 import java.io.Serializable;
@@ -21,7 +22,6 @@ import java.io.Serializable;
 @Transactional("ordTransactionManager")
 public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> implements Serializable {
 
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
     /**
      * Название GET-параметра, определяющего идентифкатор документа
      */
@@ -38,7 +38,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
      * Значение GET-параметра REQUEST_PARAM_DOC_ACTION, означающее редактирование документа
      */
     public static final String REQUEST_PVALUE_DOC_ACTION_EDIT = "edit";
-
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
     /**
      * Поле, где будет храниться сам документ
      */
@@ -109,23 +109,17 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
                 return Integer.valueOf(docId);
             } catch (NumberFormatException ex) {
                 log.error("Cannot convert docId[{}] to integer", docId);
-                addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOC_ID_CONVERSION_ERROR);
+                MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOC_ID_CONVERSION_ERROR);
                 return null;
             }
         } else {
             log.error("docId is empty or null");
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_NO_DOC_ID);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_NO_DOC_ID);
             return null;
         }
     }
 
-    protected void addMessage(final FacesMessage message) {
-        addMessage(null, message);
-    }
 
-    protected void addMessage(final String tag, final FacesMessage message) {
-        FacesContext.getCurrentInstance().addMessage(tag, message);
-    }
 
     /**
      * returns GET param value from URL by his name
@@ -297,7 +291,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
      */
     protected void setDocumentNotFound() {
         setState(State.ERROR);
-        addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+        MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
     }
 
     /**
@@ -305,7 +299,7 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
      */
     protected void setDocumentDeleted() {
         setState(State.ERROR);
-        addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
+        MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
     }
 
 }

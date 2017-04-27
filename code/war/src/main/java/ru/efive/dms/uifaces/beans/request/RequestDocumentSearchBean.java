@@ -7,19 +7,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.user.User;
 
 import javax.faces.context.FacesContext;
-import org.springframework.stereotype.Controller;
 import java.util.*;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
+import static ru.efive.dms.util.message.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
 @Controller("request_search")
@@ -46,7 +47,7 @@ public class RequestDocumentSearchBean extends AbstractDocumentSearchBean<Reques
         } catch (Exception e) {
             searchPerformed = false;
             logger.error("REQUEST: Error while search", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
+            MessageUtils.addMessage(MSG_CANT_DO_SEARCH);
         }
     }
 

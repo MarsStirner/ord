@@ -1,27 +1,26 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import com.github.javaplugs.jsf.SpringScopeView;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.OfficeKeepingFile;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.RoleType;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
-import org.springframework.stereotype.Controller;
-
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 
-@Controller("officeKeepingFile")
-@SpringScopeView
+@ViewScopedController("officeKeepingFile")
 public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKeepingFile> {
 
     private static final long serialVersionUID = 5947443099767481905L;
@@ -74,7 +73,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
             officeKeepingFileDao.delete(getDocument());
             result = true;
         } catch (Exception e) {
-            addMessage(null, MSG_CANT_DELETE);
+            MessageUtils.addMessage(MSG_CANT_DELETE);
         }
         return result;
     }
@@ -119,14 +118,14 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         try {
             OfficeKeepingFile record = officeKeepingFileDao.update(getDocument());
             if (record == null) {
-                addMessage(null, MSG_CANT_SAVE);
+                MessageUtils.addMessage(MSG_CANT_SAVE);
             } else {
                 setDocument(record);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            addMessage(null, MSG_ERROR_ON_SAVE);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -138,22 +137,16 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         try {
             OfficeKeepingFile record = officeKeepingFileDao.save(getDocument());
             if (record == null) {
-                addMessage(null, MSG_CANT_SAVE);
+                MessageUtils.addMessage(MSG_CANT_SAVE);
             } else {
                 setDocument(record);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
-        return result;
-    }
-
-    public List<RoleType> getTypes() {
-        List<RoleType> result = new ArrayList<>();
-        Collections.addAll(result, RoleType.values());
         return result;
     }
 

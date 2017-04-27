@@ -1,7 +1,7 @@
 package ru.efive.dms.uifaces.beans.task;
 
-import com.github.javaplugs.jsf.SpringScopeView;
-import org.apache.axis.utils.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import ru.entity.model.document.Task;
 import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.util.ApplicationHelper;
 
-import org.springframework.stereotype.Controller;
 import java.util.*;
 
 /**

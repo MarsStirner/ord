@@ -4,6 +4,7 @@ import com.github.javaplugs.jsf.SpringScopeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.entity.model.referenceBook.Nomenclature;
 
 import org.springframework.stereotype.Controller;
@@ -14,8 +15,7 @@ import org.springframework.stereotype.Controller;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Controller("nomenclature")
-@SpringScopeView
+@ViewScopedController("nomenclature")
 public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclature> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("RB_NOMENCLATURE");

@@ -3,7 +3,8 @@ package ru.efive.dms.uifaces.converters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.FacesConverterWithSpringSupport;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.DocumentType;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
@@ -11,7 +12,6 @@ import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-
 import java.util.List;
 
 @FacesConverterWithSpringSupport("IncomingDocumentFormConverter")
@@ -28,7 +28,7 @@ public class IncomingDocumentFormConverter implements Converter {
             if (list.size() > 0) {
                 result = list.get(0);
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CONVERTER_ERROR);
+                MessageUtils.addMessage(MessageHolder.MSG_CONVERTER_ERROR);
                 System.out.println("Не найден вид документа");
             }
         } catch (Exception e) {

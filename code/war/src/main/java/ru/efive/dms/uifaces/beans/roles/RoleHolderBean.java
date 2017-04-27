@@ -1,25 +1,24 @@
 package ru.efive.dms.uifaces.beans.roles;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageKey;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.referenceBook.Role;
 import ru.hitsl.sql.dao.interfaces.referencebook.RoleDao;
 
-import javax.faces.context.FacesContext;
-import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 
-@Controller("role")
-@SpringScopeView
+@ViewScopedController("role")
 public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
 
     @Autowired
@@ -33,7 +32,7 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
             roleDao.delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+            MessageUtils.addMessage(MSG_CANT_DELETE);
         }
         return result;
     }
@@ -43,7 +42,7 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
         setDocument(roleDao.get(id));
         if (getDocument() == null) {
             setState(State.ERROR);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
         }
     }
 
@@ -58,14 +57,14 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
         try {
             Role role = roleDao.update(getDocument());
             if (role == null) {
-                addMessage(null, MSG_CANT_SAVE);
+                MessageUtils.addMessage(MSG_CANT_SAVE);
             } else {
                 setDocument(role);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            addMessage(null, MSG_ERROR_ON_SAVE);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -77,14 +76,14 @@ public class RoleHolderBean extends AbstractDocumentHolderBean<Role> {
         try {
             Role role = roleDao.save(getDocument());
             if (role == null) {
-                addMessage(null, MSG_CANT_SAVE);
+                MessageUtils.addMessage(MSG_CANT_SAVE);
             } else {
                 setDocument(role);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return result;

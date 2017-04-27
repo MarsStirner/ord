@@ -1,18 +1,17 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageKey;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.SubstitutionDao;
@@ -24,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -32,12 +31,9 @@ import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
  * Company: Korus Consulting IT <br>
  * Description: бин для отображения замещения<br>
  */
-@Controller("substitution")
-@SpringScopeView
+@ViewScopedController("substitution")
 public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution> {
 
-    //Именованный логгер
-    private static final Logger logger = LoggerFactory.getLogger("SUBSTITUTION");
     @Autowired
     @Qualifier("substitutionDao")
     private SubstitutionDao substitutionDao;
@@ -61,7 +57,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     public void onPersonChosen(final SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        logger.info("Choose person: {}", result);
+        log.info("Choose person: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setPerson(selected);
@@ -87,7 +83,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
 
     public void onSubstitutorChosen(final SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        logger.info("Choose substitution: {}", result);
+        log.info("Choose substitution: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setSubstitution(selected);
@@ -103,8 +99,8 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
             FacesContext.getCurrentInstance().getExternalContext().redirect("delete_document.xhtml");
             return true;
         } catch (Exception e) {
-            logger.error("saveDocument ERROR:", e);
-            addMessage(MSG_ERROR_ON_DELETE);
+            log.error("saveDocument ERROR:", e);
+            MessageUtils.addMessage(MSG_ERROR_ON_DELETE);
             return false;
         }
     }
@@ -119,17 +115,17 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     @Override
     protected void initDocument(Integer id) {
         final User currentUser = authData.getAuthorized();
-        logger.info("Open Document[{}] by user[{}]", id, currentUser.getId());
+        log.info("Open Document[{}] by user[{}]", id, currentUser.getId());
         final Substitution document = substitutionDao.get(id);
         setDocument(document);
         if (document == null) {
             setState(State.ERROR);
-            logger.warn("Document NOT FOUND");
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+            log.warn("Document NOT FOUND");
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
         } else if (document.isDeleted()) {
             setState(State.ERROR);
-            logger.warn("Document[{}] IS DELETED", document.getId());
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
+            log.warn("Document[{}] IS DELETED", document.getId());
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
         }
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,11 +142,11 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         final Substitution document = getDocument();
         if (validateBeforeSave(document)) {
             try {
-                setDocument(substitutionDao.save(document));
+                setDocument(substitutionDao.update(document));
                 return true;
             } catch (Exception e) {
-                logger.error("saveDocument ERROR:", e);
-                addMessage(MSG_ERROR_ON_SAVE);
+                log.error("saveDocument ERROR:", e);
+                MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
                 return false;
             }
         }
@@ -187,24 +183,24 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         boolean result = true;
         if (document.getStartDate() != null && document.getEndDate() != null) {
             if (document.getStartDate().isAfter(document.getEndDate())) {
-                logger.error("Save cancelled: startDate[{}] is not before endDate[{}]", document.getStartDate(), document.getEndDate());
-                addMessage(MSG_SUBSTITUTION_DATE_MISMATCH);
+                log.error("Save cancelled: startDate[{}] is not before endDate[{}]", document.getStartDate(), document.getEndDate());
+                MessageUtils.addMessage(MSG_SUBSTITUTION_DATE_MISMATCH);
                 result = false;
             }
         }
         if (document.getSubstitution() == null) {
-            logger.error("Save cancelled: substitution not set");
-            addMessage(MSG_SUBSTITUTION_SUBSTITUTOR_NOT_SET);
+            log.error("Save cancelled: substitution not set");
+            MessageUtils.addMessage(MSG_SUBSTITUTION_SUBSTITUTOR_NOT_SET);
             result = false;
         }
         if (document.getPerson() == null) {
-            logger.error("Save cancelled: person not set");
-            addMessage(MSG_SUBSTITUTION_PERSON_NOT_SET);
+            log.error("Save cancelled: person not set");
+            MessageUtils.addMessage(MSG_SUBSTITUTION_PERSON_NOT_SET);
             result = false;
         }
         if (document.getPerson() != null && document.getSubstitution() != null && document.getPerson().equals(document.getSubstitution())) {
-            logger.error("Save cancelled: person and substitution is one people");
-            addMessage(MSG_SUBSTITUTION_PERSON_DUPLICATE);
+            log.error("Save cancelled: person and substitution is one people");
+            MessageUtils.addMessage(MSG_SUBSTITUTION_PERSON_DUPLICATE);
             result = false;
         }
         return result;

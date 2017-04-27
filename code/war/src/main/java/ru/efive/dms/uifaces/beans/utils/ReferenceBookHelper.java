@@ -6,17 +6,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.*;
-import ru.entity.model.referenceBook.DeliveryType;
-import ru.entity.model.referenceBook.DocumentForm;
-import ru.entity.model.referenceBook.SenderType;
-import ru.entity.model.referenceBook.UserAccessLevel;
+import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.UserDao;
 import ru.hitsl.sql.dao.interfaces.document.*;
-import ru.hitsl.sql.dao.interfaces.referencebook.DeliveryTypeDao;
-import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
-import ru.hitsl.sql.dao.interfaces.referencebook.SenderTypeDao;
-import ru.hitsl.sql.dao.interfaces.referencebook.UserAccessLevelDao;
+import ru.hitsl.sql.dao.interfaces.referencebook.*;
 import ru.util.ApplicationHelper;
 
 import java.util.List;
@@ -67,6 +61,30 @@ public class ReferenceBookHelper {
     @Qualifier("userDao")
     private UserDao userDao;
 
+    @Autowired
+    @Qualifier("nomenclatureDao")
+    private NomenclatureDao nomenclatureDao;
+
+    @Autowired
+    @Qualifier("documentTypeDao")
+    private DocumentTypeDao documentTypeDao;
+
+    @Autowired
+    @Qualifier("groupTypeDao")
+    private GroupTypeDao groupTypeDao;
+
+    @Autowired
+    @Qualifier("roleDao")
+    private RoleDao roleDao;
+
+    @Autowired
+    @Qualifier("contactInfoTypeDao")
+    private ContactInfoTypeDao contactInfoTypeDao;
+
+    @Autowired
+    @Qualifier("contragentTypeDao")
+    private ContragentTypeDao contragentTypeDao;
+
     public String getUserFullNameById(int id) {
         final User user = userDao.getItemBySimpleCriteria(id);
         return user != null ? user.getDescription() : "";
@@ -80,12 +98,40 @@ public class ReferenceBookHelper {
         return deliveryTypeDao.getItems();
     }
 
+    public List<DocumentType> getDocumentTypes() {
+        return documentTypeDao.getItems();
+    }
+
+    public List<Role> getRoles() {
+        return roleDao.getItems();
+    }
+
+    public List<GroupType> getGroupTypes() {
+        return groupTypeDao.getItems();
+    }
+
+    public List<ContactInfoType> getContactTypes() {
+        return contactInfoTypeDao.getItems();
+    }
+
+    public List<UserAccessLevel> getUserAccessLevels() {
+        return userAccessLevelDao.getItems();
+    }
+
     public List<UserAccessLevel> getUserAccessLevelsGreaterOrEqualMaxValue(int level) {
         return userAccessLevelDao.findLowerThenLevel(level);
     }
 
     public List<SenderType> getSenderTypes() {
         return senderTypeDao.getItems();
+    }
+
+    public List<ContragentType> getContragentTypes() {
+        return contragentTypeDao.getItems();
+    }
+
+    public List<Nomenclature> getNomenclatures(){
+        return nomenclatureDao.getItems();
     }
 
     public String getLinkDescriptionByUniqueId(String documentKey) {

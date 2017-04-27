@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentSearchBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.referenceBook.Contragent;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
+import static ru.efive.dms.util.message.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
 @ViewScopedController(name = "incomingSearch", transactionManager = "ordTransactionManager")
@@ -42,11 +43,11 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
         }
         boolean result = true;
         if (!checkDateRange(getStartCreationDate(), getEndCreationDate())) {
-            FacesContext.getCurrentInstance().addMessage("creationDate", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Диапозон дат для фильтрации по дате создания документа задан неверно", null));
+            MessageUtils.addMessage("creationDate", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Диапозон дат для фильтрации по дате создания документа задан неверно", null));
             result = false;
         }
         if (!checkDateRange(getStartRegistrationDate(), getEndRegistrationDate())) {
-            FacesContext.getCurrentInstance().addMessage("registrationDate", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Диапозон дат для фильтрации по дате регистрации документа задан неверно", null));
+            MessageUtils.addMessage("registrationDate", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Диапозон дат для фильтрации по дате регистрации документа задан неверно", null));
             result = false;
         }
 
@@ -72,7 +73,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             } catch (Exception e) {
                 searchPerformed = false;
                 logger.error("INCOMING: Error while search", e);
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
+                MessageUtils.addMessage(MSG_CANT_DO_SEARCH);
             }
         }
     }

@@ -31,10 +31,10 @@ public class FileManagementBean implements java.io.Serializable {
     private static final long serialVersionUID = -4470091321891731494L;
 
 
-    // file operations
-    @Autowired
-    @Qualifier("alfrescoDao")
-    private AlfrescoDAO<Attachment> alfrescoDao;
+//    // file operations
+//    @Autowired
+//    @Qualifier("alfrescoDao")
+  private AlfrescoDAO<Attachment> alfrescoDao = null;
 
     @Autowired
     @Qualifier("authData")
@@ -49,14 +49,15 @@ public class FileManagementBean implements java.io.Serializable {
             if (dao == null) {
                 return null;
             }
-            result = dao.getDataById(id);
+            //result = dao.getDataById(id);
         } catch (Exception e) {
             result = null;
             logger.error("", e);
         } finally {
-            if (dao != null) dao.disconnect();
+           // if (dao != null) dao.disconnect();
         }
-        return result;
+      //  return result;
+        return null;
     }
 
     public synchronized List<Attachment> getFilesByParentId(String id) {
@@ -67,15 +68,15 @@ public class FileManagementBean implements java.io.Serializable {
             if (dao == null) {
                 return result;
             }
-            result = dao.getDataList(
-                    "+TYPE:\"" + new Attachment().getNamedNodeType() + "\"" +
-                            " +@e5-dms\\:parentId:\"" + id + "\""
-            );
+//            result = dao.getDataList(
+//                    "+TYPE:\"" + new Attachment().getNamedNodeType() + "\"" +
+//                            " +@e5-dms\\:parentId:\"" + id + "\""
+//            );
             //" +ALL:\""+ id+ "\"");
         } catch (Exception e) {
             logger.error("", e);
         } finally {
-            if (dao != null) dao.disconnect();
+          //  if (dao != null) dao.disconnect();
         }
         return result;
     }
@@ -88,11 +89,11 @@ public class FileManagementBean implements java.io.Serializable {
             if (dao == null) {
                 return false;
             }
-            result = dao.createContent(file, bytes);
+          //  result = dao.createContent(file, bytes);
         } catch (Exception e) {
             logger.error("", e);
         } finally {
-            if (dao != null) dao.disconnect();
+         //   if (dao != null) dao.disconnect();
         }
         return result;
     }
@@ -105,11 +106,11 @@ public class FileManagementBean implements java.io.Serializable {
             if (dao == null) {
                 return false;
             }
-            result = dao.deleteData(file);
+            //result = dao.deleteData(file);
         } catch (Exception e) {
             logger.error("", e);
         } finally {
-            if (dao != null) dao.disconnect();
+           // if (dao != null) dao.disconnect();
         }
         return result;
     }
@@ -124,20 +125,21 @@ public class FileManagementBean implements java.io.Serializable {
                     logger.error("DAO IS NULL");
                     return null;
                 }
-                final Attachment attachment = dao.getDataById(id);
-                result = dao.getContent(attachment);
-                final String fileName = StringUtils.defaultIfEmpty(attachment.getCurrentRevision().getFileName(), attachment.getFileName());
-                return new DefaultStreamedContent(new ByteArrayInputStream(result), CONTENT_TYPE, URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll(
-                        "\\+", "%20"));
+               // final Attachment attachment = dao.getDataById(id);
+               // result = dao.getContent(attachment);
+              //  final String fileName = StringUtils.defaultIfEmpty(attachment.getCurrentRevision().getFileName(), attachment.getFileName());
+              //  return new DefaultStreamedContent(new ByteArrayInputStream(result), CONTENT_TYPE, URLEncoder.encode(fileName, StandardCharsets.UTF_8.name()).replaceAll(
+              //          "\\+", "%20"));
             } catch (Exception e) {
                 logger.error("", e);
                 return null;
             } finally {
-                if (dao != null) dao.disconnect();
+             //   if (dao != null) dao.disconnect();
             }
         } else {
             return null;
         }
+        return null;
     }
 
     public StreamedContent download(String id, String version) {
@@ -151,31 +153,31 @@ public class FileManagementBean implements java.io.Serializable {
                         logger.error("DAO IS NULL");
                         return null;
                     }
-                    final Attachment attachment = dao.getDataById(id);
-                    String downloadFileName = null;
-                    if (attachment.isVersionable()) {
-                        for (Revision revision : attachment.getRevisions()) {
-                            if (revision.getVersion().equals(version)) {
-                                downloadFileName = revision.getFileName();
-                                break;
-                            }
-                        }
-                    }
-                    if (StringUtils.isEmpty(downloadFileName)) {
-                        downloadFileName = attachment.getFileName();
-                    }
-                    result = dao.getContent(attachment, version);
-                    return new DefaultStreamedContent(
-                            new ByteArrayInputStream(result), CONTENT_TYPE,
-                            URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8.name()).replaceAll(
-                                    "\\+", "%20"
-                            )
-                    );
+                   // final Attachment attachment = dao.getDataById(id);
+//                    String downloadFileName = null;
+//                    if (attachment.isVersionable()) {
+//                        for (Revision revision : attachment.getRevisions()) {
+//                            if (revision.getVersion().equals(version)) {
+//                                downloadFileName = revision.getFileName();
+//                                break;
+//                            }
+//                        }
+//                    }
+//                    if (StringUtils.isEmpty(downloadFileName)) {
+//                        downloadFileName = attachment.getFileName();
+//                    }
+//                    result = dao.getContent(attachment, version);
+//                    return new DefaultStreamedContent(
+//                            new ByteArrayInputStream(result), CONTENT_TYPE,
+//                            URLEncoder.encode(downloadFileName, StandardCharsets.UTF_8.name()).replaceAll(
+//                                    "\\+", "%20"
+//                            )
+//                    );
                 } catch (Exception e) {
                     logger.error("", e);
                     return null;
                 } finally {
-                    if (dao != null) dao.disconnect();
+                  //  if (dao != null) dao.disconnect();
                 }
             } else {
                 logger.warn("Version param is not set. download via ID only");
@@ -184,6 +186,7 @@ public class FileManagementBean implements java.io.Serializable {
         } else {
             return null;
         }
+        return null;
     }
 
     public synchronized boolean createVersion(Attachment file, byte[] bytes, boolean majorVersion, String fileName, User owner) {
@@ -194,11 +197,11 @@ public class FileManagementBean implements java.io.Serializable {
             if (dao == null) {
                 return false;
             }
-            result = dao.createVersion(file, bytes, owner.getId(), fileName, majorVersion);
+           // result = dao.createVersion(file, bytes, owner.getId(), fileName, majorVersion);
         } catch (Exception e) {
             logger.error("", e);
         } finally {
-            if (dao != null) dao.disconnect();
+         //   if (dao != null) dao.disconnect();
         }
         return result;
     }
@@ -211,11 +214,11 @@ public class FileManagementBean implements java.io.Serializable {
             if (dao == null) {
                 return false;
             }
-            result = dao.createVersion(file, bytes, authData.getAuthorized().getId(), fileName, majorVersion);
+           // result = dao.createVersion(file, bytes, authData.getAuthorized().getId(), fileName, majorVersion);
         } catch (Exception e) {
             logger.error("", e);
         } finally {
-            if (dao != null) dao.disconnect();
+            //if (dao != null) dao.disconnect();
         }
         return result;
     }
@@ -228,11 +231,11 @@ public class FileManagementBean implements java.io.Serializable {
             if (dao == null) {
                 return result;
             }
-            result = dao.getRevisions(file);
+           // result = dao.getRevisions(file);
         } catch (Exception e) {
             logger.error("", e);
         } finally {
-            if (dao != null) dao.disconnect();
+          //  if (dao != null) dao.disconnect();
         }
         return result;
     }

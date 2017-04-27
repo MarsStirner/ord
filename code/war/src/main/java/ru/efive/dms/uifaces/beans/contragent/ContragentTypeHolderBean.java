@@ -8,28 +8,26 @@ package ru.efive.dms.uifaces.beans.contragent;
  */
 
 import com.github.javaplugs.jsf.SpringScopeView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.ContragentType;
 import ru.hitsl.sql.dao.interfaces.referencebook.ContragentDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.ContragentTypeDao;
 
 import javax.faces.context.FacesContext;
-import org.springframework.stereotype.Controller;
 import java.io.IOException;
 import java.util.List;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 
 @Controller("contragentType")
 @SpringScopeView
 public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<ContragentType> {
 
-    private static final Logger logger = LoggerFactory.getLogger("RB_CONTRAGENT_TYPE");
 
     @Autowired
     @Qualifier("contragentDao")
@@ -49,15 +47,15 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
                 try {
                     FacesContext.getCurrentInstance().getExternalContext().redirect("../delete_document.xhtml");
                 } catch (IOException e) {
-                    logger.error("Error in redirect ", e);
+                    log.error("Error in redirect ", e);
                 }
                 return true;
             } else {
-                addMessage(null, MSG_CANT_DELETE);
+                MessageUtils.addMessage(MSG_CANT_DELETE);
                 return false;
             }
         } else {
-            addMessage(null, MSG_RB_CONTRAGENT_TYPE_IS_USED_BY_SOME_CONTRAGENTS);
+            MessageUtils.addMessage(MSG_RB_CONTRAGENT_TYPE_IS_USED_BY_SOME_CONTRAGENTS);
             return false;
         }
     }
@@ -79,8 +77,8 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
                 setDocument(document);
             }
         } catch (Exception e) {
-            addMessage(null, MSG_ERROR_ON_INITIALIZE);
-            logger.error("initializeError", e);
+            MessageUtils.addMessage(MSG_ERROR_ON_INITIALIZE);
+            log.error("initializeError", e);
         }
     }
 
@@ -89,13 +87,13 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
         try {
             final ContragentType document = contragentTypeDao.save(getDocument());
             if (document == null) {
-                addMessage(null, MSG_CANT_SAVE);
+                MessageUtils.addMessage(MSG_CANT_SAVE);
                 return false;
             }
             return true;
         } catch (Exception e) {
-            logger.error("Error on save New", e);
-            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            log.error("Error on save New", e);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
     }
@@ -103,16 +101,16 @@ public class ContragentTypeHolderBean extends AbstractDocumentHolderBean<Contrag
     @Override
     protected boolean saveDocument() {
         try {
-            ContragentType document = contragentTypeDao.save(getDocument());
+            ContragentType document = contragentTypeDao.update(getDocument());
             if (document == null) {
-                addMessage(null, MSG_CANT_SAVE);
+                MessageUtils.addMessage(MSG_CANT_SAVE);
                 return false;
             }
             setDocument(document);
             return true;
         } catch (Exception e) {
-            logger.error("Error on save", e);
-            addMessage(null, MSG_ERROR_ON_SAVE);
+            log.error("Error on save", e);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
             return false;
         }
     }

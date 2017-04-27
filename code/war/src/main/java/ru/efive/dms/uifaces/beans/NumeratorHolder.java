@@ -1,15 +1,12 @@
 package ru.efive.dms.uifaces.beans;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.entity.model.document.Numerator;
 
-import org.springframework.stereotype.Controller;
-
-@Controller("numerator")
-@SpringScopeView
+@ViewScopedController("numerator")
 public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> {
     private static final Logger logger = LoggerFactory.getLogger("RB_NUMERATOR");
 
@@ -23,12 +20,12 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> {
 //            document.setDeleted(true);
 //            setDocument(sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).merge(document));
 //            if (!getDocument().isDeleted()) {
-//                addMessage(null, MSG_CANT_DELETE);
+//MessageUtils.addMessage(MSG_CANT_DELETE);
 //            }
 //            return true;
 //        } catch (Exception e) {
 //            logger.error("CANT_DELETE_NUMERATOR", e);
-//            addMessage(null, MSG_ERROR_ON_DELETE);
+//MessageUtils.addMessage(MSG_ERROR_ON_DELETE);
 //        }
 //        return false;
 //    }
@@ -50,10 +47,10 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> {
 //            setDocument(sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).findDocumentById(id));
 //            if (getDocument() == null) {
 //                setState(State.ERROR);
-//                addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+//                MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
 //            }
 //        } catch (Exception e) {
-//            addMessage(null, MSG_ERROR_ON_INITIALIZE);
+//MessageUtils.addMessage(MSG_ERROR_ON_INITIALIZE);
 //            logger.error("CANT_INIT_NUMERATOR", e);
 //        }
 //    }
@@ -64,13 +61,13 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> {
 //            Numerator document = getDocument();
 //            document = sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).save(document);
 //            if (document == null) {
-//                addMessage(null, MSG_CANT_SAVE);
+//MessageUtils.addMessage(MSG_CANT_SAVE);
 //            } else {
 //                return true;
 //            }
 //        } catch (Exception e) {
 //            logger.error("CANT_SAVE_NEW_NUMERATOR", e);
-//            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+//MessageUtils.addMessage(MSG_ERROR_ON_SAVE_NEW);
 //        }
 //        return false;
 //    }
@@ -81,14 +78,14 @@ public class NumeratorHolder extends AbstractDocumentHolderBean<Numerator> {
 //            Numerator document = getDocument();
 //            document = sessionManagement.getDAO(NumeratorDAOImpl.class, NUMERATOR_DAO).save(document);
 //            if (document == null) {
-//                addMessage(null, MSG_CANT_SAVE);
+//MessageUtils.addMessage(MSG_CANT_SAVE);
 //            } else {
 //                setDocument(document);
 //                return true;
 //            }
 //        } catch (Exception e) {
 //            logger.error("CANT_SAVE_NUMERATOR", e);
-//            addMessage(null, MSG_ERROR_ON_SAVE);
+//MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
 //        }
 //        return false;
 //    }

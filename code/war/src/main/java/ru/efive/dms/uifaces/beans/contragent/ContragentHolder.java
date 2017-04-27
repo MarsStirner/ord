@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.document.RequestDocument;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 
 @Controller("contragent")
 @SpringScopeView
@@ -87,16 +88,16 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> {
                 contragent.setDeleted(true);
                 contragent = contragentDao.save(contragent);
                 if (contragent == null) {
-                    addMessage(null, MSG_CANT_DELETE);
+MessageUtils.addMessage( MSG_CANT_DELETE);
                     return false;
                 }
                 return true;
             } else {
-                addMessage(null, MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
+MessageUtils.addMessage( MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
             }
         } catch (Exception e) {
             logger.error("Error on deleteDocument", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_INTERNAL_ERROR);
+MessageUtils.addMessage( MSG_INTERNAL_ERROR);
         }
         return false;
     }
@@ -109,7 +110,7 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> {
                 setDocumentNotFound();
             }
         } catch (Exception e) {
-            addMessage(null, MSG_ERROR_ON_INITIALIZE);
+MessageUtils.addMessage( MSG_ERROR_ON_INITIALIZE);
             logger.error("initializeError", e);
         }
     }
@@ -124,15 +125,15 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> {
     @Override
     protected boolean saveDocument() {
         try {
-            Contragent contragent = contragentDao.save(getDocument());
+            Contragent contragent = contragentDao.update(getDocument());
             if (contragent == null) {
-                addMessage(null, MSG_CANT_SAVE);
+MessageUtils.addMessage( MSG_CANT_SAVE);
                 return false;
             }
             return true;
         } catch (Exception e) {
             logger.error("Error on save", e);
-            addMessage(null, MSG_ERROR_ON_SAVE);
+MessageUtils.addMessage( MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -142,13 +143,13 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> {
         try {
             final Contragent contragent = contragentDao.save(getDocument());
             if (contragent == null) {
-                addMessage(null, MSG_CANT_SAVE);
+MessageUtils.addMessage( MSG_CANT_SAVE);
                 return false;
             }
             return true;
         } catch (Exception e) {
             logger.error("Error on save New", e);
-            addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+MessageUtils.addMessage( MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
     }

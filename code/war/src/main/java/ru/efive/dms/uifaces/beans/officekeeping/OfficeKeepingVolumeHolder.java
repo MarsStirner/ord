@@ -1,11 +1,12 @@
 package ru.efive.dms.uifaces.beans.officekeeping;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.OfficeKeepingFile;
@@ -18,22 +19,15 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import org.springframework.stereotype.Controller;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 
-@Controller("officeKeepingVolume")
-@SpringScopeView
+@ViewScopedController("officeKeepingVolume")
+
 public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<OfficeKeepingVolume> {
-
-    private boolean isRequisitesTabSelected = true;
-    private boolean isDocumentsTabSelected = false;
-    private boolean isLocationTabSelected = false;
-    private boolean isHistoryTabSelected = false;
-
 
     @Autowired
     @Qualifier("officeKeepingVolumeDao")
@@ -92,7 +86,7 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
             officeKeepingVolumeDao.delete(getDocument());
             result = true;
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
+            MessageUtils.addMessage(MSG_ERROR_ON_DELETE);
         }
         return result;
     }
@@ -153,14 +147,14 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
         try {
             OfficeKeepingVolume record = officeKeepingVolumeDao.update(getDocument());
             if (record == null) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                MessageUtils.addMessage(MSG_CANT_SAVE);
             } else {
                 //setDocument(record);
                 result = true;
             }
         } catch (Exception e) {
             result = false;
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
             e.printStackTrace();
         }
         return result;
@@ -174,18 +168,18 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
             if (file != null) {
                 OfficeKeepingVolume record = officeKeepingVolumeDao.save(document);
                 if (record == null) {
-                    FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_SAVE);
+                    MessageUtils.addMessage(MSG_CANT_SAVE);
                 } else {
                     return true;
                 }
             } else {
                 //TODO add to MSGHolder
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                MessageUtils.addMessage(new FacesMessage(
                         FacesMessage.SEVERITY_ERROR,
                         "Невозможно сохранить документ. Необходимо выбрать корректный документ Номенклатуры дел.", ""));
             }
         } catch (Exception e) {
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_SAVE_NEW);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE_NEW);
             e.printStackTrace();
         }
         return false;

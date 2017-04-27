@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
@@ -19,7 +19,6 @@ import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
 
 import javax.faces.context.FacesContext;
-import org.springframework.stereotype.Controller;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.MSG_CANT_DO_SEARCH;
+import static ru.efive.dms.util.message.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
 @ViewScopedController(name = "outgoingSearch", transactionManager = "ordTransactionManager")
@@ -52,7 +51,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
         } catch (Exception e) {
             searchPerformed = false;
             logger.error("OUTGOING: Error while search", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DO_SEARCH);
+            MessageUtils.addMessage(MSG_CANT_DO_SEARCH);
         }
     }
 

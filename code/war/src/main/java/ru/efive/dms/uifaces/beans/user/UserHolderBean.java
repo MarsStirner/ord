@@ -1,13 +1,14 @@
 package ru.efive.dms.uifaces.beans.user;
 
-import com.github.javaplugs.jsf.SpringScopeView;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.referenceBook.ContactInfoType;
 import ru.entity.model.user.PersonContact;
 import ru.entity.model.user.User;
@@ -16,13 +17,10 @@ import ru.hitsl.sql.dao.interfaces.referencebook.ContactInfoTypeDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.faces.event.ValueChangeEvent;
-import org.springframework.stereotype.Controller;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
-@Controller("user")
-@SpringScopeView
+@ViewScopedController("user")
 public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     private static final Logger LOGGER = LoggerFactory.getLogger("USER");
 
@@ -149,7 +147,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
                 userDao.save(getDocument());
                 return document.isDeleted();
             } catch (Exception e) {
-                addMessage(null, MessageHolder.MSG_CANT_DELETE);
+                MessageUtils.addMessage(MessageHolder.MSG_CANT_DELETE);
             }
         } else {
             LOGGER.error("TRY TO DELETE without permission");
@@ -193,7 +191,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
             return true;
         } catch (Exception e) {
             LOGGER.error("Error on save:", e);
-            addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE);
+            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -219,7 +217,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
             return true;
         } catch (Exception e) {
             LOGGER.error("Error on save new:", e);
-            addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
     }

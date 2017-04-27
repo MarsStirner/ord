@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
@@ -25,7 +26,7 @@ import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.List;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 
 
 @Controller("sessionManagement")
@@ -100,13 +101,13 @@ public class SessionManagementBean implements Serializable {
                     //Проверка удаленности\уволенности сотрудника
                     if (loggedUser.isDeleted() || loggedUser.isFired()) {
                         log.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" : "FIRED");
-                        FacesContext.getCurrentInstance().addMessage(null, loggedUser.isDeleted() ? MSG_AUTH_DELETED : MSG_AUTH_FIRED);
+                        MessageUtils.addMessage(loggedUser.isDeleted() ? MSG_AUTH_DELETED : MSG_AUTH_FIRED);
                         return;
                     }
                     //Проверка наличия у пользователя ролей
                     if (loggedUser.getRoles().isEmpty()) {
                         log.warn("USER[{}] HAS NO ONE ROLE", loggedUser.getId());
-                        FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NO_ROLE);
+                        MessageUtils.addMessage(MSG_AUTH_NO_ROLE);
                         return;
                     }
                     //Поиск замещений, где найденный пользователь является заместителем
@@ -129,11 +130,11 @@ public class SessionManagementBean implements Serializable {
                     log.info("SUCCESSFUL LOGIN:{}\n AUTH_DATA={}", loggedUser.getId(), authData);
                 } else {
                     log.error("USER[{}] NOT FOUND", userName);
-                    FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_NOT_FOUND);
+                    MessageUtils.addMessage(MSG_AUTH_NOT_FOUND);
                 }
             } catch (Exception e) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(AUTH_KEY);
-                FacesContext.getCurrentInstance().addMessage(null, MSG_AUTH_ERROR);
+                MessageUtils.addMessage(MSG_AUTH_ERROR);
                 log.error("Exception while processing login action:", e);
             }
         }
