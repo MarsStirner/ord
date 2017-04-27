@@ -6,9 +6,13 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
-        >
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+>
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{nomenclature.init}"/>
+    </f:metadata>
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{nomenclature.createState or nomenclature.editState}" scope="view"/>
@@ -43,24 +47,24 @@
 
     <ui:define name="DOCUMENT_CONTENT">
         <p:panelGrid style="width:100%">
-        <p:row styleClass="ui-grid-row">
-            <p:column styleClass="ui-grid-col-2">
-                <p:outputLabel for="e_value" value="Наименование:"/>
-            </p:column>
-            <p:column colspan="3" styleClass="ui-grid-col-10">
-                <h:outputText id="v_value" value="#{nomenclature.document.value}" styleClass="outputText"  rendered="#{not stateEditable}"/>
-                <p:inputText id="e_value" value="#{nomenclature.document.value}" required="true" styleClass="inputText" rendered="#{stateEditable}"/>
-            </p:column>
-        </p:row>
-        <p:row styleClass="ui-grid-row">
-            <p:column styleClass="ui-grid-col-2">
-                <p:outputLabel for="e_code" value="Код:"/>
-            </p:column>
-            <p:column colspan="3" styleClass="ui-grid-col-10">
-                <h:outputText id="v_code" value="#{nomenclature.document.code}" styleClass="outputText"  rendered="#{not stateEditable}"/>
-                <p:inputText id="e_code" value="#{nomenclature.document.code}" required="true" styleClass="inputText" rendered="#{stateEditable}"/>
-            </p:column>
-        </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_value" value="Наименование:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_value" value="#{nomenclature.document.value}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_value" value="#{nomenclature.document.value}" required="true" styleClass="inputText" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="e_code" value="Код:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_code" value="#{nomenclature.document.code}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_code" value="#{nomenclature.document.code}" required="true" styleClass="inputText" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
         </p:panelGrid>
     </ui:define>
 </ui:composition>

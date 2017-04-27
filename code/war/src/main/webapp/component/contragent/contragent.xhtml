@@ -10,6 +10,9 @@
         >
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{contragent.init}"/>
+    </f:metadata>
 
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
@@ -73,8 +76,8 @@
                 <p:column colspan="3" styleClass="ui-grid-col-10">
                     <h:outputText id="v_type" value="#{contragent.document.type.value}" styleClass="outputText" rendered="#{not stateEditable}"/>
                     <p:selectOneMenu id="e_type" value="#{contragent.document.type}"
-                                     converter="ContragentTypeConverter" styleClass="inputText" rendered="#{stateEditable}">
-                        <f:selectItems value="#{dictionaryManagement.contragentTypes}" var="contragentType_row"
+                                     converter="#{ContragentTypeConverter}" styleClass="inputText" rendered="#{stateEditable}">
+                        <f:selectItems value="#{refBookHelper.contragentTypes}" var="contragentType_row"
                                        itemLabel="#{contragentType_row.value}"/>
                     </p:selectOneMenu>
                 </p:column>

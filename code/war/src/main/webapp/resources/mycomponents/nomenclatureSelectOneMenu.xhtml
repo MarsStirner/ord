@@ -18,9 +18,7 @@
         <c:if test="#{cc.attrs.withNoSelectOption}">
             <f:selectItem itemLabel="" noSelectionOption="true"/>
         </c:if>
-        <f:selectItems value="#{dictionaryManagement.getNomenclature()}" var="nomenclature_row"
-                       itemLabel="#{nomenclature_row.code}-#{nomenclature_row.value}"
-                />
+        <f:selectItems value="#{refBookHelper.nomenclatures}" var="nomenclature_row" itemLabel="#{nomenclature_row.code}-#{nomenclature_row.value}"/>
     </p:selectOneMenu>
 </cc:implementation>
 

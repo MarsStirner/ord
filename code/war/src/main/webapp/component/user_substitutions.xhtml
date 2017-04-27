@@ -68,7 +68,7 @@
                 <p:column headerText="Заместитель" sortBy="#{substitution_entry.substitution}" field="substitution.lastName">
                     <h:outputText value="#{substitution_entry.substitution.description}"/>
                 </p:column>
-                <p:ajax event="rowSelect" onstart="goToSubstitution(PrimeFaces.widgets.substitutionTableWidget.selection); return false;"/>
+                <p:ajax event="rowSelect" onstart="goToSubstitution(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
             </p:dataTable>
     </ui:define>
 

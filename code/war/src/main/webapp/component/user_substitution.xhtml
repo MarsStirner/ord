@@ -8,9 +8,13 @@
       xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
       xmlns:p="http://primefaces.org/ui"
-        >
+>
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{substitution.init}"/>
+    </f:metadata>
+
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <my:homeButton outcome="/component/user_substitutions.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{substitution.errorState}"/>
@@ -46,11 +50,14 @@
                 </p:column>
                 <p:column>
                     <h:outputText value="#{substitution.document.startDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        <f:converter converterId="LocalDateConverter"/>
+                        <f:attribute name="pattern" value="dd.MM.yyyy"/>
                     </h:outputText>
                     <p:calendar id="startDateDateCalendar" value="#{substitution.document.startDate}" lang="ru"
                                 locale="ru" widgetVar="endDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"
-                                rendered="#{stateEditable}"/>
+                                rendered="#{stateEditable}">
+                        <f:converter converterId="LocalDateConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row styleClass="ui-grid-row">
@@ -59,11 +66,14 @@
                 </p:column>
                 <p:column>
                     <h:outputText value="#{substitution.document.endDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}">
-                        <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+                        <f:converter converterId="LocalDateConverter"/>
+                        <f:attribute name="pattern" value="dd.MM.yyyy"/>
                     </h:outputText>
                     <p:calendar id="endDateDateCalendar" value="#{substitution.document.endDate}" lang="ru"
                                 locale="ru" widgetVar="endDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"
-                                rendered="#{stateEditable}"/>
+                                rendered="#{stateEditable}">
+                        <f:converter converterId="LocalDateConverter"/>
+                    </p:calendar>
                 </p:column>
             </p:row>
             <p:row styleClass="ui-grid-row">

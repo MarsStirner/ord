@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html">
-<ui:composition template="/jsf-template/listViewTemplate.xhtml">
-    <ui:define name="contentLabel">О программе</ui:define>
-    <ui:define name="contentTable">
+<ui:composition template="/jsf-template/listTemplate.xhtml">
+    <ui:define name="CONTENT.VIEWTITLE">О программе</ui:define>
+    <ui:define name="CONTENT.TOOLBAR"/>
+    <ui:define name="CONTENT.TABLE">
         <h:outputText value="Организационно-распорядительный документооборот"/>
         <br/>
         <h:outputText value="Версия #{config.getString('build.version')}"/>

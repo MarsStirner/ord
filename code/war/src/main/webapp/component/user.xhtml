@@ -11,6 +11,10 @@
         >
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{user.init}"/>
+    </f:metadata>
+
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <my:homeButton outcome="/component/users.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{user.errorState}"/>
@@ -151,9 +155,9 @@
                         <p:cellEditor>
                             <f:facet name="output"><h:outputText value="#{contact.type}" styleClass="outputText"/></f:facet>
                             <f:facet name="input">
-                                <p:selectOneMenu id="contactTypeSelectMenu" value="#{contact.type}" converter="ContactTypeConverter"
+                                <p:selectOneMenu id="contactTypeSelectMenu" value="#{contact.type}" converter="#{ContactTypeConverter}"
                                                  style="width:90% !important; margin:0 0.5em" styleClass="inputText">
-                                    <f:selectItems value="#{dictionaryManagement.contactTypes}"/>
+                                    <f:selectItems value="#{refBookHelper.contactTypes}"/>
                                 </p:selectOneMenu>
                             </f:facet>
                         </p:cellEditor>
@@ -186,9 +190,9 @@
                                 <h:outputText id="v_maxAccessLevel" rendered="#{not stateEditable}" styleClass="outputText"
                                               value="#{user.document.maxUserAccessLevel.value}"/>
                                 <p:selectOneMenu id="e_maxAccessLevel" value="#{user.document.maxUserAccessLevel}" required="true"
-                                                 converter="UserAccessLevelConverter" style="width:100%;" styleClass="inputText"
+                                                 converter="#{UserAccessLevelConverter}" style="width:100%;" styleClass="inputText"
                                                  rendered="#{stateEditable}">
-                                    <f:selectItems value="#{dictionaryManagement.userAccessLevels}"/>
+                                    <f:selectItems value="#{refBookHelper.userAccessLevels}"/>
                                 </p:selectOneMenu>
                             </p:column>
                         </p:row>
@@ -210,8 +214,8 @@
                         </legend>
                         <h:selectManyCheckbox collectionType="java.util.HashSet"
                                               layout="pageDirection" value="#{user.document.roles}"
-                                              converter="RoleConverter" disabled="#{not stateEditable}">
-                            <f:selectItems value="#{roleList.availableRoles}"/>
+                                              converter="#{RoleConverter}" disabled="#{not stateEditable}">
+                            <f:selectItems value="#{refBookHelper.roles}"/>
                         </h:selectManyCheckbox>
                     </fieldset>
 

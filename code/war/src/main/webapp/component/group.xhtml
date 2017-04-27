@@ -10,6 +10,10 @@
       xmlns:p="http://primefaces.org/ui">
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{group.init}"/>
+    </f:metadata>
+
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{group.createState or group.editState}" scope="view"/>
@@ -74,7 +78,7 @@
                         <td class="second" colspan="3">
                             <div style="overflow-y: scroll; height: 90px">
                                <ui:repeat value="#{group.document.membersList}" var="member">
-                                    <h:outputText value="#{member.getDescription()}" class="width"/><br/>
+                                    <h:outputText value="#{member.description}" class="width"/><br/>
                                 </ui:repeat>
                             </div>
                         </td>
@@ -94,8 +98,8 @@
                     <tr class="row">
                         <td class="first">Категория:</td>
                         <td class="second">
-                            <p:selectOneMenu id="groupType" value="#{group.document.groupType}" converter="GroupTypeConverter" style="width:15em;">
-                            <f:selectItems value="#{dictionaryManagement.groupTypes}"/>
+                            <p:selectOneMenu id="groupType" value="#{group.document.groupType}" converter="#{GroupTypeConverter}" style="width:15em;">
+                            <f:selectItems value="#{refBookHelper.groupTypes}"/>
                         </p:selectOneMenu>
                         </td>
                     </tr>

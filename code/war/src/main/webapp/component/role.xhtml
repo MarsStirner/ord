@@ -9,6 +9,9 @@
       xmlns:f="http://java.sun.com/jsf/core"
         >
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{role.init}"/>
+    </f:metadata>
 
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
@@ -32,7 +35,7 @@
             </h:panelGroup>
             <h:panelGroup rendered="#{role.editState or role.viewState}">
                 <div class="name">
-                    <h:outputText value="Роль #{role.document.name}"/>
+                    <h:outputText value="Роль #{role.document.value}"/>
                 </div>
             </h:panelGroup>
             <h:panelGroup rendered="#{role.errorState}">
@@ -49,8 +52,8 @@
                     <p:outputLabel for="e_name" value="Наименование:"/>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-10">
-                    <h:outputText id="v_name" value="#{role.document.name}" styleClass="outputText" rendered="#{not stateEditable}"/>
-                    <p:inputText id="e_name" value="#{role.document.name}" styleClass="inputText" rendered="#{stateEditable}"/>
+                    <h:outputText id="v_name" value="#{role.document.value}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_name" value="#{role.document.value}" styleClass="inputText" rendered="#{stateEditable}"/>
                 </p:column>
             </p:row>
             <p:row styleClass="ui-grid-row">

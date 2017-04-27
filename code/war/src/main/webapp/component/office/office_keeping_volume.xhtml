@@ -11,6 +11,10 @@
         >
 <!--TODO add collectors with date who can take volumes-->
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{officeKeepingVolume.init}"/>
+    </f:metadata>
+
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{officeKeepingVolume.createState or officeKeepingVolume.editState}" scope="view"/>

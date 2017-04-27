@@ -16,7 +16,7 @@
             <c:if test="#{cc.attrs.withNoSelectOption}">
                 <f:selectItem itemLabel="" noSelectionOption="true"/>
             </c:if>
-            <f:selectItems value="#{dictionaryManagement.getDocumentTypes()}" var="docType_row"/>
+            <f:selectItems value="#{refBookHelper.documentTypes}" var="docType_row"/>
         </p:selectOneMenu>
     </cc:implementation>
 

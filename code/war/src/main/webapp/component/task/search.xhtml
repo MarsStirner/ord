@@ -81,9 +81,9 @@
                     </label>
                 </p:column>
                 <p:column colspan="3">
-                    <p:selectOneMenu id="form" value="#{request_search.form}" converter="RequestDocumentFormConverter">
+                    <p:selectOneMenu id="form" value="#{request_search.form}" converter="#{RequestDocumentFormConverter}">
                         <f:selectItem itemLabel="" noSelectionOption="true"/>
-                        <f:selectItems value="#{dictionaryManagement.getDocumentFormsByCategory('REQUEST')}"/>
+                        <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('REQUEST')}"/>
                     </p:selectOneMenu>
                 </p:column>
             </p:row>
