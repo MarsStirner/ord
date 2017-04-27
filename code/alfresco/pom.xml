@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.bars_open.medvtr.ord</groupId>
@@ -20,61 +18,38 @@
     </parent>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.alfresco/alfresco-repository -->
         <dependency>
-            <groupId>org.alfresco</groupId>
-            <artifactId>alfresco-web-service-client</artifactId>
-            <version>5.0.a</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.myfaces.core</groupId>
-                    <artifactId>myfaces-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.myfaces.core</groupId>
-                    <artifactId>myfaces-impl</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>org.apache.chemistry.opencmis</groupId>
+            <artifactId>chemistry-opencmis-client-impl</artifactId>
+            <version>0.10.0</version>
         </dependency>
-
         <dependency>
-            <groupId>axis</groupId>
-            <artifactId>axis</artifactId>
-            <version>1.4</version>
+            <groupId>org.alfresco.cmis.client</groupId>
+            <artifactId>alfresco-opencmis-extension</artifactId>
+            <version>0.7</version>
         </dependency>
-
         <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-            <version>2.7.2</version>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.1</version>
         </dependency>
-
         <dependency>
-            <groupId>org.apache.ws.security</groupId>
-            <artifactId>wss4j</artifactId>
-            <version>1.6.19</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>ru.bars_open.medvtr.ord</groupId>
+            <artifactId>dao</artifactId>
+            <version>${version.build}</version>
         </dependency>
-
         <dependency>
-            <groupId>xml-apis</groupId>
-            <artifactId>xml-apis</artifactId>
-            <version>1.4.01</version>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
         </dependency>
-
-
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

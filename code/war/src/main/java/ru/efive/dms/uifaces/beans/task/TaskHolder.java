@@ -2,23 +2,20 @@ package ru.efive.dms.uifaces.beans.task;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dao.alfresco.Attachment;
-import ru.efive.dms.uifaces.beans.utils.FileManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
-import ru.efive.dms.uifaces.beans.dialogs.AttachmentVersionDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageKey;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.*;
@@ -33,12 +30,9 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
 import javax.annotation.PreDestroy;
-import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
@@ -48,9 +42,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     private static final Logger LOGGER = LoggerFactory.getLogger("TASK");
     //TODO ACL
     private Permissions permissions;
-    @Autowired
-    @Qualifier("fileManagement")
-    private FileManagementBean fileManagement;
     @Autowired
     @Qualifier("documentTaskTree")
     private DocumentTaskTreeHolder taskTreeHolder;
@@ -82,56 +73,16 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     @Autowired
     @Qualifier("requestDocumentDao")
     private RequestDocumentDao requestDocumentDao;
-    private List<Attachment> attachments = new ArrayList<>();
 
     @PreDestroy
     public void destroy() {
         LOGGER.info("Bean destroyed");
     }
 
-    public void handleFileUpload(FileUploadEvent event) {
-        final UploadedFile file = event.getFile();
-        if (file != null) {
-            LOGGER.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
-            final Attachment attachment = new Attachment();
-            attachment.setFileName(file.getFileName());
-            attachment.setCreated(LocalDateTime.now());
-            attachment.setAuthorId(authData.getAuthorized().getId());
-            attachment.setParentId(getDocument().getUniqueId());
-            final boolean result = fileManagement.createFile(attachment, file.getContents());
-            LOGGER.info("After alfresco call Attachment.id={}", attachment.getId());
-            if (result) {
-                attachments.add(attachment);
-            }
-            addMessage(new FacesMessage("Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
-        } else {
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-        }
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public void addVersionForAttachment(final Attachment attachment) {
-        if (attachment != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AttachmentVersionDialogHolder.DIALOG_SESSION_KEY, attachment);
-            final Map<String, List<String>> params = new HashMap<>();
-            params.put(AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY, Stream.of(getDocument().getUniqueId()).collect(Collectors.toList()));
-            RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params);
-        } else {
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-        }
-    }
-
-    public void handleAddVersionDialogResult(final SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Add version dialog: {}", result);
-        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final FacesMessage msg = (FacesMessage) result.getResult();
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, msg);
-        }
-    }
 
     // Выбора исполнителей /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseExecutors() {
@@ -198,14 +149,14 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         try {
             taskDao.update(document);
             if (!document.isDeleted()) {
-                addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+                MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_DELETE);
                 LOGGER.error("After delete operation task hasn't deleted = true");
                 return false;
             }
             return true;
         } catch (Exception e) {
             LOGGER.error("Error on delete: ", e);
-            addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_DELETE);
         }
         return false;
     }
@@ -273,19 +224,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
             if (isReadPermission()) {
                 //Простановка факта просмотра записи
                 if (viewFactDao.registerViewFact(document, currentUser)) {
-                    FacesContext.getCurrentInstance().addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
+                    MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
                 }
                 taskTreeHolder.setRootDocumentId(document.getUniqueId());
                 taskTreeHolder.refresh();
-                try {
-                    updateAttachments();
-                } catch (Exception e) {
-                    LOGGER.warn("Exception while check upload files", e);
-                    addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-                }
             }
         } catch (Exception e) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
@@ -322,7 +267,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
             taskDao.save(document);
         } catch (Exception e) {
             LOGGER.error("saveNewDocument: on save document", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
         //Простановка факта просмотра записи
@@ -330,7 +275,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
             viewFactDao.registerViewFact(document, currentUser);
         } catch (Exception e) {
             LOGGER.error("saveNewDocument: on viewFact register", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
+            MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
         //Установка идшника для поиска поручений
         taskTreeHolder.setRootDocumentId(document.getUniqueId());
@@ -349,7 +294,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
             return true;
         } catch (Exception e) {
             LOGGER.error("saveDocument ERROR:", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -358,7 +303,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     @Override
     public boolean isCanDelete() {
         if (!permissions.hasPermission(WRITE)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
             LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
@@ -367,7 +312,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     @Override
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
             LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
@@ -376,7 +321,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     @Override
     public boolean isCanView() {
         if (permissions == null || !permissions.hasPermission(READ)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
             LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
             return false;
         }
@@ -407,13 +352,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     private boolean checkState(final Task document, final User user) {
         if (document == null) {
             setState(State.ERROR);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
             LOGGER.warn("Task NOT FOUND");
             return false;
         }
         if (document.isDeleted()) {
             setState(State.ERROR);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
             LOGGER.warn("TASK[{}] IS DELETED", document.getId());
             return false;
         }
@@ -424,13 +369,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         try {
             Task currentTask = taskDao.save(task);
             if (currentTask == null) {
-                addMessage(null, MessageHolder.MSG_CANT_SAVE);
+MessageUtils.addMessage( MessageHolder.MSG_CANT_SAVE);
             } else {
                 return currentTask;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            addMessage(null, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+MessageUtils.addMessage( MessageHolder.MSG_ERROR_ON_SAVE_NEW);
         }
         return null;
     }
@@ -475,41 +420,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
 
     }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void updateAttachments() {
-        LOGGER.debug("Start updating attachments");
-        if (getDocument() != null && getDocumentId() != 0) {
-            attachments = fileManagement.getFilesByParentId(getDocument().getUniqueId());
-        }
-        LOGGER.debug("Finish updating attachments");
-    }
-
-    public void deleteAttachment(Attachment attachment) {
-        if (attachment != null) {
-            Task document = getDocument();
-            LocalDateTime created = LocalDateTime.now();
-            HistoryEntry historyEntry = new HistoryEntry();
-            historyEntry.setCreated(created);
-            historyEntry.setStartDate(created);
-            historyEntry.setOwner(authData.getAuthorized());
-            historyEntry.setDocType(document.getDocumentType().getName());
-            historyEntry.setParentId(document.getId());
-            historyEntry.setActionId(0);
-            historyEntry.setFromStatusId(1);
-            historyEntry.setEndDate(created);
-            historyEntry.setProcessed(true);
-            historyEntry.setCommentary("Файл " + attachment.getFileName() + " был удален");
-            document.addToHistory(historyEntry);
-            setDocument(document);
-            if (fileManagement.deleteFile(attachment)) {
-                updateAttachments();
-            }
-            setDocument(taskDao.save(document));
-        }
-    }
 
     public DocumentTaskTreeHolder getTaskTreeHolder() {
         return taskTreeHolder;

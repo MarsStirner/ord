@@ -26,19 +26,18 @@
     </appender>
 
     <!-- для SQL-->
-    <appender name="APPENDER_SQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="APPENDER_ORM" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
-        <file>${com.sun.aas.instanceRoot}/logs/sql/sql.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/SQL/SQL_%i.log.gz</fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/orm/orm_%i.log.gz</fileNamePattern>
             <minIndex>1</minIndex>
             <maxIndex>3</maxIndex>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>25MB</maxFileSize>
+            <maxFileSize>20MB</maxFileSize>
         </triggeringPolicy>
     </appender>
 
@@ -56,25 +55,25 @@
     </appender>
 
     <!--Для DAO-->
-    <appender name="APPENDER_DAO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="APPENDER_BEAN" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/dao/dao.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/bean/bean.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
    <!--Для альфреско-->
-    <appender name="APPENDER_ALFRESCO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <appender name="APPENDER_CMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/alfresco/alfresco.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/cmis/cmis.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
@@ -156,17 +155,30 @@
         <appender-ref ref="APPENDER_LDAP"/>
     </logger>
 
-    <!--Логгер для интеграции с альфреско-->
-    <logger name="ALFRESCO" level="DEBUG" additivity="false">
-        <appender-ref ref="APPENDER_ALFRESCO"/>
+    <!--Логгер для интеграции с CMIS (alfresco)-->
+    <logger name="CMIS" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_CMIS"/>
+    </logger>
+    <logger name="ru.bars_open.medvtr.ord.cmis" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_CMIS"/>
+    </logger>
+    <logger name="org.apache.chemistry.opencmis" level="INFO" additivity="false">
+        <appender-ref ref="APPENDER_CMIS"/>
     </logger>
 
     <!--Hibernate SQL LOGGER-->
     <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
-        <appender-ref ref="APPENDER_SQL"/>
+        <appender-ref ref="APPENDER_ORM"/>
     </logger>
     <logger name="org.springframework.orm.jpa" level="DEBUG" additivity="false">
-        <appender-ref ref="APPENDER_SQL"/>
+        <appender-ref ref="APPENDER_ORM"/>
+    </logger>
+
+    <logger name="org.springframework.beans" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_BEAN"/>
+    </logger>
+    <logger name="org.springframework.aop" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_BEAN"/>
     </logger>
 
     <root level="${logs.level}">

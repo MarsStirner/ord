@@ -3,20 +3,18 @@ package ru.efive.dms.uifaces.beans.incoming;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
-import ru.efive.dao.alfresco.Attachment;
-import ru.efive.dms.config.JCR;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageKey;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.HistoryEntry;
@@ -33,8 +31,6 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.jcr.RepositoryException;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -45,8 +41,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     //TODO ACL
     private Permissions permissions;
 
-    @Autowired
-    private JCR jcr;
 
     @Autowired
     @Qualifier("documentTaskTree")
@@ -77,40 +71,10 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
      */
     private List<OutgoingDocument> relatedDocuments;
 
-    public void handleFileUpload(FileUploadEvent event) throws RepositoryException, IOException {
-        final UploadedFile file = event.getFile();
-        if (file != null) {
-            log.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
-            jcr.createAttachment(getDocument().getUniqueId(), file.getFileName(), LocalDateTime.now(), authData, file.getContentType(), file.getContents());
-            addMessage(new FacesMessage("Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
-        } else {
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-        }
-    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public void addVersionForAttachment(final Attachment attachment) {
-        if (attachment != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AttachmentVersionDialogHolder.DIALOG_SESSION_KEY, attachment);
-            final Map<String, List<String>> params = new HashMap<>();
-            params.put(AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY, Collections.singletonList(getDocument().getUniqueId()));
-            RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params);
-        } else {
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-        }
-    }
-
-    public void handleAddVersionDialogResult(final SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        log.info("Add version dialog: {}", result);
-        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final FacesMessage msg = (FacesMessage) result.getResult();
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, msg);
-        }
-    }
 
     //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseController() {
@@ -336,12 +300,12 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         try {
             final boolean result = incomingDocumentDao.delete(getDocument());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_CANT_DELETE);
+                MessageUtils.addMessage(MessageHolder.MSG_CANT_DELETE);
             }
             return result;
         } catch (Exception e) {
             log.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
-            FacesContext.getCurrentInstance().addMessage(null, MessageHolder.MSG_ERROR_ON_DELETE);
+            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_DELETE);
             return false;
         }
     }
@@ -393,7 +357,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             if (isReadPermission()) {
                 //Простановка факта просмотра записи
                 if (viewFactDao.registerViewFact(document, currentUser)) {
-                    addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
+                    MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
                 }
                 //Установка идшника для поиска поручений
                 taskTreeHolder.setRootDocumentId(document.getUniqueId());
@@ -401,7 +365,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 taskTreeHolder.refresh();
             }
         } catch (Exception e) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
             log.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
@@ -439,7 +403,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             incomingDocumentDao.save(document);
         } catch (Exception e) {
             log.error("saveNewDocument: on save document", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
         //Простановка факта просмотра записи
@@ -447,7 +411,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             viewFactDao.registerViewFact(document, currentUser);
         } catch (Exception e) {
             log.error("saveNewDocument: on viewFact register", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
+            MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
         //Установка идшника для поиска поручений
         taskTreeHolder.setRootDocumentId(document.getUniqueId());
@@ -467,7 +431,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             return true;
         } catch (Exception e) {
             log.error("saveDocument ERROR:", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -484,7 +448,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
                     )
             );
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, msg);
+            MessageUtils.addMessage(MessageKey.ERROR, msg);
             return false;
         }
         return true;
@@ -493,7 +457,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Override
     public boolean isCanDelete() {
         if (!permissions.hasPermission(WRITE)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
             log.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
@@ -502,7 +466,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Override
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
             log.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
@@ -511,7 +475,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Override
     public boolean isCanView() {
         if (permissions == null || !permissions.hasPermission(READ)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
             log.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
             return false;
         }
@@ -542,13 +506,13 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         if (document == null) {
             setState(State.ERROR);
             log.warn("Document NOT FOUND");
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
             return false;
         }
         if (document.isDeleted()) {
             setState(State.ERROR);
             log.warn("Document[{}] IS DELETED", document.getId());
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
@@ -562,7 +526,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
 
                     )
             );
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, msg);
+            MessageUtils.addMessage(MessageKey.ERROR, msg);
             log.warn(
                     "Document[{}] has higher accessLevel[{}] then user[{}]", document.getId(), docAccessLevel.getValue(), accessLevel.getValue()
             );
@@ -574,19 +538,19 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     protected boolean validateHolder() {
         boolean result = true;
         if (getDocument().getController() == null) {
-            addMessage(null, MessageHolder.MSG_CONTROLLER_NOT_SET);
+MessageUtils.addMessage( MessageHolder.MSG_CONTROLLER_NOT_SET);
             result = false;
         }
         if (getDocument().getContragent() == null) {
-            addMessage(null, MessageHolder.MSG_CONTRAGENT_NOT_SET);
+MessageUtils.addMessage( MessageHolder.MSG_CONTRAGENT_NOT_SET);
             result = false;
         }
         if (getDocument().getRecipientUsers() == null || getDocument().getRecipientUsers().isEmpty()) {
-            addMessage(null, MessageHolder.MSG_RECIPIENTS_NOT_SET);
+MessageUtils.addMessage( MessageHolder.MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
         if (getDocument().getShortDescription() == null || getDocument().getShortDescription().equals("")) {
-            addMessage(null, MessageHolder.MSG_SHORT_DESCRIPTION_NOT_SET);
+MessageUtils.addMessage( MessageHolder.MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
         return result;

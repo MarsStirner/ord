@@ -2,28 +2,23 @@ package ru.efive.dms.uifaces.beans.outgoing;
 
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dao.alfresco.Attachment;
-import ru.efive.dms.uifaces.beans.utils.FileManagementBean;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
-import ru.efive.dms.uifaces.beans.utils.MessageHolder;
+import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.efive.wf.core.ActionResult;
-import ru.entity.model.document.*;
+import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
-import ru.hitsl.sql.dao.interfaces.document.*;
+import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
@@ -34,7 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.efive.dms.uifaces.beans.utils.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController(value = "out_doc", transactionManager = "ordTransactionManager")
@@ -56,68 +51,10 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     private AuthorizationData authData;
     //TODO ACL
     private Permissions permissions;
-    @Autowired
-    @Qualifier("fileManagement")
-    private FileManagementBean fileManagement;
     //Для проверки прав доступа
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
-    private List<Attachment> attachments = new ArrayList<>();
-    private ProcessorModalBean processorModal = new ProcessorModalBean() {
-        @Override
-        protected void doInit() {
-            setProcessedData(getDocument());
-            if (getDocumentId() == null || getDocumentId() == 0) {
-                saveNewDocument();
-            }
-        }
-
-        @Override
-        protected void doPostProcess(ActionResult actionResult) {
-            OutgoingDocument document = (OutgoingDocument) actionResult.getProcessedData();
-            if (getSelectedAction().isHistoryAction()) {
-                Set<HistoryEntry> history = document.getHistory();
-                if (history == null) {
-                    history = new HashSet<>();
-                }
-                history.add(getHistoryEntry());
-                document.setHistory(history);
-            }
-            setDocument(document);
-            OutgoingDocumentHolder.this.save();
-        }
-
-        @Override
-        protected void doProcessException(ActionResult actionResult) {
-            OutgoingDocument document = (OutgoingDocument) actionResult.getProcessedData();
-            String in_result = document.getWFResultDescription();
-            if (StringUtils.isNotEmpty(in_result)) {
-                setActionResult(in_result);
-            }
-        }
-    };
-
-
-    public void handleFileUpload(FileUploadEvent event) {
-        final UploadedFile file = event.getFile();
-        if (file != null) {
-            log.info("Upload new file[{}] content-type={} size={}", file.getFileName(), file.getContentType(), file.getSize());
-            final Attachment attachment = new Attachment();
-            attachment.setFileName(file.getFileName());
-            attachment.setCreated(LocalDateTime.now());
-            attachment.setAuthorId(authData.getAuthorized().getId());
-            attachment.setParentId(getDocument().getUniqueId());
-            final boolean result = fileManagement.createFile(attachment, file.getContents());
-            log.info("After alfresco call Attachment.id={}", attachment.getId());
-            if (result) {
-                attachments.add(attachment);
-            }
-            addMessage(new FacesMessage("Successful! " + file.getFileName() + " is uploaded. Size " + file.getSize()));
-        } else {
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-        }
-    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  ////////////////////////////////////////////////////////////////
@@ -138,29 +75,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         final String selected = (String) event.getObject();
         getDocument().setReasonDocumentId(selected);
         log.info("Choose reasonDocument From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
-    }
-
-    public void addVersionForAttachment(final Attachment attachment) {
-        if (attachment != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AttachmentVersionDialogHolder.DIALOG_SESSION_KEY, attachment);
-            final Map<String, List<String>> params = new HashMap<>();
-            params.put(
-                    AttachmentVersionDialogHolder.DIALOG_DOCUMENT_KEY,
-                    Collections.singletonList(getDocument().getUniqueId())
-            );
-            RequestContext.getCurrentInstance().openDialog("/dialogs/addVersionForAttachment.xhtml", AbstractDialog.getViewOptions(), params);
-        } else {
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
-        }
-    }
-
-    public void handleAddVersionDialogResult(final SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        log.info("Add version dialog: {}", result);
-        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final FacesMessage msg = (FacesMessage) result.getResult();
-            addMessage(MessageHolder.MSG_KEY_FOR_FILES, msg);
-        }
     }
 
     //Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,12 +250,12 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         try {
             final boolean result = outgoingDocumentDao.delete(getDocument());
             if (!result) {
-                FacesContext.getCurrentInstance().addMessage(null, MSG_CANT_DELETE);
+MessageUtils.addMessage( MSG_CANT_DELETE);
             }
             return result;
         } catch (Exception e) {
             log.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
-            FacesContext.getCurrentInstance().addMessage(null, MSG_ERROR_ON_DELETE);
+MessageUtils.addMessage( MSG_ERROR_ON_DELETE);
             return false;
         }
     }
@@ -376,17 +290,11 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             if (isReadPermission()) {
                 //Простановка факта просмотра записи
                 if (viewFactDao.registerViewFact(document, currentUser)) {
-                    addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
-                }
-                try {
-                    updateAttachments();
-                } catch (Exception e) {
-                    log.warn("Exception while check upload files", e);
-                    addMessage(MessageHolder.MSG_KEY_FOR_FILES, MessageHolder.MSG_ERROR_ON_ATTACH);
+                    MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
                 }
             }
         } catch (Exception e) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MSG_ERROR_ON_INITIALIZE);
+            MessageUtils.addMessage(MessageKey.ERROR, MSG_ERROR_ON_INITIALIZE);
             log.error("INTERNAL ERROR ON INITIALIZATION:", e);
         }
     }
@@ -423,7 +331,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             outgoingDocumentDao.save(document);
         } catch (Exception e) {
             log.error("saveNewDocument: on save document", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             return false;
         }
         //Простановка факта просмотра записи
@@ -431,7 +339,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             viewFactDao.registerViewFact(document, currentUser);
         } catch (Exception e) {
             log.error("saveNewDocument: on viewFact register", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
+            MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
         return true;
     }
@@ -446,7 +354,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
             return true;
         } catch (Exception e) {
             log.error("saveDocument ERROR:", e);
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
             return false;
         }
     }
@@ -463,7 +371,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
                     )
             );
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, msg);
+            MessageUtils.addMessage(MessageKey.ERROR, msg);
             return false;
         }
         return true;
@@ -472,7 +380,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     public boolean isCanDelete() {
         if (!permissions.hasPermission(WRITE)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
             log.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
@@ -481,7 +389,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     public boolean isCanEdit() {
         if (!permissions.hasPermission(WRITE)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
             log.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
@@ -490,7 +398,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Override
     public boolean isCanView() {
         if (permissions == null || !permissions.hasPermission(READ)) {
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
             log.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
             return false;
         }
@@ -522,13 +430,13 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         if (document == null) {
             setState(State.ERROR);
             log.warn("Document NOT FOUND");
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
             return false;
         }
         if (document.isDeleted()) {
             setState(State.ERROR);
             log.warn("Document[{}] IS DELETED", document.getId());
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
             return false;
         }
         final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
@@ -542,7 +450,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
                     )
             );
-            addMessage(MessageHolder.MSG_KEY_FOR_ERROR, msg);
+            MessageUtils.addMessage(MessageKey.ERROR, msg);
             log.warn(
                     "Document[{}] has higher accessLevel[{}] then user[{}]", document.getId(), docAccessLevel.getValue(), accessLevel.getValue()
             );
@@ -556,62 +464,23 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         boolean result = true;
         FacesContext context = FacesContext.getCurrentInstance();
         if (getDocument().getController() == null) {
-            context.addMessage(null, MSG_CONTROLLER_NOT_SET);
+MessageUtils.addMessage( MSG_CONTROLLER_NOT_SET);
             result = false;
         }
         if (getDocument().getExecutor() == null) {
-            context.addMessage(null, MSG_EXECUTOR_NOT_SET);
+MessageUtils.addMessage( MSG_EXECUTOR_NOT_SET);
             result = false;
         }
         if (getDocument().getContragent() == null) {
-            context.addMessage(null, MSG_RECIPIENTS_NOT_SET);
+MessageUtils.addMessage( MSG_RECIPIENTS_NOT_SET);
             result = false;
         }
         if (StringUtils.isEmpty(getDocument().getShortDescription())) {
-            context.addMessage(null, MSG_SHORT_DESCRIPTION_NOT_SET);
+MessageUtils.addMessage( MSG_SHORT_DESCRIPTION_NOT_SET);
             result = false;
         }
         return result;
     }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
-    }
-
-    public void updateAttachments() {
-        log.debug("Start updating attachments");
-        if (getDocument() != null && getDocumentId() != 0) {
-            attachments = fileManagement.getFilesByParentId(getDocument().getUniqueId());
-        }
-        log.debug("Finish updating attachments");
-    }
-
-    public void deleteAttachment(Attachment attachment) {
-        if (attachment != null && isCanEdit()) {
-            final OutgoingDocument document = getDocument();
-            final LocalDateTime created = LocalDateTime.now();
-            HistoryEntry historyEntry = new HistoryEntry();
-            historyEntry.setCreated(created);
-            historyEntry.setStartDate(created);
-            historyEntry.setOwner(authData.getAuthorized());
-            historyEntry.setDocType(document.getDocumentType().getName());
-            historyEntry.setParentId(document.getId());
-            historyEntry.setActionId(0);
-            historyEntry.setFromStatusId(1);
-            historyEntry.setEndDate(created);
-            historyEntry.setProcessed(true);
-            historyEntry.setCommentary("Файл " + attachment.getFileName() + " был удален");
-            document.addToHistory(historyEntry);
-            setDocument(document);
-            if (fileManagement.deleteFile(attachment)) {
-                updateAttachments();
-            }
-            outgoingDocumentDao.save(document);
-        }
-    }
-
-    public ProcessorModalBean getProcessorModal() {
-        return processorModal;
-    }
 
 }

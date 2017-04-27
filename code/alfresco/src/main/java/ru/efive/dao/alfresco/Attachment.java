@@ -1,8 +1,8 @@
 package ru.efive.dao.alfresco;
 
-import org.alfresco.webservice.types.NamedValue;
-import org.alfresco.webservice.util.Constants;
-import org.alfresco.webservice.util.Utils;
+//import org.alfresco.webservice.types.NamedValue;
+//import org.alfresco.webservice.util.Constants;
+//import org.alfresco.webservice.util.Utils;
 
 import java.io.Serializable;
 import java.net.URLDecoder;
@@ -90,54 +90,54 @@ public class Attachment extends AlfrescoNode implements Serializable {
         } else return new Revision("1.0", getAuthorId(), getFileName());
     }
 
-    @Override
-    public boolean setNodeProperties(NamedValue[] nodeProperties) {
-        boolean result;
-        try {
-            for (NamedValue namedValue : nodeProperties) {
-                if (namedValue.getName().endsWith(Constants.PROP_NAME)) {
-                    setDisplayName(namedValue.getValue());
-                }
-                /*else if (namedValue.getName().endsWith(Constants.PROP_CREATED)) {
-                        setCreated(new java.text.SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss.mmm+hh:mm").parse(namedValue.getValue()));
-                    }*/
-                else if (namedValue.getName().endsWith("parentId")) {
-                    setParentId(namedValue.getValue());
-                } else if (namedValue.getName().endsWith("authorId")) {
-                    String value = namedValue.getValue();
-                    if (value != null && !value.equals("")) {
-                        setAuthorId(Integer.parseInt(value));
-                    }
-                } else if (namedValue.getName().endsWith("fileName")) {
-                    String fileName = URLDecoder.decode(namedValue.getValue(), "UTF-8");
-                    setFileName(fileName);
-                }
-            }
-            result = true;
-        } catch (Exception e) {
-            result = false;
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    @Override
-    public NamedValue[] getNodeProperties() {
-        try {
-            if (getDisplayName() == null || getDisplayName().equals("")) {
-                setDisplayName(new String((new SimpleDateFormat("ddMMyyyy_HHmmss").format(getCreated()) + "-" + getParentId()).getBytes(), "UTF-8"));
-            }
-            String fileName = URLEncoder.encode(getFileName(), "UTF-8");
-            System.out.println(fileName);
-            return new NamedValue[]{Utils.createNamedValue(Constants.PROP_NAME, getDisplayName()),
-                    Utils.createNamedValue(Constants.createQNameString(getNamespace(), "parentId"), getParentId()),
-                    Utils.createNamedValue(Constants.createQNameString(getNamespace(), "authorId"), Integer.toString(getAuthorId())),
-                    Utils.createNamedValue(Constants.createQNameString(getNamespace(), "fileName"), fileName)};
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new NamedValue[]{};
-        }
-    }
+//    @Override
+//    public boolean setNodeProperties(NamedValue[] nodeProperties) {
+//        boolean result;
+//        try {
+//            for (NamedValue namedValue : nodeProperties) {
+//                if (namedValue.getName().endsWith(Constants.PROP_NAME)) {
+//                    setDisplayName(namedValue.getValue());
+//                }
+//                /*else if (namedValue.getName().endsWith(Constants.PROP_CREATED)) {
+//                        setCreated(new java.text.SimpleDateFormat("YYYY-MM-DD'T'hh:mm:ss.mmm+hh:mm").parse(namedValue.getValue()));
+//                    }*/
+//                else if (namedValue.getName().endsWith("parentId")) {
+//                    setParentId(namedValue.getValue());
+//                } else if (namedValue.getName().endsWith("authorId")) {
+//                    String value = namedValue.getValue();
+//                    if (value != null && !value.equals("")) {
+//                        setAuthorId(Integer.parseInt(value));
+//                    }
+//                } else if (namedValue.getName().endsWith("fileName")) {
+//                    String fileName = URLDecoder.decode(namedValue.getValue(), "UTF-8");
+//                    setFileName(fileName);
+//                }
+//            }
+//            result = true;
+//        } catch (Exception e) {
+//            result = false;
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
+//
+//    @Override
+//    public NamedValue[] getNodeProperties() {
+//        try {
+//            if (getDisplayName() == null || getDisplayName().equals("")) {
+//                setDisplayName(new String((new SimpleDateFormat("ddMMyyyy_HHmmss").format(getCreated()) + "-" + getParentId()).getBytes(), "UTF-8"));
+//            }
+//            String fileName = URLEncoder.encode(getFileName(), "UTF-8");
+//            System.out.println(fileName);
+//            return new NamedValue[]{Utils.createNamedValue(Constants.PROP_NAME, getDisplayName()),
+//                    Utils.createNamedValue(Constants.createQNameString(getNamespace(), "parentId"), getParentId()),
+//                    Utils.createNamedValue(Constants.createQNameString(getNamespace(), "authorId"), Integer.toString(getAuthorId())),
+//                    Utils.createNamedValue(Constants.createQNameString(getNamespace(), "fileName"), fileName)};
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return new NamedValue[]{};
+//        }
+//    }
 
     @Override
     public int hashCode() {

@@ -11,6 +11,10 @@
         >
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{officeKeepingFile.init}"/>
+    </f:metadata>
+
     <ui:define name="VARIABLE_DEFINITIONS">
         <!-- Статусы документа -->
         <c:set var="stateEditable" value="#{officeKeepingFile.createState or officeKeepingFile.editState}" scope="view"/>
@@ -142,12 +146,11 @@
                             <f:param name="docAction" value="create"/>
                             <f:param name="parentId" value="#{officeKeepingFile.document.id}"/>
                         </p:button>
-                        <p:commandButton value="Обновить" id="task_refresh_btn" action="#{officeKeepingVolumes.refresh}"
-                                         update="dela" icon="ui-icon-refresh"/>
+                        <p:commandButton value="Обновить" id="task_refresh_btn"  update="dela" icon="ui-icon-refresh"/>
                     </p:toolbarGroup>
                 </p:toolbar>
                 <p:dataTable id="dela"
-                             value="#{officeKeepingVolumes.getAllVolumesByParentFileId(officeKeepingFile.document.id)}"
+                             value="#{officeKeepingVolumeLDM.getAllVolumesByParentFileId(officeKeepingFile.document.id)}"
                              var="row"
                              selectionMode="single"
                              emptyMessage="Записей нет"

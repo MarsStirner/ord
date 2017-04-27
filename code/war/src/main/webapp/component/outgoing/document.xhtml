@@ -5,7 +5,6 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:e5ui="http://efive.ru/uitemplates"
       xmlns:p="http://primefaces.org/ui"
       xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
@@ -312,82 +311,11 @@
                 <my:historyTable id="historyTable" value="#{out_doc.document.historyList}"/>
             </p:tab>
             <p:tab id="tab_files" title="Файлы" rendered="#{not out_doc.createState}">
-                <p:dataTable id="table_attachment" value="#{out_doc.attachments}" var="attachment"
-                             rowExpandMode="single" emptyMessage="#{ui['attachments.empty']}">
-                    <p:column style="width:1em" styleClass="outputText">
-                        <p:rowToggler rendered="#{not empty attachment.revisions}"/>
-                    </p:column>
-                    <p:column headerText="Имя файла" styleClass="outputText">
-                        <h:outputText
-                                value="#{not empty attachment.currentRevision.fileName ? attachment.currentRevision.fileName : attachment.fileName}"/>
-                    </p:column>
-                    <p:column headerText="Версия" style="width:10em" styleClass="outputText">
-                        <h:outputText value="#{attachment.currentRevision.version}" style="padding-right:0.5em;"/>
-                        <p:commandButton value="Добавить" icon="ui-icon-extlink"
-                                         actionListener="#{out_doc.addVersionForAttachment(attachment)}">
-                            <p:ajax event="dialogReturn" listener="#{out_doc.handleAddVersionDialogResult}"
-                                    update=":documentForm:msg"/>
-                        </p:commandButton>
-                    </p:column>
-                    <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
-                        <h:outputText
-                                value="#{refBookHelper.getUserFullNameById(attachment.currentRevision.authorId != 0 ? attachment.currentRevision.authorId : attachment.authorId)}"/>
-                    </p:column>
-                    <p:column headerText="Скачать" style="width:7em">
-                        <p:commandButton value="Скачать" ajax="false"
-                                         onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
-                            <p:fileDownload value="#{fileManagement.download(attachment.id)}"/>
-                        </p:commandButton>
-                    </p:column>
-                    <p:column headerText="Удалить" rendered="#{statusId lt 90 and out_doc.editPermission}"
-                              style="width:7em">
-                        <p:commandButton value="Удалить" action="#{out_doc.deleteAttachment(attachment)}"
-                                         update="table_attachment">
-                            <p:confirm header="Удаление вложения"
-                                       message="Вы уверены, что хотите удалить это вложение?"/>
-                        </p:commandButton>
-                    </p:column>
-                    <p:rowExpansion styleClass="no-padding">
-                        <p:dataTable var="revision" value="#{attachment.revisions}" styleClass="hide-column-names"
-                                     style="padding-left: 2.1em; padding-right:0;">
-                            <f:facet name="header">
-                                История версий для файла #{not empty attachment.currentRevision.fileName ? attachment.currentRevision.fileName : attachment.fileName}
-                            </f:facet>
-                            <p:column headerText="Имя файла" styleClass="outputText">
-                                <h:outputText
-                                        value="#{not empty revision.fileName ? revision.fileName : attachment.fileName}"/>
-                            </p:column>
-                            <p:column headerText="Версия" style="width:4em" styleClass="outputText">
-                                <h:outputText value="#{revision.version}"/>
-                            </p:column>
-                            <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
-                                <h:outputText
-                                        value="#{refBookHelper.getUserFullNameById(revision.authorId != 0 ? revision.authorId : attachment.authorId)}"/>
-                            </p:column>
-                            <p:column headerText="Скачать" style="width:7em">
-                                <p:commandButton value="Скачать" ajax="false"
-                                                 onclick="PrimeFaces.monitorDownload(showStatus, hideStatus)">
-                                    <p:fileDownload
-                                            value="#{fileManagement.download(attachment.id, revision.version)}"/>
-                                </p:commandButton>
-                            </p:column>
-                        </p:dataTable>
-                    </p:rowExpansion>
-                </p:dataTable>
-                <!-- Это конечно КОСТЫЛИЩЕ, но если после первой загрузки файла делать еще один XHR запрос,
-                 то следующая загрузка работает нормально. Пишут, что это связано с переходом на JSF 2.2 .
-                  я-хз, долго искал и долго пытался исправить,
-                 в общем каждый четный запрос XHR для fileUpload почему-то идет лесом, а нечетные - нет-->
-                <p:fileUpload id="files" fileUploadListener="#{out_doc.handleFileUpload}" multiple="false"
-                              mode="advanced"
-                              widgetVar="uploadFileWidget"
-                              label="Выбрать файл" sizeLimit="104857600" auto="true"
-                              uploadLabel="Загрузить выбранное" cancelLabel="Отмена"
-                              invalidSizeMessage="Размер файла не должен превышать 100 МБ"
-                              fileLimit="1" fileLimitMessage="Не более 1-го файла за раз, пожалуйста"
-                              update=":documentForm:msg table_attachment"
-                              oncomplete="workaround(); PrimeFaces.widgets.uploadFileWidget.uploadedFileCount = PrimeFaces.widgets.uploadFileWidget.uploadedFileCount - 1;"/>
-                <p:remoteCommand id="workaround" name="workaround"/>
+                <ui:include src="/jsf-template/fileManagement.xhtml">
+                    <ui:param name="documentFolder" value="#{out_doc.document.uniqueId}"/>
+                    <ui:param name="allowDelete" value="#{statusId lt 90 and out_doc.editPermission}"/>
+                    <ui:param name="allowAttach" value="#{out_doc.editPermission}"/>
+                </ui:include>
             </p:tab>
         </p:tabView>
     </ui:define>
@@ -396,25 +324,6 @@
         <p:growl id="msg"/>
         <!-- Сообщения о фактах просмотра-->
         <p:growl id="viewFactMessage" for="viewFact"/>
-        <!-- Жаваскрипт для этой страницы-->
-        <script type="text/javascript">
-            function showStatus() {
-                PF('statusDialog').show();
-            }
-            function hideStatus() {
-                PF('statusDialog').hide();
-            }
-        </script>
-        <!-- Подтверждение действия(удаление вложения)-->
-        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-            <p:commandButton value="Нет" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
-            <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
-        </p:confirmDialog>
-        <!-- Диалог при загрузке файла -->
-        <p:dialog modal="true" widgetVar="statusDialog" header="Загрузка файла" draggable="false" closable="false"
-                  resizable="false">
-            <h:outputText value="Пожалуйста подождите пока ваш файл будет загружен"/>
-        </p:dialog>
         <!-- Диалог работы с действиями -->
         <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
                   closeOnEscape="true" fitViewport="true">
