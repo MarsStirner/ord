@@ -1,13 +1,12 @@
 package ru.efive.dms.uifaces.beans.workflow;
 
-import org.apache.axis.utils.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.util.WorkflowHelper;
-import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentAction;
 import ru.hitsl.sql.dao.interfaces.document.RequestDocumentDao;
