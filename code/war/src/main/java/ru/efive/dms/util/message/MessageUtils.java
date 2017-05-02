@@ -6,12 +6,12 @@ import java.text.MessageFormat;
 
 public class MessageUtils {
     public static void addMessage(FacesMessage message, Object... params) {
-        MessageUtils.addMessage(new FacesMessage(message.getSeverity(), MessageFormat.format(message.getSummary(), params), null));
+        addMessage(new FacesMessage(message.getSeverity(), MessageFormat.format(message.getSummary(), params), null));
     }
 
 
     public static void addMessage(final FacesMessage message) {
-MessageUtils.addMessage( message);
+        addMessage(null, message);
     }
 
     public static void addMessage(final String tag, final FacesMessage message) {

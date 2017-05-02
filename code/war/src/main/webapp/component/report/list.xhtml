@@ -4,7 +4,6 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui">
-
 <ui:composition template="/jsf-template/listTemplate.xhtml">
     <ui:param name="prefix" value="document.default"/>
     <ui:param name="defaultSortField" value="displayName"/>
@@ -41,7 +40,7 @@
             <p:column headerText="Наименование" style="width:6em;" sortBy="#{row.displayName}" field="displayName">
                 <h:outputText value="#{row.displayName}"/>
             </p:column>
-            <p:ajax event="rowSelect" onstart="goToReportTemplate(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
+            <p:ajax event="rowSelect" onstart="goToReport(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>
     </ui:define>
 </ui:composition>

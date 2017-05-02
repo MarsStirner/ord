@@ -166,11 +166,11 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.efive.fonts</groupId>
+            <groupId>ru.bars_open.medvtr.jasperreports</groupId>
             <artifactId>fonts-ext</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/fonts-ext-1.0.jar</systemPath>
+            <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/fonts-ext.jar</systemPath>
         </dependency>
         
         <dependency>

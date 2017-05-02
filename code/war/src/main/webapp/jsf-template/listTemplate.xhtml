@@ -6,12 +6,10 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://java.sun.com/jsf/core"
 >
-<!--
-NOTE:
-Необходимо передавать параметрами две переменные
-String prefix - префикс к настройкам отображения
-SelectableLazyDataTable lazyDataModel - бин который содержит в себе ленивую модель
--->
+<!--@elvariable id="prefix" type="java.lang.String"-->
+<!--@elvariable id="defaultSortField" type="java.lang.String"-->
+<!--@elvariable id="defaultSortOrder" type="java.lang.String"-->
+<!--@elvariable id="lazyDataModel" type="ru.efive.dms.uifaces.beans.abstractBean.AbstractFilterableLazyDataModel"-->
 <h:head>
     <h:outputScript library="js" name="goToFunctionsAndRemoveSelection.js"/>
     <h:outputStylesheet library="css" name="listView.css"/>

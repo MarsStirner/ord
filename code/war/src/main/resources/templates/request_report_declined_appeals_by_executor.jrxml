@@ -85,11 +85,11 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<parameter name="DateFrom" class="java.util.Date"/>
-	<parameter name="DateTo" class="java.util.Date"/>
-	<parameter name="ExecutorID" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
+	<parameter name="begDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="executorId" class="java.lang.Integer"/>
+	<parameter name="organisation.shortName" class="java.lang.String"/>
+	<parameter name="organisation.fullName" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
      dms_tasks.`creationDate` AS dms_tasks_creationDate,
@@ -112,10 +112,10 @@ FROM
      INNER JOIN `dms_system_persons` dms_system_persons ON dms_tasks_executors.`executor_id` = dms_system_persons.`id`
      INNER JOIN `rbDocumentForm` documents_forms on documents_forms.`id` = dms_request_documents.`form_id`
 WHERE
-     dms_tasks.`creationDate` >= $P{DateFrom}
- AND dms_tasks.`creationDate` <= $P{DateTo}
+     dms_tasks.`creationDate` >= $P{begDate}
+ AND dms_tasks.`creationDate` <= $P{endDate}
  AND dms_tasks.`status_id` = 4
- AND dms_system_persons.`id` = $P{ExecutorID}
+ AND dms_system_persons.`id` = $P{executorId}
  AND dms_request_documents.`deleted` = 0
  AND documents_forms.`value` like 'Заявка на лечение'
 group by dms_tasks.`id`]]>
@@ -144,16 +144,15 @@ group by dms_tasks.`id`]]>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Отказ от консультации пациента за период с "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateFrom})+" по "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateTo})]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Отказ от консультации пациента за период с "+new SimpleDateFormat("dd.MM.yyyy").format($P{begDate})+" по "+new SimpleDateFormat("dd.MM.yyyy").format($P{endDate})]]></textFieldExpression>
 			</textField>
-			<staticText>
+			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="802" height="22" uuid="a72bbbd9-8558-4d7c-8a3c-f2222dbdb185"/>
 				<textElement textAlignment="Center">
-					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+					<font fontName="Tahoma" size="12"/>
 				</textElement>
-				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздрава России
-]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$P{organisation.shortName}]]></textFieldExpression>
+			</textField>
 			<textField>
 				<reportElement x="0" y="42" width="802" height="20" uuid="331b559f-3cb2-48d3-82c9-5ad8da292bac"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -207,7 +206,7 @@ group by dms_tasks.`id`]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="20" splitType="Prevent">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="25" height="20" uuid="4c6d8f32-a5ad-4a36-b18f-3dd1b2df0876"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -270,20 +269,19 @@ group by dms_tasks.`id`]]>
 	</summary>
 	<noData>
 		<band height="90">
-			<staticText>
+			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="802" height="22" uuid="67e4271c-2204-4313-aaea-0289ef20efe0"/>
 				<textElement textAlignment="Center">
-					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+					<font fontName="Tahoma" size="12"/>
 				</textElement>
-				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздрава России
-]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$P{organisation.shortName}]]></textFieldExpression>
+			</textField>
 			<textField>
 				<reportElement x="0" y="22" width="802" height="20" uuid="20edc286-d7cb-424d-bad0-24bc4b2dcd34"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Tahoma" size="12"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Отказ от консультации пациента за период с "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateFrom})+" по "+new SimpleDateFormat("dd.MM.yyyy").format($P{DateTo})]]></textFieldExpression>
+				<textFieldExpression><![CDATA["Отказ от консультации пациента за период с "+new SimpleDateFormat("dd.MM.yyyy").format($P{begDate})+" по "+new SimpleDateFormat("dd.MM.yyyy").format($P{endDate})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="42" width="802" height="20" uuid="107cdd8a-158e-4c7a-b20d-462a9ef198b9"/>

@@ -30,35 +30,6 @@ public class Report extends DeletableEntity {
     public Report() {
     }
 
-    /**
-     * Тип отчета (0 - за дату,
-     * 1 - за период,
-     * 100 - за дату c с выбором пользователя,
-     * 101 - за период с выбором пользователя )
-     * <p>
-     * private byte type;
-     *
-     * @Transient private LocalDateTime startDate;
-     * private String startAlias;
-     * private String startDescription;
-     * @Transient private LocalDateTime endDate;
-     * private String endAlias;
-     * private String endDescription;
-     * @Transient private User user;
-     * private String userAlias;
-     * private String userProperty;
-     * private String userDescription;
-     * private String userGroup;
-     * @Transient private DocumentForm documentForm;
-     * private String documentFormAlias;
-     * private String documentFormProperty;
-     * private String documentFormDescription;
-     * private String documentFormGroup;
-     * @Transient private Region region;
-     * private String regionAlias;
-     * private String regionProperty;
-     * private String regionDescription;
-     */
     public String getDisplayName() {
         return displayName;
     }

@@ -132,9 +132,9 @@ function goToUser(id) {
     }
 }
 // К шаблонам печати
-function goToReportTemplate(id) {
+function goToReport(id) {
     if (id !== 0) {
-        window.open('/component/report/report_template.xhtml?docId=' + id, '_blank');
+        window.open('/component/report/report.xhtml?docId=' + id, '_blank');
     }
 }
 // К ролям

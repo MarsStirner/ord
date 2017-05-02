@@ -8,7 +8,7 @@
     <!--@elvariable id="label" type="java.lang.String"-->
     <!--@elvariable id="required" type="java.lang.Boolean"-->
     <!--@elvariable id="settings" type="javax.json.JsonObject"-->
-    <!--@elvariable id="resultHolder" type="ru.efive.dms.uifaces.beans.ReportTemplateHolderBean"-->
+    <!--@elvariable id="resultHolder" type="ru.efive.dms.uifaces.beans.ReportHolderBean"-->
     <p:row styleClass="ui-grid-row">
         <p:column styleClass="ui-grid-col-3">
             <p:commandButton value="#{label}" action="#{userDialogLDM.initWithSettings(settings)}"  immediate="true" onsuccess="PF('userDialog_#{name}').show();"/>
@@ -22,7 +22,7 @@
     <!--Выбранный пользователь хранится в карте viewScope, и при подтверждении отправляется в resultHolder -->
     <p:dialog widgetVar="userDialog_#{name}" modal="true" dynamic="true" resizable="false"
               width="50%" closeOnEscape="true" height="80vh" position="top"
-              header="#{settings.getString('dialogHeader', 'Выберите пользователя yf[')}">
+              header="#{settings.getString('dialogHeader', 'Выберите пользователя')}">
         <p:dataTable id="selectPersonTable_#{name}"
                      paginator="true"
                      rows="#{ui['dialog.paginator.rows.default']}"

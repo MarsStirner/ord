@@ -181,7 +181,13 @@
         <appender-ref ref="APPENDER_BEAN"/>
     </logger>
 
-    <root level="${logs.level}">
+    <!--Чужие логгеры все засирают-->
+    <!--JasperReports-->
+    <logger name="org.apache.commons.digester" level="INFO"/>
+    <logger name="net.sf.jasperreports" level="INFO"/>
+    <logger name="org.apache.commons.beanutils" level="INFO"/>
+
+    <root level="${log.level}">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

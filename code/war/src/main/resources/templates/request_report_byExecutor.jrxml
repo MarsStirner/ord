@@ -2,9 +2,6 @@
 <!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
 <!-- 2015-08-17T20:05:17 -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report4" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="99349081-2f87-4f8a-a6fe-03bef7417748">
-	<property name="ireport.zoom" value="1.2396694214876032"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -86,25 +83,21 @@
 		</box>
 	</style>
 	<subDataset name="Manager" uuid="22effc06-93c2-458a-a1f7-3fd40e31b37c">
-		<parameter name="ExecutorId" class="java.lang.String" isForPrompting="false"/>
+		<parameter name="executorId" class="java.lang.String" isForPrompting="false"/>
 		<queryString>
 			<![CDATA[SELECT
                     CONCAT_WS(' ' , person.lastName, person.firstName, person.middleName) AS 'managerInfo'
                     FROM
                     dms_system_persons person
-                    WHERE person.id = $P{ExecutorId}]]>
+                    WHERE person.id = $P{executorId}]]>
 		</queryString>
 		<field name="managerInfo" class="java.lang.String"/>
 	</subDataset>
-	<parameter name="ExecutorId" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="DateFrom" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="DateTo" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
+	<parameter name="begDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="executorId" class="java.lang.Integer"/>
+	<parameter name="organisation.shortName" class="java.lang.String"/>
+	<parameter name="organisation.fullName" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
                 requestDocumentId,
@@ -122,11 +115,11 @@
             FROM
                 report_requests_by_executor
             WHERE
-                executorId = $P{ExecutorId}
+                executorId = $P{executorId}
                 AND
-                DATE(checkDate) >= DATE($P{DateFrom})
+                DATE(checkDate) >= DATE($P{begDate})
                 AND
-                DATE(checkDate) <= DATE($P{DateTo})]]>
+                DATE(checkDate) <= DATE($P{endDate})]]>
 	</queryString>
 	<field name="requestDocumentId" class="java.lang.Integer"/>
 	<field name="requestDocumentRegistrationNumber" class="java.lang.String"/>
@@ -168,8 +161,8 @@
 				<reportElement key="table 1" x="325" y="19" width="477" height="20" uuid="73579a31-eec8-4791-8545-e8241bd6e7c2"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Manager" uuid="a3abfaee-6c20-474b-8e9a-06cc43955824">
-						<datasetParameter name="ExecutorId">
-							<datasetParameterExpression><![CDATA[$P{ExecutorId}]]></datasetParameterExpression>
+						<datasetParameter name="executorId">
+							<datasetParameterExpression><![CDATA[$P{executorId}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
@@ -246,7 +239,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="20" splitType="Prevent">
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="25" height="20" uuid="6c3c0ced-ccf7-4316-a32c-cb6ff6b3f27b"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -345,8 +338,8 @@
 				<reportElement key="table 1" x="325" y="19" width="477" height="20" uuid="54dadc32-5e5b-4506-9397-fe08c103029d"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="Manager" uuid="52606ff0-2bc3-41d3-86bf-1a331ca23b5b">
-						<datasetParameter name="ExecutorId">
-							<datasetParameterExpression><![CDATA[$P{ExecutorId}]]></datasetParameterExpression>
+						<datasetParameter name="executorId">
+							<datasetParameterExpression><![CDATA[$P{executorId}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>

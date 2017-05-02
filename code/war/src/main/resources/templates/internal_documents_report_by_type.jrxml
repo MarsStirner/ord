@@ -165,7 +165,7 @@ and dms_internal_documents.`form_id` = $P{FormId}]]>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="802" height="30"/>
 				<textElement textAlignment="Center">
-					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+					<font fontName="Tahoma" size="12"/>
 				</textElement>
 				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздрава России
 ]]></text>
@@ -268,7 +268,7 @@ and dms_internal_documents.`form_id` = $P{FormId}]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="20" splitType="Prevent">
 			<textField isStretchWithOverflow="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="0" y="0" width="122" height="20"/>
 				<textElement verticalAlignment="Middle">

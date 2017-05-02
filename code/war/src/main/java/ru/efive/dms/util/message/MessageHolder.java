@@ -45,10 +45,16 @@ public class MessageHolder {
     // Неизветсная внутренняя ошибка
     public static final FacesMessage MSG_INTERNAL_ERROR = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка", "");
 
-    public static final FacesMessage MSG_ERROR_ON_REPORT_CREATION = new FacesMessage(SEVERITY_ERROR, "Ошибка при формировании отчета", "");
-    public static final FacesMessage MSG_ERROR_ON_REPORT_CREATION_CAUSE_TEMPLATE =
-            new FacesMessage(SEVERITY_ERROR, "Отчет ''{0}'' не может быть сформирован из-за ошибки в шаблоне [{1}]. Текст ошибки: {2}", "");
 
+
+    //Отчеты
+    public static final FacesMessage MSG_ERROR_ON_REPORT_CREATION = new FacesMessage(SEVERITY_ERROR, "Ошибка при формировании отчета", "");
+    public static final FacesMessage MSG_ERROR_ON_REPORT_COMPILATION =
+            new FacesMessage(SEVERITY_ERROR, "Отчет ''{0}'' не может быть сформирован из-за ошибки в шаблоне [{1}]. Текст ошибки: {2}", "");
+    public static final FacesMessage MSG_ERROR_ON_REPORT_EXECUTION =
+            new FacesMessage(SEVERITY_ERROR, "Отчет ''{0}'' не может быть сформирован из-за ошибки во время выполнения. Текст ошибки: {1}", "");
+    public static final FacesMessage MSG_ERROR_ON_REPORT_EXPORT =
+            new FacesMessage(SEVERITY_ERROR, "Отчет ''{0}'' сформирован, но не может быть экспортирован в выбранный формат. Текст ошибки: {1}", "");
     // Расширенные поиски
     public static final FacesMessage MSG_CANT_DO_SEARCH = new FacesMessage(SEVERITY_ERROR, "Невозможно осуществить поиск", "");
 
@@ -75,5 +81,6 @@ public class MessageHolder {
 
     // Ошибки валидации
     public static final FacesMessage MSG_REQUIRED_PARAMETER_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Обязательный параметр ''{0}'' не указан", "");
+
 
 }

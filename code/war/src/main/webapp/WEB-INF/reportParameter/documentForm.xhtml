@@ -1,6 +1,7 @@
 <ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
 >
     <!--@elvariable id="name" type="java.lang.String"-->
     <!--@elvariable id="label" type="java.lang.String"-->
@@ -12,9 +13,10 @@
             <h:outputLabel value="#{label}"/>
         </p:column>
         <p:column>
-            <p:calendar value="#{resultHolder.result[name]}" required="#{required}" requiredMessage="Обязательный параметр '#{label}' не указан"
-                        lang="ru" locale="ru" showOn="both" styleClass="inputText"
-                        pattern="#{settings != null ? settings.getString('pattern', 'dd.MM.yyyy') : 'dd.MM.yyyy'}"/>
+            <p:selectOneMenu value="#{resultHolder.result[name]}" converter="#{DocumentFormConverter}" required="#{required}" styleClass="inputText" >
+                <f:selectItem value="#{null}" noSelectionOption="#{required}" itemLabel=""/>
+                <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory(settings != null ? settings.getString('type', 'INTERNAL') : 'INTERNAL')}"/>
+            </p:selectOneMenu>
         </p:column>
     </p:row>
 </ui:composition>

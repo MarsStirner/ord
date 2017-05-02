@@ -130,7 +130,7 @@
             <p:menuitem value="О программе" url="/component/version.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/version.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
         </p:submenu>
-        <p:menuitem value="Отчеты" url="/component/report/report_templates.xhtml" rendered="#{isAdministrator or isOfficeManager or isRequestManager}"
-                    icon="leafIcon" styleClass="#{currentView eq '/component/report/report_templates.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+        <p:menuitem value="Отчеты" url="/component/report/list.xhtml" rendered="#{isAdministrator or isOfficeManager or isRequestManager}"
+                    icon="leafIcon" styleClass="#{currentView eq '/component/report/list.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
     </p:menu>
 </ui:composition>

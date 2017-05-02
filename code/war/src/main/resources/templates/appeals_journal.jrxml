@@ -10,12 +10,10 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<parameter name="StartDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
-	<parameter name="EndDate" class="java.util.Date">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
+	<parameter name="begDate" class="java.util.Date"/>
+	<parameter name="endDate" class="java.util.Date"/>
+	<parameter name="organisation.shortName" class="java.lang.String"/>
+	<parameter name="organisation.fullName" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
          documentId AS 'documentId',
@@ -28,8 +26,8 @@
          responsibleInfo AS 'responsibleInfo',
          documentStatus AS 'documentStatus'
     FROM report_appeals_journal
-    WHERE DATE(checkDate) >= DATE($P{StartDate})
-    AND DATE(checkDate) <= DATE($P{EndDate})]]>
+    WHERE DATE(checkDate) >= DATE($P{begDate})
+    AND DATE(checkDate) <= DATE($P{endDate})]]>
 	</queryString>
 	<field name="documentId" class="java.lang.Integer"/>
 	<field name="checkDate" class="java.sql.Timestamp"/>
@@ -45,14 +43,13 @@
 	</background>
 	<title>
 		<band height="76" splitType="Stretch">
-			<staticText>
+			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="802" height="30" uuid="aea858d6-ef55-4022-82c1-c261b209a42f"/>
 				<textElement textAlignment="Center">
-					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+					<font fontName="Tahoma" size="12"/>
 				</textElement>
-				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздрава России
-]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$P{organisation.shortName}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="0" y="30" width="802" height="20" uuid="e38ee72a-a9e8-4200-af75-5d3050553bb2"/>
 				<textElement textAlignment="Center">
@@ -72,7 +69,7 @@
 				<textElement>
 					<font fontName="Tahoma" size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{EndDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{endDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="145" y="50" width="50" height="20" uuid="6dd8c26b-0a0b-46ac-8411-b00cb60a840c"/>
@@ -86,7 +83,7 @@
 				<textElement>
 					<font fontName="Tahoma" size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{StartDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{begDate}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
@@ -155,7 +152,7 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="20" splitType="Prevent">
 			<textField isStretchWithOverflow="true">
 				<reportElement style="table_TD" stretchType="RelativeToTallestObject" x="35" y="0" width="90" height="20" uuid="c2af372d-38fc-4ae2-8cd5-390f32d52636"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
@@ -247,14 +244,14 @@
 				<textElement>
 					<font fontName="Tahoma" size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{StartDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{begDate}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd.MM.yyyy">
 				<reportElement x="420" y="50" width="126" height="20" uuid="bd3abcd6-abdf-499b-8ed6-c0f7830cdbf6"/>
 				<textElement>
 					<font fontName="Tahoma" size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{EndDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{endDate}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="368" y="50" width="52" height="20" uuid="e7096aa9-52a0-45c4-89d8-db928194a67c"/>
@@ -263,14 +260,13 @@
 				</textElement>
 				<text><![CDATA[по]]></text>
 			</staticText>
-			<staticText>
+			<textField>
 				<reportElement mode="Opaque" x="0" y="0" width="802" height="30" uuid="81aab4da-e80b-4e74-95ed-5159fbd3bf00"/>
 				<textElement textAlignment="Center">
-					<font fontName="Tahoma" size="12" pdfFontName="Courier"/>
+					<font fontName="Tahoma" size="12"/>
 				</textElement>
-				<text><![CDATA[ФГБУ «ННПЦ ДГОИ им.Дмитрия Рогачева» Минздрава России
-]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA[$P{organisation.shortName}]]></textFieldExpression>
+			</textField>
 			<staticText>
 				<reportElement x="0" y="70" width="801" height="30" uuid="4eb2cccd-0880-4795-972d-750527f1c544"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">

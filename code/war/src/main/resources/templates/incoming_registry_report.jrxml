@@ -168,7 +168,7 @@ ORDER BY
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="45" splitType="Stretch">
+		<band height="45" splitType="Prevent">
 			<textField>
 				<reportElement style="table_TD" x="541" y="0" width="156" height="45"/>
 				<textElement>

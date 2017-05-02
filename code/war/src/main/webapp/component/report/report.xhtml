@@ -9,13 +9,14 @@
       xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents">
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
     <f:metadata>
-        <f:viewAction action="#{report.init}"/>
+        <f:viewParam name="docId" value="#{report.id}" />
+        <f:viewAction action="#{report.load}"/>
     </f:metadata>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/report/report_templates.xhtml"/>
+        <my:homeButton outcome="/component/report/list.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{report.errorState}"/>
-        <p:commandButton value="Сформировать отчет" action="#{report.save}" process="@form" rendered="#{report.viewState}" icon="ui-icon-print" ajax="false"/>
+        <p:commandButton value="Сформировать отчет" action="#{report.fillAndShow}" process="@form" rendered="#{report.editState}" icon="ui-icon-print" ajax="false"/>
     </ui:define>
 
     <ui:define name="DOCUMENT_HEADER">
