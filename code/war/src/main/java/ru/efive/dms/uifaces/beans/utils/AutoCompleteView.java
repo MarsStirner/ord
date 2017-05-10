@@ -2,6 +2,7 @@ package ru.efive.dms.uifaces.beans.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
 import ru.entity.model.user.User;
@@ -22,6 +23,7 @@ import java.util.List;
  */
 @Controller("autoCompleteView")
 @ApplicationScoped
+@Transactional("ordTransactionManager")
 public class AutoCompleteView {
     private final static int MIN_SEARCH_STRING_LENGTH = 2;
     private final static int MAX_SEARCH_RESULTS = 10;

@@ -1,14 +1,10 @@
 package ru.efive.dms.uifaces.beans.user;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.efive.dms.util.message.MessageHolder;
-import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.referenceBook.ContactInfoType;
 import ru.entity.model.user.PersonContact;
 import ru.entity.model.user.User;
@@ -18,24 +14,23 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.faces.event.ValueChangeEvent;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @ViewScopedController("user")
-public class UserHolderBean extends AbstractDocumentHolderBean<User> {
-    private static final Logger LOGGER = LoggerFactory.getLogger("USER");
+public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
 
-
-    @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-    @Autowired
-    @Qualifier("userDao")
-    private UserDao userDao;
     @Autowired
     @Qualifier("contactInfoTypeDao")
     private ContactInfoTypeDao contactInfoTypeDao;
 
     private List<PersonContact> contactList;
+
+    public UserHolderBean(@Qualifier("userDao") final UserDao dao, @Qualifier("authData") final AuthorizationData authData) {
+        super(dao, authData);
+    }
 
     public List<PersonContact> getContactList() {
         return contactList;
@@ -46,38 +41,13 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     }
 
     @Override
-    public boolean isCanCreate() {
-        if (isErrorState()) {
-            LOGGER.error("TRY TO CREATE ON ErrorState");
-            return false;
-        }
-        final User loggedUser = authData.getAuthorized();
-        if (!loggedUser.isAdministrator() && !loggedUser.isHr()) {
-            LOGGER.error("User[{}] try to create new User without permission. Restricted!", loggedUser.getId());
-            return false;
-        } else {
-            return true;
-        }
+    public boolean isCanCreate(final AuthorizationData authData) {
+        return authData.isAdministrator() || authData.isHr();
     }
 
     @Override
-    public boolean isCanEdit() {
-        if (isErrorState()) {
-            LOGGER.error("TRY TO EDIT ON ErrorState");
-            return false;
-        }
-        final User loggedUser = authData.getAuthorized();
-        if (!loggedUser.isAdministrator() && !loggedUser.isHr() && !isOwner()) {
-            LOGGER.error("User[{}] try to edit User[{}] info without permission. Restricted!", loggedUser.getId(), getDocumentId());
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public boolean isEditPermission() {
-        final User loggedUser = authData.getAuthorized();
-        return loggedUser.isAdministrator() || loggedUser.isHr();
+    public boolean isCanUpdate(final AuthorizationData authData) {
+        return authData.isAdministrator() || authData.isHr() || authData.getAuthorized().equals(getDocument());
     }
 
     /**
@@ -106,7 +76,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
             //Увольняем сотрудника
             user.fire(now);
         }
-        userDao.save(user);
+        dao.update(user);
         return user.isFired();
     }
 
@@ -138,96 +108,34 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User> {
     }
 
     @Override
-    protected boolean deleteDocument() {
-        if (isCanEdit()) {
-            try {
-                final User document = getDocument();
-                LOGGER.debug("Delete User[{}]", document.getId());
-                document.setDeleted(true);
-                userDao.save(getDocument());
-                return document.isDeleted();
-            } catch (Exception e) {
-                MessageUtils.addMessage(MessageHolder.MSG_CANT_DELETE);
-            }
-        } else {
-            LOGGER.error("TRY TO DELETE without permission");
-        }
-        return false;
+    protected User newModel(AuthorizationData authData) {
+        final User user = new User();
+        user.setCreated(LocalDateTime.now());
+        user.setDeleted(false);
+        user.setFired(false);
+        contactList = new ArrayList<>(5);
+        return user;
     }
 
-
     @Override
-    protected void initDocument(Integer id) {
-        LOGGER.info("Open User[{}]", id);
-        setDocument(userDao.get(id));
-        final Set<PersonContact> contacts = getDocument().getContacts();
+    public boolean afterRead(User document, AuthorizationData authData) {
+        final Set<PersonContact> contacts = document.getContacts();
         if (contacts != null && !contacts.isEmpty()) {
             contactList = new ArrayList<>(contacts);
         } else {
             contactList = new ArrayList<>(5);
         }
+        return true;
     }
+
 
     @Override
-    protected void initNewDocument() {
-        LOGGER.info("Create new user");
-        final User user = new User();
-        user.setCreated(LocalDateTime.now());
-        user.setDeleted(false);
-        user.setFired(false);
-        setDocument(user);
-        contactList = new ArrayList<>(5);
+    public boolean beforeCreate(final User document, final AuthorizationData authData) {
+        //Удаляем пустые контактные данные, введенные пользователем
+        contactList.removeIf(item -> StringUtils.isEmpty(item.getValue()));
+        document.setContacts(new HashSet<>(contactList));
+        document.setCurrentUserAccessLevel(document.getMaxUserAccessLevel());
+        return true;
     }
 
-    @Override
-    protected boolean saveDocument() {
-        LOGGER.info("Save changes to User[{}]", getDocument().getId());
-        try {
-            //Удаляем пустые контактные данные, введенные пользователем
-            removeEmptyContacts(contactList);
-            getDocument().getContacts().clear();
-            getDocument().getContacts().addAll(new HashSet<>(contactList));
-            userDao.update(getDocument());
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("Error on save:", e);
-            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_SAVE);
-            return false;
-        }
-    }
-
-    /**
-     * Удаляем незаполненные контактные данные
-     *
-     * @param contacts список контактных данных
-     */
-    private void removeEmptyContacts(Collection<PersonContact> contacts) {
-        contacts.removeIf(item -> StringUtils.isEmpty(item.getValue()));
-    }
-
-    @Override
-    public boolean saveNewDocument() {
-        LOGGER.info("Save new User");
-        try {
-            //Удаляем пустые контактные данные, введенные пользователем
-            removeEmptyContacts(contactList);
-            getDocument().getContacts().clear();
-            getDocument().getContacts().addAll(new HashSet<>(contactList));
-            userDao.save(getDocument());
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("Error on save new:", e);
-            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_SAVE_NEW);
-            return false;
-        }
-    }
-
-    /**
-     * Является ли текущий пользователь владельцем карточки (сам открыл себя)
-     *
-     * @return true- текущий пользователь открыл свою карточку
-     */
-    public boolean isOwner() {
-        return authData.getAuthorized().equals(getDocument());
-    }
 }

@@ -1,13 +1,12 @@
 package ru.efive.dms.uifaces.beans.nomenclature;
 
-import com.github.javaplugs.jsf.SpringScopeView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.entity.model.referenceBook.Nomenclature;
-
-import org.springframework.stereotype.Controller;
+import ru.hitsl.sql.dao.interfaces.referencebook.NomenclatureDao;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
 /**
  * Author: Upatov Egor <br>
@@ -16,48 +15,16 @@ import org.springframework.stereotype.Controller;
  * Description: <br>
  */
 @ViewScopedController("nomenclature")
-public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclature> {
+public class NomenclatureHolderBean extends AbstractDocumentHolderBean<Nomenclature, NomenclatureDao> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("RB_NOMENCLATURE");
-
-
-    @Override
-    protected boolean deleteDocument() {
-        return false;
-    }
-
-
-    @Override
-    protected void initNewDocument() {
-        final Nomenclature newItem = new Nomenclature();
-        newItem.setDeleted(false);
-        newItem.setValue("");
-        setDocument(newItem);
+    @Autowired
+    public NomenclatureHolderBean(@Qualifier("nomenclatureDao") NomenclatureDao dao, @Qualifier("authData") AuthorizationData authData) {
+        super(dao, authData);
     }
 
     @Override
-    protected void initDocument(Integer documentId) {
-//        if(documentId != null) {
-//            setDocument(sessionManagementBean.getDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).get(documentId));
-//        }
-    }
-
-    @Override
-    public boolean saveNewDocument() {
-//        try {
-//            setDocument(sessionManagementBean.getDAO(NomenclatureDAOImpl.class, RB_NOMENCLATURE_DAO).save(getDocument()));
-//            return true;
-//        } catch (Exception e) {
-//            LOGGER.error("CANT SAVE NEW:", e);
-//            return false;
-//        }
-        return false;
-    }
-
-    @Override
-    protected boolean saveDocument() {
-//
-        return false;
+    protected Nomenclature newModel(AuthorizationData authData) {
+        return new Nomenclature();
     }
 
 

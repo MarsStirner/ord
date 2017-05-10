@@ -3,6 +3,7 @@ package ru.efive.dms.uifaces.beans.annotations;
 
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,7 @@ import java.lang.annotation.Target;
  * Indicates that spring bean instance will be in JSF like view scope.
  */
 @Component
-@Scope(value = "view")
+@Scope(value = "view", proxyMode = ScopedProxyMode.TARGET_CLASS)
 @SuppressWarnings("unchecked")
 @Transactional
 @Target(ElementType.TYPE)

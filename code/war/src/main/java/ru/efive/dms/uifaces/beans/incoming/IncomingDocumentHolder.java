@@ -37,7 +37,7 @@ import java.util.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController(value = "in_doc", transactionManager = "ordTransactionManager")
-public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument> {
+public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingDocument, IncomingDocumentDao> {
     //TODO ACL
     private Permissions permissions;
 
@@ -59,17 +59,17 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Autowired
     @Qualifier("documentFormDao")
     private DocumentFormDao documentFormDao;
-    @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-    @Autowired
-    @Qualifier("incomingDocumentDao")
-    private IncomingDocumentDao incomingDocumentDao;
+
 
     /**
      * Связанные с этим входящим письмом исходящие документы
      */
     private List<OutgoingDocument> relatedDocuments;
+
+    @Autowired
+    public IncomingDocumentHolder(@Qualifier("incomingDocumentDao") IncomingDocumentDao dao, @Qualifier("authData") AuthorizationData authData) {
+        super(dao, authData);
+    }
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,102 +295,78 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         return permissions.hasPermission(EXECUTE);
     }
 
-    @Override
-    protected boolean deleteDocument() {
-        try {
-            final boolean result = incomingDocumentDao.delete(getDocument());
-            if (!result) {
-                MessageUtils.addMessage(MessageHolder.MSG_CANT_DELETE);
-            }
-            return result;
-        } catch (Exception e) {
-            log.error("INTERNAL ERROR ON DELETE_DOCUMENT:", e);
-            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_DELETE);
-            return false;
-        }
-    }
 
     @Override
-    @Transactional("ordTransactionManager")
-    protected void initNewDocument() {
-        permissions = Permissions.ALL_PERMISSIONS;
+    protected IncomingDocument newModel(AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
-        final User currentUser = authData.getAuthorized();
-        log.info("Start initialize new document by USER[{}]", currentUser.getId());
         final IncomingDocument doc = new IncomingDocument();
         doc.setDocumentStatus(DocumentStatus.NEW);
         doc.setDeliveryDate(created);
         doc.setCreationDate(created);
-        doc.setAuthor(currentUser);
+        doc.setAuthor(authData.getAuthorized());
         doc.setForm(getDefaultForm());
         doc.setUserAccessLevel(authData.getCurrentAccessLevel());
-        setDocument(doc);
         relatedDocuments = new ArrayList<>(0);
+        permissions = Permissions.ALL_PERMISSIONS;
+        return doc;
     }
 
-
     @Override
-    @Transactional(value = "ordTransactionManager")
-    protected void initDocument(final Integer id) {
-        final User currentUser = authData.getAuthorized();
-        log.info("Open Document[{}] by user[{}]", id, currentUser.getId());
-        try {
-            final IncomingDocument document = incomingDocumentDao.get(id);
-            setDocument(document);
-            if (!checkState(document, currentUser)) {
-                return;
-            }
-            relatedDocuments = loadRelatedDocuments();
-            //Проверка прав на открытие
-            permissions = permissionChecker.getPermissions(authData, document);
-            if (!isReadPermission()) {
-                //Проверяем права на связанные доки, если есть, то прокидываем на чтение
-                for (OutgoingDocument relatedDocument : relatedDocuments) {
-                    final Permissions relatedPermissions = permissionChecker.getPermissions(authData, relatedDocument);
-                    if (relatedPermissions.hasPermission(READ)) {
-                        log.info("Get permissions from related documents [{}], {}", relatedDocument.getUniqueId(), relatedPermissions);
-                        permissions.addPermission(READ);
-                        break;
-                    }
-                }
-            }
-            if (isReadPermission()) {
-                //Простановка факта просмотра записи
-                if (viewFactDao.registerViewFact(document, currentUser)) {
-                    MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
-                }
-                //Установка идшника для поиска поручений
-                taskTreeHolder.setRootDocumentId(document.getUniqueId());
-                //Поиск поручений
-                taskTreeHolder.refresh();
-            }
-        } catch (Exception e) {
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
-            log.error("INTERNAL ERROR ON INITIALIZATION:", e);
+    public boolean afterRead(IncomingDocument document, AuthorizationData authData) {
+        final UserAccessLevel userUAL = authData.getCurrentAccessLevel();
+        final UserAccessLevel documentUAL = document.getUserAccessLevel();
+        if (documentUAL.getLevel() > userUAL.getLevel()) {
+            setState(State.ERROR);
+            final FacesMessage msg = MessageHolder.MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL;
+            msg.setSummary(String.format(msg.getSummary(), documentUAL.getValue(), userUAL.getValue()));
+            MessageUtils.addMessage(MessageKey.ERROR, msg);
+            return false;
         }
+
+        relatedDocuments = loadRelatedDocuments();
+        //Проверка прав на открытие
+        permissions = permissionChecker.getPermissions(authData, document);
+        if (!isReadPermission()) {
+            //Проверяем права на связанные доки, если есть, то прокидываем на чтение
+            for (OutgoingDocument relatedDocument : relatedDocuments) {
+                final Permissions relatedPermissions = permissionChecker.getPermissions(authData, relatedDocument);
+                if (relatedPermissions.hasPermission(READ)) {
+                    log.info("Get permissions from related documents [{}], {}", relatedDocument.getUniqueId(), relatedPermissions);
+                    permissions.addPermission(READ);
+                    break;
+                }
+            }
+        }
+        if (isReadPermission()) {
+            //Простановка факта просмотра записи
+            if (viewFactDao.registerViewFact(document, authData.getAuthorized())) {
+                MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
+            }
+            //Установка идшника для поиска поручений
+            taskTreeHolder.setRootDocumentId(document.getUniqueId());
+            //Поиск поручений
+            taskTreeHolder.refresh();
+        }
+        return true;
     }
 
     @Override
-    @Transactional("ordTransactionManager")
-    public boolean saveNewDocument() {
-        final User currentUser = authData.getAuthorized();
+    public boolean beforeCreate(IncomingDocument document, AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
-        log.info("Save new document by USER[{}]", currentUser.getId());
         // Сохранение дока в БД и создание записи в истории о создании
-        final IncomingDocument document = getDocument();
         if (document.getCreationDate() == null) {
             log.warn("creationDate not set. Set it to NOW");
             document.setCreationDate(created);
         }
-        if (document.getAuthor() == null || !document.getAuthor().equals(currentUser)) {
-            log.warn("Author[{}] not set or not equals with currentUser[{}]. Set it to currentUser", document.getAuthor(), currentUser);
-            document.setAuthor(currentUser);
+        if (document.getAuthor() == null || !document.getAuthor().equals(authData.getAuthorized())) {
+            log.warn("Author[{}] not set or not equals with current {}. Set it to currentUser", document.getAuthor(), authData.getLogString());
+            document.setAuthor(authData.getAuthorized());
         }
 
         final HistoryEntry historyEntry = new HistoryEntry();
         historyEntry.setCreated(created);
         historyEntry.setStartDate(created);
-        historyEntry.setOwner(currentUser);
+        historyEntry.setOwner(authData.getAuthorized());
         historyEntry.setDocType(document.getDocumentType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
@@ -399,18 +375,16 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
         document.addToHistory(historyEntry);
-        try {
-            incomingDocumentDao.save(document);
-        } catch (Exception e) {
-            log.error("saveNewDocument: on save document", e);
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
-            return false;
-        }
+        return true;
+    }
+
+    @Override
+    public boolean afterCreate(final IncomingDocument document, final AuthorizationData authData) {
         //Простановка факта просмотра записи
         try {
-            viewFactDao.registerViewFact(document, currentUser);
+            viewFactDao.registerViewFact(document, authData.getAuthorized());
         } catch (Exception e) {
-            log.error("saveNewDocument: on viewFact register", e);
+            log.error("createModel: on viewFact register", e);
             MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
         //Установка идшника для поиска поручений
@@ -418,53 +392,19 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         return true;
     }
 
-    @Override
-    @Transactional("ordTransactionManager")
-    protected boolean saveDocument() {
-        final User currentUser = authData.getAuthorized();
-        log.info("Save document by USER[{}]", currentUser.getId());
-        final IncomingDocument document = getDocument();
-        try {
-            incomingDocumentDao.update(document);
-            //Установка идшника для поиска поручений
-            taskTreeHolder.setRootDocumentId(document.getUniqueId());
-            return true;
-        } catch (Exception e) {
-            log.error("saveDocument ERROR:", e);
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
-            return false;
-        }
-    }
 
     @Override
-    protected boolean doAfterSave() {
-        final UserAccessLevel accessLevel = authData.getCurrentAccessLevel();
-        if (getDocument().getUserAccessLevel().getLevel() > accessLevel.getLevel()) {
-            setState(State.ERROR);
-            final FacesMessage msg = MessageHolder.MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL;
-            msg.setSummary(
-                    String.format(
-                            msg.getSummary(), getDocument().getUserAccessLevel().getValue(), accessLevel.getValue()
-
-                    )
-            );
-            MessageUtils.addMessage(MessageKey.ERROR, msg);
+    public boolean isCanRead(AuthorizationData authData) {
+        if (permissions == null || !permissions.hasPermission(READ)) {
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
+            log.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
             return false;
         }
         return true;
     }
 
     @Override
-    public boolean isCanDelete() {
-        if (!permissions.hasPermission(WRITE)) {
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
-            log.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
-        }
-        return permissions.hasPermission(WRITE);
-    }
-
-    @Override
-    public boolean isCanEdit() {
+    public boolean isCanUpdate(AuthorizationData authData) {
         if (!permissions.hasPermission(WRITE)) {
             MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
             log.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
@@ -473,14 +413,15 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     }
 
     @Override
-    public boolean isCanView() {
-        if (permissions == null || !permissions.hasPermission(READ)) {
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
-            log.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
-            return false;
+    public boolean isCanDelete(AuthorizationData authData) {
+        if (!permissions.hasPermission(WRITE)) {
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
+            log.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
-        return true;
+        return permissions.hasPermission(WRITE);
     }
+
+
 
     public DocumentForm getDefaultForm() {
         final DocumentForm form = documentFormDao.getByCode(DocumentForm.RB_CODE_INCOMING_LETTER);
@@ -494,66 +435,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
                 return null;
             }
         }
-    }
-
-    /**
-     * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
-     *
-     * @param document документ для проверки
-     * @return true - допуск есть
-     */
-    private boolean checkState(final IncomingDocument document, final User user) {
-        if (document == null) {
-            setState(State.ERROR);
-            log.warn("Document NOT FOUND");
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
-            return false;
-        }
-        if (document.isDeleted()) {
-            setState(State.ERROR);
-            log.warn("Document[{}] IS DELETED", document.getId());
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
-            return false;
-        }
-        final UserAccessLevel docAccessLevel = document.getUserAccessLevel();
-        final UserAccessLevel accessLevel = authData.getCurrentAccessLevel();
-        if (docAccessLevel.getLevel() > accessLevel.getLevel()) {
-            setState(State.ERROR);
-            final FacesMessage msg = MessageHolder.MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL;
-            msg.setSummary(
-                    String.format(
-                            msg.getSummary(), docAccessLevel.getValue(), accessLevel.getValue()
-
-                    )
-            );
-            MessageUtils.addMessage(MessageKey.ERROR, msg);
-            log.warn(
-                    "Document[{}] has higher accessLevel[{}] then user[{}]", document.getId(), docAccessLevel.getValue(), accessLevel.getValue()
-            );
-            return false;
-        }
-        return true;
-    }
-
-    protected boolean validateHolder() {
-        boolean result = true;
-        if (getDocument().getController() == null) {
-MessageUtils.addMessage( MessageHolder.MSG_CONTROLLER_NOT_SET);
-            result = false;
-        }
-        if (getDocument().getContragent() == null) {
-MessageUtils.addMessage( MessageHolder.MSG_CONTRAGENT_NOT_SET);
-            result = false;
-        }
-        if (getDocument().getRecipientUsers() == null || getDocument().getRecipientUsers().isEmpty()) {
-MessageUtils.addMessage( MessageHolder.MSG_RECIPIENTS_NOT_SET);
-            result = false;
-        }
-        if (getDocument().getShortDescription() == null || getDocument().getShortDescription().equals("")) {
-MessageUtils.addMessage( MessageHolder.MSG_SHORT_DESCRIPTION_NOT_SET);
-            result = false;
-        }
-        return result;
     }
 
     /**

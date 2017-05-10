@@ -1,18 +1,13 @@
 package ru.efive.dms.uifaces.beans.department;
 
 import com.github.javaplugs.jsf.SpringScopeView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
-import ru.efive.dms.uifaces.beans.utils.SessionManagementBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.entity.model.referenceBook.Department;
 import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
-
-import java.io.Serializable;
 
 /**
  * Author: Upatov Egor <br>
@@ -23,82 +18,33 @@ import java.io.Serializable;
 
 @Controller("department")
 @SpringScopeView
-public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department> implements Serializable {
-    private static final Logger LOGGER = LoggerFactory.getLogger("DEPARTMENT");
-
+public class DepartmentHolderBean extends AbstractDocumentHolderBean<Department, DepartmentDao> {
 
     @Autowired
-    @Qualifier("departmentDao")
-    private DepartmentDao departmentDao;
-
-    @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-    @Autowired
-    @Qualifier("sessionManagement")
-    private transient SessionManagementBean sessionManagementBean;
-
-    /**
-     * Меняет значение флажка Deleted и сохраняет это в БД
-     *
-     * @return успешность сохранения изменений в БД
-     */
-    public boolean changeDeleted() {
-        Department item = getDocument();
-        item.setDeleted(!item.isDeleted());
-        return saveDocument();
+    public DepartmentHolderBean(@Qualifier("departmentDao") DepartmentDao dao, @Qualifier("authData") AuthorizationData authData) {
+        super(dao, authData);
     }
 
-    public boolean isCanCreate() {
-        return authData.isAdministrator();
-    }
-
-    public boolean isCanDelete() {
-        return authData.isAdministrator();
-    }
-
-    public boolean isCanEdit() {
+    @Override
+    public boolean isCanCreate(AuthorizationData authData) {
         return authData.isAdministrator();
     }
 
     @Override
-    protected boolean deleteDocument() {
-        getDocument().setDeleted(true);
-        return getDocument().isDeleted();
+    public boolean isCanUpdate(AuthorizationData authData) {
+        return authData.isAdministrator();
     }
 
     @Override
-    protected void initNewDocument() {
+    public boolean isCanDelete(AuthorizationData authData) {
+        return authData.isAdministrator();
+    }
+
+    @Override
+    protected Department newModel(AuthorizationData authData) {
         final Department newItem = new Department();
         newItem.setDeleted(false);
         newItem.setValue("");
-        setDocument(newItem);
-    }
-
-    @Override
-    protected void initDocument(Integer documentId) {
-        setDocument(departmentDao.get(documentId));
-    }
-
-    @Override
-    public boolean saveNewDocument() {
-        try {
-            setDocument(departmentDao.save(getDocument()));
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("CANT SAVE NEW:", e);
-            return false;
-        }
-    }
-
-    @Override
-    protected boolean saveDocument() {
-        try {
-            setDocument(departmentDao.update(getDocument()));
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("CANT SAVE:", e);
-            return false;
-        }
+        return newItem;
     }
 }

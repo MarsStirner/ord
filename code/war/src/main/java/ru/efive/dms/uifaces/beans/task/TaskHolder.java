@@ -3,8 +3,6 @@ package ru.efive.dms.uifaces.beans.task;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
@@ -29,7 +27,6 @@ import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
 
-import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -37,9 +34,8 @@ import java.util.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController("task")
-public class TaskHolder extends AbstractDocumentHolderBean<Task> {
+public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger("TASK");
     //TODO ACL
     private Permissions permissions;
     @Autowired
@@ -49,15 +45,11 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
-    @Autowired
-    @Qualifier("taskDao")
-    private TaskDao taskDao;
+
     @Autowired
     @Qualifier("viewFactDao")
     private ViewFactDao viewFactDao;
-    @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
+
     @Autowired
     @Qualifier("documentFormDao")
     private DocumentFormDao documentFormDao;
@@ -74,10 +66,13 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     @Qualifier("requestDocumentDao")
     private RequestDocumentDao requestDocumentDao;
 
-    @PreDestroy
-    public void destroy() {
-        LOGGER.info("Bean destroyed");
+    @Autowired
+    public TaskHolder(
+            @Qualifier("taskDao") final TaskDao dao,
+            @Qualifier("authData") final AuthorizationData authData) {
+        super(dao, authData);
     }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
@@ -97,7 +92,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
 
     public void onExecutorsChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose executors: {}", result);
+        log.info("Choose executors: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final List<User> selected = (List<User>) result.getResult();
             if (selected != null && !selected.isEmpty()) {
@@ -121,7 +116,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
 
     public void onControllerChosen(SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        LOGGER.info("Choose controller: {}", result);
+        log.info("Choose controller: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
             getDocument().setController(selected);
@@ -141,35 +136,11 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         return permissions.hasPermission(EXECUTE);
     }
 
-
     @Override
-    protected boolean deleteDocument() {
-        final Task document = getDocument();
-        document.setDeleted(true);
-        try {
-            taskDao.update(document);
-            if (!document.isDeleted()) {
-                MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_DELETE);
-                LOGGER.error("After delete operation task hasn't deleted = true");
-                return false;
-            }
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("Error on delete: ", e);
-            MessageUtils.addMessage(MessageHolder.MSG_ERROR_ON_DELETE);
-        }
-        return false;
-    }
-
-
-    // FILES
-
-    @Override
-    protected void initNewDocument() {
+    protected Task newModel(AuthorizationData authData) {
         permissions = Permissions.ALL_PERMISSIONS;
         final LocalDateTime created = LocalDateTime.now();
         final User currentUser = authData.getAuthorized();
-        LOGGER.info("Start initialize new document by USER[{}]", currentUser.getId());
         final Task doc = new Task();
         doc.setDocumentStatus(DocumentStatus.NEW);
         doc.setCreationDate(created);
@@ -182,27 +153,28 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         if (StringUtils.isNotEmpty(rootDocumentId)) {
             doc.setRootDocumentId(rootDocumentId);
         } else {
-            LOGGER.warn("RootDocumentId is not set");
+            log.warn("RootDocumentId is not set");
         }
         final String formId = getRequestParamByName("formId");
         doc.setForm(getDefaultForm(formId));
-        setDocument(doc);
         initDefaultInitiator();
         taskTreeHolder.setRootDocumentId(doc.getUniqueId());
         taskTreeHolder.refresh();
+        return doc;
     }
+
 
     private Task initializeParentTask(final String parentId) {
         Integer parentIdentifier = null;
         try {
             parentIdentifier = Integer.valueOf(parentId);
         } catch (NumberFormatException e) {
-            LOGGER.error("Cant parse parentId[{}] to Integer", parentId, e);
+            log.error("Cant parse parentId[{}] to Integer", parentId, e);
         }
         if (parentIdentifier != null) {
-            final Task parentTask = taskDao.getItemBySimpleCriteria(parentIdentifier);
+            final Task parentTask = dao.getItemBySimpleCriteria(parentIdentifier);
             if (parentTask == null) {
-                LOGGER.warn("Not found parentTask by \"{}\"", parentIdentifier);
+                log.warn("Not found parentTask by \"{}\"", parentIdentifier);
             }
             return parentTask;
         } else {
@@ -211,70 +183,25 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     }
 
     @Override
-    protected void initDocument(Integer id) {
-        final User currentUser = authData.getAuthorized();
-        LOGGER.info("Open Document[{}] by user[{}]", id, currentUser.getId());
-        try {
-            final Task document = taskDao.get(id);
-            setDocument(document);
-            if (!checkState(document, currentUser)) {
-                return;
+    public boolean afterRead(Task document, AuthorizationData authData) {
+        permissions = permissionChecker.getPermissions(authData, document);
+        if (isReadPermission()) {
+            //Простановка факта просмотра записи
+            if (viewFactDao.registerViewFact(document, authData.getAuthorized())) {
+                MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
             }
-            permissions = permissionChecker.getPermissions(authData, document);
-            if (isReadPermission()) {
-                //Простановка факта просмотра записи
-                if (viewFactDao.registerViewFact(document, currentUser)) {
-                    MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
-                }
-                taskTreeHolder.setRootDocumentId(document.getUniqueId());
-                taskTreeHolder.refresh();
-            }
-        } catch (Exception e) {
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_INITIALIZE);
-            LOGGER.error("INTERNAL ERROR ON INITIALIZATION:", e);
+            taskTreeHolder.setRootDocumentId(document.getUniqueId());
+            taskTreeHolder.refresh();
         }
+        return true;
     }
 
     @Override
-    public boolean saveNewDocument() {
-        final User currentUser = authData.getAuthorized();
-        final LocalDateTime created = LocalDateTime.now();
-        LOGGER.info("Save new document by USER[{}]", currentUser.getId());
-        // Сохранение дока в БД и создание записи в истории о создании
-        final Task document = getDocument();
-        if (document.getCreationDate() == null) {
-            LOGGER.warn("creationDate not set. Set it to NOW");
-            document.setCreationDate(created);
-        }
-        if (document.getAuthor() == null || !document.getAuthor().equals(currentUser)) {
-            LOGGER.warn("Author[{}] not set or not equals with currentUser[{}]. Set it to currentUser", document.getAuthor(), currentUser);
-            document.setAuthor(currentUser);
-        }
-
-        final HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(currentUser);
-        historyEntry.setDocType(document.getDocumentType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
-        document.addToHistory(historyEntry);
+    public boolean afterCreate(Task document, AuthorizationData authData) {
         try {
-            taskDao.save(document);
+            viewFactDao.registerViewFact(document, authData.getAuthorized());
         } catch (Exception e) {
-            LOGGER.error("saveNewDocument: on save document", e);
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE_NEW);
-            return false;
-        }
-        //Простановка факта просмотра записи
-        try {
-            viewFactDao.registerViewFact(document, currentUser);
-        } catch (Exception e) {
-            LOGGER.error("saveNewDocument: on viewFact register", e);
+            log.error("createModel: on viewFact register", e);
             MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
         //Установка идшника для поиска поручений
@@ -283,46 +210,58 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
     }
 
     @Override
-    protected boolean saveDocument() {
-        final User currentUser = authData.getAuthorized();
-        LOGGER.info("Save document by USER[{}]", currentUser.getId());
-        final Task document = getDocument();
-        try {
-            taskDao.save(document);
-            //Установка идшника для поиска поручений
-            taskTreeHolder.setRootDocumentId(document.getUniqueId());
-            return true;
-        } catch (Exception e) {
-            LOGGER.error("saveDocument ERROR:", e);
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_ERROR_ON_SAVE);
-            return false;
+    public boolean beforeCreate(Task document, AuthorizationData authData) {
+        final LocalDateTime created = LocalDateTime.now();
+        // Сохранение дока в БД и создание записи в истории о создании
+        if (document.getCreationDate() == null) {
+            log.warn("creationDate not set. Set it to NOW");
+            document.setCreationDate(created);
         }
+        if (document.getAuthor() == null || !document.getAuthor().equals(authData.getAuthorized())) {
+            log.warn("Author[{}] not set or not equals with current {}. Set it to currentUser", document.getAuthor(), authData.getLogString());
+            document.setAuthor(authData.getAuthorized());
+        }
+
+        final HistoryEntry historyEntry = new HistoryEntry();
+        historyEntry.setCreated(created);
+        historyEntry.setStartDate(created);
+        historyEntry.setOwner(authData.getAuthorized());
+        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setParentId(document.getId());
+        historyEntry.setActionId(0);
+        historyEntry.setFromStatusId(1);
+        historyEntry.setEndDate(created);
+        historyEntry.setProcessed(true);
+        historyEntry.setCommentary("");
+        document.addToHistory(historyEntry);
+        return true;
     }
 
 
+
     @Override
-    public boolean isCanDelete() {
+    public boolean isCanDelete(final AuthorizationData authData) {
         if (!permissions.hasPermission(WRITE)) {
             MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
+            log.error("USER[{}] DELETE ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
 
     @Override
-    public boolean isCanEdit() {
+    public boolean isCanUpdate(final AuthorizationData authData) {
         if (!permissions.hasPermission(WRITE)) {
             MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_EDIT_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
+            log.error("USER[{}] EDIT ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
         }
         return permissions.hasPermission(WRITE);
     }
 
     @Override
-    public boolean isCanView() {
+    public boolean isCanRead(final AuthorizationData authData) {
         if (permissions == null || !permissions.hasPermission(READ)) {
             MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_TRY_TO_VIEW_WITHOUT_PERMISSION);
-            LOGGER.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
+            log.error("USER[{}] VIEW ACCESS TO DOCUMENT[{}] FORBIDDEN", authData.getAuthorized().getId(), getDocumentId());
             return false;
         }
         return true;
@@ -343,42 +282,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task> {
         }
     }
 
-    /**
-     * Проверяем является ли документ валидным, и есть ли у пользователя к нему уровень допуска
-     *
-     * @param document документ для проверки
-     * @return true - допуск есть
-     */
-    private boolean checkState(final Task document, final User user) {
-        if (document == null) {
-            setState(State.ERROR);
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
-            LOGGER.warn("Task NOT FOUND");
-            return false;
-        }
-        if (document.isDeleted()) {
-            setState(State.ERROR);
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
-            LOGGER.warn("TASK[{}] IS DELETED", document.getId());
-            return false;
-        }
-        return true;
-    }
-
-    private Task createTask(Task task) {
-        try {
-            Task currentTask = taskDao.save(task);
-            if (currentTask == null) {
-MessageUtils.addMessage( MessageHolder.MSG_CANT_SAVE);
-            } else {
-                return currentTask;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-MessageUtils.addMessage( MessageHolder.MSG_ERROR_ON_SAVE_NEW);
-        }
-        return null;
-    }
 
     protected void initDefaultInitiator() {
         Task task = getDocument();
@@ -399,12 +302,12 @@ MessageUtils.addMessage( MessageHolder.MSG_ERROR_ON_SAVE_NEW);
                 RequestDocument request_doc = requestDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 initiator = request_doc.getController();
             } else if (key.contains("task")) {
-                Task parent_task = taskDao.getItemByListCriteria(rootDocumentId);
+                Task parent_task = dao.getItemByListCriteria(rootDocumentId);
                 final Set<User> users = parent_task.getExecutors();
                 if (users != null && users.size() == 1) {
                     initiator = users.iterator().next();
                 } else {
-                    LOGGER.error(
+                    log.error(
                             "TASK[{}] can not set initiator cause: {}",
                             task.getId(),
                             users == null ? "executors is null" : "too much executors. size =" + users.size()
@@ -414,7 +317,7 @@ MessageUtils.addMessage( MessageHolder.MSG_ERROR_ON_SAVE_NEW);
             if (initiator != null) {
                 task.setInitiator(initiator);
             } else {
-                LOGGER.warn("TASK[{}] Initiator not founded", task.getId());
+                log.warn("TASK[{}] Initiator not founded", task.getId());
             }
         }
 

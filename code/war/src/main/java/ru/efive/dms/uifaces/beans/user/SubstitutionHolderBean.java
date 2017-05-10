@@ -5,12 +5,9 @@ import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
-import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.efive.dms.util.message.MessageHolder;
-import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.user.Substitution;
 import ru.entity.model.user.User;
@@ -32,15 +29,24 @@ import static ru.efive.dms.util.message.MessageHolder.*;
  * Description: бин для отображения замещения<br>
  */
 @ViewScopedController("substitution")
-public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution> {
+public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitution, SubstitutionDao> {
+
 
     @Autowired
-    @Qualifier("substitutionDao")
-    private SubstitutionDao substitutionDao;
-    @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
+    public SubstitutionHolderBean(@Qualifier("substitutionDao") SubstitutionDao dao, @Qualifier("authData") AuthorizationData authData) {
+        super(dao, authData);
+    }
 
+    @Override
+    protected Substitution newModel(AuthorizationData authData) {
+        final Substitution doc = new Substitution();
+        doc.setPerson(authData.getAuthorized());
+        return doc;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //Выбора замещаемого ////////////////////////////////////////////////////////////////////////////////////////////////////
     public void choosePerson() {
@@ -77,9 +83,6 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public void onSubstitutorChosen(final SelectEvent event) {
         final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
@@ -90,87 +93,29 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         }
     }
 
-    @Override
-    protected boolean deleteDocument() {
-        final Substitution doc = getDocument();
-        doc.setDeleted(true);
-        try {
-            setDocument(substitutionDao.save(doc));
-            FacesContext.getCurrentInstance().getExternalContext().redirect("delete_document.xhtml");
-            return true;
-        } catch (Exception e) {
-            log.error("saveDocument ERROR:", e);
-            MessageUtils.addMessage(MSG_ERROR_ON_DELETE);
-            return false;
-        }
-    }
 
-    @Override
-    protected void initNewDocument() {
-        final Substitution doc = new Substitution();
-        doc.setPerson(authData.getAuthorized());
-        setDocument(doc);
-    }
-
-    @Override
-    protected void initDocument(Integer id) {
-        final User currentUser = authData.getAuthorized();
-        log.info("Open Document[{}] by user[{}]", id, currentUser.getId());
-        final Substitution document = substitutionDao.get(id);
-        setDocument(document);
-        if (document == null) {
-            setState(State.ERROR);
-            log.warn("Document NOT FOUND");
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
-        } else if (document.isDeleted()) {
-            setState(State.ERROR);
-            log.warn("Document[{}] IS DELETED", document.getId());
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
-        }
-    }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ///// КОНЕЦ Диалоговые окошки  /////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public boolean saveNewDocument() {
-        return saveDocument();
+    public boolean isCanCreate(final AuthorizationData authData) {
+        return authData.isFilling();
     }
 
     @Override
-    protected boolean saveDocument() {
-        final Substitution document = getDocument();
-        if (validateBeforeSave(document)) {
-            try {
-                setDocument(substitutionDao.update(document));
-                return true;
-            } catch (Exception e) {
-                log.error("saveDocument ERROR:", e);
-                MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
-                return false;
-            }
-        }
-        return false;
+    public boolean isCanDelete(final AuthorizationData authData) {
+        return authData.isFilling();
     }
 
     @Override
-    public boolean isCanCreate() {
-        return super.isCanCreate() && authData.isFilling();
+    public boolean isCanUpdate(final AuthorizationData authData) {
+        return authData.isFilling();
     }
 
     @Override
-    public boolean isCanDelete() {
-        return super.isCanDelete() && authData.isFilling();
-    }
-
-    @Override
-    public boolean isCanEdit() {
-        return super.isCanEdit() && authData.isFilling();
-    }
-
-    @Override
-    public boolean isCanView() {
-        return super.isCanView() && authData.isFilling();
+    public boolean isCanRead(final AuthorizationData authData) {
+        return authData.isFilling();
     }
 
     /**
@@ -179,7 +124,8 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
      * @param document документ для проверки
      * @return признак успешности проверки { false - некорректный документ }
      */
-    private boolean validateBeforeSave(Substitution document) {
+    @Override
+    public boolean beforeCreate(Substitution document, AuthorizationData authData) {
         boolean result = true;
         if (document.getStartDate() != null && document.getEndDate() != null) {
             if (document.getStartDate().isAfter(document.getEndDate())) {
@@ -204,5 +150,10 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
             result = false;
         }
         return result;
+    }
+
+    @Override
+    public boolean beforeUpdate(Substitution document, AuthorizationData authData) {
+        return beforeCreate(document, authData);
     }
 }

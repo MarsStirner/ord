@@ -1,12 +1,9 @@
 package ru.efive.dms.uifaces.beans.contragent;
 
-import com.github.javaplugs.jsf.SpringScopeView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Controller;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
@@ -21,20 +18,15 @@ import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import javax.faces.context.FacesContext;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static ru.efive.dms.util.message.MessageHolder.*;
+import static ru.efive.dms.util.message.MessageHolder.MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS;
 
-@Controller("contragent")
-@SpringScopeView
-public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> {
-    private static final Logger logger = LoggerFactory.getLogger("CONTRAGENT");
+@ViewScopedController("contragent")
+public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, ContragentDao> {
 
-    @Autowired
-    @Qualifier("contragentDao")
-    private ContragentDao contragentDao;
     @Autowired
     @Qualifier("incomingDocumentDao")
     private IncomingDocumentDao incomingDocumentDao;
@@ -44,114 +36,59 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent> {
     @Autowired
     @Qualifier("outgoingDocumentDao")
     private OutgoingDocumentDao outgoingDocumentDao;
+
+
     @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
+    public ContragentHolder(@Qualifier("contragentDao") final ContragentDao dao,
+                            @Qualifier("authData") final AuthorizationData authData) {
+        super(dao, authData);
+    }
 
     @Override
-    public boolean doAfterDelete() {
+    public boolean afterDelete(Contragent document, AuthorizationData authData) {
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect("delete_contragent.xhtml");
         } catch (IOException e) {
-            logger.error("Error on redirect", e);
+            log.error("Error on redirect", e);
             return false;
         }
         return true;
     }
 
     @Override
-    protected boolean deleteDocument() {
-        try {
-            Contragent contragent = getDocument();
-            boolean hasDocuments;
-            final Map<String, Object> in_map = new HashMap<>();
-            in_map.put(DocumentSearchMapKeys.CONTRAGENT_KEY, contragent);
-            List<IncomingDocument> incomingDocuments = incomingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
-            if (incomingDocuments.isEmpty()) {
-                List<RequestDocument> requestDocuments = requestDocumentDao.getItems(
-                        authData,
-                        null,
-                        in_map,
-                        null,
-                        true,
-                        0, -1, false, false);
-                if (requestDocuments.isEmpty()) {
-                    List<OutgoingDocument> outgoingDocuments = outgoingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
-                    hasDocuments = !outgoingDocuments.isEmpty();
-                } else {
-                    hasDocuments = true;
-                }
-            } else {
-                hasDocuments = true;
-            }
-            if (!hasDocuments) {
-                contragent.setDeleted(true);
-                contragent = contragentDao.save(contragent);
-                if (contragent == null) {
-MessageUtils.addMessage( MSG_CANT_DELETE);
-                    return false;
-                }
-                return true;
-            } else {
-MessageUtils.addMessage( MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
-            }
-        } catch (Exception e) {
-            logger.error("Error on deleteDocument", e);
-MessageUtils.addMessage( MSG_INTERNAL_ERROR);
-        }
-        return false;
-    }
-
-    @Override
-    protected void initDocument(Integer id) {
-        try {
-            setDocument(contragentDao.get(id));
-            if (getDocument() == null) {
-                setDocumentNotFound();
-            }
-        } catch (Exception e) {
-MessageUtils.addMessage( MSG_ERROR_ON_INITIALIZE);
-            logger.error("initializeError", e);
-        }
-    }
-
-    @Override
-    protected void initNewDocument() {
-        final Contragent contragent = new Contragent();
-        contragent.setDeleted(false);
-        setDocument(contragent);
-    }
-
-    @Override
-    protected boolean saveDocument() {
-        try {
-            Contragent contragent = contragentDao.update(getDocument());
-            if (contragent == null) {
-MessageUtils.addMessage( MSG_CANT_SAVE);
-                return false;
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error("Error on save", e);
-MessageUtils.addMessage( MSG_ERROR_ON_SAVE);
+    public boolean beforeDelete(Contragent document, AuthorizationData authData) {
+        final Map<String, Object> in_map = Collections.singletonMap(DocumentSearchMapKeys.CONTRAGENT_KEY, document);
+        final List<IncomingDocument> incomingDocuments = incomingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
+        if (!incomingDocuments.isEmpty()) {
+            MessageUtils.addMessage(MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
             return false;
         }
+        final List<RequestDocument> requestDocuments = requestDocumentDao.getItems(
+                authData,
+                null,
+                in_map,
+                null,
+                true,
+                0, -1, false, false);
+
+        if (!requestDocuments.isEmpty()) {
+            MessageUtils.addMessage(MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
+            return false;
+        }
+
+        final List<OutgoingDocument> outgoingDocuments = outgoingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
+        if (!outgoingDocuments.isEmpty()) {
+            MessageUtils.addMessage(MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
+            return false;
+        }
+        return true;
     }
 
     @Override
-    public boolean saveNewDocument() {
-        try {
-            final Contragent contragent = contragentDao.save(getDocument());
-            if (contragent == null) {
-MessageUtils.addMessage( MSG_CANT_SAVE);
-                return false;
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error("Error on save New", e);
-MessageUtils.addMessage( MSG_ERROR_ON_SAVE_NEW);
-            return false;
-        }
+    protected Contragent newModel(AuthorizationData authData) {
+        final Contragent result = new Contragent();
+        result.setDeleted(false);
+        return result;
     }
 
 }

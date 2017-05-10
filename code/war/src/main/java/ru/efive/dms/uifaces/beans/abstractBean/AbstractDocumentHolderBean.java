@@ -1,35 +1,30 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
-import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.mapped.DeletableEntity;
+import ru.hitsl.sql.dao.interfaces.mapped.criteria.Deletable;
+import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PreDestroy;
 import javax.faces.context.FacesContext;
 import java.io.IOException;
-import java.io.Serializable;
+
+import static ru.efive.dms.util.message.MessageHolder.MSG_ERROR_ON_SAVE;
+import static ru.efive.dms.util.message.MessageHolder.MSG_ERROR_ON_SAVE_NEW;
 
 /**
  * Абстарктный бин-обработчик страницы документа (Serializable)
  *
- * @param <D> тип документа (должен наследовать от IdentifiedEntity)
+ * @param <I> тип документа (должен наследовать от DeletableEntity)
+ * @param <D> Dao для работы с документом
  */
-@Transactional("ordTransactionManager")
-public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> implements Serializable {
 
-    /**
-     * Название GET-параметра, определяющего идентифкатор документа
-     */
-    public static final String REQUEST_PARAM_DOC_ID = "docId";
-    /**
-     * Название GET-параметра, определяющего действие над документом
-     */
-    public static final String REQUEST_PARAM_DOC_ACTION = "docAction";
+public abstract class AbstractDocumentHolderBean<I extends DeletableEntity, D extends Deletable<I>>
+        extends AbstractStateableAccessableHolder
+        implements OperationCallback<I> {
     /**
      * Значение GET-параметра REQUEST_PARAM_DOC_ACTION, означающее создание нового документа
      */
@@ -38,88 +33,194 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
      * Значение GET-параметра REQUEST_PARAM_DOC_ACTION, означающее редактирование документа
      */
     public static final String REQUEST_PVALUE_DOC_ACTION_EDIT = "edit";
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
+
+    protected final D dao;
+
     /**
      * Поле, где будет храниться сам документ
      */
-    private D document;
-    /**
-     * Текущее состояние бина-обработчика
-     */
-    private State state;
+    private I document;
+
+    public AbstractDocumentHolderBean(D dao, AuthorizationData authData) {
+        super(authData);
+        log.debug("<init>:[@{}] as '{}'", Integer.toHexString(hashCode()), getBeanName());
+        this.dao = dao;
+    }
+
+
+    protected Integer getDocumentId() {
+        return getDocument() == null ? null : getDocument().getId();
+    }
+
+
+    protected abstract I newModel(AuthorizationData authData);
+
+    @Transactional("ordTransactionManager")
+    protected I readModel(Integer id, AuthorizationData authData) {
+        log.info("Read Model[{}] by {}", id, authData.getLogString());
+        return dao.get(id);
+    }
+
+    @Transactional("ordTransactionManager")
+    protected boolean createModel(I document, final AuthorizationData authData) {
+        log.info("Create Model[{}] by {}", document.getId(), authData.getLogString());
+        try {
+            setDocument(dao.save(document));
+            return true;
+        } catch (Exception e) {
+            log.error("Error on create Model[{}] by {} ", document.getId(), authData.getLogString(), e);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE_NEW);
+            return false;
+        }
+    }
+
+    @Transactional("ordTransactionManager")
+    protected boolean updateModel(I document, final AuthorizationData authData) {
+        log.info("Update Model[{}] by {}", document.getId(), authData.getLogString());
+        try {
+            setDocument(dao.update(document));
+            return true;
+        } catch (Exception e) {
+            log.error("Error on update Model[{}] by {} ", document.getId(), authData.getLogString(), e);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
+            return false;
+        }
+    }
 
     /**
      * Удаление документа (из БД или только флаг решается в реализации)
      *
      * @return упсешность удаления
      */
-    protected abstract boolean deleteDocument();
-
-    /**
-     * @return
-     */
-    protected Integer getDocumentId() {
-        return getDocument() == null ? null : getDocument().getId();
+    @Transactional("ordTransactionManager")
+    protected boolean deleteModel(I document, final AuthorizationData authData) {
+        log.info("Delete Model[{}] by {}", document.getId(), authData.getLogString());
+        try {
+            return dao.delete(document);
+        } catch (Exception e) {
+            log.error("Error on update Model[{}] by {} ", document.getId(), authData.getLogString(), e);
+            MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
+            return false;
+        }
     }
 
-    protected abstract void initNewDocument();
 
-    protected abstract void initDocument(Integer documentId);
+    // ----------------------------------------------------------------------------------------------------------------
+    @Transactional("ordTransactionManager")
+    public boolean delete() {
+        // should add error messages to context themself. (For example, concurrent modify).
+        // If chained method fail -> break operation execution
+        // [check user privilege for operation] -> [before operation callback] -> [operation] -> [after operation callback]
+        return !isErrorState() && isCanDelete(authData) && beforeDelete(document, authData) && deleteModel(document, authData) & afterDelete(document, authData);
+    }
 
-    public abstract boolean saveNewDocument();
+    /**
+     * Меняет значение флажка Deleted и сохраняет это в БД
+     *
+     * @return успешность сохранения изменений в БД
+     */
+    @Transactional("ordTransactionManager")
+    public boolean changeDeleted() {
+        if (!isErrorState() && isCanDelete(authData)) {
+            document.setDeleted(!document.isDeleted());
+            return updateModel(document, authData);
+        } else {
+            return false;
+        }
+    }
 
-    protected abstract boolean saveDocument();
+    public boolean edit() {
+        if (!isErrorState() && isCanUpdate(authData) && beforeUpdate(document, authData)) {
+            setState(State.EDIT);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Transactional("ordTransactionManager")
+    public boolean save() {
+        if (!isErrorState()) {
+            boolean success;
+            // If chained method fail -> break operation execution
+            // [check user privilege for operation] -> [before operation callback] -> [operation] -> [after operation callback]
+            if (isCreateState()) {
+                success = isCanCreate(authData) && beforeCreate(document, authData) && createModel(document, authData) & afterCreate(document, authData);
+            } else {
+                success = isCanUpdate(authData) && beforeUpdate(document, authData) && updateModel(document, authData) && afterUpdate(document, authData);
+            }
+            if (success) {
+                setState(State.VIEW);
+            }
+        }
+        return false;
+    }
+
+
+    @Transactional("ordTransactionManager")
+    public boolean view() {
+        if (!isErrorState() && isCanRead(authData) && beforeRead(authData)) {
+            document = readModel(getDocumentId(), authData);
+            setState(State.VIEW);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @PreDestroy
+    public void destroy() {
+        log.info("Bean[{}] destroyed", getBeanName());
+    }
+
+
+    @Transactional("ordTransactionManager")
+    public void init(final String action, final Integer id) {
+        log.info("Initialize new HolderBean");
+        //CREATE
+        if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
+            if (isCanCreate(authData)) {
+                setState(State.CREATE);
+                document = newModel(authData);
+                return;
+            } else {
+                setState(State.ERROR);
+                return;
+            }
+        }
+        //EDIT OR VIEW EXISTING DOCUMENT
+        if (id != null && beforeRead(authData)) {
+            setDocument(readModel(id, authData));
+        }
+        if (document == null) {
+            setState(State.ERROR);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
+            return;
+        } else if (document.isDeleted()) {
+            setState(State.ERROR);
+            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
+            return;
+        }
+        if (!afterRead(document, authData)) {
+            setState(State.ERROR);
+        } else if (REQUEST_PVALUE_DOC_ACTION_EDIT.equals(action)) {
+            setState(isCanUpdate(authData) ? State.EDIT : State.ERROR);
+        } else {
+            setState(isCanRead(authData) ? State.VIEW : State.ERROR);
+        }
+    }
 
     // ----------------------------------------------------------------------------------------------------------------
 
-    protected boolean doAfterCreate() {
-        return true;
+
+    public I getDocument() {
+        return document;
     }
 
-    protected boolean doAfterDelete() {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("/component/delete_document.xhtml");
-        } catch (IOException e) {
-            log.error("Error on redirect", e);
-            return false;
-        }
-        return true;
+    private void setDocument(I document) {
+        this.document = document;
     }
-
-    protected boolean doAfterEdit() {
-        return true;
-    }
-
-    protected boolean doAfterError() {
-        return true;
-    }
-
-    protected boolean doAfterSave() {
-        return true;
-    }
-
-    protected boolean doAfterView() {
-        return true;
-    }
-
-    protected Integer getInitialDocumentId() {
-        final String docId = getRequestParamByName(REQUEST_PARAM_DOC_ID);
-        if (StringUtils.isNotEmpty(docId)) {
-            try {
-                return Integer.valueOf(docId);
-            } catch (NumberFormatException ex) {
-                log.error("Cannot convert docId[{}] to integer", docId);
-                MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOC_ID_CONVERSION_ERROR);
-                return null;
-            }
-        } else {
-            log.error("docId is empty or null");
-            MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_NO_DOC_ID);
-            return null;
-        }
-    }
-
-
 
     /**
      * returns GET param value from URL by his name
@@ -131,175 +232,17 @@ public abstract class AbstractDocumentHolderBean<D extends IdentifiedEntity> imp
         return FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get(paramName);
     }
 
-    public boolean isCanCreate() {
-        return true;
-    }
-
-    public boolean isCanDelete() {
-        return !isErrorState();
-    }
-
-    public boolean isCanEdit() {
-        return !isErrorState();
-    }
-
-    public boolean isCanView() {
-        return !isErrorState();
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    public boolean cancel() {
-        if (isErrorState()) {
-            return doAfterError();
-        }
-        return view();
-    }
-
-    public boolean create() {
-        if (isCanCreate()) {
-            initNewDocument();
-        }
-        if (!isErrorState()) {
-            setState(State.CREATE);
-            return doAfterCreate();
-        } else {
-            return doAfterError();
-        }
-    }
-
-    public boolean delete() {
-        if (isErrorState()) {
-            return doAfterError();
-        } else if (isCanDelete() && deleteDocument()) {
-            setState(null);
-            document = null;
-            return doAfterDelete();
-        } else {
-            // If this instructions are executed then deleteDocument() is returned <code>false</code> and it should
-            // add error messages to context themself.
+    @Override
+    public boolean afterDelete(I document, AuthorizationData authData) {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("/component/delete_document.xhtml");
+            //Удалить ViewScope бин
+            //@see http://stackoverflow.com/questions/9458911/reset-jsf-backing-beanview-or-session-scope
+            FacesContext.getCurrentInstance().getViewRoot().getViewMap().remove(getBeanName());
+            return true;
+        } catch (IOException e) {
+            log.error("Error on redirect", e);
             return false;
         }
     }
-
-    public boolean edit() {
-        if (isErrorState() || !isCanEdit()) {
-            return doAfterError();
-        } else {
-            setState(State.EDIT);
-            return doAfterEdit();
-        }
-    }
-
-    public boolean save() {
-        if (isErrorState() || !isCanEdit()) {
-            return doAfterError();
-        }
-        boolean success;
-        if (isCreateState()) {
-            success = saveNewDocument();
-        } else {
-            success = saveDocument();
-        }
-        if (success) {        // should add error messages to context themself. (For example, concurrent modify).
-            setState(State.VIEW);
-            return doAfterSave();
-        }
-        return false;
-    }
-
-    public boolean view() {
-        initDocument(getDocumentId());
-        if (!isErrorState()) {
-            setState(State.VIEW);
-            return doAfterView();
-        } else {
-            return doAfterError();
-        }
-    }
-
-    @PreDestroy
-    public void destroy() {
-        log.info("Bean destroyed");
-    }
-
-    public void init() {
-        log.info("Initialize new HolderBean");
-        final String action = getRequestParamByName(REQUEST_PARAM_DOC_ACTION);
-        //CREATE
-        if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
-            if (isCanCreate()) {
-                setState(State.CREATE);
-                initNewDocument();
-                return;
-            } else {
-                setState(State.ERROR);
-                return;
-            }
-        }
-        //EDIT OR VIEW EXISTING DOCUMENT
-        Integer id = getInitialDocumentId();
-        if (id != null) {
-            initDocument(id);
-        }
-        if (document == null) {
-            setState(State.ERROR);
-        } else if (REQUEST_PVALUE_DOC_ACTION_EDIT.equals(action)) {
-            setState(isCanEdit() ? State.EDIT : State.ERROR);
-        } else {
-            setState(isCanView() ? State.VIEW : State.ERROR);
-        }
-    }
-
-    // ----------------------------------------------------------------------------------------------------------------
-
-    public boolean isCreateState() {
-        return State.CREATE.equals(state);
-    }
-
-    public boolean isEditState() {
-        return State.EDIT.equals(state);
-    }
-
-    public boolean isViewState() {
-        return State.VIEW.equals(state);
-    }
-
-    public boolean isErrorState() {
-        return State.ERROR.equals(state);
-    }
-
-    public D getDocument() {
-        return document;
-    }
-
-    protected void setDocument(D document) {
-        this.document = document;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    protected void setState(final State state) {
-        log.info("Document state changed from {} to {}", this.state, state);
-        this.state = state;
-    }
-
-    /**
-     * Стандартные действия когда документ не был найден
-     */
-    protected void setDocumentNotFound() {
-        setState(State.ERROR);
-        MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_NOT_FOUND);
-    }
-
-    /**
-     * Стандартные действия когда документ не был найден
-     */
-    protected void setDocumentDeleted() {
-        setState(State.ERROR);
-        MessageUtils.addMessage(MessageKey.ERROR, MessageHolder.MSG_DOCUMENT_IS_DELETED);
-    }
-
 }
