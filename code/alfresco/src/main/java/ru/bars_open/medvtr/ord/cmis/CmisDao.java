@@ -142,7 +142,7 @@ public class CmisDao {
             log.debug("Folder['{}'] not exists", fullPath);
             return null;
         } catch (Exception e) {
-            log.error("Folder['{}']: Error: {} ", e.getMessage());
+            log.error("Folder['{}']: Error: {} ", fullPath,  e.getMessage());
             return null;
         }
     }
