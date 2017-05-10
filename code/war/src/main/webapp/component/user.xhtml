@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -12,18 +11,20 @@
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
     <f:metadata>
-        <f:viewAction action="#{user.init}"/>
+        <f:viewParam name="docId" value="#{viewScope['id']}"/>
+        <f:viewParam name="docAction" value="#{viewScope['action']}"/>
+        <f:viewAction action="#{user.init(viewScope['action'], viewScope['id'])}"/>
     </f:metadata>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <my:homeButton outcome="/component/users.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{user.errorState}"/>
-        <p:commandButton value="Редактировать" action="#{user.edit}" rendered="#{user.viewState and user.editPermission}" icon="ui-icon-pencil"
+        <p:commandButton value="Редактировать" action="#{user.edit}" rendered="#{user.viewState and user.isCanUpdate(authData)}" icon="ui-icon-pencil"
                          update="@form"/>
         <p:commandButton value="Отменить" action="#{user.view}" rendered="#{user.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{user.save}" rendered="#{user.editState or user.createState}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="#{user.document.fired ? 'Восстановить' : 'Уволить'}" action="#{user.changeFired}"
-                         rendered="#{user.viewState and user.editPermission}" icon="ui-icon-eject" update="@form"/>
+                         rendered="#{user.viewState and user.isCanUpdate(authData)}" icon="ui-icon-eject" update="@form"/>
     </ui:define>
 
     <ui:define name="VARIABLE_DEFINITIONS">

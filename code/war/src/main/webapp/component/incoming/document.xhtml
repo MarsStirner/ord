@@ -11,7 +11,9 @@
 
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
     <f:metadata>
-        <f:viewAction action="#{in_doc.init}"/>
+        <f:viewParam name="docId" value="#{viewScope['id']}"/>
+        <f:viewParam name="docAction" value="#{viewScope['action']}"/>
+        <f:viewAction action="#{in_doc.init(viewScope['action'], viewScope['id'])}"/>
     </f:metadata>
 
     <ui:define name="VARIABLE_DEFINITIONS">
@@ -25,52 +27,41 @@
         <c:set var="status_InArchive" value="#{statusId eq 100}" scope="view"/>
         <c:set var="status_OutArchive" value="#{statusId eq 110}" scope="view"/>
         <!-- Редактируемость полей (true - редактируемо, иначе только для просмотра) -->
-        <c:set var="editable_ShortDescription"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'shortDescription')}"
-               scope="view"/>
+        <c:set var="editable_ShortDescription" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'shortDescription')}"/>
         <!-- Поле 'Вид документа' -->
-        <c:set var="editable_DocumentForm"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'form')}" scope="view"/>
+        <c:set var="editable_DocumentForm" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'form')}"/>
         <!-- Поле 'Тип доставки' -->
-        <c:set var="editable_DeliveryType"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'deliveryType')}"
-               scope="view"/>
+        <c:set var="editable_DeliveryType" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'deliveryType')}"/>
         <!-- Поле 'Дата исполнения' -->
-        <c:set var="editable_ExecutionDate"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executionDate')}"
-               scope="view"/>
+        <c:set var="editable_ExecutionDate" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executionDate')}"/>
         <!-- Поле 'Номер поступившего' -->
-        <c:set var="editable_ReceivedDocumentNumber"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedNumber')}"
-               scope="view"/>
+        <c:set var="editable_ReceivedDocumentNumber" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedNumber')}"/>
         <!-- Поле 'Дата поступившего' -->
-        <c:set var="editable_ReceivedDocumentDate"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedDate')}"
-               scope="view"/>
+        <c:set var="editable_ReceivedDocumentDate" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedDate')}"/>
         <!-- Поле 'Руководитель' -->
-        <c:set var="editable_Controller"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'controller')}"
-               scope="view"/>
+        <c:set var="editable_Controller" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'controller')}"/>
         <!-- Поле 'Корреспондент' -->
-        <c:set var="editable_Contragent"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'contragent')}"
-               scope="view"/>
+        <c:set var="editable_Contragent" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'contragent')}"/>
         <!-- Поле 'Адресаты'  -->
-        <c:set var="editable_Recipients"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'recipients')}"
-               scope="view"/>
+        <c:set var="editable_Recipients" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'recipients')}"/>
         <!-- Поле 'Исполнители' -->
-        <c:set var="editable_Executors"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executors')}"
-               scope="view"/>
+        <c:set var="editable_Executors" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executors')}"/>
         <!-- Поле 'Доступ-редакторы'  -->
-        <c:set var="editable_AccessTabEditors"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessEditors')}"
-               scope="view"/>
+        <c:set var="editable_AccessTabEditors" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessEditors')}"/>
         <!-- Поле 'Доступ-Читатели'  -->
-        <c:set var="editable_AccessTabReaders"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessReaders')}"
-               scope="view"/>
+        <c:set var="editable_AccessTabReaders" scope="view"
+               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessReaders')}"/>
         <!-- Конец блока переменных -->
     </ui:define>
 

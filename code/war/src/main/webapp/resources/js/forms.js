@@ -11,6 +11,5 @@ function update_content() {
     $("#table_wrap").height(height);
     $("#table_inner").height(height);
     $("#split").height(document.body.clientHeight);
-    $(".e5ui-menu").height(document.body.clientHeight - 30);
 }
 ;

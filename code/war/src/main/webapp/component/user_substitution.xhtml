@@ -19,12 +19,12 @@
         <my:homeButton outcome="/component/user_substitutions.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{substitution.errorState}"/>
         <p:commandButton value="Редактировать" action="#{substitution.edit}"
-                         rendered="#{substitution.viewState and substitution.isCanEdit() and isFilling}" icon="ui-icon-pencil"
+                         rendered="#{substitution.viewState and substitution.canUpdate() and isFilling}" icon="ui-icon-pencil"
                          update="@form"/>
         <p:commandButton value="Отменить" action="#{substitution.view}" rendered="#{substitution.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{substitution.save}" rendered="#{substitution.editState or substitution.createState}"
                          icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{substitution.delete}" rendered="#{substitution.viewState and substitution.isCanEdit()}"
+        <p:commandButton value="Удалить" action="#{substitution.delete}" rendered="#{substitution.viewState and substitution.canUpdate()}"
                          icon="ui-icon-eject" update="@form"/>
     </ui:define>
 

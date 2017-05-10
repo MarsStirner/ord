@@ -26,21 +26,21 @@ a:hover {text-decoration:none;}
 #form_header {float:left; display:block; width:100%; background:#D1F3DB;}
 
 #header  {color: #15428B; font-weight: bold; text-decoration: none;}
-#header .menu {margin:0px 0 0 0; padding:0 1px; font-size:12px; font-family:Tahoma, Geneva, sans-serif; border-bottom:1px solid #7AD6B4; border-bottom:1px solid #7AD6B4; height:27px; background:#D1F3DB url('#{resource['images:bg.gif']}') 0 0 repeat-x;}
+#header .menu {margin:0 0 0 0; padding:0 1px; font-size:12px; font-family:Tahoma, Geneva, sans-serif; border-bottom:1px solid #7AD6B4; border-bottom:1px solid #7AD6B4; height:27px; background:#D1F3DB url('#{resource['images:bg.gif']}') 0 0 repeat-x;}
 
 #viewtitle {padding:4px; float:left;}
 
 #header .username {padding:0; display:block; float:right; font-weight: normal; color:#454c4e;}
 #header .role {padding:0; display:block; font-weight: normal; color:#454c4e; margin-right:30px;}
 
-.actionbar .menu {margin:0px 0 0 0; padding:0 1px; font-size:12px; font-family:Tahoma, Geneva, sans-serif; border-bottom:1px solid #7AD6B4; height:27px; background:#D1F3DB url('#{resource['images:bg.gif']}') 0 0 repeat-x;}
+.actionbar .menu {margin:0 0 0 0; padding:0 1px; font-size:12px; font-family:Tahoma, Geneva, sans-serif; border-bottom:1px solid #7AD6B4; height:27px; background:#D1F3DB url('#{resource['images:bg.gif']}') 0 0 repeat-x;}
 .actionbar .menu ul {display:block; margin:0; padding:0; list-style:none; border-bottom:1px solid #7AD6B4;  }
 .actionbar .right {display:block; float:right; font-weight: normal; color:#454c4e;}
 
-#footer {position:absolute; padding:0px; bottom:0; right:0; width:84%; float:left; background:#D1F3DB; text-decoration: none;}
-#footer .content {margin:0px 0 0 0; padding:0 1px; border-top:1px solid #7AD6B4; height:27px; background:#D1F3DB url('#{resource['images:bg.gif']}') 0 0 repeat-x;}
+#footer {position:absolute; padding:0; bottom:0; right:0; width:84%; float:left; background:#D1F3DB; text-decoration: none;}
+#footer .content {margin:0 0 0 0; padding:0 1px; border-top:1px solid #7AD6B4; height:27px; background:#D1F3DB url('#{resource['images:bg.gif']}') 0 0 repeat-x;}
 
-#split {display:block; float:left; padding:0px; margin:0; width:0.3%; min-height:100%; height: 100%; background: #CDEFD8; border-left:1px solid #7AD6B4; border-right:1px solid #7AD6B4;}
+#split {display:block; float:left; padding:0; margin:0; width:0.3%; min-height:100%; height: 100%; background: #CDEFD8; border-left:1px solid #7AD6B4; border-right:1px solid #7AD6B4;}
 
 div.defbutton {float:left; padding:2px 0 0 2px;vertical-align:middle;}
 div.defbutton img {vertical-align:middle; padding-right: 3px;}
@@ -67,14 +67,14 @@ div.defbutton a:active {color:#000000;}
 .header_content div.row table.form_title {width:100%; vertical-align: middle; font-weight: bold;}
 
 #main_menu {clear:both; padding:0 5% 0 5%; background:#00c4d7; border-bottom:3px solid #009eb5;}
-#main_menu ul {height:33px; margin:0px; padding:7px 0 0 0; list-style:none;}
+#main_menu ul {height:33px; margin:0; padding:7px 0 0 0; list-style:none;}
 #main_menu ul li {float:left; height:36px; margin:0; background:none;}
 #main_menu ul li.active {padding-right:23px; background:url('#{resource['images:tab_bg.gif']}') 100% 0 no-repeat;}
 #main_menu ul li a {float:left; display:block; height:26px; padding:10px 30px 0 20px; text-decoration:none; color:#fff; font-size:12px; font-weight:bold}
 #main_menu ul li.active a {padding-right:10px; background:#fff; color:#454c4e;}
 
 
-.main_content {padding: 0px 30px 0 30px; height:100%;}
+.main_content {padding: 0 30px 0 30px; height:100%;}
 .main_content div.row {padding:24px 20px; border-bottom:1px dashed #e7e7e4;}
 .main_content div.row.last {border:none}
 .main_content div.row table.form_grid {width:100%; }
@@ -97,12 +97,10 @@ div.defbutton a:active {color:#000000;}
 #main_table {float:left; margin:0; width:84%; font-size:12px; overflow:auto;}
 #main_table table {width:100%; border: none;}
 #main_table table thead {}
-#main_table table thead th {height:0px; padding:0 10px; white-space:nowrap; vertical-align:left; border:0 0 0 1px solid #ededed; background:#F9F9F9 url('#{resource['images:grid3-hrow.gif']}') 0 0 repeat-x; text-align:left;}
+#main_table table thead th {height:0; padding:0 10px; white-space:nowrap; vertical-align:left; border:0 0 0 1px solid #ededed; background:#F9F9F9 url('#{resource['images:grid3-hrow.gif']}') 0 0 repeat-x; text-align:left;}
 #main_table table thead th a, #main_table table thead th a.visited {color:#000000;text-decoration: none; font-weight:normal; position: absolute; margin-top: 3px; top: 1px;}
 #main_table table tbody td {padding:7px 12px; border:1px solid #ededed; border-left:none; border-right:none;}
 #main_table table tbody tr:hover td {background: #EFEFEF url('#{resource['images:row-over.gif']}') 0 0 repeat-x;}
-#main_table table tbody tr:hover td.e5ui-row-marker {background-image: url('#{resource['images:marker_down.png']}'); background-position: right center; background-repeat:no-repeat;}
-#main_table table tbody tr.collapsed:hover td.e5ui-row-marker {background-image: url('#{resource['images:marker_right.png']}'); background-position: right center; background-repeat:no-repeat;}
 
 #main_table table tbody td .articul {color:#15428B; font-weight:bold;}
 #main_table table tbody td.author {white-space:nowrap;}
@@ -113,12 +111,8 @@ div.defbutton a:active {color:#000000;}
 #main_table table tbody tr.sub_row td.first .articul {padding-left:30px; background-image:url('#{resource['images:horizontal_point.gif']}'); background-position:5px 50%; background-repeat:no-repeat;}
 #main_table table tbody tr.sub_row.last td.first {background-image:url('#{resource['images:horizontal_point_last.gif']}'); background-position:5px -85px; background-repeat:no-repeat;}
 
-table.e5ui-dataTable thead th p, table.e5ui-dataTable thead tr p {position: absolute;top: 1px;margin-top:3px;}
-div.inner table.e5ui-dataTable thead tr th, div.inner table.e5ui-dataTable thead tr {height: 0; border: 0px solid #E7E7E4;}
 
 /* дописать джаваскрипт расчёта позиции бэграунда */
-
-/*.e5uiTabPanelContent {border: 1px solid #E7E7E4;}*/
 
 /* FORM */
 .datepicker {position:relative;}
@@ -159,14 +153,13 @@ label label {display:inline;}
 .searchbar input {width:250px;}
 
 /*customization*/
-#news {position: absolute; padding:0px; left:0; bottom:0; min-height:20%; height:20%; width:19.5%; min-width:195px}
+#news {position: absolute; padding:0; left:0; bottom:0; min-height:20%; height:20%; width:19.5%; min-width:195px}
 #news .header {color:#15428B; font-weight:bold; padding:6px; border-bottom:1px solid #7AD6B4; border-top:1px solid #7AD6B4; background:transparent url('#{resource['images:white-top-bottom.gif']}') 0 -1px repeat-x;}
 
 
 #header .default_buttn {float:left; padding:20px 0 0 10px;vertical-align:middle;}
-#header .default_buttn a {display:block; height:22px; background:transparent url('#{resource['images:bg_buttn.png']}') repeat-x 0 0; text-align: center; border: 1px solid #CCCFCB; cursor: pointer; float: left; font-family: Arial;font-size: 12px; padding:3px 10px 0px 10px; text-decoration: none; font-weight: bold; }
+#header .default_buttn a {display:block; height:22px; background:transparent url('#{resource['images:bg_buttn.png']}') repeat-x 0 0; text-align: center; border: 1px solid #CCCFCB; cursor: pointer; float: left; font-family: Arial;font-size: 12px; padding:3px 10px 0 10px; text-decoration: none; font-weight: bold; }
 
-.e5ui-error {color: #B80000;padding-top: 14px;}
 
 #first {margin: 0 auto; padding-bottom: 50px; position: relative; width: 410px;}
 #first .head { padding-top: 19px; text-align: center;}
@@ -257,27 +250,6 @@ div.view_header_tab a.selected_tab span span {
     clear:both;
 }
 
-table.e5ui-dataTable thead th p, table.e5ui-dataTable thead tr p
-{
-    position: absolute;
-    top: 1px;
-    margin-top:3px;
-}
-
-div.inner table.e5ui-dataTable thead tr th, div.inner table.e5ui-dataTable thead tr {
-    height: 0;
-    border: 0 solid;
-}
-
-.e5ui-modal #title
-{
-    text-align: left;
-    font-weight: bold;
-    color: #ffffff;
-    height: 20px;
-    background-color:#7AD6B4;
-    padding: 3px 0px 0px 10px;
-}
 
 #files_tbl {
     width:50%;

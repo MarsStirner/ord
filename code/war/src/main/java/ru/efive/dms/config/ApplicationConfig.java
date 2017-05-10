@@ -11,9 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import ru.bars_open.medvtr.ord.cmis.CmisDao;
 import ru.bars_open.medvtr.ord.cmis.CmisSessionFactory;
-import ru.efive.dao.InitializationException;
-import ru.efive.dao.alfresco.AlfrescoDAO;
-import ru.efive.dao.alfresco.Attachment;
 import ru.efive.dms.util.ldap.LDAPImportService;
 import ru.efive.wf.core.MailSettings;
 
@@ -52,24 +49,6 @@ public class ApplicationConfig {
         result.setBaseValue(subCfg.getString("path.base"));
         result.setFiredBaseValue(subCfg.getString("path.fired"));
         log.info("Initialized {}", result);
-        return result;
-    }
-
-
-    @Bean("alfrescoDao")
-    public AlfrescoDAO<Attachment> alfrescoDAO(Config config) throws InitializationException {
-        final Logger log = LoggerFactory.getLogger("ALFRESCO");
-        //  final Config subCfg = config.getConfig("alfresco");
-        //  log.info("Configuration parsed:\n{}", subCfg.root().render(ConfigRenderOptions.defaults().setOriginComments(false).setJson(false)));
-
-        final AlfrescoDAO<Attachment> result = new AlfrescoDAO<>();
-//        result.setLogin(subCfg.getString("login"));
-//        result.setPassword(subCfg.getString("password"));
-//        result.setPath(subCfg.getString("path"));
-//        result.setServerUrl(subCfg.getString("url"));
-//        result.initClass(Attachment.class);
-//        result.connect();
-        log.info("Initialized ALFRESCO. Connect status={}", result);
         return result;
     }
 

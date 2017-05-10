@@ -9,8 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentTreeHolderBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
+
 import ru.entity.model.document.Task;
 import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.util.ApplicationHelper;

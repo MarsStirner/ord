@@ -33,7 +33,6 @@
         <module>entities</module>
         <module>dao</module>
 
-        <module>ui-templates-core</module>
         <module>alfresco</module>
         <module>workflow_core</module>
 

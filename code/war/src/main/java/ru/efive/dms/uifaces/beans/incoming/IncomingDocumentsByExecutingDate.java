@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.efive.uifaces.bean.AbstractDocumentTreeHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentTreeHolderBean;
 import ru.entity.model.document.IncomingDocument;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;

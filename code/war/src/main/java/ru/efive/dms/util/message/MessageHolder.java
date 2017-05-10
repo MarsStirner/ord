@@ -70,7 +70,13 @@ public class MessageHolder {
 
     //Сообщения для документа и holder-бина
     public static final FacesMessage MSG_CANT_CREATE = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на создание нового документа", "");
+
+    public static final FacesMessage MSG_NOT_ALLOW_TO_VIEW = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на просмотр и работу с этим типом документов", "");
+    public static final FacesMessage MSG_NOT_ALLOW_TO_VIEW_ITEM = new FacesMessage(SEVERITY_ERROR, "У вас нет прав на просмотр и работу с этим документом", "");
+
     public static final FacesMessage MSG_CANT_EDIT_WITHOUT_ID = new FacesMessage(SEVERITY_ERROR, "Невозможно проводить редактирование не указав документ", "");
+
+    public static final FacesMessage MSG_UNKNOWN_ACTION = new FacesMessage(SEVERITY_WARN, "Неизвестное действие при открытии документа", ""); ;
     public static final FacesMessage MSG_NO_DOC_ID = new FacesMessage(SEVERITY_ERROR, "Не указан идентификатор документа", "");
     public static final FacesMessage MSG_DOC_ID_CONVERSION_ERROR = new FacesMessage(SEVERITY_ERROR, "Некорректное значение идентифкатора", "");
     public static final FacesMessage MSG_DOCUMENT_IS_DELETED = new FacesMessage(SEVERITY_ERROR, "Запрошенный документ помечен как удаленный", "");
@@ -81,6 +87,7 @@ public class MessageHolder {
 
     // Ошибки валидации
     public static final FacesMessage MSG_REQUIRED_PARAMETER_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Обязательный параметр ''{0}'' не указан", "");
+
 
 
 }

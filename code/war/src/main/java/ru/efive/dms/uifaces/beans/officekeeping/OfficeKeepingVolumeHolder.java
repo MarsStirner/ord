@@ -3,105 +3,38 @@ package ru.efive.dms.uifaces.beans.officekeeping;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.beans.ProcessorModalBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.util.message.MessageUtils;
-import ru.efive.wf.core.ActionResult;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.OfficeKeepingFile;
 import ru.entity.model.document.OfficeKeepingVolume;
 import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.RoleType;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingVolumeDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.*;
-
-import static ru.efive.dms.util.message.MessageHolder.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @ViewScopedController("officeKeepingVolume")
+public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<OfficeKeepingVolume, OfficeKeepingVolumeDao> {
 
-public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<OfficeKeepingVolume> {
-
-    @Autowired
-    @Qualifier("officeKeepingVolumeDao")
-    private OfficeKeepingVolumeDao officeKeepingVolumeDao;
 
     @Autowired
     @Qualifier("officeKeepingFileDao")
     private OfficeKeepingFileDao officeKeepingFileDao;
 
     @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-
-    private ProcessorModalBean processorModal = new ProcessorModalBean() {
-
-        @Override
-        protected void doInit() {
-            setProcessedData(getDocument());
-            if (getDocumentId() == null || getDocumentId() == 0) saveNewDocument();
-        }
-
-        @Override
-        protected void doPostProcess(ActionResult actionResult) {
-            OfficeKeepingVolume document = (OfficeKeepingVolume) actionResult.getProcessedData();
-            HistoryEntry historyEntry = getHistoryEntry();
-            if (document.getDocumentStatus().equals(DocumentStatus.EXTRACT) && document.getCollector() != null) {
-                historyEntry.setCommentary(document.getCollector().getDescriptionShort() + " : на руках до " + (new SimpleDateFormat("dd.MM.yyyy")).format(document.getReturnDate()));
-            }
-            if (getSelectedAction().isHistoryAction()) {
-                Set<HistoryEntry> history = document.getHistory();
-                if (history == null) {
-                    history = new HashSet<>();
-                }
-                history.add(historyEntry);
-                document.setHistory(history);
-            }
-            setDocument(document);
-            OfficeKeepingVolumeHolder.this.save();
-        }
-
-        @Override
-        protected void doProcessException(ActionResult actionResult) {
-            OfficeKeepingVolume document = (OfficeKeepingVolume) actionResult.getProcessedData();
-            String in_result = document.getWFResultDescription();
-
-            if (!in_result.equals("")) {
-                setActionResult(in_result);
-            }
-        }
-    };
-
-    @Override
-    protected boolean deleteDocument() {
-        boolean result = false;
-        try {
-            officeKeepingVolumeDao.delete(getDocument());
-            result = true;
-        } catch (Exception e) {
-            MessageUtils.addMessage(MSG_ERROR_ON_DELETE);
-        }
-        return result;
+    public OfficeKeepingVolumeHolder(@Qualifier("officeKeepingVolumeDao") OfficeKeepingVolumeDao dao, @Qualifier("authData") AuthorizationData authData) {
+        super(dao, authData);
     }
 
     @Override
-    protected void initDocument(Integer id) {
-        setDocument(officeKeepingVolumeDao.get(id));
-
-        if (getDocument() == null) {
-            setDocumentNotFound();
-        }
-    }
-
-    @Override
-    protected void initNewDocument() {
+    protected OfficeKeepingVolume newModel(AuthorizationData authData) {
         OfficeKeepingVolume document = new OfficeKeepingVolume();
 
         String parentId = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("parentId");
@@ -137,62 +70,22 @@ public class OfficeKeepingVolumeHolder extends AbstractDocumentHolderBean<Office
         Set<HistoryEntry> history = new HashSet<>();
         history.add(historyEntry);
         document.setHistory(history);
-
-        setDocument(document);
+        return document;
     }
 
-    @Override
-    protected boolean saveDocument() {
-        boolean result = false;
-        try {
-            OfficeKeepingVolume record = officeKeepingVolumeDao.update(getDocument());
-            if (record == null) {
-                MessageUtils.addMessage(MSG_CANT_SAVE);
-            } else {
-                //setDocument(record);
-                result = true;
-            }
-        } catch (Exception e) {
-            result = false;
-            MessageUtils.addMessage(MSG_ERROR_ON_SAVE);
-            e.printStackTrace();
-        }
-        return result;
-    }
+
 
     @Override
-    public boolean saveNewDocument() {
-        try {
-            OfficeKeepingVolume document = getDocument();
-            OfficeKeepingFile file = document.getParentFile();
-            if (file != null) {
-                OfficeKeepingVolume record = officeKeepingVolumeDao.save(document);
-                if (record == null) {
-                    MessageUtils.addMessage(MSG_CANT_SAVE);
-                } else {
-                    return true;
-                }
-            } else {
-                //TODO add to MSGHolder
-                MessageUtils.addMessage(new FacesMessage(
-                        FacesMessage.SEVERITY_ERROR,
-                        "Невозможно сохранить документ. Необходимо выбрать корректный документ Номенклатуры дел.", ""));
-            }
-        } catch (Exception e) {
-            MessageUtils.addMessage(MSG_ERROR_ON_SAVE_NEW);
-            e.printStackTrace();
+    public boolean beforeCreate(OfficeKeepingVolume document, AuthorizationData authData) {
+        if (document.getParentFile() == null) {
+            //TODO add to MSGHolder
+            MessageUtils.addMessage(new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Невозможно сохранить документ. Необходимо выбрать корректный документ Номенклатуры дел.", ""));
+            return false;
         }
-        return false;
+        return true;
     }
 
-    public List<RoleType> getTypes() {
-        List<RoleType> result = new ArrayList<>();
-        Collections.addAll(result, RoleType.values());
-        return result;
-    }
-
-    public ProcessorModalBean getProcessorModal() {
-        return processorModal;
-    }
 
 }
