@@ -3,15 +3,14 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+>
     <!-- Блок объявления параметров -->
     <!--@elvariable id="allowAttach" type="Boolean"-->
     <!--@elvariable id="allowDelete" type="Boolean"-->
     <!--@elvariable id="documentFolder" type="String"-->
-
-    <c:set var="attachmentList" value="#{cmisDao.getDocuments(documentFolder, authData)}" scope="view"/>
+    <p:panel id="dirtyworkaround" style="display: none">#{viewScope['attachmentList'] = cmisDao.getDocuments(documentFolder, authData)}</p:panel>
     <p:dataTable id="attachmentTable"
-                 value="#{attachmentList}"
+                 value="#{viewScope['attachmentList']}"
                  var="attachment"
                  rowExpandMode="single"
                  emptyMessage="#{ui['attachments.empty']}"
@@ -67,16 +66,13 @@
         </p:rowExpansion>
     </p:dataTable>
     <p:fileUpload id="files" label="Выбрать файл" uploadLabel="Загрузить выбранное" cancelLabel="Отмена" rendered="#{allowAttach}"
-                  fileUploadListener="#{cmisDao.handleFileUpload}" update=":documentForm:msg attachmentTable"
-                  multiple="false" fileLimit="1" fileLimitMessage="Не более 1-го файла за раз, пожалуйста"
-                  mode="advanced" auto="true"
-                  widgetVar="uploadFileWidget"
+                  fileUploadListener="#{cmisDao.handleFileUpload}" update=":documentForm:msg dirtyworkaround attachmentTable"
+                  multiple="false" mode="advanced" auto="true" widgetVar="uploadFileWidget"
                   sizeLimit="104857600" invalidSizeMessage="Размер файла не должен превышать 100 МБ">
         <f:attribute name="documentFolder" value="#{documentFolder}"/>
         <f:attribute name="userId" value="#{authData.authorized.id}"/>
         <f:attribute name="userFullName" value="#{authData.authorized.description}"/>
     </p:fileUpload>
-
 
     <!-- Диалог при загрузке файла -->
     <p:dialog modal="true" widgetVar="statusDialog" header="Загрузка файла" draggable="false" closable="false" resizable="false">

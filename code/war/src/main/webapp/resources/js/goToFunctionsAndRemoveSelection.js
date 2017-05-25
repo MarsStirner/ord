@@ -22,15 +22,16 @@ function goToDocumentByUniqueId(parentId) {
 function goToDocument(docType, id) {
     if (id !== "") {
         if (docType !== "") {
-            if (docType.indexOf('incoming') !== -1) {
+            x = docType.toUpperCase();
+            if (x.indexOf('INCOMING') !== -1) {
                 componentType = 'incoming/document';
-            } else if (docType.indexOf('outgoing') !== -1) {
+            } else if (x.indexOf('OUTGOING') !== -1) {
                 componentType = 'outgoing/document';
-            } else if (docType.indexOf('internal') !== -1) {
+            } else if (x.indexOf('INTERNAL') !== -1) {
                 componentType = 'internal/document';
-            } else if (docType.indexOf('request') !== -1) {
+            } else if (x.indexOf('REQUEST') !== -1) {
                 componentType = 'request/document';
-            } else if (docType.indexOf('task') !== -1) {
+            } else if (x.indexOf('TASK') !== -1) {
                 componentType = 'task/document';
             }
             window.open('/component/' + componentType + '.xhtml?docId=' + id, '_blank');

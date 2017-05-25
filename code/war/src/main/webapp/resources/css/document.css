@@ -32,7 +32,8 @@ div[id*="stickyGroup"] {
 
 .outputText {
     font-size: medium !important;
-    word-break: break-all
+    word-break: break-all;
+    white-space: normal !important;
 }
 
 .inputText {
@@ -53,5 +54,12 @@ div[id*="stickyGroup"] {
 
 td[colspan="5"] {
     padding: 0 !important;
+}
+
+.leafNode {
+}
+
+.parentNode {
+    background-color: #EFEFEF;
 }
 

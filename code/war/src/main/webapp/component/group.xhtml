@@ -23,10 +23,10 @@
         <my:homeButton outcome="/component/groups.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{group.errorState}"/>
         <p:commandButton value="Редактировать" action="#{group.edit}"
-                         rendered="#{group.viewState and group.canEdit}" icon="ui-icon-pencil" update="@form"/>
+                         rendered="#{group.viewState and group.isCanUpdate(authData)}" icon="ui-icon-pencil" update="@form"/>
         <p:commandButton value="Отменить" action="#{group.view}" rendered="#{group.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{group.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{group.delete}" rendered="#{isAdministrator and group.viewState and group.canDelete}"
+        <p:commandButton value="Удалить" action="#{group.delete}" rendered="#{isAdministrator and group.viewState and group.isCanDelete(authData)}"
                          icon="ui-icon-trash" update="@form"/>
     </ui:define>
     <ui:define name="DOCUMENT_HEADER">
@@ -48,9 +48,6 @@
         <p:growl id="msg"/>
     </ui:define>
 
-
-
-
     <ui:define name="DOCUMENT_CONTENT">
         <h:panelGroup rendered="#{group.viewState}">
             <div class="row">
@@ -58,7 +55,7 @@
                     <tr class="row">
                         <td class="first">Категория:</td>
                         <td class="second" colspan="3">
-                            <h:outputText value="#{group.document.groupType.value}" class="wide"/>
+                            <h:outputText value="#{group.document.type.value}" class="wide"/>
                         </td>
                     </tr>
                     <tr class="row">
@@ -68,7 +65,7 @@
                         </td>
                     </tr>
                     <tr class="row">
-                        <td class="first">Алиас:</td>
+                        <td class="first">Код:</td>
                         <td class="second" colspan="3">
                             <h:outputText value="#{group.document.code}" class="wide"/>
                         </td>
@@ -98,7 +95,7 @@
                     <tr class="row">
                         <td class="first">Категория:</td>
                         <td class="second">
-                            <p:selectOneMenu id="groupType" value="#{group.document.groupType}" converter="#{GroupTypeConverter}" style="width:15em;">
+                            <p:selectOneMenu id="type" value="#{group.document.type}" converter="#{GroupTypeConverter}" style="width:15em;">
                             <f:selectItems value="#{refBookHelper.groupTypes}"/>
                         </p:selectOneMenu>
                         </td>

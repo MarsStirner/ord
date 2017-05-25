@@ -23,7 +23,7 @@
         <my:homeButton outcome="/component/contragent/contragents.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{contragent.errorState}"/>
         <p:commandButton value="Редактировать" action="#{contragent.edit}"
-                         rendered="#{contragent.viewState and contragent.canEdit}" icon="ui-icon-pencil" update="@form"/>
+                         rendered="#{contragent.viewState and contragent.isCanUpdate(authData)}" icon="ui-icon-pencil" update="@form"/>
         <p:commandButton value="Отменить" action="#{contragent.view}" rendered="#{contragent.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{contragent.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{contragent.delete}" rendered="#{isAdministrator or isOfficeManager or isRequestManager}"

@@ -62,8 +62,8 @@
                         <f:attribute name="pattern" value="dd.MM.yyyy"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Замещаемый пользователь" sortBy="#{substitution_entry.person}" field="person.lastName">
-                    <h:outputText value="#{substitution_entry.person.description}"/>
+                <p:column headerText="Замещаемый пользователь" sortBy="#{substitution_entry.user}" field="user.lastName">
+                    <h:outputText value="#{substitution_entry.user.description}"/>
                 </p:column>
                 <p:column headerText="Заместитель" sortBy="#{substitution_entry.substitution}" field="substitution.lastName">
                     <h:outputText value="#{substitution_entry.substitution.description}"/>

@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -25,38 +24,23 @@
         <c:set var="status_Executed" value="#{statusId eq 90}" scope="view"/>
         <c:set var="status_InArchive" value="#{statusId eq 100}" scope="view"/>
         <!-- Редактируемость полей (true - редактируемо, иначе только для просмотра) -->
-        <c:set var="editable_ShortDescription"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'shortDescription')}"
-               scope="view"/>
+        <c:set var="editable_ShortDescription" scope="view" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'shortDescription')}"/>
         <!-- Поле 'Вид документа' -->
-        <c:set var="editable_DocumentForm"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'form')}" scope="view"/>
+        <c:set var="editable_DocumentForm" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'form')}" scope="view"/>
         <!-- Поле 'Руководитель' -->
-        <c:set var="editable_Controller"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'controller')}"
-               scope="view"/>
+        <c:set var="editable_Controller" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'controller')}" scope="view"/>
         <!-- Поле 'Корреспондент' -->
-        <c:set var="editable_Contragent"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'contragent')}"
-               scope="view"/>
+        <c:set var="editable_Contragent" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'contragent')}" scope="view"/>
         <!-- Поле 'Исполнители' -->
-        <c:set var="editable_Executor"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'executor')}" scope="view"/>
+        <c:set var="editable_Executor" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'executor')}" scope="view"/>
         <!-- Поле 'Дата подписания'  -->
-        <c:set var="editable_SignDate"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'signDate')}" scope="view"/>
+        <c:set var="editable_SignDate" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'signDate')}" scope="view"/>
         <!-- Поле 'Документ-основание'  -->
-        <c:set var="editable_reasonDocument"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'reasonDocument')}"
-               scope="view"/>
+        <c:set var="editable_reasonDocument" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'reasonDocument')}" scope="view"/>
         <!-- Поле 'Доступ-редакторы'  -->
-        <c:set var="editable_AccessTabEditors"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'accessEditors')}"
-               scope="view"/>
+        <c:set var="editable_AccessTabEditors" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'accessEditors')}" scope="view"/>
         <!-- Поле 'Доступ-Читатели'  -->
-        <c:set var="editable_AccessTabReaders"
-               value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'accessReaders')}"
-               scope="view"/>
+        <c:set var="editable_AccessTabReaders" value="#{stateEditable and editableMatrix.outgoing.isFieldEditable(statusId, 'accessReaders')}" scope="view"/>
         <!-- Конец блока переменных -->
     </ui:define>
 
@@ -65,12 +49,9 @@
         <h:outputText value="Ошибка" rendered="#{out_doc.errorState}"/>
         <p:commandButton value="Редактировать" action="#{out_doc.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{out_doc.viewState and out_doc.editPermission and editableMatrix.outgoing.isStateEditable(statusId)}"/>
-        <p:commandButton value="Отменить" action="#{out_doc.view}" rendered="#{out_doc.editState}" icon="ui-icon-cancel"
-                         update="@form"/>
-        <p:commandButton value="Сохранить" action="#{out_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk"
-                         update="@form"/>
-        <p:commandButton value="Удалить" action="#{out_doc.delete}" rendered="#{out_doc.editState}" icon="ui-icon-trash"
-                         update="@form"/>
+        <p:commandButton value="Отменить" action="#{out_doc.view}" rendered="#{out_doc.editState}" icon="ui-icon-cancel" update="@form"/>
+        <p:commandButton value="Сохранить" action="#{out_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
+        <p:commandButton value="Удалить" action="#{out_doc.delete}" rendered="#{out_doc.editState}" icon="ui-icon-trash" update="@form"/>
         <p:commandButton value="Действия" action="#{outgoingWorkflow.init(out_doc.document)}" rendered="#{out_doc.viewState and out_doc.executePermission}"
                          icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
 
@@ -79,33 +60,27 @@
 
     <ui:define name="DOCUMENT_HEADER">
         <p:messages id="errorMessages" for="error" rendered="#{out_doc.errorState}"/>
-        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not out_doc.errorState}"
-                      style="font-weight: bold; display:inline-block; width:85%;">
+        <h:panelGroup layout="block" id="documentHeaderDiv" rendered="#{not out_doc.errorState}" style="font-weight: bold; display:inline-block; width:85%;">
             Исходящий документ
             <h:outputText value="#{out_doc.document.form.value}"/>
-            <h:outputText value=" № #{out_doc.document.registrationNumber} от "
-                          rendered="#{out_doc.editState or out_doc.viewState}"/>
-            <h:outputText value="#{out_doc.document.registrationDate}"
-                          rendered="#{out_doc.editState or out_doc.viewState}">
+            <h:outputText value=" № #{out_doc.document.registrationNumber} от " rendered="#{out_doc.editState or out_doc.viewState}"/>
+            <h:outputText value="#{out_doc.document.registrationDate}" rendered="#{out_doc.editState or out_doc.viewState}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="dd.MM.yyyy"/>
             </h:outputText>
             <div style="float: right; padding-right:1.5em;">
-                <h:outputText id="v_author" value="Зарегистрировал: #{out_doc.document.author.description}"
-                              styleClass="outputText"/>
+                <h:outputText id="v_author" value="Зарегистрировал: #{out_doc.document.author.description}" styleClass="outputText"/>
             </div>
         </h:panelGroup>
         <h:panelGroup layout="block" id="documentStatusDiv" rendered="#{not out_doc.errorState}"
-                      style="display: inline-block; text-align: right; padding: 0.4em;
-                            background-color: rgb(60,141,188); border-radius: 4px; color: white;">
+                      style="display: inline-block; text-align: right; padding: 0.4em; background-color: rgb(60,141,188); border-radius: 4px; color: white;">
             <h:outputText value="#{out_doc.document.getDocumentStatus().getName()}"/>
         </h:panelGroup>
     </ui:define>
 
 
     <ui:define name="DOCUMENT_CONTENT">
-        <p:tabView id="documentTabPanel" widgetVar="outgoingDocumentTabViewVar" effect="fade" effectDuration="fast"
-                   rendered="#{not out_doc.errorState}">
+        <p:tabView id="documentTabPanel" widgetVar="outgoingDocumentTabViewVar" effect="fade" effectDuration="fast" rendered="#{not out_doc.errorState}">
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%;">
                     <p:row styleClass="ui-grid-row">
@@ -113,11 +88,9 @@
                             <p:outputLabel for="e_documentForm" value="Вид документа:"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputText id="v_documentForm" value="#{out_doc.document.form.value}"
-                                          styleClass="outputText"
+                            <h:outputText id="v_documentForm" value="#{out_doc.document.form.value}" styleClass="outputText"
                                           rendered="#{not editable_DocumentForm}"/>
-                            <p:selectOneMenu id="e_documentForm" value="#{out_doc.document.form}"
-                                             converter="#{OutgoingDocumentFormConverter}"
+                            <p:selectOneMenu id="e_documentForm" value="#{out_doc.document.form}" converter="#{OutgoingDocumentFormConverter}"
                                              required="true" styleClass="inputText" rendered="#{editable_DocumentForm}">
                                 <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('OUTGOING')}"/>
                             </p:selectOneMenu>
@@ -128,8 +101,7 @@
                             <p:outputLabel for="v_reasonDocument" value="Документ-основание:" rendered="#{not editable_reasonDocument}"/>
                             <p:commandButton actionListener="#{out_doc.chooseReasonDocument}" value="Документ-основание"
                                              styleClass="dialogButton" rendered="#{editable_reasonDocument}">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onReasonDocumentChosen}"
-                                        update="v_reasonDocument"/>
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onReasonDocumentChosen}" update="v_reasonDocument"/>
                             </p:commandButton>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
@@ -143,61 +115,49 @@
                             <p:outputLabel for="e_signDate" value="Дата подписания:"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputText id="v_signDate" value="#{out_doc.document.signatureDate}" lang="ru"
-                                          styleClass="outputText"
+                            <h:outputText id="v_signDate" value="#{out_doc.document.signatureDate}" lang="ru" styleClass="outputText"
                                           rendered="#{not editable_SignDate}">
                                 <f:converter converterId="LocalDateTimeConverter"/>
                                 <f:attribute name="pattern" value="dd.MM.yyyy"/>
                             </h:outputText>
                             <p:calendar id="e_signDate" value="#{out_doc.document.signatureDate}" lang="ru" locale="ru"
-                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText"
-                                        rendered="#{editable_SignDate}">
+                                        pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_SignDate}">
                                 <f:converter converterId="LocalDateTimeConverter"/>
                             </p:calendar>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="v_controller" value="Руководитель:"
-                                           rendered="#{not editable_Controller}"/>
-                            <p:commandButton value="Руководитель" actionListener="#{out_doc.chooseController}"
-                                             rendered="#{editable_Controller}"
+                            <p:outputLabel for="v_controller" value="Руководитель:" rendered="#{not editable_Controller}"/>
+                            <p:commandButton value="Руководитель" actionListener="#{out_doc.chooseController}" rendered="#{editable_Controller}"
                                              styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onControllerChosen}"
-                                        update="v_controller"/>
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onControllerChosen}" update="v_controller"/>
                             </p:commandButton>
                         </p:column>
                         <p:column styleClass="ui-grid-col-4">
-                            <h:outputText id="v_controller" value="#{out_doc.document.controller.description}"
-                                          styleClass="outputText"/>
+                            <h:outputText id="v_controller" value="#{out_doc.document.controller.description}" styleClass="outputText"/>
                         </p:column>
                         <p:column styleClass="ui-grid-col-2">
                             <p:outputLabel for="v_executor" value="Исполнитель:" rendered="#{not editable_Executor}"/>
-                            <p:commandButton value="Исполнитель" actionListener="#{out_doc.chooseExecutor}"
-                                             rendered="#{editable_Executor}"
+                            <p:commandButton value="Исполнитель" actionListener="#{out_doc.chooseExecutor}" rendered="#{editable_Executor}"
                                              styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onExecutorChosen}"
-                                        update="v_executor"/>
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onExecutorChosen}" update="v_executor"/>
                             </p:commandButton>
                         </p:column>
                         <p:column styleClass="ui-grid-col-4">
-                            <h:outputText id="v_executor" value="#{out_doc.document.executor.description}"
-                                          styleClass="outputText"/>
+                            <h:outputText id="v_executor" value="#{out_doc.document.executor.description}" styleClass="outputText"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-2">
-                            <p:outputLabel for="v_contragent" value="Корреспондент-адресат:"
-                                           rendered="#{not editable_Contragent}"/>
-                            <p:commandButton value="Корреспондент-адресат" actionListener="#{out_doc.chooseContragent}"
-                                             styleClass="dialogButton" rendered="#{editable_Contragent}">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onContragentChosen}"
-                                        update="v_contragent"/>
+                            <p:outputLabel for="v_contragent" value="Корреспондент-адресат:" rendered="#{not editable_Contragent}"/>
+                            <p:commandButton value="Корреспондент-адресат" actionListener="#{out_doc.chooseContragent}" styleClass="dialogButton"
+                                             rendered="#{editable_Contragent}">
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onContragentChosen}" update="v_contragent"/>
                             </p:commandButton>
                         </p:column>
                         <p:column styleClass="ui-grid-col-10" colspan="3">
-                            <h:outputText id="v_contragent" value="#{out_doc.document.contragent.value}"
-                                          styleClass="outputText"/>
+                            <h:outputText id="v_contragent" value="#{out_doc.document.contragent.value}" styleClass="outputText"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -220,26 +180,21 @@
                             <p:outputLabel for="e_docAccessLevel" value="Уровень допуска:"/>
                         </p:column>
                         <p:column styleClass="ui-grid-col-9">
-                            <h:outputText id="v_docAccessLevel" value="#{out_doc.document.userAccessLevel.value}"
-                                          rendered="#{out_doc.viewState}"
+                            <h:outputText id="v_docAccessLevel" value="#{out_doc.document.userAccessLevel.value}" rendered="#{out_doc.viewState}"
                                           styleClass="outputText"/>
-                            <p:selectOneMenu id="e_docAccessLevel" value="#{out_doc.document.userAccessLevel}"
-                                             converter="#{UserAccessLevelConverter}" rendered="#{stateEditable}">
-                                <f:selectItems var="level"
-                                               value="#{refBookHelper.getUserAccessLevelsGreaterOrEqualMaxValue(authData.currentAccessLevel.level)}"
+                            <p:selectOneMenu id="e_docAccessLevel" value="#{out_doc.document.userAccessLevel}" converter="#{UserAccessLevelConverter}"
+                                             rendered="#{stateEditable}">
+                                <f:selectItems var="level" value="#{refBookHelper.getUserAccessLevelsGreaterOrEqualMaxValue(authData.currentAccessLevel.level)}"
                                                itemLabel="#{level.value}"/>
                             </p:selectOneMenu>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_person_readers" value="Пользователи-читатели:"
-                                           rendered="#{not editable_AccessTabReaders}"/>
-                            <p:commandButton value="Пользователи-читатели"
-                                             actionListener="#{out_doc.choosePersonReaders}"
+                            <p:outputLabel for="v_person_readers" value="Пользователи-читатели:" rendered="#{not editable_AccessTabReaders}"/>
+                            <p:commandButton value="Пользователи-читатели" actionListener="#{out_doc.choosePersonReaders}"
                                              rendered="#{editable_AccessTabReaders}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onPersonReadersChosen}"
-                                        update="v_person_readers"/>
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onPersonReadersChosen}" update="v_person_readers"/>
                             </p:commandButton>
                         </p:column>
                         <p:column styleClass="ui-grid-col-9">
@@ -252,13 +207,10 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_person_editors" value="Пользователи-редакторы:"
-                                           rendered="#{not editable_AccessTabEditors}"/>
-                            <p:commandButton value="Пользователи-редакторы"
-                                             actionListener="#{out_doc.choosePersonEditors}"
+                            <p:outputLabel for="v_person_editors" value="Пользователи-редакторы:" rendered="#{not editable_AccessTabEditors}"/>
+                            <p:commandButton value="Пользователи-редакторы" actionListener="#{out_doc.choosePersonEditors}"
                                              rendered="#{editable_AccessTabEditors}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onPersonEditorsChosen}"
-                                        update="v_person_editors"/>
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onPersonEditorsChosen}" update="v_person_editors"/>
                             </p:commandButton>
                         </p:column>
                         <p:column styleClass="ui-grid-col-9">
@@ -271,12 +223,10 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_role_readers" value="Роли-читатели:"
-                                           rendered="#{not editable_AccessTabReaders}"/>
-                            <p:commandButton value="Роли-читатели" actionListener="#{out_doc.chooseRoleReaders}"
-                                             rendered="#{editable_AccessTabReaders}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onRoleReadersChosen}"
-                                        update="v_role_readers"/>
+                            <p:outputLabel for="v_role_readers" value="Роли-читатели:" rendered="#{not editable_AccessTabReaders}"/>
+                            <p:commandButton value="Роли-читатели" actionListener="#{out_doc.chooseRoleReaders}" rendered="#{editable_AccessTabReaders}"
+                                             styleClass="dialogButton">
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onRoleReadersChosen}" update="v_role_readers"/>
                             </p:commandButton>
                         </p:column>
                         <p:column styleClass="ui-grid-col-9">
@@ -289,12 +239,10 @@
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_role_editors" value="Роли-редакторы:"
-                                           rendered="#{not editable_AccessTabEditors}"/>
+                            <p:outputLabel for="v_role_editors" value="Роли-редакторы:" rendered="#{not editable_AccessTabEditors}"/>
                             <p:commandButton value="Роли-редакторы" actionListener="#{out_doc.chooseRoleEditors}"
                                              rendered="#{editable_AccessTabEditors}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{out_doc.onRoleEditorsChosen}"
-                                        update="v_role_editors"/>
+                                <p:ajax event="dialogReturn" listener="#{out_doc.onRoleEditorsChosen}" update="v_role_editors"/>
                             </p:commandButton>
                         </p:column>
                         <p:column styleClass="ui-grid-col-9">
@@ -310,13 +258,15 @@
             <p:tab id="tab_history" title="История">
                 <my:historyTable id="historyTable" value="#{out_doc.document.historyList}"/>
             </p:tab>
-            <p:tab id="tab_files" title="Файлы" rendered="#{not out_doc.createState}">
-                <ui:include src="/jsf-template/fileManagement.xhtml">
-                    <ui:param name="documentFolder" value="#{out_doc.document.uniqueId}"/>
-                    <ui:param name="allowDelete" value="#{statusId lt 90 and out_doc.editPermission}"/>
-                    <ui:param name="allowAttach" value="#{out_doc.editPermission}"/>
-                </ui:include>
-            </p:tab>
+            <c:if test="#{not out_doc.createState}">
+                <p:tab id="tab_files" title="Файлы">
+                    <ui:include src="/jsf-template/fileManagement.xhtml">
+                        <ui:param name="documentFolder" value="#{out_doc.document.uniqueId}"/>
+                        <ui:param name="allowDelete" value="#{statusId lt 90 and out_doc.editPermission}"/>
+                        <ui:param name="allowAttach" value="#{out_doc.editPermission}"/>
+                    </ui:include>
+                </p:tab>
+            </c:if>
         </p:tabView>
     </ui:define>
 

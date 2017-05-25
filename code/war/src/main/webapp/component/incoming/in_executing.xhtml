@@ -57,13 +57,11 @@
             <p:button value="Новый документ" outcome="#{ui['document.incoming.page.link']}" target="_blank" icon="ui-icon-plusthick">
                 <f:param name="docAction" value="create"/>
             </p:button>
-            <p:commandButton action="#{in_documents_by_executing_date.refresh}" value="Обновить" update="documentTable" onsuccess="addRowHandlers();"
-                             icon="ui-icon-refresh" ajax="true"/>
+            <p:commandButton action="#{in_documents_by_executing_date.refresh}" value="Обновить" update="documentTable" icon="ui-icon-refresh" ajax="true"/>
             <p:commandButton value="Свернуть" action="#{in_documents_by_executing_date.collapseAll}" icon="ui-icon-minusthick" update="documentTable"/>
             <p:commandButton value="Развернуть" action="#{in_documents_by_executing_date.expandAll}" icon="ui-icon-plusthick" update="documentTable"/>
             <p:commandButton value="#{in_documents_by_executing_date.showExpiredFlag ? 'Показать все':'Показать только просроченные'}"
                              action="#{in_documents_by_executing_date.changeExpiredFlag}" update=" @this documentTable viewTitleText"/>
-
         </p:toolbarGroup>
         <p:toolbarGroup align="right">
             <p:inputText id="filterString" value="#{in_documents_by_executing_date.filter}" title="Поиск"
@@ -77,15 +75,12 @@
     </ui:define>
 
     <ui:define name="CONTENT.TABLE">
-        <p:treeTable id="documentTable"
-                     value="#{in_documents_by_executing_date.root}"
-                     var="node"
+        <p:treeTable id="documentTable"  widgetVar="treeTableVar"
+                     value="#{in_documents_by_executing_date.root}" var="node"
                      style="width:100%; overflow-x:hidden;"
                      emptyMessage="#{ui['document.incoming.list.emptyMessage']}"
-                     widgetVar="treeTableVar"
                      selectionMode="single"
-                     rowStyleClass="#{node.document.styleClass}"
-        >
+                     rowStyleClass="#{node.document.styleClass}">
             <p:column headerText="Срок исполнения">
                 <h:outputText value="#{node.header}"/>
             </p:column>
@@ -112,25 +107,8 @@
             <p:column style="display:none;">
                 <input type="hidden" value="#{node.document.id}"/>
             </p:column>
-            <p:ajax event="select" oncomplete="addRowHandlers()"/>
+            <p:ajax event="select" oncomplete="goToIncoming(PrimeFaces.widgets.taskTableVar.cursorNode.children()[7].textContent)"/>
         </p:treeTable>
-        <script type="text/javascript">
-            function addRowHandlers() {
-                console.log("refresh treetable row onclick handlers");
-                var table_tree = document.getElementById(PrimeFaces.widgets.treeTableVar.id);
-                var rows = table_tree.getElementsByClassName("document");
-                for (var i = 0; i &lt; rows.length; i++) {
-                    var currentRow = rows[i];
-                    var createClickHandler = function (row) {
-                        return function () {
-                            goToIncomingDocument(row.lastChild.lastChild.value);
-                        };
-                    };
-                    document.getElementById(currentRow.id).className = document.getElementById(currentRow.id).className.replace('ui-state-highlight', '');
-                    currentRow.onclick = createClickHandler(currentRow);
-                }
-            }
-        </script>
     </ui:define>
 </ui:composition>
 </html>

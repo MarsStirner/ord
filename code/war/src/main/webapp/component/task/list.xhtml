@@ -14,8 +14,9 @@
     <ui:define name="HEAD.TITLE">Все виды поручений по номеру</ui:define>
     <ui:define name="CONTENT.VIEWTITLE">Все виды поручений по номеру</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Номер" style="width:9em;" sortBy="#{row.taskNumber}" field="taskNumber">
-            <h:outputText value="#{row.taskNumber}"/>
+        <!--@elvariable id="row" type="ru.entity.model.document.Task"-->
+        <p:column headerText="Номер" style="width:9em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
+            <h:outputText value="#{row.registrationNumber}"/>
         </p:column>
         <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field="creationDate">
             <h:outputText value="#{row.creationDate}">
@@ -38,7 +39,7 @@
             </h:outputText>
         </p:column>
         <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
-            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+            <h:outputText value="#{row.documentStatus.name}"/>
         </p:column>
         <p:column headerText="Краткое содержание">
             <h:outputText value="#{row.shortDescription}"/>

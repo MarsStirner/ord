@@ -6,12 +6,14 @@
               xmlns:h="http://java.sun.com/jsf/html">
 
     <cc:interface>
-        <cc:attribute name="id"/>
         <cc:attribute name="value"/>
     </cc:interface>
 
     <cc:implementation>
-        <p:dataTable id="#{cc.attrs.id}" value="#{cc.attrs.value}" var="history_entry" style="width:100%;" emptyMessage="У документа нет записей в истории">
+        <p:dataTable id="history_table"
+                     value="#{cc.attrs.value}"
+                     var="history_entry" style="width:100%;"
+                     emptyMessage="У документа нет записей в истории">
             <p:column headerText="Дата" styleClass="outputText">
                 <h:outputText value="#{history_entry.startDate}">
                     <f:converter  converterId="LocalDateTimeConverter"/>

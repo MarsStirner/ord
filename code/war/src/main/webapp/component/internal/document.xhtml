@@ -62,7 +62,8 @@
         <p:commandButton value="Отменить" action="#{internal_doc.view}" rendered="#{internal_doc.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{internal_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{internal_doc.delete}" rendered="#{internal_doc.editState}" icon="ui-icon-trash" update="@form"/>
-        <p:commandButton value="Действия" action="#{internalWorkflow.init(internal_doc.document)}" rendered="#{internal_doc.viewState and internal_doc.executePermission}"
+        <p:commandButton value="Действия" action="#{internalWorkflow.init(internal_doc.document)}"
+                         rendered="#{internal_doc.viewState and internal_doc.executePermission}"
                          icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
     </ui:define>
 
@@ -119,7 +120,7 @@
                             </h:outputText>
                             <p:calendar id="e_signDate" value="#{internal_doc.document.signatureDate}" lang="ru" locale="ru"
                                         pattern="dd.MM.yyyy" showOn="both" styleClass="inputText" rendered="#{editable_SignDate}">
-                            <f:converter converterId="LocalDateConverter"/>
+                                <f:converter converterId="LocalDateConverter"/>
                             </p:calendar>
                         </p:column>
                         <p:column styleClass="ui-grid-col-3">
@@ -206,62 +207,8 @@
                 </p:panelGrid>
             </p:tab>
             <p:tab id="tab_task" title="Движение документа">
-                <p:treeTable id="task_table"
-                             value="#{internal_doc.taskTreeHolder.root}"
-                             var="row_task"
-                             selectionMode="single"
-                             emptyMessage="Записей нет"
-                             widgetVar="taskTableVar">
-                    <p:column headerText="Дата создания" style="width:7em;" styleClass="outputText">
-                        <h:outputText value="#{row_task.creationDate}">
-                            <f:converter converterId="LocalDateTimeConverter"/>
-                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Номер" style="width:7em;" styleClass="outputText">
-                        <h:outputText value="#{row_task.taskNumber}"/>
-                    </p:column>
-                    <p:column headerText="Автор" style="width:9em; white-space: normal;" styleClass="outputText">
-                        <h:outputText value="#{row_task.author.getDescription()}"/>
-                    </p:column>
-                    <p:column headerText="Исполнитель" style="width:9em; white-space: normal;" styleClass="outputText">
-                        <ui:repeat value="#{row_task.executorsList}" var="executor">
-                            <h:outputText value="#{executor.description}"/><br/>
-                        </ui:repeat>
-                    </p:column>
-                    <p:column headerText="Срок исполнения" style="width:9em;" styleClass="outputText">
-                        <h:outputText value="#{row_task.controlDate}">
-                            <f:converter converterId="LocalDateTimeConverter"/>
-                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Содержание" style="width:100%; white-space: normal;" styleClass="outputText">
-                        <h:outputText value="#{row_task.shortDescription}"/>
-                    </p:column>
-                    <p:column headerText="Статус" style="width:7em;" styleClass="outputText">
-                        <h:outputText value="#{row_task.getDocumentStatus().getName()}"/>
-                    </p:column>
-                    <p:column style="display:none;">
-                        <input type="hidden" value="#{row_task.id}"/>
-                    </p:column>
-                    <p:ajax event="expand" oncomplete="addRowHandlers()"/>
-                </p:treeTable>
-                <script type="text/javascript">
-                    $(window).load(function () {
-                        PrimeFaces.widgets.taskTableVar._render = function () {
-                            if (this.cfg.scrollable) {
-                                this.setupScrolling()
-                            }
-                            if (this.cfg.resizableColumns) {
-                                this.setupResizableColumns()
-                            }
-                            this.bindEvents();
-                            addRowHandlers();
-                        }
-                    });
-                </script>
-                <p:toolbar id="taskToolBar">
-                    <p:toolbarGroup>
+                <my:taskTreeTable id="taskTable" documentId="#{internal_doc.document.uniqueId}">
+                    <f:facet name="additionalButtons">
                         <p:button value="Новая резолюция" id="task_add_resolution_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_Registered}">
                             <f:param name="docAction" value="create"/>
@@ -274,14 +221,8 @@
                             <f:param name="rootDocumentId" value="#{internal_doc.document.uniqueId}"/>
                             <f:param name="formId" value="TASK_ASSIGMENT"/>
                         </p:button>
-                        <p:commandButton value="Обновить" id="task_refresh_btn" action="#{internal_doc.taskTreeHolder.refresh}"
-                                         update="task_table" icon="ui-icon-refresh"/>
-                        <p:commandButton value="Свернуть все" id="task_collapse_btn" action="#{internal_doc.taskTreeHolder.collapseAll}"
-                                         update="task_table" icon="ui-icon-carat-1-w"/>
-                        <p:commandButton value="Развернуть все" id="task_expand_btn" action="#{internal_doc.taskTreeHolder.expandAll}"
-                                         update="task_table" icon="ui-icon-carat-1-e"/>
-                    </p:toolbarGroup>
-                </p:toolbar>
+                    </f:facet>
+                </my:taskTreeTable>
             </p:tab>
             <p:tab id="tab_access" title="Доступ">
                 <p:panelGrid style="width:100%">
@@ -369,13 +310,15 @@
             <p:tab id="tab_history" title="История">
                 <my:historyTable id="historyTable" value="#{internal_doc.document.historyList}"/>
             </p:tab>
-            <p:tab id="tab_files" title="Файлы" rendered="#{not internal_doc.createState}">
-                <ui:include src="/jsf-template/fileManagement.xhtml">
-                    <ui:param name="documentFolder" value="#{internal_doc.document.uniqueId}"/>
-                    <ui:param name="allowDelete" value="#{statusId lt 90 and internal_doc.editPermission}"/>
-                    <ui:param name="allowAttach" value="#{internal_doc.editPermission}"/>
-                </ui:include>
-            </p:tab>
+            <c:if test="#{not internal_doc.createState}">
+                <p:tab id="tab_files" title="Файлы">
+                    <ui:include src="/jsf-template/fileManagement.xhtml">
+                        <ui:param name="documentFolder" value="#{internal_doc.document.uniqueId}"/>
+                        <ui:param name="allowDelete" value="#{statusId lt 90 and internal_doc.editPermission}"/>
+                        <ui:param name="allowAttach" value="#{internal_doc.editPermission}"/>
+                    </ui:include>
+                </p:tab>
+            </c:if>
         </p:tabView>
     </ui:define>
 
@@ -383,24 +326,6 @@
         <p:growl id="msg"/>
         <!-- Сообщения о фактах просмотра-->
         <p:growl id="viewFactMessage" for="viewFact"/>
-        <!-- Жаваскрипт для этой страницы-->
-        <script type="text/javascript">
-            function addRowHandlers() {
-                console.log("refresh treetable row onclick handlers");
-                var table_tree = document.getElementById(PrimeFaces.widgets.taskTableVar.id);
-                var rows = table_tree.getElementsByClassName("task");
-                for (var i = 0; i &lt; rows.length; i++) {
-                    var currentRow = rows[i];
-                    var createClickHandler = function (row) {
-                        return function () {
-                            row.className.replace('ui-state-highlight', '');
-                            goToTask(row.lastChild.lastChild.value);
-                        };
-                    };
-                    currentRow.ondblclick = createClickHandler(currentRow);
-                }
-            }
-        </script>
         <!-- Диалог работы с действиями -->
         <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
                   closeOnEscape="true" fitViewport="true">
