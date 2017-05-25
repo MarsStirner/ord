@@ -1,0 +1,18 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS"
+                   logicalFilePath="serbsky/rb_document_form.xml">
+<changeSet id="serbsky/user/data" author="e.upatov" context="SERBSKY">
+    <comment>Дополнение справочника (специфично): Виды документов</comment>
+    <sql dbms="mysql">
+        SET @currentUserAccessLevel=(SELECT id FROM rbUserAccessLevel WHERE level = 1);
+        SET @maxUserAccessLevel=(SELECT id FROM rbUserAccessLevel WHERE level = 5);
+    </sql>
+    <loadData tableName="user" file="data/user.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'">
+        <column name="currentUserAccessLevel_id" type="COMPUTED"/>
+        <column name="maxUserAccessLevel_id" type="COMPUTED"/>
+    </loadData>
+    <sql>UPDATE user SET password = MD5(login) WHERE password IS NULL;</sql>
+</changeSet>
+</databaseChangeLog>

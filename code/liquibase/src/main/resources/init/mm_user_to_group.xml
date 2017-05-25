@@ -1,0 +1,25 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/mm_user_to_group.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/mm_user_to_group" author="e.upatov">
+        <comment>Таблица-связка: пользователи и группы</comment>
+        <createTable tableName="mmUserToGroup" remarks="Таблица-связка: пользователи и группы">
+            <column name="user_id" type="INT(10)" remarks="Ссылка на пользователя (член заданной группы)">
+                <constraints nullable="false" foreignKeyName="FK_mmusertogroup__user__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column name="group_id" type="INT(10)" remarks="Ссылка на группу">
+                <constraints nullable="false" foreignKeyName="FK_mmusertogroup__group__group" referencedTableName="groups" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="init/mm_user_to_group/primary_key" author="e.upatov">
+        <comment>Уникальный ключ для: Таблицы-связки пользователей и групп</comment>
+        <addPrimaryKey columnNames="group_id, user_id" constraintName="PRIMARY" tableName="mmUserToGroup"/>
+    </changeSet>
+</databaseChangeLog>

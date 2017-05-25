@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <!-- CHANGESET ID PREFIX = "init/{description}" -->
+    <include file="rb_contragent_type.xml" relativeToChangelogFile="true"/>
+    <include file="rb_contragent.xml" relativeToChangelogFile="true"/>
+    <include file="rb_user_access_level.xml" relativeToChangelogFile="true"/>
+    <include file="rb_nomenclature.xml" relativeToChangelogFile="true"/>
+    <include file="rb_department.xml" relativeToChangelogFile="true"/>
+    <include file="rb_position.xml" relativeToChangelogFile="true"/>
+    <include file="rb_document_type.xml" relativeToChangelogFile="true"/>
+    <include file="rb_document_form.xml" relativeToChangelogFile="true"/>
+    <include file="rb_delivery_type.xml" relativeToChangelogFile="true"/>
+    <include file="rb_group_type.xml" relativeToChangelogFile="true"/>
+    <include file="rb_role.xml" relativeToChangelogFile="true"/>
+    <include file="rb_sender_type.xml" relativeToChangelogFile="true"/>
+    <include file="rb_region.xml" relativeToChangelogFile="true"/>
+    <include file="rb_contact_point_system.xml" relativeToChangelogFile="true"/>
+    <include file="rb_document_type_field.xml" relativeToChangelogFile="true"/>
+    <include file="user.xml" relativeToChangelogFile="true"/>
+    <include file="groups.xml" relativeToChangelogFile="true"/>
+    <include file="mm_user_to_group.xml" relativeToChangelogFile="true"/>
+    <include file="mm_user_to_role.xml" relativeToChangelogFile="true"/>
+    <include file="user_substitutions.xml" relativeToChangelogFile="true"/>
+    <include file="util_editable_field_matrix.xml" relativeToChangelogFile="true"/>
+    <include file="contact_point.xml" relativeToChangelogFile="true"/>
+    <!--Историчность-->
+    <include file="wf_history.xml" relativeToChangelogFile="true"/>
+
+    <include file="office_keeping_file.xml" relativeToChangelogFile="true"/>
+    <include file="office_keeping_volume.xml" relativeToChangelogFile="true"/>
+    <!--Типы документов-->
+    <include file="incoming_document.xml" relativeToChangelogFile="true"/>
+    <include file="internal_document.xml" relativeToChangelogFile="true"/>
+    <include file="outgoing_document.xml" relativeToChangelogFile="true"/>
+    <include file="request_document.xml" relativeToChangelogFile="true"/>
+    <include file="task.xml" relativeToChangelogFile="true"/>
+    <!--Вьюхи для отчетов-->
+
+    <!--Отчеты-->
+    <include file="report.xml" relativeToChangelogFile="true"/>
+    <include file="report_parameter.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>

@@ -1,0 +1,32 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/user_substitutions.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/user_substitutions" author="e.upatov">
+        <comment>Замещения пользователей</comment>
+        <createTable tableName="user_substitutions" remarks="Замещения пользователей">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="deleted" remarks="Флаг удаления" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="startDate" remarks="Дата начала действия замещения" type="date"/>
+            <column name="endDate" remarks="Дата окончания действия замещения" type="date"/>
+            <column name="user_id" remarks="Пользователь, которого замещают (замещаемый)" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_user_substitutions__user__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column name="substitution_id" remarks="Пользователь, который замещает (заместитель)" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_user_substitutions__substitution__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column defaultValueNumeric="1" name="type" remarks="Тип замещения" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,38 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/report_parameter.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/report_parameter" author="e.upatov">
+        <comment>Настраиваемый справочник: Параметры отчетов</comment>
+        <createTable tableName="report_parameter" remarks="Настраиваемый справочник: Параметры отчетов">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="report_id" remarks="Ссылка на использующий отчет" type="INT">
+                <constraints nullable="false" foreignKeyName="FK_report_parameter__report"
+                             referencedTableName="report" referencedColumnNames="id" deleteCascade="true"/>
+            </column>
+            <column name="name" remarks="Имя параметра в отчете" type="VARCHAR(64)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="required" remarks="Признак обязательности" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="label" remarks="Название параметра" type="VARCHAR(50)"/>
+            <column defaultValueNumeric="50" name="sort" remarks="Сортировка при отрисовке" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="template" remarks="Шаблон отрисовки" type="VARCHAR(64)"/>
+            <column name="settings" remarks="Свойства для отрисовки" type="JSON"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="init/report_parameter/unique_index" author="e.upatov">
+        <comment>Уникальный индекс для: Параметры отчетов</comment>
+        <addUniqueConstraint  constraintName="UQ_report_paramter__report__name" tableName="report_parameter" columnNames="report_id, name"/>
+    </changeSet>
+</databaseChangeLog>

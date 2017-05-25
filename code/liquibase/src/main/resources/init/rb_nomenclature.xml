@@ -1,0 +1,25 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/rb_nomenclature.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/rb_nomenclature" author="e.upatov">
+        <comment>Справочник: Номенклатуры</comment>
+        <createTable tableName="rbNomenclature" remarks="Справочник: Номенклатуры">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="deleted" type="BIT(1)" defaultValueBoolean="0">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(1024)"/>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

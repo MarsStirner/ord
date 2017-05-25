@@ -1,0 +1,25 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/mm_user_to_role.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/mm_user_to_role" author="e.upatov">
+        <comment>Таблица-связка: пользователи и роли</comment>
+        <createTable tableName="mmUserToRole" remarks="Таблица-связка: пользователи и роли">
+            <column name="user_id" type="INT(10)" remarks="Ссылка на пользователя (владеет указанной ролью)">
+                <constraints nullable="false" foreignKeyName="FK_mmusertorole__user__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column name="role_id" type="INT(10)" remarks="Ссылка на роль">
+                <constraints nullable="false" foreignKeyName="FK_mmusertorole__role__rbrole" referencedTableName="rbRole" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="init/mm_user_to_role/primary_key" author="e.upatov">
+        <comment>Уникальный ключ для: Таблицы-связки пользователей и ролей</comment>
+        <addPrimaryKey columnNames="role_id, user_id" constraintName="PRIMARY" tableName="mmUserToRole"/>
+    </changeSet>
+</databaseChangeLog>

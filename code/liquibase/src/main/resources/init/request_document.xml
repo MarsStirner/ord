@@ -1,0 +1,258 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/request_document.xml.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <property name="table.name" value="request_document" global="false"/>
+    <property name="table.comment" value="Обращения граждан" global="false"/>
+
+    <property name="prefix.changeSetId" value="init/${table.name}" global="false"/>
+    <property name="prefix.FK" value="FK_${table.name}" global="false"/>
+
+    <changeSet id="${prefix.changeSetId}" author="e.upatov">
+        <comment>${table.comment}</comment>
+        <createTable tableName="${table.name}" remarks="${table.comment}">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="appendixiesCount" remarks="Количество приложений" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="copiesCount" remarks="Количество копий" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="sheetsCount" remarks="Количество страниц" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="creationDate" remarks="Дата создания" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="author_id" remarks="Автор документа" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="${prefix.FK}__ author" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column name="controller_id" remarks="Руководитель по документу" type="INT(10)">-->
+                <constraints nullable="true" foreignKeyName="${prefix.FK}controller" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column defaultValueNumeric="0" name="deleted" remarks="Признак удаления" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="executionDate" remarks="Крайний срок исполнения" type="datetime"/>
+            <column name="registrationDate" remarks="Дата регистрации документа" type="datetime"/>
+            <column name="registrationNumber" remarks="Номер документа после регистрации" type="VARCHAR(255)"/>
+            <column name="shortDescription" remarks="Краткое описание содержания документа" type="LONGTEXT"/>
+            <column name="status_id" remarks="Статус документа" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="form_id" remarks="Вид документа" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="${prefix.FK}__form" referencedTableName="rbDocumentForm" referencedColumnNames="id"/>
+            </column>
+
+            <column name="userAccessLevel_id" remarks="Уровень допуска документа" type="INT(10)">-->
+                <constraints nullable="false" foreignKeyName="${prefix.FK}__userAccessLevel" referencedTableName="rbUserAccessLevel" referencedColumnNames="id"/>
+            </column>
+            <!--Specific fields-->
+            <column name="responsible_id" remarks="Исполнитель документа" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}__responsible" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column name="nomenclature_id" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}__nomenclature" referencedTableName="rbNomenclature" referencedColumnNames="id"/>
+            </column>
+            <column name="deliveryType_id" remarks="Тип доставки" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="${prefix.FK}__deliveryType" referencedTableName="rbDeliveryType" referencedColumnNames="id"/>
+            </column>
+            <column name="senderType_id" remarks="Тип доставки" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="${prefix.FK}__senderType" referencedTableName="rbSenderType" referencedColumnNames="id"/>
+            </column>
+            <column name="senderFirstName" type="VARCHAR(255)"/>
+            <column name="senderLastName" type="VARCHAR(255)"/>
+            <column name="senderMiddleName" type="VARCHAR(255)"/>
+            <column name="deliveryDate" type="datetime"/>
+            <column name="receivedDocumentDate" type="datetime"/>
+            <column name="receivedDocumentNumber" type="VARCHAR(255)"/>
+            <column name="contragent_id" type="INT(10)" remarks="Котрагент">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}__contragent" referencedTableName="rbContragent" referencedColumnNames="id"/>
+            </column>
+            <column name="region_id" type="INT(10)" remarks="регион">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}__region" referencedTableName="rbRegion" referencedColumnNames="id"/>
+            </column>
+            <column name="erpNumber" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/index" author="e.upatov">
+        <comment>Создание индексов: ${table.comment}</comment>
+        <createIndex indexName="IDX_${table.name}__registrationDate" tableName="${table.name}">
+            <column name="registrationDate"/>
+        </createIndex>
+        <createIndex indexName="IDX_${table.name}__registrationNumber" tableName="${table.name}">
+            <column name="registrationNumber"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="${prefix.changeSetId}/view_facts" author="e.upatov">
+        <comment>Факты просмотров: ${table.comment}</comment>
+        <createTable tableName="${table.name}_views" remarks="Факты просмотров: ${table.comment}">
+            <column name="document_id" remarks="Идентификатор просмотренного документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_views__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="user_id" remarks="Идентификатор пользователя, просмотревшего документ" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_views__author" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="viewDateTime" remarks="Время просмотра документа" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/view_facts/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_views" columnNames="document_id, user_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+    <changeSet id="${prefix.changeSetId}/history" author="e.upatov">
+        <comment>История действий: ${table.comment}</comment>
+        <createTable tableName="${table.name}_history" remarks="История действий: ${table.comment}">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_history__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="entry_id" remarks="Запись в истории" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_history__entry" referencedTableName="wf_history" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/history/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_history" columnNames="document_id, entry_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+    <!--Пользователи-редакторы-->
+    <changeSet id="${prefix.changeSetId}/person_editors" author="e.upatov">
+        <comment>Таблица-связка: ${table.comment} с пользователями-редакторами</comment>
+        <createTable tableName="${table.name}_person_editors" remarks="Таблица-связка: ${table.comment} с пользователями-редакторами">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_person_editors__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="user_id" remarks="Пользователь" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_person_editors__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/person_editors/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_person_editors" columnNames="document_id, user_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+    <!--Роли-редакторы-->
+    <changeSet id="${prefix.changeSetId}/role_editors" author="e.upatov">
+        <comment>Таблица-связка: ${table.comment} с ролями-редакторами</comment>
+        <createTable tableName="${table.name}_role_editors" remarks="Таблица-связка: ${table.comment} с ролями-редакторами">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_role_editors__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="role_id" remarks="Роль" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_role_editors__role" referencedTableName="rbRole" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/role_editors/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_role_editors" columnNames="document_id, role_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+    <!--Пользователи-читатели-->
+    <changeSet id="${prefix.changeSetId}/person_readers" author="e.upatov">
+        <comment>Таблица-связка: ${table.comment} с пользователями-читателями</comment>
+        <createTable tableName="${table.name}_person_readers" remarks="Таблица-связка: ${table.comment} с пользователями-читателями">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_person_readers__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="user_id" remarks="Пользователь" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_person_readers__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/person_readers/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_person_readers" columnNames="document_id, user_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+    <!--Роли-читатели-->
+    <changeSet id="${prefix.changeSetId}/role_readers" author="e.upatov">
+        <comment>Таблица-связка: ${table.comment} с ролями-читателями</comment>
+        <createTable tableName="${table.name}_role_readers" remarks="Таблица-связка: ${table.comment} с ролями-читателями">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_role_readers__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="role_id" remarks="Роль" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_role_readers__role" referencedTableName="rbRole" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/role_readers/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_role_readers" columnNames="document_id, role_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+    <!--Пользователи-адресаты-->
+    <changeSet id="${prefix.changeSetId}/recipient" author="e.upatov">
+        <comment>Таблица-связка: ${table.comment} с пользователями-адресатами</comment>
+        <createTable tableName="${table.name}_recipient" remarks="Таблица-связка: ${table.comment} с пользователями-адресатами">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_recipient__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="user_id" remarks="Пользователь" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_recipient__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/recipient/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_recipient" columnNames="document_id, user_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+    <!--Группы-адресаты-->
+    <changeSet id="${prefix.changeSetId}/group_recipient" author="e.upatov">
+        <comment>Таблица-связка: ${table.comment} с Группами-адресатами</comment>
+        <createTable tableName="${table.name}_group_recipient" remarks="Таблица-связка: ${table.comment} с Группами-адресатами">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_group_recipient__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="group_id" remarks="Группа" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_group_recipient__group" referencedTableName="groups" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/group_recipient/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_group_recipient" columnNames="document_id, group_id" constraintName="PRIMARY"/>
+    </changeSet>
+
+
+
+</databaseChangeLog>

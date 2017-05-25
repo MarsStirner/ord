@@ -1,0 +1,19 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS"
+                   logicalFilePath="serbsky/rb_document_form.xml">
+<changeSet id="serbsky/rb_document_form/data" author="e.upatov" context="SERBSKY">
+    <comment>Дополнение справочника (специфично): Виды документов</comment>
+    <sql dbms="mysql">
+        SET @incomingType=(SELECT id FROM rbDocumentType WHERE code = 'INCOMING');
+        SET @outgoingType=(SELECT id FROM rbDocumentType WHERE code = 'OUTGOING');
+        SET @internalType=(SELECT id FROM rbDocumentType WHERE code = 'INTERNAL');
+        SET @requestType=(SELECT id FROM rbDocumentType WHERE code = 'REQUEST');
+        SET @taskType=(SELECT id FROM rbDocumentType WHERE code = 'TASK');
+    </sql>
+    <loadData tableName="rbDocumentForm" file="data/rb_document_form.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'">
+        <column name="documentType_id" type="COMPUTED"/>
+    </loadData>
+</changeSet>
+</databaseChangeLog>

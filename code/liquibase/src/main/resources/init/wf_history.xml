@@ -1,0 +1,33 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/wf_history.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/wf_history" author="e.upatov">
+        <comment>Историй действий над документами</comment>
+        <createTable tableName="wf_history" remarks="Историй действий над документами">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="action_id" type="INT"/>
+            <column name="commentary" type="LONGTEXT"/>
+            <column name="created" type="datetime"/>
+            <column name="docType" type="VARCHAR(255)"/>
+            <column name="endDate" type="datetime"/>
+            <column name="from_status_id" type="INT"/>
+            <column name="parent_id" type="INT"/>
+            <column name="processed" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="startDate" type="datetime"/>
+            <column name="to_status_id" type="INT"/>
+            <column name="owner_id" type="INT">
+                <constraints nullable="false" foreignKeyName="FK_wf_history__owner" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

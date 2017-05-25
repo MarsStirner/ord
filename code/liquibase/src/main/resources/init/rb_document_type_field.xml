@@ -1,0 +1,38 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/rb_document_type_field.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/rb_document_type_field" author="e.upatov">
+         <comment>Справочник: Поля для типа документа</comment>
+        <createTable tableName="rbDocumentTypeField" remarks="Справочник: Поля для типа документа">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="documentType_id" remarks="Ссылка на тип документа" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_rbdocumenttypefield__documentType__rbdocumenttype"
+                             referencedTableName="rbDocumentType" referencedColumnNames="id" deleteCascade="true"/>
+            </column>
+            <column name="fieldName" remarks="Наименование поля" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="1" name="editable" remarks="Является ли поле редактируемым (вообще)" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fieldCode" remarks="Код поля" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="init/rb_document_type_field/uniqueIndex" author="e.upatov">
+        <comment>Уникальный индекс для справочника: Поля для типа документа</comment>
+        <createIndex indexName="UQ_documenttype__fieldcode" tableName="rbDocumentTypeField" unique="true">
+            <column name="documentType_id"/>
+            <column name="fieldCode"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

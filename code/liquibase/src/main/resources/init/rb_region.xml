@@ -1,0 +1,28 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/rb_region.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/rb_region" author="e.upatov">
+        <comment>Справочник: Регионы</comment>
+        <createTable tableName="rbRegion" remarks="Справочник: Тип Регионы">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="deleted" remarks="Признак удаления записи" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" remarks="Описание значения справочника" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" remarks="Уникальный код записи справочника" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="category" remarks="тип региона (край\область\итд)" type="VARCHAR(255)"/>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,63 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/user.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/user" author="e.upatov">
+        <comment>Справочник: Поля для типа документа</comment>
+        <createTable tableName="user" remarks="Справочник: Поля для типа документа">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="created" remarks="дата создания" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="deleted" remarks="удален" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" remarks="адрес электронной почты" type="VARCHAR(255)"/>
+            <column name="firstName" remarks="Имя" type="VARCHAR(255)"/>
+            <column name="lastName" remarks="Фамилия" type="VARCHAR(255)"/>
+            <column name="middleName" remarks="Отчество" type="VARCHAR(255)"/>
+            <column name="login" remarks="Логин" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
+            <column name="password" remarks="пароль" type="VARCHAR(255)"/>
+            <column name="unid" remarks="табельный номер" type="VARCHAR(255)"/>
+            <column name="jobPosition" remarks="должность" type="VARCHAR(255)"/>
+            <column name="jobPosition_id" remarks="должность" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="FK_user__jobPosition__rbposition"
+                             referencedTableName="rbPosition" referencedColumnNames="id"/>
+            </column>
+            <column name="jobDepartment" remarks="департамент" type="VARCHAR(255)"/>
+            <column name="jobDepartment_id" remarks="подразделение" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="FK_user__jobDepartment_rbdepartment"
+                             referencedTableName="rbDepartment" referencedColumnNames="id"/>
+            </column>
+            <column name="currentUserAccessLevel_id" remarks="текщий уровень допуска" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_user__currentUserAccessLevel__rbuseraccesslevel"
+                             referencedTableName="rbUserAccessLevel" referencedColumnNames="id"/>
+            </column>
+            <column name="maxUserAccessLevel_id" remarks="максимальный уровеень допуска" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_user__maxUserAccessLevel__rbuseraccesslevel"
+                             referencedTableName="rbUserAccessLevel" referencedColumnNames="id"/>
+            </column>
+            <column name="GUID" remarks="LDAP objectGUID для этого пользователя" type="VARCHAR(36)">
+                <constraints unique="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="fired" remarks="уволен" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="lastModified" remarks="связь с AD" type="datetime"/>
+            <column name="firedDate" remarks="Дата увольнения" type="datetime"/>
+            <column name="defaultNomeclature_id" remarks="Номенклатура дел пользователя по-умолчанию" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="FK_user__defaultNomeclature__rbnomenclature"
+                             referencedTableName="rbNomenclature" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

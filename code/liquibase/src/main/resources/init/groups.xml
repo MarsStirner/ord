@@ -1,0 +1,33 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/groups.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/groups" author="e.upatov">
+        <comment>Настраиваемый справочник: Группы</comment>
+        <createTable tableName="groups" remarks="Настраиваемый справочник: Группы">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="author_id" remarks="Автор группы" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="FK_group__author__user" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+            <column name="deleted" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_id" remarks="Тип группы {rbGroupType}" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_group__type__rbgrouptype" referencedTableName="rbGroupType" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

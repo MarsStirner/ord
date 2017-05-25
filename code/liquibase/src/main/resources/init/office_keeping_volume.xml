@@ -1,0 +1,70 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/office_keeping_volume.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <property name="table.name" value="office_keeping_volume" global="false"/>
+    <property name="table.comment" value="Тома архивных дел" global="false"/>
+
+    <property name="prefix.changeSetId" value="init/${table.name}" global="false"/>
+    <property name="prefix.FK" value="FK_${table.name}" global="false"/>
+
+    <changeSet id="${prefix.changeSetId}" author="e.upatov">
+        <comment>${table.comment}</comment>
+        <createTable tableName="${table.name}" remarks="${table.comment}">
+            <column autoIncrement="true" name="id" type="INT(10)">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="boxNumber" type="VARCHAR(255)"/>
+            <column name="comment" type="TEXT"/>
+            <column defaultValueNumeric="0" name="deleted" remarks="Признак удаления" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fundNumber" type="VARCHAR(255)"/>
+            <column name="keepingPeriodReasons" type="TEXT"/>
+            <column name="shelfNumber" type="VARCHAR(255)"/>
+            <column name="shortDescription" type="TEXT"/>
+            <column name="standNumber" type="VARCHAR(255)"/>
+            <column name="status_id" remarks="Статус документа" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="unitsCount" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="limitUnitsCount" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="volumeIndex" type="VARCHAR(255)"/>
+            <column name="returnDate" type="datetime"/>
+            <column name="file_id" remarks="ссылка на дело" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_${table.name}__file" referencedTableName="office_keeping_file" referencedColumnNames="id"/>
+            </column>
+            <column name="collector_id" remarks="У кого на руках" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="FK_${table.name}__controller" referencedTableName="user" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet id="${prefix.changeSetId}/history" author="e.upatov">
+        <comment>История действий: ${table.comment}</comment>
+        <createTable tableName="${table.name}_history" remarks="История действий: ${table.comment}">
+            <column name="document_id" remarks="Идентификатор документа" type="INT(10)">
+                <constraints foreignKeyName="${prefix.FK}_history__document" referencedTableName="${table.name}" referencedColumnNames="id"/>
+            </column>
+            <column name="entry_id" remarks="Запись в истории" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="${prefix.FK}_history__entry" referencedTableName="wf_history" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="${prefix.changeSetId}/history/primary_key" author="e.upatov">
+        <addPrimaryKey tableName="${table.name}_history" columnNames="document_id, entry_id" constraintName="PRIMARY"/>
+    </changeSet>
+</databaseChangeLog>

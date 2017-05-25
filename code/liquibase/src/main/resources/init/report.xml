@@ -1,0 +1,27 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/report.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/report" author="e.upatov">
+        <comment>Настраиваемый справочник: Отчеты</comment>
+        <createTable tableName="report" remarks="Настраиваемый справочник: Отчеты">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="deleted" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="displayName" remarks="Отображаемое имя отчета" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="templateName" remarks="Путь или имя к шаблону с отчетом" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

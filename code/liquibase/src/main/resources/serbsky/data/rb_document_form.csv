@@ -1,0 +1,21 @@
+'value','code','documentType_id'
+# Входящие
+'Запрос','INCOMING_REQUEST','@incomingType'
+'Заявка','INCOMING_BID','@incomingType'
+'Приглашение','INCOMING_INVITE','@incomingType'
+'Поздравление/благодарность','INCOMING_CONGRATULATION','@incomingType'
+'Повестка','INCOMING_WRIT','@incomingType'
+'Счет/смета','INCOMING_ACCOUNT','@incomingType'
+# Исходящие
+'Претензия','OUTGOING_PRETENSION','@outgoingType'
+'Распоряжение','OUTGOING_ORDINANCE','@outgoingType'
+'Ходатайство','OUTGOING_PETITION','@outgoingType'
+'Ответ на обращение/запрос','OUTGOING_RESPONSE','@outgoingType'
+'Приглашение','OUTGOING_INVITE','@outgoingType'
+'Просьба','OUTGOING_PLEA','@outgoingType'
+'Уведомление','OUTGOING_NOTIFICATION','@outgoingType'
+'Поздравление/благодарность','OUTGOING_CONGRATULATION','@outgoingType'
+'Счет/смета','OUTGOING_ACCOUNT','@outgoingType'
+# Внутренние
+'Заявление','INTERNAL_STATEMENT','@internalType'
+'Докладная записка','INTERNAL_MEMO_NOTE','@internalType'

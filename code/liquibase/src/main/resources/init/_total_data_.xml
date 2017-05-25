@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <!-- CHANGESET ID PREFIX = "init/{description}/data" -->
+    <!--http://stackoverflow.com/questions/31252711/liquibase-inserting-into-bit-column-mysql-data-too-long-for-column-->
+    <changeSet id="init/rb_contragent_type/data" author="e.upatov">
+        <comment>Загрузка справочника: Типы контрагентов</comment>
+        <loadData tableName="rbContragentType" file="data/rb_contragent_type.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_user_access_level/data" author="e.upatov">
+        <comment>Загрузка справочника: Уровни допуска</comment>
+        <loadData tableName="rbUserAccessLevel" file="data/rb_user_access_level.csv" relativeToChangelogFile="true" encoding="UTF-8" separator=","
+                  quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_document_type/data" author="e.upatov">
+        <comment>Загрузка справочника: Типы Документов</comment>
+        <loadData tableName="rbDocumentType" file="data/rb_document_type.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_document_form/data" author="e.upatov">
+        <comment>Загрузка справочника: Типы Документов</comment>
+        <sql dbms="mysql">
+            SET @incomingType=(SELECT id FROM rbDocumentType WHERE code = 'INCOMING');
+            SET @outgoingType=(SELECT id FROM rbDocumentType WHERE code = 'OUTGOING');
+            SET @internalType=(SELECT id FROM rbDocumentType WHERE code = 'INTERNAL');
+            SET @requestType=(SELECT id FROM rbDocumentType WHERE code = 'REQUEST');
+            SET @taskType=(SELECT id FROM rbDocumentType WHERE code = 'TASK');
+        </sql>
+        <loadData tableName="rbDocumentForm" file="data/rb_document_form.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'">
+            <column name="documentType_id" type="COMPUTED"/>
+        </loadData>
+    </changeSet>
+    <changeSet id="init/rb_delivery_type/data" author="e.upatov">
+        <comment>Загрузка справочника: Типы доставки</comment>
+        <loadData tableName="rbDeliveryType" file="data/rb_delivery_type.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_group_type/data" author="e.upatov">
+        <comment>Загрузка справочника: Типы групп</comment>
+        <loadData tableName="rbGroupType" file="data/rb_group_type.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_role/data" author="e.upatov">
+        <comment>Загрузка справочника: Типовые Роли</comment>
+        <loadData tableName="rbRole" file="data/rb_role.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_sender_type/data" author="e.upatov">
+        <comment>Загрузка справочника: Типы Отправителя</comment>
+        <loadData tableName="rbSenderType" file="data/rb_sender_type.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_region/data" author="e.upatov">
+        <comment>Загрузка справочника: Регионы</comment>
+        <loadData tableName="rbRegion" file="data/rb_region.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_contact_point_system/data" author="e.upatov">
+        <comment>Загрузка справочника: Регионы</comment>
+        <loadData tableName="rbContactPointSystem" file="data/rb_contact_point_system.csv" relativeToChangelogFile="true" encoding="UTF-8" separator=","
+                  quotchar="'"/>
+    </changeSet>
+    <changeSet id="init/rb_document_type_field/data" author="e.upatov">
+        <comment>Загрузка справочника: Справочник полей для типа документа</comment>
+        <sql dbms="mysql">
+            SET @incomingType=(SELECT id FROM rbDocumentType WHERE code = 'INCOMING');
+            SET @outgoingType=(SELECT id FROM rbDocumentType WHERE code = 'OUTGOING');
+            SET @internalType=(SELECT id FROM rbDocumentType WHERE code = 'INTERNAL');
+            SET @requestType=(SELECT id FROM rbDocumentType WHERE code = 'REQUEST');
+            SET @taskType=(SELECT id FROM rbDocumentType WHERE code = 'TASK');
+        </sql>
+        <loadData tableName="rbDocumentTypeField" file="data/rb_document_type_field.csv" relativeToChangelogFile="true" encoding="UTF-8" separator=","
+                  quotchar="'">
+            <column name="documentType_id" type="COMPUTED"/>
+            <column name="editable" type="BOOLEAN"/>
+        </loadData>
+    </changeSet>
+    <changeSet id="init/util_editable_field_matrix/data" author="e.upatov">
+        <comment>Загрузка справочника: Матрица редактируемости</comment>
+        <loadData tableName="utilEditableFieldMatrix" file="data/util_editable_field_matrix.csv" relativeToChangelogFile="true" encoding="UTF-8" separator=","
+                  quotchar="'">
+            <column name="editable" type="BOOLEAN"/>
+        </loadData>
+    </changeSet>
+    <changeSet id="init/report/data" author="e.upatov">
+        <comment>Загрузка справочника: Отчеты</comment>
+        <loadData tableName="report" file="data/report.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'">
+            <column name="deleted" type="BOOLEAN"/>
+        </loadData>
+    </changeSet>
+    <changeSet id="init/report_parameter/data" author="e.upatov">
+        <comment>Загрузка справочника: Параметры отчетов</comment>
+        <loadData tableName="report_parameter" file="data/report_parameter.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'">
+            <column name="required" type="BOOLEAN"/>
+        </loadData>
+    </changeSet>
+    <changeSet id="init/user/data" author="e.upatov">
+        <comment>Учетка администратора</comment>
+        <insert tableName="user">
+            <column name="email" value="sample@mail.com"/>
+            <column name="firstName" value="A"/>
+            <column name="lastName" value="Administrator"/>
+            <column name="middleName" value="A"/>
+            <column name="login" value="admin"/>
+            <column name="password" valueComputed="MD5('ololo')"/>
+            <column name="currentUserAccessLevel_id" valueComputed="(SELECT id FROM rbUserAccessLevel WHERE level = 1)"/>
+            <column name="maxUserAccessLevel_id" valueComputed="(SELECT id FROM rbUserAccessLevel ORDER BY level DESC LIMIT 1)"/>
+        </insert>
+        <insert tableName="mmUserToRole">
+            <column name="user_id" valueComputed="(SELECT id FROM user WHERE login='admin')"/>
+            <column name="role_id" valueComputed="(SELECT id FROM rbRole WHERE code='ADMINISTRATOR')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

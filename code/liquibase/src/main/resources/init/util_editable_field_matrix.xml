@@ -1,0 +1,29 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   logicalFilePath="init/util_editable_field_matrix.xml"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS">
+    <changeSet id="init/util_editable_field_matrix" author="e.upatov">
+        <comment>Матрица редактируемости полей в зависимости от статуса документа</comment>
+        <createTable tableName="utilEditableFieldMatrix" remarks="Матрица редактируемости полей в зависимости от статуса документа">
+            <column name="field_id" remarks="Ссылка на поле документа" type="INT(10)">
+                <constraints nullable="false" foreignKeyName="FK_utileditablefieldmatrix__field__rbdocumenttypefield"
+                             referencedTableName="rbDocumentTypeField" referencedColumnNames="id"/>
+            </column>
+            <column name="status_id" remarks="Ссылка на статус документа" type="INT(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="editable" remarks="Признак редактиремости" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="init/util_editable_field_matrix/primary_key" author="e.upatov">
+        <comment>Уникальный ключ для: Матрица редактируемости полей в зависимости от статуса документа</comment>
+        <addPrimaryKey columnNames="field_id, status_id" constraintName="PRIMARY" tableName="utilEditableFieldMatrix"/>
+    </changeSet>
+</databaseChangeLog>
