@@ -94,6 +94,7 @@ public class CmisSessionFactory {
 
 
     public Folder getRootFolder(final Session session) {
+        if(session==null){ return null; }
         final CmisObject result = session.getObjectByPath(ROOT_PATH);
         if (BaseTypeId.CMIS_FOLDER.equals(result.getBaseTypeId())) {
             return (Folder) result;

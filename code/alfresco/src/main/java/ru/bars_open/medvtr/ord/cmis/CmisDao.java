@@ -40,11 +40,16 @@ public class CmisDao {
 
     public List<Document> getDocuments(final String name, final AuthorizationData authData) {
         log.info("{} start fetch attachments by Folder[{}]", authData.getLogString(), sessionFactory.getFullPath(name));
-        final Folder documentFolder = getFolder(name);
-        if (documentFolder != null) {
-            return StreamSupport.stream(documentFolder.getChildren().spliterator(), false).map(Document.class::cast).collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
+        try {
+            final Folder documentFolder = getFolder(name);
+            if (documentFolder != null) {
+                return StreamSupport.stream(documentFolder.getChildren().spliterator(), false).map(Document.class::cast).collect(Collectors.toList());
+            } else {
+                return Collections.emptyList();
+            }
+        }catch (Exception e){
+            log.error("Error while fetch Folder[{}] ", sessionFactory.getFullPath(name));
+            return null;
         }
     }
 
@@ -79,6 +84,7 @@ public class CmisDao {
         final String userFullName = (String) uiComponentAttributes.get("userFullName");
         log.debug("User[{}][{}] start upload File[{}] to Path[{}]", userId, userFullName, file.getFileName(), fullPath);
         final Folder folder = getOrCreateFolder(documentFolder);
+        if(folder == null){ return; }
         final Map<String, Object> metadata = createFileMetaData(file.getFileName(), file.getContentType(), userId, userFullName);
         final ContentStream contentStream = sessionFactory.createContentStream(
                 file.getFileName(),
@@ -111,9 +117,16 @@ public class CmisDao {
         final Map<String, String> props = new HashMap<>(2);
         props.put(PropertyIds.OBJECT_TYPE_ID, BaseTypeId.CMIS_FOLDER.value());
         props.put(PropertyIds.NAME, path);
-        final Folder result = sessionFactory.getRootFolder(sessionFactory.getSession()).createFolder(props);
-        log.info("Created new Folder['{}']{name='{}', id='{}'}", result.getPath(), result.getName(), result.getId());
-        return result;
+        final Session session = sessionFactory.getSession();
+        if(session !=null) {
+            final Folder result = sessionFactory.getRootFolder(session).createFolder(props);
+            log.info("Created new Folder['{}']{name='{}', id='{}'}", result.getPath(), result.getName(), result.getId());
+            return result;
+        } else {
+            log.error("Could not create folder cause no session/connection available");
+
+            return null;
+        }
     }
 
     /**

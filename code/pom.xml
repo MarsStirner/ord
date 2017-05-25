@@ -70,7 +70,7 @@
         <version.spring-framework>4.3.7.RELEASE</version.spring-framework>
         <version.spring-jsf-scope-lib>0.1.1</version.spring-jsf-scope-lib>
 
-        <version.jdbc-mysql>6.0.5</version.jdbc-mysql>
+        <version.jdbc-mysql>6.0.6</version.jdbc-mysql>
         <version.hikari>2.6.0</version.hikari>
         <version.hibernate>5.2.9.Final</version.hibernate>
         <!-- Utils -->
