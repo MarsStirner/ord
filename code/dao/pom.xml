@@ -24,7 +24,7 @@
         <dependency>
             <groupId>ru.bars_open.medvtr.ord</groupId>
             <artifactId>entities</artifactId>
-            <version>LATEST</version>
+            <version>${version.build}</version>
         </dependency>
 
         <dependency>
