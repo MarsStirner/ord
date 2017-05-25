@@ -25,14 +25,18 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     @Override
     protected OfficeKeepingFile newModel(AuthorizationData authData) {
         OfficeKeepingFile document = new OfficeKeepingFile();
-        document.setDocumentStatus(DocumentStatus.NEW);
+        document.setStatus(DocumentStatus.NEW);
+        return document;
+    }
 
+    @Override
+    public boolean beforeCreate(OfficeKeepingFile document, AuthorizationData authData) {
         LocalDateTime created = LocalDateTime.now();
         HistoryEntry historyEntry = new HistoryEntry();
         historyEntry.setCreated(created);
         historyEntry.setStartDate(created);
         historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setDocType(document.getType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);
@@ -42,6 +46,6 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
         Set<HistoryEntry> history = new HashSet<>();
         history.add(historyEntry);
         document.setHistory(history);
-        return document;
+        return true;
     }
 }

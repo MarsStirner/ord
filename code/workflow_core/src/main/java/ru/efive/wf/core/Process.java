@@ -31,7 +31,7 @@ public final class Process {
 
     public void setCurrentStatus(Status<? extends ProcessedData> currentStatus) {
         this.currentStatus = currentStatus;
-        this.getProcessedData().setDocumentStatus(currentStatus.getStatus());
+        this.getProcessedData().setStatus(currentStatus.getStatus());
     }
 
     public ProcessedData getProcessedData() {

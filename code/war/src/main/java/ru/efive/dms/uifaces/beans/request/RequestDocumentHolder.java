@@ -297,7 +297,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     protected RequestDocument newModel(AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
         final RequestDocument doc = new RequestDocument();
-        doc.setDocumentStatus(DocumentStatus.NEW);
+        doc.setStatus(DocumentStatus.NEW);
         doc.setDeliveryDate(created);
         doc.setCreationDate(created);
         doc.setAuthor(authData.getAuthorized());
@@ -325,7 +325,7 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         historyEntry.setCreated(created);
         historyEntry.setStartDate(created);
         historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setDocType(document.getType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);

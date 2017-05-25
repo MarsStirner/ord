@@ -40,7 +40,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
     @Override
     protected Substitution newModel(AuthorizationData authData) {
         final Substitution doc = new Substitution();
-        doc.setPerson(authData.getAuthorized());
+        doc.setUser(authData.getAuthorized());
         return doc;
     }
 
@@ -54,7 +54,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         params.put(
                 UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_PERSON_SUBSTITUTION)
         );
-        final User preselected = getDocument().getPerson();
+        final User preselected = getDocument().getUser();
         if (preselected != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
@@ -66,7 +66,7 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
         log.info("Choose person: {}", result);
         if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
             final User selected = (User) result.getResult();
-            getDocument().setPerson(selected);
+            getDocument().setUser(selected);
         }
     }
 
@@ -139,12 +139,12 @@ public class SubstitutionHolderBean extends AbstractDocumentHolderBean<Substitut
             MessageUtils.addMessage(MSG_SUBSTITUTION_SUBSTITUTOR_NOT_SET);
             result = false;
         }
-        if (document.getPerson() == null) {
+        if (document.getUser() == null) {
             log.error("Save cancelled: person not set");
             MessageUtils.addMessage(MSG_SUBSTITUTION_PERSON_NOT_SET);
             result = false;
         }
-        if (document.getPerson() != null && document.getSubstitution() != null && document.getPerson().equals(document.getSubstitution())) {
+        if (document.getUser() != null && document.getSubstitution() != null && document.getUser().equals(document.getSubstitution())) {
             log.error("Save cancelled: person and substitution is one people");
             MessageUtils.addMessage(MSG_SUBSTITUTION_PERSON_DUPLICATE);
             result = false;

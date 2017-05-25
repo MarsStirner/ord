@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * Description: <br>
  */
 @Entity
-@Table(name = "outgoing_documents_views")
+@Table(name = "outgoing_document_views")
 @IdClass(OutgoingDocumentViewFactPrimaryKey.class)
 public class OutgoingDocumentViewFact implements DocumentViewFact<OutgoingDocument>{
     @Id

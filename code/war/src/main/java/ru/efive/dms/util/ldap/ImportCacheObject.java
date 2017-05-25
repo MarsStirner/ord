@@ -1,6 +1,6 @@
 package ru.efive.dms.util.ldap;
 
-import ru.entity.model.referenceBook.ContactInfoType;
+import ru.entity.model.referenceBook.RbContactPointSystem;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
 import ru.entity.model.referenceBook.UserAccessLevel;
@@ -20,9 +20,9 @@ public class ImportCacheObject {
     // Уровнь допуска по-умолчанию для создаваемых пользователей
     private UserAccessLevel defaultUserAccessLevel;
     //Перечень типов контактной информации
-    private ContactInfoType emailContactType;
-    private ContactInfoType phoneContactType;
-    private ContactInfoType mobileContactType;
+    private RbContactPointSystem emailContactType;
+    private RbContactPointSystem phoneContactType;
+    private RbContactPointSystem mobileContactType;
     //Перечень должностей
     private List<Position> positions;
     //Перечень подразделений
@@ -37,27 +37,27 @@ public class ImportCacheObject {
         this.defaultUserAccessLevel = defaultUserAccessLevel;
     }
 
-    public ContactInfoType getEmailContactType() {
+    public RbContactPointSystem getEmailContactType() {
         return emailContactType;
     }
 
-    public void setEmailContactType(final ContactInfoType emailContactType) {
+    public void setEmailContactType(final RbContactPointSystem emailContactType) {
         this.emailContactType = emailContactType;
     }
 
-    public ContactInfoType getPhoneContactType() {
+    public RbContactPointSystem getPhoneContactType() {
         return phoneContactType;
     }
 
-    public void setPhoneContactType(final ContactInfoType phoneContactType) {
+    public void setPhoneContactType(final RbContactPointSystem phoneContactType) {
         this.phoneContactType = phoneContactType;
     }
 
-    public ContactInfoType getMobileContactType() {
+    public RbContactPointSystem getMobileContactType() {
         return mobileContactType;
     }
 
-    public void setMobileContactType(final ContactInfoType mobileContactType) {
+    public void setMobileContactType(final RbContactPointSystem mobileContactType) {
         this.mobileContactType = mobileContactType;
     }
 

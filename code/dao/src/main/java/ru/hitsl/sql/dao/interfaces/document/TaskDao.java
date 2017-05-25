@@ -3,6 +3,7 @@ package ru.hitsl.sql.dao.interfaces.document;
 import ru.entity.model.document.Task;
 import ru.hitsl.sql.dao.interfaces.mapped.DocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
+import ru.util.Node;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface TaskDao extends DocumentDao<Task> {
     List<Task> getTaskListByRootDocumentId(String rootId, boolean showDeleted);
 
     List<Task> getChildrenTaskByParentId(int parentId, boolean showDeleted);
+
+    void fetchTreeRecursive(String documentId, Node<Task> node, int depth);
 }

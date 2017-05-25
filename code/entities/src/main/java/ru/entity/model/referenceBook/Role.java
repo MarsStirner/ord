@@ -1,5 +1,6 @@
 package ru.entity.model.referenceBook;
 
+import org.apache.commons.lang3.StringUtils;
 import ru.entity.model.enums.RoleType;
 import ru.entity.model.mapped.ReferenceBookEntity;
 import ru.entity.model.user.User;
@@ -21,8 +22,7 @@ public class Role extends ReferenceBookEntity implements Comparable<Role> {
     /**
      * тип права доступа
      */
-    @Column(name = "roleType")
-    @Enumerated(value = EnumType.STRING)
+    @Transient
     private RoleType roleType;
 
     /**
@@ -40,13 +40,6 @@ public class Role extends ReferenceBookEntity implements Comparable<Role> {
      */
     private String email;
 
-    public RoleType getRoleType() {
-        return roleType;
-    }
-
-    public void setRoleType(RoleType roleType) {
-        this.roleType = roleType;
-    }
 
     public String getEmail() {
         return email;
@@ -63,6 +56,13 @@ public class Role extends ReferenceBookEntity implements Comparable<Role> {
             return result;
         }
         return new ArrayList<>(0);
+    }
+
+    public RoleType getRoleType() {
+        if(roleType == null && StringUtils.isNotEmpty(code)){
+            roleType = RoleType.valueOf(code);
+        }
+        return roleType;
     }
 
     public Set<User> getPersons() {

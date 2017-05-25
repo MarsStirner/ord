@@ -836,7 +836,7 @@ public class WorkflowHelper {
                 SessionManagementBean sessionManagement = context.getApplication().evaluateExpressionGet(
                         context, "#{sessionManagement}", SessionManagementBean.class
                 );
-                if (StringUtils.isEmpty(doc.getTaskNumber())) {
+                if (StringUtils.isEmpty(doc.getRegistrationNumber())) {
                     //Номер не задан
                     StringBuilder in_number = new StringBuilder();
                     StringBuilder in_count = new StringBuilder();
@@ -878,7 +878,7 @@ public class WorkflowHelper {
                             )
                     );
                     in_number.append(in_count);
-                    doc.setTaskNumber(in_number.toString());
+                    doc.setRegistrationNumber(in_number.toString());
 
                     doc.setRegistrationDate(LocalDateTime.now());
                     result = true;
@@ -923,9 +923,9 @@ public class WorkflowHelper {
                 templateTask.getHistory().clear();
 
                 final Map<String, Object> in_filters = new HashMap<>();
-                final Matcher matcher = Pattern.compile("(.*)([0-9]+)$").matcher(doc.getTaskNumber());
+                final Matcher matcher = Pattern.compile("(.*)([0-9]+)$").matcher(doc.getRegistrationNumber());
                 if (matcher.find()) {
-                    templateTask.setTaskNumber(matcher.group(1));
+                    templateTask.setRegistrationNumber(matcher.group(1));
                     in_filters.put("rootDocumentId", doc.getRootDocumentId());
                 } else {
                     in_filters.put("taskDocumentId", "");
@@ -938,7 +938,7 @@ public class WorkflowHelper {
                     currentTask.setExecutors(executorsSet);
                     //+2 потому что жизнь-боль и первое поручение еще не сохранено в БД с корректным номером
                     int numberOffset = taskDao.countItems(null, in_filters, false) + 2;
-                    currentTask.setTaskNumber(currentTask.getTaskNumber().concat(String.valueOf(numberOffset)));
+                    currentTask.setRegistrationNumber(currentTask.getRegistrationNumber().concat(String.valueOf(numberOffset)));
                     Set<HistoryEntry> history = new HashSet<>(1);
                     final HistoryEntry entry = new HistoryEntry();
                     entry.setActionId(DocumentAction.REDIRECT_TO_EXECUTION_1.getId());
@@ -947,9 +947,9 @@ public class WorkflowHelper {
                     entry.setFromStatusId(1);
                     entry.setToStatusId(DocumentStatus.ON_EXECUTION_2.getId());
                     currentTask.setHistory(history);
-                    currentTask.setDocumentStatus(DocumentStatus.ON_EXECUTION_2);
+                    currentTask.setStatus(DocumentStatus.ON_EXECUTION_2);
                     taskDao.save(currentTask);
-                    taskLogger.debug("Sub-task[{}] {}", currentTask.getId(), currentTask.getTaskNumber());
+                    taskLogger.debug("Sub-task[{}] {}", currentTask.getId(), currentTask.getRegistrationNumber());
                     if (taskLogger.isTraceEnabled()) {
                         taskLogger.trace("Sub-task Info: {}", currentTask);
                     }

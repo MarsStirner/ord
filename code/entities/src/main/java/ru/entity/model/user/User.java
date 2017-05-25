@@ -16,7 +16,7 @@ import java.util.*;
  * Пользователь системы
  */
 @Entity
-@Table(name = "dms_system_persons")
+@Table(name = "user")
 public class User extends DeletableEntity implements Descriptionable, Comparable<User> {
 
     /**********************************************************************
@@ -47,7 +47,7 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
     /**
      * Адрес почты
      */
-    //TODO перенести в contacts
+    //TODO перенести в telecom
     @Column(name = "email")
     private String email;
     /**
@@ -97,14 +97,14 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      * Контактные данные пользователя (почта, телефон, итд)
      * При сохранении пользователя - добавлять\удалять и обновлять записи
      */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    private Set<PersonContact> contacts;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private Set<ContactPoint> telecom;
     /**
      * группы
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "mmPersonToGroup",
-            joinColumns = {@JoinColumn(name = "member_id")},
+    @JoinTable(name = "mmUserToGroup",
+            joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "group_id")}
     )
     private Set<Group> groups;
@@ -112,8 +112,8 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
      * роли
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_system_person_roles",
-            joinColumns = {@JoinColumn(name = "person_id")},
+    @JoinTable(name = "mmUserToRole",
+            joinColumns = {@JoinColumn(name = "user_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Set<Role> roles;
     /**
@@ -137,6 +137,10 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
     private Department jobDepartment;
     @Column(name = "jobDepartment")
     private String jobDepartmentString;
+
+    /**
+     * Номенкалтура по-умолчанию
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "defaultNomeclature_id", nullable = true)
     private Nomenclature defaultNomenclature;
@@ -475,18 +479,18 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         this.jobDepartmentString = jobDepartmentString;
     }
 
-    public Set<PersonContact> getContacts() {
-        return contacts;
+    public Set<ContactPoint> getTelecom() {
+        return telecom;
     }
 
-    public void setContacts(Set<PersonContact> contacts) {
-        this.contacts = contacts;
+    public void setTelecom(Set<ContactPoint> telecom) {
+        this.telecom = telecom;
     }
 
     public String getContact(final String type) {
         final StringBuilder sb = new StringBuilder();
-        for (PersonContact contact : contacts) {
-            if (contact.getType().getCode().equalsIgnoreCase(type)) {
+        for (ContactPoint contact : telecom) {
+            if (contact.getSystem().getCode().equalsIgnoreCase(type)) {
                 if (sb.length() != 0) {
                     sb.append(", ");
                 }
@@ -496,18 +500,18 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
         return sb.toString();
     }
 
-    public boolean addToContacts(final PersonContact contact) {
-        if (contacts == null) {
-            contacts = new HashSet<>(1);
+    public boolean addToContacts(final ContactPoint contact) {
+        if (telecom == null) {
+            telecom = new HashSet<>(1);
         }
-        return contacts.add(contact);
+        return telecom.add(contact);
     }
 
-    public boolean addToContacts(final Collection<PersonContact> newContacts) {
-        if (contacts == null) {
-            contacts = new HashSet<>(newContacts.size());
+    public boolean addToContacts(final Collection<ContactPoint> newContacts) {
+        if (telecom == null) {
+            telecom = new HashSet<>(newContacts.size());
         }
-        return contacts.addAll(newContacts);
+        return telecom.addAll(newContacts);
     }
 
     /**

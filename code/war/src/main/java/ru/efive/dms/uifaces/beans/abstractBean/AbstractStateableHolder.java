@@ -6,15 +6,12 @@ import org.springframework.beans.factory.BeanNameAware;
 
 import java.io.Serializable;
 
-public abstract class AbstractStateableHolder implements Serializable, BeanNameAware {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+public abstract class AbstractStateableHolder extends AbstractLoggableBean  {
 
     /**
      * Текущее состояние бина-обработчика
      */
     private State state;
-
-    private String beanName;
 
     public boolean isCreateState() {
         return State.CREATE.equals(state);
@@ -36,17 +33,8 @@ public abstract class AbstractStateableHolder implements Serializable, BeanNameA
         return state;
     }
 
-    String getBeanName(){
-        return beanName;
-    }
-
     protected void setState(final State state) {
         log.info("Document state changed from {} to {}", this.state, state);
         this.state = state;
-    }
-
-    @Override
-    public void setBeanName(String name) {
-        this.beanName = name;
     }
 }

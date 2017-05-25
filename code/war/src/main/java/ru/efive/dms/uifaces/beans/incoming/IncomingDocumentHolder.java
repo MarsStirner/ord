@@ -41,10 +41,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     //TODO ACL
     private Permissions permissions;
 
-
-    @Autowired
-    @Qualifier("documentTaskTree")
-    private DocumentTaskTreeHolder taskTreeHolder;
     //Для проверки прав доступа
     @Autowired
     @Qualifier("permissionChecker")
@@ -300,7 +296,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     protected IncomingDocument newModel(AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
         final IncomingDocument doc = new IncomingDocument();
-        doc.setDocumentStatus(DocumentStatus.NEW);
+        doc.setStatus(DocumentStatus.NEW);
         doc.setDeliveryDate(created);
         doc.setCreationDate(created);
         doc.setAuthor(authData.getAuthorized());
@@ -342,10 +338,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             if (viewFactDao.registerViewFact(document, authData.getAuthorized())) {
                 MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
             }
-            //Установка идшника для поиска поручений
-            taskTreeHolder.setRootDocumentId(document.getUniqueId());
-            //Поиск поручений
-            taskTreeHolder.refresh();
         }
         return true;
     }
@@ -367,7 +359,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         historyEntry.setCreated(created);
         historyEntry.setStartDate(created);
         historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setDocType(document.getType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);
@@ -387,8 +379,6 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
             log.error("createModel: on viewFact register", e);
             MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
-        //Установка идшника для поиска поручений
-        taskTreeHolder.setRootDocumentId(document.getUniqueId());
         return true;
     }
 
@@ -454,13 +444,4 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     public List<OutgoingDocument> getRelatedDocuments() {
         return relatedDocuments;
     }
-
-    public DocumentTaskTreeHolder getTaskTreeHolder() {
-        return taskTreeHolder;
-    }
-
-    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
-        this.taskTreeHolder = taskTreeHolder;
-    }
-
 }

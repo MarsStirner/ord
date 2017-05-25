@@ -6,7 +6,6 @@ import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
-import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
@@ -18,8 +17,8 @@ import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.DocumentForm;
-import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.*;
@@ -38,9 +37,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
 
     //TODO ACL
     private Permissions permissions;
-    @Autowired
-    @Qualifier("documentTaskTree")
-    private DocumentTaskTreeHolder taskTreeHolder;
+
     //Для проверки прав доступа
     @Autowired
     @Qualifier("permissionChecker")
@@ -142,7 +139,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
         final LocalDateTime created = LocalDateTime.now();
         final User currentUser = authData.getAuthorized();
         final Task doc = new Task();
-        doc.setDocumentStatus(DocumentStatus.NEW);
+        doc.setStatus(DocumentStatus.NEW);
         doc.setCreationDate(created);
         doc.setAuthor(currentUser);
         final String parentId = getRequestParamByName("parentId");
@@ -157,9 +154,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
         }
         final String formId = getRequestParamByName("formId");
         doc.setForm(getDefaultForm(formId));
-        initDefaultInitiator();
-        taskTreeHolder.setRootDocumentId(doc.getUniqueId());
-        taskTreeHolder.refresh();
+        doc.setInitiator(getDefaultInitiator(rootDocumentId));
         return doc;
     }
 
@@ -190,8 +185,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
             if (viewFactDao.registerViewFact(document, authData.getAuthorized())) {
                 MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
             }
-            taskTreeHolder.setRootDocumentId(document.getUniqueId());
-            taskTreeHolder.refresh();
         }
         return true;
     }
@@ -204,8 +197,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
             log.error("createModel: on viewFact register", e);
             MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
-        //Установка идшника для поиска поручений
-        taskTreeHolder.setRootDocumentId(document.getUniqueId());
         return true;
     }
 
@@ -226,7 +217,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
         historyEntry.setCreated(created);
         historyEntry.setStartDate(created);
         historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setDocType(document.getType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);
@@ -236,7 +227,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
         document.addToHistory(historyEntry);
         return true;
     }
-
 
 
     @Override
@@ -273,7 +263,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
         if (form != null) {
             return form;
         } else {
-            final List<DocumentForm> forms = documentFormDao.findByDocumentTypeCode(DocumentType.RB_CODE_TASK);
+            final List<DocumentForm> forms = documentFormDao.findByDocumentTypeCode(DocumentType.Task.getName());
             if (forms != null && !forms.isEmpty()) {
                 return forms.get(0);
             } else {
@@ -283,54 +273,31 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
     }
 
 
-    protected void initDefaultInitiator() {
-        Task task = getDocument();
-        User initiator = null;
-        String key = task.getRootDocumentId();
+    private User getDefaultInitiator(String key) {
         final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(key);
         if (rootDocumentId != null) {
-            if (key.contains("incoming")) {
-                IncomingDocument in_doc = incomingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                initiator = in_doc.getController();
-            } else if (key.contains("outgoing")) {
-                OutgoingDocument out_doc = outgoingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                initiator = out_doc.getController();
-            } else if (key.contains("internal")) {
-                InternalDocument internal_doc = internalDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                initiator = internal_doc.getController();
-            } else if (key.contains("request")) {
-                RequestDocument request_doc = requestDocumentDao.getItemBySimpleCriteria(rootDocumentId);
-                initiator = request_doc.getController();
-            } else if (key.contains("task")) {
+            if (StringUtils.startsWith(key, DocumentType.IncomingDocument.getName())) {
+                IncomingDocument in_doc = incomingDocumentDao.getItemByListCriteria(rootDocumentId);
+                return in_doc.getController();
+            } else if (StringUtils.startsWith(key, DocumentType.OutgoingDocument.getName())) {
+                OutgoingDocument out_doc = outgoingDocumentDao.getItemByListCriteria(rootDocumentId);
+                return out_doc.getController();
+            } else if (StringUtils.startsWith(key, DocumentType.InternalDocument.getName())) {
+                InternalDocument internal_doc = internalDocumentDao.getItemByListCriteria(rootDocumentId);
+                return internal_doc.getController();
+            } else if (StringUtils.startsWith(key, DocumentType.RequestDocument.getName())) {
+                RequestDocument request_doc = requestDocumentDao.getItemByListCriteria(rootDocumentId);
+                return request_doc.getController();
+            } else if (StringUtils.startsWith(key, DocumentType.Task.getName())) {
                 Task parent_task = dao.getItemByListCriteria(rootDocumentId);
                 final Set<User> users = parent_task.getExecutors();
                 if (users != null && users.size() == 1) {
-                    initiator = users.iterator().next();
+                    return users.iterator().next();
                 } else {
-                    log.error(
-                            "TASK[{}] can not set initiator cause: {}",
-                            task.getId(),
-                            users == null ? "executors is null" : "too much executors. size =" + users.size()
-                    );
+                    log.error("Error to set initiator from executors, cause: {}", users == null ? "executors is null" : "too much executors. size =" + users.size());
                 }
             }
-            if (initiator != null) {
-                task.setInitiator(initiator);
-            } else {
-                log.warn("TASK[{}] Initiator not founded", task.getId());
-            }
         }
-
+        return null;
     }
-
-
-    public DocumentTaskTreeHolder getTaskTreeHolder() {
-        return taskTreeHolder;
-    }
-
-    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
-        this.taskTreeHolder = taskTreeHolder;
-    }
-
-
 }

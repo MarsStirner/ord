@@ -1,8 +1,8 @@
 package ru.hitsl.sql.dao.util;
 
-import com.github.javaplugs.jsf.SpringScopeSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.referenceBook.Role;
@@ -24,7 +24,7 @@ import java.util.Set;
  * Description: <br>
  */
 @Component("authData")
-@SpringScopeSession
+@Scope("session")
 public class AuthorizationData implements Serializable {
 
     private final static Logger logger = LoggerFactory.getLogger("AUTH");
@@ -111,7 +111,7 @@ public class AuthorizationData implements Serializable {
             for (Substitution currentSubstitution : substitutions) {
                 logger.debug("{}", currentSubstitution);
                 //Текущий замещаемый пользователь
-                final User currentSubstituted = currentSubstitution.getPerson();
+                final User currentSubstituted = currentSubstitution.getUser();
                 if (currentSubstituted != null) {
                     //Добавляем текущего замещаемого пользователя в список замещаемых
                     this.substitutedUsers.add(currentSubstituted);
@@ -292,7 +292,7 @@ public class AuthorizationData implements Serializable {
         for (Group current : groups) {
             sb.append("\n\t\t\t").append(current.getCode());
         }
-        sb.append("SessionID=").append(FacesContext.getCurrentInstance().getExternalContext().getSessionId(false));
+        sb.append("\n\t SessionID=").append(FacesContext.getCurrentInstance().getExternalContext().getSessionId(false));
         sb.append("\n]");
         return sb.toString();
     }

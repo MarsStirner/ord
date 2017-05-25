@@ -11,11 +11,12 @@ import javax.persistence.Table;
  * Author: Upatov Egor <br>
  * Date: 18.08.2014, 18:51 <br>
  * Company: Korus Consulting IT <br>
- * Description: Справочник Типов контактной иформации (телефон мобильный \ телефон рабочий \ skype \ итд)<br>
+ * See <a href="http://hl7.org/fhir/contact-point-system">FHIR:ContactPointSystem</a>
+ * Справочник Типов контактной иформации (телефон мобильный \ телефон рабочий \ skype \ итд)<br>
  */
 @Entity
-@Table(name = "rbContactInfoType")
-public class ContactInfoType extends ReferenceBookEntity {
+@Table(name = "rbContactPointSystem")
+public class RbContactPointSystem extends ReferenceBookEntity {
 
     public static final String RB_CODE_MOBILE_PHONE = "mobilePhone";
     public static final String RB_CODE_WORK_PHONE = "workPhone";
@@ -31,15 +32,15 @@ public class ContactInfoType extends ReferenceBookEntity {
 
     //**************************************************** End OF DB Fields
 
-    public ContactInfoType() {
+    public RbContactPointSystem() {
     }
 
-    public ContactInfoType(String name, String code) {
+    public RbContactPointSystem(String name, String code) {
         this.setValue(name);
         this.code = code;
     }
 
-    public ContactInfoType(String name, String code, String valueMask) {
+    public RbContactPointSystem(String name, String code, String valueMask) {
         this.setValue(name);
         this.code = code;
         this.valueMask = valueMask;

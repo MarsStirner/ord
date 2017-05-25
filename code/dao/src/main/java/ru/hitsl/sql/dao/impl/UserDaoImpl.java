@@ -72,7 +72,7 @@ public class UserDaoImpl extends CommonDaoImpl<User> implements UserDao {
         final DetachedCriteria result = getSimpleCriteria();
         result.createAlias("jobPosition", "jobPosition", LEFT_OUTER_JOIN);
         result.createAlias("jobDepartment", "jobDepartment", LEFT_OUTER_JOIN);
-        result.createAlias("contacts", "contacts", LEFT_OUTER_JOIN);
+        result.createAlias("telecom", "telecom", LEFT_OUTER_JOIN);
         return result;
     }
 

@@ -1,6 +1,8 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
 import org.primefaces.model.TreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
@@ -12,7 +14,7 @@ import java.util.List;
  * Company: Korus Consulting IT <br>
  * Description: Абстрактный бин, в котором есть дерево (Tree) <br>
  */
-public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> implements Serializable {
+public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> extends AbstractLoggableBean {
 
     //////////////////////// ABSTRACT METHODS START ///////////////////////////////////////////////////////////////////
 
@@ -20,10 +22,6 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * Ограничение на максимальную глубину узла при сворачивании\разворачивании
      */
     private static final int MAX_RECURSIVE_DEPTH = 10;
-    /**
-     * Флаг иницаилизации бина
-     */
-    private boolean initialized = false;
 
 
     ////////////////////// ABSTRACT METHODS END ////////////////////////////////////////////////////////////////////////
@@ -31,36 +29,13 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * корневой элемент дерева
      */
     private TreeNode rootNode;
-    /**
-     * Документы, которые используются в дереве
-     */
-    private List<D> documents;
-    /**
-     * Текущая глубина узла при сворачивании\ разворачивании дерева
-     */
-    private int depth = 0;
 
-    /**
-     * Переопределяемый метод для загрузки списка документов, которые будут использоваться при построении дерева
-     *
-     * @return список документов
-     */
-    protected abstract List<D> loadDocuments();
 
     /**
      * Переопределяемый метод для построения дерева из списка документов
-     *
-     * @param documents список документов, по которым надо построить дерево
      * @return корневой элемент дерева
      */
-    protected abstract TreeNode constructTreeFromDocumentList(final List<D> documents);
-
-    @PostConstruct
-    private void init() {
-        this.documents = loadDocuments();
-        this.rootNode = constructTreeFromDocumentList(documents);
-        this.initialized = true;
-    }
+    protected abstract TreeNode loadTree();
 
 
     /////////////////// PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////////
@@ -69,12 +44,7 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * Обновление данных в бине - новая загрузка документов и построение дерева
      */
     public void refresh() {
-        if (!initialized) {
-            init();
-        } else {
-            this.documents = loadDocuments();
-            this.rootNode = constructTreeFromDocumentList(documents);
-        }
+        this.rootNode = loadTree();
     }
 
     /**
@@ -95,16 +65,14 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * Свернуть все дерево
      */
     public void collapseAll() {
-        this.depth = 0;
-        changeExpandState(rootNode, false);
+        changeExpandState(rootNode, false, 0);
     }
 
     /**
      * Развернуть все дерево
      */
     public void expandAll() {
-        this.depth = 0;
-        changeExpandState(rootNode, true);
+        changeExpandState(rootNode, true, 0);
     }
 
     /**
@@ -113,18 +81,12 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
      * @param node   элемент, для котрого нужно утсановить опцию (а также у всех его дочерних элементов)
      * @param option true - развернуть \ false- свернуть
      */
-    private void changeExpandState(final TreeNode node, final boolean option) {
+    private void changeExpandState(final TreeNode node, final boolean option, int depth) {
         if (depth <= MAX_RECURSIVE_DEPTH) {
             node.setExpanded(option);
-            if (node.getChildCount() > 0) {
-                depth++;
-            }
-            for (TreeNode childNode : node.getChildren()) {
-                changeExpandState(childNode, option);
-            }
-            if (node.getChildCount() > 0) {
-                depth--;
-            }
+            node.getChildren().forEach(x-> changeExpandState(x, option, depth+1));
+        } else {
+            log.warn("MAX_RECURSIVE_DEPTH[{}] reached", MAX_RECURSIVE_DEPTH);
         }
     }
 
@@ -136,10 +98,4 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> imp
     public TreeNode getRoot() {
         return rootNode;
     }
-
-    public List<D> getDocuments() {
-        return documents;
-    }
-
-
 }

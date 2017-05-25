@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * Description: <br>
  */
 @Entity
-@Table(name = "incoming_documents_views")
+@Table(name = "incoming_document_views")
 @IdClass(IncomingDocumentViewFactPrimaryKey.class)
 public class IncomingDocumentViewFact implements DocumentViewFact<IncomingDocument> {
 

@@ -14,10 +14,9 @@ import java.util.*;
  * Тома дел
  */
 @Entity
-@Table(name = "dms_office_keeping_volumes")
+@Table(name = "office_keeping_volume")
+@Access(AccessType.FIELD)
 public class OfficeKeepingVolume extends DeletableEntity implements ProcessedData {
-
-    private static final long serialVersionUID = -638563758311092558L;
     /**
      * Номер фонда
      */
@@ -37,8 +36,8 @@ public class OfficeKeepingVolume extends DeletableEntity implements ProcessedDat
     /**
      * Кому передан на руки в текущий момент
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_office_keeping_volume_collectors")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "collector_id")
     private User collector;
     /**
      * Предполагаемая дата возврата
@@ -87,31 +86,24 @@ public class OfficeKeepingVolume extends DeletableEntity implements ProcessedDat
      * История
      */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "dms_office_keeping_volume_history",
-            joinColumns = {@JoinColumn(name = "file_id")},
-            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
+    @JoinTable(name = "office_keeping_volume_history",
+            joinColumns = {@JoinColumn(name = "document_id")},
+            inverseJoinColumns = {@JoinColumn(name = "entry_id")})
     private Set<HistoryEntry> history;
-    @Transient
+
+
     private String WFResultDescription;
 
-    @Transient
-    public DocumentType getDocumentType() {
+    public DocumentType getType() {
         return DocumentType.OfficeKeepingVolume;
     }
 
-    @Transient
     public DocumentStatus getDocumentStatus() {
-        return DocumentType.getStatus(getDocumentType().getName(), statusId);
+        return DocumentType.getStatus(getType().getName(), statusId);
     }
 
-    @Transient
-    public void setDocumentStatus(DocumentStatus status) {
+    public void setStatus(DocumentStatus status) {
         statusId = status.getId();
-    }
-
-    @Override
-    public String getBeanName() {
-        return "officeKeepingVolume";
     }
 
     public String getShortDescription() {
@@ -202,7 +194,6 @@ public class OfficeKeepingVolume extends DeletableEntity implements ProcessedDat
         this.history = history;
     }
 
-    @Transient
     public List<HistoryEntry> getHistoryList() {
         List<HistoryEntry> result = new ArrayList<>();
         if (history != null) {

@@ -8,13 +8,11 @@ import java.io.Serializable;
 public interface ProcessedData extends Serializable {
     Integer getId();
 
-    DocumentType getDocumentType();
+    DocumentType getType();
 
     DocumentStatus getDocumentStatus();
 
-    void setDocumentStatus(DocumentStatus status);
-
-    String getBeanName();
+    void setStatus(DocumentStatus status);
 
     String getWFResultDescription();
 }

@@ -1,9 +1,6 @@
 package ru.entity.model.enums;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Nastya Peshekhonova
@@ -12,13 +9,13 @@ import java.util.List;
  */
 
 public enum DocumentType {
-    IncomingDocument("IncomingDocument", getIncomingDocumentStatuses(), getIncomingDocumentActions()),
-    InternalDocument("InternalDocument", getInternalDocumentStatuses(), getInternalDocumentActions()),
-    OutgoingDocument("OutgoingDocument", getOutgoingDocumentStatuses(), getOutgoingDocumentActions()),
-    Task("Task", getTaskStatuses(), getTaskActions()),
+    IncomingDocument("INCOMING", getIncomingDocumentStatuses(), getIncomingDocumentActions()),
+    InternalDocument("INTERNAL", getInternalDocumentStatuses(), getInternalDocumentActions()),
+    OutgoingDocument("OUTGOING", getOutgoingDocumentStatuses(), getOutgoingDocumentActions()),
+    Task("TASK", getTaskStatuses(), getTaskActions()),
     OfficeKeepingFile("OfficeKeepingFile", getOfficeKeepingFileStatuses(), getOfficeKeepingFileActions()),
     OfficeKeepingVolume("OfficeKeepingVolume", getOfficeKeepingVolumeStatuses(), getOfficeKeepingVolumeActions()),
-    RequestDocument("RequestDocument", getRequestDocumentStatuses(), getRequestDocumentActions());
+    RequestDocument("REQUEST", getRequestDocumentStatuses(), getRequestDocumentActions());
 
     private final String name;
     private final List<DocumentStatus> statuses;
@@ -31,30 +28,26 @@ public enum DocumentType {
     }
 
     public static synchronized String getStatusName(String documentName, int id) {
-        DocumentType documentType = valueOf(documentName);
-        for (DocumentStatus status : documentType.getStatuses()) {
-            if (status.getId() == id)
-                return status.getName();
-        }
-        return "";
+        return Arrays.stream(values())
+                .filter(x -> Objects.equals(x.getName(), documentName))
+                .flatMap(x -> x.getStatuses().stream())
+                .filter(x -> x.getId() == id).findFirst()
+                .map(DocumentStatus::getName).orElse("");
     }
 
     public static synchronized DocumentStatus getStatus(String documentName, int id) {
-        DocumentType documentType = valueOf(documentName);
-        for (DocumentStatus status : documentType.getStatuses()) {
-            if (status.getId() == id)
-                return status;
-        }
-        return DocumentStatus.NEW;
+        return Arrays.stream(values())
+                .filter(x -> Objects.equals(x.getName(), documentName))
+                .flatMap(x -> x.getStatuses().stream())
+                .filter(x -> x.getId() == id).findFirst().orElse(DocumentStatus.NEW);
     }
 
     public synchronized static String getActionName(String documentName, int id) {
-        DocumentType documentType = valueOf(documentName);
-        for (DocumentAction action : documentType.getActions()) {
-            if (action.getId() == id)
-                return action.getName();
-        }
-        return "";
+        return Arrays.stream(values())
+                .filter(x -> Objects.equals(x.getName(), documentName))
+                .flatMap(x -> x.getActions().stream())
+                .filter(x -> x.getId() == id).findFirst()
+                .map(DocumentAction::getName).orElse("");
     }
 
     public static List<Integer> getStatusIdListByStrKey(String documentName, String strKey) {

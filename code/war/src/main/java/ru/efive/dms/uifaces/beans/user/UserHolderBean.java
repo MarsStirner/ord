@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.entity.model.referenceBook.ContactInfoType;
-import ru.entity.model.user.PersonContact;
+import ru.entity.model.referenceBook.RbContactPointSystem;
+import ru.entity.model.user.ContactPoint;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.UserDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.ContactInfoTypeDao;
@@ -26,17 +26,17 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
     @Qualifier("contactInfoTypeDao")
     private ContactInfoTypeDao contactInfoTypeDao;
 
-    private List<PersonContact> contactList;
+    private List<ContactPoint> contactList;
 
     public UserHolderBean(@Qualifier("userDao") final UserDao dao, @Qualifier("authData") final AuthorizationData authData) {
         super(dao, authData);
     }
 
-    public List<PersonContact> getContactList() {
+    public List<ContactPoint> getContactList() {
         return contactList;
     }
 
-    public void setContactList(final List<PersonContact> contactList) {
+    public void setContactList(final List<ContactPoint> contactList) {
         this.contactList = contactList;
     }
 
@@ -86,7 +86,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
      * @param contact контакт, который надо удалить
      * @return успешность удаления
      */
-    public boolean deleteContact(final PersonContact contact) {
+    public boolean deleteContact(final ContactPoint contact) {
         return getContactList().remove(contact);
 
     }
@@ -97,11 +97,11 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
      * @return успешность добавления
      */
     public boolean addContact() {
-        final PersonContact newContact = new PersonContact();
-        newContact.setPerson(getDocument());
-        final List<ContactInfoType> typeList = contactInfoTypeDao.getItems();
+        final ContactPoint newContact = new ContactPoint();
+        newContact.setUser(getDocument());
+        final List<RbContactPointSystem> typeList = contactInfoTypeDao.getItems();
         if (!typeList.isEmpty()) {
-            newContact.setType(typeList.get(0));
+            newContact.setSystem(typeList.get(0));
             return getContactList().add(newContact);
         }
         return false;
@@ -119,7 +119,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
 
     @Override
     public boolean afterRead(User document, AuthorizationData authData) {
-        final Set<PersonContact> contacts = document.getContacts();
+        final Set<ContactPoint> contacts = document.getTelecom();
         if (contacts != null && !contacts.isEmpty()) {
             contactList = new ArrayList<>(contacts);
         } else {
@@ -133,7 +133,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
     public boolean beforeCreate(final User document, final AuthorizationData authData) {
         //Удаляем пустые контактные данные, введенные пользователем
         contactList.removeIf(item -> StringUtils.isEmpty(item.getValue()));
-        document.setContacts(new HashSet<>(contactList));
+        document.setTelecom(new HashSet<>(contactList));
         document.setCurrentUserAccessLevel(document.getMaxUserAccessLevel());
         return true;
     }

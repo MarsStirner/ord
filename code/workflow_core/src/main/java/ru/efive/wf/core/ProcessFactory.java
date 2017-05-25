@@ -23,11 +23,11 @@ import ru.entity.model.user.User;
 import ru.external.ProcessUser;
 import ru.external.ProcessedData;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+@SuppressWarnings("Duplicates")
 public final class ProcessFactory {
 
     private final static Config cfg = ConfigFactory.parseResources("application.conf", ConfigParseOptions.defaults().setSyntax(ConfigSyntax.CONF)).resolve();
@@ -48,26 +48,26 @@ public final class ProcessFactory {
 
             if (id != null && !id.equals("")) {
                 Status<T> currentStatus = new Status<>();
-                if (t.getDocumentType().equals(DocumentType.IncomingDocument)) {
+                if (t.getType().equals(DocumentType.IncomingDocument)) {
                     System.out.println("Initialization process for incoming document");
                     currentStatus = getCurrentStatusInDocument(t, process, prop);
-                } else if (t.getDocumentType().equals(DocumentType.OutgoingDocument)) {
+                } else if (t.getType().equals(DocumentType.OutgoingDocument)) {
                     System.out.println("Initialization process for outgoing document");
                     currentStatus = getCurrentStatusOutDocument(t, process);
-                } else if (t.getDocumentType().equals(DocumentType.Task)) {
+                } else if (t.getType().equals(DocumentType.Task)) {
                     System.out.println("Initialization process for task");
                     currentStatus = getCurrentStatusTask(t, process, prop);
-                } else if (t.getDocumentType().equals(DocumentType.InternalDocument)) {
+                } else if (t.getType().equals(DocumentType.InternalDocument)) {
                     System.out.println("Initialization process for internal document");
                     currentStatus = getCurrentStatusInternalDocument(t, process, prop);
-                } else if (t.getDocumentType().equals(DocumentType.RequestDocument)) {
+                } else if (t.getType().equals(DocumentType.RequestDocument)) {
                     System.out.println("Initialization process for request document");
                     currentStatus = getCurrentStatusRequestDocument(t, process, prop);
-                } else if (t.getDocumentType().equals(DocumentType.OfficeKeepingFile)) {
+                } else if (t.getType().equals(DocumentType.OfficeKeepingFile)) {
                     System.out.println("Initialization process for office keeping file");
                     currentStatus = getCurrentStatusOfficeKeepingFile(t, process);
                     System.out.println("new process initialization");
-                } else if (t.getDocumentType().equals(DocumentType.OfficeKeepingVolume)) {
+                } else if (t.getType().equals(DocumentType.OfficeKeepingVolume)) {
                     System.out.println("Initialization process for office keeping volume");
                     currentStatus = getCurrentStatusOfficeKeepingVolume(t, process);
                 }
@@ -234,7 +234,6 @@ public final class ProcessFactory {
         toStatusAction.setDestinationStatus(toStatus);
 
         prop = PropertyUtils.getProperty(t, "registrationNumber");
-        String docNumber = (prop == null ? "" : (String) prop);
 
         fromStatusActions.add(toStatusAction);
         processStatus.setAvailableActions(fromStatusActions);
@@ -274,7 +273,7 @@ public final class ProcessFactory {
         ParametrizedPropertyLocalActivity localActivity = new ParametrizedPropertyLocalActivity();
         localActivity.setParentAction(toStatusAction);
         InputDateForm dateForm = new InputDateForm();
-        dateForm.setBeanName(process.getProcessedData().getBeanName());
+//        dateForm.setBeanName(process.getProcessedData().getBeanName());
         dateForm.setActionDateField("registrationDate");
         dateForm.setActionDate(defaultRegistrationDate);
         dateForm.setScope(EditablePropertyScope.GLOBAL);
@@ -341,7 +340,7 @@ public final class ProcessFactory {
         localActivity = new ParametrizedPropertyLocalActivity();
         localActivity.setParentAction(toStatusAction);
         dateForm = new InputDateForm();
-        dateForm.setBeanName(process.getProcessedData().getBeanName());
+//        dateForm.setBeanName(process.getProcessedData().getBeanName());
         dateForm.setActionDateField("registrationDate");
         dateForm.setActionDate(defaultRegistrationDate);
         dateForm.setScope(EditablePropertyScope.GLOBAL);
@@ -370,7 +369,6 @@ public final class ProcessFactory {
         toStatusAction.setPreActionActivities(activites);
         toStatusAction.setDestinationStatus(toStatus);
 
-        prop = PropertyUtils.getProperty(t, "registrationNumber");
 
         fromStatusActions.add(toStatusAction);
         processStatus.setAvailableActions(fromStatusActions);
@@ -391,11 +389,7 @@ public final class ProcessFactory {
 
         //List<String> sendTo=new ArrayList<String>();
         activites = new ArrayList<>();
-        Object agreementTree = PropertyUtils.getProperty(t, "agreementTree");
         sendTo = new ArrayList<>();
-
-        if (agreementTree != null) {
-        }
 
         if (!recipients.isEmpty()) sendTo.addAll(recipients);
 
@@ -493,7 +487,7 @@ public final class ProcessFactory {
         localActivity = new ParametrizedPropertyLocalActivity();
         localActivity.setParentAction(toStatusAction);
         dateForm = new InputDateForm();
-        dateForm.setBeanName(process.getProcessedData().getBeanName());
+//        dateForm.setBeanName(process.getProcessedData().getBeanName());
         dateForm.setActionDateField("registrationDate");
         dateForm.setActionDate(defaultRegistrationDate);
         dateForm.setScope(EditablePropertyScope.GLOBAL);
@@ -523,7 +517,6 @@ public final class ProcessFactory {
         toStatusAction.setDestinationStatus(toStatus);
 
         prop = PropertyUtils.getProperty(t, "registrationNumber");
-        docNumber = (prop == null ? "" : (String) prop);
 
         fromStatusActions.add(toStatusAction);
         processStatus.setAvailableActions(fromStatusActions);
@@ -746,7 +739,7 @@ public final class ProcessFactory {
         ParametrizedPropertyLocalActivity localActivity4 = new ParametrizedPropertyLocalActivity();
         localActivity4.setParentAction(changeAccessLevelAction);
         SelectAccessLevelForm accessLevelForm = new SelectAccessLevelForm();
-        accessLevelForm.setBeanName(process.getProcessedData().getBeanName());
+//        accessLevelForm.setBeanName(process.getProcessedData().getBeanName());
         accessLevelForm.setSelectedAccessLevelField("userAccessLevel");
         accessLevelForm.setScope(EditablePropertyScope.GLOBAL);
         localActivity4.setDocument(accessLevelForm);
@@ -832,7 +825,6 @@ public final class ProcessFactory {
         toStatus.setProcessedData(t);
         toStatusAction.setDestinationStatus(toStatus);
 
-        activites = new ArrayList<>();
         SendMailActivity mailActivity = null;
         prop = PropertyUtils.getProperty(t, "registrationNumber");
         String docNumber = (prop == null ? "" : (String) prop);
@@ -878,7 +870,6 @@ public final class ProcessFactory {
         }
         if (mailActivity != null) {
             activites.add(mailActivity);
-            mailActivity = null;
         }
         if (activites.size() > 0) {
             toStatus.setPreStatusActivities(activites);
@@ -921,7 +912,6 @@ public final class ProcessFactory {
         }
         if (mailActivity != null) {
             activites.add(mailActivity);
-            mailActivity = null;
         }
         if (activites.size() > 0) {
             toStatus.setPreStatusActivities(activites);
@@ -1127,7 +1117,7 @@ public final class ProcessFactory {
         Set<User> executors = prop == null ? null : (Set<User>) prop;
 
         prop = PropertyUtils.getProperty(t, "form");
-        Object form = (prop == null ? null : prop);
+        Object form = (prop);
 
         prop = null;
         if (form != null) {
@@ -1180,7 +1170,7 @@ public final class ProcessFactory {
                         break;
                     case "exercise":
                         prop = PropertyUtils.getProperty(t, "exerciseType");
-                        Object exerciseType = (prop == null ? null : prop);
+                        Object exerciseType = (prop);
 
                         prop = null;
                         if (form != null) {
@@ -1339,7 +1329,7 @@ public final class ProcessFactory {
             ParametrizedPropertyLocalActivity localActivity = new ParametrizedPropertyLocalActivity();
             localActivity.setParentAction(delegateAction);
             SelectUserForm selectUserForm = new SelectUserForm();
-            selectUserForm.setBeanName(process.getProcessedData().getBeanName());
+//            selectUserForm.setBeanName(process.getProcessedData().getBeanName());
             selectUserForm.setUserListBeanName("userList");
             selectUserForm.setSelectedUserField(EngineHelper.PROP_DELEGATION_USER);
             selectUserForm.setScope(EditablePropertyScope.LOCAL);
@@ -1396,7 +1386,7 @@ public final class ProcessFactory {
                 ParametrizedPropertyLocalActivity localActivity2 = new ParametrizedPropertyLocalActivity();
                 localActivity2.setParentAction(changeDateAction);
                 InputDateForm dateForm = new InputDateForm();
-                dateForm.setBeanName(process.getProcessedData().getBeanName());
+//                dateForm.setBeanName(process.getProcessedData().getBeanName());
                 dateForm.setActionDateField("controlDate");
                 dateForm.setActionDate(executionDate);
                 dateForm.setScope(EditablePropertyScope.GLOBAL);
@@ -1503,10 +1493,8 @@ public final class ProcessFactory {
         agreeStatus.setStatus(DocumentStatus.AGREEMENT_3);
         agreeStatus.setProcessedData(t);
         agreeStatus.setAgreementEnabled(true);
-        activites = new ArrayList<>();
         Object agreementTree = PropertyUtils.getProperty(t, "agreementTree");
-        if (agreementTree != null) {
-        }
+
         toStatusAction.setDestinationStatus(agreeStatus);
 
         fromStatusActions.add(toStatusAction);
@@ -1695,7 +1683,7 @@ public final class ProcessFactory {
         localActivity2 = new ParametrizedPropertyLocalActivity();
         localActivity2.setParentAction(changeAccessLevelAction);
         SelectAccessLevelForm accessLevelForm = new SelectAccessLevelForm();
-        accessLevelForm.setBeanName(process.getProcessedData().getBeanName());
+//        accessLevelForm.setBeanName(process.getProcessedData().getBeanName());
         accessLevelForm.setSelectedAccessLevelField("userAccessLevel");
         accessLevelForm.setScope(EditablePropertyScope.GLOBAL);
         localActivity2.setDocument(accessLevelForm);
@@ -1787,7 +1775,6 @@ public final class ProcessFactory {
         }
         if (mailActivity != null) {
             activites.add(mailActivity);
-            mailActivity = null;
         }
 
         //2-mail
@@ -1894,7 +1881,7 @@ public final class ProcessFactory {
         ParametrizedPropertyLocalActivity localActivity2 = new ParametrizedPropertyLocalActivity();
         localActivity2.setParentAction(changeDateAction);
         InputDateForm dateForm = new InputDateForm();
-        dateForm.setBeanName(process.getProcessedData().getBeanName());
+//        dateForm.setBeanName(process.getProcessedData().getBeanName());
         dateForm.setActionDateField("executionDate");
         dateForm.setActionDate(executionDate);
         dateForm.setScope(EditablePropertyScope.GLOBAL);
@@ -1929,7 +1916,7 @@ public final class ProcessFactory {
         localActivity2 = new ParametrizedPropertyLocalActivity();
         localActivity2.setParentAction(changeAccessLevelAction);
         SelectAccessLevelForm accessLevelForm = new SelectAccessLevelForm();
-        accessLevelForm.setBeanName(process.getProcessedData().getBeanName());
+//        accessLevelForm.setBeanName(process.getProcessedData().getBeanName());
         accessLevelForm.setSelectedAccessLevelField("userAccessLevel");
         accessLevelForm.setScope(EditablePropertyScope.GLOBAL);
         localActivity2.setDocument(accessLevelForm);

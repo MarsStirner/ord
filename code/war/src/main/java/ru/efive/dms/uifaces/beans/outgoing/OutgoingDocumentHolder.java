@@ -248,7 +248,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     protected OutgoingDocument newModel(AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
         final OutgoingDocument document = new OutgoingDocument();
-        document.setDocumentStatus(DocumentStatus.NEW);
+        document.setStatus(DocumentStatus.NEW);
         document.setCreationDate(created);
         document.setAuthor(authData.getAuthorized());
         document.setForm(getDefaultForm());
@@ -298,7 +298,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         historyEntry.setCreated(created);
         historyEntry.setStartDate(created);
         historyEntry.setOwner(currentUser);
-        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setDocType(document.getType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);

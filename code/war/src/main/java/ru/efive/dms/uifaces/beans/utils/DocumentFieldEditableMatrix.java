@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,13 +17,7 @@ import ru.hitsl.sql.dao.interfaces.EditableMatrixDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PostConstruct;
-
-import org.springframework.stereotype.Controller;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -230,17 +225,8 @@ public class DocumentFieldEditableMatrix {
             return matrix;
         }
 
-        public Map<String, Boolean> getEditableMap(final int statusId) {
-            return fastAccessMap.get(statusId);
-        }
-
         public boolean isFieldEditable(final int statusId, final String fieldName) {
-            final Map<String, Boolean> map = getEditableMap(statusId);
-            if (map != null) {
-                return map.get(fieldName);
-            } else {
-                return false;
-            }
+            return fastAccessMap.get(statusId).entrySet().stream().filter(x -> fieldName.equals(x.getKey())).findFirst().map(Map.Entry::getValue).orElse(false);
         }
 
         protected void toLog() {
@@ -265,24 +251,11 @@ public class DocumentFieldEditableMatrix {
         }
 
         public EditableFieldMatrix getItem(int statusId, String fieldName) {
-            for (EditableFieldMatrix item : matrix) {
-                if (item.getStatusId() == statusId && item.getField().getFieldCode().equals(fieldName)) {
-                    return item;
-                }
-            }
-            return null;
+            return matrix.stream().filter(x -> Objects.equals(statusId, x.getStatusId()) && Objects.equals(fieldName, x.getField().getFieldCode())).findFirst().orElse(null);
         }
 
         public boolean isStateEditable(int status) {
-            final Map<String, Boolean> editableMap = getEditableMap(status);
-            if (editableMap != null && !editableMap.isEmpty()) {
-                for (Map.Entry<String, Boolean> entry : editableMap.entrySet()) {
-                    if (entry.getValue()) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            return fastAccessMap.get(status).entrySet().stream().anyMatch(Map.Entry::getValue);
         }
     }
 }

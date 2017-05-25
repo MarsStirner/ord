@@ -9,6 +9,4 @@ import ru.hitsl.sql.dao.interfaces.mapped.ReferenceBookDao;
  * Company: Bars Group [ www.bars.open.ru ]
  * Description:
  */
-public interface GroupDao extends ReferenceBookDao<Group> {
-    Group findGroupByAlias(String alias);
-}
+public interface GroupDao extends ReferenceBookDao<Group> {}

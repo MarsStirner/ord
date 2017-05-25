@@ -36,18 +36,18 @@ public class SubstitutionDaoImpl extends CommonDaoImpl<Substitution> implements 
 
 
     @Override
-    public List<Substitution> getItemsOnPerson(final User person, final boolean showDeleted) {
+    public List<Substitution> getItemsOnPerson(final User user, final boolean showDeleted) {
         final DetachedCriteria criteria = getListCriteria();
         applyDeletedRestriction(criteria, showDeleted);
-        criteria.add(Restrictions.eq("person.id", person.getId()));
+        criteria.add(Restrictions.eq("user.id", user.getId()));
         return getItems(criteria);
     }
 
     @Override
-    public List<Substitution> getCurrentItemsOnPerson(final User person, final boolean showDeleted) {
+    public List<Substitution> getCurrentItemsOnPerson(final User user, final boolean showDeleted) {
         final DetachedCriteria criteria = getListCriteria();
         applyDeletedRestriction(criteria, showDeleted);
-        criteria.add(Restrictions.eq("person.id", person.getId()));
+        criteria.add(Restrictions.eq("user.id", user.getId()));
         addCurrentDateRestrictions(criteria);
         return getItems(criteria);
     }
@@ -78,10 +78,10 @@ public class SubstitutionDaoImpl extends CommonDaoImpl<Substitution> implements 
     @Override
     public DetachedCriteria getListCriteria() {
         final DetachedCriteria result = getSimpleCriteria();
-        result.createAlias("person", "person", INNER_JOIN);
+        result.createAlias("user", "user", INNER_JOIN);
         result.createAlias("substitution", "substitution", INNER_JOIN);
-        result.createAlias("person.groups", "person.groups", LEFT_OUTER_JOIN);
-        result.createAlias("person.roles", "person.roles", LEFT_OUTER_JOIN);
+        result.createAlias("user.groups", "user.groups", LEFT_OUTER_JOIN);
+        result.createAlias("user.roles", "user.roles", LEFT_OUTER_JOIN);
         return result;
     }
 
@@ -106,9 +106,9 @@ public class SubstitutionDaoImpl extends CommonDaoImpl<Substitution> implements 
     public void applyFilter(final DetachedCriteria criteria, final String filter) {
         if (StringUtils.isNotEmpty(filter)) {
             final Disjunction disjunction = Restrictions.disjunction();
-            disjunction.add(Restrictions.ilike("person.lastName", filter, ANYWHERE));
-            disjunction.add(Restrictions.ilike("person.firstName", filter, ANYWHERE));
-            disjunction.add(Restrictions.ilike("person.middleName", filter, ANYWHERE));
+            disjunction.add(Restrictions.ilike("user.lastName", filter, ANYWHERE));
+            disjunction.add(Restrictions.ilike("user.firstName", filter, ANYWHERE));
+            disjunction.add(Restrictions.ilike("user.middleName", filter, ANYWHERE));
             disjunction.add(Restrictions.ilike("substitution.lastName", filter, ANYWHERE));
             disjunction.add(Restrictions.ilike("substitution.firstName", filter, ANYWHERE));
             disjunction.add(Restrictions.ilike("substitution.middleName", filter, ANYWHERE));

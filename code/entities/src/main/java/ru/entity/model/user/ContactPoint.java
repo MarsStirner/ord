@@ -2,7 +2,7 @@ package ru.entity.model.user;
 
 
 import ru.entity.model.mapped.IdentifiedEntity;
-import ru.entity.model.referenceBook.ContactInfoType;
+import ru.entity.model.referenceBook.RbContactPointSystem;
 
 import javax.persistence.*;
 
@@ -10,47 +10,47 @@ import javax.persistence.*;
  * Author: Upatov Egor <br>
  * Date: 18.08.2014, 19:29 <br>
  * Company: Korus Consulting IT <br>
- * Description: <br>
+ * See <a href="https://www.hl7.org/fhir/datatypes.html#ContactPoint">FHIR:ContactPoint</a>
  */
 
 @Entity
-@Table(name = "dms_system_user_contact")
-public class PersonContact extends IdentifiedEntity {
+@Table(name = "contactPoint")
+public class ContactPoint extends IdentifiedEntity {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "person_id", nullable = false)
-    private User person;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "type_id", nullable = false)
-    private ContactInfoType type;
+    @JoinColumn(name = "system_id", nullable = false)
+    private RbContactPointSystem system;
 
     @Column(name = "value", nullable = true)
     private String value;
 
-    public PersonContact() {
+    public ContactPoint() {
     }
 
-    public PersonContact(User person, ContactInfoType type, String value) {
-        this.person = person;
-        this.type = type;
+    public ContactPoint(User user, RbContactPointSystem type, String value) {
+        this.user = user;
+        this.system = type;
         this.value = value;
     }
 
-    public User getPerson() {
-        return person;
+    public User getUser() {
+        return user;
     }
 
-    public void setPerson(User person) {
-        this.person = person;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public ContactInfoType getType() {
-        return type;
+    public RbContactPointSystem getSystem() {
+        return system;
     }
 
-    public void setType(ContactInfoType type) {
-        this.type = type;
+    public void setSystem(RbContactPointSystem system) {
+        this.system = system;
     }
 
     public String getValue() {
@@ -73,12 +73,12 @@ public class PersonContact extends IdentifiedEntity {
             return false;
         }
 
-        final PersonContact that = (PersonContact) o;
+        final ContactPoint that = (ContactPoint) o;
 
-        if (!person.equals(that.person)) {
+        if (!user.equals(that.user)) {
             return false;
         }
-        if (!type.equals(that.type)) {
+        if (!system.equals(that.system)) {
             return false;
         }
         return !(value != null ? !value.equals(that.value) : that.value != null);
@@ -88,8 +88,8 @@ public class PersonContact extends IdentifiedEntity {
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + person.hashCode();
-        result = 31 * result + type.hashCode();
+        result = 31 * result + user.hashCode();
+        result = 31 * result + system.hashCode();
         result = 31 * result + (value != null ? value.hashCode() : 0);
         return result;
     }

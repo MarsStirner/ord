@@ -27,8 +27,8 @@ public class Substitution extends DeletableEntity {
     private LocalDate endDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "person_id", nullable = false)
-    private User person;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "substitution_id", nullable = false)
@@ -43,7 +43,7 @@ public class Substitution extends DeletableEntity {
     public Substitution(LocalDate startDate, LocalDate endDate, User person, User substitution, int type) {
         this.startDate = startDate;
         this.endDate = endDate;
-        this.person = person;
+        this.user = person;
         this.substitution = substitution;
         this.type = type;
     }
@@ -65,12 +65,12 @@ public class Substitution extends DeletableEntity {
         this.endDate = endDate;
     }
 
-    public User getPerson() {
-        return person;
+    public User getUser() {
+        return user;
     }
 
-    public void setPerson(User person) {
-        this.person = person;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public User getSubstitution() {
@@ -97,9 +97,9 @@ public class Substitution extends DeletableEntity {
         sb.append(", startDate=").append(startDate);
         sb.append(", endDate=").append(endDate);
         sb.append(", deleted=").append(deleted);
-        sb.append(", person=");
-        if (person != null) {
-            sb.append('[').append(person.getId()).append(' ').append(person.getDescription()).append(']');
+        sb.append(", user=");
+        if (user != null) {
+            sb.append('[').append(user.getId()).append(' ').append(user.getDescription()).append(']');
         } else {
             sb.append("NULL");
         }

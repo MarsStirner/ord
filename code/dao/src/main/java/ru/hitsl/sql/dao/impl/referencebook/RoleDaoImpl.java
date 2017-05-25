@@ -25,7 +25,7 @@ public class RoleDaoImpl extends ReferenceBookDaoImpl<Role> implements RoleDao{
 
     @Override
     public Role findRoleByType(RoleType roleType) {
-        return getFirstItem(getFullCriteria().add(Restrictions.eq("roleType", roleType)));
+        return getFirstItem(getFullCriteria().add(Restrictions.eq("code", roleType.name())));
     }
 
 }

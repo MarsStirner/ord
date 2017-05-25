@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "task_documents_views")
+@Table(name = "task_views")
 @IdClass(TaskDocumentViewFactPrimaryKey.class)
 public class TaskDocumentViewFact implements DocumentViewFact<Task>{
     @Id

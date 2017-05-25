@@ -1,12 +1,15 @@
 package ru.efive.dms.uifaces.beans.utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.*;
+import ru.entity.model.enums.*;
 import ru.entity.model.referenceBook.*;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.UserDao;
 import ru.hitsl.sql.dao.interfaces.document.*;
@@ -110,7 +113,7 @@ public class ReferenceBookHelper {
         return groupTypeDao.getItems();
     }
 
-    public List<ContactInfoType> getContactTypes() {
+    public List<RbContactPointSystem> getContactTypes() {
         return contactInfoTypeDao.getItems();
     }
 
@@ -135,10 +138,9 @@ public class ReferenceBookHelper {
     }
 
     public String getLinkDescriptionByUniqueId(String documentKey) {
-
         if (!documentKey.isEmpty()) {
             final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
-            if (documentKey.contains("incoming")) {
+            if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.IncomingDocument.getName())) {
                 final IncomingDocument in_doc = incomingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (in_doc != null) {
                     return (in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ? "Черновик входщяего документа от " + ApplicationHelper
@@ -148,7 +150,7 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (documentKey.contains("outgoing")) {
+            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.OutgoingDocument.getName())) {
                 final OutgoingDocument out_doc = outgoingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (out_doc != null) {
                     return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ? "Черновик исходящего документа от " + ApplicationHelper
@@ -157,7 +159,7 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (documentKey.contains("internal")) {
+            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.InternalDocument.getName())) {
                 final InternalDocument internal_doc = internalDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (internal_doc != null) {
                     return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ? "Черновик внутреннего документа от " + ApplicationHelper.formatDate(
@@ -169,7 +171,7 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (documentKey.contains("request")) {
+            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.RequestDocument.getName())) {
                 final RequestDocument request_doc = requestDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (request_doc != null) {
                     return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ? "Черновик обращения граждан от " + ApplicationHelper.formatDate(
@@ -181,11 +183,11 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (documentKey.contains("task")) {
+            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.Task.getName())) {
                 final Task task_doc = taskDao.getItemBySimpleCriteria(rootDocumentId);
                 if (task_doc != null) {
-                    return (task_doc.getTaskNumber() == null || task_doc.getTaskNumber().equals("") ? "Черновик поручения от " + ApplicationHelper
-                            .formatDate(task_doc.getCreationDate()) : "Поручение № " + task_doc.getTaskNumber() + " от " + ApplicationHelper.formatDate(
+                    return (task_doc.getRegistrationNumber() == null || task_doc.getRegistrationNumber().equals("") ? "Черновик поручения от " + ApplicationHelper
+                            .formatDate(task_doc.getCreationDate()) : "Поручение № " + task_doc.getRegistrationNumber() + " от " + ApplicationHelper.formatDate(
                             task_doc.getCreationDate()
                     ));
                 } else {

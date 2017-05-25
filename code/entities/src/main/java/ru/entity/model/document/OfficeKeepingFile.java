@@ -18,10 +18,9 @@ import java.util.Set;
  * @author Alexey Vagizov
  */
 @Entity
-@Table(name = "dms_office_keeping_files")
+@Table(name = "office_keeping_file")
+@Access(AccessType.FIELD)
 public class OfficeKeepingFile extends DeletableEntity implements ProcessedData {
-
-    private static final long serialVersionUID = -638563758311092558L;
     /**
      * Индекс дела
      */
@@ -79,31 +78,23 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
      * История
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "dms_office_keeping_file_history",
-            joinColumns = {@JoinColumn(name = "file_id")},
-            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
+    @JoinTable(name = "office_keeping_file_history",
+            joinColumns = {@JoinColumn(name = "document_id")},
+            inverseJoinColumns = {@JoinColumn(name = "entry_id")})
     private Set<HistoryEntry> history;
-    @Transient
+
     private String WFResultDescription;
 
-    @Transient
-    public DocumentType getDocumentType() {
+    public DocumentType getType() {
         return DocumentType.OfficeKeepingFile;
     }
 
-    @Transient
     public DocumentStatus getDocumentStatus() {
-        return DocumentType.getStatus(getDocumentType().getName(), statusId);
+        return DocumentType.getStatus(getType().getName(), statusId);
     }
 
-    @Transient
-    public void setDocumentStatus(DocumentStatus status) {
+    public void setStatus(DocumentStatus status) {
         statusId = status.getId();
-    }
-
-    @Override
-    public String getBeanName() {
-        return "officeKeepingFile";
     }
 
     public String getShortDescription() {
@@ -154,7 +145,6 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
         this.volumes = volumes;
     }
 
-    @Transient
     public List<OfficeKeepingVolume> getVolumesList() {
         List<OfficeKeepingVolume> result = new ArrayList<>();
         if (volumes != null) {
@@ -163,7 +153,6 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
         return result;
     }
 
-    @Transient
     public List<OfficeKeepingVolume> getRegistratedVolumesList() {
         List<OfficeKeepingVolume> result = new ArrayList<>();
         if (volumes != null && !volumes.isEmpty()) {
@@ -184,7 +173,6 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
         this.history = history;
     }
 
-    @Transient
     public List<HistoryEntry> getHistoryList() {
         List<HistoryEntry> result = new ArrayList<>();
         if (history != null) {

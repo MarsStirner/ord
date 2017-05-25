@@ -90,7 +90,7 @@ public class WorkflowAction {
         result.setCreated(date);
         result.setStartDate(date);
         result.setOwner(authData.getAuthorized());
-        result.setDocType(document.getDocumentType().getName());
+        result.setDocType(document.getType().getName());
         result.setParentId(document.getId());
         result.setActionId(action.getId());
         result.setCommentary(additionalInfo);

@@ -267,7 +267,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     protected InternalDocument newModel(AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
         final InternalDocument doc = new InternalDocument();
-        doc.setDocumentStatus(DocumentStatus.DOC_PROJECT_1);
+        doc.setStatus(DocumentStatus.DOC_PROJECT_1);
         doc.setAuthor(authData.getAuthorized());
         doc.setCreationDate(created);
         doc.setForm(getDefaultForm());
@@ -319,7 +319,7 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         historyEntry.setCreated(created);
         historyEntry.setStartDate(created);
         historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getDocumentType().getName());
+        historyEntry.setDocType(document.getType().getName());
         historyEntry.setParentId(document.getId());
         historyEntry.setActionId(0);
         historyEntry.setFromStatusId(1);

@@ -9,6 +9,7 @@ import ru.entity.model.referenceBook.Group;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 import ru.hitsl.sql.dao.interfaces.referencebook.GroupDao;
 
+import static org.hibernate.sql.JoinType.INNER_JOIN;
 import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
 
 @Repository("groupDao")
@@ -42,7 +43,7 @@ public class GroupDaoImpl extends ReferenceBookDaoImpl<Group> implements GroupDa
         final DetachedCriteria result = getListCriteria();
         //EAGER LOADING OF GROUPS, ROLES, defaultNomenclature, and accessLevels
         result.createAlias("author", "author", LEFT_OUTER_JOIN);
-        result.createAlias("groupType", "groupType", CriteriaSpecification.INNER_JOIN);
+        result.createAlias("type", "type", INNER_JOIN);
         return result;
     }
 
@@ -60,10 +61,5 @@ public class GroupDaoImpl extends ReferenceBookDaoImpl<Group> implements GroupDa
             disjunction.add(Restrictions.ilike("value", filter, MatchMode.ANYWHERE));
             criteria.add(disjunction);
         }
-    }
-
-    @Override
-    public Group findGroupByAlias(final String alias) {
-        return getFirstItem(getFullCriteria().add(Restrictions.eq("alias", alias)));
     }
 }

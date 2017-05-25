@@ -1,8 +1,8 @@
 package ru.entity.model.document;
 
 import org.apache.commons.lang3.StringUtils;
-import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
+import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
@@ -10,7 +10,9 @@ import ru.external.ProcessedData;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -19,20 +21,31 @@ import java.util.*;
  * @author Alexey Vagizov
  */
 @Entity
-@Table(name = "dms_request_documents")
-public class RequestDocument extends DocumentEntity implements ProcessedData {
-
-    /**
-     * Номер входящего
-     */
-    @Column(name = "registrationNumber", nullable = true)
-    private String registrationNumber;
-
-    /**
-     * Дата регистрации
-     */
-    @Column(name = "registrationDate", nullable = true)
-    private LocalDateTime registrationDate;
+@Table(name = "request_document")
+@Access(AccessType.FIELD)
+@AssociationOverrides({
+        @AssociationOverride(name = "history", joinTable = @JoinTable(name = "request_document_history",
+                joinColumns = {@JoinColumn(name = "document_id")},
+                inverseJoinColumns = {@JoinColumn(name = "entry_id")}
+        )),
+        @AssociationOverride(name = "personReaders", joinTable = @JoinTable(name = "request_document_person_readers",
+                joinColumns = {@JoinColumn(name = "document_id")},
+                inverseJoinColumns = {@JoinColumn(name = "user_id")}
+        )),
+        @AssociationOverride(name = "personEditors", joinTable = @JoinTable(name = "request_document_person_editors",
+                joinColumns = {@JoinColumn(name = "document_id")},
+                inverseJoinColumns = {@JoinColumn(name = "user_id")}
+        )),
+        @AssociationOverride(name = "roleReaders", joinTable = @JoinTable(name = "request_document_role_readers",
+                joinColumns = {@JoinColumn(name = "document_id")},
+                inverseJoinColumns = {@JoinColumn(name = "role_id")}
+        )),
+        @AssociationOverride(name = "roleEditors", joinTable = @JoinTable(name = "request_document_role_editors",
+                joinColumns = {@JoinColumn(name = "document_id")},
+                inverseJoinColumns = {@JoinColumn(name = "role_id")}
+        ))
+})
+public class RequestDocument extends AccessControlledDocumentEntity implements ProcessedData {
 
     /**
      * Дата поступления
@@ -46,13 +59,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
     @Column(name = "executionDate", nullable = true)
     private LocalDateTime executionDate;
 
-    /**
-     * Руководитель
-     * TODO решить до конца вопрос с руководителем в обращениях граждан
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_documents_controllers")
-    private User controller;
 
     /**
      * Ответсвтенный исполнитель
@@ -97,68 +103,20 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
      * Адресаты
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_documents_recipients",
-            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "recipientUsers_id")})
+    @JoinTable(name = "request_document_recipient",
+            joinColumns = {@JoinColumn(name = "document_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> recipientUsers;
 
     /**
      * Адресаты (группы)
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_documents_recipient_groups",
-            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "recipientGroups_id")})
+    @JoinTable(name = "request_document_group_recipient",
+            joinColumns = {@JoinColumn(name = "document_id")},
+            inverseJoinColumns = {@JoinColumn(name = "group_id")})
     private Set<Group> recipientGroups;
 
-    /**
-     * Пользователи-читатели
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_documents_person_readers",
-            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "personReaders_id")})
-    private Set<User> personReaders;
-
-    /**
-     * Пользователи-редакторы
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_documents_person_editors",
-            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "personEditors_id")})
-    private Set<User> personEditors;
-
-    /**
-     * Роли-читатели
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_documents_role_readers",
-            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "roleReaders_id")})
-    private Set<Role> roleReaders;
-
-    /**
-     * Роли-редакторы
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_documents_role_editors",
-            joinColumns = {@JoinColumn(name = "dms_request_documents_id")},
-            inverseJoinColumns = {@JoinColumn(name = "roleEditors_id")})
-    private Set<Role> roleEditors;
-
-
-    /**
-     * Краткое описание
-     */
-    @Column(name = "shortDescription", columnDefinition = "text")
-    private String shortDescription;
-
-    /**
-     * Дата создания документа
-     */
-    @Column(name = "creationDate")
-    private LocalDateTime creationDate;
 
     /**
      * Регион
@@ -167,12 +125,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
     @JoinColumn(name = "region_id")
     private Region region;
 
-    /**
-     * Вид документа
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_id")
-    private DocumentForm form;
 
     /**
      * Вид документа
@@ -218,15 +170,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
     private int sheetsCount;
 
     /**
-     * Текущий статус документа в процессе
-     */
-    @Column(name = "status_id")
-    private int statusId;
-
-    @Transient
-    private String WFResultDescription;
-
-    /**
      * Номенклатура
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -234,70 +177,11 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
     private Nomenclature nomenclature;
 
 
-    /**
-     * Является ли документ шаблоном
-     */
-    private boolean templateFlag;
-
-    /**
-     * История
-     */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable(name = "dms_request_document_history",
-            joinColumns = {@JoinColumn(name = "document_id")},
-            inverseJoinColumns = {@JoinColumn(name = "history_entry_id")})
-    private Set<HistoryEntry> history;
-
-    /**
-     * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
-     * TODO класс-обертка
-     */
-    @Transient
-    private String styleClass;
-
-    @Transient
-    public DocumentType getDocumentType() {
+    @Override
+    public DocumentType getType() {
         return DocumentType.RequestDocument;
     }
 
-    @Transient
-    public DocumentStatus getDocumentStatus() {
-        return DocumentType.getStatus(getDocumentType().getName(), this.statusId);
-    }
-
-    @Transient
-    public void setDocumentStatus(DocumentStatus status) {
-        this.statusId = status.getId();
-    }
-
-    @Override
-    public String getBeanName() {
-        return "request_doc";
-    }
-
-    public String getRegistrationNumber() {
-        return registrationNumber;
-    }
-
-    public void setRegistrationNumber(String registrationNumber) {
-        this.registrationNumber = registrationNumber;
-    }
-
-    public String getErpNumber() {
-        return erpNumber;
-    }
-
-    public void setErpNumber(String erpNumber) {
-        this.erpNumber = erpNumber;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
 
     public LocalDateTime getExecutionDate() {
         return executionDate;
@@ -340,7 +224,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         this.senderMiddleName = middleName;
     }
 
-    @Transient
     public String getSenderDescription() {
         final StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotEmpty(senderLastName)) {
@@ -361,7 +244,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         return sb.toString();
     }
 
-    @Transient
     public String getSenderDescriptionShort() {
         final StringBuilder sb = new StringBuilder();
         if (StringUtils.isNotEmpty(senderLastName)) {
@@ -382,14 +264,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         return sb.toString();
     }
 
-    public User getController() {
-        return controller;
-    }
-
-    public void setController(User controller) {
-        this.controller = controller;
-    }
-
     public User getResponsible() {
         return responsible;
     }
@@ -398,36 +272,12 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         this.responsible = responsible;
     }
 
-    public String getShortDescription() {
-        return shortDescription;
-    }
-
-    public void setShortDescription(String shortDescription) {
-        this.shortDescription = shortDescription;
-    }
-
     public Nomenclature getNomenclature() {
         return nomenclature;
     }
 
     public void setNomenclature(Nomenclature nomenclature) {
         this.nomenclature = nomenclature;
-    }
-
-    public LocalDateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public DocumentForm getForm() {
-        return form;
-    }
-
-    public void setForm(DocumentForm form) {
-        this.form = form;
     }
 
     public DeliveryType getDeliveryType() {
@@ -478,64 +328,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         this.appendixiesCount = appendixiesCount;
     }
 
-    public int getStatusId() {
-        return statusId;
-    }
-
-    public void setStatusId(int statusId) {
-        this.statusId = statusId;
-    }
-
-    @Transient
-    public String getStatusName() {
-        return DocumentType.getStatusName(getType(), getStatusId());
-    }
-
-
-    public String getWFResultDescription() {
-        return this.WFResultDescription;
-    }
-
-    public void setWFResultDescription(String WFResultDescription) {
-        this.WFResultDescription = WFResultDescription;
-    }
-
-    @Transient
-    public String getUniqueId() {
-        return getId() == null ? "" : "request_" + getId();
-    }
-
-    public Set<HistoryEntry> getHistory() {
-        return history;
-    }
-
-    public void setHistory(Set<HistoryEntry> history) {
-        this.history = history;
-    }
-
-    @Transient
-    public List<HistoryEntry> getHistoryList() {
-        List<HistoryEntry> result = new ArrayList<>();
-        if (history != null) {
-            result.addAll(history);
-        }
-        Collections.sort(result);
-        return result;
-    }
-
-    /**
-     * Добавление в историю еще одной записи, если история пуста, то она создается
-     *
-     * @param historyEntry Запись в истории, которую надо добавить
-     * @return статус добавления (true - успех)
-     */
-    public boolean addToHistory(final HistoryEntry historyEntry) {
-        if (history == null) {
-            this.history = new HashSet<>(1);
-        }
-        return this.history.add(historyEntry);
-    }
-
     public Set<Group> getRecipientGroups() {
         return recipientGroups;
     }
@@ -544,7 +336,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
         this.recipientGroups = recipientGroups;
     }
 
-    @Transient
     public List<Group> getRecipientGroupsList() {
         List<Group> in_result = new ArrayList<>();
         if (recipientGroups != null) {
@@ -566,68 +357,6 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
             return new ArrayList<>(recipientUsers);
         }
         return new ArrayList<>(0);
-    }
-
-    public Set<User> getPersonReaders() {
-        return personReaders;
-    }
-
-    public void setPersonReaders(Set<User> personReaders) {
-        this.personReaders = personReaders;
-    }
-
-    public List<User> getPersonReadersList() {
-        if (personReaders != null && !personReaders.isEmpty()) {
-            return new ArrayList<>(personReaders);
-        }
-        return new ArrayList<>(0);
-    }
-
-    public Set<Role> getRoleReaders() {
-        return roleReaders;
-    }
-
-    public void setRoleReaders(Set<Role> roleReaders) {
-        this.roleReaders = roleReaders;
-    }
-
-    public List<Role> getRoleReadersList() {
-        if (roleReaders != null && !roleReaders.isEmpty()) {
-            return new ArrayList<>(roleReaders);
-        }
-        return new ArrayList<>(0);
-    }
-
-    public Set<Role> getRoleEditors() {
-        return roleEditors;
-    }
-
-    public void setRoleEditors(Set<Role> roleEditors) {
-        this.roleEditors = roleEditors;
-    }
-
-    public List<Role> getRoleEditorsList() {
-        if (roleEditors == null || roleEditors.isEmpty()) {
-            return new ArrayList<>(0);
-        } else {
-            return new ArrayList<>(roleEditors);
-        }
-    }
-
-    public Set<User> getPersonEditors() {
-        return personEditors;
-    }
-
-    public void setPersonEditors(Set<User> personEditors) {
-        this.personEditors = personEditors;
-    }
-
-    public List<User> getPersonEditorsList() {
-        if (personEditors == null || personEditors.isEmpty()) {
-            return new ArrayList<>(0);
-        } else {
-            return new ArrayList<>(personEditors);
-        }
     }
 
     public Region getRegion() {
@@ -652,18 +381,5 @@ public class RequestDocument extends DocumentEntity implements ProcessedData {
 
     public void setSenderType(SenderType senderType) {
         this.senderType = senderType;
-    }
-
-    public boolean getTemplateFlag() {
-        return templateFlag;
-    }
-
-    public void setTemplateFlag(boolean templateFlag) {
-        this.templateFlag = templateFlag;
-    }
-
-    @Override
-    public String getType() {
-        return ru.entity.model.referenceBook.DocumentType.RB_CODE_REQUEST;
     }
 }

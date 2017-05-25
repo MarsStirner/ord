@@ -130,17 +130,14 @@ public abstract class AbstractDocumentHolderBean<I extends DeletableEntity, D ex
         }
     }
 
-    public boolean edit() {
+    public void edit() {
         if (!isErrorState() && isCanUpdate(authData) && beforeUpdate(document, authData)) {
             setState(State.EDIT);
-            return true;
-        } else {
-            return false;
         }
     }
 
     @Transactional("ordTransactionManager")
-    public boolean save() {
+    public void save() {
         if (!isErrorState()) {
             boolean success;
             // If chained method fail -> break operation execution
@@ -154,24 +151,32 @@ public abstract class AbstractDocumentHolderBean<I extends DeletableEntity, D ex
                 setState(State.VIEW);
             }
         }
-        return false;
     }
 
 
     @Transactional("ordTransactionManager")
-    public boolean view() {
+    public void view() {
         if (!isErrorState() && isCanRead(authData) && beforeRead(authData)) {
             document = readModel(getDocumentId(), authData);
             setState(State.VIEW);
-            return true;
-        } else {
-            return false;
         }
     }
 
     @PreDestroy
     public void destroy() {
         log.info("Bean[{}] destroyed", getBeanName());
+    }
+
+    @Transactional("ordTransactionManager")
+    public void init() {
+        String docId = getRequestParamByName("docId");
+        Integer id = null;
+        try {
+            id = Integer.valueOf(docId);
+        } catch (NumberFormatException e) {
+
+        }
+        init(getRequestParamByName("docAction"), id);
     }
 
 
@@ -181,8 +186,8 @@ public abstract class AbstractDocumentHolderBean<I extends DeletableEntity, D ex
         //CREATE
         if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
             if (isCanCreate(authData)) {
-                setState(State.CREATE);
                 document = newModel(authData);
+                setState(State.CREATE);
                 return;
             } else {
                 setState(State.ERROR);

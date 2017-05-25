@@ -7,18 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.entity.model.referenceBook.ContactInfoType;
+import ru.entity.model.referenceBook.RbContactPointSystem;
 import ru.entity.model.referenceBook.Department;
 import ru.entity.model.referenceBook.Position;
 import ru.entity.model.referenceBook.UserAccessLevel;
-import ru.entity.model.user.PersonContact;
+import ru.entity.model.user.ContactPoint;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.UserDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.ContactInfoTypeDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DepartmentDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.PositionDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.UserAccessLevelDao;
-import ru.util.ApplicationHelper;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -291,13 +290,13 @@ public class LDAPImportService {
         }
         user.setLastModified(ldapUser.getLastModified());
         if (ldapUser.getMail() != null && !ldapUser.getMail().isEmpty()) {
-            user.addToContacts(new PersonContact(user, cache.getEmailContactType(), ldapUser.getMail()));
+            user.addToContacts(new ContactPoint(user, cache.getEmailContactType(), ldapUser.getMail()));
         }
         if (ldapUser.getPhone() != null && !ldapUser.getPhone().isEmpty()) {
-            user.addToContacts(new PersonContact(user, cache.getPhoneContactType(), ldapUser.getPhone()));
+            user.addToContacts(new ContactPoint(user, cache.getPhoneContactType(), ldapUser.getPhone()));
         }
         if (ldapUser.getMobile() != null && !ldapUser.getMobile().isEmpty()) {
-            user.addToContacts(new PersonContact(user, cache.getMobileContactType(), ldapUser.getMobile()));
+            user.addToContacts(new ContactPoint(user, cache.getMobileContactType(), ldapUser.getMobile()));
         }
         try {
             userDao.save(user);
@@ -363,27 +362,27 @@ public class LDAPImportService {
                 boolean foundedEmail = ldapUser.getMail() == null || ldapUser.getMail().isEmpty();
                 boolean foundedPhone = ldapUser.getPhone() == null || ldapUser.getPhone().isEmpty();
                 boolean foundedMobile = ldapUser.getMobile() == null || ldapUser.getMobile().isEmpty();
-                for (PersonContact contact : localUser.getContacts()) {
-                    if (!foundedEmail && cache.getEmailContactType().equals(contact.getType())) {
+                for (ContactPoint contact : localUser.getTelecom()) {
+                    if (!foundedEmail && cache.getEmailContactType().equals(contact.getSystem())) {
                         contact.setValue(ldapUser.getMail());
                         foundedEmail = true;
-                    } else if (!foundedPhone && cache.getPhoneContactType().equals(contact.getType())) {
+                    } else if (!foundedPhone && cache.getPhoneContactType().equals(contact.getSystem())) {
                         contact.setValue(ldapUser.getPhone());
                         foundedPhone = true;
-                    } else if (!foundedMobile && cache.getMobileContactType().equals(contact.getType())) {
+                    } else if (!foundedMobile && cache.getMobileContactType().equals(contact.getSystem())) {
                         contact.setValue(ldapUser.getMobile());
                         foundedMobile = true;
                     }
                 }
                 if (!foundedEmail) {
-                    localUser.addToContacts(new PersonContact(localUser, cache.getEmailContactType(), ldapUser.getMail()));
+                    localUser.addToContacts(new ContactPoint(localUser, cache.getEmailContactType(), ldapUser.getMail()));
                     localUser.setEmail(ldapUser.getMail());
                 }
                 if (!foundedPhone) {
-                    localUser.addToContacts(new PersonContact(localUser, cache.getPhoneContactType(), ldapUser.getPhone()));
+                    localUser.addToContacts(new ContactPoint(localUser, cache.getPhoneContactType(), ldapUser.getPhone()));
                 }
                 if (!foundedMobile) {
-                    localUser.addToContacts(new PersonContact(localUser, cache.getMobileContactType(), ldapUser.getMobile()));
+                    localUser.addToContacts(new ContactPoint(localUser, cache.getMobileContactType(), ldapUser.getMobile()));
                 }
                 userDao.save(localUser);
                 LOGGER.debug("Updated");
@@ -404,13 +403,13 @@ public class LDAPImportService {
             throw new Exception("CACHE_ERROR: Upload not started: cause not founded default UserAccessLevel = 1");
         }
 
-        final List<ContactInfoType> contactTypes = contactInfoTypeDao.getItems();
-        for (ContactInfoType contactType : contactTypes) {
-            if (ContactInfoType.RB_CODE_EMAIL.equals(contactType.getCode())) {
+        final List<RbContactPointSystem> contactTypes = contactInfoTypeDao.getItems();
+        for (RbContactPointSystem contactType : contactTypes) {
+            if (RbContactPointSystem.RB_CODE_EMAIL.equals(contactType.getCode())) {
                 result.setEmailContactType(contactType);
-            } else if (ContactInfoType.RB_CODE_PHONE.equals(contactType.getCode())) {
+            } else if (RbContactPointSystem.RB_CODE_PHONE.equals(contactType.getCode())) {
                 result.setPhoneContactType(contactType);
-            } else if (ContactInfoType.RB_CODE_MOBILE_PHONE.equals(contactType.getCode())) {
+            } else if (RbContactPointSystem.RB_CODE_MOBILE_PHONE.equals(contactType.getCode())) {
                 result.setMobileContactType(contactType);
             }
         }

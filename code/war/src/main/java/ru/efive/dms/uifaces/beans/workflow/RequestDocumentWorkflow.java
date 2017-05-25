@@ -162,7 +162,7 @@ public class RequestDocumentWorkflow {
     public void finish() {
         final WorkflowAction workflowAction = selectedAction;
         if (workflowAction.getTargetStatus() != null) {
-            document.setDocumentStatus(workflowAction.getTargetStatus());
+            document.setStatus(workflowAction.getTargetStatus());
         }
         if (workflowAction.isNeedHistory()) {
             document.addToHistory(workflowAction.getHistoryEntity(document, authData));

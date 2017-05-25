@@ -1,6 +1,7 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
 import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
@@ -51,6 +52,12 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
 
     @Override
     @Transactional(value = "ordTransactionManager", propagation = Propagation.REQUIRED)
+    protected TreeNode loadTree() {
+        return constructTreeFromDocumentList(loadDocuments());
+    }
+
+    @Override
+    @Transactional(value = "ordTransactionManager", propagation = Propagation.REQUIRED)
     public void refresh() {
         super.refresh();
     }
@@ -58,7 +65,6 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
 
 
 
-    @Override
     @Transactional(value = "ordTransactionManager", propagation = Propagation.REQUIRED)
     protected List<IncomingDocument> loadDocuments() {
         final List<IncomingDocument> resultList = incomingDocumentDao
@@ -73,7 +79,6 @@ public class IncomingDocumentsByExecutingDate extends AbstractDocumentTreeHolder
         return resultList;
     }
 
-    @Override
     protected DefaultTreeNode constructTreeFromDocumentList(final List<IncomingDocument> documents) {
         if (dateFormatSymbols == null) {
             dateFormatSymbols = new DateFormatSymbols(ApplicationHelper.getLocale());

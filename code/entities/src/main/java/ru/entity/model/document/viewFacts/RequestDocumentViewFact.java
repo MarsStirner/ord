@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "request_documents_views")
+@Table(name = "request_document_views")
 @IdClass(RequestDocumentViewFactPrimaryKey.class)
 public class RequestDocumentViewFact implements DocumentViewFact<RequestDocument>{
     @Id

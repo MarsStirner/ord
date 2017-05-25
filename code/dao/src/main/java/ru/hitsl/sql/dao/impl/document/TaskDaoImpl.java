@@ -1,7 +1,10 @@
 package ru.hitsl.sql.dao.impl.document;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.criterion.*;
+import org.hibernate.criterion.Conjunction;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,18 +17,26 @@ import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 import ru.util.ApplicationHelper;
+import ru.util.Node;
 
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.hibernate.criterion.MatchMode.*;
+import static org.hibernate.criterion.MatchMode.ANYWHERE;
+import static org.hibernate.sql.JoinType.INNER_JOIN;
 import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
 
 @Repository("taskDao")
 @Transactional(propagation = Propagation.MANDATORY)
 public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
+
+    /**
+     * Ограничение на максимальную глубину рекурсии
+     */
+    private static final int MAX_RECURSIVE_DEPTH = 10;
+
 
     @Override
     public Class<Task> getEntityClass() {
@@ -83,7 +94,7 @@ public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
             criteria.add(Restrictions.eq("parent.id", parentId));
             //Sorting по дате создания а потом по номеру
             applyOrder(criteria, "creationDate", false);
-            applyOrder(criteria, "taskNumber", true);
+            applyOrder(criteria, "registrationNumber", true);
 
             final List<Task> subResult = getItems(criteria);
             final List<Task> result = new ArrayList<>(subResult.size());
@@ -95,6 +106,24 @@ public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
         } else {
             log.warn("parentId  = 0. return empty list");
             return new ArrayList<>(0);
+        }
+    }
+
+    @Override
+    public void fetchTreeRecursive(String documentId, Node<Task> node, int depth) {
+        final DetachedCriteria criteria = getListCriteria();
+        applyDeletedRestriction(criteria, false);
+        criteria.add(Restrictions.eq("rootDocumentId", documentId));
+        criteria.add(Restrictions.eqOrIsNull("parent.id", node.getData() == null ? null : node.getData().getId()));
+        //Not lambda cause IDEA not mark recursive call in lambdas at left-side panel =)
+        for (Task x : getItems(criteria)) {
+            Node<Task> subNode = new Node<>(x);
+            node.addChild(subNode);
+            if (depth <= MAX_RECURSIVE_DEPTH) {
+                fetchTreeRecursive(documentId, subNode, depth + 1);
+            } else {
+                log.warn("MAX_RECURSIVE_DEPTH[{}] reached. Not fetch childrens under {}", MAX_RECURSIVE_DEPTH, x);
+            }
         }
     }
 
@@ -116,7 +145,7 @@ public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
     @Override
     public DetachedCriteria getListCriteria() {
         final DetachedCriteria result = getSimpleCriteria();
-        result.createAlias("author", "author", CriteriaSpecification.INNER_JOIN);
+        result.createAlias("author", "author", INNER_JOIN);
         result.createAlias("executors", "executors", LEFT_OUTER_JOIN);
         result.createAlias("controller", "controller", LEFT_OUTER_JOIN);
         result.createAlias("form", "form", LEFT_OUTER_JOIN);
@@ -169,7 +198,7 @@ public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
                 disjunction.add(Restrictions.isNull("rootDocumentId"));
                 conjunction.add(disjunction);
             } else if (DocumentSearchMapKeys.REGISTRATION_NUMBER_KEY.equals(key)) {
-                conjunction.add(Restrictions.ilike("taskNumber", (String) value, ANYWHERE));
+                conjunction.add(Restrictions.ilike("registrationNumber", (String) value, ANYWHERE));
             } else if (DocumentSearchMapKeys.START_REGISTRATION_DATE_KEY.equals(key)) {
                 conjunction.add(Restrictions.ge("registrationDate", value));
             } else if (DocumentSearchMapKeys.END_REGISTRATION_DATE_KEY.equals(key)) {
@@ -231,7 +260,7 @@ public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
         final Disjunction disjunction = Restrictions.disjunction();
         disjunction.add(createDateLikeTextRestriction("creationDate", filter));
         disjunction.add(createDateLikeTextRestriction("controlDate", filter));
-        disjunction.add(Restrictions.ilike("taskNumber", filter, ANYWHERE));
+        disjunction.add(Restrictions.ilike("registrationNumber", filter, ANYWHERE));
         disjunction.add(Restrictions.ilike("executors.lastName", filter, ANYWHERE));
         disjunction.add(Restrictions.ilike("executors.middleName", filter, ANYWHERE));
         disjunction.add(Restrictions.ilike("executors.firstName", filter, ANYWHERE));

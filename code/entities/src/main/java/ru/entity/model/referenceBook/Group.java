@@ -30,17 +30,17 @@ public class Group extends ReferenceBookEntity {
      * пользователи
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "mmPersonToGroup",
+    @JoinTable(name = "mmUserToGroup",
             joinColumns = {@JoinColumn(name = "group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "member_id")})
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> members;
 
     /**
      * Категория
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "groupType_id")
-    private GroupType groupType;
+    @JoinColumn(name = "type_id")
+    private GroupType type;
 
     public List<User> getMembersList() {
         List<User> result = new ArrayList<>();
@@ -67,11 +67,11 @@ public class Group extends ReferenceBookEntity {
         this.author = author;
     }
 
-    public GroupType getGroupType() {
-        return groupType;
+    public GroupType getType() {
+        return type;
     }
 
-    public void setGroupType(final GroupType groupType) {
-        this.groupType = groupType;
+    public void setType(final GroupType type) {
+        this.type = type;
     }
 }

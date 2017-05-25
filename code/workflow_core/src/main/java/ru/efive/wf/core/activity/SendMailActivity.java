@@ -97,9 +97,9 @@ public class SendMailActivity implements IActivity {
 
     private String getDocNumber() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         Object prop = null;
-        if (!processedData.getDocumentType().equals(DocumentType.Task)) {
+        if (!processedData.getType().equals(DocumentType.Task)) {
             prop = PropertyUtils.getProperty(processedData, "registrationNumber");
-        } else if (processedData.getDocumentType().equals(DocumentType.Task)) {
+        } else if (processedData.getType().equals(DocumentType.Task)) {
             prop = PropertyUtils.getProperty(processedData, "taskNumber");
         }
         return (prop == null ? "" : (String) prop);
