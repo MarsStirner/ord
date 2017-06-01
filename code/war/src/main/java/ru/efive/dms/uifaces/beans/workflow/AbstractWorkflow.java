@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.beans.workflow;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractLoggableBean;
 import ru.entity.model.mapped.DocumentEntity;
@@ -13,14 +12,11 @@ import java.util.List;
 
 public abstract class AbstractWorkflow<I extends DocumentEntity, D extends DocumentDao> extends AbstractLoggableBean {
 
-    private final AuthorizationData authData;
     protected final D dao;
-    private I document;
-
-    private State state;
-
+    private final AuthorizationData authData;
     private final List<String> warnings;
-
+    private I document;
+    private State state;
     private WorkflowAction selectedAction;
 
     private List<WorkflowAction> actions = new ArrayList<>(3);
@@ -53,12 +49,8 @@ public abstract class AbstractWorkflow<I extends DocumentEntity, D extends Docum
             log.info("Start process {} ", selectedAction);
             if (process(selectedAction, document)) {
                 log.info("processed {}", selectedAction);
-                if (!StringUtils.isEmpty(selectedAction.getUi())) {
-                    state = State.WAIT_FOR_USER_INPUT;
-                } else {
-                    finish();
-                    state = State.PROCESSED;
-                }
+                finish();
+                state = State.PROCESSED;
             } else {
                 state = State.WARNING;
             }
@@ -85,7 +77,6 @@ public abstract class AbstractWorkflow<I extends DocumentEntity, D extends Docum
     }
 
 
-
     public State getState() {
         return state;
     }
@@ -102,7 +93,7 @@ public abstract class AbstractWorkflow<I extends DocumentEntity, D extends Docum
         warnings.add(message);
     }
 
-    public List<String> getWarnings(){
+    public List<String> getWarnings() {
         return warnings;
     }
 

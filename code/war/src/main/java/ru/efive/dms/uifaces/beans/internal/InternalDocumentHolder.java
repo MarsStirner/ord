@@ -9,18 +9,19 @@ import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
+import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.InternalDocument;
+import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.InternalDocumentDao;
+import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
@@ -39,11 +40,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     private Permissions permissions;
 
     @Autowired
-    @Qualifier("documentTaskTree")
-    private DocumentTaskTreeHolder taskTreeHolder;
-
-
-    @Autowired
     @Qualifier("viewFactDao")
     private ViewFactDao viewFactDao;
 
@@ -54,6 +50,13 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
+
+    @Autowired
+    @Qualifier("taskDao")
+    private TaskDao taskDao;
+
+    @Autowired
+    private ReferenceBookHelper referenceBookHelper;
 
     @Autowired
     public InternalDocumentHolder(@Qualifier("internalDocumentDao") InternalDocumentDao dao, @Qualifier("authData") AuthorizationData authData) {
@@ -287,19 +290,28 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             MessageUtils.addMessage(MessageKey.ERROR, msg);
             return false;
         }
-
         permissions = permissionChecker.getPermissions(authData, document);
         if (isReadPermission()) {
             //Простановка факта просмотра записи
             if (viewFactDao.registerViewFact(document, authData.getAuthorized())) {
                 MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
             }
-            //Установка идшника для поиска поручений
-            taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
-            //Поиск поручений
-            taskTreeHolder.refresh();
         }
         return true;
+    }
+
+    @Override
+    public boolean beforeDelete(InternalDocument document, AuthorizationData authData) {
+        boolean result = true;
+        List<Task> taskList = taskDao.getTaskListByRootDocumentId(document.getUniqueId(), false);
+        for (Task task : taskList) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
+            );
+            result = false;
+        }
+        return result;
     }
 
     @Override
@@ -339,8 +351,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             log.error("createModel: on viewFact register", e);
             MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
-        //Установка идшника для поиска поручений
-        taskTreeHolder.setRootDocumentId(getDocument().getUniqueId());
         return true;
     }
 
@@ -386,13 +396,4 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
             }
         }
     }
-
-    public DocumentTaskTreeHolder getTaskTreeHolder() {
-        return taskTreeHolder;
-    }
-
-    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
-        this.taskTreeHolder = taskTreeHolder;
-    }
-
 }

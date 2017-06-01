@@ -44,7 +44,6 @@ public abstract class AbstractDocumentHolderBean<I extends DeletableEntity, D ex
 
     public AbstractDocumentHolderBean(D dao, AuthorizationData authData) {
         super(authData);
-        log.debug("<init>:[@{}] as '{}'", Integer.toHexString(hashCode()), getBeanName());
         this.dao = dao;
     }
 
@@ -169,10 +168,9 @@ public abstract class AbstractDocumentHolderBean<I extends DeletableEntity, D ex
 
     @Transactional("ordTransactionManager")
     public void init() {
-        String docId = getRequestParamByName("docId");
         Integer id = null;
         try {
-            id = Integer.valueOf(docId);
+            id = Integer.valueOf(getRequestParamByName("docId"));
         } catch (NumberFormatException e) {
 
         }
@@ -182,7 +180,7 @@ public abstract class AbstractDocumentHolderBean<I extends DeletableEntity, D ex
 
     @Transactional("ordTransactionManager")
     public void init(final String action, final Integer id) {
-        log.info("Initialize new HolderBean");
+        log.debug("init: [@{}] as '{}' with[action={}, id={}]", Integer.toHexString(hashCode()), getBeanName(), action, id);
         //CREATE
         if (REQUEST_PVALUE_DOC_ACTION_CREATE.equals(action)) {
             if (isCanCreate(authData)) {

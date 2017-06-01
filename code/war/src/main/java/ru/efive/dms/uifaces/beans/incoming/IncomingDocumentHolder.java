@@ -12,6 +12,7 @@ import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
+import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
@@ -20,14 +21,17 @@ import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
+import ru.entity.model.document.Task;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
+import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
+import ru.util.ApplicationHelper;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -45,6 +49,7 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
+
     @Autowired
     @Qualifier("outgoingDocumentDao")
     private OutgoingDocumentDao outgoingDocumentDao;
@@ -52,9 +57,17 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     @Autowired
     @Qualifier("viewFactDao")
     private ViewFactDao viewFactDao;
+
     @Autowired
     @Qualifier("documentFormDao")
     private DocumentFormDao documentFormDao;
+
+    @Autowired
+    @Qualifier("taskDao")
+    private TaskDao taskDao;
+
+    @Autowired
+    private ReferenceBookHelper referenceBookHelper;
 
 
     /**
@@ -66,6 +79,8 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
     public IncomingDocumentHolder(@Qualifier("incomingDocumentDao") IncomingDocumentDao dao, @Qualifier("authData") AuthorizationData authData) {
         super(dao, authData);
     }
+
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -368,6 +383,29 @@ public class IncomingDocumentHolder extends AbstractDocumentHolderBean<IncomingD
         historyEntry.setCommentary("");
         document.addToHistory(historyEntry);
         return true;
+    }
+
+
+    @Override
+    public boolean beforeDelete(IncomingDocument document, AuthorizationData authData) {
+        boolean result = true;
+        final List<OutgoingDocument> outgoingDocuments = getRelatedDocuments();
+        for (OutgoingDocument outgoingDocument : outgoingDocuments) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(outgoingDocument.getUniqueId())
+            );
+            result = false;
+        }
+        List<Task> taskList = taskDao.getTaskListByRootDocumentId(document.getUniqueId(), false);
+        for (Task task : taskList) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
+            );
+            result = false;
+        }
+        return result;
     }
 
     @Override

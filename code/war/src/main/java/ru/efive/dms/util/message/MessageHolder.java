@@ -28,15 +28,19 @@ public class MessageHolder {
     public static final FacesMessage MSG_EXECUTOR_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Необходимо выбрать Ответственного исполнителя", "");
 
 
+    public static final FacesMessage MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT  = new FacesMessage(
+            SEVERITY_ERROR, "Невозможно удалить документ, так как он связан с ''{0}'' ", "");
+
     public static final FacesMessage MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS = new FacesMessage(SEVERITY_ERROR, "Невозможно удалить контрагента, так как к нему привязаны документы.", "");
     public static final FacesMessage MSG_RB_CONTRAGENT_TYPE_IS_USED_BY_SOME_CONTRAGENTS = new FacesMessage(SEVERITY_ERROR, "Невозможно удалить тип контрагента, так как к нему привязаны контрагенты.", "");
+
+
     //Сообщения об ошибках авторизации
     public final static FacesMessage MSG_AUTH_FIRED = new FacesMessage(SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
     public final static FacesMessage MSG_AUTH_DELETED = new FacesMessage(SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");
     public final static FacesMessage MSG_AUTH_ERROR = new FacesMessage(SEVERITY_ERROR, "Ошибка при входе в систему. Попробуйте повторить позже.", "");
     public final static FacesMessage MSG_AUTH_NOT_FOUND = new FacesMessage(SEVERITY_ERROR, "Введены неверные данные.", "");
     public final static FacesMessage MSG_AUTH_NO_ROLE = new FacesMessage(SEVERITY_ERROR, "Обратитесь к администратору системы для получения доступа", "");
-    public final static FacesMessage MSG_AUTH_NO_MAX_ACCESS_LEVEL = new FacesMessage(SEVERITY_ERROR, "Обратитесь к администратору системы для назначения корректного уровня допуска", "");
 
     //ORD-42 факты просмотров документов
     public static final FacesMessage MSG_VIEW_FACT_REGISTERED = new FacesMessage(SEVERITY_INFO, "Факт просмотра документа сохранен", "");
@@ -44,7 +48,6 @@ public class MessageHolder {
 
     // Неизветсная внутренняя ошибка
     public static final FacesMessage MSG_INTERNAL_ERROR = new FacesMessage(SEVERITY_ERROR, "Внутренняя ошибка", "");
-
 
 
     //Отчеты
@@ -76,7 +79,8 @@ public class MessageHolder {
 
     public static final FacesMessage MSG_CANT_EDIT_WITHOUT_ID = new FacesMessage(SEVERITY_ERROR, "Невозможно проводить редактирование не указав документ", "");
 
-    public static final FacesMessage MSG_UNKNOWN_ACTION = new FacesMessage(SEVERITY_WARN, "Неизвестное действие при открытии документа", ""); ;
+    public static final FacesMessage MSG_UNKNOWN_ACTION = new FacesMessage(SEVERITY_WARN, "Неизвестное действие при открытии документа", "");
+    ;
     public static final FacesMessage MSG_NO_DOC_ID = new FacesMessage(SEVERITY_ERROR, "Не указан идентификатор документа", "");
     public static final FacesMessage MSG_DOC_ID_CONVERSION_ERROR = new FacesMessage(SEVERITY_ERROR, "Некорректное значение идентифкатора", "");
     public static final FacesMessage MSG_DOCUMENT_IS_DELETED = new FacesMessage(SEVERITY_ERROR, "Запрошенный документ помечен как удаленный", "");
@@ -87,7 +91,6 @@ public class MessageHolder {
 
     // Ошибки валидации
     public static final FacesMessage MSG_REQUIRED_PARAMETER_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Обязательный параметр ''{0}'' не указан", "");
-
 
 
 }

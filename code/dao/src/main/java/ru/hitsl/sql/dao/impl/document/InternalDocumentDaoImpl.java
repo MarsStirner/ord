@@ -46,11 +46,11 @@ public class InternalDocumentDaoImpl extends DocumentDaoImpl<InternalDocument> i
         DetachedCriteria in_searchCriteria = getListCriteria();
         applyDeletedRestriction(in_searchCriteria, showDeleted);
         applyDraftRestriction(in_searchCriteria, showDrafts);
-        LocalDate currentDate;
+        LocalDateTime currentDate;
         if (in_map.get("DEPRECATED_REGISTRATION_DATE") != null) {
-            currentDate = (LocalDate) in_map.get("DEPRECATED_REGISTRATION_DATE");
+            currentDate = (LocalDateTime) in_map.get("DEPRECATED_REGISTRATION_DATE");
         } else {
-            currentDate = LocalDate.now();
+            currentDate = LocalDateTime.now();
         }
         in_searchCriteria.add(Restrictions.sqlRestriction("DATE_FORMAT(registrationDate, '%Y') like lower(?)",
                 currentDate.getYear() + "%", new StringType()));

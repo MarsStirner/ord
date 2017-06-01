@@ -8,4 +8,14 @@
             <p:message for="workflow_regNumber"/>
         </p:column>
     </p:row>
+    <p:row>
+        <p:column>
+            <p:outputLabel for="workflow_regDate" value="Дата регистрации"/>
+        </p:column>
+        <p:column>
+            <p:calendar id="workflow_regDate" value="#{model.registrationDate}" converter="LocalDateTimeConverter" pattern="dd.MM.yyyy" showOn="both"
+                        required="true"  requiredMessage="Дата регистрации обязательна при регистрации задним числом" lang="ru" locale="ru"/>
+            <p:message for="workflow_regDate"/>
+        </p:column>
+    </p:row>
 </ui:composition>

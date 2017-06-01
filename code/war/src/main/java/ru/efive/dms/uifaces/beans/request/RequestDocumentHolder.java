@@ -9,20 +9,20 @@ import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
+import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.OutgoingDocument;
-import ru.entity.model.document.RequestDocument;
+import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.RequestDocumentDao;
+import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DeliveryTypeDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.SenderTypeDao;
@@ -57,13 +57,19 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     //TODO ACL
     private Permissions permissions;
 
-    @Autowired
-    @Qualifier("documentTaskTree")
-    private DocumentTaskTreeHolder taskTreeHolder;
     //Для проверки прав доступа
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
+
+
+    @Autowired
+    @Qualifier("taskDao")
+    private TaskDao taskDao;
+
+    @Autowired
+    private ReferenceBookHelper referenceBookHelper;
+
     /**
      * Связанные с этим обращением исходящие документы
      */
@@ -346,8 +352,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             log.error("createModel: on viewFact register", e);
             MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
         }
-        //Установка идшника для поиска поручений
-        taskTreeHolder.setRootDocumentId(document.getUniqueId());
         return true;
     }
 
@@ -372,12 +376,30 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             if (viewFactDao.registerViewFact(document, authData.getAuthorized())) {
                 MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTERED);
             }
-            //Установка идшника для поиска поручений
-            taskTreeHolder.setRootDocumentId(document.getUniqueId());
-            //Поиск поручений
-            taskTreeHolder.refresh();
         }
         return true;
+    }
+
+    @Override
+    public boolean beforeDelete(RequestDocument document, AuthorizationData authData) {
+        boolean result = true;
+        final List<OutgoingDocument> outgoingDocuments = getRelatedDocuments();
+        for (OutgoingDocument outgoingDocument : outgoingDocuments) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(outgoingDocument.getUniqueId())
+            );
+            result = false;
+        }
+        List<Task> taskList = taskDao.getTaskListByRootDocumentId(document.getUniqueId(), false);
+        for (Task task : taskList) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
+            );
+            result = false;
+        }
+        return result;
     }
 
     @Override
@@ -466,14 +488,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
 
     public List<OutgoingDocument> getRelatedDocuments() {
         return relatedDocuments;
-    }
-
-    public DocumentTaskTreeHolder getTaskTreeHolder() {
-        return taskTreeHolder;
-    }
-
-    public void setTaskTreeHolder(DocumentTaskTreeHolder taskTreeHolder) {
-        this.taskTreeHolder = taskTreeHolder;
     }
 
 }

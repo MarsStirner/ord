@@ -1,5 +1,6 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
+import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,18 +9,22 @@ import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
+import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.InternalDocument;
 import ru.entity.model.document.OutgoingDocument;
+import ru.entity.model.document.Task;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
+import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
@@ -38,6 +43,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     @Autowired
     @Qualifier("viewFactDao")
     private ViewFactDao viewFactDao;
+
     @Autowired
     @Qualifier("documentFormDao")
     private DocumentFormDao documentFormDao;
@@ -45,10 +51,18 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
 
     //TODO ACL
     private Permissions permissions;
+
     //Для проверки прав доступа
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
+
+    @Autowired
+    @Qualifier("taskDao")
+    private TaskDao taskDao;
+
+    @Autowired
+    private ReferenceBookHelper referenceBookHelper;
 
     @Autowired
     public OutgoingDocumentHolder(@Qualifier("outgoingDocumentDao") final OutgoingDocumentDao dao, @Qualifier("authData") final AuthorizationData authData) {
@@ -231,7 +245,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         }
     }
 
-
     public boolean isReadPermission() {
         return permissions.hasPermission(READ);
     }
@@ -329,6 +342,26 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         return true;
     }
 
+    @Override
+    public boolean beforeDelete(OutgoingDocument document, AuthorizationData authData) {
+        boolean result = true;
+        final List<Task> taskList = taskDao.getTaskListByRootDocumentId(document.getUniqueId(), false);
+        for (Task task : taskList) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
+            );
+            result = false;
+        }
+        if(StringUtils.isNotEmpty(document.getReasonDocumentId())){
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(document.getReasonDocumentId())
+            );
+            result = false;
+        }
+        return result;
+    }
 
     @Override
     public boolean isCanDelete(final AuthorizationData authData) {
