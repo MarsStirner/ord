@@ -4,7 +4,7 @@
                    objectQuotingStrategy="QUOTE_ALL_OBJECTS"
                    logicalFilePath="serbsky/user.xml">
 <changeSet id="serbsky/user/data" author="e.upatov" context="SERBSKY">
-    <comment>Дополнение справочника (специфично): Виды документов</comment>
+    <comment>Создание дополнительных пользователей</comment>
     <sql dbms="mysql">
         SET @currentUserAccessLevel=(SELECT id FROM rbUserAccessLevel WHERE level = 1);
         SET @maxUserAccessLevel=(SELECT id FROM rbUserAccessLevel WHERE level = 5);
@@ -14,5 +14,12 @@
         <column name="maxUserAccessLevel_id" type="COMPUTED"/>
     </loadData>
     <sql>UPDATE user SET password = MD5(login) WHERE password IS NULL;</sql>
+    <sql>
+        INSERT INTO mmUserToRole (user_id, role_id)
+        SELECT u.id, r.id
+        FROM user u
+        INNER JOIN rbRole r ON r.code = 'EMPLOYER'
+        WHERE u.login != 'admin'
+    </sql>
 </changeSet>
 </databaseChangeLog>

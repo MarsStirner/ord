@@ -149,6 +149,7 @@ public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
         result.createAlias("executors", "executors", LEFT_OUTER_JOIN);
         result.createAlias("controller", "controller", LEFT_OUTER_JOIN);
         result.createAlias("form", "form", LEFT_OUTER_JOIN);
+        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 

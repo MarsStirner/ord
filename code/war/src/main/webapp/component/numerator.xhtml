@@ -4,10 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:f="http://java.sun.com/jsf/core"
->
+      xmlns:f="http://java.sun.com/jsf/core">
 
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
     <f:metadata>
@@ -20,13 +18,13 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/numerators.xhtml"/>
+        <p:button icon="ui-icon-home" outcome="/component/numerators.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{numerator.errorState}"/>
         <p:commandButton value="Редактировать" action="#{numerator.edit}"
-                         rendered="#{numerator.viewState and numerator.canEdit}" icon="ui-icon-pencil" update="@form"/>
+                         rendered="#{numerator.viewState and numerator.isCanUpdate(authData)}" icon="ui-icon-pencil" update="@form"/>
         <p:commandButton value="Отменить" action="#{numerator.view}" rendered="#{numerator.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{numerator.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{numerator.delete}" rendered="#{isAdministrator and numerator.viewState and numerator.canDelete}"
+        <p:commandButton value="Удалить" action="#{numerator.delete}" rendered="#{isAdministrator and numerator.viewState and numerator.isCanDelete(authData)}"
                          icon="ui-icon-trash" update="@form"/>
     </ui:define>
     <ui:define name="DOCUMENT_HEADER">
@@ -38,11 +36,8 @@
             </h:panelGroup>
             <h:panelGroup rendered="#{numerator.editState or numerator.viewState}">
                 <div class="name">
-                    <h:outputText value="Нумератор от "/>
-                    <h:outputText value="#{numerator.document.creationDate}">
-                        <f:converter converterId="LocalDateTimeConverter"/>
-                        <f:attribute name="pattern" value="dd.MM.yyyy"/>
-                    </h:outputText>
+                    <h:outputText value="Нумератор #"/>
+                    <h:outputText value="#{numerator.document.id}"/>
                 </div>
             </h:panelGroup>
             <h:panelGroup rendered="#{numerator.errorState}">
@@ -56,52 +51,20 @@
         <p:panelGrid style="width:100%">
             <p:row styleClass="ui-grid-row">
                 <p:column styleClass="ui-grid-col-2">
-                    <p:outputLabel for="v_creationDate" value="Дата создания:"/>
+                    <p:outputLabel for="v_prefix" value="Префикс к номеру:"/>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-10">
-                    <h:outputText id="v_creationDate" value="#{numerator.document.creationDate}" styleClass="outputText">
-                        <f:converter converterId="LocalDateTimeConverter"/>
-                        <f:attribute name="pattern" value="dd.MM.yyyy HH:mm:ss"/>
-                    </h:outputText>
+                    <h:outputText id="v_prefix" value="#{numerator.document.prefix}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputText id="e_prefix" value="#{numerator.document.prefix}" styleClass="inputText" rendered="#{stateEditable}"/>
                 </p:column>
             </p:row>
             <p:row styleClass="ui-grid-row">
                 <p:column styleClass="ui-grid-col-2">
-                    <p:outputLabel for="v_author" value="Автор:"/>
+                    <p:outputLabel for="v_current" value="Текущий номер:"/>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-10">
-                    <h:outputText id="v_author" value="#{numerator.document.author.description}" styleClass="outputText"/>
-                </p:column>
-            </p:row>
-            <p:row styleClass="ui-grid-row">
-                <p:column styleClass="ui-grid-col-2">
-                    <p:outputLabel for="documentTypeSelectOneMenu" value="Тип документа:"/>
-                </p:column>
-                <p:column colspan="3" styleClass="ui-grid-col-10">
-                    <h:outputText id="v_documentType" value="#{numerator.document.documentType.value}"
-                                  styleClass="outputText" rendered="#{not stateEditable}"/>
-                    <my:documentTypeSelectOneMenu id="documentTypeSelectOneMenu" value="#{numerator.document.documentType}"
-                                                  rendered="#{stateEditable}"/>
-                </p:column>
-            </p:row>
-            <p:row styleClass="ui-grid-row">
-                <p:column styleClass="ui-grid-col-2">
-                    <p:outputLabel for="nomenclatureSelectOneMenu" value="Номенклатура:"/>
-                </p:column>
-                <p:column colspan="3" styleClass="ui-grid-col-10">
-                    <h:outputText styleClass="outputText" rendered="#{not stateEditable}"
-                                  value="#{numerator.document.nomenclature != null ? numerator.document.nomenclature.code.concat('-').concat(numerator.document.nomenclature.value) : 'Отсутствует(любая номенклатура)'}"
-                    />
-                    <my:nomenclatureSelectOneMenu id="nomenclatureSelectOneMenu" value="#{numerator.document.nomenclature}"
-                                                  style="width:100%;" withNoSelectOption="true" rendered="#{stateEditable}"/>
-                </p:column>
-            </p:row>
-            <p:row styleClass="ui-grid-row">
-                <p:column styleClass="ui-grid-col-2">
-                    <p:outputLabel for="v_currentNumber" value="Текущий номер:"/>
-                </p:column>
-                <p:column colspan="3" styleClass="ui-grid-col-10">
-                    <h:outputText id="v_currentNumber" value="#{numerator.document.value}" styleClass="outputText"/>
+                    <h:outputText id="v_current" value="#{numerator.document.current}" styleClass="outputText" rendered="#{not numerator.createState}"/>
+                    <p:inputText id="e_current" value="#{numerator.document.current}" styleClass="inputText" rendered="#{numerator.createState}"/>
                 </p:column>
             </p:row>
             <p:row styleClass="ui-grid-row">
@@ -120,25 +83,74 @@
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-10">
                     <h:outputText value="C "/>
-                    <h:outputText value="#{numerator.document.startDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}">
-                        <f:converter converterId="LocalDateConverter"/>
-                        <f:attribute name="pattern" value="dd.MM.yyyy"/>
-                    </h:outputText>
-                    <p:calendar id="startDateCalendar" value="#{numerator.document.startDate}" lang="ru"
-                                locale="ru" widgetVar="startDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"
-                                rendered="#{stateEditable}">
-                        <f:converter converterId="LocalDateConverter"/>
-                    </p:calendar>
+                    <h:outputText value="#{numerator.document.begDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}"
+                                  converter="LocalDateConverter" pattern="yyyy.MM.dd"/>
+                    <p:calendar id="begDateCalendar" value="#{numerator.document.begDate}" lang="ru" locale="ru"
+                                converter="LocalDateConverter" pattern="dd.MM.yyyy" showOn="both" rendered="#{stateEditable}"/>
                     <h:outputText value=" ПО "/>
-                    <h:outputText value="#{numerator.document.endDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}">
-                        <f:converter converterId="LocalDateConverter"/>
-                        <f:attribute name="pattern" value="dd.MM.yyyy"/>
-                    </h:outputText>
-                    <p:calendar id="endDateCalendar" value="#{numerator.document.endDate}" lang="ru"
-                                locale="ru" widgetVar="endDateCalendarVar" pattern="dd.MM.yyyy" showOn="both"
-                                rendered="#{stateEditable}">
-                        <f:converter converterId="LocalDateConverter"/>
-                    </p:calendar>
+                    <h:outputText value="#{numerator.document.endDate}" lang="ru" styleClass="outputText" rendered="#{not stateEditable}"
+                                  converter="LocalDateConverter" pattern="yyyy.MM.dd"/>
+                    <p:calendar id="endDateCalendar" value="#{numerator.document.endDate}" lang="ru" locale="ru"
+                                converter="LocalDateConverter" pattern="dd.MM.yyyy" showOn="both" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_priority" value="Приоритет:" title="чем выше тем лучше"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_priority" value="#{numerator.document.priority}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:inputNumber id="e_priority" value="#{numerator.document.priority}" decimalPlaces="0" thousandSeparator=""  styleClass="inputText" rendered="#{stateEditable}"/>
+                </p:column>
+            </p:row>
+
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_documentType" value="Тип документа:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_documentType" value="#{numerator.document.documentType.value}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:selectOneMenu id="e_documentType" value="#{numerator.document.documentType}" converter="#{DocumentTypeConverter}"
+                                     rendered="#{stateEditable}">
+                        <f:selectItem noSelectionOption="true"/>
+                        <f:selectItems value="#{refBookHelper.documentTypes}" var="docType_row"/>
+                        <p:ajax update="e_documentForm"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_documentForm" value="Вид документа:"/>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_documentForm" value="#{numerator.document.documentForm.value}" styleClass="outputText" rendered="#{not stateEditable}"/>
+                    <p:selectOneMenu id="e_documentForm" value="#{numerator.document.documentForm}" converter="#{DocumentFormConverter}"
+                                     rendered="#{stateEditable}">
+                        <f:selectItem noSelectionOption="true"/>
+                        <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory(numerator.document.documentType.code)}"/>
+                    </p:selectOneMenu>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_controller" value="Руководитель:" rendered="#{not stateEditable}"/>
+                    <p:commandButton value="Руководитель" actionListener="#{numerator.chooseController}" rendered="#{stateEditable}" styleClass="dialogButton">
+                        <p:ajax event="dialogReturn" listener="#{numerator.onControllerChosen}" update="v_controller"/>
+                    </p:commandButton>
+                </p:column>
+                <p:column colspan="3" styleClass="ui-grid-col-10">
+                    <h:outputText id="v_controller" value="#{numerator.document.controller.description}" styleClass="outputText"/>
+                </p:column>
+            </p:row>
+            <p:row styleClass="ui-grid-row">
+                <p:column styleClass="ui-grid-col-2">
+                    <p:outputLabel for="v_contragent" value="Корреспондент:" rendered="#{not stateEditable}"/>
+                    <p:commandButton value="Корреспондент" actionListener="#{numerator.chooseContragent}" rendered="#{stateEditable}" styleClass="dialogButton">
+                        <p:ajax event="dialogReturn" listener="#{numerator.onContragentChosen}" update="v_contragent"/>
+                    </p:commandButton>
+                </p:column>
+                <p:column styleClass="ui-grid-col-10" colspan="3">
+                    <h:outputText id="v_contragent" value="#{numerator.document.contragent.value}" styleClass="outputText"/>
                 </p:column>
             </p:row>
         </p:panelGrid>

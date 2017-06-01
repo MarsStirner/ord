@@ -92,9 +92,9 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
     @Override
     @Transactional(transactionManager = "ordTransactionManager", propagation = Propagation.MANDATORY)
     public T update(T entity) {
-        log.trace("Update {}.", entity);
+        log.trace("Update {}", entity);
         em.merge(entity);
-        log.debug("Updated {}.", entity);
+        log.debug("Updated {}", entity);
         return entity;
     }
 

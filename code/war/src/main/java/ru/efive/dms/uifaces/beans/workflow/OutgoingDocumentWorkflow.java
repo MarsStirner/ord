@@ -1,19 +1,14 @@
 package ru.efive.dms.uifaces.beans.workflow;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.efive.dms.util.WorkflowHelper;
-
 import ru.entity.model.document.OutgoingDocument;
 import ru.entity.model.enums.DocumentAction;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
-import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,44 +18,50 @@ import static ru.entity.model.enums.DocumentStatus.*;
  * Created by EUpatov on 13.04.2017.
  */
 @ViewScopedController("outgoingWorkflow")
-public class OutgoingDocumentWorkflow {
-    private static final Logger log = LoggerFactory.getLogger(OutgoingDocumentWorkflow.class);
+public class OutgoingDocumentWorkflow extends AbstractWorkflow<OutgoingDocument, OutgoingDocumentDao> {
+    @Autowired
+    @Qualifier("numerationService")
+    private NumerationService numerationService;
 
     @Autowired
-    @Qualifier("outgoingDocumentDao")
-    private OutgoingDocumentDao outgoingDocumentDao;
-
-    @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-
-    @Autowired
-    private WorkflowHelper helper;
-
-
-    private List<WorkflowAction> actions = new ArrayList<>(3);
-
-    private State state = State.HIDDEN;
-
-
-    private OutgoingDocument document;
-    private String processedMessage;
-    private WorkflowAction selectedAction;
-
-    @PostConstruct
-    public void postConstruct(){
-        log.info("@PostConstruct callback");
+    public OutgoingDocumentWorkflow(
+            @Qualifier("authData") final AuthorizationData authData,
+            @Qualifier("outgoingDocumentDao") final OutgoingDocumentDao dao) {
+        super(authData, dao);
     }
 
 
-    public void init(final OutgoingDocument document) {
-        log.info("Start initializing new Workflow by {} with document: {}", authData.getLogString(), document.getUniqueId());
-        state = State.OPENED;
-        this.document = document;
-        actions = getActions(document, authData);
+    public boolean setOutgoingRegistrationNumber(OutgoingDocument doc) {
+        log.info("Call->setOutgoingRegistrationNumber({})", doc);
+        boolean result = true;
+        if (doc.getController() == null) {
+            addWarning("Необходимо выбрать Руководителя");
+            result = false;
+        }
+        if (doc.getExecutor() == null) {
+            addWarning("Необходимо выбрать Ответственного исполнителя");
+            result = false;
+        }
+        if (doc.getContragent() == null) {
+            addWarning("Необходимо выбрать Адресата");
+            result = false;
+        }
+        if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
+            addWarning("Необходимо заполнить Краткое содержание");
+            result = false;
+
+        }
+        if (!result) {
+            log.warn("End. Validation failed: '{}'", getWarnings());
+            return false;
+        }
+        log.debug("validation success");
+        return numerationService.fillDocumentNumber(doc);
     }
 
-    private List<WorkflowAction> getActions(OutgoingDocument document, AuthorizationData authData) {
+
+    @Override
+    public List<WorkflowAction> getActions(OutgoingDocument document, AuthorizationData authData) {
         log.debug("getActions by {} with document: {}", authData.getLogString(), document.getUniqueId());
         final List<WorkflowAction> result = new ArrayList<>();
         switch (document.getDocumentStatus()) {
@@ -96,7 +97,7 @@ public class OutgoingDocumentWorkflow {
                 break;
             }
             //На рассмотрении - Зарегистрирован
-            case ON_CONSIDERATION:{
+            case ON_CONSIDERATION: {
                 final WorkflowAction action2 = new WorkflowAction();
                 action2.setAction(DocumentAction.CHECK_IN_80);
                 action2.setAvailable(authData.isAdministrator() || authData.isOfficeManager());
@@ -148,68 +149,19 @@ public class OutgoingDocumentWorkflow {
     }
 
 
-    public List<WorkflowAction> getActions() {
-        return actions;
-    }
+    @Override
+    public boolean process(WorkflowAction action, OutgoingDocument document) {
+        switch (action.getAction()) {
+            case CHECK_IN_80: {
+                return setOutgoingRegistrationNumber(document);
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_INCOMING_EXECUTORS);
 
-    public void process() {
-        document.setWFResultDescription(null);
-        boolean success = false;
-        try {
-            final WorkflowAction workflowAction = selectedAction;
-            switch (workflowAction.getAction()) {
-                case CHECK_IN_80: {
-                    success = helper.setOutgoingRegistrationNumber(document);
-                    processedMessage = document.getWFResultDescription();
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_INCOMING_EXECUTORS);
-                    break;
-                }
-                default:
-                    log.warn("{} is only document state changing action!", workflowAction.getAction());
-                    success = true;
-                    break;
             }
-            if (success) {
-                if(StringUtils.isEmpty(workflowAction.getUi())) {
-                    finish();
-                    state=State.PROCESSED;
-                } else {
-                    state= State.WAIT_FOR_USER_INPUT;
-                }
-            } else {
-                state=State.PROCESSED;
-            }
-        } catch (Exception e) {
-            this.processedMessage = "Внутренняя ошибка";
-            state=State.PROCESSED;
+            default:
+                log.warn("{} is only document state changing action!", action.getAction());
+                return true;
         }
-    }
-
-    public void finish() {
-        final WorkflowAction workflowAction = selectedAction;
-        if (workflowAction.getTargetStatus() != null) {
-            document.setStatus(workflowAction.getTargetStatus());
-        }
-        if (workflowAction.isNeedHistory()) {
-            document.addToHistory(workflowAction.getHistoryEntity(document, authData));
-        }
-        outgoingDocumentDao.update(document);
-        this.processedMessage = "Успешно выполнено";
-    }
-
-    public String getProcessedMessage() {
-        return processedMessage;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public WorkflowAction getSelectedAction() {
-        return selectedAction;
-    }
-
-    public void setSelectedAction(WorkflowAction selectedAction) {
-        this.selectedAction = selectedAction;
     }
 }
+
+

@@ -45,16 +45,14 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/outgoing/list.xhtml"/>
+        <p:button icon="ui-icon-home" outcome="/component/outgoing/list.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{out_doc.errorState}"/>
         <p:commandButton value="Редактировать" action="#{out_doc.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{out_doc.viewState and out_doc.editPermission and editableMatrix.outgoing.isStateEditable(statusId)}"/>
         <p:commandButton value="Отменить" action="#{out_doc.view}" rendered="#{out_doc.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{out_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{out_doc.delete}" rendered="#{out_doc.editState}" icon="ui-icon-trash" update="@form"/>
-        <p:commandButton value="Действия" action="#{outgoingWorkflow.init(out_doc.document)}" rendered="#{out_doc.viewState and out_doc.executePermission}"
-                         icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
-
+        <my:actionWorkflow rendered="#{out_doc.viewState and out_doc.executePermission}" model="#{out_doc.document}" workflow="#{outgoingWorkflow}"/>
     </ui:define>
 
 
@@ -80,7 +78,7 @@
 
 
     <ui:define name="DOCUMENT_CONTENT">
-        <p:tabView id="documentTabPanel" widgetVar="outgoingDocumentTabViewVar" effect="fade" effectDuration="fast" rendered="#{not out_doc.errorState}">
+        <p:tabView id="documentTabPanel" dynamic="true" widgetVar="tabViewVar"  rendered="#{not out_doc.errorState}">
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%;">
                     <p:row styleClass="ui-grid-row">
@@ -274,39 +272,6 @@
         <p:growl id="msg"/>
         <!-- Сообщения о фактах просмотра-->
         <p:growl id="viewFactMessage" for="viewFact"/>
-        <!-- Диалог работы с действиями -->
-        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
-                  closeOnEscape="true" fitViewport="true">
-            <h:panelGroup id="actionForm" rendered="#{outgoingWorkflow.state != 'HIDDEN'}">
-                <p:dataTable id="action_select_table"
-                             rendered="#{outgoingWorkflow.state == 'OPENED'}"
-                             value="#{outgoingWorkflow.actions}"
-                             var="row_action"
-                             width="100%"
-                             emptyMessage="Доступных действий нет"
-                             rowKey="#{row_action.action.name}"
-                             selectionMode="single"
-                             selection="#{outgoingWorkflow.selectedAction}"
-                >
-                    <p:column headerText="Доступные действия">
-                        <h:outputText value="#{row_action.action.name}"/>
-                    </p:column>
-                </p:dataTable>
-                <h:panelGroup id="processedMessage" rendered="#{outgoingWorkflow.state == 'PROCESSED'}">
-                    <h:outputText style="padding-left:10px;" value="#{outgoingWorkflow.processedMessage}"/>
-                </h:panelGroup>
-                <h:panelGroup id="customUi" rendered="#{outgoingWorkflow.state == 'WAIT_FOR_USER_INPUT'}">
-                    <ui:include src="#{outgoingWorkflow.selectedAction.ui}">
-                        <ui:param name="documentHolder" value="#{out_doc}"/>
-                    </ui:include>
-                </h:panelGroup>
-                <p:commandButton action="#{outgoingWorkflow.process}" value="Выполнить" process="action_select_table @this" update="actionForm"
-                                 rendered="#{outgoingWorkflow.state == 'OPENED'}"/>
-                <p:commandButton action="#{outgoingWorkflow.finish}" value="Завершить" process="customUi @this" update="actionForm"
-                                 rendered="#{outgoingWorkflow.state == 'WAIT_FOR_USER_INPUT'}"/>
-                <p:commandButton onclick="PF('actionDialogVar').close(); return false;" value="Закрыть"/>
-            </h:panelGroup>
-        </p:dialog>
     </ui:define>
 </ui:composition>
 </html>

@@ -5,10 +5,7 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-        >
-
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
     <f:metadata>
         <f:viewParam name="docId" value="#{viewScope['id']}"/>
@@ -17,7 +14,7 @@
     </f:metadata>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/users.xhtml"/>
+        <p:button icon="ui-icon-home" outcome="/component/users.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{user.errorState}"/>
         <p:commandButton value="Редактировать" action="#{user.edit}" rendered="#{user.viewState and user.isCanUpdate(authData)}" icon="ui-icon-pencil"
                          update="@form"/>
@@ -140,10 +137,7 @@
                             <p:outputLabel for="e_nomenclature" value="Номенклатура дел по-умолчанию"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-9">
-                            <h:outputText id="v_nomenclature" rendered="#{not stateEditable}" styleClass="outputText"
-                                          value="#{user.document.defaultNomenclature.code.concat('-').concat(user.document.defaultNomenclature.value)}"/>
-                            <my:nomenclatureSelectOneMenu id="e_nomenclature" rendered="#{stateEditable}" value="#{user.document.defaultNomenclature}"
-                                                          style="width:100%" withNoSelectOption="true"/>
+
                         </p:column>
                     </p:row>
                 </p:panelGrid>

@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hibernate.criterion.CriteriaSpecification.INNER_JOIN;
+import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
 
 
 @Repository("requestDocumentDao")
@@ -61,8 +62,9 @@ public class RequestDocumentDaoImpl extends DocumentDaoImpl<RequestDocument> imp
     @Override
     public DetachedCriteria getListCriteria() {
         final DetachedCriteria result = getSimpleCriteria();
-        result.createAlias("author", "author", CriteriaSpecification.INNER_JOIN);
-        result.createAlias("form", "form", JoinType.LEFT_OUTER_JOIN);
+        result.createAlias("author", "author", JoinType.INNER_JOIN);
+        result.createAlias("form", "form", LEFT_OUTER_JOIN);
+        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 
@@ -74,19 +76,19 @@ public class RequestDocumentDaoImpl extends DocumentDaoImpl<RequestDocument> imp
     @Override
     public DetachedCriteria getFullCriteria() {
         final DetachedCriteria result = getListCriteria();
-        result.createAlias("responsible", "responsible", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("deliveryType", "deliveryType", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("senderType", "senderType", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("region", "region", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("contragent", "contragent", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("recipientUsers", "recipientUsers", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("recipientGroups", "recipientGroups", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("recipientGroups.members", "recipientGroups.members", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("personReaders", "personReaders", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("personEditors", "personEditors", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("roleReaders", "roleReaders", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("roleEditors", "roleEditors", JoinType.LEFT_OUTER_JOIN);
-        result.createAlias("history", "history", JoinType.LEFT_OUTER_JOIN);
+        result.createAlias("responsible", "responsible", LEFT_OUTER_JOIN);
+        result.createAlias("deliveryType", "deliveryType", LEFT_OUTER_JOIN);
+        result.createAlias("senderType", "senderType", LEFT_OUTER_JOIN);
+        result.createAlias("region", "region", LEFT_OUTER_JOIN);
+        result.createAlias("contragent", "contragent", LEFT_OUTER_JOIN);
+        result.createAlias("recipientUsers", "recipientUsers", LEFT_OUTER_JOIN);
+        result.createAlias("recipientGroups", "recipientGroups", LEFT_OUTER_JOIN);
+        result.createAlias("recipientGroups.members", "recipientGroups.members", LEFT_OUTER_JOIN);
+        result.createAlias("personReaders", "personReaders", LEFT_OUTER_JOIN);
+        result.createAlias("personEditors", "personEditors", LEFT_OUTER_JOIN);
+        result.createAlias("roleReaders", "roleReaders", LEFT_OUTER_JOIN);
+        result.createAlias("roleEditors", "roleEditors", LEFT_OUTER_JOIN);
+        result.createAlias("history", "history", LEFT_OUTER_JOIN);
         return result;
     }
 
@@ -240,28 +242,28 @@ public class RequestDocumentDaoImpl extends DocumentDaoImpl<RequestDocument> imp
             disjunction.add(Restrictions.in("author.id", userIds));
             disjunction.add(Restrictions.in("responsible.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("controller", "controller", JoinType.LEFT_OUTER_JOIN);
+            criteria.createAlias("controller", "controller", LEFT_OUTER_JOIN);
             disjunction.add(Restrictions.in("controller.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("recipientUsers", "recipientUsers", JoinType.LEFT_OUTER_JOIN);
+            criteria.createAlias("recipientUsers", "recipientUsers", LEFT_OUTER_JOIN);
             disjunction.add(Restrictions.in("recipientUsers.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("personReaders", "personReaders", JoinType.LEFT_OUTER_JOIN);
+            criteria.createAlias("personReaders", "personReaders", LEFT_OUTER_JOIN);
             disjunction.add(Restrictions.in("personReaders.id", userIds));
             //NOTE  Добавляются алиасы с fetch
-            criteria.createAlias("personEditors", "personEditors", JoinType.LEFT_OUTER_JOIN);
+            criteria.createAlias("personEditors", "personEditors", LEFT_OUTER_JOIN);
             disjunction.add(Restrictions.in("personEditors.id", userIds));
             if (!auth.getGroups().isEmpty()) {
                 //NOTE  Добавляются алиасы с fetch
-                criteria.createAlias("recipientGroups", "recipientGroups", JoinType.LEFT_OUTER_JOIN);
+                criteria.createAlias("recipientGroups", "recipientGroups", LEFT_OUTER_JOIN);
                 disjunction.add(Restrictions.in("recipientGroups.id", auth.getGroupIds()));
             }
             if (!auth.getRoles().isEmpty()) {
                 //NOTE  Добавляются алиасы с fetch
-                criteria.createAlias("roleReaders", "roleReaders", JoinType.LEFT_OUTER_JOIN);
+                criteria.createAlias("roleReaders", "roleReaders", LEFT_OUTER_JOIN);
                 disjunction.add(Restrictions.in("roleReaders.id", auth.getRoleIds()));
                 //NOTE  Добавляются алиасы с fetch
-                criteria.createAlias("roleEditors", "roleEditors", JoinType.LEFT_OUTER_JOIN);
+                criteria.createAlias("roleEditors", "roleEditors", LEFT_OUTER_JOIN);
                 disjunction.add(Restrictions.in("roleEditors.id", auth.getRoleIds()));
             }
             criteria.add(disjunction);

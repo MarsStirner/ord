@@ -186,6 +186,9 @@ public class DocumentForm extends ReferenceBookEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "documentType_id", nullable = false)
     private DocumentType documentType;
+//
+//    @Column(name="visibleInMenu")
+//    private boolean visibleInMenu;
 
     public DocumentType getDocumentType() {
         return documentType;
@@ -195,4 +198,11 @@ public class DocumentForm extends ReferenceBookEntity {
         this.documentType = documentType;
     }
 
+//    public boolean isVisibleInMenu() {
+//        return visibleInMenu;
+//    }
+//
+//    public void setVisibleInMenu(boolean visibleInMenu) {
+//        this.visibleInMenu = visibleInMenu;
+//    }
 }

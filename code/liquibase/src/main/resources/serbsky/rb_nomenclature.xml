@@ -1,0 +1,17 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS"
+                   logicalFilePath="serbsky/rb_nomenclature.xml">
+    <changeSet id="serbsky/rb_nomenclature/drop" author="e.upatov" context="SERBSKY">
+        <comment>Удаление неиспользуемого српавочника номенклатур</comment>
+        <dropForeignKeyConstraint baseTableName="incoming_document" constraintName="FK_incoming_document__nomenclature"/>
+        <dropColumn tableName="incoming_document" columnName="nomenclature_id"/>
+        <dropForeignKeyConstraint baseTableName="request_document" constraintName="FK_request_document__nomenclature"/>
+        <dropColumn tableName="request_document" columnName="nomenclature_id"/>
+        <dropForeignKeyConstraint baseTableName="user" constraintName="FK_user__defaultNomenclature"/>
+        <dropColumn tableName="user" columnName="defaultNomenclature_id"/>
+        <dropColumn tableName="outgoing_document" columnName="nomenclature_id"/>
+        <dropTable tableName="rbNomenclature"/>
+    </changeSet>
+</databaseChangeLog>

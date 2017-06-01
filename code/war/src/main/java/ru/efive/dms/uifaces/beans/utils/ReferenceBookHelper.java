@@ -65,10 +65,6 @@ public class ReferenceBookHelper {
     private UserDao userDao;
 
     @Autowired
-    @Qualifier("nomenclatureDao")
-    private NomenclatureDao nomenclatureDao;
-
-    @Autowired
     @Qualifier("documentTypeDao")
     private DocumentTypeDao documentTypeDao;
 
@@ -95,6 +91,10 @@ public class ReferenceBookHelper {
 
     public List<DocumentForm> getDocumentFormsByCategory(String category) {
         return documentFormDao.findByDocumentTypeCode(category);
+    }
+
+    public List<DocumentForm> getDocumentForms() {
+        return documentFormDao.getItems();
     }
 
     public List<DeliveryType> getDeliveryTypes() {
@@ -131,10 +131,6 @@ public class ReferenceBookHelper {
 
     public List<ContragentType> getContragentTypes() {
         return contragentTypeDao.getItems();
-    }
-
-    public List<Nomenclature> getNomenclatures(){
-        return nomenclatureDao.getItems();
     }
 
     public String getLinkDescriptionByUniqueId(String documentKey) {
@@ -197,5 +193,6 @@ public class ReferenceBookHelper {
         }
         return "";
     }
+
 
 }

@@ -1,66 +1,40 @@
 package ru.efive.dms.uifaces.beans.workflow;
 
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.efive.dms.util.WorkflowHelper;
 import ru.entity.model.document.InternalDocument;
 import ru.entity.model.enums.DocumentAction;
 import ru.hitsl.sql.dao.interfaces.document.InternalDocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
+import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
-import javax.annotation.PostConstruct;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static ru.entity.model.enums.DocumentStatus.*;
 
-/**
- * Created by EUpatov on 13.04.2017.
- */
+
 @ViewScopedController("internalWorkflow")
-public class InternalDocumentWorkflow {
-    private static final Logger log = LoggerFactory.getLogger(InternalDocumentWorkflow.class);
+public class InternalDocumentWorkflow extends AbstractWorkflow<InternalDocument, InternalDocumentDao> {
 
     @Autowired
-    @Qualifier("internalDocumentDao")
-    private InternalDocumentDao internalDocumentDao;
+    @Qualifier("numerationService")
+    private NumerationService numerationService;
 
     @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-
-    @Autowired
-    private WorkflowHelper helper;
-
-
-    private List<WorkflowAction> actions = new ArrayList<>(3);
-
-    private State state = State.HIDDEN;
-
-
-    private InternalDocument document;
-    private String processedMessage;
-    private WorkflowAction selectedAction;
-
-    @PostConstruct
-    public void postConstruct() {
-        log.info("@PostConstruct callback");
+    public InternalDocumentWorkflow(
+            @Qualifier("authData") final AuthorizationData authData,
+            @Qualifier("internalDocumentDao") final InternalDocumentDao dao) {
+        super(authData, dao);
     }
 
-
-    public void init(final InternalDocument document) {
-        log.info("Start initializing new Workflow by {} with document: {}", authData.getLogString(), document.getUniqueId());
-        state = State.OPENED;
-        this.document = document;
-        actions = getActions(document, authData);
-    }
-
-    private List<WorkflowAction> getActions(InternalDocument document, AuthorizationData authData) {
+    @Override
+    public List<WorkflowAction> getActions(InternalDocument document, AuthorizationData authData) {
         log.debug("getActions by {} with document: {}", authData.getLogString(), document.getUniqueId());
         final List<WorkflowAction> result = new ArrayList<>();
         switch (document.getDocumentStatus()) {
@@ -101,8 +75,7 @@ public class InternalDocumentWorkflow {
                 action3.setInitialStatus(DOC_PROJECT_1);
                 action3.setTargetStatus(CHECK_IN_5);
                 action3.setNeedHistory(true);
-                //TODO
-                action3.setUi("/workflow/internalClosePeriodRegistration.xhtml");
+                action3.setUi("/component/workflow/internalClosePeriodRegistration.xhtml");
                 result.add(action3);
                 break;
             }
@@ -125,8 +98,7 @@ public class InternalDocumentWorkflow {
                 action3.setInitialStatus(ON_CONSIDERATION);
                 action3.setTargetStatus(CHECK_IN_5);
                 action3.setNeedHistory(true);
-                //TODO
-                action3.setUi("/workflow/internalClosePeriodRegistration.xhtml");
+                action3.setUi("/component/workflow/internalClosePeriodRegistration.xhtml");
                 result.add(action3);
 
                 //На рассмотрении - Отказ
@@ -156,8 +128,7 @@ public class InternalDocumentWorkflow {
                 action3.setInitialStatus(AGREEMENT_3);
                 action3.setTargetStatus(CHECK_IN_5);
                 action3.setNeedHistory(true);
-                //TODO
-                action3.setUi("/workflow/internalClosePeriodRegistration.xhtml");
+                action3.setUi("/component/workflow/internalClosePeriodRegistration.xhtml");
                 result.add(action3);
                 break;
             }
@@ -184,7 +155,7 @@ public class InternalDocumentWorkflow {
                 result.add(action);
                 break;
             }
-            case EXECUTE:{
+            case EXECUTE: {
                 //Исполнен - Архив
                 final WorkflowAction action = new WorkflowAction();
                 action.setAction(DocumentAction.IN_ARCHIVE_90);
@@ -211,107 +182,130 @@ public class InternalDocumentWorkflow {
         return result;
     }
 
-
-    public List<WorkflowAction> getActions() {
-        return actions;
-    }
-
-    public void process() {
-        document.setWFResultDescription(null);
-        boolean success = false;
-        try {
-            final WorkflowAction workflowAction = selectedAction;
-            switch (workflowAction.getAction()) {
-                case REDIRECT_TO_CONSIDERATION_1: {
-                    success = helper.checkInternalDocumentPropertiesForReview(document);
-                    processedMessage = document.getWFResultDescription();
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                case REGISTRATION_CLOSE_PERIOD_551: {
-                    success = helper.setInternalRegistrationNumberOnOutDate(document);
-                    processedMessage = document.getWFResultDescription();
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                case CHECK_IN_5: {
-                    success = helper.setInternalRegistrationNumber(document);
-                    processedMessage = document.getWFResultDescription();
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                case REDIRECT_TO_AGREEMENT: {
-                    success =true;
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                case REDIRECT_TO_EXECUTION_80: {
-                    success = true;
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                case EXECUTE_80: {
-                    success = true;
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                case IN_ARCHIVE_90: {
-                    success = helper.checkInternalPropertiesForArchiving(document);
-                    processedMessage = document.getWFResultDescription();
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                case CANCEL_150: {
-                    success = true;
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
-                    break;
-                }
-                default:
-                    log.warn("{} is only document state changing action!", workflowAction.getAction());
-                    success = true;
-                    break;
+    @Override
+    public boolean process(WorkflowAction workflowAction, InternalDocument document) {
+        switch (workflowAction.getAction()) {
+            case REDIRECT_TO_CONSIDERATION_1: {
+                return checkInternalDocumentPropertiesForReview(document);
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
             }
-            if (success) {
-                if (StringUtils.isEmpty(workflowAction.getUi())) {
-                    finish();
-                    state = State.PROCESSED;
-                } else {
-                    state = State.WAIT_FOR_USER_INPUT;
-                }
-            } else {
-                state = State.PROCESSED;
+            case REGISTRATION_CLOSE_PERIOD_551: {
+                return setInternalRegistrationNumberOnOutDate(document);
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
             }
-        } catch (Exception e) {
-            this.processedMessage = "Внутренняя ошибка";
-            state = State.PROCESSED;
+            case CHECK_IN_5: {
+                return setInternalRegistrationNumber(document);
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
+            }
+            case REDIRECT_TO_AGREEMENT: {
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
+                return true;
+            }
+            case REDIRECT_TO_EXECUTION_80: {
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
+                return true;
+            }
+            case EXECUTE_80: {
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
+                return true;
+            }
+            case IN_ARCHIVE_90: {
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
+                return true;
+            }
+            case CANCEL_150: {
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_internal_EXECUTORS);
+                return true;
+            }
+            default:
+                log.warn("{} is only document state changing action!", workflowAction.getAction());
+                return true;
         }
     }
 
-    public void finish() {
-        final WorkflowAction workflowAction = selectedAction;
-        if (workflowAction.getTargetStatus() != null) {
-            document.setStatus(workflowAction.getTargetStatus());
+
+    public boolean setInternalRegistrationNumber(InternalDocument doc) {
+        log.info("Call->setInternalRegistrationNumber({})", doc);
+        boolean result = true;
+        if (doc.getController() == null) {
+            addWarning("Необходимо выбрать Руководителя");
+            result = false;
         }
-        if (workflowAction.isNeedHistory()) {
-            document.addToHistory(workflowAction.getHistoryEntity(document, authData));
+        if (doc.getResponsible() == null) {
+            addWarning("Необходимо выбрать Контроль исполнения");
+            result = false;
         }
-        internalDocumentDao.update(document);
-        this.processedMessage = "Успешно выполнено";
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().isEmpty()) && (doc.getRecipientGroups() == null || doc.getRecipientGroups().isEmpty())) {
+            addWarning("Необходимо выбрать Адресатов");
+            result = false;
+        }
+        if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
+            addWarning("Необходимо заполнить Краткое содержание");
+            result = false;
+        }
+        if (!result) {
+            log.warn("End. Validation failed: '{}'", getWarnings());
+            return false;
+        }
+        log.debug("validation success");
+        return numerationService.fillDocumentNumber(doc);
     }
 
-    public String getProcessedMessage() {
-        return processedMessage;
+
+    public boolean checkInternalDocumentPropertiesForReview(InternalDocument doc) {
+        boolean result = true;
+        if (doc.getController() == null) {
+            addWarning("Необходимо указать руководителя");
+            result = false;
+        }
+        if (doc.getResponsible() == null) {
+            addWarning("Необходимо указать ответственного");
+            result = false;
+        }
+        return result;
     }
 
-    public State getState() {
-        return state;
-    }
 
-    public WorkflowAction getSelectedAction() {
-        return selectedAction;
-    }
-
-    public void setSelectedAction(WorkflowAction selectedAction) {
-        this.selectedAction = selectedAction;
+    public boolean setInternalRegistrationNumberOnOutDate(InternalDocument doc) {
+        boolean result = true;
+        if (doc.getController() == null) {
+            addWarning("Необходимо выбрать Руководителя");
+            result = false;
+        }
+        if (doc.getResponsible() == null) {
+            addWarning("Необходимо выбрать Контроль исполнения");
+            result = false;
+        }
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().isEmpty()) && (doc.getRecipientGroups() == null || doc.getRecipientGroups().isEmpty())) {
+            addWarning("Необходимо выбрать Адресатов");
+            result = false;
+        }
+        if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
+            addWarning("Необходимо заполнить Краткое содержание");
+            result = false;
+        }
+        if (doc.getRegistrationDate() == null || !doc.getRegistrationDate().toLocalDate().isBefore(LocalDate.now())) {
+            addWarning("Дата регистрации должна быть указана до текущей даты");
+            result = false;
+        }
+        Map<String, Object> in_filters = new HashMap<>();
+        //TODO вычистить эту ересь при внедрении нумераторов
+        in_filters.put("registrationNumber", doc.getRegistrationNumber());
+        in_filters.put("DEPRECATED_REGISTRATION_DATE", doc.getRegistrationDate());
+        in_filters.put(DocumentSearchMapKeys.FORM_KEY, doc.getForm());
+        List<InternalDocument> copyDocuments = dao.findDocumentsByCriteria(in_filters, false, true);
+        if (!copyDocuments.isEmpty()) {
+            addWarning("Документ под таким номером уже существует");
+            for (InternalDocument internalDocument : copyDocuments) {
+                addWarning(internalDocument.getId() + "-\'" + internalDocument.getRegistrationNumber() + "\'");
+            }
+            result = false;
+        }
+        if (!result) {
+            log.warn("End. Validation failed: '{}'", getWarnings());
+            return false;
+        }
+        log.debug("validation success");
+        return true;
     }
 }

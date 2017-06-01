@@ -100,6 +100,7 @@ public class IncomingDocumentDaoImpl extends DocumentDaoImpl<IncomingDocument> i
         result.createAlias("recipientUsers", "recipientUsers", LEFT_OUTER_JOIN);
         result.createAlias("form", "form", LEFT_OUTER_JOIN);
         result.createAlias("contragent", "contragent", LEFT_OUTER_JOIN);
+        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 

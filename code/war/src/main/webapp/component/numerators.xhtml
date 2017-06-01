@@ -7,7 +7,7 @@
       xmlns:p="http://primefaces.org/ui">
 <ui:composition template="/jsf-template/listTemplate.xhtml">
     <ui:param name="prefix" value="document.default"/>
-    <ui:param name="defaultSortField" value="creationDate"/>
+    <ui:param name="defaultSortField" value="begDate"/>
     <ui:param name="defaultSortOrder" value="descending"/>
     <ui:param name="lazyDataModel" value="#{numeratorLDM}"/>
 
@@ -41,27 +41,36 @@
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     sortBy="#{null}"
                      sortField="#{defaultSortField}"
                      sortOrder="#{defaultSortOrder}"
         >
-            <p:column style="min-width:5em" headerText="Дата создания" sortBy="#{row.creationDate}" field="creationDate">
-                <h:outputText value="#{row.creationDate}">
-                    <f:converter converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="dd.MM.yyyy"/>
-                </h:outputText>
+            <!--@elvariable id="row" type="ru.entity.model.document.Numerator"-->
+            <p:column headerText="Дата начала действия" sortBy="#{null}" field="begDate">
+                <h:outputText value="#{row.begDate}" converter="LocalDateConverter" pattern="yyyy.MM.dd"/>
             </p:column>
-            <p:column style="min-width:5em" headerText="Автор" sortBy="#{row.author}" field="author.lastName">
-                <h:outputText value="#{row.author}" converter="#{PersonConverter}"/>
+            <p:column headerText="Дата окончания действия" sortBy="#{null}" field="endDate">
+                <h:outputText value="#{row.endDate}" converter="LocalDateConverter" pattern="yyyy.MM.dd"/>
             </p:column>
-            <p:column style="min-width:5em" headerText="Тип документа" sortBy="#{row.documentType}" field="documentType.value">
+            <p:column headerText="Префикс (номенклатура)" sortBy="#{null}" field="prefix">
+                <h:outputText value="#{row.prefix}"/>
+            </p:column>
+            <p:column headerText="Текущий номер" sortBy="#{null}" field="current">
+                <h:outputText value="#{row.current}"/>
+            </p:column>
+            <p:column headerText="Приоритет" sortBy="#{null}" field="priority">
+                <h:outputText value="#{row.priority}"/>
+            </p:column>
+            <p:column headerText="Тип документа" sortBy="#{null}" field="documentType.value">
                 <h:outputText value="#{row.documentType.value}"/>
             </p:column>
-            <p:column style="min-width:12em" headerText="Номенклатура" sortBy="#{row.nomenclature.code}" field="nomenclature.code">
-                <h:outputText value="#{row.nomenclature.code}-#{row.nomenclature.value}"/>
+            <p:column headerText="Вид документа" sortBy="#{null}" field="documentForm.value">
+                <h:outputText value="#{row.documentForm.value}"/>
             </p:column>
-            <p:column style="min-width:12em" headerText="Текущий номер" sortBy="#{row.value}" field="value">
-                <h:outputText value="#{row.value}"/>
+            <p:column headerText="Руководитель" sortBy="#{null}" field="controller.lastName">
+                <h:outputText value="#{row.controller}" converter="#{PersonConverter}"/>
+            </p:column>
+            <p:column headerText="Контрагент" sortBy="#{null}" field="contragent.value">
+                <h:outputText value="#{row.contragent.value}"/>
             </p:column>
             <p:ajax event="rowSelect" onstart="goToNumerator(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>

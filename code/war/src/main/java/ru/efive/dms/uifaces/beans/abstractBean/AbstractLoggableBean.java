@@ -11,7 +11,7 @@ public class AbstractLoggableBean implements Serializable, BeanNameAware {
 
     private String beanName;
 
-    String getBeanName() {
+    protected String getBeanName() {
         return beanName;
     }
 

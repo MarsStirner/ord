@@ -2,6 +2,7 @@ package ru.entity.model.mapped;
 
 
 import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.document.Numerator;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.DocumentForm;
@@ -17,56 +18,71 @@ import java.util.*;
 @MappedSuperclass
 @Access(AccessType.FIELD)
 public abstract class DocumentEntity extends DeletableEntity {
-
     /**
      * Дата создания документа
      */
     @Column(name = "creationDate", nullable = false)
     protected LocalDateTime creationDate;
+
     /**
      * Автор документа
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     protected User author;
+
     /**
      * Руководитель
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "controller_id")
+    @JoinColumn(name = "controller_id", nullable = true)
     protected User controller;
+
+    /**
+     * Нумератор, использующийся при регистрации документа
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "numerator_id", nullable = true)
+    protected Numerator numerator;
+
     /**
      * Номер входящего
      */
-    @Column(name = "registrationNumber", nullable = true)
+    @Column(name = "registrationNumber")
     protected String registrationNumber;
+
     /**
      * Дата регистрации
      */
-    @Column(name = "registrationDate", nullable = true)
+    @Column(name = "registrationDate")
     protected LocalDateTime registrationDate;
+
     /**
      * Краткое описание
      */
-    @Column(name = "shortDescription", columnDefinition = "text", nullable = true)
+    @Column(name = "shortDescription", columnDefinition = "text")
     protected String shortDescription;
+
     /**
      * Текущий статус документа в процессе
      */
     @Column(name = "status_id", nullable = false)
     protected int statusId;
+
     /**
      * Вид документа
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_id", nullable = false)
     protected DocumentForm form;
+
     /**
      * История
      * XXX: @AssociationOverride
      */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     protected Set<HistoryEntry> history;
+
 
     /**
      * Поле, в котором предполагается сохранять имя css - класса, для вывода в списках
@@ -114,6 +130,19 @@ public abstract class DocumentEntity extends DeletableEntity {
         return this.history.add(historyEntry);
     }
 
+    /**
+     * Получение полного, форматированного, номера документа
+     *
+     * @return форматированный номер документа
+     */
+    public String getFullNumber() {
+        return (numerator != null ? numerator.getPrefix() : null) + registrationNumber;
+    }
+
+    @Override
+    public String toString() {
+        return getType().getName() + "[" + getId() + "]";
+    }
 
     public User getAuthor() {
         return author;
@@ -203,4 +232,11 @@ public abstract class DocumentEntity extends DeletableEntity {
         this.WFResultDescription = WFResultDescription;
     }
 
+    public Numerator getNumerator() {
+        return numerator;
+    }
+
+    public void setNumerator(Numerator numerator) {
+        this.numerator = numerator;
+    }
 }

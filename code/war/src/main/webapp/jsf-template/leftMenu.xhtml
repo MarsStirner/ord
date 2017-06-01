@@ -12,7 +12,7 @@
     <c:set var="isHr" value="#{authData.isHr()}" scope="session"/>
     <c:set var="isFilling" value="#{authData.isFilling()}" scope="session"/>
 
-    <p:menu id="navigationMenu" toggleable="true" widgetVar="navigationMenuVar"
+<p:menu id="navigationMenu" toggleable="true" widgetVar="navigationMenuVar"
             style="width:100%; border-radius:0; border:0; padding:0; margin:0;">
         <p:submenu label="Входящие документы" styleClass="subMenuItem">
             <p:menuitem value="Мои проекты" url="/component/incoming/personal.xhtml" icon="leafIcon"
@@ -41,24 +41,17 @@
                         styleClass="#{currentView eq '/component/internal/on_agreement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="По номеру" url="/component/internal/list.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/internal/list.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Докладная записка" url="/component/internal/office_memo_notes.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/internal/office_memo_notes.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Заявление" url="/component/internal/statement.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/internal/statement.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+            <p:menuitem value="Служебные записки" url="/component/internal/office_memos.xhtml" icon="leafIcon"
+                        styleClass="#{currentView eq '/component/internal/office_memos.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="Распоряжения" url="/component/internal/directions.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/internal/directions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
             <p:menuitem value="Приказы" url="/component/internal/orders.xhtml" icon="leafIcon"
                         styleClass="#{currentView eq '/component/internal/orders.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Служебные записки" url="/component/internal/office_memos.xhtml" icon="leafIcon"
-                        styleClass="#{currentView eq '/component/internal/office_memos.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Информационные письма" url="/component/internal/information_memos.xhtml" icon="leafIcon"
-                        styleClass="#{currentView eq '/component/internal/information_memos.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Инструкции" url="/component/internal/instructions.xhtml" icon="leafIcon"
-                        styleClass="#{currentView eq '/component/internal/instructions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Методические пособия" url="/component/internal/manuals.xhtml" icon="leafIcon"
-                        styleClass="#{currentView eq '/component/internal/manuals.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Правила внутреннего распорядка" url="/component/internal/rules.xhtml" icon="leafIcon"
-                        styleClass="#{currentView eq '/component/internal/rules.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Положения" url="/component/internal/positions.xhtml" icon="leafIcon"
-                        styleClass="#{currentView eq '/component/internal/positions.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
-            <p:menuitem value="Гарантийные письма" url="/component/internal/garantees.xhtml" icon="leafIcon"
-                        styleClass="#{currentView eq '/component/internal/garantees.xhtml' ? 'selectedMenuItem' : 'menuItem'}"/>
+
         </p:submenu>
         <p:submenu label="Обращения граждан" styleClass="subMenuItem" rendered="#{isRequestManager or isAdministrator}">
             <p:menuitem value="Мои проекты" url="/component/request/personal.xhtml" icon="leafIcon"

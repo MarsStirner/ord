@@ -84,7 +84,7 @@ public class WorkflowAction {
         return needHistory;
     }
 
-    public HistoryEntry getHistoryEntity(ProcessedData document, AuthorizationData authData) {
+    public HistoryEntry getHistoryEntity(DocumentEntity document, AuthorizationData authData) {
         final HistoryEntry result = new HistoryEntry();
         LocalDateTime date = LocalDateTime.now();
         result.setCreated(date);

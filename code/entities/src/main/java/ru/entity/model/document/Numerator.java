@@ -1,13 +1,13 @@
 package ru.entity.model.document;
 
 import ru.entity.model.mapped.DeletableEntity;
+import ru.entity.model.referenceBook.Contragent;
+import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.DocumentType;
-import ru.entity.model.referenceBook.Nomenclature;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 /**
  * Нумератор
@@ -15,76 +15,112 @@ import java.time.LocalDateTime;
  * @author Alexey Vagizov, Egor Upatov
  */
 @Entity
-@Table(name = "rbNumerators")
+@Table(name = "numerator")
 public class Numerator extends DeletableEntity {
-    /**
-     * Дата создания документа
-     */
-    @Column(name = "creationDate")
-    private LocalDateTime creationDate;
-    /**
-     * Автор документа
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private User author;
-
-    /**
-     * Тип документа (Входящий|Исходящий|Внутренний|Обращение граждан)
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "documentType_id")
-    private DocumentType documentType;
-
-
-    /**
-     * Номенклатура документа (NULL - wildcard)
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "nomenclature_id", nullable = true)
-    private Nomenclature nomenclature;
-
-    /**
-     * Текущее значение счетчика
-     */
-    @Column(name = "value")
-    private Integer value;
-
     /**
      * Краткое описание
      */
     @Column(name = "shortDescription", columnDefinition = "text")
-    private String shortDescription;
-
+    protected String shortDescription;
+    /**
+     * Префикс номера нумератора (ранее номенклатура)
+     **/
+    @Column(name = "prefix")
+    private String prefix;
+    /**
+     * Текущий номер нумератора
+     **/
+    @Column(name = "current")
+    private Integer current;
     /**
      * Дата начала действия нумератора
      */
-    @Column(name = "startDate")
-    private LocalDate startDate;
-
+    @Column(name = "begDate", nullable = false)
+    private LocalDate begDate;
     /**
      * Дата окончания действия нумератора
      */
     @Column(name = "endDate")
     private LocalDate endDate;
+    /**
+     * Приоритет нумератора над остальными
+     **/
+    @Column(name = "priority")
+    private Integer priority;
+
+    /* К чему привязываются нумераторы */
+    /**
+     * Тип документа, NULL - любой
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "documentType_id", nullable = true)
+    private DocumentType documentType;
+
+    /**
+     * Вид документа, NULL - любой
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "documentForm_id", nullable = true)
+    private DocumentForm documentForm;
+
+    /**
+     * Руководитель, NULL - любой
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "controller_id", nullable = true)
+    private User controller;
+
+    /**
+     * ТКонтрагент, NULL - любой
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contragent_id", nullable = true)
+    private Contragent contragent;
 
     public Numerator() {
+        priority = 1000;
+        current = 0;
+        begDate = LocalDate.now();
     }
 
-    public LocalDateTime getCreationDate() {
-        return creationDate;
+    public String getPrefix() {
+        return prefix;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
-        this.creationDate = creationDate;
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
-    public User getAuthor() {
-        return author;
+    public Integer getCurrent() {
+        return current;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
+    public void setCurrent(Integer current) {
+        this.current = current;
+    }
+
+    public LocalDate getBegDate() {
+        return begDate;
+    }
+
+    public void setBegDate(LocalDate begDate) {
+        this.begDate = begDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
     }
 
     public DocumentType getDocumentType() {
@@ -95,20 +131,28 @@ public class Numerator extends DeletableEntity {
         this.documentType = documentType;
     }
 
-    public Nomenclature getNomenclature() {
-        return nomenclature;
+    public DocumentForm getDocumentForm() {
+        return documentForm;
     }
 
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
+    public void setDocumentForm(DocumentForm documentForm) {
+        this.documentForm = documentForm;
     }
 
-    public Integer getValue() {
-        return value;
+    public User getController() {
+        return controller;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setController(User controller) {
+        this.controller = controller;
+    }
+
+    public Contragent getContragent() {
+        return contragent;
+    }
+
+    public void setContragent(Contragent contragent) {
+        this.contragent = contragent;
     }
 
     public String getShortDescription() {
@@ -117,21 +161,5 @@ public class Numerator extends DeletableEntity {
 
     public void setShortDescription(String shortDescription) {
         this.shortDescription = shortDescription;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
     }
 }

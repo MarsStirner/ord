@@ -1,0 +1,60 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:cc="http://java.sun.com/jsf/composite"
+              xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <cc:interface>
+        <cc:attribute name="workflow" type="ru.efive.dms.uifaces.beans.workflow.AbstractWorkflow" required="true"/>
+        <cc:attribute name="model" type="ru.entity.model.mapped.DocumentEntity" required="true"/>
+    </cc:interface>
+
+    <cc:implementation>
+        <p:commandButton value="Действия" action="#{cc.attrs.workflow.init(cc.attrs.model)}" update="actionDialog"
+                         icon="ui-icon-circle-triangle-e" oncomplete="PF('actionDialogVar').show();"/>
+
+        <!-- Диалог работы с действиями -->
+        <p:dialog id="actionDialog" header="Действия" widgetVar="actionDialogVar" width="70%" position="top" fitViewport="true"
+                   closeable="true" closeOnEscape="true" modal="true" draggable="false" resizable="false">
+            <p:ajax event="close" onstart="goToDocumentByUniqueId('#{cc.attrs.model.uniqueId}', '_self')"/>
+            <h:panelGroup id = "workflowForm">
+                <!--@elvariable id="row_action" type="ru.efive.dms.uifaces.beans.workflow.WorkflowAction"-->
+                <p:dataTable id="action_select_table"
+                             rendered="#{cc.attrs.workflow.state == 'OPENED'}"
+                             value="#{cc.attrs.workflow.actions}"
+                             var="row_action"
+                             width="100%"
+                             emptyMessage="Доступных действий нет"
+                             rowKey="#{row_action.action.name}"
+                             selectionMode="single"
+                             selection="#{cc.attrs.workflow.selectedAction}">
+                    <p:ajax event="rowSelect" update="@parent"/>
+                    <p:column headerText="Доступные действия">
+                        <h:outputText value="#{row_action.action.name}"/>
+                    </p:column>
+                </p:dataTable>
+                <h:outputText id="processedMessage" rendered="#{cc.attrs.workflow.state == 'PROCESSED'}" style="padding-left:10px;" value="Успешно выполнено"/>
+                <p:dataList id="warnings" value="#{cc.attrs.workflow.warnings}" var="row_warning" rendered="#{cc.attrs.workflow.state == 'WARNING'}">
+                    <f:facet name="header">Действие не выполнено</f:facet>
+                    <h:outputText value="#{row_warning}"/>
+                </p:dataList>
+                <p:panelGrid id="customUi" rendered="#{not empty cc.attrs.workflow.selectedAction.ui and cc.attrs.workflow.state != 'WARNING'}" style="margin-top: 1em; width: 100%;">
+                    <p:row>
+                        <p:column colspan="2" style="background-color: yellow">
+                            Введите дополнительные данные для совершения действия
+                        </p:column>
+                    </p:row>
+                    <ui:include src="#{cc.attrs.workflow.selectedAction.ui}">
+                        <ui:param name="model" value="#{cc.attrs.model}"/>
+                    </ui:include>
+                </p:panelGrid>
+                <h:panelGroup id="dialogButtons" layout="block">
+                    <p:commandButton value="Выполнить" action="#{cc.attrs.workflow.process}" process="workflowForm" update="workflowForm"
+                                     rendered="#{cc.attrs.workflow.state == 'OPENED'}"
+                                     disabled="#{empty cc.attrs.workflow.actions or cc.attrs.workflow.selectedAction == null}"/>
+                    <p:commandButton value="Закрыть" onclick="goToDocumentByUniqueId('#{cc.attrs.model.uniqueId}', '_self');"/>
+                </h:panelGroup>
+            </h:panelGroup>
+        </p:dialog>
+    </cc:implementation>
+</ui:component>

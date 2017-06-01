@@ -19,7 +19,10 @@ import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -84,6 +87,7 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
         result.createAlias("form", "form", LEFT_OUTER_JOIN);
         result.createAlias("executor", "executor", LEFT_OUTER_JOIN);
         result.createAlias("contragent", "contragent", LEFT_OUTER_JOIN);
+        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 

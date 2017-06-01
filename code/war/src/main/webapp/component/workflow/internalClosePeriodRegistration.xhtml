@@ -1,0 +1,11 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui">
+    <p:row>
+        <p:column>
+            <p:outputLabel for="workflow_regNumber" value="Регистрационный номер"/>
+        </p:column>
+        <p:column>
+            <p:inputText id="workflow_regNumber" value="#{model.registrationNumber}" required="true" requiredMessage="Регистрационный номер обязателен"/>
+            <p:message for="workflow_regNumber"/>
+        </p:column>
+    </p:row>
+</ui:composition>

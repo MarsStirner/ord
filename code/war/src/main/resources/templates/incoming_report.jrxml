@@ -26,10 +26,10 @@
 		<parameter name="managerId" class="java.lang.String" isForPrompting="false"/>
 		<queryString>
 			<![CDATA[SELECT
-            CONCAT_WS(' ' , person.lastName, person.firstName, person.middleName) AS 'managerInfo'
+            CONCAT_WS(' ' , user.lastName, user.firstName, user.middleName) AS 'managerInfo'
             FROM
-            dms_system_persons person 
-            WHERE person.id = $P{managerId}]]>
+            dms_system_persons user
+            WHERE user.id = $P{managerId}]]>
 		</queryString>
 		<field name="managerInfo" class="java.lang.String"/>
 	</subDataset>

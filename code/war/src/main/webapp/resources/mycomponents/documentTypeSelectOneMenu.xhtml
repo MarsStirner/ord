@@ -4,13 +4,11 @@
               xmlns:p="http://primefaces.org/ui"
               xmlns:f="http://xmlns.jcp.org/jsf/core"
               xmlns:c="http://java.sun.com/jsp/jstl/core">
-
     <cc:interface>
         <cc:attribute name="id"/>
         <cc:attribute name="value"/>
         <cc:attribute name="withNoSelectOption" required="false" type="java.lang.Boolean" shortDescription="render no select options in dropdown or not" default="false"/>
     </cc:interface>
-
     <cc:implementation>
         <p:selectOneMenu id="#{cc.attrs.id}" value="#{cc.attrs.value}" converter="#{DocumentTypeConverter}" style="width:100%">
             <c:if test="#{cc.attrs.withNoSelectOption}">
@@ -19,5 +17,4 @@
             <f:selectItems value="#{refBookHelper.documentTypes}" var="docType_row"/>
         </p:selectOneMenu>
     </cc:implementation>
-
 </ui:component>

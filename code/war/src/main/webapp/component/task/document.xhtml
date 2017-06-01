@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
@@ -35,15 +34,14 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/task/list.xhtml"/>
+        <p:button icon="ui-icon-home" outcome="/component/task/list.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{task.errorState}"/>
         <p:commandButton value="Редактировать" action="#{task.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{task.viewState and task.editPermission and editableMatrix.task.isStateEditable(statusId)}"/>
         <p:commandButton value="Отменить" action="#{task.view}" rendered="#{task.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{task.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
         <p:commandButton value="Удалить" action="#{task.delete}" rendered="#{task.editState}" icon="ui-icon-trash" update="@form"/>
-        <p:commandButton value="Действия" action="#{taskWorkflow.init(task.document)}" rendered="#{task.viewState and task.executePermission}"
-                         icon="ui-icon-circle-triangle-e" update="actionDialog" oncomplete="PF('actionDialogVar').show();"/>
+        <my:actionWorkflow rendered="#{task.viewState and task.executePermission}" model="#{task.document}" workflow="#{taskWorkflow}"/>
     </ui:define>
 
     <ui:define name="DOCUMENT_HEADER">
@@ -67,7 +65,7 @@
     </ui:define>
 
     <ui:define name="DOCUMENT_CONTENT">
-        <p:tabView id="documentTabPanel" widgetVar="tabViewVar" dynamic="true" rendered="#{not task.errorState}">
+        <p:tabView id="documentTabPanel" dynamic="true" widgetVar="tabViewVar" rendered="#{not task.errorState}">
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%;">
                     <p:row styleClass="ui-grid-row">
@@ -197,39 +195,6 @@
         <p:growl id="msg"/>
         <!-- Сообщения о фактах просмотра-->
         <p:growl id="viewFactMessage" for="viewFact"/>
-        <!-- Диалог работы с действиями -->
-        <p:dialog id="actionDialog" widgetVar="actionDialogVar" closeable="true" modal="true" header="Действия" draggable="false" resizable="false" width="50%"
-                  closeOnEscape="true" fitViewport="true">
-            <h:panelGroup id="actionForm" rendered="#{taskWorkflow.state != 'HIDDEN'}">
-                <p:dataTable id="action_select_table"
-                             rendered="#{taskWorkflow.state == 'OPENED'}"
-                             value="#{taskWorkflow.actions}"
-                             var="row_action"
-                             width="100%"
-                             emptyMessage="Доступных действий нет"
-                             rowKey="#{row_action.action.name}"
-                             selectionMode="single"
-                             selection="#{taskWorkflow.selectedAction}"
-                >
-                    <p:column headerText="Доступные действия">
-                        <h:outputText value="#{row_action.action.name}"/>
-                    </p:column>
-                </p:dataTable>
-                <h:panelGroup id="processedMessage" rendered="#{taskWorkflow.state == 'PROCESSED'}">
-                    <h:outputText style="padding-left:10px;" value="#{taskWorkflow.processedMessage}"/>
-                </h:panelGroup>
-                <h:panelGroup id="customUi" rendered="#{taskWorkflow.state == 'WAIT_FOR_USER_INPUT'}">
-                    <ui:include src="#{taskWorkflow.selectedAction.ui}">
-                        <ui:param name="documentHolder" value="#{in_doc}"/>
-                    </ui:include>
-                </h:panelGroup>
-                <p:commandButton action="#{taskWorkflow.process}" value="Выполнить" process="action_select_table @this" update="actionForm"
-                                 rendered="#{taskWorkflow.state == 'OPENED'}"/>
-                <p:commandButton action="#{taskWorkflow.finish}" value="Завершить" process="customUi @this" update="actionForm"
-                                 rendered="#{taskWorkflow.state == 'WAIT_FOR_USER_INPUT'}"/>
-                <p:commandButton onclick="PF('actionDialogVar').close(); return false;" value="Закрыть"/>
-            </h:panelGroup>
-        </p:dialog>
     </ui:define>
 </ui:composition>
 </html>

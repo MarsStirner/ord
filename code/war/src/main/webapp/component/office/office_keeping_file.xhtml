@@ -6,9 +6,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-        >
-
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 <ui:composition template="/jsf-template/documentPageTemplate.xhtml">
     <f:metadata>
         <f:viewAction action="#{officeKeepingFile.init}"/>
@@ -22,7 +20,7 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/office/office_keeping_files.xhtml"/>
+        <p:button icon="ui-icon-home" outcome="/component/office/office_keeping_files.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{officeKeepingFile.errorState}"/>
         <p:commandButton value="Редактировать" action="#{officeKeepingFile.edit}" icon="ui-icon-pencil" update="@form"
                          rendered="#{officeKeepingFile.viewState}"/>

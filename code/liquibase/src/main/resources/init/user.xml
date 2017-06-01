@@ -26,20 +26,20 @@
             <column name="unid" remarks="табельный номер" type="VARCHAR(255)"/>
             <column name="jobPosition" remarks="должность" type="VARCHAR(255)"/>
             <column name="jobPosition_id" remarks="должность" type="INT(10)">
-                <constraints nullable="true" foreignKeyName="FK_user__jobPosition__rbposition"
+                <constraints nullable="true" foreignKeyName="FK_user__jobPosition"
                              referencedTableName="rbPosition" referencedColumnNames="id"/>
             </column>
             <column name="jobDepartment" remarks="департамент" type="VARCHAR(255)"/>
             <column name="jobDepartment_id" remarks="подразделение" type="INT(10)">
-                <constraints nullable="true" foreignKeyName="FK_user__jobDepartment_rbdepartment"
+                <constraints nullable="true" foreignKeyName="FK_user__jobDepartment"
                              referencedTableName="rbDepartment" referencedColumnNames="id"/>
             </column>
             <column name="currentUserAccessLevel_id" remarks="текщий уровень допуска" type="INT(10)">
-                <constraints nullable="false" foreignKeyName="FK_user__currentUserAccessLevel__rbuseraccesslevel"
+                <constraints nullable="false" foreignKeyName="FK_user__currentUserAccessLevel"
                              referencedTableName="rbUserAccessLevel" referencedColumnNames="id"/>
             </column>
             <column name="maxUserAccessLevel_id" remarks="максимальный уровеень допуска" type="INT(10)">
-                <constraints nullable="false" foreignKeyName="FK_user__maxUserAccessLevel__rbuseraccesslevel"
+                <constraints nullable="false" foreignKeyName="FK_user__maxUserAccessLevel"
                              referencedTableName="rbUserAccessLevel" referencedColumnNames="id"/>
             </column>
             <column name="GUID" remarks="LDAP objectGUID для этого пользователя" type="VARCHAR(36)">
@@ -50,8 +50,8 @@
             </column>
             <column name="lastModified" remarks="связь с AD" type="datetime"/>
             <column name="firedDate" remarks="Дата увольнения" type="datetime"/>
-            <column name="defaultNomeclature_id" remarks="Номенклатура дел пользователя по-умолчанию" type="INT(10)">
-                <constraints nullable="true" foreignKeyName="FK_user__defaultNomeclature__rbnomenclature"
+            <column name="defaultNomenclature_id" remarks="Номенклатура дел пользователя по-умолчанию" type="INT(10)">
+                <constraints nullable="true" foreignKeyName="FK_user__defaultNomenclature"
                              referencedTableName="rbNomenclature" referencedColumnNames="id"/>
             </column>
         </createTable>

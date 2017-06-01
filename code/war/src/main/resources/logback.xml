@@ -31,6 +31,7 @@
             <pattern>${log.format}</pattern>
             <charset>UTF-8</charset>
         </encoder>
+        <file>${com.sun.aas.instanceRoot}/logs/orm/orm.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <fileNamePattern>${com.sun.aas.instanceRoot}/logs/orm/orm_%i.log.gz</fileNamePattern>
             <minIndex>1</minIndex>
@@ -78,19 +79,36 @@
         </rollingPolicy>
     </appender>
 
-    <!-- Для различных подсистемных сообщений (Утилиты, Конвертеры)-->
-    <appender name="APPENDER_UTIL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- для действий пользователя (url+auth) -->
+    <appender name="APPENDER_ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
-            <pattern>${log.format}</pattern>
+            <pattern>[%date{ISO8601}][%-5level][%thread][SID=%X{sessionId}]:#%X{requestNumber} %msg%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/util/util.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/access/access.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
             <maxHistory>${log.maxHistory}</maxHistory>
         </rollingPolicy>
     </appender>
 
     <!--LOGGERS-->
+
+    <!--Логгер для действий пользователя (url+auth)-->
+    <logger name="ACCESS" level="DEBUG" additivity="true">
+        <appender-ref ref="APPENDER_ACCESS"/>
+    </logger>
+
+    <!--Логгер для интеграции с CMIS (alfresco)-->
+    <logger name="CMIS" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_CMIS"/>
+    </logger>
+    <logger name="ru.bars_open.medvtr.ord.cmis" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_CMIS"/>
+    </logger>
+    <logger name="org.apache.chemistry.opencmis" level="INFO" additivity="false">
+        <appender-ref ref="APPENDER_CMIS"/>
+    </logger>
+
 
     <!--Логгеры для документов-->
     <!-- базовый -->
@@ -115,9 +133,7 @@
     </logger>
     <!--Конец логгеров для документов-->
 
-    <logger name="AUTH" level="DEBUG"/>
 
-    <logger name="FILTER" level="DEBUG"/>
 
     <!--Логгеры для различных утилит-->
     <!-- Матрица редактируемости полей-->
@@ -155,16 +171,6 @@
         <appender-ref ref="APPENDER_LDAP"/>
     </logger>
 
-    <!--Логгер для интеграции с CMIS (alfresco)-->
-    <logger name="CMIS" level="DEBUG" additivity="false">
-        <appender-ref ref="APPENDER_CMIS"/>
-    </logger>
-    <logger name="ru.bars_open.medvtr.ord.cmis" level="DEBUG" additivity="false">
-        <appender-ref ref="APPENDER_CMIS"/>
-    </logger>
-    <logger name="org.apache.chemistry.opencmis" level="INFO" additivity="false">
-        <appender-ref ref="APPENDER_CMIS"/>
-    </logger>
 
     <!--Hibernate SQL LOGGER-->
     <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">

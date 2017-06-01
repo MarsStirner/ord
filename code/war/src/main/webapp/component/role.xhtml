@@ -4,10 +4,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:f="http://java.sun.com/jsf/core"
-        >
+      xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
     <f:metadata>
         <f:viewAction action="#{role.init}"/>
@@ -19,7 +17,7 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/roles.xhtml"/>
+        <p:button icon="ui-icon-home" outcome="/component/roles.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{role.errorState}"/>
         <p:commandButton value="Редактировать" action="#{role.edit}"
                          rendered="#{role.viewState and role.canEdit}" icon="ui-icon-pencil" update="@form"/>

@@ -1,65 +1,35 @@
 package ru.efive.dms.uifaces.beans.workflow;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.efive.dms.util.WorkflowHelper;
 import ru.entity.model.document.RequestDocument;
 import ru.entity.model.enums.DocumentAction;
 import ru.hitsl.sql.dao.interfaces.document.RequestDocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
 import static ru.entity.model.enums.DocumentStatus.*;
 
-/**
- * Created by EUpatov on 13.04.2017.
- */
 @ViewScopedController("requestWorkflow")
-public class RequestDocumentWorkflow {
-    private static final Logger log = LoggerFactory.getLogger(RequestDocumentWorkflow.class);
+public class RequestDocumentWorkflow extends AbstractWorkflow<RequestDocument, RequestDocumentDao> {
+
 
     @Autowired
-    @Qualifier("requestDocumentDao")
-    private RequestDocumentDao requestDocumentDao;
+    @Qualifier("numerationService")
+    private NumerationService numerationService;
 
     @Autowired
-    @Qualifier("authData")
-    private AuthorizationData authData;
-
-    @Autowired
-    private WorkflowHelper helper;
-
-
-    private List<WorkflowAction> actions = new ArrayList<>(3);
-
-    private State state = State.HIDDEN;
-
-
-    private RequestDocument document;
-    private String processedMessage;
-    private WorkflowAction selectedAction;
-
-    @PostConstruct
-    public void postConstruct(){
-        log.info("@PostConstruct callback");
+    public RequestDocumentWorkflow(
+            @Qualifier("authData") final AuthorizationData authData,
+            @Qualifier("requestDocumentDao") final RequestDocumentDao dao) {
+        super(authData, dao);
     }
 
-
-    public void init(final RequestDocument document) {
-        log.info("Start initializing new Workflow by {} with document: {}", authData.getLogString(), document.getUniqueId());
-        state = State.OPENED;
-        this.document = document;
-        actions = getActions(document, authData);
-    }
-
-    private List<WorkflowAction> getActions(RequestDocument document, AuthorizationData authData) {
+    @Override
+    public List<WorkflowAction> getActions(RequestDocument document, AuthorizationData authData) {
         log.debug("getActions by {} with document: {}", authData.getLogString(), document.getUniqueId());
         final List<WorkflowAction> result = new ArrayList<>();
         switch (document.getDocumentStatus()) {
@@ -76,7 +46,7 @@ public class RequestDocumentWorkflow {
                 break;
             }
             //Зарегистрирован - На исполнении
-            case CHECK_IN_2:{
+            case CHECK_IN_2: {
                 final WorkflowAction action2 = new WorkflowAction();
                 action2.setAction(DocumentAction.REDIRECT_TO_EXECUTION_2);
                 action2.setAvailable(true);
@@ -122,68 +92,51 @@ public class RequestDocumentWorkflow {
     }
 
 
-    public List<WorkflowAction> getActions() {
-        return actions;
-    }
-
-    public void process() {
-        document.setWFResultDescription(null);
-        boolean success = false;
-        try {
-            final WorkflowAction workflowAction = selectedAction;
-            switch (workflowAction.getAction()) {
-                case CHECK_IN_1: {
-                    success = helper.setRequestRegistrationNumber(document);
-                    processedMessage = document.getWFResultDescription();
-                    //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_INCOMING_EXECUTORS);
-                    break;
-                }
-                default:
-                    log.warn("{} is only document state changing action!", workflowAction.getAction());
-                    success = true;
-                    break;
+    @Override
+    public boolean process(WorkflowAction action, RequestDocument document) {
+        switch (action.getAction()) {
+            case CHECK_IN_1: {
+                return setRequestRegistrationNumber(document);
+                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_INCOMING_EXECUTORS);
             }
-            if (success) {
-                if(StringUtils.isEmpty(workflowAction.getUi())) {
-                    finish();
-                    state=State.PROCESSED;
-                } else {
-                    state= State.WAIT_FOR_USER_INPUT;
-                }
-            } else {
-                state=State.PROCESSED;
-            }
-        } catch (Exception e) {
-            this.processedMessage = "Внутренняя ошибка";
-            state=State.PROCESSED;
+            default:
+                log.warn("{} is only document state changing action!", action.getAction());
+                return true;
         }
     }
 
-    public void finish() {
-        final WorkflowAction workflowAction = selectedAction;
-        if (workflowAction.getTargetStatus() != null) {
-            document.setStatus(workflowAction.getTargetStatus());
+    private boolean setRequestRegistrationNumber(RequestDocument document) {
+        boolean result = false;
+        if ((document.getSenderType() == null)) {
+            addWarning("Необходимо указать Тип отправителя документа");
+            result = false;
         }
-        if (workflowAction.isNeedHistory()) {
-            document.addToHistory(workflowAction.getHistoryEntity(document, authData));
+
+        if ((document.getSenderType().getValue().equals("Физическое лицо")) && (document.getSenderLastName() == null)) {
+            addWarning("Необходимо указать Фамилию адресанта");
+            result = false;
         }
-        requestDocumentDao.update(document);
-        this.processedMessage = "Успешно выполнено";
+        if ((document.getSenderType().getValue().equals("Юридическое лицо")) && (document.getContragent() == null)) {
+            addWarning("Необходимо указать Корреспондента");
+            result = false;
+        }
+        if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) && (document.getRecipientGroups() == null || document
+                .getRecipientGroups().size() == 0)) {
+            addWarning("Необходимо выбрать Адресатов");
+            result = false;
+        }
+        if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
+            addWarning("Необходимо заполнить Краткое содержание");
+            result = false;
+        }
+
+        if (!result) {
+            log.warn("End. Validation failed: '{}'", getWarnings());
+            return false;
+        }
+        log.debug("validation success");
+        return numerationService.fillDocumentNumber(document);
     }
 
-    public String getProcessedMessage() {
-        return processedMessage;
-    }
 
-    public State getState() {
-        return state;
-    }
-
-    public WorkflowAction getSelectedAction() {
-        return selectedAction;
-    }
-
-    public void setSelectedAction(WorkflowAction selectedAction) {
-        this.selectedAction = selectedAction;
-    }
 }

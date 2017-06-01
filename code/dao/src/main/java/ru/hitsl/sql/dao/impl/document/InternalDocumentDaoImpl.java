@@ -47,7 +47,7 @@ public class InternalDocumentDaoImpl extends DocumentDaoImpl<InternalDocument> i
         applyDeletedRestriction(in_searchCriteria, showDeleted);
         applyDraftRestriction(in_searchCriteria, showDrafts);
         LocalDate currentDate;
-        if (in_map.containsKey("DEPRECATED_REGISTRATION_DATE")) {
+        if (in_map.get("DEPRECATED_REGISTRATION_DATE") != null) {
             currentDate = (LocalDate) in_map.get("DEPRECATED_REGISTRATION_DATE");
         } else {
             currentDate = LocalDate.now();
@@ -80,6 +80,7 @@ public class InternalDocumentDaoImpl extends DocumentDaoImpl<InternalDocument> i
         result.createAlias("controller", "controller", LEFT_OUTER_JOIN);
         result.createAlias("form", "form", LEFT_OUTER_JOIN);
         result.createAlias("responsible", "responsible", LEFT_OUTER_JOIN);
+        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 

@@ -5,7 +5,6 @@ import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.referenceBook.Group;
-import ru.entity.model.referenceBook.Nomenclature;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
@@ -99,13 +98,6 @@ public class IncomingDocument extends AccessControlledDocumentEntity implements 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contragent_id", nullable = true)
     private Contragent contragent;
-
-    /**
-     * Номенклатура
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nomenclature_id")
-    private Nomenclature nomenclature;
 
     /**
      * Вид документа
@@ -207,14 +199,6 @@ public class IncomingDocument extends AccessControlledDocumentEntity implements 
             return new ArrayList<>(executors);
         }
         return new ArrayList<>(0);
-    }
-
-    public Nomenclature getNomenclature() {
-        return nomenclature;
-    }
-
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
     }
 
     public DeliveryType getDeliveryType() {

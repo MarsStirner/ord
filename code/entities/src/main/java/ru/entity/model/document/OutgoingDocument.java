@@ -4,7 +4,6 @@ import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
-import ru.entity.model.referenceBook.Nomenclature;
 import ru.entity.model.user.User;
 import ru.external.ProcessedData;
 
@@ -76,13 +75,6 @@ public class OutgoingDocument extends AccessControlledDocumentEntity implements 
     private DeliveryType deliveryType;
 
     /**
-     * Номенклатура
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nomenclature_id", nullable = true)
-    private Nomenclature nomenclature;
-
-    /**
      * Ссылка на документ основание
      */
     @Column(name = "reason_document_id")
@@ -101,15 +93,6 @@ public class OutgoingDocument extends AccessControlledDocumentEntity implements 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "executor_id", nullable = true)
     private User executor;
-
-
-    public Nomenclature getNomenclature() {
-        return nomenclature;
-    }
-
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
-    }
 
     public Contragent getContragent() {
         return contragent;

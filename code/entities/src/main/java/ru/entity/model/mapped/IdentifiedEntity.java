@@ -11,8 +11,6 @@ import java.io.Serializable;
  */
 @MappedSuperclass
 public abstract class IdentifiedEntity implements Serializable {
-
-    private static final long serialVersionUID = -5373498855516075305L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;

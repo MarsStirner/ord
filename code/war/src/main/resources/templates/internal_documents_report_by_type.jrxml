@@ -27,9 +27,9 @@
 		<parameter name="docId" class="java.lang.Integer" isForPrompting="false"/>
 		<queryString>
 			<![CDATA[SELECT
-     group_concat(concat(person.`lastName`," ",person.`firstName`," ",person.`middleName`,"")separator " ") AS fio
+     group_concat(concat(user.`lastName`," ",user.`firstName`," ",user.`middleName`,"")separator " ") AS fio
 FROM
-     `dms_internal_documents` dms_internal_documents INNER JOIN `dms_system_persons` person ON dms_internal_documents.`signer_id` = person.`id`
+     `dms_internal_documents` dms_internal_documents INNER JOIN `dms_system_persons` user ON dms_internal_documents.`signer_id` = user.`id`
 where dms_internal_documents.`id`=$P{docId}]]>
 		</queryString>
 		<field name="fio" class="java.lang.String"/>

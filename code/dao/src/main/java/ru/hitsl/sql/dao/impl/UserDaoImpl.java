@@ -87,7 +87,6 @@ public class UserDaoImpl extends CommonDaoImpl<User> implements UserDao {
         //EAGER LOADING OF GROUPS, ROLES, defaultNomenclature, and accessLevels
         result.createAlias("groups", "groups", LEFT_OUTER_JOIN);
         result.createAlias("roles", "roles", LEFT_OUTER_JOIN);
-        result.createAlias("defaultNomenclature", "defaultNomenclature", LEFT_OUTER_JOIN);
         result.createAlias("maxUserAccessLevel", "maxUserAccessLevel", INNER_JOIN);
         result.createAlias("currentUserAccessLevel", "currentUserAccessLevel", LEFT_OUTER_JOIN);
         return result;

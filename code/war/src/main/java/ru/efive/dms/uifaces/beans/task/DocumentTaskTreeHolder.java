@@ -69,8 +69,14 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     }
 
     private String printTreeToString(Node<Task> rootNode, final String prefix) {
-        final StringBuilder sb = new StringBuilder(prefix).append("├──")
-                .append(rootNode.getData() != null ? rootNode.getData().getId() : "ROOT").append('\n');
+        Task rootData = rootNode.getData();
+        final StringBuilder sb = new StringBuilder(prefix).append("├──");
+        if(rootData != null){
+            sb.append(rootData.getId()).append("[").append(rootData.getRegistrationNumber()).append("]");
+        } else {
+            sb.append("ROOT");
+        }
+        sb.append('\n');
         rootNode.getChildren().forEach(x -> sb.append(printTreeToString(x, prefix + "│   ")));
         return sb.toString();
     }

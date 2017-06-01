@@ -138,12 +138,6 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
     @Column(name = "jobDepartment")
     private String jobDepartmentString;
 
-    /**
-     * Номенкалтура по-умолчанию
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "defaultNomeclature_id", nullable = true)
-    private Nomenclature defaultNomenclature;
 
     /**
      * *******************************************************************
@@ -451,14 +445,6 @@ public class User extends DeletableEntity implements Descriptionable, Comparable
 
     public void setUNID(String UNID) {
         this.UNID = UNID;
-    }
-
-    public Nomenclature getDefaultNomenclature() {
-        return defaultNomenclature;
-    }
-
-    public void setDefaultNomenclature(Nomenclature defaultNomenclature) {
-        this.defaultNomenclature = defaultNomenclature;
     }
 
     public String getJobPositionString() {

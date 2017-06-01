@@ -8,18 +8,19 @@ document.ondblclick = function DoubleClick(evt) {
         document.selection.empty();
 };
 
-function goToDocumentByUniqueId(parentId) {
+function goToDocumentByUniqueId(parentId, name) {
     if (parentId !== "") {
         var pos = parentId.indexOf('_');
         if (pos !== -1) {
             var id = parentId.substring(pos + 1, parentId.length);
             var docType = parentId.substring(0, pos);
-            goToDocument(docType, id);
+            goToDocument(docType, id, name);
         }
     }
 }
 
-function goToDocument(docType, id) {
+
+function goToDocument(docType, id, name) {
     if (id !== "") {
         if (docType !== "") {
             x = docType.toUpperCase();
@@ -34,7 +35,7 @@ function goToDocument(docType, id) {
             } else if (x.indexOf('TASK') !== -1) {
                 componentType = 'task/document';
             }
-            window.open('/component/' + componentType + '.xhtml?docId=' + id, '_blank');
+            window.open('/component/' + componentType + '.xhtml?docId=' + id, name || '_blank');
         }
     }
 }

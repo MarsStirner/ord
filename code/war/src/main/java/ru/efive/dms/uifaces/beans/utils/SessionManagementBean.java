@@ -36,7 +36,7 @@ public class SessionManagementBean implements Serializable {
 
     public static final String AUTH_KEY = "app.user.name";
     public static final String BACK_URL = "app.back.url";
-    private final static Logger log = LoggerFactory.getLogger("AUTH");
+    private static final Logger log = LoggerFactory.getLogger("ACCESS");
     @Autowired
     @Qualifier("userAccessLevelDao")
     private UserAccessLevelDao userAccessLevelDao;

@@ -7,4 +7,6 @@
     <!-- CHANGESET ID PREFIX = "serbsky/" -->
     <include file="rb_document_form.xml" relativeToChangelogFile="true"/>
     <include file="user.xml" relativeToChangelogFile="true"/>
+    <include file="numerator.xml" relativeToChangelogFile="true"/>
+    <include file="rb_nomenclature.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

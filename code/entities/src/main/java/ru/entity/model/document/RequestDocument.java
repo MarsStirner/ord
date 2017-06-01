@@ -169,13 +169,6 @@ public class RequestDocument extends AccessControlledDocumentEntity implements P
     @Column(name = "sheetsCount", nullable = false)
     private int sheetsCount;
 
-    /**
-     * Номенклатура
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nomenclature_id")
-    private Nomenclature nomenclature;
-
 
     @Override
     public DocumentType getType() {
@@ -270,14 +263,6 @@ public class RequestDocument extends AccessControlledDocumentEntity implements P
 
     public void setResponsible(User responsible) {
         this.responsible = responsible;
-    }
-
-    public Nomenclature getNomenclature() {
-        return nomenclature;
-    }
-
-    public void setNomenclature(Nomenclature nomenclature) {
-        this.nomenclature = nomenclature;
     }
 
     public DeliveryType getDeliveryType() {

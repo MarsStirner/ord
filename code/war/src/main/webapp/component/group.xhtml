@@ -1,14 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:my="http://xmlns.jcp.org/jsf/composite/mycomponents"
       xmlns:p="http://primefaces.org/ui">
-
 <ui:composition template="/jsf-template/referenceBookItemTemplate.xhtml">
     <f:metadata>
         <f:viewAction action="#{group.init}"/>
@@ -20,7 +17,7 @@
     </ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
-        <my:homeButton outcome="/component/groups.xhtml"/>
+        <p:button icon="ui-icon-home" outcome="/component/groups.xhtml"/>
         <h:outputText value="Ошибка" rendered="#{group.errorState}"/>
         <p:commandButton value="Редактировать" action="#{group.edit}"
                          rendered="#{group.viewState and group.isCanUpdate(authData)}" icon="ui-icon-pencil" update="@form"/>

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.hitsl.sql.dao.impl.mapped.ReferenceBookDaoImpl;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 
@@ -43,5 +44,10 @@ public class DocumentFormDaoImpl extends ReferenceBookDaoImpl<DocumentForm> impl
         return getItems(criteria);
     }
 
-
+    @Override
+    public List<DocumentForm> findByDocumentType(DocumentType documentType) {
+        final DetachedCriteria criteria = getListCriteria();
+        criteria.add(Restrictions.eq("documentType", documentType));
+        return getItems(criteria);
+    }
 }

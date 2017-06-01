@@ -2,23 +2,15 @@
               xmlns:ui="http://java.sun.com/jsf/facelets"
               xmlns:cc="http://java.sun.com/jsf/composite"
               xmlns:p="http://primefaces.org/ui"
-              xmlns:f="http://xmlns.jcp.org/jsf/core"
               xmlns:h="http://java.sun.com/jsf/html">
-
     <cc:interface>
-        <cc:attribute name="value"/>
+        <cc:attribute name="value" type="java.util.Collection" />
     </cc:interface>
-
     <cc:implementation>
-        <p:dataTable id="history_table"
-                     value="#{cc.attrs.value}"
-                     var="history_entry" style="width:100%;"
-                     emptyMessage="У документа нет записей в истории">
+        <p:dataTable id="history_table" value="#{cc.attrs.value}" var="history_entry" style="width:100%;" emptyMessage="У документа нет записей в истории">
+            <!--@elvariable id="history_entry" type="ru.entity.model.document.HistoryEntry"-->
             <p:column headerText="Дата" styleClass="outputText">
-                <h:outputText value="#{history_entry.startDate}">
-                    <f:converter  converterId="LocalDateTimeConverter"/>
-                    <f:attribute name="pattern" value="dd.MM.yyyy HH:mm:ss"/>
-                </h:outputText>
+                <h:outputText value="#{history_entry.startDate}" converter="LocalDateTimeConverter" pattern="dd.MM.yyyy HH:mm:ss"/>
             </p:column>
             <p:column headerText="Статус" styleClass="outputText">
                 <h:outputText value="#{history_entry.fromStatusName}"/>
@@ -34,5 +26,4 @@
             </p:column>
         </p:dataTable>
     </cc:implementation>
-
 </ui:component>

@@ -2,14 +2,14 @@
               xmlns:ui="http://java.sun.com/jsf/facelets"
               xmlns:p="http://primefaces.org/ui"
               xmlns:h="http://java.sun.com/jsf/html"
-              xmlns:cc="http://java.sun.com/jsf/composite" 
+              xmlns:cc="http://java.sun.com/jsf/composite"
               xmlns:f="http://xmlns.jcp.org/jsf/core">
     <cc:interface>
         <cc:attribute name="editable" type="java.lang.Boolean" required="true" shortDescription="is state editable?"/>
         <cc:attribute name="model" type="ru.entity.model.mapped.AccessControlledDocumentEntity" required="true" shortDescription="document"/>
-        <cc:attribute name="controller" type=" ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean" required="true"/>
-        <cc:attribute name="editableReaders"  type="java.lang.Boolean" required="false" default="false"/>
-        <cc:attribute name="editableEditors"  type="java.lang.Boolean" required="false" default="false"/>
+        <cc:attribute name="controller" type="ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean" required="true"/>
+        <cc:attribute name="editableReaders" type="java.lang.Boolean" required="false" default="false"/>
+        <cc:attribute name="editableEditors" type="java.lang.Boolean" required="false" default="false"/>
     </cc:interface>
 
     <cc:implementation>
