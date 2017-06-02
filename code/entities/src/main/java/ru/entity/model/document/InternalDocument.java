@@ -45,28 +45,10 @@ import java.util.Set;
 public class InternalDocument extends AccessControlledDocumentEntity {
 
     /**
-     * Количество приложений
-     */
-    @Column(name = "appendixiesCount", nullable = false)
-    private int appendixiesCount;
-
-    /**
-     * Количество экземпляров
-     */
-    @Column(name = "copiesCount", nullable = false)
-    private int copiesCount;
-
-    /**
      * Срок исполнения
      */
     @Column(name = "executionDate")
     private LocalDateTime executionDate;
-
-    /**
-     * Количество страниц
-     */
-    @Column(name = "sheetsCount")
-    private int sheetsCount;
 
     /**
      * Ответственный , следит за сроками исполнения документов и пинает, если исполнители не успевают.
@@ -169,30 +151,6 @@ public class InternalDocument extends AccessControlledDocumentEntity {
 
     public void setResponsible(User responsible) {
         this.responsible = responsible;
-    }
-
-    public int getCopiesCount() {
-        return copiesCount;
-    }
-
-    public void setCopiesCount(int copiesCount) {
-        this.copiesCount = copiesCount;
-    }
-
-    public int getSheetsCount() {
-        return sheetsCount;
-    }
-
-    public void setSheetsCount(int sheetsCount) {
-        this.sheetsCount = sheetsCount;
-    }
-
-    public int getAppendixiesCount() {
-        return appendixiesCount;
-    }
-
-    public void setAppendixiesCount(int appendixiesCount) {
-        this.appendixiesCount = appendixiesCount;
     }
 
     @Override

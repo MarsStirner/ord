@@ -43,24 +43,6 @@ import java.time.LocalDateTime;
 public class OutgoingDocument extends AccessControlledDocumentEntity {
 
     /**
-     * Количество приложений
-     */
-    @Column(name = "appendixiesCount")
-    private int appendixiesCount;
-
-    /**
-     * Количество экземпляров
-     */
-    @Column(name = "copiesCount")
-    private int copiesCount;
-
-    /**
-     * Количество страниц
-     */
-    @Column(name = "sheetsCount")
-    private int sheetsCount;
-
-    /**
      * Дата подписания
      */
     @Column(name = "signatureDate")
@@ -107,30 +89,6 @@ public class OutgoingDocument extends AccessControlledDocumentEntity {
 
     public void setDeliveryType(DeliveryType deliveryType) {
         this.deliveryType = deliveryType;
-    }
-
-    public int getCopiesCount() {
-        return copiesCount;
-    }
-
-    public void setCopiesCount(int copiesCount) {
-        this.copiesCount = copiesCount;
-    }
-
-    public int getSheetsCount() {
-        return sheetsCount;
-    }
-
-    public void setSheetsCount(int sheetsCount) {
-        this.sheetsCount = sheetsCount;
-    }
-
-    public int getAppendixiesCount() {
-        return appendixiesCount;
-    }
-
-    public void setAppendixiesCount(int appendixiesCount) {
-        this.appendixiesCount = appendixiesCount;
     }
 
     public User getExecutor() {

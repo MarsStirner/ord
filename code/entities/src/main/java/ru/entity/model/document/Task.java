@@ -173,18 +173,18 @@ public class Task extends DocumentEntity implements Cloneable {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("Task[").append(getId())
-                .append("]{ controlDate=").append(controlDate)
-                .append(", creationDate=").append(getCreationDate())
-                .append(", author=").append(getAuthor().getDescription())
-                .append(", initiator=").append(initiator != null ? initiator.getDescription() : "null")
-                .append(", controller=").append(getController() != null ? getController().getDescription() : "null")
-                .append(", parent=").append(parent != null ? parent.getId() : "null")
-                .append(", registrationDate=").append(getRegistrationDate())
-                .append(", shortDescription='").append(getShortDescription()).append('\'')
-                .append(", statusId=").append(getDocumentStatus())
-                .append(", registrationNumber='").append(getRegistrationNumber()).append('\'')
-                .append(", rootDocumentId='").append(rootDocumentId).append('\'')
-                .append('}').toString();
+        return "Task[" + getId() +
+                "]{ controlDate=" + controlDate +
+                ", creationDate=" + getCreationDate() +
+                ", author=" + getAuthor().getDescription() +
+                ", initiator=" + (initiator != null ? initiator.getDescription() : "null") +
+                ", controller=" + (getController() != null ? getController().getDescription() : "null") +
+                ", parent=" + (parent != null ? parent.getId() : "null") +
+                ", registrationDate=" + getRegistrationDate() +
+                ", shortDescription='" + getShortDescription() + '\'' +
+                ", statusId=" + getDocumentStatus() +
+                ", registrationNumber='" + getRegistrationNumber() + '\'' +
+                ", rootDocumentId='" + rootDocumentId + '\'' +
+                '}';
     }
 }

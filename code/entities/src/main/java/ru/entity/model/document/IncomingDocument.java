@@ -49,18 +49,6 @@ import java.util.Set;
 public class IncomingDocument extends AccessControlledDocumentEntity {
 
     /**
-     * Количество приложений
-     */
-    @Column(name = "appendixiesCount", nullable = false)
-    private int appendixiesCount = 0;
-
-    /**
-     * Количество экземпляров
-     */
-    @Column(name = "copiesCount", nullable = false)
-    private int copiesCount = 0;
-
-    /**
      * Дата поступления
      */
     @Column(name = "deliveryDate", nullable = true)
@@ -84,12 +72,6 @@ public class IncomingDocument extends AccessControlledDocumentEntity {
     @Column(name = "receivedDocumentDate", nullable = true)
     private LocalDateTime receivedDocumentDate;
 
-
-    /**
-     * Количество страниц
-     */
-    @Column(name = "sheetsCount", nullable = false)
-    private int sheetsCount;
 
     /**
      * Корреспондент
@@ -222,30 +204,6 @@ public class IncomingDocument extends AccessControlledDocumentEntity {
 
     public void setReceivedDocumentDate(LocalDateTime receivedDocumentDate) {
         this.receivedDocumentDate = receivedDocumentDate;
-    }
-
-    public int getCopiesCount() {
-        return copiesCount;
-    }
-
-    public void setCopiesCount(int copiesCount) {
-        this.copiesCount = copiesCount;
-    }
-
-    public int getSheetsCount() {
-        return sheetsCount;
-    }
-
-    public void setSheetsCount(int sheetsCount) {
-        this.sheetsCount = sheetsCount;
-    }
-
-    public int getAppendixiesCount() {
-        return appendixiesCount;
-    }
-
-    public void setAppendixiesCount(int appendixiesCount) {
-        this.appendixiesCount = appendixiesCount;
     }
 
     public DocumentType getType() {
