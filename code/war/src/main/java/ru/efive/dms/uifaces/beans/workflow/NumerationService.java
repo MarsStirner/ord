@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractLoggableBean;
+import ru.efive.dms.util.message.MessageHolder;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.Numerator;
 import ru.entity.model.document.RequestDocument;
@@ -33,7 +35,7 @@ public class NumerationService extends AbstractLoggableBean {
             final Numerator numerator = numeratorDao.findBestNumerator(doc.getType(), doc.getForm(), doc.getController(), getContragent(doc));
             if(numerator == null){
                 log.error("No numerator found!");
-                doc.setWFResultDescription("Не найдено подходящего нумератора");
+                MessageUtils.addMessage(MessageHolder.MSG_NO_NUMERATOR_FOUND);
                 return false;
             }
             log.info("Used numerator: {}", numerator);

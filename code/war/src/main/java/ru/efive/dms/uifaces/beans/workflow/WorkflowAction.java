@@ -1,16 +1,12 @@
 package ru.efive.dms.uifaces.beans.workflow;
 
 import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.enums.DocumentAction;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.mapped.DocumentEntity;
-import ru.external.ProcessedData;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import java.time.LocalDateTime;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Created by EUpatov on 13.04.2017.

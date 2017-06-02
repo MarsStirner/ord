@@ -91,8 +91,6 @@ public class OfficeKeepingVolume extends DeletableEntity {
     private Set<HistoryEntry> history;
 
 
-    private String WFResultDescription;
-
     public DocumentType getType() {
         return DocumentType.OfficeKeepingVolume;
     }
@@ -200,14 +198,6 @@ public class OfficeKeepingVolume extends DeletableEntity {
         }
         Collections.sort(result);
         return result;
-    }
-
-    public String getWFResultDescription() {
-        return WFResultDescription;
-    }
-
-    public void setWFResultDescription(String WFResultDescription) {
-        this.WFResultDescription = WFResultDescription;
     }
 
     public User getCollector() {

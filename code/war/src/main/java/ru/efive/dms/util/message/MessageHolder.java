@@ -35,6 +35,8 @@ public class MessageHolder {
     public static final FacesMessage MSG_RB_CONTRAGENT_TYPE_IS_USED_BY_SOME_CONTRAGENTS = new FacesMessage(SEVERITY_ERROR, "Невозможно удалить тип контрагента, так как к нему привязаны контрагенты.", "");
 
 
+    public static final FacesMessage MSG_NO_NUMERATOR_FOUND = new FacesMessage(SEVERITY_ERROR, "Не найдено подходящего нумератора", "");
+
     //Сообщения об ошибках авторизации
     public final static FacesMessage MSG_AUTH_FIRED = new FacesMessage(SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
     public final static FacesMessage MSG_AUTH_DELETED = new FacesMessage(SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник удален", "");
@@ -91,6 +93,7 @@ public class MessageHolder {
 
     // Ошибки валидации
     public static final FacesMessage MSG_REQUIRED_PARAMETER_NOT_SET = new FacesMessage(SEVERITY_ERROR, "Обязательный параметр ''{0}'' не указан", "");
+
 
 
 }

@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Import;
 import ru.bars_open.medvtr.ord.cmis.CmisDao;
 import ru.bars_open.medvtr.ord.cmis.CmisSessionFactory;
 import ru.efive.dms.util.ldap.LDAPImportService;
-import ru.efive.wf.core.MailSettings;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,15 +83,15 @@ public class ApplicationConfig {
         return result;
     }
 
-    @Bean("mailSettings")
-    public MailSettings mailSettings(Config config) {
-        final Config subCfg = config.getConfig("mail");
-        final MailSettings result = new MailSettings();
-        if (subCfg.hasPath("jndiName")) {
-            result.setJndi(subCfg.getString("jndiName"));
-        }
-        log.info("Initialized {}", result);
-        return result;
-    }
+//    @Bean("mailSettings")
+//    public MailSettings mailSettings(Config config) {
+//        final Config subCfg = config.getConfig("mail");
+//        final MailSettings result = new MailSettings();
+//        if (subCfg.hasPath("jndiName")) {
+//            result.setJndi(subCfg.getString("jndiName"));
+//        }
+//        log.info("Initialized {}", result);
+//        return result;
+//    }
 
 }
