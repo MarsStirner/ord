@@ -1,20 +1,16 @@
 package ru.entity.model.document;
 
-import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.AccessControlledDocumentEntity;
-import ru.entity.model.mapped.DocumentEntity;
-import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.referenceBook.Group;
-import ru.entity.model.referenceBook.Role;
-import ru.entity.model.referenceBook.UserAccessLevel;
 import ru.entity.model.user.User;
-import ru.external.ProcessedData;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Внутренний документ
@@ -46,7 +42,7 @@ import java.util.*;
                 inverseJoinColumns = {@JoinColumn(name = "role_id")}
         ))
 })
-public class InternalDocument extends AccessControlledDocumentEntity implements ProcessedData {
+public class InternalDocument extends AccessControlledDocumentEntity {
 
     /**
      * Количество приложений

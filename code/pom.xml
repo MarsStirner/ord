@@ -34,7 +34,6 @@
         <module>dao</module>
 
         <module>alfresco</module>
-        <module>workflow_core</module>
 
         <module>war</module>
         <module>ear</module>

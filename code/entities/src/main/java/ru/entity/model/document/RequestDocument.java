@@ -6,7 +6,6 @@ import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
-import ru.external.ProcessedData;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -45,7 +44,7 @@ import java.util.Set;
                 inverseJoinColumns = {@JoinColumn(name = "role_id")}
         ))
 })
-public class RequestDocument extends AccessControlledDocumentEntity implements ProcessedData {
+public class RequestDocument extends AccessControlledDocumentEntity {
 
     /**
      * Дата поступления

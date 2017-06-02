@@ -3,7 +3,6 @@ package ru.entity.model.document;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DeletableEntity;
-import ru.external.ProcessedData;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.Set;
 @Entity
 @Table(name = "office_keeping_file")
 @Access(AccessType.FIELD)
-public class OfficeKeepingFile extends DeletableEntity implements ProcessedData {
+public class OfficeKeepingFile extends DeletableEntity {
     /**
      * Индекс дела
      */
@@ -83,7 +82,6 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
             inverseJoinColumns = {@JoinColumn(name = "entry_id")})
     private Set<HistoryEntry> history;
 
-    private String WFResultDescription;
 
     public DocumentType getType() {
         return DocumentType.OfficeKeepingFile;
@@ -209,17 +207,8 @@ public class OfficeKeepingFile extends DeletableEntity implements ProcessedData 
     public String getBoxNumber() {
         return boxNumber;
     }
-
-    public void setBoxNumber(String boxNumber) {
+   public void setBoxNumber(String boxNumber) {
         this.boxNumber = boxNumber;
-    }
-
-    public String getWFResultDescription() {
-        return WFResultDescription;
-    }
-
-    public void setWFResultDescription(String wFResultDescription) {
-        WFResultDescription = wFResultDescription;
     }
 
 }

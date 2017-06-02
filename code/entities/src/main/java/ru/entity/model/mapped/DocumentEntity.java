@@ -90,9 +90,6 @@ public abstract class DocumentEntity extends DeletableEntity {
     @Transient
     protected String styleClass;
 
-    @Transient
-    protected String WFResultDescription;
-
     public abstract DocumentType getType();
 
     public List<HistoryEntry> getHistoryList() {
@@ -222,14 +219,6 @@ public abstract class DocumentEntity extends DeletableEntity {
 
     public void setForm(DocumentForm form) {
         this.form = form;
-    }
-
-    public String getWFResultDescription() {
-        return this.WFResultDescription;
-    }
-
-    public void setWFResultDescription(String WFResultDescription) {
-        this.WFResultDescription = WFResultDescription;
     }
 
     public Numerator getNumerator() {

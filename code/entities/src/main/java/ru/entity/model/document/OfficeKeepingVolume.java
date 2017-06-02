@@ -4,7 +4,6 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.user.User;
-import ru.external.ProcessedData;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -16,7 +15,7 @@ import java.util.*;
 @Entity
 @Table(name = "office_keeping_volume")
 @Access(AccessType.FIELD)
-public class OfficeKeepingVolume extends DeletableEntity implements ProcessedData {
+public class OfficeKeepingVolume extends DeletableEntity {
     /**
      * Номер фонда
      */

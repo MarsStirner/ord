@@ -3,7 +3,6 @@ package ru.entity.model.document;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.user.User;
-import ru.external.ProcessedData;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,7 +25,7 @@ import java.util.Set;
                 inverseJoinColumns = {@JoinColumn(name = "entry_id")}
         ))
 })
-public class Task extends DocumentEntity implements ProcessedData, Cloneable {
+public class Task extends DocumentEntity implements Cloneable {
 
     /**
      * Контрольная дата исполнения

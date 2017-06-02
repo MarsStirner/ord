@@ -5,7 +5,6 @@ import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
 import ru.entity.model.user.User;
-import ru.external.ProcessedData;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -41,7 +40,7 @@ import java.time.LocalDateTime;
                 inverseJoinColumns = {@JoinColumn(name = "role_id")}
         ))
 })
-public class OutgoingDocument extends AccessControlledDocumentEntity implements ProcessedData {
+public class OutgoingDocument extends AccessControlledDocumentEntity {
 
     /**
      * Количество приложений
