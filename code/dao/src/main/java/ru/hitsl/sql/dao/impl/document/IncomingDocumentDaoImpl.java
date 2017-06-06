@@ -93,14 +93,10 @@ public class IncomingDocumentDaoImpl extends DocumentDaoImpl<IncomingDocument> i
      */
     @Override
     public DetachedCriteria getListCriteria() {
-        final DetachedCriteria result = getSimpleCriteria();
-        result.createAlias("author", "author", INNER_JOIN);
-        result.createAlias("controller", "controller", LEFT_OUTER_JOIN);
+        final DetachedCriteria result = super.getListCriteria();
         result.createAlias("executors", "executors", LEFT_OUTER_JOIN);
         result.createAlias("recipientUsers", "recipientUsers", LEFT_OUTER_JOIN);
-        result.createAlias("form", "form", LEFT_OUTER_JOIN);
         result.createAlias("contragent", "contragent", LEFT_OUTER_JOIN);
-        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 

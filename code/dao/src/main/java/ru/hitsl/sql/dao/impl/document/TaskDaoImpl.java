@@ -144,12 +144,8 @@ public class TaskDaoImpl extends DocumentDaoImpl<Task> implements TaskDao {
      */
     @Override
     public DetachedCriteria getListCriteria() {
-        final DetachedCriteria result = getSimpleCriteria();
-        result.createAlias("author", "author", INNER_JOIN);
+        final DetachedCriteria result = super.getListCriteria();
         result.createAlias("executors", "executors", LEFT_OUTER_JOIN);
-        result.createAlias("controller", "controller", LEFT_OUTER_JOIN);
-        result.createAlias("form", "form", LEFT_OUTER_JOIN);
-        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 

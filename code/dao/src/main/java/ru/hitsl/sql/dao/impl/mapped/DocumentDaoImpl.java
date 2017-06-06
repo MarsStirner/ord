@@ -9,6 +9,9 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 import java.util.List;
 import java.util.Map;
 
+import static org.hibernate.sql.JoinType.INNER_JOIN;
+import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
+
 /**
  * Author: Upatov Egor <br>
  * Date: 30.03.2015, 18:57 <br>
@@ -16,6 +19,16 @@ import java.util.Map;
  * Description: <br>
  */
 public abstract class DocumentDaoImpl<T extends DocumentEntity> extends CommonDaoImpl<T> implements DocumentDao<T> {
+    @Override
+    public DetachedCriteria getListCriteria() {
+        final DetachedCriteria result = super.getListCriteria();
+        result.createAlias("author", "author", INNER_JOIN);
+        result.createAlias("form", "form", INNER_JOIN);
+
+        result.createAlias("controller", "controller", LEFT_OUTER_JOIN);
+        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
+        return result;
+    }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Методы для работы со списками

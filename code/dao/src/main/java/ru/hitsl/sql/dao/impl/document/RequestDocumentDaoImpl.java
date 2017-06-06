@@ -50,25 +50,6 @@ public class RequestDocumentDaoImpl extends DocumentDaoImpl<RequestDocument> imp
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Получить критерий для отбора Документов и их показа в расширенных списках
-     * Обычно:
-     * Автор - INNER
-     * Руководитель - LEFT
-     * Вид документа - LEFT
-     * ++ В зависимости от вида
-     *
-     * @return критерий для документов с DISTINCT и нужными alias (with fetch strategy)
-     */
-    @Override
-    public DetachedCriteria getListCriteria() {
-        final DetachedCriteria result = getSimpleCriteria();
-        result.createAlias("author", "author", JoinType.INNER_JOIN);
-        result.createAlias("form", "form", LEFT_OUTER_JOIN);
-        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
-        return result;
-    }
-
-    /**
      * Получить критерий для отбора Документов с максимальным количеством FETCH
      *
      * @return критерий для документов с DISTINCT и нужными alias (with fetch strategy)
