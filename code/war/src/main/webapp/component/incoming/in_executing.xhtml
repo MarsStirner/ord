@@ -104,10 +104,8 @@
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{node.document.shortDescription}"/>
             </p:column>
-            <p:column style="display:none;">
-                <input type="hidden" value="#{node.document.id}"/>
-            </p:column>
-            <p:ajax event="select" oncomplete="goToIncoming(PrimeFaces.widgets.taskTableVar.cursorNode.children()[7].textContent)"/>
+            <p:column style="display:none;">#{node.document.id}</p:column>
+            <p:ajax event="select" oncomplete="if(parseInt(PrimeFaces.widgets.treeTableVar.cursorNode.children()[7].textContent)){ goToIncomingDocument(PrimeFaces.widgets.treeTableVar.cursorNode.children()[7].textContent);}"/>
         </p:treeTable>
     </ui:define>
 </ui:composition>

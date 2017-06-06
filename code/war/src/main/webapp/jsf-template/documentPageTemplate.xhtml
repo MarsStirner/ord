@@ -55,7 +55,11 @@
             <ui:insert name="DOCUMENT_CONTENT"/>
         </p:panel>
         <!-- Диалоги, используемые в документе -->
-        <ui:insert name="DIALOGS"/>
+        <ui:insert name="DIALOGS">
+            <p:growl id="msg"/>
+            <!-- Сообщения о фактах просмотра-->
+            <p:growl id="viewFactMessage" for="viewFact"/>
+        </ui:insert>
     </o:form>
 </h:body>
 
