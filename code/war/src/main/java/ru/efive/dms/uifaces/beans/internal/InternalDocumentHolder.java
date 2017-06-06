@@ -4,7 +4,9 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.bars_open.medvtr.ord.cmis.CmisDao;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyTabHolder;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
@@ -20,6 +22,7 @@ import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
+import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.InternalDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
@@ -34,61 +37,35 @@ import static ru.efive.dms.util.message.MessageHolder.MSG_ERROR_ON_DELETE;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController(value = "internal_doc", transactionManager = "ordTransactionManager")
-public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalDocument, InternalDocumentDao> {
+public class InternalDocumentHolder extends AbstractDocumentLazyTabHolder<InternalDocument, InternalDocumentDao> {
 
     //TODO ACL
     private Permissions permissions;
 
     @Autowired
-    @Qualifier("viewFactDao")
-    private ViewFactDao viewFactDao;
-
-    @Autowired
     @Qualifier("documentFormDao")
     private DocumentFormDao documentFormDao;
+
     //Для проверки прав доступа
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
 
     @Autowired
-    @Qualifier("taskDao")
-    private TaskDao taskDao;
-
-    @Autowired
-    private ReferenceBookHelper referenceBookHelper;
-
-    @Autowired
-    public InternalDocumentHolder(@Qualifier("internalDocumentDao") InternalDocumentDao dao, @Qualifier("authData") AuthorizationData authData) {
-        super(dao, authData);
+    public InternalDocumentHolder(
+            @Qualifier("internalDocumentDao") InternalDocumentDao dao,
+            @Qualifier("authData") final AuthorizationData authData,
+            @Qualifier("cmisDao") final CmisDao cmisDao,
+            @Qualifier("documentTaskTree") final DocumentTaskTreeHolder documentTaskTree,
+            @Qualifier("refBookHelper") final ReferenceBookHelper referenceBookHelper,
+            @Qualifier("viewFactDao") final ViewFactDao viewFactDao
+    ) {
+        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao);
     }
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseController() {
-        final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, Collections.singletonList(Group.RB_CODE_MANAGERS));
-        final User preselected = getDocument().getController();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
-    }
-
-    public void onControllerChosen(SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        log.info("Choose controller: {}", result);
-        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final User selected = (User) result.getResult();
-            getDocument().setController(selected);
-        }
-    }
 
     //Выбора исполнителя /////////////////////////////////////////////////////////////////////////////////////////////
     public void chooseResponsible() {
@@ -299,61 +276,6 @@ public class InternalDocumentHolder extends AbstractDocumentHolderBean<InternalD
         }
         return true;
     }
-
-    @Override
-    public boolean beforeDelete(InternalDocument document, AuthorizationData authData) {
-        boolean result = true;
-        List<Task> taskList = taskDao.getTaskListByRootDocumentId(document.getUniqueId(), false);
-        for (Task task : taskList) {
-            MessageUtils.addMessage(
-                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
-                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
-            );
-            result = false;
-        }
-        return result;
-    }
-
-    @Override
-    public boolean beforeCreate(InternalDocument document, AuthorizationData authData) {
-        final LocalDateTime created = LocalDateTime.now();
-        // Сохранение дока в БД и создание записи в истории о создании
-        if (document.getCreationDate() == null) {
-            log.warn("creationDate not set. Set it to NOW");
-            document.setCreationDate(created);
-        }
-        if (document.getAuthor() == null || !document.getAuthor().equals(authData.getAuthorized())) {
-            log.warn("Author[{}] not set or not equals with currentUser[{}]. Set it to currentUser", document.getAuthor(), authData.getAuthorized());
-            document.setAuthor(authData.getAuthorized());
-        }
-
-        final HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
-        document.addToHistory(historyEntry);
-        return true;
-    }
-
-    @Override
-    public boolean afterCreate(InternalDocument document, AuthorizationData authData) {
-        //Простановка факта просмотра записи
-        try {
-            viewFactDao.registerViewFact(document, authData.getAuthorized());
-        } catch (Exception e) {
-            log.error("createModel: on viewFact register", e);
-            MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
-        }
-        return true;
-    }
-
 
     @Override
     public boolean isCanDelete(final AuthorizationData authData) {

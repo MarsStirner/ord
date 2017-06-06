@@ -90,7 +90,8 @@
     </ui:define>
 
     <ui:define name="DOCUMENT_CONTENT">
-        <p:tabView id="documentTabPanel" dynamic="true" widgetVar="tabViewVar" rendered="#{not internal_doc.errorState}">
+        <p:tabView id="documentTabPanel" widgetVar="tabViewVar" rendered="#{not internal_doc.errorState}">
+            <p:ajax event="tabChange" listener="#{internal_doc.onTabChange}" update="documentTabPanel"/>
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%">
                     <p:row styleClass="ui-grid-row">
@@ -205,7 +206,7 @@
                 </p:panelGrid>
             </p:tab>
             <p:tab id="tab_task" title="Движение документа">
-                <my:taskTreeTable id="taskTable" documentId="#{internal_doc.document.uniqueId}">
+                <my:taskTreeTable id="taskTable" controller="#{internal_doc.taskTree}">
                     <f:facet name="additionalButtons">
                         <p:button value="Новая резолюция" id="task_add_resolution_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_Registered}">
@@ -223,98 +224,20 @@
                 </my:taskTreeTable>
             </p:tab>
             <p:tab id="tab_access" title="Доступ">
-                <p:panelGrid style="width:100%">
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="e_docAccessLevel" value="Уровень допуска:"/>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-9">
-                            <h:outputText id="v_docAccessLevel" value="#{internal_doc.document.userAccessLevel.value}" rendered="#{internal_doc.viewState}"
-                                          styleClass="outputText"/>
-                            <p:selectOneMenu id="e_docAccessLevel" value="#{internal_doc.document.userAccessLevel}"
-                                             converter="#{UserAccessLevelConverter}" rendered="#{stateEditable}">
-                                <f:selectItems var="level"
-                                               value="#{refBookHelper.getUserAccessLevelsGreaterOrEqualMaxValue(authData.currentAccessLevel.level)}"
-                                               itemLabel="#{level.value}"/>
-                            </p:selectOneMenu>
-                        </p:column>
-                    </p:row>
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_person_readers" value="Пользователи-читатели:" rendered="#{not editable_AccessTabReaders}"/>
-                            <p:commandButton value="Пользователи-читатели" actionListener="#{internal_doc.choosePersonReaders}"
-                                             rendered="#{editable_AccessTabReaders}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{internal_doc.onPersonReadersChosen}" update="v_person_readers"/>
-                            </p:commandButton>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-9">
-                            <h:panelGroup id="v_person_readers">
-                                <ui:repeat value="#{internal_doc.document.personReadersList}" var="personReader">
-                                    <h:outputText value="#{personReader.description}" styleClass="outputText"/><br/>
-                                </ui:repeat>
-                            </h:panelGroup>
-                        </p:column>
-                    </p:row>
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_person_editors" value="Пользователи-редакторы:" rendered="#{not editable_AccessTabEditors}"/>
-                            <p:commandButton value="Пользователи-редакторы" actionListener="#{internal_doc.choosePersonEditors}"
-                                             rendered="#{editable_AccessTabEditors}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{internal_doc.onPersonEditorsChosen}" update="v_person_editors"/>
-                            </p:commandButton>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-9">
-                            <h:panelGroup id="v_person_editors">
-                                <ui:repeat value="#{internal_doc.document.personEditorsList}" var="personEditor">
-                                    <h:outputText value="#{personEditor.description}" styleClass="outputText"/><br/>
-                                </ui:repeat>
-                            </h:panelGroup>
-                        </p:column>
-                    </p:row>
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_role_readers" value="Роли-читатели:" rendered="#{not editable_AccessTabReaders}"/>
-                            <p:commandButton value="Роли-читатели" actionListener="#{internal_doc.chooseRoleReaders}"
-                                             rendered="#{editable_AccessTabReaders}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{internal_doc.onRoleReadersChosen}" update="v_role_readers"/>
-                            </p:commandButton>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-9">
-                            <h:panelGroup id="v_role_readers">
-                                <ui:repeat value="#{internal_doc.document.roleReadersList}" var="roleReader">
-                                    <h:outputText value="#{roleReader.value}" styleClass="outputText"/><br/>
-                                </ui:repeat>
-                            </h:panelGroup>
-                        </p:column>
-                    </p:row>
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="v_role_editors" value="Роли-редакторы:" rendered="#{not editable_AccessTabEditors}"/>
-                            <p:commandButton value="Роли-редакторы" actionListener="#{internal_doc.chooseRoleEditors}"
-                                             rendered="#{editable_AccessTabEditors}" styleClass="dialogButton">
-                                <p:ajax event="dialogReturn" listener="#{internal_doc.onRoleEditorsChosen}" update="v_role_editors"/>
-                            </p:commandButton>
-                        </p:column>
-                        <p:column styleClass="ui-grid-col-9">
-                            <h:panelGroup id="v_role_editors">
-                                <ui:repeat value="#{internal_doc.document.roleEditorsList}" var="roleEditor">
-                                    <h:outputText value="#{roleEditor.value}" styleClass="outputText"/><br/>
-                                </ui:repeat>
-                            </h:panelGroup>
-                        </p:column>
-                    </p:row>
-                </p:panelGrid>
+                <my:accessManagement model="#{internal_doc.document}" controller="#{internal_doc}" editable="#{stateEditable}"
+                                     editableEditors="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'accessEditors')}"
+                                     editableReaders="#{stateEditable and editableMatrix.internal.isFieldEditable(statusId, 'accessReaders')}"/>
             </p:tab>
             <p:tab id="tab_history" title="История">
                 <my:historyTable id="historyTable" value="#{internal_doc.document.historyList}"/>
             </p:tab>
             <c:if test="#{not internal_doc.createState}">
                 <p:tab id="tab_files" title="Файлы">
-                    <ui:include src="/jsf-template/fileManagement.xhtml">
-                        <ui:param name="documentFolder" value="#{internal_doc.document.uniqueId}"/>
-                        <ui:param name="allowDelete" value="#{statusId lt 90 and internal_doc.editPermission}"/>
-                        <ui:param name="allowAttach" value="#{internal_doc.editPermission}"/>
-                    </ui:include>
+                    <my:attachmentManagement id="attachmentManager"
+                                             attachments="#{internal_doc.attachments}"
+                                             documentFolder="#{internal_doc.document.uniqueId}"
+                                             allowDelete="#{statusId lt 90 and internal_doc.editPermission}"
+                                             allowAttach="#{internal_doc.editPermission}"/>
                 </p:tab>
             </c:if>
         </p:tabView>

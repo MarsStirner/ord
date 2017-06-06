@@ -5,11 +5,14 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import ru.bars_open.medvtr.ord.cmis.CmisDao;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyTabHolder;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
+import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
@@ -33,7 +36,7 @@ import java.util.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController("task")
-public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
+public class TaskHolder extends AbstractDocumentLazyTabHolder<Task, TaskDao> {
 
     //TODO ACL
     private Permissions permissions;
@@ -42,10 +45,6 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
     @Autowired
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
-
-    @Autowired
-    @Qualifier("viewFactDao")
-    private ViewFactDao viewFactDao;
 
     @Autowired
     @Qualifier("documentFormDao")
@@ -63,11 +62,17 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
     @Qualifier("requestDocumentDao")
     private RequestDocumentDao requestDocumentDao;
 
+
     @Autowired
     public TaskHolder(
             @Qualifier("taskDao") final TaskDao dao,
-            @Qualifier("authData") final AuthorizationData authData) {
-        super(dao, authData);
+            @Qualifier("authData") final AuthorizationData authData,
+            @Qualifier("cmisDao") final CmisDao cmisDao,
+            @Qualifier("documentTaskTree") final DocumentTaskTreeHolder documentTaskTree,
+            @Qualifier("refBookHelper") final ReferenceBookHelper referenceBookHelper,
+            @Qualifier("viewFactDao") final ViewFactDao viewFactDao
+    ) {
+        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao);
     }
 
 
@@ -100,25 +105,7 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
         }
     }
 
-    //Выбора руководителя ////////////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseController() {
-        final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_RESPONSIBLE));
-        final User preselected = getDocument().getController();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
-    }
 
-    public void onControllerChosen(SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        log.info("Choose controller: {}", result);
-        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final User selected = (User) result.getResult();
-            getDocument().setController(selected);
-        }
-    }
 
 
     public boolean isReadPermission() {
@@ -189,43 +176,27 @@ public class TaskHolder extends AbstractDocumentHolderBean<Task, TaskDao> {
         return true;
     }
 
-    @Override
-    public boolean afterCreate(Task document, AuthorizationData authData) {
-        try {
-            viewFactDao.registerViewFact(document, authData.getAuthorized());
-        } catch (Exception e) {
-            log.error("createModel: on viewFact register", e);
-            MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
-        }
-        return true;
-    }
 
     @Override
-    public boolean beforeCreate(Task document, AuthorizationData authData) {
-        final LocalDateTime created = LocalDateTime.now();
-        // Сохранение дока в БД и создание записи в истории о создании
-        if (document.getCreationDate() == null) {
-            log.warn("creationDate not set. Set it to NOW");
-            document.setCreationDate(created);
+    public boolean beforeDelete(Task document, AuthorizationData authData) {
+        boolean result = true;
+        final List<Task> taskList = dao.getTaskListByRootDocumentId(document.getUniqueId(), false);
+        for (Task task : taskList) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
+            );
+            result = false;
         }
-        if (document.getAuthor() == null || !document.getAuthor().equals(authData.getAuthorized())) {
-            log.warn("Author[{}] not set or not equals with current {}. Set it to currentUser", document.getAuthor(), authData.getLogString());
-            document.setAuthor(authData.getAuthorized());
+        final List<Task> childrenList = dao.getChildrenTaskByParentId(document.getId(), false);
+        for (Task task : childrenList) {
+            MessageUtils.addMessage(
+                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
+                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
+            );
+            result = false;
         }
-
-        final HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
-        document.addToHistory(historyEntry);
-        return true;
+        return result;
     }
 
 

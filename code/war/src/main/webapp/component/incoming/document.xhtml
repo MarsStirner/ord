@@ -92,7 +92,8 @@
 
 
     <ui:define name="DOCUMENT_CONTENT">
-        <p:tabView id="documentTabPanel" dynamic="true" widgetVar="tabViewVar" rendered="#{not in_doc.errorState}">
+        <p:tabView id="documentTabPanel" widgetVar="tabViewVar" rendered="#{not in_doc.errorState}" cache="false">
+            <p:ajax event="tabChange" listener="#{in_doc.onTabChange}" update="documentTabPanel"/>
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%">
                     <p:row styleClass="ui-grid-row">
@@ -260,7 +261,7 @@
                 </p:panelGrid>
             </p:tab>
             <p:tab id="tab_task" title="Движение документа">
-                <my:taskTreeTable id="taskTable" documentId="#{in_doc.document.uniqueId}">
+                <my:taskTreeTable id="taskTable" controller="#{in_doc.taskTree}">
                     <f:facet name="additionalButtons">
                         <p:button value="Новая резолюция" id="add_resolution_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_Registered}">
@@ -278,7 +279,7 @@
                 </my:taskTreeTable>
             </p:tab>
             <p:tab id="tab_relation" title="Связи">
-                <p:dataTable id="table_relation" value="#{in_doc.getRelatedDocuments()}"
+                <p:dataTable id="table_relation" value="#{in_doc.relatedDocuments}"
                              var="outgoing_document_row"
                              emptyMessage="#{ui['document.default.list.emptyMessage']}"
                              selectionMode="single"
@@ -317,20 +318,20 @@
                 </p:dataTable>
             </p:tab>
             <p:tab id="tab_access" title="Доступ">
-               <my:accessManagement model="#{in_doc.document}" controller="#{in_doc}" editable="#{stateEditable}"
-                       editableEditors="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessEditors')}"
-                       editableReaders="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessReaders')}"/>
+                <my:accessManagement model="#{in_doc.document}" controller="#{in_doc}" editable="#{stateEditable}"
+                                     editableEditors="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessEditors')}"
+                                     editableReaders="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'accessReaders')}"/>
             </p:tab>
             <p:tab id="tab_history" title="История">
                 <my:historyTable id="historyTable" value="#{in_doc.document.historyList}"/>
             </p:tab>
             <c:if test="#{not in_doc.createState}">
                 <p:tab id="tab_files" title="Файлы">
-                    <ui:include src="/jsf-template/fileManagement.xhtml">
-                        <ui:param name="documentFolder" value="#{in_doc.document.uniqueId}"/>
-                        <ui:param name="allowDelete" value="#{statusId lt 90 and in_doc.editPermission}"/>
-                        <ui:param name="allowAttach" value="#{in_doc.editPermission}"/>
-                    </ui:include>
+                    <my:attachmentManagement id="attachmentManager"
+                                             attachments="#{in_doc.attachments}"
+                                             documentFolder="#{in_doc.document.uniqueId}"
+                                             allowDelete="#{statusId lt 90 and in_doc.editPermission}"
+                                             allowAttach="#{in_doc.editPermission}"/>
                 </p:tab>
             </c:if>
         </p:tabView>

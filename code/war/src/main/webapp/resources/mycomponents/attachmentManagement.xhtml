@@ -1,0 +1,141 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:cc="http://java.sun.com/jsf/composite"
+              xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <cc:interface>
+        <cc:attribute name="attachments" type="java.util.Collection" required="true"
+                      shortDescription="is state editable?"/>
+        <cc:attribute name="allowAttach" type="Boolean" default="false"/>
+        <cc:attribute name="allowDelete" type="Boolean" default="false"/>
+        <cc:attribute name="documentFolder" type="String" required="true"/>
+    </cc:interface>
+
+    <cc:implementation>
+        <p:dataTable id="attachmentTable"
+                     value="#{cc.attrs.attachments}"
+                     var="attachment"
+                     rowExpandMode="single"
+                     emptyMessage="#{ui['attachments.empty']}"
+        >
+            <!--@elvariable id="attachment" type="org.apache.chemistry.opencmis.client.api.Document"-->
+            <p:column style="width:1em" styleClass="outputText">
+                <p:rowToggler/>
+            </p:column>
+            <p:column headerText="Имя вложения" styleClass="outputText">
+                <h:outputText value="#{attachment.name}"/>
+            </p:column>
+            <p:column headerText="Версия" styleClass="outputText">
+                <h:outputText value="#{attachment.versionLabel}"/>
+                <p:commandButton value="Добавить" action="#{versionDialog.init(attachment)}" rendered="#{cc.attrs.allowAttach}"
+                                 onsuccess="PF('attachmentDialog').show()" icon="ui-icon-extlink"/>
+            </p:column>
+            <p:column headerText="Пользователь" styleClass="outputText" id="TODO_USE_CMIS_EXTENSIONS_AND_SECONDARYTYPES">
+                <h:outputText value="#{attachment.description}"/>
+            </p:column>
+            <p:column headerText="Скачать">
+                <p:commandButton value="Скачать" ajax="false" style="width:100%"
+                                 onclick="PrimeFaces.monitorDownload(PF('statusDialog').show(), PF('statusDialog').hide())">
+                    <p:fileDownload value="#{cmisDao.download(attachment, authData)}"/>
+                </p:commandButton>
+            </p:column>
+            <p:column headerText="Удалить" rendered="#{cc.attrs.allowDelete}">
+                <p:commandButton value="Удалить" action="#{cmisDao.delete(attachment, authData)}" update="attachmentTable" style="width:100%">
+                    <p:confirm header="Удаление вложения" message="Вы уверены, что хотите удалить это вложение?"/>
+                </p:commandButton>
+            </p:column>
+            <p:rowExpansion styleClass="no-padding">
+                <p:dataTable var="revision" value="#{attachment.allVersions}" styleClass="hide-column-names" style="padding-left: 2.1em; padding-right:0;">
+                    <!--@elvariable id="revision" type="org.apache.chemistry.opencmis.client.api.Document"-->
+                    <f:facet name="header">
+                        <h:outputText value="История версий для файла #{attachment.name}"/>
+                    </f:facet>
+                    <p:column headerText="Версия" style="width:4em" styleClass="outputText">
+                        <h:outputText value="#{revision.versionLabel}"/>
+                    </p:column>
+                    <p:column headerText="Комментарий к смене версии" styleClass="outputText">
+                        <h:outputText value="#{revision.checkinComment}"/>
+                    </p:column>
+                    <p:column headerText="Пользователь" style="width:12em" styleClass="outputText">
+                        <h:outputText value="#{revision.description}"/>
+                    </p:column>
+                    <p:column>
+                        <p:commandButton value="Скачать" ajax="false" style="width:100%"
+                                         onclick="PrimeFaces.monitorDownload(PF('statusDialog').show(), PF('statusDialog').hide())">
+                            <p:fileDownload value="#{cmisDao.download(revision, authData)}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </p:rowExpansion>
+        </p:dataTable>
+        <p:fileUpload id="files" label="Выбрать файл" uploadLabel="Загрузить выбранное" cancelLabel="Отмена" rendered="#{cc.attrs.allowAttach}"
+                      fileUploadListener="#{cmisDao.handleFileUpload}" update=":documentForm:msg attachmentTable"
+                      multiple="false" mode="advanced" auto="true" widgetVar="uploadFileWidget"
+                      sizeLimit="104857600" invalidSizeMessage="Размер файла не должен превышать 100 МБ">
+            <f:attribute name="documentFolder" value="#{cc.attrs.documentFolder}"/>
+            <f:attribute name="userId" value="#{authData.authorized.id}"/>
+            <f:attribute name="userFullName" value="#{authData.authorized.description}"/>
+        </p:fileUpload>
+
+        <!-- Диалог при загрузке файла -->
+        <p:dialog modal="true" widgetVar="statusDialog" header="Загрузка файла" draggable="false" closable="false" resizable="false">
+            <h:outputText value="Пожалуйста подождите пока ваш файл будет загружен"/>
+        </p:dialog>
+        <p:dialog header="Добавить новую версию вложения" widgetVar="attachmentDialog" dynamic="true" draggable="false" closable="true" closeOnEsc="true"
+                  resizable="false" modal="true">
+            <h:form id="addAttachmentVersionForm" enctype="multipart/form-data">
+                <p:panelGrid>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="v_documentName" value="Наименование документа:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <h:outputText id="v_documentName" value="#{versionDialog.name}" styleClass="outputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="v_documentVersion" value="Версия документа:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <h:outputText id="v_documentVersion" value="#{versionDialog.versionLabel}" styleClass="outputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="e_checkinComment" value="Комментарий к версии:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <p:inputText id="e_checkinComment" value="#{versionDialog.checkinComment}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="e_major" value="Следующая версия:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <p:selectBooleanButton id="e_major" value="#{versionDialog.major}" onLabel="Мажорная" offLabel="Минорная"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column colspan="2" styleClass="ui-grid-col-12">
+                            <p:fileUpload fileUploadListener="#{versionDialog.handleFileUpload}" process="@form" id="dialog_file_upload"
+                                          mode="advanced" auto="true" oncomplete="PF('attachmentDialog').hide();"
+                            />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:commandButton value="Отмена" onclick="PF('attachmentDialog').hide(); return false;"/>
+
+            </h:form>
+            <p:ajax event="close" update="attachmentTable"/>
+        </p:dialog>
+        <!-- Подтверждение действия(удаление вложения)-->
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Нет" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+            <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+        </p:confirmDialog>
+
+    </cc:implementation>
+</ui:component>

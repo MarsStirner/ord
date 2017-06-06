@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.entity.model.document.*;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.document.*;
 import ru.hitsl.sql.dao.util.AuthorizationData;
@@ -15,6 +16,7 @@ import ru.util.ApplicationHelper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.util.Objects;
 
 import static ru.efive.dms.util.security.Permissions.*;
 import static ru.efive.dms.util.security.Permissions.Permission.READ;
@@ -62,6 +64,34 @@ public class PermissionChecker implements Serializable {
     // По User
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+    public Permissions getPermissions(AuthorizationData authData, DocumentEntity document) {
+        //1) админ
+        if (authData.isAdministrator()) {
+            loggerIncomingDocument.debug("{}:Permission RWX granted: AdminRole", document.getId());
+            return ALL_PERMISSIONS;
+        }
+        //2) автор
+        if (Objects.equals(authData.getAuthorized(), document.getAuthor())) {
+            loggerIncomingDocument.debug("{}:Permission RWX granted: Author", document.getId());
+            return ALL_PERMISSIONS;
+        }
+        if(document instanceof IncomingDocument){
+            return getPermissions(authData, (IncomingDocument) document);
+        } else if(document instanceof OutgoingDocument){
+            return getPermissions(authData, (OutgoingDocument) document);
+        } else if(document instanceof InternalDocument){
+            return getPermissions(authData, (InternalDocument) document);
+        } else if(document instanceof RequestDocument){
+            return getPermissions(authData, (RequestDocument) document);
+        } else
+        if(document instanceof Task){
+            return getPermissions(authData, (Task) document);
+        } else {
+            return EMPTY_PERMISSIONS;
+        }
+    }
+
     /**
      * @param user     пользователь для которого проверяем права
      * @param document входящий документ, на который проверяем права
@@ -85,16 +115,6 @@ public class PermissionChecker implements Serializable {
          * Редактирование документа: 1-2-3-4-6-8
          * Действия: 1-2-3-8
          */
-        //1) админ
-        if (user.isAdministrator()) {
-            loggerIncomingDocument.debug("{}:Permission RWX granted: AdminRole", document.getId());
-            return ALL_PERMISSIONS;
-        }
-        //2) автор
-        if (user.equals(document.getAuthor())) {
-            loggerIncomingDocument.debug("{}:Permission RWX granted: Author", document.getId());
-            return ALL_PERMISSIONS;
-        }
         //3) исполнитель
         if (document.getExecutors().contains(user)) {
             loggerIncomingDocument.debug("{}:Permission RXW granted: Executor", document.getId());
@@ -149,16 +169,6 @@ public class PermissionChecker implements Serializable {
      * @return структура с правами
      */
     public Permissions getPermissions(final User user, final Task document) {
-        //1) админ
-        if (user.isAdministrator()) {
-            loggerTask.debug("{}:Permission RWX granted: AdminRole", document.getId());
-            return ALL_PERMISSIONS;
-        }
-        //2) автор
-        if (user.equals(document.getAuthor())) {
-            loggerTask.debug("{}:Permission RWX granted: Author", document.getId());
-            return ALL_PERMISSIONS;
-        }
         //3) инициатор
         if (user.equals(document.getInitiator())) {
             loggerTask.debug("{}:Permission RWX granted: Initiator", document.getId());
@@ -208,16 +218,6 @@ public class PermissionChecker implements Serializable {
          * Редактирование документа: 1-2-3-4-6-8
          * Действия: 1-2-3-8
          */
-        //1) админ
-        if (user.isAdministrator()) {
-            loggerOutgoingDocument.debug("{}:Permission RWX granted: AdminRole", document.getId());
-            return ALL_PERMISSIONS;
-        }
-        //2) автор
-        if (user.equals(document.getAuthor())) {
-            loggerOutgoingDocument.debug("{}:Permission RWX granted: Author", document.getId());
-            return ALL_PERMISSIONS;
-        }
         //3) исполнитель
         if (user.equals(document.getExecutor())) {
             loggerOutgoingDocument.debug("{}:Permission RWX granted: Executor", document.getId());
@@ -283,16 +283,6 @@ public class PermissionChecker implements Serializable {
          * Редактирование документа: 1-2-3-4-6-8
          * Действия: 1-2-3-8
          */
-        //1) админ
-        if (user.isAdministrator()) {
-            loggerInternalDocument.debug("{}:Permission RWX granted: AdminRole", document.getId());
-            return ALL_PERMISSIONS;
-        }
-        //2) автор
-        if (user.equals(document.getAuthor())) {
-            loggerInternalDocument.debug("{}:Permission RWX granted: Author", document.getId());
-            return ALL_PERMISSIONS;
-        }
         // 3) Ответстенный
         if (user.equals(document.getResponsible())) {
             loggerInternalDocument.debug("{}:Permission RWX granted: Responsible", document.getId());
@@ -365,16 +355,6 @@ public class PermissionChecker implements Serializable {
          * Редактирование документа: 1-2-3-4-6-8
          * Действия: 1-2-3-8
          */
-        //1) админ
-        if (user.isAdministrator()) {
-            loggerRequestDocument.debug("{}:Permission RWX granted: AdminRole", document.getId());
-            return ALL_PERMISSIONS;
-        }
-        //2) автор
-        if (user.equals(document.getAuthor())) {
-            loggerRequestDocument.debug("{}:Permission RWX granted: Author", document.getId());
-            return ALL_PERMISSIONS;
-        }
         //3) исполнитель
         if (user.equals(document.getResponsible())) {
             loggerRequestDocument.debug("{}:Permission RWX granted: Responsible", document.getId());
@@ -656,4 +636,5 @@ public class PermissionChecker implements Serializable {
         loggerRequestDocument.info("Result permissions for user[{}] to document[{}] is {}", auth.getAuthorized().getId(), document.getId(), result);
         return result;
     }
+
 }

@@ -1,5 +1,6 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public abstract class AbstractDocumentTreeHolderBean<D extends Serializable> ext
     /**
      * корневой элемент дерева
      */
-    private TreeNode rootNode;
+    private TreeNode rootNode = new DefaultTreeNode();
 
 
     /**

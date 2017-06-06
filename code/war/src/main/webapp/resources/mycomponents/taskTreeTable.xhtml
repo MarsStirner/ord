@@ -4,15 +4,15 @@
               xmlns:h="http://java.sun.com/jsf/html"
               xmlns:cc="http://java.sun.com/jsf/composite">
     <cc:interface>
-        <cc:attribute name="documentId" type="java.lang.String" required="true" shortDescription="uniquie id of root document, e.g. 'INCOMING_3654'"/>
+        <cc:attribute name="controller"
+                      type="ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder"
+                      required="true"
+                      shortDescription="reference to taskTreeController"/>
     </cc:interface>
-
     <cc:implementation>
-        #{documentTaskTree.setRootDocumentId(cc.attrs.documentId)}
-        #{documentTaskTree.refresh()}
         <!--@elvariable id="node" type="org.primefaces.model.TreeNode"-->
         <p:treeTable id="task_table" widgetVar="taskTableVar"
-                     value="#{documentTaskTree.root}" var="row_task"
+                     value="#{cc.attrs.controller.root}" var="row_task"
                      selectionMode="single" emptyMessage="Записей нет"
                      nodeVar="node" rowStyleClass="#{node.leaf ? 'leafNode' : 'parentNode'}">
             <!--@elvariable id="row_task" type="ru.entity.model.document.Task"-->
@@ -44,9 +44,9 @@
         </p:treeTable>
         <p:toolbar id="taskToolBar">
             <p:toolbarGroup>
-                <p:commandButton value="Обновить" id="refresh_btn" action="#{documentTaskTree.refresh}" update="task_table" icon="ui-icon-refresh"/>
-                <p:commandButton value="Свернуть все" id="collapse_btn" action="#{documentTaskTree.collapseAll}" update="task_table" icon="ui-icon-carat-1-w"/>
-                <p:commandButton value="Развернуть все" id="expand_btn" action="#{documentTaskTree.expandAll}" update="task_table" icon="ui-icon-carat-1-e"/>
+                <p:commandButton value="Обновить" id="refresh_btn" action="#{cc.attrs.controller.refresh}" update="task_table" icon="ui-icon-refresh"/>
+                <p:commandButton value="Свернуть все" id="collapse_btn" action="#{cc.attrs.controller.collapseAll}" update="task_table" icon="ui-icon-carat-1-w"/>
+                <p:commandButton value="Развернуть все" id="expand_btn" action="#{cc.attrs.controller.expandAll}" update="task_table" icon="ui-icon-carat-1-e"/>
                 <!--UX: ADDITIONAL FACET FOR BUTTONS-->
                 <cc:renderFacet name="additionalButtons"/>
             </p:toolbarGroup>

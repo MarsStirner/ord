@@ -14,6 +14,9 @@ import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.util.ApplicationHelper;
 import ru.util.Node;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 /**
  * Author: Upatov Egor <br>
  * Date: 22.10.2014, 15:20 <br>
@@ -43,8 +46,12 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
      * @return список документов
      */
     @Override
+    public TreeNode loadTree() {
+      return loadTree(rootDocumentId);
+    }
+
     @Transactional("ordTransactionManager")
-    protected TreeNode loadTree() {
+    private TreeNode loadTree(String rootDocumentId) {
         final Node<Task> rootNode = new Node<>();
         if (StringUtils.isNotEmpty(rootDocumentId)) {
             if (StringUtils.startsWith(rootDocumentId, "TASK_")) {
@@ -67,6 +74,7 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
         }
         return convertToTreeNode(rootNode);
     }
+
 
     private String printTreeToString(Node<Task> rootNode, final String prefix) {
         Task rootData = rootNode.getData();
@@ -106,5 +114,9 @@ public class DocumentTaskTreeHolder extends AbstractDocumentTreeHolderBean<Task>
     @Transactional("ordTransactionManager")
     public void refresh(boolean option) {
         super.refresh(option);
+    }
+
+    public List<Task> getFlatList(String rootId, boolean showDeleted) {
+        return taskDao.getTaskListByRootDocumentId(rootId, showDeleted);
     }
 }

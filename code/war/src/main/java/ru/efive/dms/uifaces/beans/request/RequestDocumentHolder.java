@@ -5,7 +5,10 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
+import ru.bars_open.medvtr.ord.cmis.CmisDao;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyTabHolder;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
@@ -17,6 +20,7 @@ import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.*;
 import ru.entity.model.enums.DocumentStatus;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
@@ -35,12 +39,8 @@ import java.util.*;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController(value = "request_doc", transactionManager = "ordTransactionManager")
-public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDocument, RequestDocumentDao> {
+public class RequestDocumentHolder extends AbstractDocumentLazyTabHolder<RequestDocument, RequestDocumentDao> {
 
-
-    @Autowired
-    @Qualifier("viewFactDao")
-    private ViewFactDao viewFactDao;
 
     @Autowired
     @Qualifier("documentFormDao")
@@ -62,23 +62,23 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
     @Qualifier("permissionChecker")
     private PermissionChecker permissionChecker;
 
-
-    @Autowired
-    @Qualifier("taskDao")
-    private TaskDao taskDao;
-
-    @Autowired
-    private ReferenceBookHelper referenceBookHelper;
-
     /**
      * Связанные с этим обращением исходящие документы
      */
     private List<OutgoingDocument> relatedDocuments;
 
     @Autowired
-    public RequestDocumentHolder(@Qualifier("requestDocumentDao") RequestDocumentDao dao, @Qualifier("authData") AuthorizationData authData) {
-        super(dao, authData);
+    public RequestDocumentHolder(
+            @Qualifier("requestDocumentDao") RequestDocumentDao dao,
+            @Qualifier("authData") final AuthorizationData authData,
+            @Qualifier("cmisDao") final CmisDao cmisDao,
+            @Qualifier("documentTaskTree") final DocumentTaskTreeHolder documentTaskTree,
+            @Qualifier("refBookHelper") final ReferenceBookHelper referenceBookHelper,
+            @Qualifier("viewFactDao") final ViewFactDao viewFactDao
+    ) {
+        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao);
     }
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,55 +314,14 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
         return doc;
     }
 
-    @Override
-    public boolean beforeCreate(RequestDocument document, AuthorizationData authData) {
-        final LocalDateTime created = LocalDateTime.now();
-        // Сохранение дока в БД и создание записи в истории о создании
-        if (document.getCreationDate() == null) {
-            log.warn("creationDate not set. Set it to NOW");
-            document.setCreationDate(created);
-        }
-        if (document.getAuthor() == null || !document.getAuthor().equals(authData.getAuthorized())) {
-            log.warn("Author[{}] not set or not equals with currentUser[{}]. Set it to currentUser", document.getAuthor(), authData.getAuthorized());
-            document.setAuthor(authData.getAuthorized());
-        }
-
-        final HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
-        document.addToHistory(historyEntry);
-
-        return true;
-    }
-
-    @Override
-    public boolean afterCreate(RequestDocument document, AuthorizationData authData) {
-        //Простановка факта просмотра записи
-        try {
-            viewFactDao.registerViewFact(document, authData.getAuthorized());
-        } catch (Exception e) {
-            log.error("createModel: on viewFact register", e);
-            MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
-        }
-        return true;
-    }
 
     @Override
     public boolean afterRead(RequestDocument document, AuthorizationData authData) {
-        relatedDocuments = loadRelatedDocuments();
         //Проверка прав на открытие
         permissions = permissionChecker.getPermissions(authData, document);
         if (!isReadPermission()) {
             //Проверяем права на связанные доки, если есть, то прокидываем на чтение
-            for (OutgoingDocument relatedDocument : relatedDocuments) {
+            for (DocumentEntity relatedDocument : loadRelatedDocuments(document, authData)) {
                 final Permissions relatedPermissions = permissionChecker.getPermissions(authData, relatedDocument);
                 if (relatedPermissions.hasPermission(READ)) {
                     log.info("Get permissions from related documents [{}], {}", relatedDocument.getUniqueId(), relatedPermissions);
@@ -378,28 +337,6 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
             }
         }
         return true;
-    }
-
-    @Override
-    public boolean beforeDelete(RequestDocument document, AuthorizationData authData) {
-        boolean result = true;
-        final List<OutgoingDocument> outgoingDocuments = getRelatedDocuments();
-        for (OutgoingDocument outgoingDocument : outgoingDocuments) {
-            MessageUtils.addMessage(
-                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
-                    referenceBookHelper.getLinkDescriptionByUniqueId(outgoingDocument.getUniqueId())
-            );
-            result = false;
-        }
-        List<Task> taskList = taskDao.getTaskListByRootDocumentId(document.getUniqueId(), false);
-        for (Task task : taskList) {
-            MessageUtils.addMessage(
-                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
-                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
-            );
-            result = false;
-        }
-        return result;
     }
 
     @Override
@@ -478,16 +415,14 @@ public class RequestDocumentHolder extends AbstractDocumentHolderBean<RequestDoc
      *
      * @return список исходящих документов \ пустой список
      */
-    public List<OutgoingDocument> loadRelatedDocuments() {
-        if (StringUtils.isNotEmpty(getDocument().getUniqueId())) {
-            return outgoingDocumentDao.findAllDocumentsByReasonDocumentId(getDocument().getUniqueId());
+    @Override
+    @Transactional(transactionManager = "ordTransactionManager")
+    public List<DocumentEntity> loadRelatedDocuments(final RequestDocument document, final AuthorizationData authData) {
+        if (StringUtils.isNotEmpty(document.getUniqueId())) {
+            return new ArrayList<>(outgoingDocumentDao.findAllDocumentsByReasonDocumentId(document.getUniqueId()));
         } else {
             return new ArrayList<>(0);
         }
-    }
-
-    public List<OutgoingDocument> getRelatedDocuments() {
-        return relatedDocuments;
     }
 
 }

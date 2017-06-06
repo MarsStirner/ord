@@ -1,30 +1,27 @@
 package ru.efive.dms.uifaces.beans.outgoing;
 
-import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
+import ru.bars_open.medvtr.ord.cmis.CmisDao;
+import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyTabHolder;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
+import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.InternalDocument;
 import ru.entity.model.document.OutgoingDocument;
-import ru.entity.model.document.Task;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
-import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
@@ -38,11 +35,7 @@ import java.util.stream.Stream;
 import static ru.efive.dms.util.security.Permissions.Permission.*;
 
 @ViewScopedController(value = "out_doc", transactionManager = "ordTransactionManager")
-public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingDocument, OutgoingDocumentDao> {
-
-    @Autowired
-    @Qualifier("viewFactDao")
-    private ViewFactDao viewFactDao;
+public class OutgoingDocumentHolder extends AbstractDocumentLazyTabHolder<OutgoingDocument, OutgoingDocumentDao> {
 
     @Autowired
     @Qualifier("documentFormDao")
@@ -58,15 +51,15 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
     private PermissionChecker permissionChecker;
 
     @Autowired
-    @Qualifier("taskDao")
-    private TaskDao taskDao;
-
-    @Autowired
-    private ReferenceBookHelper referenceBookHelper;
-
-    @Autowired
-    public OutgoingDocumentHolder(@Qualifier("outgoingDocumentDao") final OutgoingDocumentDao dao, @Qualifier("authData") final AuthorizationData authData) {
-        super(dao, authData);
+    public OutgoingDocumentHolder(
+            @Qualifier("outgoingDocumentDao") final OutgoingDocumentDao dao,
+            @Qualifier("authData") final AuthorizationData authData,
+            @Qualifier("cmisDao") final CmisDao cmisDao,
+            @Qualifier("documentTaskTree") final DocumentTaskTreeHolder documentTaskTree,
+            @Qualifier("refBookHelper") final ReferenceBookHelper referenceBookHelper,
+            @Qualifier("viewFactDao") final ViewFactDao viewFactDao
+    ) {
+        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,27 +81,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         final String selected = (String) event.getObject();
         getDocument().setReasonDocumentId(selected);
         log.info("Choose reasonDocument From Dialog \'{}\'", selected != null ? selected : "#NOTSET");
-    }
-
-    //Выбора руководителя /////////////////////////////////////////////////////////////////////////////////////////////
-    public void chooseController() {
-        final Map<String, List<String>> params = new HashMap<>();
-        params.put(UserDialogHolder.DIALOG_TITLE_GET_PARAM_KEY, Collections.singletonList(UserDialogHolder.DIALOG_TITLE_VALUE_CONTROLLER));
-        params.put(UserDialogHolder.DIALOG_GROUP_KEY, Collections.singletonList(Group.RB_CODE_MANAGERS));
-        final User preselected = getDocument().getController();
-        if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
-        }
-        RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
-    }
-
-    public void onControllerChosen(SelectEvent event) {
-        final AbstractDialog.DialogResult result = (AbstractDialog.DialogResult) event.getObject();
-        log.info("Choose controller: {}", result);
-        if (AbstractDialog.Button.CONFIRM.equals(result.getButton())) {
-            final User selected = (User) result.getResult();
-            getDocument().setController(selected);
-        }
     }
 
     //Выбора контрагента //////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,76 +264,6 @@ public class OutgoingDocumentHolder extends AbstractDocumentHolderBean<OutgoingD
         return true;
     }
 
-    @Override
-    public boolean beforeCreate(OutgoingDocument document, AuthorizationData authData) {
-        final User currentUser = authData.getAuthorized();
-        final LocalDateTime created = LocalDateTime.now();
-        log.info("Save new document by USER[{}]", currentUser.getId());
-        // Сохранение дока в БД и создание записи в истории о создании
-        if (document.getCreationDate() == null) {
-            log.warn("creationDate not set. Set it to NOW");
-            document.setCreationDate(created);
-        }
-        if (document.getAuthor() == null || !document.getAuthor().equals(currentUser)) {
-            log.warn("Author[{}] not set or not equals with currentUser[{}]. Set it to currentUser", document.getAuthor(), currentUser);
-            document.setAuthor(currentUser);
-        }
-
-        final HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(currentUser);
-        historyEntry.setDocType(document.getType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
-        document.addToHistory(historyEntry);
-        return true;
-    }
-
-    @Override
-    public boolean afterCreate(OutgoingDocument document, AuthorizationData authData) {
-        final UserAccessLevel userUAL = authData.getCurrentAccessLevel();
-        final UserAccessLevel documentUAL = document.getUserAccessLevel();
-        if (documentUAL.getLevel() > userUAL.getLevel()) {
-            setState(State.ERROR);
-            final FacesMessage msg = MessageHolder.MSG_TRY_TO_VIEW_WITH_LESSER_ACCESS_LEVEL;
-            msg.setSummary(String.format(msg.getSummary(), documentUAL.getValue(), userUAL.getValue()));
-            MessageUtils.addMessage(MessageKey.ERROR, msg);
-            return false;
-        }
-        try {
-            viewFactDao.registerViewFact(document, authData.getAuthorized());
-        } catch (Exception e) {
-            log.error("createModel: on viewFact register", e);
-            MessageUtils.addMessage(MessageKey.VIEW_FACT, MessageHolder.MSG_VIEW_FACT_REGISTRATION_ERROR);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean beforeDelete(OutgoingDocument document, AuthorizationData authData) {
-        boolean result = true;
-        final List<Task> taskList = taskDao.getTaskListByRootDocumentId(document.getUniqueId(), false);
-        for (Task task : taskList) {
-            MessageUtils.addMessage(
-                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
-                    referenceBookHelper.getLinkDescriptionByUniqueId(task.getUniqueId())
-            );
-            result = false;
-        }
-        if(StringUtils.isNotEmpty(document.getReasonDocumentId())){
-            MessageUtils.addMessage(
-                    MessageHolder.MSG_CANT_DELETE_EXISTS_LINK_WITH_OTHER_DOCUMENT,
-                    referenceBookHelper.getLinkDescriptionByUniqueId(document.getReasonDocumentId())
-            );
-            result = false;
-        }
-        return result;
-    }
 
     @Override
     public boolean isCanDelete(final AuthorizationData authData) {

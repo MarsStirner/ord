@@ -65,7 +65,8 @@
     </ui:define>
 
     <ui:define name="DOCUMENT_CONTENT">
-        <p:tabView id="documentTabPanel" dynamic="true" widgetVar="tabViewVar" rendered="#{not task.errorState}">
+        <p:tabView id="documentTabPanel" widgetVar="tabViewVar" rendered="#{not task.errorState}">
+            <p:ajax event="tabChange" listener="#{task.onTabChange}" update="documentTabPanel"/>
             <p:tab id="tab_info" title="Реквизиты">
                 <p:panelGrid style="width:100%;">
                     <p:row styleClass="ui-grid-row">
@@ -138,7 +139,7 @@
                 </p:panelGrid>
             </p:tab>
             <p:tab id="tab_task" title="Движение документа">
-                <my:taskTreeTable id="taskTable" documentId="#{task.document.uniqueId}">
+                <my:taskTreeTable id="taskTable" controller="#{task.taskTree}">
                     <f:facet name="additionalButtons">
                         <p:button value="Новое поручение" id="task_add_assigment_btn" outcome="#{ui['document.task.page.link']}" target="_blank"
                                   icon="ui-icon-plusthick" rendered="#{status_OnExecution}">
@@ -181,11 +182,11 @@
             </p:tab>
             <c:if test="#{not task.createState}">
                 <p:tab id="tab_files" title="Файлы">
-                    <ui:include src="/jsf-template/fileManagement.xhtml">
-                        <ui:param name="documentFolder" value="#{task.document.uniqueId}"/>
-                        <ui:param name="allowDelete" value="#{statusId lt 90}"/>
-                        <ui:param name="allowAttach" value="#{task.editPermission}"/>
-                    </ui:include>
+                    <my:attachmentManagement id="attachmentManager"
+                                             attachments="#{task.attachments}"
+                                             documentFolder="#{task.document.uniqueId}"
+                                             allowDelete="#{statusId lt 90}"
+                                             allowAttach="#{task.editPermission}"/>
                 </p:tab>
             </c:if>
         </p:tabView>
