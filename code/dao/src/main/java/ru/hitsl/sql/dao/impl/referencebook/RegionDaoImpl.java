@@ -22,7 +22,7 @@ public class RegionDaoImpl extends ReferenceBookDaoImpl<Region> implements Regio
             Disjunction disjunction = Restrictions.disjunction();
             disjunction.add(Restrictions.ilike("value", filter, MatchMode.ANYWHERE));
             disjunction.add(Restrictions.ilike("category", filter, MatchMode.ANYWHERE));
-            disjunction.add(Restrictions.ilike("description", filter, MatchMode.ANYWHERE));
+            disjunction.add(Restrictions.ilike("code", filter, MatchMode.ANYWHERE));
             criteria.add(disjunction);
         }
     }
