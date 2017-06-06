@@ -1,0 +1,84 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:cc="http://java.sun.com/jsf/composite">
+    <cc:interface>
+        <cc:attribute name="editable" type="Boolean" default="false" shortDescription="Is field editable"/>
+        <cc:attribute name="label" type="String" required="true" default="Документ-основание" shortDescription="Label for field (or button text if editable state)"/>
+        <cc:attribute name="allowDelete" type="Boolean" default="false" shortDescription="Can user delete existing CMIS-documents "/>
+
+    </cc:interface>
+
+    <cc:implementation>
+        <p:row styleClass="ui-grid-row">
+            <p:column styleClass="ui-grid-col-2">
+                <p:outputLabel for="v_reasonDocument" value="#{cc.attrs.label}:" rendered="#{not cc.attrs.editable}"/>
+                <p:commandButton value="#{cc.attrs.label}" styleClass="dialogButton" rendered="#{cc.attrs.editable}">
+                    <p:ajax event="dialogReturn" update="v_reasonDocument"/>
+                </p:commandButton>
+            </p:column>
+            <p:column colspan="3" styleClass="ui-grid-col-10">
+                <p:commandLink id="v_reasonDocument" onclick="goToDocumentByUniqueId('#{out_doc.document.reasonDocumentId}');">
+                    <h:outputText value="#{refBookHelper.getLinkDescriptionByUniqueId(viewScope.get('reasonDocuments'))}"/>
+                </p:commandLink>
+            </p:column>
+        </p:row>
+
+        <p:dialog header="Добавить новую версию вложения" widgetVar="attachmentDialog" dynamic="true" draggable="false" closable="true" closeOnEsc="true"
+                  resizable="false" modal="true">
+            <h:form id="addAttachmentVersionForm" enctype="multipart/form-data">
+                <p:panelGrid>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="v_documentName" value="Наименование документа:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <h:outputText id="v_documentName" value="#{versionDialog.name}" styleClass="outputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="v_documentVersion" value="Версия документа:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <h:outputText id="v_documentVersion" value="#{versionDialog.versionLabel}" styleClass="outputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="e_checkinComment" value="Комментарий к версии:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <p:inputText id="e_checkinComment" value="#{versionDialog.checkinComment}" styleClass="inputText"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column styleClass="ui-grid-col-5">
+                            <p:outputLabel for="e_major" value="Следующая версия:"/>
+                        </p:column>
+                        <p:column styleClass="ui-grid-col-7">
+                            <p:selectBooleanButton id="e_major" value="#{versionDialog.major}" onLabel="Мажорная" offLabel="Минорная"/>
+                        </p:column>
+                    </p:row>
+                    <p:row styleClass="ui-grid-row">
+                        <p:column colspan="2" styleClass="ui-grid-col-12">
+                            <p:fileUpload fileUploadListener="#{versionDialog.handleFileUpload}" process="@form" id="dialog_file_upload"
+                                          mode="advanced" auto="true" oncomplete="PF('attachmentDialog').hide();"
+                            />
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:commandButton value="Отмена" onclick="PF('attachmentDialog').hide(); return false;"/>
+
+            </h:form>
+            <p:ajax event="close" update="attachmentTable"/>
+        </p:dialog>
+        <!-- Подтверждение действия(удаление вложения)-->
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Нет" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close"/>
+            <p:commandButton value="Да" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check"/>
+        </p:confirmDialog>
+
+    </cc:implementation>
+</ui:component>

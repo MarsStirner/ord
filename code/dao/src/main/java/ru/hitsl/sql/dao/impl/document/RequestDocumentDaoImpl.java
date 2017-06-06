@@ -89,6 +89,7 @@ public class RequestDocumentDaoImpl extends DocumentDaoImpl<RequestDocument> imp
         result.createAlias("roleReaders", "roleReaders", LEFT_OUTER_JOIN);
         result.createAlias("roleEditors", "roleEditors", LEFT_OUTER_JOIN);
         result.createAlias("history", "history", LEFT_OUTER_JOIN);
+        result.createAlias("userAccessLevel", "userAccessLevel", JoinType.INNER_JOIN);
         return result;
     }
 
