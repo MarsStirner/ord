@@ -5,11 +5,10 @@
               xmlns:cc="http://java.sun.com/jsf/composite"
               xmlns:f="http://xmlns.jcp.org/jsf/core">
     <cc:interface>
-        <cc:attribute name="attachments" type="java.util.Collection" required="true"
-                      shortDescription="is state editable?"/>
-        <cc:attribute name="allowAttach" type="Boolean" default="false"/>
-        <cc:attribute name="allowDelete" type="Boolean" default="false"/>
-        <cc:attribute name="documentFolder" type="String" required="true"/>
+        <cc:attribute name="attachments" type="java.util.Collection" required="true" shortDescription="list of CMIS-documents attached to ORD-document"/>
+        <cc:attribute name="allowAttach" type="Boolean" default="false" shortDescription="Can user attach more CMIS-documents"/>
+        <cc:attribute name="allowDelete" type="Boolean" default="false" shortDescription="Can user delete existing CMIS-documents "/>
+        <cc:attribute name="documentFolder" type="String" required="true" shortDescription="CMIS-path associated with ORD-document"/>
     </cc:interface>
 
     <cc:implementation>
@@ -17,8 +16,7 @@
                      value="#{cc.attrs.attachments}"
                      var="attachment"
                      rowExpandMode="single"
-                     emptyMessage="#{ui['attachments.empty']}"
-        >
+                     emptyMessage="#{ui['attachments.empty']}">
             <!--@elvariable id="attachment" type="org.apache.chemistry.opencmis.client.api.Document"-->
             <p:column style="width:1em" styleClass="outputText">
                 <p:rowToggler/>

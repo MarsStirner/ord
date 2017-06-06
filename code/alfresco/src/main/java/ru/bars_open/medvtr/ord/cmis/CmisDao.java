@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -71,7 +72,7 @@ public class CmisDao {
         log.error("{} successfully delete Document[{}][name={}]", authData.getLogString(), document.getId(), document.getName());
     }
 
-    public void handleFileUpload(FileUploadEvent event) {
+    public void handleFileUpload(FileUploadEvent event) throws IOException {
         final UploadedFile file = event.getFile();
         if (file == null) {
             log.error("[handleFileUpload] called without file!!!");
@@ -88,9 +89,9 @@ public class CmisDao {
         final Map<String, Object> metadata = createFileMetaData(file.getFileName(), file.getContentType(), userId, userFullName);
         final ContentStream contentStream = sessionFactory.createContentStream(
                 file.getFileName(),
-                file.getContents().length,
+                Math.toIntExact(file.getSize()),
                 file.getContentType(),
-                new ByteArrayInputStream(file.getContents())
+                file.getInputstream()
         );
         final Document document = folder.createDocument(metadata, contentStream, VersioningState.MAJOR);
         log.info("Created document[{}]: {}", document.getName(), document.getId());
