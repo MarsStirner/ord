@@ -243,12 +243,8 @@ public class InternalDocumentWorkflow extends AbstractWorkflow<InternalDocument,
             addWarning("Необходимо заполнить Краткое содержание");
             result = false;
         }
-        if (!result) {
-            log.warn("End. Validation failed: '{}'", getWarnings());
-            return false;
-        }
-        log.debug("validation success");
-        return numerationService.fillDocumentNumber(doc);
+        log.debug("valid: {}", result);
+        return result && numerationService.fillDocumentNumber(doc);
     }
 
 
@@ -301,11 +297,7 @@ public class InternalDocumentWorkflow extends AbstractWorkflow<InternalDocument,
             }
             result = false;
         }
-        if (!result) {
-            log.warn("End. Validation failed: '{}'", getWarnings());
-            return false;
-        }
-        log.debug("validation success");
-        return true;
+        log.debug("valid: {}", result);
+        return result;
     }
 }

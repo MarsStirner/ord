@@ -34,10 +34,10 @@
                     </p:column>
                 </p:dataTable>
                 <h:outputText id="processedMessage" rendered="#{cc.attrs.workflow.state == 'PROCESSED'}" style="padding-left:10px;" value="Успешно выполнено"/>
-                <p:dataList id="warnings" value="#{cc.attrs.workflow.warnings}" var="row_warning" rendered="#{cc.attrs.workflow.state == 'WARNING'}">
-                    <f:facet name="header">Действие не выполнено</f:facet>
-                    <h:outputText value="#{row_warning}"/>
-                </p:dataList>
+                <p:panelGrid id = "warnings" rendered="#{cc.attrs.workflow.state == 'WARNING'}">
+                    Действие не выполнено:
+                    <p:messages id="messages" showDetail="true" autoUpdate="true" closable="false"/>
+                </p:panelGrid>
                 <p:panelGrid id="customUi" rendered="#{not empty cc.attrs.workflow.selectedAction.ui and cc.attrs.workflow.state != 'WARNING'}" style="margin-top: 1em; width: 100%;">
                     <p:row>
                         <p:column colspan="2" style="background-color: yellow">

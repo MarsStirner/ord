@@ -132,11 +132,11 @@ public class TaskWorkflow extends AbstractWorkflow<Task, TaskDao> {
             addWarning("Необходимо заполнить Текст поручения");
             result = false;
         }
+        log.debug("valid: {}", result);
+
         if (!result) {
-            log.warn("End. Validation failed: '{}'", getWarnings());
             return false;
         }
-        log.debug("validation success");
         if (StringUtils.isNotEmpty(doc.getRegistrationNumber())) {
             //Номер задан - > Нихера не делаем?!
             return true;

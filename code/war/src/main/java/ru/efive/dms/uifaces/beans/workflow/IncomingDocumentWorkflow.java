@@ -131,12 +131,8 @@ public class IncomingDocumentWorkflow extends AbstractWorkflow<IncomingDocument,
             addWarning("Необходимо заполнить Краткое содержание");
             result = false;
         }
-        if (!result) {
-            log.warn("End. Validation failed: '{}'", getWarnings());
-            return false;
-        }
-        log.debug("validation success");
-        return numerationService.fillDocumentNumber(doc);
+        log.debug("valid: {}", result);
+        return result && numerationService.fillDocumentNumber(doc);
     }
 
 

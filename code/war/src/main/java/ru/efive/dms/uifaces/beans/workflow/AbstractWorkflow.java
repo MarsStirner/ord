@@ -2,10 +2,12 @@ package ru.efive.dms.uifaces.beans.workflow;
 
 import org.springframework.transaction.annotation.Transactional;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractLoggableBean;
+import ru.efive.dms.util.message.MessageUtils;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.hitsl.sql.dao.interfaces.mapped.DocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
+import javax.faces.application.FacesMessage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +16,6 @@ public abstract class AbstractWorkflow<I extends DocumentEntity, D extends Docum
 
     protected final D dao;
     private final AuthorizationData authData;
-    private final List<String> warnings;
     private I document;
     private State state;
     private WorkflowAction selectedAction;
@@ -25,7 +26,6 @@ public abstract class AbstractWorkflow<I extends DocumentEntity, D extends Docum
         log.debug("<init>:[@{}]", Integer.toHexString(hashCode()));
         this.authData = authData;
         this.dao = dao;
-        this.warnings = new ArrayList<>(5);
     }
 
 
@@ -44,7 +44,6 @@ public abstract class AbstractWorkflow<I extends DocumentEntity, D extends Docum
 
     @Transactional(transactionManager = "ordTransactionManager")
     public void process() {
-        warnings.clear();
         try {
             log.info("Start process {} ", selectedAction);
             if (process(selectedAction, document)) {
@@ -89,12 +88,8 @@ public abstract class AbstractWorkflow<I extends DocumentEntity, D extends Docum
         this.selectedAction = selectedAction;
     }
 
-    public void addWarning(String message) {
-        warnings.add(message);
-    }
-
-    public List<String> getWarnings() {
-        return warnings;
+    public void addWarning(final String message) {
+        MessageUtils.addMessage(new FacesMessage(FacesMessage.SEVERITY_ERROR, message, ""));
     }
 
 }

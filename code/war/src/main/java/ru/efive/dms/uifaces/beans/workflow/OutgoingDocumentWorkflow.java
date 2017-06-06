@@ -51,12 +51,8 @@ public class OutgoingDocumentWorkflow extends AbstractWorkflow<OutgoingDocument,
             result = false;
 
         }
-        if (!result) {
-            log.warn("End. Validation failed: '{}'", getWarnings());
-            return false;
-        }
-        log.debug("validation success");
-        return numerationService.fillDocumentNumber(doc);
+        log.debug("valid: {}", result);
+        return result && numerationService.fillDocumentNumber(doc);
     }
 
 

@@ -105,37 +105,32 @@ public class RequestDocumentWorkflow extends AbstractWorkflow<RequestDocument, R
         }
     }
 
-    private boolean setRequestRegistrationNumber(RequestDocument document) {
-        boolean result = false;
-        if ((document.getSenderType() == null)) {
+    private boolean setRequestRegistrationNumber(RequestDocument doc) {
+        boolean result = true;
+        if ((doc.getSenderType() == null)) {
             addWarning("Необходимо указать Тип отправителя документа");
             result = false;
         }
-
-        if ((document.getSenderType().getValue().equals("Физическое лицо")) && (document.getSenderLastName() == null)) {
+        if ((doc.getSenderType().getValue().equals("Физическое лицо")) && (doc.getSenderLastName() == null)) {
             addWarning("Необходимо указать Фамилию адресанта");
             result = false;
         }
-        if ((document.getSenderType().getValue().equals("Юридическое лицо")) && (document.getContragent() == null)) {
+        if ((doc.getSenderType().getValue().equals("Юридическое лицо")) && (doc.getContragent() == null)) {
             addWarning("Необходимо указать Корреспондента");
             result = false;
         }
-        if ((document.getRecipientUsers() == null || document.getRecipientUsers().size() == 0) && (document.getRecipientGroups() == null || document
+        if ((doc.getRecipientUsers() == null || doc.getRecipientUsers().size() == 0) && (doc.getRecipientGroups() == null || doc
                 .getRecipientGroups().size() == 0)) {
             addWarning("Необходимо выбрать Адресатов");
             result = false;
         }
-        if (document.getShortDescription() == null || document.getShortDescription().equals("")) {
+        if (doc.getShortDescription() == null || doc.getShortDescription().equals("")) {
             addWarning("Необходимо заполнить Краткое содержание");
             result = false;
         }
 
-        if (!result) {
-            log.warn("End. Validation failed: '{}'", getWarnings());
-            return false;
-        }
-        log.debug("validation success");
-        return numerationService.fillDocumentNumber(document);
+        log.debug("valid: {}", result);
+        return result && numerationService.fillDocumentNumber(doc);
     }
 
 
