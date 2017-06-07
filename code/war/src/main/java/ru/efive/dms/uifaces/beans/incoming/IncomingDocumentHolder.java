@@ -1,31 +1,26 @@
 package ru.efive.dms.uifaces.beans.incoming;
 
 
-import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.annotation.Transactional;
 import ru.bars_open.medvtr.ord.cmis.CmisDao;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyTabHolder;
-import ru.efive.dms.uifaces.beans.abstractBean.AttachmentHolder;
 import ru.efive.dms.uifaces.beans.abstractBean.State;
-import ru.efive.dms.uifaces.beans.abstractBean.TaskTreeHolder;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
+import ru.efive.dms.uifaces.beans.workflow.NumerationService;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
-import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.IncomingDocument;
 import ru.entity.model.document.OutgoingDocument;
-import ru.entity.model.document.Task;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.*;
@@ -33,7 +28,6 @@ import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.IncomingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
-import ru.hitsl.sql.dao.interfaces.document.TaskDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
@@ -69,9 +63,10 @@ public class IncomingDocumentHolder extends AbstractDocumentLazyTabHolder<Incomi
             @Qualifier("cmisDao") final CmisDao cmisDao,
             @Qualifier("documentTaskTree") final DocumentTaskTreeHolder documentTaskTree,
             @Qualifier("refBookHelper") final ReferenceBookHelper referenceBookHelper,
-            @Qualifier("viewFactDao") final ViewFactDao viewFactDao
-    ) {
-        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao);
+            @Qualifier("viewFactDao") final ViewFactDao viewFactDao,
+            @Qualifier("numerationService") final NumerationService numerationService
+            ) {
+        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao, numerationService);
     }
 
     /**
@@ -88,6 +83,20 @@ public class IncomingDocumentHolder extends AbstractDocumentLazyTabHolder<Incomi
         }
     }
 
+    @Override
+    public boolean afterUpdate(IncomingDocument document, AuthorizationData authData) {
+        if (!additionalRelatedDocuments.isEmpty()) {
+            for (DocumentEntity entity : additionalRelatedDocuments) {
+                if (entity instanceof OutgoingDocument) {
+                    final OutgoingDocument outgoingDocument = (OutgoingDocument) entity;
+                    outgoingDocument.setReasonDocumentId(document.getUniqueId());
+                    outgoingDocumentDao.update(outgoingDocument);
+                    log.info("Add related document {}", outgoingDocument);
+                }
+            }
+        }
+        return true;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////// Диалоговые окошки  /////////////////////////////////////////////////////////////////

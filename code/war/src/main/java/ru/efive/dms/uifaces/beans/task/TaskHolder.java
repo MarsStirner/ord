@@ -13,6 +13,7 @@ import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
+import ru.efive.dms.uifaces.beans.workflow.NumerationService;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
@@ -62,7 +63,6 @@ public class TaskHolder extends AbstractDocumentLazyTabHolder<Task, TaskDao> {
     @Qualifier("requestDocumentDao")
     private RequestDocumentDao requestDocumentDao;
 
-
     @Autowired
     public TaskHolder(
             @Qualifier("taskDao") final TaskDao dao,
@@ -70,9 +70,10 @@ public class TaskHolder extends AbstractDocumentLazyTabHolder<Task, TaskDao> {
             @Qualifier("cmisDao") final CmisDao cmisDao,
             @Qualifier("documentTaskTree") final DocumentTaskTreeHolder documentTaskTree,
             @Qualifier("refBookHelper") final ReferenceBookHelper referenceBookHelper,
-            @Qualifier("viewFactDao") final ViewFactDao viewFactDao
+            @Qualifier("viewFactDao") final ViewFactDao viewFactDao,
+            @Qualifier("numerationService") final NumerationService numerationService
     ) {
-        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao);
+        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao, numerationService);
     }
 
 

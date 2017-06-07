@@ -2,6 +2,7 @@ package ru.hitsl.sql.dao.interfaces;
 
 import ru.entity.model.document.Numerator;
 import ru.entity.model.enums.DocumentType;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
@@ -24,4 +25,6 @@ public interface NumeratorDao  extends CommonDao<Numerator> {
      * @return текущее состояние счетчика ПОСЛЕ увеличения
      */
     String incrementAndGet(Numerator numerator);
+
+    String decrementAndGet(Numerator numerator);
 }

@@ -284,42 +284,7 @@
                 </my:taskTreeTable>
             </p:tab>
             <p:tab id="tab_relation" title="Связи">
-                <p:dataTable id="table_relation" value="#{request_doc.getRelatedDocuments()}"
-                             var="outgoing_document_row"
-                             emptyMessage="#{ui['document.default.list.emptyMessage']}"
-                             selectionMode="single"
-                             resizableColumns="true"
-                             widgetVar="relationDocumentTableVar"
-                             rowKey="#{outgoing_document_row.id}">
-                    <f:facet name="header">
-                        <h:outputText value="Исходящие документы"/>
-                    </f:facet>
-                    <p:column headerText="Дата регистрации" style="width:9em;" styleClass="outputText">
-                        <h:outputText value="#{outgoing_document_row.registrationDate}">
-                            <f:converter converterId="LocalDateTimeConverter"/>
-                            <f:attribute name="pattern" value="dd.MM.yyyy"/>
-                        </h:outputText>
-                    </p:column>
-                    <p:column headerText="Номер" style="width:5em;" styleClass="outputText">
-                        <h:outputText value="#{outgoing_document_row.registrationNumber}"/>
-                    </p:column>
-                    <p:column headerText="Исполнитель" style="width:12em;" styleClass="outputText">
-                        <h:outputText value="#{outgoing_document_row.executor.getDescriptionShort()}"/>
-                    </p:column>
-                    <p:column headerText="Адресат" style="width:12em;" styleClass="outputText">
-                        <h:outputText value="#{outgoing_document_row.contragent.value}"/>
-                    </p:column>
-                    <p:column headerText="Вид" style="width:7em;" styleClass="outputText">
-                        <h:outputText value="#{outgoing_document_row.form.value}"/>
-                    </p:column>
-                    <p:column headerText="Статус" style="width:9em;" styleClass="outputText">
-                        <h:outputText value="#{outgoing_document_row.getDocumentStatus().getName()}"/>
-                    </p:column>
-                    <p:column headerText="Краткое содержание" styleClass="outputText">
-                        <h:outputText value="#{outgoing_document_row.shortDescription}"/>
-                    </p:column>
-                    <p:ajax event="rowSelect" onstart="goToOutgoingDocument(PrimeFaces.widgets.relationDocumentTableVar.selection); return false;"/>
-                </p:dataTable>
+                <my:documentRelations controller="#{request_doc}" editable="false"/>
             </p:tab>
             <p:tab id="tab_access" title="Доступ">
                 <my:accessManagement model="#{request_doc.document}" controller="#{request_doc}" editable="#{stateEditable}"

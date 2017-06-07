@@ -11,6 +11,7 @@ import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
+import ru.efive.dms.uifaces.beans.workflow.NumerationService;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
@@ -18,6 +19,8 @@ import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.Task;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.user.User;
+import ru.hitsl.sql.dao.impl.NumeratorDaoImpl;
+import ru.hitsl.sql.dao.interfaces.NumeratorDao;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.mapped.DocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
@@ -25,6 +28,7 @@ import ru.hitsl.sql.dao.util.AuthorizationData;
 import javax.faces.context.FacesContext;
 import java.time.LocalDateTime;
 import java.util.*;
+
 
 public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D extends DocumentDao<I>>
         extends AbstractDocumentHolderBean<I, D>
@@ -38,6 +42,7 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
     protected final DocumentTaskTreeHolder taskTreeHolder;
     protected final ReferenceBookHelper referenceBookHelper;
     protected final ViewFactDao viewFactDao;
+    protected final NumerationService numerationService;
 
     private Map<String, Boolean> initialized = new HashMap<>(3);
 
@@ -51,6 +56,8 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
      */
     private List<DocumentEntity> relatedDocuments;
 
+    protected List<DocumentEntity> additionalRelatedDocuments;
+
 
     public AbstractDocumentLazyTabHolder(
             final D dao,
@@ -58,12 +65,14 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
             final CmisDao cmisDao,
             final DocumentTaskTreeHolder taskTreeHolder,
             final ReferenceBookHelper referenceBookHelper,
-            final ViewFactDao viewFactDao) {
+            final ViewFactDao viewFactDao,
+            final NumerationService numerationService) {
         super(dao, authData);
         this.cmisDao = cmisDao;
         this.taskTreeHolder = taskTreeHolder;
         this.referenceBookHelper = referenceBookHelper;
         this.viewFactDao = viewFactDao;
+        this.numerationService = numerationService;
     }
 
 
@@ -139,7 +148,16 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
         return relatedDocuments;
     }
 
-
+    public void addNewRelatedDocument(DocumentEntity relatedDocument){
+        if(additionalRelatedDocuments == null){
+            additionalRelatedDocuments = new ArrayList<>(4);
+        }
+        if(!relatedDocuments.contains(relatedDocument)) {
+            additionalRelatedDocuments.add(relatedDocument);
+            relatedDocuments.add(relatedDocument);
+        }
+        FacesContext.getCurrentInstance().getViewRoot().getViewMap().remove("relatedDocument");
+    }
 
     @Override
     public DocumentTaskTreeHolder getTaskTree() {
@@ -244,5 +262,11 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
             final User selected = (User) result.getResult();
             getDocument().setController(selected);
         }
+    }
+
+    @Override
+    public boolean afterDelete(I document, AuthorizationData authData) {
+        numerationService.freeIfLast(document);
+        return super.afterDelete(document, authData);
     }
 }

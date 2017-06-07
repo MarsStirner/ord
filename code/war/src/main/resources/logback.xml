@@ -192,6 +192,8 @@
     <logger name="org.apache.commons.digester" level="INFO"/>
     <logger name="net.sf.jasperreports" level="INFO"/>
     <logger name="org.apache.commons.beanutils" level="INFO"/>
+    <!--Spring-->
+    <logger name="org.springframework.transaction.annotation" level="INFO"/>
 
     <root level="${log.level}">
         <appender-ref ref="STDOUT"/>

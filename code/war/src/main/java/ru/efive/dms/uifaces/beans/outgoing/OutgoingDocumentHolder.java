@@ -11,6 +11,7 @@ import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.*;
 import ru.efive.dms.uifaces.beans.task.DocumentTaskTreeHolder;
 import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
+import ru.efive.dms.uifaces.beans.workflow.NumerationService;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
@@ -57,9 +58,10 @@ public class OutgoingDocumentHolder extends AbstractDocumentLazyTabHolder<Outgoi
             @Qualifier("cmisDao") final CmisDao cmisDao,
             @Qualifier("documentTaskTree") final DocumentTaskTreeHolder documentTaskTree,
             @Qualifier("refBookHelper") final ReferenceBookHelper referenceBookHelper,
-            @Qualifier("viewFactDao") final ViewFactDao viewFactDao
+            @Qualifier("viewFactDao") final ViewFactDao viewFactDao,
+            @Qualifier("numerationService") final NumerationService numerationService
     ) {
-        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao);
+        super(dao, authData, cmisDao, documentTaskTree, referenceBookHelper, viewFactDao, numerationService);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

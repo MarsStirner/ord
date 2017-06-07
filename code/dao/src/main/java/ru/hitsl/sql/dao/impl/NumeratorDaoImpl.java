@@ -1,5 +1,6 @@
 package ru.hitsl.sql.dao.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.Numerator;
 import ru.entity.model.enums.DocumentType;
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
@@ -58,6 +60,14 @@ public class NumeratorDaoImpl extends CommonDaoImpl<Numerator> implements Numera
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String incrementAndGet(Numerator numerator) {
         numerator.setCurrent(numerator.getCurrent() + 1);
+        update(numerator);
+        return numerator.getPrefix() + numerator.getCurrent();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public String decrementAndGet(Numerator numerator) {
+        numerator.setCurrent(numerator.getCurrent() -1);
         update(numerator);
         return numerator.getPrefix() + numerator.getCurrent();
     }

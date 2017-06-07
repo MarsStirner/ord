@@ -44,7 +44,7 @@
                      sortField="#{defaultSortField}"
                      sortOrder="#{defaultSortOrder}"
         >
-            <!--@elvariable id="row" type="ru.entity.model.document.Numerator"-->
+            <!--@elvariable id="row" type="ru.entity.model.numerator.Numerator"-->
             <p:column headerText="Дата начала действия" sortBy="#{null}" field="begDate">
                 <h:outputText value="#{row.begDate}" converter="LocalDateConverter" pattern="yyyy.MM.dd"/>
             </p:column>

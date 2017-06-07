@@ -1,4 +1,4 @@
-package ru.entity.model.document;
+package ru.entity.model.numerator;
 
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.Contragent;
@@ -28,10 +28,10 @@ public class Numerator extends DeletableEntity {
     @Column(name = "prefix")
     private String prefix;
     /**
-     * Текущий номер нумератора
+     * Стартовый номер нумератора
      **/
-    @Column(name = "current")
-    private Integer current;
+    @Column(name = "startNumber")
+    private Integer startNumber;
     /**
      * Дата начала действия нумератора
      */
@@ -79,7 +79,7 @@ public class Numerator extends DeletableEntity {
 
     public Numerator() {
         priority = 1000;
-        current = 0;
+        startNumber = 1;
         begDate = LocalDate.now();
     }
 
@@ -91,12 +91,12 @@ public class Numerator extends DeletableEntity {
         this.prefix = prefix;
     }
 
-    public Integer getCurrent() {
-        return current;
+    public Integer getStartNumber() {
+        return startNumber;
     }
 
-    public void setCurrent(Integer current) {
-        this.current = current;
+    public void setStartNumber(Integer startNumber) {
+        this.startNumber = startNumber;
     }
 
     public LocalDate getBegDate() {

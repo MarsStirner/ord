@@ -9,7 +9,7 @@ import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.ContragentDialogHolder;
 import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
-import ru.entity.model.document.Numerator;
+import ru.entity.model.numerator.Numerator;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;

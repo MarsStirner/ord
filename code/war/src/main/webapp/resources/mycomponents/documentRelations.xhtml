@@ -1,0 +1,104 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:cc="http://java.sun.com/jsf/composite"
+              xmlns:p="http://primefaces.org/ui"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <cc:interface>
+        <cc:attribute name="editable" type="java.lang.Boolean"/>
+        <cc:attribute name="controller" type="ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyTabHolder"/>
+    </cc:interface>
+    <cc:implementation>
+        <!--@elvariable id="row" type="ru.entity.model.mapped.DocumentEntity"-->
+        <p:dataTable id="relation_table" value="#{cc.attrs.controller.relatedDocuments}"
+                     var="row"
+                     rowSelectMode="none"
+                     emptyMessage="#{ui['document.default.list.emptyMessage']}"
+                     selectionMode="single"
+                     resizableColumns="true"
+                     widgetVar="relationTableVar"
+                     rowKey="#{row.id}">
+            <f:facet name="header">
+                <h:outputText value="Исходящие документы"/>
+            </f:facet>
+            <p:column headerText="Дата регистрации" style="width:9em;" styleClass="outputText">
+                <h:outputText value="#{row.registrationDate}" converter="LocalDateTimeConverter" pattern="dd.MM.yyyy"/>
+            </p:column>
+            <p:column headerText="Номер" style="width:5em;" styleClass="outputText">
+                <h:outputText value="#{row.registrationNumber}"/>
+            </p:column>
+            <p:column headerText="Исполнитель" style="width:12em;" styleClass="outputText">
+                <h:outputText value="#{row.executor.descriptionShort}"/>
+            </p:column>
+            <p:column headerText="Адресат" style="width:12em;" styleClass="outputText">
+                <h:outputText value="#{row.contragent.value}"/>
+            </p:column>
+            <p:column headerText="Вид" style="width:7em;" styleClass="outputText">
+                <h:outputText value="#{row.form.value}"/>
+            </p:column>
+            <p:column headerText="Статус" style="width:9em;" styleClass="outputText">
+                <h:outputText value="#{row.documentStatus.name}"/>
+            </p:column>
+            <p:column headerText="Краткое содержание" styleClass="outputText">
+                <h:outputText value="#{row.shortDescription}"/>
+            </p:column>
+            <p:ajax event="rowSelect" onstart="goToOutgoingDocument(PrimeFaces.widgets.relationTableVar.selection); return false;"/>
+        </p:dataTable>
+        <p:toolbar id="taskToolBar" rendered="#{cc.attrs.editable}">
+            <p:toolbarGroup>
+                <p:commandButton value="Добавить документ" id="refresh_btn" icon="ui-icon-plusthick" oncomplete="PF('relationDialogVar').show();"/>
+            </p:toolbarGroup>
+        </p:toolbar>
+
+        <!-- Диалог добавления документа -->
+        <p:dialog id="relationDialog" header="Добавить документ" widgetVar="relationDialogVar" width="70%" position="top" fitViewport="true"
+                  closeable="true" closeOnEscape="true" modal="true" draggable="false" resizable="false" dynamic="true">
+            <p:dataTable id="dialogRelationTable"
+                         paginator="true"
+                         rows="#{ui['document.outgoing.list.paginator.rows.default']}"
+                         currentPageReportTemplate="#{ui['document.outgoing.list.paginator.template.currentPage']}"
+                         paginatorTemplate="#{ui['document.outgoing.list.paginator.template.total']}"
+                         rowsPerPageTemplate="#{ui['document.outgoing.list.paginator.rows.dropDown']}"
+                         paginatorPosition="#{ui['document.outgoing.list.paginator.position']}"
+                         emptyMessage="#{ui['document.outgoing.list.emptyMessage']}"
+                         value="#{outgoingDocumentLDM}"
+                         var="row"
+                         lazy="true"
+                         widgetVar="dialogRelationTableVar"
+                         scrollable="true"
+                         scrollHeight="400"
+                         selectionMode="single"
+                         selection="#{viewScope['relatedDocument']}"
+                         sortBy="#{row.registrationDate}"
+                         sortField="registrationDate"
+                         sortOrder="descending">
+                <f:facet name="header">
+                    <p:inputText id="filter" value="#{outgoingDocumentLDM.filter}" style="width:80%;" title="Поиск"/>
+                    <p:commandButton id="btn_search" value="Найти" process="filter dialogRelationTable" update="dialogRelationTable"/>
+                    <p:defaultCommand target="btn_search"/>
+                </f:facet>
+                <p:column headerText="Номер" style="width:5em;" styleClass="outputText">
+                    <h:outputText value="#{row.registrationNumber}"/>
+                </p:column>
+                <p:column headerText="Адресат" style="width:12em;" styleClass="outputText">
+                    <h:outputText value="#{row.contragent.value}"/>
+                </p:column>
+                <p:column headerText="Вид" style="width:7em;" styleClass="outputText">
+                    <h:outputText value="#{row.form.value}"/>
+                </p:column>
+                <p:column headerText="Статус" style="width:9em;" styleClass="outputText">
+                    <h:outputText value="#{row.documentStatus.name}"/>
+                </p:column>
+                <p:column headerText="Краткое содержание" styleClass="outputText">
+                    <h:outputText value="#{row.shortDescription}"/>
+                </p:column>
+            </p:dataTable>
+            <f:facet name="footer">
+                <p:commandButton value="Выбрать" action="#{cc.attrs.controller.addNewRelatedDocument(viewScope['relatedDocument'])}"
+                                 oncomplete="PF('relationDialogVar').hide();"
+                                 update="relation_table"/>
+                <p:commandButton value="Отмена" onclick="PF('relationDialogVar').hide();"/>
+            </f:facet>
+        </p:dialog>
+    </cc:implementation>
+</ui:component>
