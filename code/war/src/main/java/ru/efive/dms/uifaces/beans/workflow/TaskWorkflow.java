@@ -144,7 +144,7 @@ public class TaskWorkflow extends AbstractWorkflow<Task, TaskDao> {
         final String key = doc.getRootDocumentId();
         if (StringUtils.isEmpty(key)) {
             //Нет документа-основания -> сквозная нумерация
-            return numerationService.fillDocumentNumber(doc);
+            return numerationService.registerDocument(doc);
         } else {
             //Номер не задан
             Map<String, Object> in_filters = Collections.singletonMap("rootDocumentId", key);

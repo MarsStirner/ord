@@ -132,7 +132,7 @@ public class IncomingDocumentWorkflow extends AbstractWorkflow<IncomingDocument,
             result = false;
         }
         log.debug("valid: {}", result);
-        return result && numerationService.fillDocumentNumber(doc);
+        return result && numerationService.registerDocument(doc);
     }
 
 

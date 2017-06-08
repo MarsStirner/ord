@@ -2,7 +2,7 @@ package ru.entity.model.mapped;
 
 
 import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.document.Numerator;
+import ru.entity.model.numerator.Numerator;
 import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.DocumentForm;
@@ -37,13 +37,6 @@ public abstract class DocumentEntity extends DeletableEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "controller_id", nullable = true)
     protected User controller;
-
-    /**
-     * Нумератор, использующийся при регистрации документа
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "numerator_id", nullable = true)
-    protected Numerator numerator;
 
     /**
      * Номер входящего
@@ -125,15 +118,6 @@ public abstract class DocumentEntity extends DeletableEntity {
             this.history = new HashSet<>(1);
         }
         return this.history.add(historyEntry);
-    }
-
-    /**
-     * Получение полного, форматированного, номера документа
-     *
-     * @return форматированный номер документа
-     */
-    public String getFullNumber() {
-        return (numerator != null ? numerator.getPrefix() : null) + registrationNumber;
     }
 
     @Override
@@ -221,11 +205,4 @@ public abstract class DocumentEntity extends DeletableEntity {
         this.form = form;
     }
 
-    public Numerator getNumerator() {
-        return numerator;
-    }
-
-    public void setNumerator(Numerator numerator) {
-        this.numerator = numerator;
-    }
 }

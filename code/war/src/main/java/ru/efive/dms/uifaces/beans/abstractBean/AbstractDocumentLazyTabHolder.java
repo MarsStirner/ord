@@ -56,7 +56,7 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
      */
     private List<DocumentEntity> relatedDocuments;
 
-    protected List<DocumentEntity> additionalRelatedDocuments;
+    protected List<DocumentEntity> additionalRelatedDocuments = new ArrayList<>();
 
 
     public AbstractDocumentLazyTabHolder(
@@ -149,9 +149,6 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
     }
 
     public void addNewRelatedDocument(DocumentEntity relatedDocument){
-        if(additionalRelatedDocuments == null){
-            additionalRelatedDocuments = new ArrayList<>(4);
-        }
         if(!relatedDocuments.contains(relatedDocument)) {
             additionalRelatedDocuments.add(relatedDocument);
             relatedDocuments.add(relatedDocument);
@@ -266,7 +263,7 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
 
     @Override
     public boolean afterDelete(I document, AuthorizationData authData) {
-        numerationService.freeIfLast(document);
+        numerationService.freeNumeration(document);
         return super.afterDelete(document, authData);
     }
 }

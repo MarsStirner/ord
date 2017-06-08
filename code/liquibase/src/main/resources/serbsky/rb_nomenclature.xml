@@ -4,7 +4,7 @@
                    objectQuotingStrategy="QUOTE_ALL_OBJECTS"
                    logicalFilePath="serbsky/rb_nomenclature.xml">
     <changeSet id="serbsky/rb_nomenclature/drop" author="e.upatov" context="SERBSKY">
-        <comment>Удаление неиспользуемого српавочника номенклатур</comment>
+        <comment>Удаление неиспользуемого справочника номенклатур</comment>
         <dropForeignKeyConstraint baseTableName="incoming_document" constraintName="FK_incoming_document__nomenclature"/>
         <dropColumn tableName="incoming_document" columnName="nomenclature_id"/>
         <dropForeignKeyConstraint baseTableName="request_document" constraintName="FK_request_document__nomenclature"/>

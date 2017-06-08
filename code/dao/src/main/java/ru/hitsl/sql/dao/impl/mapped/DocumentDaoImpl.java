@@ -26,7 +26,6 @@ public abstract class DocumentDaoImpl<T extends DocumentEntity> extends CommonDa
         result.createAlias("form", "form", INNER_JOIN);
 
         result.createAlias("controller", "controller", LEFT_OUTER_JOIN);
-        result.createAlias("numerator", "numerator", LEFT_OUTER_JOIN);
         return result;
     }
 

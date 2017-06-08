@@ -52,7 +52,7 @@ public class OutgoingDocumentWorkflow extends AbstractWorkflow<OutgoingDocument,
 
         }
         log.debug("valid: {}", result);
-        return result && numerationService.fillDocumentNumber(doc);
+        return result && numerationService.registerDocument(doc);
     }
 
 

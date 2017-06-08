@@ -54,11 +54,14 @@
             <p:column headerText="Префикс (номенклатура)" sortBy="#{null}" field="prefix">
                 <h:outputText value="#{row.prefix}"/>
             </p:column>
-            <p:column headerText="Текущий номер" sortBy="#{null}" field="current">
-                <h:outputText value="#{row.current}"/>
+            <p:column headerText="Стартовый номер" sortBy="#{null}" field="current">
+                <h:outputText value="#{row.startNumber}"/>
             </p:column>
             <p:column headerText="Приоритет" sortBy="#{null}" field="priority">
                 <h:outputText value="#{row.priority}"/>
+            </p:column>
+            <p:column headerText="Описание" sortBy="#{null}" field="shortDescription">
+                <h:outputText value="#{row.shortDescription}"/>
             </p:column>
             <p:column headerText="Тип документа" sortBy="#{null}" field="documentType.value">
                 <h:outputText value="#{row.documentType.value}"/>

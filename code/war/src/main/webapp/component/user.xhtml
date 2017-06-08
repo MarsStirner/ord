@@ -104,8 +104,6 @@
                                             forceSelection="false" minQueryLength="2" queryDelay="500" size="100"
                                             emptyMessage="Нет подходящих элементов" placeHolder="Выберете подразделение" maxResults="10"/>
                         </p:column>
-
-
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-3">
@@ -119,8 +117,6 @@
                                             forceSelection="false" minQueryLength="2" queryDelay="500" size="100"
                                             emptyMessage="Нет подходящих элементов" placeHolder="Выберете должность" maxResults="10"/>
                         </p:column>
-
-
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column styleClass="ui-grid-col-3">
@@ -130,14 +126,6 @@
                             <h:outputText id="v_mail" value="#{user.document.email}" rendered="#{not stateEditable}" styleClass="outputText"/>
                             <p:inputText id="e_mail" value="#{user.document.email}" required="true" rendered="#{stateEditable}" styleClass="inputText"
                                          style="width:100%;"/>
-                        </p:column>
-                    </p:row>
-                    <p:row styleClass="ui-grid-row">
-                        <p:column styleClass="ui-grid-col-3">
-                            <p:outputLabel for="e_nomenclature" value="Номенклатура дел по-умолчанию"/>
-                        </p:column>
-                        <p:column colspan="3" styleClass="ui-grid-col-9">
-
                         </p:column>
                     </p:row>
                 </p:panelGrid>

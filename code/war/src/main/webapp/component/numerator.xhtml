@@ -60,11 +60,11 @@
             </p:row>
             <p:row styleClass="ui-grid-row">
                 <p:column styleClass="ui-grid-col-2">
-                    <p:outputLabel for="v_current" value="Текущий номер:"/>
+                    <p:outputLabel for="v_current" value="Нумерация начинается с (не включая):"/>
                 </p:column>
                 <p:column colspan="3" styleClass="ui-grid-col-10">
-                    <h:outputText id="v_current" value="#{numerator.document.current}" styleClass="outputText" rendered="#{not numerator.createState}"/>
-                    <p:inputText id="e_current" value="#{numerator.document.current}" styleClass="inputText" rendered="#{numerator.createState}"/>
+                    <h:outputText id="v_current" value="#{numerator.document.startNumber}" styleClass="outputText" rendered="#{not numerator.createState}"/>
+                    <p:inputText id="e_current" value="#{numerator.document.startNumber}" styleClass="inputText" rendered="#{numerator.createState}"/>
                 </p:column>
             </p:row>
             <p:row styleClass="ui-grid-row">

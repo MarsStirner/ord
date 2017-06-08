@@ -28,7 +28,7 @@ public class Numerator extends DeletableEntity {
     @Column(name = "prefix")
     private String prefix;
     /**
-     * Стартовый номер нумератора
+     * Стартовый номер нумератора (откуда начинается нумерация)
      **/
     @Column(name = "startNumber")
     private Integer startNumber;
@@ -71,7 +71,7 @@ public class Numerator extends DeletableEntity {
     private User controller;
 
     /**
-     * ТКонтрагент, NULL - любой
+     * Контрагент, NULL - любой
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contragent_id", nullable = true)
@@ -79,7 +79,7 @@ public class Numerator extends DeletableEntity {
 
     public Numerator() {
         priority = 1000;
-        startNumber = 1;
+        startNumber = 0;
         begDate = LocalDate.now();
     }
 

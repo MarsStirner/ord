@@ -15,7 +15,7 @@
             <column name="prefix" type="VARCHAR(64)" remarks="Префикс номера нумератора (ранее номенклатура)" defaultValue="">
                 <constraints nullable="false"/>
             </column>
-            <column name="startNumber" type="INT" remarks="Текущий номер нумератора" defaultValue="1">
+            <column name="startNumber" type="INT" remarks="Стартовый номер нумератора (откуда начинается нумерация) +1" defaultValue="0">
                 <constraints nullable="false"/>
             </column>
             <column name="begDate" type="DATE" remarks="Дата начала действия нумератора">
@@ -43,58 +43,21 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="serbsky/numerator/foreign_keys/incoming" author="e.upatov" context="SERBSKY">
-        <comment>Добавление FK от Входящего документа к нумератору</comment>
-        <addColumn tableName="incoming_document">
-            <column name="numerator_id" type="INT" remarks="Используемый нумератор" afterColumn="registrationNumber">
-                <constraints nullable="true" foreignKeyName="FK_incoming_document__numerator" referencedTableName="numerator" referencedColumnNames="id"/>
+    <changeSet id="serbsky/numerator_usage" author="e.upatov" context="SERBSKY">
+        <comment>Таблица связка документов и используемых нумераторов с указанием номера</comment>
+        <createTable tableName="numerator_usage" remarks="Таблица связка документов и используемых нумераторов с указанием номера">
+            <column name="document_id" type="VARCHAR(64)" remarks="Уникальный ключ документа">
+                <constraints primaryKey="true"/>
             </column>
-        </addColumn>
-        <addUniqueConstraint tableName="incoming_document" columnNames="registrationNumber, numerator_id" constraintName="UQ_numerator_number"/>
-    </changeSet>
-    <changeSet id="serbsky/numerator/foreign_keys/outgoing" author="e.upatov" context="SERBSKY">
-        <comment>Добавление FK от Исходящего документа к нумератору</comment>
-        <addColumn tableName="outgoing_document">
-            <column name="numerator_id" type="INT" remarks="Используемый нумератор" afterColumn="registrationNumber">
-                <constraints nullable="true" foreignKeyName="FK_outgoing_document__numerator" referencedTableName="numerator" referencedColumnNames="id"/>
+            <column name="numerator_id" remarks="Ссылка на использованный нумератор" type="INT">
+                <constraints nullable="false" foreignKeyName="FK_numerator_usage__numerator" referencedTableName="numerator" referencedColumnNames="id"/>
             </column>
-        </addColumn>
-        <addUniqueConstraint tableName="outgoing_document" columnNames="registrationNumber, numerator_id" constraintName="UQ_numerator_number"/>
-    </changeSet>
-    <changeSet id="serbsky/numerator/foreign_keys/internal" author="e.upatov" context="SERBSKY">
-        <comment>Добавление FK от Внутреннего документа к нумератору</comment>
-        <addColumn tableName="internal_document">
-            <column name="numerator_id" type="INT" remarks="Используемый нумератор" afterColumn="registrationNumber">
-                <constraints nullable="true" foreignKeyName="FK_internal_document__numerator" referencedTableName="numerator" referencedColumnNames="id"/>
+            <column name="number" type="INT" remarks="Используемый номер в рамках нумератора">
+                <constraints nullable="false"/>
             </column>
-        </addColumn>
-        <addUniqueConstraint tableName="internal_document" columnNames="registrationNumber, numerator_id" constraintName="UQ_numerator_number"/>
-    </changeSet>
-    <changeSet id="serbsky/numerator/foreign_keys/request" author="e.upatov" context="SERBSKY">
-        <comment>Добавление FK от Оюращений граждан к нумератору</comment>
-        <addColumn tableName="request_document">
-            <column name="numerator_id" type="INT" remarks="Используемый нумератор" afterColumn="registrationNumber">
-                <constraints nullable="true" foreignKeyName="FK_request_document__numerator" referencedTableName="numerator" referencedColumnNames="id"/>
+            <column name="registration_date" type="DATETIME" remarks="Дата+время регистрации документа">
+                <constraints nullable="false"/>
             </column>
-        </addColumn>
-        <addUniqueConstraint tableName="request_document" columnNames="registrationNumber, numerator_id" constraintName="UQ_numerator_number"/>
-    </changeSet>
-    <changeSet id="serbsky/numerator/foreign_keys/task" author="e.upatov" context="SERBSKY">
-        <comment>Добавление FK от Поручения к нумератору</comment>
-        <addColumn tableName="task">
-            <column name="numerator_id" type="INT" remarks="Используемый нумератор" afterColumn="registrationNumber">
-                <constraints nullable="true" foreignKeyName="FK_task__numerator" referencedTableName="numerator" referencedColumnNames="id"/>
-            </column>
-        </addColumn>
-        <addUniqueConstraint tableName="task" columnNames="registrationNumber, numerator_id" constraintName="UQ_numerator_number"/>
-    </changeSet>
-    <changeSet id="serbsky/numerator/foreign_keys/task" author="e.upatov" context="SERBSKY">
-        <comment>Добавление FK от Поручения к нумератору</comment>
-        <addColumn tableName="task">
-            <column name="numerator_id" type="INT" remarks="Используемый нумератор" afterColumn="registrationNumber">
-                <constraints nullable="true" foreignKeyName="FK_task__numerator" referencedTableName="numerator" referencedColumnNames="id"/>
-            </column>
-        </addColumn>
-        <addUniqueConstraint tableName="task" columnNames="registrationNumber, numerator_id" constraintName="UQ_numerator_number"/>
+        </createTable>
     </changeSet>
 </databaseChangeLog>

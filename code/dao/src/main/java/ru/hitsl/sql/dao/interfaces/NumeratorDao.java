@@ -1,8 +1,9 @@
 package ru.hitsl.sql.dao.interfaces;
 
-import ru.entity.model.document.Numerator;
+import ru.entity.model.numerator.Numerator;
 import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DocumentEntity;
+import ru.entity.model.numerator.NumeratorUsage;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
@@ -20,11 +21,13 @@ public interface NumeratorDao  extends CommonDao<Numerator> {
     Numerator findBestNumerator(DocumentType type, DocumentForm form, User controller, Contragent contragent);
 
     /**
-     * Увеличить значение счетчика и сохранить его в БД после чего вернуть это значение
-     * @param numerator счетчик, значение которого нужно увеличить
-     * @return текущее состояние счетчика ПОСЛЕ увеличения
+     * Получить использование нумераторов этим документом
+     * @param documentId уникальный идентифкатор документ-а
+     * @return NumeratorUsage этого документа / null если отсутсвтует
      */
-    String incrementAndGet(Numerator numerator);
+    NumeratorUsage getUsage(String documentId);
 
-    String decrementAndGet(Numerator numerator);
+    NumeratorUsage createUsage(DocumentEntity doc, Numerator numerator);
+
+    void deleteUsage(NumeratorUsage usage);
 }

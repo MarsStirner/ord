@@ -244,7 +244,7 @@ public class InternalDocumentWorkflow extends AbstractWorkflow<InternalDocument,
             result = false;
         }
         log.debug("valid: {}", result);
-        return result && numerationService.fillDocumentNumber(doc);
+        return result && numerationService.registerDocument(doc);
     }
 
 

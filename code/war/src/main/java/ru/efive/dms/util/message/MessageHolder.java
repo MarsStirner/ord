@@ -36,6 +36,7 @@ public class MessageHolder {
 
 
     public static final FacesMessage MSG_NO_NUMERATOR_FOUND = new FacesMessage(SEVERITY_ERROR, "Не найдено подходящего нумератора", "");
+    public static final FacesMessage MSG_NUMERATOR_ALREADY_IN_USE = new FacesMessage(SEVERITY_ERROR, "Документ уже использует нумерацию", "");;
 
     //Сообщения об ошибках авторизации
     public final static FacesMessage MSG_AUTH_FIRED = new FacesMessage(SEVERITY_ERROR, "Невозможно выполнить вход, потому что сотрудник уволен", "");
