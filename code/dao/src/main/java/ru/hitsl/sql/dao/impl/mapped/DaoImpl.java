@@ -5,6 +5,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.*;
+import org.hibernate.engine.spi.LoadQueryInfluencers;
+import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.hibernate.internal.CriteriaImpl;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.loader.OuterJoinLoader;
+import org.hibernate.loader.criteria.CriteriaLoader;
+import org.hibernate.loader.criteria.CriteriaQueryTranslator;
+import org.hibernate.persister.entity.OuterJoinLoadable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,6 +24,7 @@ import ru.util.ApplicationHelper;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,5 +167,47 @@ public abstract class DaoImpl<T extends IdentifiedEntity> implements AbstractDao
             result.addOrder(orderAsc ? Order.asc(orderBy) : Order.desc(orderBy));
         }
         return result;
+    }
+
+
+    @Deprecated
+    public String TEST_ONLY_RAW_SQL(DetachedCriteria criteria) throws NoSuchFieldException, IllegalAccessException {
+        String sql;
+        Object[] parameters = null;
+
+        CriteriaImpl c = (CriteriaImpl) criteria.getExecutableCriteria(em.unwrap(Session.class));
+        SessionImpl s = (SessionImpl)c.getSession();
+        SessionFactoryImplementor factory = (SessionFactoryImplementor)s.getSessionFactory();
+        String[] implementors = factory.getImplementors( c.getEntityOrClassName() );
+        CriteriaLoader loader = new CriteriaLoader((OuterJoinLoadable)factory.getEntityPersister(implementors[0]), factory, c, implementors[0], LoadQueryInfluencers.NONE);
+        Field f = OuterJoinLoader.class.getDeclaredField("sql");
+        f.setAccessible(true);
+        sql = (String)f.get(loader);
+        Field fp = CriteriaLoader.class.getDeclaredField("translator");
+        fp.setAccessible(true);
+        CriteriaQueryTranslator translator = (CriteriaQueryTranslator) fp.get(loader);
+        parameters = translator.getQueryParameters().getPositionalParameterValues();
+
+        if (sql !=null){
+            int fromPosition = sql.indexOf(" from ");
+            sql = "SELECT * "+ sql.substring(fromPosition);
+
+            if (parameters!=null && parameters.length>0){
+                for (Object val : parameters) {
+                    String value;
+                    if(val instanceof Boolean){
+                        value = ((Boolean)val)?"1":"0";
+                    }else if (val instanceof String){
+                        value = "'"+val+"'";
+                    } else if(val instanceof IdentifiedEntity){
+                        value = String.valueOf(((IdentifiedEntity) val).getId());
+                    } else {
+                        value = "'"+val+"'";
+                    }
+                    sql = sql.replaceFirst("\\?", value);
+                }
+            }
+        }
+       return sql.replaceAll("left outer join", "\nleft outer join").replace(" and ", "\nand ").replace(" on ", "\non ");
     }
 }

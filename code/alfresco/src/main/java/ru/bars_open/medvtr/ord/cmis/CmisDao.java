@@ -10,16 +10,12 @@ import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.BaseTypeId;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-import org.primefaces.model.UploadedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +36,7 @@ public class CmisDao {
     }
 
     public List<Document> getDocuments(final String name, final AuthorizationData authData) {
-        log.info("{} start fetch attachments by Folder[{}]", authData.getLogString(), sessionFactory.getFullPath(name));
+        log.info("start fetch CMIS-documents in Folder[{}] by {}", sessionFactory.getFullPath(name), authData.getLogString());
         try {
             final Folder documentFolder = getFolder(name);
             if (documentFolder != null) {
@@ -55,11 +51,10 @@ public class CmisDao {
     }
 
 
-    public StreamedContent download(final Document document, final AuthorizationData authData) {
-        log.error("{} start download Document[{}][name={}]", authData.getLogString(), document.getId(), document.getName());
+    public ContentStream download(final Document document, final AuthorizationData authData) {
+        log.info("start download Document[{}][name={}] by {}", document.getId(), document.getName(), authData.getLogString());
         try {
-            final ContentStream x = document.getContentStream();
-            return new DefaultStreamedContent(x.getStream(), x.getMimeType(), x.getFileName());
+            return document.getContentStream();
         } catch (Exception e) {
             log.error("Error while download content for Document[{}][name={}] ", document.getId(), document.getName());
             return null;
@@ -72,30 +67,6 @@ public class CmisDao {
         log.error("{} successfully delete Document[{}][name={}]", authData.getLogString(), document.getId(), document.getName());
     }
 
-    public void handleFileUpload(FileUploadEvent event) throws IOException {
-        final UploadedFile file = event.getFile();
-        if (file == null) {
-            log.error("[handleFileUpload] called without file!!!");
-            return;
-        }
-        final Map<String, Object> uiComponentAttributes = event.getComponent().getAttributes();
-        final String documentFolder = (String) uiComponentAttributes.get("documentFolder");
-        final String fullPath = sessionFactory.getFullPath(documentFolder);
-        final int userId = (int) uiComponentAttributes.get("userId");
-        final String userFullName = (String) uiComponentAttributes.get("userFullName");
-        log.debug("User[{}][{}] start upload File[{}] to Path[{}]", userId, userFullName, file.getFileName(), fullPath);
-        final Folder folder = getOrCreateFolder(documentFolder);
-        if(folder == null){ return; }
-        final Map<String, Object> metadata = createFileMetaData(file.getFileName(), file.getContentType(), userId, userFullName);
-        final ContentStream contentStream = sessionFactory.createContentStream(
-                file.getFileName(),
-                Math.toIntExact(file.getSize()),
-                file.getContentType(),
-                file.getInputstream()
-        );
-        final Document document = folder.createDocument(metadata, contentStream, VersioningState.MAJOR);
-        log.info("Created document[{}]: {}", document.getName(), document.getId());
-    }
 
     private Map<String, Object> createFileMetaData(String fileName, String contentType, int userId, String userFullName) {
         final Map<String, Object> result = new HashMap<>();
@@ -182,5 +153,23 @@ public class CmisDao {
             return original;
         }
         return null;
+    }
+
+    public void createDocument(
+            final String targetFolder,
+            final String fileName,
+            final String contentType,
+            int size,
+            final InputStream stream,
+            final Integer userId,
+            final String userFullName
+    ) {
+        log.debug("start upload File[{}] to Folder[{}] by User[{}][{}]", fileName, targetFolder, userId, userFullName);
+        final Folder folder = getOrCreateFolder(targetFolder);
+        if(folder == null){ return; }
+        final Map<String, Object> metadata = createFileMetaData(fileName, contentType, userId, userFullName);
+        final ContentStream contentStream = sessionFactory.createContentStream(fileName, size, contentType, stream);
+        final Document document = folder.createDocument(metadata, contentStream, VersioningState.MAJOR);
+        log.info("Created document[{}]: {}", document.getName(), document.getId());
     }
 }

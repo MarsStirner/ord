@@ -66,7 +66,7 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
      *
      * @return флаг удаления
      */
-    public boolean changeFired() {
+    public void changeFired() {
         final User user = getDocument();
         final LocalDateTime now = LocalDateTime.now();
         if (user.isFired()) {
@@ -77,7 +77,6 @@ public class UserHolderBean extends AbstractDocumentHolderBean<User, UserDao> {
             user.fire(now);
         }
         dao.update(user);
-        return user.isFired();
     }
 
     /**

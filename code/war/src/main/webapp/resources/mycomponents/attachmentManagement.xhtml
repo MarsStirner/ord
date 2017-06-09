@@ -5,15 +5,14 @@
               xmlns:cc="http://java.sun.com/jsf/composite"
               xmlns:f="http://xmlns.jcp.org/jsf/core">
     <cc:interface>
-        <cc:attribute name="attachments" type="java.util.Collection" required="true" shortDescription="list of CMIS-documents attached to ORD-document"/>
+        <cc:attribute name="controller" type="ru.efive.dms.uifaces.beans.abstractBean.AttachmentHolder" shortDescription="Can user delete existing CMIS-documents "/>
         <cc:attribute name="allowAttach" type="Boolean" default="false" shortDescription="Can user attach more CMIS-documents"/>
         <cc:attribute name="allowDelete" type="Boolean" default="false" shortDescription="Can user delete existing CMIS-documents "/>
-        <cc:attribute name="documentFolder" type="String" required="true" shortDescription="CMIS-path associated with ORD-document"/>
     </cc:interface>
 
     <cc:implementation>
         <p:dataTable id="attachmentTable"
-                     value="#{cc.attrs.attachments}"
+                     value="#{cc.attrs.controller.attachments}"
                      var="attachment"
                      rowExpandMode="single"
                      emptyMessage="#{ui['attachments.empty']}">
@@ -26,7 +25,7 @@
             </p:column>
             <p:column headerText="Версия" styleClass="outputText">
                 <h:outputText value="#{attachment.versionLabel}"/>
-                <p:commandButton value="Добавить" action="#{versionDialog.init(attachment)}" rendered="#{cc.attrs.allowAttach}"
+                <p:commandButton value="Добавить" action="#{cc.attrs.controller.setCurrent(attachment)}" rendered="#{cc.attrs.allowAttach}"
                                  onsuccess="PF('attachmentDialog').show()" icon="ui-icon-extlink"/>
             </p:column>
             <p:column headerText="Пользователь" styleClass="outputText" id="TODO_USE_CMIS_EXTENSIONS_AND_SECONDARYTYPES">
@@ -35,11 +34,11 @@
             <p:column headerText="Скачать">
                 <p:commandButton value="Скачать" ajax="false" style="width:100%"
                                  onclick="PrimeFaces.monitorDownload(PF('statusDialog').show(), PF('statusDialog').hide())">
-                    <p:fileDownload value="#{cmisDao.download(attachment, authData)}"/>
+                    <p:fileDownload value="#{cc.attrs.controller.download(attachment)}"/>
                 </p:commandButton>
             </p:column>
             <p:column headerText="Удалить" rendered="#{cc.attrs.allowDelete}">
-                <p:commandButton value="Удалить" action="#{cmisDao.delete(attachment, authData)}" update="attachmentTable" style="width:100%">
+                <p:commandButton value="Удалить" action="#{cc.attrs.controller.delete(attachment)}" update="attachmentTable" style="width:100%">
                     <p:confirm header="Удаление вложения" message="Вы уверены, что хотите удалить это вложение?"/>
                 </p:commandButton>
             </p:column>
@@ -61,20 +60,16 @@
                     <p:column>
                         <p:commandButton value="Скачать" ajax="false" style="width:100%"
                                          onclick="PrimeFaces.monitorDownload(PF('statusDialog').show(), PF('statusDialog').hide())">
-                            <p:fileDownload value="#{cmisDao.download(revision, authData)}"/>
+                            <p:fileDownload value="#{cc.attrs.controller.download(revision)}"/>
                         </p:commandButton>
                     </p:column>
                 </p:dataTable>
             </p:rowExpansion>
         </p:dataTable>
         <p:fileUpload id="files" label="Выбрать файл" uploadLabel="Загрузить выбранное" cancelLabel="Отмена" rendered="#{cc.attrs.allowAttach}"
-                      fileUploadListener="#{cmisDao.handleFileUpload}" update=":documentForm:msg attachmentTable"
+                      fileUploadListener="#{cc.attrs.controller.handleFileUpload}" update=":documentForm:msg attachmentTable"
                       multiple="false" mode="advanced" auto="true" widgetVar="uploadFileWidget"
-                      sizeLimit="104857600" invalidSizeMessage="Размер файла не должен превышать 100 МБ">
-            <f:attribute name="documentFolder" value="#{cc.attrs.documentFolder}"/>
-            <f:attribute name="userId" value="#{authData.authorized.id}"/>
-            <f:attribute name="userFullName" value="#{authData.authorized.description}"/>
-        </p:fileUpload>
+                      sizeLimit="104857600" invalidSizeMessage="Размер файла не должен превышать 100 МБ"/>
 
         <!-- Диалог при загрузке файла -->
         <p:dialog modal="true" widgetVar="statusDialog" header="Загрузка файла" draggable="false" closable="false" resizable="false">
@@ -89,7 +84,7 @@
                             <p:outputLabel for="v_documentName" value="Наименование документа:"/>
                         </p:column>
                         <p:column styleClass="ui-grid-col-7">
-                            <h:outputText id="v_documentName" value="#{versionDialog.name}" styleClass="outputText"/>
+                            <h:outputText id="v_documentName" value="#{cc.attrs.controller.current.name}" styleClass="outputText"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -97,7 +92,7 @@
                             <p:outputLabel for="v_documentVersion" value="Версия документа:"/>
                         </p:column>
                         <p:column styleClass="ui-grid-col-7">
-                            <h:outputText id="v_documentVersion" value="#{versionDialog.versionLabel}" styleClass="outputText"/>
+                            <h:outputText id="v_documentVersion" value="#{cc.attrs.controller.current.versionLabel}" styleClass="outputText"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -105,7 +100,7 @@
                             <p:outputLabel for="e_checkinComment" value="Комментарий к версии:"/>
                         </p:column>
                         <p:column styleClass="ui-grid-col-7">
-                            <p:inputText id="e_checkinComment" value="#{versionDialog.checkinComment}" styleClass="inputText"/>
+                            <p:inputText id="e_checkinComment" value="#{cc.attrs.controller.checkinComment}" styleClass="inputText"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
@@ -113,19 +108,18 @@
                             <p:outputLabel for="e_major" value="Следующая версия:"/>
                         </p:column>
                         <p:column styleClass="ui-grid-col-7">
-                            <p:selectBooleanButton id="e_major" value="#{versionDialog.major}" onLabel="Мажорная" offLabel="Минорная"/>
+                            <p:selectBooleanButton id="e_major" value="#{cc.attrs.controller.major}" onLabel="Мажорная" offLabel="Минорная"/>
                         </p:column>
                     </p:row>
                     <p:row styleClass="ui-grid-row">
                         <p:column colspan="2" styleClass="ui-grid-col-12">
-                            <p:fileUpload fileUploadListener="#{versionDialog.handleFileUpload}" process="@form" id="dialog_file_upload"
+                            <p:fileUpload fileUploadListener="#{cc.attrs.controller.handleVersionUpload}" process="@form" id="dialog_file_upload"
                                           mode="advanced" auto="true" oncomplete="PF('attachmentDialog').hide();"
                             />
                         </p:column>
                     </p:row>
                 </p:panelGrid>
                 <p:commandButton value="Отмена" onclick="PF('attachmentDialog').hide(); return false;"/>
-
             </h:form>
             <p:ajax event="close" update="attachmentTable"/>
         </p:dialog>

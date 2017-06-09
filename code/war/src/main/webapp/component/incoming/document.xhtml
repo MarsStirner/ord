@@ -66,7 +66,9 @@
                          rendered="#{in_doc.viewState and in_doc.editPermission and editableMatrix.incoming.isStateEditable(statusId)}"/>
         <p:commandButton value="Отменить" action="#{in_doc.view}" rendered="#{in_doc.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{in_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{in_doc.delete}" rendered="#{in_doc.editState}" icon="ui-icon-trash" update="@form"/>
+        <p:commandButton value="Удалить" action="#{in_doc.delete}" rendered="#{in_doc.editState}" icon="ui-icon-trash" update="@form">
+            <p:confirm header="Удаление документа" message="Вы уверены, что хотите удалить это документ?"/>
+        </p:commandButton>
         <my:actionWorkflow rendered="#{in_doc.viewState and in_doc.executePermission}" model="#{in_doc.document}" workflow="#{incomingWorkflow}"/>
     </ui:define>
 
@@ -279,7 +281,7 @@
                 </my:taskTreeTable>
             </p:tab>
             <p:tab id="tab_relation" title="Связи">
-              <my:documentRelations controller="#{in_doc}" editable="#{in_doc.editState}" />
+                <my:documentRelations controller="#{in_doc}" editable="#{in_doc.editState}"/>
             </p:tab>
             <p:tab id="tab_access" title="Доступ">
                 <my:accessManagement model="#{in_doc.document}" controller="#{in_doc}" editable="#{stateEditable}"
@@ -291,11 +293,8 @@
             </p:tab>
             <c:if test="#{not in_doc.createState}">
                 <p:tab id="tab_files" title="Файлы">
-                    <my:attachmentManagement id="attachmentManager"
-                                             attachments="#{in_doc.attachments}"
-                                             documentFolder="#{in_doc.document.uniqueId}"
-                                             allowDelete="#{statusId lt 90 and in_doc.editPermission}"
-                                             allowAttach="#{in_doc.editPermission}"/>
+                    <my:attachmentManagement id="attachmentManager" controller="#{in_doc.attachmentHolder}"
+                                             allowDelete="#{statusId lt 90 and in_doc.editPermission}" allowAttach="#{in_doc.editPermission}"/>
                 </p:tab>
             </c:if>
         </p:tabView>

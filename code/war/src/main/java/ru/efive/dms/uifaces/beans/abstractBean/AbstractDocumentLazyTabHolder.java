@@ -1,6 +1,5 @@
 package ru.efive.dms.uifaces.beans.abstractBean;
 
-import org.apache.chemistry.opencmis.client.api.Document;
 import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
@@ -19,8 +18,6 @@ import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.Task;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.user.User;
-import ru.hitsl.sql.dao.impl.NumeratorDaoImpl;
-import ru.hitsl.sql.dao.interfaces.NumeratorDao;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.mapped.DocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
@@ -32,31 +29,29 @@ import java.util.*;
 
 public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D extends DocumentDao<I>>
         extends AbstractDocumentHolderBean<I, D>
-        implements TaskTreeHolder, AttachmentHolder {
+        implements TaskTreeHolder{
 
     public static final String TAB_ID_TASK = "tab_task";
     public static final String TAB_ID_RELATION = "tab_relation";
     public static final String TAB_ID_ATTACHMENTS = "tab_files";
 
-    protected final CmisDao cmisDao;
+
+    private final CmisDao cmisDao;
     protected final DocumentTaskTreeHolder taskTreeHolder;
     protected final ReferenceBookHelper referenceBookHelper;
     protected final ViewFactDao viewFactDao;
     protected final NumerationService numerationService;
+    protected List<DocumentEntity> additionalRelatedDocuments = new ArrayList<>();
 
     private Map<String, Boolean> initialized = new HashMap<>(3);
 
-    /**
-     * Документы - вложения (CMIS / alfresco)
-     */
-    private List<Document> attachments;
+    private AttachmentHolder attachmentHolder;
+
 
     /**
      * Документы имеющие связь основным документом (кроме поручений)
      */
     private List<DocumentEntity> relatedDocuments;
-
-    protected List<DocumentEntity> additionalRelatedDocuments = new ArrayList<>();
 
 
     public AbstractDocumentLazyTabHolder(
@@ -89,6 +84,11 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
         }
     }
 
+
+    public AttachmentHolder getAttachmentHolder() {
+        return attachmentHolder;
+    }
+
     /**
      * Загрузить и закешировать вкладку с указанным идентифактором
      *
@@ -105,7 +105,8 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
             case TAB_ID_ATTACHMENTS: {
                 // Найти в БД все исходящие документы для нашего входящего
                 if (StringUtils.isNotEmpty(document.getUniqueId())) {
-                    attachments = cmisDao.getDocuments(document.getUniqueId(), authData);
+                    attachmentHolder = new AttachmentHolderImpl(cmisDao, authData, document.getUniqueId());
+                    attachmentHolder.refresh();
                 }
                 //NOT CACHE
                 return false;
@@ -135,21 +136,20 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
     }
 
 
-
     public List<DocumentEntity> loadRelatedDocuments(I document, AuthorizationData authData) {
         return new ArrayList<>(0);
     }
 
-    public void refreshRelatedDocuments(){
+    public void refreshRelatedDocuments() {
         relatedDocuments = loadRelatedDocuments(getDocument(), authData);
     }
 
-    public List<DocumentEntity> getRelatedDocuments(){
+    public List<DocumentEntity> getRelatedDocuments() {
         return relatedDocuments;
     }
 
-    public void addNewRelatedDocument(DocumentEntity relatedDocument){
-        if(!relatedDocuments.contains(relatedDocument)) {
+    public void addNewRelatedDocument(DocumentEntity relatedDocument) {
+        if (!relatedDocuments.contains(relatedDocument)) {
             additionalRelatedDocuments.add(relatedDocument);
             relatedDocuments.add(relatedDocument);
         }
@@ -161,15 +161,9 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
         return taskTreeHolder;
     }
 
-    @Override
-    public List<Document> getAttachments() {
-        return attachments;
-    }
-
-    public List<Task> getTaskListByRootDocumentId(String uniqueId, boolean showDeleted){
+    public List<Task> getTaskListByRootDocumentId(String uniqueId, boolean showDeleted) {
         return taskTreeHolder.getFlatList(uniqueId, showDeleted);
     }
-
 
 
     @Override
@@ -221,7 +215,6 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
         document.addToHistory(historyEntry);
         return true;
     }
-
 
 
     @Override

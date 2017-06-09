@@ -40,7 +40,9 @@
                          rendered="#{task.viewState and task.editPermission and editableMatrix.task.isStateEditable(statusId)}"/>
         <p:commandButton value="Отменить" action="#{task.view}" rendered="#{task.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{task.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{task.delete}" rendered="#{task.editState}" icon="ui-icon-trash" update="@form"/>
+        <p:commandButton value="Удалить" action="#{task.delete}" rendered="#{task.editState}" icon="ui-icon-trash" update="@form">
+            <p:confirm header="Удаление документа" message="Вы уверены, что хотите удалить это документ?"/>
+        </p:commandButton>
         <my:actionWorkflow rendered="#{task.viewState and task.executePermission}" model="#{task.document}" workflow="#{taskWorkflow}"/>
     </ui:define>
 
@@ -182,9 +184,7 @@
             </p:tab>
             <c:if test="#{not task.createState}">
                 <p:tab id="tab_files" title="Файлы">
-                    <my:attachmentManagement id="attachmentManager"
-                                             attachments="#{task.attachments}"
-                                             documentFolder="#{task.document.uniqueId}"
+                    <my:attachmentManagement id="attachmentManager" controller="#{task.attachmentHolder}"
                                              allowDelete="#{statusId lt 90}"
                                              allowAttach="#{task.editPermission}"/>
                 </p:tab>

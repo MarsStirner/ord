@@ -53,7 +53,9 @@
                          rendered="#{request_doc.viewState and request_doc.editPermission and editableMatrix.request.isStateEditable(statusId)}"/>
         <p:commandButton value="Отменить" action="#{request_doc.view}" rendered="#{request_doc.editState}" icon="ui-icon-cancel" update="@form"/>
         <p:commandButton value="Сохранить" action="#{request_doc.save}" rendered="#{stateEditable}" icon="ui-icon-disk" update="@form"/>
-        <p:commandButton value="Удалить" action="#{request_doc.delete}" rendered="#{request_doc.editState}" icon="ui-icon-trash" update="@form"/>
+        <p:commandButton value="Удалить" action="#{request_doc.delete}" rendered="#{request_doc.editState}" icon="ui-icon-trash" update="@form">
+            <p:confirm header="Удаление документа" message="Вы уверены, что хотите удалить это документ?"/>
+        </p:commandButton>
         <my:actionWorkflow rendered="#{request_doc.viewState and request_doc.executePermission}" model="#{request_doc.document}" workflow="#{requestWorkflow}"/>
     </ui:define>
 
@@ -297,9 +299,7 @@
             </p:tab>
             <c:if test="#{not request_doc.createState}">
                 <p:tab id="tab_files" title="Файлы">
-                    <my:attachmentManagement id="attachmentManager"
-                                             attachments="#{request_doc.attachments}"
-                                             documentFolder="#{request_doc.document.uniqueId}"
+                    <my:attachmentManagement id="attachmentManager" controller="#{request_doc.attachmentHolder}"
                                              allowDelete="#{statusId lt 90 and request_doc.editPermission}"
                                              allowAttach="#{request_doc.editPermission}"/>
                 </p:tab>

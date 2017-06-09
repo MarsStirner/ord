@@ -9,4 +9,6 @@
     <include file="user.xml" relativeToChangelogFile="true"/>
     <include file="numerator.xml" relativeToChangelogFile="true"/>
     <include file="rb_nomenclature.xml" relativeToChangelogFile="true"/>
+    <include file="rb_status.xml" relativeToChangelogFile="true"/>
+    <!--<include file="wf_action.xml" relativeToChangelogFile="true"/>-->
 </databaseChangeLog>

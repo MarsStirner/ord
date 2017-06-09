@@ -46,8 +46,8 @@ public class NumeratorDaoImpl extends CommonDaoImpl<Numerator> implements Numera
     public Numerator findBestNumerator(DocumentType type, DocumentForm form, User controller, Contragent contragent) {
         final DetachedCriteria criteria = getFullCriteria();
         final LocalDate now = LocalDate.now();
-        criteria.add(Restrictions.ge("begDate", now));
-        criteria.add(Restrictions.or(Restrictions.isNull("endDate"), Restrictions.lt("endDate", now)));
+        criteria.add(Restrictions.le("begDate", now));
+        criteria.add(Restrictions.or(Restrictions.isNull("endDate"), Restrictions.gt("endDate", now)));
 
         criteria.add(Restrictions.or(Restrictions.isNull("documentType.code"), Restrictions.eqOrIsNull("documentType.code", type.getName())));
         criteria.add(Restrictions.or(Restrictions.isNull("documentForm"), Restrictions.eqOrIsNull("documentForm", form)));

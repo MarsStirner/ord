@@ -1,0 +1,11 @@
+'value','code'
+##############
+'Документ создан','CREATED'
+'Направить на рассмотрение','REGISTERED'
+'На исполнении','ON_EXECUTION'
+'Исполнен','EXECUTED'
+'В архиве','IN_ARCHIVE'
+'Изъят из архива','OUT_ARCHIVE'
+'На рассмотрении','ON_CONSIDERATION'
+'На согласовании','ON_AGREEMENT'
+'Отказ','CANCELED'

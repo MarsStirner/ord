@@ -1,0 +1,113 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS"
+                   logicalFilePath="serbsky/rb_status.xml">
+    <changeSet id="serbsky/rb_status" author="e.upatov" context="SERBSKY">
+        <comment>Создание справочника: Статусы документа</comment>
+        <createTable tableName="rb_status" remarks="Справочник: Статусы документа">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="deleted" remarks="Флаг удаления" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" remarks="Наименование статуса" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" remarks="Уникальный код записи справочника" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="serbsky/rb_status/data" author="e.upatov" context="SERBSKY">
+        <comment>Загрузка справочника: Статусы документа</comment>
+        <loadData tableName="rb_status" file="data/rb_status.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+    <changeSet id="serbsky/rb_status/migration" author="e.upatov" context="SERBSKY">
+        <comment>Миграция старых данных: перевод старых статусов на новый справочник</comment>
+        <sql>
+            SET @ST_DRAFT = (SELECT a.id FROM rb_status a WHERE a.code = 'DRAFT');
+            SET @ST_REGISTERED = (SELECT a.id FROM rb_status a WHERE a.code = 'REGISTERED');
+            SET @ST_ON_EXECUTION = (SELECT a.id FROM rb_status a WHERE a.code = 'ON_EXECUTION');
+            SET @ST_EXECUTED = (SELECT a.id FROM rb_status a WHERE a.code = 'EXECUTED');
+            SET @ST_IN_ARCHIVE = (SELECT a.id FROM rb_status a WHERE a.code = 'IN_ARCHIVE');
+            SET @ST_OUT_ARCHIVE = (SELECT a.id FROM rb_status a WHERE a.code = 'OUT_ARCHIVE');
+            SET @ST_ON_CONSIDERATION = (SELECT a.id FROM rb_status a WHERE a.code = 'ON_CONSIDERATION');
+            SET @ST_ON_AGREEMENT = (SELECT a.id FROM rb_status a WHERE a.code = 'ON_AGREEMENT');
+            SET @ST_CANCELED = (SELECT a.id FROM rb_status a WHERE a.code = 'CANCELED');
+        </sql>
+        <sql>
+            UPDATE incoming_document a SET a.status_id = ( CASE a.status_id
+                WHEN 110 THEN @ST_OUT_ARCHIVE
+                WHEN 100 THEN @ST_IN_ARCHIVE
+                WHEN 90 THEN @ST_EXECUTED
+                WHEN 80 THEN @ST_ON_EXECUTION
+                WHEN 2 THEN @ST_REGISTERED
+                WHEN 1 THEN @ST_DRAFT
+                ELSE -1
+            END)
+        </sql>
+        <sql>
+            UPDATE internal_document a SET a.status_id = ( CASE a.status_id
+                WHEN 150 THEN @ST_CANCELED
+                WHEN 110 THEN @ST_OUT_ARCHIVE
+                WHEN 100 THEN @ST_IN_ARCHIVE
+                WHEN 90 THEN @ST_EXECUTED
+                WHEN 80 THEN @ST_ON_EXECUTION
+                WHEN 5 THEN @ST_REGISTERED
+                WHEN 3 THEN @ST_ON_AGREEMENT
+                WHEN 2 THEN @ST_ON_CONSIDERATION
+                WHEN 1 THEN @ST_DRAFT
+                ELSE -1
+            END)
+        </sql>
+        <sql>
+            UPDATE outgoing_document a SET a.status_id = ( CASE a.status_id
+                WHEN 100 THEN @ST_IN_ARCHIVE
+                WHEN 90 THEN @ST_EXECUTED
+                WHEN 80 THEN @ST_REGISTERED
+                WHEN 3 THEN @ST_ON_AGREEMENT
+                WHEN 2 THEN @ST_ON_CONSIDERATION
+                WHEN 1 THEN @ST_DRAFT
+                ELSE -1
+            END)
+        </sql>
+        <sql>
+            UPDATE task a SET a.status_id = ( CASE a.status_id
+                WHEN 4 THEN @ST_CANCELED
+                WHEN 3 THEN @ST_EXECUTED
+                WHEN 2 THEN @ST_ON_EXECUTION
+                WHEN 1 THEN @ST_DRAFT
+                ELSE -1
+            END)
+        </sql>
+        <sql>
+            UPDATE request_document a SET a.status_id = ( CASE a.status_id
+                WHEN 100 THEN @ST_IN_ARCHIVE
+                WHEN 90 THEN @ST_EXECUTED
+                WHEN 80 THEN @ST_ON_EXECUTION
+                WHEN 2 THEN @ST_REGISTERED
+                WHEN 1 THEN @ST_DRAFT
+                ELSE -1
+            END)
+        </sql>
+    </changeSet>
+    <changeSet id="serbsky/rb_status/foreign_keys" author="e.upatov" context="SERBSKY">
+        <comment>Делаем статусы - ссылками на справочник</comment>
+        <addForeignKeyConstraint baseTableName="incoming_document" baseColumnNames="status_id" constraintName="FK_incoming_document__status"
+                                 referencedTableName="rb_status" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="outgoing_document" baseColumnNames="status_id" constraintName="FK_outgoing_document__status"
+                                 referencedTableName="rb_status" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="internal_document" baseColumnNames="status_id" constraintName="FK_internal_document__status"
+                                 referencedTableName="rb_status" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="request_document" baseColumnNames="status_id" constraintName="FK_request_document__status"
+                                 referencedTableName="rb_status" referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="task" baseColumnNames="status_id" constraintName="FK_task__status"
+                                 referencedTableName="rb_status" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

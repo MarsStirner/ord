@@ -31,7 +31,7 @@ public enum DocumentStatus {
     DRAFT("Черновик", 1),
     ACTION_PROJECT("Проект дела", 1),
     REGISTERED("Зарегистрировано", 2),
-    EXTRACT("Изъят", 110),
+    EXTRACT("Изъят из архива", 110),
     CLOSE("Закрыт", 10),
     OPEN("Открыт", 2),
     VOLUME_PROJECT("Проект тома", 1),
