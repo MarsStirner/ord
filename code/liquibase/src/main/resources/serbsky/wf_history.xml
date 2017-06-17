@@ -1,0 +1,97 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS"
+                   logicalFilePath="serbsky/wf_transition.xml">
+    <changeSet id="serbsky/wf_transition" author="e.upatov" context="SERBSKY">
+        <comment>Настраиваемые переходы документов между статусами</comment>
+        <createTable tableName="wf_transition" remarks="Настраиваемый справочник: Действия над документами">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="deleted" remarks="Флаг удаления" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="document_type_id" remarks="Тип документа (NULL - любой)" type="INT">
+                <constraints nullable="true" referencedTableName="rbDocumentType" referencedColumnNames="id" foreignKeyName="FK_wf_transition__document_type"/>
+            </column>
+            <column name="from_status_id" remarks="С какого статуса переход (NULL - любой)" type="INT">
+                <constraints nullable="true" referencedTableName="rb_status" referencedColumnNames="id" foreignKeyName="FK_wf_transition__from_status"/>
+            </column>
+            <column name="action_id" remarks="Какое действие будет выполнено при переходе" type="INT">
+                <constraints nullable="false" referencedTableName="wf_action" referencedColumnNames="id" foreignKeyName="FK_wf_transition__action"/>
+            </column>
+            <column name="to_status_id" remarks="На какой статус переход (NULL - переход не меняет статус)" type="INT">
+                <constraints nullable="true" referencedTableName="rb_status" referencedColumnNames="id" foreignKeyName="FK_wf_transition__to_status"/>
+            </column>
+            <column defaultValueNumeric="1" name="write_history" remarks="Нужно ли создавать запись в истории документа" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0" name="need_comment" remarks="Нужно ли запрашивать у пользователя комментарий при совершении действия" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="serbsky/wf_transition/data" author="e.upatov" context="SERBSKY">
+        <comment>Загрузка справочника: Настраиваемые переходы документов между статусами</comment>
+        <sql dbms="mysql">
+            SET @INCOMING=(SELECT id FROM rbDocumentType WHERE code = 'INCOMING');
+            SET @OUTGOING=(SELECT id FROM rbDocumentType WHERE code = 'OUTGOING');
+            SET @INTERNAL=(SELECT id FROM rbDocumentType WHERE code = 'INTERNAL');
+            SET @REQUEST=(SELECT id FROM rbDocumentType WHERE code = 'REQUEST');
+            SET @TASK=(SELECT id FROM rbDocumentType WHERE code = 'TASK');
+        </sql>
+        <sql dbms="mysql">
+            SET @ST_DRAFT = (SELECT a.id FROM rb_status a WHERE a.code = 'DRAFT');
+            SET @ST_ON_CONSIDERATION = (SELECT a.id FROM rb_status a WHERE a.code = 'ON_CONSIDERATION');
+            SET @ST_ON_AGREEMENT = (SELECT a.id FROM rb_status a WHERE a.code = 'ON_AGREEMENT');
+            SET @ST_REGISTERED = (SELECT a.id FROM rb_status a WHERE a.code = 'REGISTERED');
+            SET @ST_ON_EXECUTION = (SELECT a.id FROM rb_status a WHERE a.code = 'ON_EXECUTION');
+            SET @ST_EXECUTED = (SELECT a.id FROM rb_status a WHERE a.code = 'EXECUTED');
+            SET @ST_IN_ARCHIVE = (SELECT a.id FROM rb_status a WHERE a.code = 'IN_ARCHIVE');
+            SET @ST_OUT_ARCHIVE = (SELECT a.id FROM rb_status a WHERE a.code = 'OUT_ARCHIVE');
+            SET @ST_CANCELED = (SELECT a.id FROM rb_status a WHERE a.code = 'CANCELED');
+        </sql>
+        <sql dbms="mysql">
+            SET @ACT_CREATED = (SELECT a.id FROM wf_action a WHERE a.code = 'CREATED');
+            SET @ACT_TO_CONSIDERATION = (SELECT a.id FROM wf_action a WHERE a.code = 'TO_CONSIDERATION');
+            SET @ACT_TO_AGREEMENT = (SELECT a.id FROM wf_action a WHERE a.code = 'TO_AGREEMENT');
+            SET @ACT_REGISTER = (SELECT a.id FROM wf_action a WHERE a.code = 'REGISTER');
+            SET @ACT_CUSTOM_REGISTER = (SELECT a.id FROM wf_action a WHERE a.code = 'CUSTOM_REGISTER');
+            SET @ACT_TO_EXECUTION = (SELECT a.id FROM wf_action a WHERE a.code = 'TO_EXECUTION');
+            SET @ACT_EXECUTE = (SELECT a.id FROM wf_action a WHERE a.code = 'EXECUTE');
+            SET @ACT_TO_ARCHIVE = (SELECT a.id FROM wf_action a WHERE a.code = 'TO_ARCHIVE');
+            SET @ACT_FROM_ARCHIVE = (SELECT a.id FROM wf_action a WHERE a.code = 'FROM_ARCHIVE');
+            SET @ACT_RETURN_TO_ARCHIVE = (SELECT a.id FROM wf_action a WHERE a.code = 'RETURN_TO_ARCHIVE');
+            SET @ACT_TO_OTHER_ARCHIVE = (SELECT a.id FROM wf_action a WHERE a.code = 'TO_OTHER_ARCHIVE');
+            SET @ACT_CANCEL = (SELECT a.id FROM wf_action a WHERE a.code = 'CANCEL');
+        </sql>
+        <loadData tableName="wf_transition" file="data/wf_transition.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'">
+            <column name="document_type_id" type="COMPUTED"/>
+            <column name="from_status_id" type="COMPUTED"/>
+            <column name="action_id" type="COMPUTED"/>
+            <column name="to_status_id" type="COMPUTED"/>
+        </loadData>
+    </changeSet>
+    <changeSet id="serbsky/wf_transition/view" author="e.upatov" context="SERBSKY">
+        <validCheckSum>any</validCheckSum>
+        <createView viewName="v_wf_transition" replaceIfExists="true">
+            SELECT
+            IFNULL(dt.value, 'ЛЮБОЙ') as 'DocumentType',
+            IFNULL(fs.value, 'ЛЮБОЙ') as 'FROM_STATUS',
+            ac.value as 'ACTION',
+            ts.value as 'TO_STATUS'
+            FROM wf_transition wf
+            LEFT JOIN rbDocumentType dt ON dt.id = wf.document_type_id AND dt.deleted = 0
+            LEFT JOIN rb_status fs ON fs.id = wf.from_status_id AND fs.deleted = 0
+            LEFT JOIN rb_status ts ON ts.id = wf.to_status_id AND ts.deleted = 0
+            INNER JOIN wf_action ac ON ac.id = wf.action_id AND ac.deleted = 0
+            WHERE wf.deleted = 0
+            ORDER BY dt.code DESC, wf.id
+        </createView>
+    </changeSet>
+</databaseChangeLog>

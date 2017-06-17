@@ -1,6 +1,5 @@
 package ru.entity.model.document;
 
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.user.User;
 
@@ -13,43 +12,48 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "wf_history")
 public class HistoryEntry extends IdentifiedEntity implements Comparable<HistoryEntry> {
-    private static final long serialVersionUID = -67429605560038386L;
 
     /**
-     * Идентификатор действия
+     * Дата + время совершения действия
      */
-    @Column(name = "action_id")
-    private Integer actionId;
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+
+    /**
+     * Произведенное над документом действие
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "action_id", nullable = false)
+    private Action action;
+
+    /**
+     * На каком статусе документа было выполнено действие
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "from_status_id", nullable = false)
+    private Status fromStatus;
+
+
+    /**
+     * На какой статус был переведен документ во время выполнения действия
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "to_status_id", nullable = true)
+    private Status toStatus;
+
+    /**
+     * Пользователь, выполнивший действие
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     /**
      * Комментарий
      */
-    @Column(name = "commentary", columnDefinition = "text")
+    @Column(name = "commentary")
     private String commentary;
-
-    /**
-     * Дата создания
-     */
-    @Column(name = "created")
-    private LocalDateTime created;
-
-    /**
-     * Тип документа
-     */
-    @Column(name = "docType")
-    private String docType;
-
-    /**
-     * Время завершения
-     */
-    @Column(name = "endDate")
-    private LocalDateTime endDate;
-
-    /**
-     * Идентификатор начального статуса
-     */
-    @Column(name = "from_status_id")
-    private Integer fromStatusId;
 
 
     /**
@@ -57,6 +61,25 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
      */
     @Column(name = "parent_id")
     private Integer parentId;
+    
+
+    /**
+     * Тип документа
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "document_type_id")
+    private ru.entity.model.referenceBook.DocumentType docType;
+
+    /**
+     * Время завершения
+     */
+    @Column(name = "endDate")
+    private LocalDateTime endDate;
+
+
+
+
+
 
     /**
      * Было ли выполнено действие: 0 - нет, 1 - да
@@ -77,12 +100,7 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
     @Column(name = "to_status_id")
     private Integer toStatusId;
 
-    /**
-     * Пользователь, выполнивший действие
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "owner_id", nullable = true)
-    private User owner;
+
 
 
     public HistoryEntry() {
@@ -178,23 +196,6 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
 
     public void setOwner(User owner) {
         this.owner = owner;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Custom methods
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public String getFromStatusName() {
-        return fromStatusId == null || fromStatusId == 0 ? "" : DocumentType.getStatusName(getDocType(), fromStatusId);
-    }
-
-
-    public String getToStatusName() {
-        return toStatusId == 0 ? "" : DocumentType.getStatusName(getDocType(), toStatusId);
-    }
-
-    public String getActionName() {
-        return DocumentType.getActionName(getDocType(), actionId);
     }
 
 

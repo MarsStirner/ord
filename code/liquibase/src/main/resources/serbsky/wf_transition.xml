@@ -1,0 +1,31 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd"
+                   objectQuotingStrategy="QUOTE_ALL_OBJECTS"
+                   logicalFilePath="serbsky/wf_action.xml">
+    <changeSet id="serbsky/wf_action" author="e.upatov" context="SERBSKY">
+        <comment>Настраиваемый справочник: Действия над документами</comment>
+        <createTable tableName="wf_action" remarks="Настраиваемый справочник: Действия над документами">
+            <column autoIncrement="true" name="id" type="INT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="deleted" remarks="Флаг удаления" type="BIT(1)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" remarks="Наименование Действия" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" remarks="Уникальный код записи справочника" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE = InnoDB "/>
+            <append value=" DEFAULT CHARACTER SET = utf8 "/>
+        </modifySql>
+    </changeSet>
+    <changeSet id="serbsky/wf_action/data" author="e.upatov" context="SERBSKY">
+        <comment>Загрузка справочника: Статусы документа</comment>
+        <loadData tableName="wf_action" file="data/wf_action.csv" relativeToChangelogFile="true" encoding="UTF-8" separator="," quotchar="'"/>
+    </changeSet>
+</databaseChangeLog>
