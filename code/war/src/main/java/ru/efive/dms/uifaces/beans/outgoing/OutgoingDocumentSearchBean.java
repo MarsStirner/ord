@@ -67,8 +67,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
         params.put(UserDialogHolder.DIALOG_GROUP_KEY, Stream.of(Group.RB_CODE_MANAGERS).collect(Collectors.toList()));
         final User preselected = getController();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder
-                    .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(UserDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectUserDialog.xhtml", AbstractDialog.getViewOptions(), params);
     }
@@ -81,7 +80,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             if (selected != null) {
                 setController(selected);
             } else {
-                filters.remove(CONTROLLER_KEY);
+                filters.remove(CONTROLLER);
             }
         }
     }
@@ -90,9 +89,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     public void chooseContragent() {
         final Contragent preselected = getContragent();
         if (preselected != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(
-                    ContragentDialogHolder
-                            .DIALOG_SESSION_KEY, preselected);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(ContragentDialogHolder.DIALOG_SESSION_KEY, preselected);
         }
         RequestContext.getCurrentInstance().openDialog("/dialogs/selectContragentDialog.xhtml", AbstractDialog.getViewOptions(), null);
     }
@@ -105,7 +102,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             if (selected != null) {
                 setContragent(selected);
             } else {
-                filters.remove(CONTRAGENT_KEY);
+                filters.remove(CONTRAGENT);
             }
         }
     }
@@ -131,7 +128,7 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
             if (selected != null && !selected.isEmpty()) {
                 setExecutors(selected);
             } else {
-                filters.remove(EXECUTORS_KEY);
+                filters.remove(EXECUTORS);
             }
         }
     }
@@ -141,82 +138,82 @@ public class OutgoingDocumentSearchBean extends AbstractDocumentSearchBean<Outgo
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public User getController() {
-        return (User) filters.get(CONTROLLER_KEY);
+        return (User) filters.get(CONTROLLER);
     }
 
     // Руководитель
     public void setController(final User value) {
-        putNotNullToFilters(CONTROLLER_KEY, value);
+        putNotNullToFilters(CONTROLLER, value);
     }
 
     public Date getStartSignatureDate() {
-        return (Date) filters.get(START_SIGNATURE_DATE_KEY);
+        return (Date) filters.get(SIGNATURE_DATE_START);
     }
 
     // Дата подписания ОТ
     public void setStartSignatureDate(Date value) {
-        putNotNullToFilters(START_SIGNATURE_DATE_KEY, value);
+        putNotNullToFilters(SIGNATURE_DATE_START, value);
     }
 
     public Date getEndSignatureDate() {
-        return (Date) filters.get(END_SIGNATURE_DATE_KEY);
+        return (Date) filters.get(SIGNATURE_DATE_END);
     }
 
     // Дата подписания ДО
     public void setEndSignatureDate(Date value) {
-        putNotNullToFilters(END_SIGNATURE_DATE_KEY, value);
+        putNotNullToFilters(SIGNATURE_DATE_END, value);
     }
 //
 //    //Дата отправки ОТ
 //    public void setStartSendingDate(Date value) {
-//        putNotNullToFilters(START_SENDING_DATE_KEY, value);
+//        putNotNullToFilters(SENDING_DATE_START, value);
 //    }
 //
 //    public Date getStartSendingDate() {
-//        return (Date) filters.get(START_SENDING_DATE_KEY);
+//        return (Date) filters.get(SENDING_DATE_START);
 //    }
 //
 //    //Дата отправки ДО
 //    public void setEndSendingDate(Date value) {
-//        putNotNullToFilters(END_SENDING_DATE_KEY, value);
+//        putNotNullToFilters(SENDING_DATE_END, value);
 //    }
 //
 //    public Date getEndSendingDate() {
-//        return (Date) filters.get(END_SENDING_DATE_KEY);
+//        return (Date) filters.get(SENDING_DATE_END);
 //    }
 
     public DeliveryType getDeliveryType() {
-        return (DeliveryType) filters.get(DELIVERY_TYPE_KEY);
+        return (DeliveryType) filters.get(DELIVERY_TYPE);
     }
 
     // Тип доставки
     public void setDeliveryType(DeliveryType value) {
-        putNotNullToFilters(DELIVERY_TYPE_KEY, value);
+        putNotNullToFilters(DELIVERY_TYPE, value);
     }
 
     public Contragent getContragent() {
-        return (Contragent) filters.get(CONTRAGENT_KEY);
+        return (Contragent) filters.get(CONTRAGENT);
     }
 
     // Контрагент (адресат)
     public void setContragent(Contragent value) {
-        putNotNullToFilters(CONTRAGENT_KEY, value);
+        putNotNullToFilters(CONTRAGENT, value);
     }
 
     public List<User> getExecutors() {
-        return (List<User>) filters.get(EXECUTORS_KEY);
+        return (List<User>) filters.get(EXECUTORS);
     }
 
     // Исполнители
     public void setExecutors(List<User> value) {
-        putNotNullToFilters(EXECUTORS_KEY, value);
+        putNotNullToFilters(EXECUTORS, value);
     }
 
     public void removeExecutor(User executor) {
         final List<User> executors = getExecutors();
         executors.remove(executor);
         if (executors.isEmpty()) {
-            filters.remove(EXECUTORS_KEY);
+            filters.remove(EXECUTORS);
         }
     }
 

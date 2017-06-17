@@ -28,7 +28,7 @@ import java.util.Map;
 import static ru.efive.dms.util.message.MessageHolder.MSG_CANT_DO_SEARCH;
 import static ru.hitsl.sql.dao.util.DocumentSearchMapKeys.*;
 
-@ViewScopedController(name = "incomingSearch", transactionManager = "ordTransactionManager")
+@ViewScopedController(value = "incomingSearch", transactionManager = "ordTransactionManager")
 public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<IncomingDocument> {
     private static final Logger logger = LoggerFactory.getLogger("SEARCH");
 
@@ -106,7 +106,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             if (selected != null) {
                 setController(selected);
             } else {
-                filters.remove(CONTROLLER_KEY);
+                filters.remove(CONTROLLER);
             }
         }
     }
@@ -128,7 +128,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             if (selected != null) {
                 setContragent(selected);
             } else {
-                filters.remove(CONTRAGENT_KEY);
+                filters.remove(CONTRAGENT);
             }
         }
     }
@@ -152,7 +152,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             if (selected != null && !selected.isEmpty()) {
                 setExecutors(selected);
             } else {
-                filters.remove(EXECUTORS_KEY);
+                filters.remove(EXECUTORS);
             }
         }
     }
@@ -176,7 +176,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             if (selected != null && !selected.isEmpty()) {
                 setRecipients(selected);
             } else {
-                filters.remove(RECIPIENTS_KEY);
+                filters.remove(RECIPIENTS);
             }
         }
     }
@@ -198,7 +198,7 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
             if (selected != null) {
                 setOfficeKeepingVolume(selected);
             } else {
-                filters.remove(OFFICE_KEEPING_VOLUME_KEY);
+                filters.remove(OFFICE_KEEPING_VOLUME);
             }
         }
     }
@@ -207,135 +207,135 @@ public class IncomingDocumentSearchBean extends AbstractDocumentSearchBean<Incom
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     public String getReceivedDocumentNumber() {
-        return (String) filters.get(RECEIVED_DOCUMENT_NUMBER_KEY);
+        return (String) filters.get(RECEIVED_DOCUMENT_NUMBER);
     }
 
     // Регистрационный номер
     public void setReceivedDocumentNumber(final String value) {
-        putNotNullToFilters(RECEIVED_DOCUMENT_NUMBER_KEY, value);
+        putNotNullToFilters(RECEIVED_DOCUMENT_NUMBER, value);
     }
 
     public User getController() {
-        return (User) filters.get(CONTROLLER_KEY);
+        return (User) filters.get(CONTROLLER);
     }
 
     // Руководитель
     public void setController(final User value) {
-        putNotNullToFilters(CONTROLLER_KEY, value);
+        putNotNullToFilters(CONTROLLER, value);
     }
 
     public LocalDateTime getStartDeliveryDate() {
-        return (LocalDateTime) filters.get(START_DELIVERY_DATE_KEY);
+        return (LocalDateTime) filters.get(DELIVERY_DATE_START);
     }
 
     // Дата доставки ОТ
     public void setStartDeliveryDate(LocalDateTime value) {
-        putNotNullToFilters(START_DELIVERY_DATE_KEY, value);
+        putNotNullToFilters(DELIVERY_DATE_START, value);
     }
 
     public LocalDateTime getEndDeliveryDate() {
-        return (LocalDateTime) filters.get(END_DELIVERY_DATE_KEY);
+        return (LocalDateTime) filters.get(DELIVERY_DATE_END);
     }
 
     // Дата доставки ДО
     public void setEndDeliveryDate(LocalDateTime value) {
-        putNotNullToFilters(END_DELIVERY_DATE_KEY, value);
+        putNotNullToFilters(DELIVERY_DATE_END, value);
     }
 
     public LocalDateTime getStartExecutionDate() {
-        return (LocalDateTime) filters.get(START_EXECUTION_DATE_KEY);
+        return (LocalDateTime) filters.get(EXECUTION_DATE_START);
     }
 
     // Срок исполнения ОТ
     public void setStartExecutionDate(LocalDateTime value) {
-        putNotNullToFilters(START_EXECUTION_DATE_KEY, value);
+        putNotNullToFilters(EXECUTION_DATE_START, value);
     }
 
     public LocalDateTime getEndExecutionDate() {
-        return (LocalDateTime) filters.get(END_EXECUTION_DATE_KEY);
+        return (LocalDateTime) filters.get(EXECUTION_DATE_END);
     }
 
     // Срок исполнения ДО
     public void setEndExecutionDate(LocalDateTime value) {
-        putNotNullToFilters(END_EXECUTION_DATE_KEY, value);
+        putNotNullToFilters(EXECUTION_DATE_END, value);
     }
 
     public LocalDateTime getStartReceivedDocumentDate() {
-        return (LocalDateTime) filters.get(START_RECEIVED_DATE_KEY);
+        return (LocalDateTime) filters.get(RECEIVED_DATE_START);
     }
 
     // Дата поступившего ОТ
     public void setStartReceivedDocumentDate(LocalDateTime value) {
-        putNotNullToFilters(START_RECEIVED_DATE_KEY, value);
+        putNotNullToFilters(RECEIVED_DATE_START, value);
     }
 
     public LocalDateTime getEndReceivedDocumentDate() {
-        return (LocalDateTime) filters.get(END_RECEIVED_DATE_KEY);
+        return (LocalDateTime) filters.get(RECEIVED_DATE_END);
     }
 
     // дата поступившего ДО
     public void setEndReceivedDocumentDate(LocalDateTime value) {
-        putNotNullToFilters(END_RECEIVED_DATE_KEY, value);
+        putNotNullToFilters(RECEIVED_DATE_END, value);
     }
 
     public DeliveryType getDeliveryType() {
-        return (DeliveryType) filters.get(DELIVERY_TYPE_KEY);
+        return (DeliveryType) filters.get(DELIVERY_TYPE);
     }
 
     // Тип доставки
     public void setDeliveryType(DeliveryType value) {
-        putNotNullToFilters(DELIVERY_TYPE_KEY, value);
+        putNotNullToFilters(DELIVERY_TYPE, value);
     }
 
     public Contragent getContragent() {
-        return (Contragent) filters.get(CONTRAGENT_KEY);
+        return (Contragent) filters.get(CONTRAGENT);
     }
 
     // Контрагент
     public void setContragent(Contragent value) {
-        putNotNullToFilters(CONTRAGENT_KEY, value);
+        putNotNullToFilters(CONTRAGENT, value);
     }
 
     public List<User> getExecutors() {
-        return (List<User>) filters.get(EXECUTORS_KEY);
+        return (List<User>) filters.get(EXECUTORS);
     }
 
     // Исполнители
     public void setExecutors(List<User> value) {
-        putNotNullToFilters(EXECUTORS_KEY, value);
+        putNotNullToFilters(EXECUTORS, value);
     }
 
     public void removeExecutor(User executor) {
         final List<User> executors = getExecutors();
         executors.remove(executor);
         if (executors.isEmpty()) {
-            filters.remove(EXECUTORS_KEY);
+            filters.remove(EXECUTORS);
         }
     }
 
     public List<User> getRecipients() {
-        return (List<User>) filters.get(RECIPIENTS_KEY);
+        return (List<User>) filters.get(RECIPIENTS);
     }
 
     // Адресаты
     public void setRecipients(List<User> value) {
-        putNotNullToFilters(RECIPIENTS_KEY, value);
+        putNotNullToFilters(RECIPIENTS, value);
     }
 
     public void removeRecipient(User recipient) {
         final List<User> recipients = getRecipients();
         recipients.remove(recipient);
         if (recipients.isEmpty()) {
-            filters.remove(RECIPIENTS_KEY);
+            filters.remove(RECIPIENTS);
         }
     }
 
     public OfficeKeepingVolume getOfficeKeepingVolume() {
-        return (OfficeKeepingVolume) filters.get(OFFICE_KEEPING_VOLUME_KEY);
+        return (OfficeKeepingVolume) filters.get(OFFICE_KEEPING_VOLUME);
     }
 
     // том дела
     public void setOfficeKeepingVolume(OfficeKeepingVolume value) {
-        putNotNullToFilters(OFFICE_KEEPING_VOLUME_KEY, value);
+        putNotNullToFilters(OFFICE_KEEPING_VOLUME, value);
     }
 }

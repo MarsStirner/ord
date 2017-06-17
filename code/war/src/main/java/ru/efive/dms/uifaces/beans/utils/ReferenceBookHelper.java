@@ -136,7 +136,7 @@ public class ReferenceBookHelper {
     public String getLinkDescriptionByUniqueId(String documentKey) {
         if (!documentKey.isEmpty()) {
             final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(documentKey);
-            if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.IncomingDocument.getName())) {
+            if (StringUtils.startsWith(documentKey, DocumentType.INCOMING.getCode())) {
                 final IncomingDocument in_doc = incomingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (in_doc != null) {
                     return (in_doc.getRegistrationNumber() == null || in_doc.getRegistrationNumber().equals("") ? "Черновик входщяего документа от " + ApplicationHelper
@@ -146,7 +146,7 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.OutgoingDocument.getName())) {
+            } else if (StringUtils.startsWith(documentKey, DocumentType.OUTGOING.getCode())) {
                 final OutgoingDocument out_doc = outgoingDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (out_doc != null) {
                     return (out_doc.getRegistrationNumber() == null || out_doc.getRegistrationNumber().equals("") ? "Черновик исходящего документа от " + ApplicationHelper
@@ -155,7 +155,7 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.InternalDocument.getName())) {
+            } else if (StringUtils.startsWith(documentKey, DocumentType.INTERNAL.getCode())) {
                 final InternalDocument internal_doc = internalDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (internal_doc != null) {
                     return (internal_doc.getRegistrationNumber() == null || internal_doc.getRegistrationNumber().equals("") ? "Черновик внутреннего документа от " + ApplicationHelper.formatDate(
@@ -167,7 +167,7 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.RequestDocument.getName())) {
+            } else if (StringUtils.startsWith(documentKey, DocumentType.REQUEST.getCode())) {
                 final RequestDocument request_doc = requestDocumentDao.getItemBySimpleCriteria(rootDocumentId);
                 if (request_doc != null) {
                     return (request_doc.getRegistrationNumber() == null || request_doc.getRegistrationNumber().equals("") ? "Черновик обращения граждан от " + ApplicationHelper.formatDate(
@@ -179,7 +179,7 @@ public class ReferenceBookHelper {
                     return "";
                 }
 
-            } else if (StringUtils.startsWith(documentKey, ru.entity.model.enums.DocumentType.Task.getName())) {
+            } else if (StringUtils.startsWith(documentKey, DocumentType.TASK.getCode())) {
                 final Task task_doc = taskDao.getItemBySimpleCriteria(rootDocumentId);
                 if (task_doc != null) {
                     return (task_doc.getRegistrationNumber() == null || task_doc.getRegistrationNumber().equals("") ? "Черновик поручения от " + ApplicationHelper

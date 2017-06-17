@@ -18,9 +18,9 @@ import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.OutgoingDocument;
-import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
+import ru.entity.model.workflow.Status;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
@@ -235,7 +235,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentLazyTabHolder<Outgoi
     protected OutgoingDocument newModel(AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
         final OutgoingDocument document = new OutgoingDocument();
-        document.setStatus(DocumentStatus.NEW);
+        document.setStatus(Status.DRAFT);
         document.setCreationDate(created);
         document.setAuthor(authData.getAuthorized());
         document.setForm(getDefaultForm());
@@ -300,7 +300,7 @@ public class OutgoingDocumentHolder extends AbstractDocumentLazyTabHolder<Outgoi
         if (form != null) {
             return form;
         } else {
-            final List<DocumentForm> formList = documentFormDao.findByDocumentTypeCode(DocumentType.RB_CODE_OUTGOING);
+            final List<DocumentForm> formList = documentFormDao.findByDocumentTypeCode(DocumentType.OUTGOING.getCode());
             if (!formList.isEmpty()) {
                 return formList.get(0);
             } else {

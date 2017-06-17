@@ -34,17 +34,12 @@
                             <p:password value="#{sessionManagement.password}" styleClass="inp"/>
                         </div>
                         <div>
-                            <p:commandButton id="loginBtn" type="submit" action="#{sessionManagement.logIn}" value="Войти" ajax="false" styleClass="but"/>
+                            <p:commandButton id="loginBtn" type="submit" action="#{sessionManagement.logIn}" value="Войти" styleClass="but"/>
                             <p:defaultCommand target="loginBtn"/>
                         </div>
                     </h:panelGroup>
-                    <c:if test="#{sessionManagement.loggedIn}">
-                        <h:outputScript>
-                            location.href = "#{sessionManagement.backUrl}";
-                        </h:outputScript>
-                    </c:if>
                     <div>
-                        <p:messages showSummary="true"  showDetail="false"/>
+                        <p:messages showSummary="true"  showDetail="false" autoUpdate="true"/>
                     </div>
                 </div>
             </h:form>

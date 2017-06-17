@@ -5,7 +5,7 @@
       xmlns:f="http://java.sun.com/jsf/core">
 <ui:composition template="/jsf-template/listViewInternalByStatus.xhtml">
     <f:metadata>
-        <f:viewAction action="#{internalDocumentLDM.addFilter('statusId', '2')}"/>
+        <f:viewAction action="#{internalDocumentLDM.addFilter('status', 'ON_CONSIDERATION')}"/>
     </f:metadata>
     <ui:define name="HEAD.TITLE">Внутренние документы на рассмотрении</ui:define>
     <ui:define name="CONTENT.VIEWTITLE">Внутренние документы на рассмотрении</ui:define>

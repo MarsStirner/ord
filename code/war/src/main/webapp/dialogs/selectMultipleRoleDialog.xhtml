@@ -28,11 +28,11 @@
                      widgetVar="selectRoleTableVar"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{role_row.value}"
+                     filterable="false"
                      sortOrder="ascending"
                      sortField="value"
                 >
-            <p:column headerText="Наименование" sortBy="#{role_row.value}" field = "name">
+            <p:column headerText="Наименование" filterable="false" field = "name">
                 <h:outputText value="#{role_row.value}"/>
             </p:column>
             <f:facet name="footer">

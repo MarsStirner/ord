@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.workflow.HistoryEntry;
 import ru.entity.model.document.OfficeKeepingFile;
-import ru.entity.model.enums.DocumentStatus;
+
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
@@ -25,27 +25,7 @@ public class OfficeKeepingFileHolder extends AbstractDocumentHolderBean<OfficeKe
     @Override
     protected OfficeKeepingFile newModel(AuthorizationData authData) {
         OfficeKeepingFile document = new OfficeKeepingFile();
-        document.setStatus(DocumentStatus.NEW);
-        return document;
+             return document;
     }
 
-    @Override
-    public boolean beforeCreate(OfficeKeepingFile document, AuthorizationData authData) {
-        LocalDateTime created = LocalDateTime.now();
-        HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
-        historyEntry.setStartDate(created);
-        historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
-        historyEntry.setProcessed(true);
-        historyEntry.setCommentary("");
-        Set<HistoryEntry> history = new HashSet<>();
-        history.add(historyEntry);
-        document.setHistory(history);
-        return true;
-    }
 }

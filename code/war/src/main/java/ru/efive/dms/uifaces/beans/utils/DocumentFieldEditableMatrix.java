@@ -4,20 +4,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
-import ru.entity.model.enums.DocumentStatus;
 import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.util.DocumentTypeField;
 import ru.entity.model.util.EditableFieldMatrix;
+import ru.entity.model.workflow.Status;
 import ru.hitsl.sql.dao.interfaces.EditableMatrixDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Author: Upatov Egor <br>
@@ -25,6 +28,7 @@ import java.util.*;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
+@DependsOn("mappedEnumLoader")
 @Controller("editableMatrix")
 @Transactional("ordTransactionManager")
 public class DocumentFieldEditableMatrix {
@@ -68,7 +72,7 @@ public class DocumentFieldEditableMatrix {
 
     /**
      * Заполнить матрицу из внешнего источника
-     */
+    */
     @PostConstruct
     public void load() {
         logger.info("Start initialize ({})", this);
@@ -106,39 +110,64 @@ public class DocumentFieldEditableMatrix {
 
     public void loadTask() {
         logger.debug("start loading task");
-        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_TASK);
-        final List<DocumentStatus> statuses = ru.entity.model.enums.DocumentType.getTaskStatuses();
-        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.RB_CODE_TASK);
-        task = new DocumentTypeMatrix(DocumentType.RB_CODE_TASK, fields, statuses, matrix);
+        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.TASK.getCode());
+        final List<Status> statuses = Stream.of(
+                Status.DRAFT,
+                Status.ON_EXECUTION,
+                Status.EXECUTED,
+                Status.CANCELED
+        ).collect(Collectors.toList());
+        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.TASK.getCode());
+        task = new DocumentTypeMatrix(DocumentType.TASK.getCode(), fields, statuses, matrix);
         task.toLog();
     }
 
     public void loadRequest() {
         logger.debug("start loading request");
-        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_REQUEST);
-        final List<DocumentStatus> statuses = ru.entity.model.enums.DocumentType.getRequestDocumentStatuses();
-        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.RB_CODE_REQUEST);
-        request = new DocumentTypeMatrix(DocumentType.RB_CODE_REQUEST, fields, statuses, matrix);
+        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.REQUEST.getCode());
+        final List<Status> statuses = Stream.of(
+                Status.DRAFT,
+                Status.REGISTERED,
+                Status.ON_EXECUTION,
+                Status.EXECUTED,
+                Status.IN_ARCHIVE,
+                Status.OUT_ARCHIVE
+        ).collect(Collectors.toList());
+        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.REQUEST.getCode());
+        request = new DocumentTypeMatrix(DocumentType.REQUEST.getCode(), fields, statuses, matrix);
         request.toLog();
     }
 
     public void loadInternal() {
         logger.debug("start loading internal");
-        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_INTERNAL);
-        final List<DocumentStatus> statuses = new ArrayList<>(ru.entity.model.enums.DocumentType.getInternalDocumentStatuses());
-        statuses.remove(DocumentStatus.REDIRECT);
-        statuses.remove(DocumentStatus.CANCEL_150);
-        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.RB_CODE_INTERNAL);
-        internal = new DocumentTypeMatrix(DocumentType.RB_CODE_INTERNAL, fields, statuses, matrix);
+        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.INTERNAL.getCode());
+        final List<Status> statuses = Stream.of(
+                Status.DRAFT,
+                Status.ON_AGREEMENT,
+                Status.ON_CONSIDERATION,
+                Status.REGISTERED,
+                Status.ON_EXECUTION,
+                Status.IN_ARCHIVE,
+                Status.OUT_ARCHIVE
+        ).collect(Collectors.toList());
+        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.INTERNAL.getCode());
+        internal = new DocumentTypeMatrix(DocumentType.INTERNAL.getCode(), fields, statuses, matrix);
         internal.toLog();
     }
 
     public void loadOutgoing() {
         logger.debug("start loading outgoing");
-        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_OUTGOING);
-        final List<DocumentStatus> statuses = ru.entity.model.enums.DocumentType.getOutgoingDocumentStatuses();
-        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.RB_CODE_OUTGOING);
-        outgoing = new DocumentTypeMatrix(DocumentType.RB_CODE_OUTGOING, fields, statuses, matrix);
+        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.OUTGOING.getCode());
+        final List<Status> statuses = Stream.of(
+                Status.DRAFT,
+                Status.ON_AGREEMENT,
+                Status.ON_CONSIDERATION,
+                Status.REGISTERED,
+                Status.EXECUTED,
+                Status.IN_ARCHIVE
+        ).collect(Collectors.toList());
+        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.OUTGOING.getCode());
+        outgoing = new DocumentTypeMatrix(DocumentType.OUTGOING.getCode(), fields, statuses, matrix);
         outgoing.toLog();
     }
 
@@ -147,12 +176,17 @@ public class DocumentFieldEditableMatrix {
      */
     public void loadIncoming() {
         logger.debug("start loading incoming");
-        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.RB_CODE_INCOMING);
-        final List<DocumentStatus> statuses = new ArrayList<>(ru.entity.model.enums.DocumentType.getIncomingDocumentStatuses());
-        statuses.remove(DocumentStatus.SOURCE_DESTROY);
-        statuses.remove(DocumentStatus.REDIRECT);
-        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.RB_CODE_INCOMING);
-        incoming = new DocumentTypeMatrix(DocumentType.RB_CODE_INCOMING, fields, statuses, matrix);
+        final List<EditableFieldMatrix> matrix = dao.getFieldMatrixByDocumentTypeCode(DocumentType.INCOMING.getCode());
+        final List<Status> statuses = Stream.of(
+                Status.DRAFT,
+                Status.REGISTERED,
+                Status.ON_EXECUTION,
+                Status.EXECUTED,
+                Status.IN_ARCHIVE,
+                Status.OUT_ARCHIVE
+        ).collect(Collectors.toList());
+        final List<DocumentTypeField> fields = dao.getDocumentTypeFieldByDocumentTypeCode(DocumentType.INCOMING.getCode());
+        incoming = new DocumentTypeMatrix(DocumentType.INCOMING.getCode(), fields, statuses, matrix);
         incoming.toLog();
     }
 
@@ -180,14 +214,14 @@ public class DocumentFieldEditableMatrix {
     public class DocumentTypeMatrix {
         private String documentTypeCode;
         private List<DocumentTypeField> fields;
-        private List<DocumentStatus> statuses;
+        private List<Status> statuses;
         private List<EditableFieldMatrix> matrix;
         private Map<Integer, Map<String, Boolean>> fastAccessMap;
 
         public DocumentTypeMatrix(
                 final String documentTypeCode,
                 final List<DocumentTypeField> fields,
-                final List<DocumentStatus> statuses,
+                final List<Status> statuses,
                 final List<EditableFieldMatrix> matrix
 
         ) {
@@ -217,7 +251,7 @@ public class DocumentFieldEditableMatrix {
             return fields;
         }
 
-        public List<DocumentStatus> getStatuses() {
+        public List<Status> getStatuses() {
             return statuses;
         }
 
@@ -226,14 +260,15 @@ public class DocumentFieldEditableMatrix {
         }
 
         public boolean isFieldEditable(final int statusId, final String fieldName) {
-            return fastAccessMap.get(statusId).entrySet().stream().filter(x -> fieldName.equals(x.getKey())).findFirst().map(Map.Entry::getValue).orElse(false);
+            return true;
+//            return fastAccessMap.get(statusId).entrySet().stream().filter(x -> fieldName.equals(x.getKey())).findFirst().map(Map.Entry::getValue).orElse(false);
         }
 
         protected void toLog() {
             if (logger.isDebugEnabled()) {
                 logger.debug("[{}]Statuses: {}", documentTypeCode, statuses.size());
-                for (DocumentStatus item : statuses) {
-                    logger.debug("{}:\'{}\'", item.getId(), item.getName());
+                for (Status item : statuses) {
+                    logger.debug("{}:\'{}\'", item.getId(), item.getCode());
                 }
                 logger.debug("[{}]Fields: {}", documentTypeCode, fields.size());
                 for (DocumentTypeField item : fields) {
@@ -255,7 +290,8 @@ public class DocumentFieldEditableMatrix {
         }
 
         public boolean isStateEditable(int status) {
-            return fastAccessMap.get(status).entrySet().stream().anyMatch(Map.Entry::getValue);
+            return true;
+//            return fastAccessMap.get(status).entrySet().stream().anyMatch(Map.Entry::getValue);
         }
     }
 }

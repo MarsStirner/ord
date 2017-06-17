@@ -10,6 +10,7 @@ import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
+import ru.entity.model.workflow.Status;
 
 import javax.faces.context.FacesContext;
 import java.time.LocalDateTime;
@@ -108,7 +109,7 @@ public abstract class AbstractDocumentSearchBean<T extends DeletableEntity> exte
             if (selected != null) {
                 setAuthors(selected);
             } else {
-                filters.remove(AUTHORS_KEY);
+                filters.remove(AUTHORS);
             }
         }
     }
@@ -117,93 +118,93 @@ public abstract class AbstractDocumentSearchBean<T extends DeletableEntity> exte
     // Параметры поиска *** ОБЩИЕ для всех типов документов *****  /////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public String getStatus() {
-        return (String) filters.get(STATUS_KEY);
+    public Status getStatus() {
+        return (Status) filters.get(STATUS);
     }
 
     // Статус
-    public void setStatus(final String value) {
-        putNotNullToFilters(STATUS_KEY, value);
+    public void setStatus(final Status value) {
+        putNotNullToFilters(STATUS, value);
     }
 
     public DocumentForm getForm() {
-        return (DocumentForm) filters.get(FORM_KEY);
+        return (DocumentForm) filters.get(FORM);
     }
 
     //  Вид документа
     public void setForm(final DocumentForm value) {
-        putNotNullToFilters(FORM_KEY, value);
+        putNotNullToFilters(FORM, value);
     }
 
     public List<User> getAuthors() {
-        return (List<User>) filters.get(AUTHORS_KEY);
+        return (List<User>) filters.get(AUTHORS);
     }
 
     // Автор
     public void setAuthors(final List<User> value) {
-        putNotNullToFilters(AUTHORS_KEY, value);
+        putNotNullToFilters(AUTHORS, value);
     }
 
     public void removeAuthor(User author) {
         final List<User> authors = getAuthors();
         authors.remove(author);
         if (authors.isEmpty()) {
-            filters.remove(AUTHORS_KEY);
+            filters.remove(AUTHORS);
         }
     }
 
     public String getRegistrationNumber() {
-        return (String) filters.get(REGISTRATION_NUMBER_KEY);
+        return (String) filters.get(REGISTRATION_NUMBER);
     }
 
     // Регистрационный номер
     public void setRegistrationNumber(final String value) {
-        putNotNullToFilters(REGISTRATION_NUMBER_KEY, value);
+        putNotNullToFilters(REGISTRATION_NUMBER, value);
     }
 
     public LocalDateTime getStartCreationDate() {
-        return (LocalDateTime) filters.get(START_CREATION_DATE_KEY);
+        return (LocalDateTime) filters.get(CREATION_DATE_START);
     }
 
     // Дата создания ОТ
     public void setStartCreationDate(LocalDateTime value) {
-        putNotNullToFilters(START_CREATION_DATE_KEY, value);
+        putNotNullToFilters(CREATION_DATE_START, value);
     }
 
     public LocalDateTime getEndCreationDate() {
-        return (LocalDateTime) filters.get(END_CREATION_DATE_KEY);
+        return (LocalDateTime) filters.get(CREATION_DATE_END);
     }
 
     // Дата создания ДО
     public void setEndCreationDate(LocalDateTime value) {
-        putNotNullToFilters(END_CREATION_DATE_KEY, value);
+        putNotNullToFilters(CREATION_DATE_END, value);
     }
 
     public LocalDateTime getStartRegistrationDate() {
-        return (LocalDateTime) filters.get(START_REGISTRATION_DATE_KEY);
+        return (LocalDateTime) filters.get(REGISTRATION_DATE_START);
     }
 
     // Дата регистрации ОТ
     public void setStartRegistrationDate(LocalDateTime value) {
-        putNotNullToFilters(START_REGISTRATION_DATE_KEY, value);
+        putNotNullToFilters(REGISTRATION_DATE_START, value);
     }
 
     public LocalDateTime getEndRegistrationDate() {
-        return (LocalDateTime) filters.get(END_REGISTRATION_DATE_KEY);
+        return (LocalDateTime) filters.get(REGISTRATION_DATE_END);
     }
 
     // Дата регистрации ДО
     public void setEndRegistrationDate(LocalDateTime value) {
-        putNotNullToFilters(END_REGISTRATION_DATE_KEY, value);
+        putNotNullToFilters(REGISTRATION_DATE_END, value);
     }
 
     public String getShortDescription() {
-        return (String) filters.get(SHORT_DESCRIPTION_KEY);
+        return (String) filters.get(SHORT_DESCRIPTION);
     }
 
     // Краткое содержание
     public void setShortDescription(final String value) {
-        putNotNullToFilters(SHORT_DESCRIPTION_KEY, value);
+        putNotNullToFilters(SHORT_DESCRIPTION, value);
     }
 
 }

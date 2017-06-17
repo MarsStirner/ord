@@ -20,19 +20,6 @@
     </parent>
 
     <dependencies>
-              <!-- https://mvnrepository.com/artifact/com.sun.faces/jsf-impl -->
-        <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-impl</artifactId>
-            <version>2.2.14</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.faces</groupId>
-            <artifactId>jsf-api</artifactId>
-            <version>2.2.14</version>
-        </dependency>
-
 
         <dependency>
             <groupId>javax</groupId>
@@ -58,7 +45,7 @@
         <dependency>
             <groupId>ru.bars_open.medvtr.ord</groupId>
             <artifactId>alfresco</artifactId>
-            <version>LATEST</version>
+            <version>${version.build}</version>
         </dependency>
 
         <dependency>
@@ -146,6 +133,11 @@
             <artifactId>commons-digester</artifactId>
             <version>1.7</version>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.10</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
@@ -167,23 +159,13 @@
             <version>0.1.1</version>
         </dependency>
 
-        <!-- JCR API -->
         <dependency>
-            <groupId>javax.jcr</groupId>
-            <artifactId>jcr</artifactId>
-            <version>2.0</version>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.10</version>
         </dependency>
-        <!-- All the Jackrabbit libraries needed for DavEx, plus JcrUtils -->
-        <dependency>
-            <groupId>org.apache.jackrabbit</groupId>
-            <artifactId>jackrabbit-jcr2dav</artifactId>
-            <version>2.15.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
-        </dependency>
+
+
 
 
 

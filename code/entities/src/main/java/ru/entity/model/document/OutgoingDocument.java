@@ -1,9 +1,9 @@
 package ru.entity.model.document;
 
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
@@ -109,7 +109,7 @@ public class OutgoingDocument extends AccessControlledDocumentEntity {
 
     @Override
     public DocumentType getType() {
-        return DocumentType.OutgoingDocument;
+        return DocumentType.OUTGOING;
     }
 
     public String getReasonDocumentId() {

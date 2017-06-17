@@ -1,5 +1,6 @@
 package ru.entity.model.referenceBook;
 
+import ru.entity.model.mapped.MappedEnum;
 import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.persistence.Entity;
@@ -14,27 +15,14 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "rbDocumentType")
 public class DocumentType extends ReferenceBookEntity {
-    /**
-     * Предопределенные коды для справочника типов документов
-     */
-    /**
-     * Входящий
-     */
-    public static final String RB_CODE_INCOMING = "INCOMING";
-    /**
-     * Исходящий
-     */
-    public static final String RB_CODE_OUTGOING = "OUTGOING";
-    /**
-     * Внутренний
-     */
-    public static final String RB_CODE_INTERNAL = "INTERNAL";
-    /**
-     * Обращение граждан
-     */
-    public static final String RB_CODE_REQUEST = "REQUEST";
-    /**
-     * Поручение
-     */
-    public static final String RB_CODE_TASK = "TASK";
+    @MappedEnum("INCOMING")
+    public static DocumentType INCOMING;
+    @MappedEnum("OUTGOING")
+    public static DocumentType OUTGOING;
+    @MappedEnum("INTERNAL")
+    public static DocumentType INTERNAL;
+    @MappedEnum("TASK")
+    public static DocumentType TASK;
+    @MappedEnum("REQUEST")
+    public static DocumentType REQUEST;
 }

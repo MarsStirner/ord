@@ -1,4 +1,4 @@
-package ru.entity.model.enums;
+package ru.entity.model.mapped;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

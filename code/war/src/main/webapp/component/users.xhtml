@@ -48,26 +48,26 @@
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     sortBy="#{null}"
+                     filterable="false"
                      sortField="#{defaultSortField}"
                      sortOrder="#{defaultSortOrder}"
         >
-            <p:column headerText="Фамилия" sortBy="#{person_row.lastName}" field="lastName">
+            <p:column headerText="Фамилия" filterable="false" field="lastName">
                 <h:outputText value="#{person_row.lastName}"/>
             </p:column>
-            <p:column headerText="Имя" sortBy="#{person_row.firstName}" field="firstName">
+            <p:column headerText="Имя" filterable="false" field="firstName">
                 <h:outputText value="#{person_row.firstName}"/>
             </p:column>
-            <p:column headerText="Отчество" sortBy="#{person_row.middleName}" field="middleName">
+            <p:column headerText="Отчество" filterable="false" field="middleName">
                 <h:outputText value="#{person_row.middleName}"/>
             </p:column>
-            <p:column headerText="Подразделение" sortBy="#{person_row.jobDepartmentString}" field="jobDepartmentString">
+            <p:column headerText="Подразделение" filterable="false" field="jobDepartmentString">
                 <h:outputText value="#{person_row.jobDepartmentString}"/>
             </p:column>
-            <p:column headerText="Должность" sortBy="#{person_row.jobPositionString}" field="jobPositionString">
+            <p:column headerText="Должность" filterable="false" field="jobPositionString">
                 <h:outputText value="#{person_row.jobPositionString}"/>
             </p:column>
-            <p:column headerText="Почта" sortBy="#{person_row.email}" field="email">
+            <p:column headerText="Почта" filterable="false" field="email">
                 <h:outputText value="#{person_row.email}"/>
             </p:column>
             <p:column headerText="Рабочий телефон">

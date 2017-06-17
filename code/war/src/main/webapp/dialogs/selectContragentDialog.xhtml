@@ -27,7 +27,7 @@
                      widgetVar="selectPersonTableVar"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{contragent_row.shortName}"
+                     filterable="false"
                      sortOrder="ascending"
                      sortField="shortName"
                 >
@@ -35,7 +35,7 @@
                 <p:inputText id="filter" value="#{contragentDialog.filter}" styleClass="searchTextBox"/>
                 <p:commandButton value="Поиск" styleClass="searchButton" process="filter selectContragentTable" update="selectContragentTable"/>
             </f:facet>
-            <p:column headerText="Краткое наименование" sortBy="#{contragent_row.shortName}" field="shortName">
+            <p:column headerText="Краткое наименование" filterable="false" field="shortName">
                 <h:outputText value="#{contragent_row.shortName}"/>
             </p:column>
             <f:facet name="footer">

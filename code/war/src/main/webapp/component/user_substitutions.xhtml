@@ -43,29 +43,29 @@
                     tableStyle="table-layout: auto;"
                     scrollable="true"
                     scrollHeight="100%"
-                    sortBy="#{null}"
+                    filterable="false"
                     sortField="#{defaultSortField}"
                     sortOrder="#{defaultSortOrder}"
                     >
-                <p:column headerText="Идентификатор" sortBy="#{substitution_entry.id}" field="id">
+                <p:column headerText="Идентификатор" filterable="false" field="id">
                     <h:outputText value="#{substitution_entry.id}"/>
                 </p:column>
-                <p:column headerText="Дата начала" sortBy="#{substitution_entry.startDate}" field="startDate">
+                <p:column headerText="Дата начала" filterable="false" field="startDate">
                     <h:outputText value="#{substitution_entry.startDate}">
                         <f:converter converterId="LocalDateConverter"/>
                         <f:attribute name="pattern" value="dd.MM.yyyy"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Дата окончания" sortBy="#{substitution_entry.endDate}" field="endDate">
+                <p:column headerText="Дата окончания" filterable="false" field="endDate">
                     <h:outputText value="#{substitution_entry.endDate}">
                         <f:converter converterId="LocalDateConverter"/>
                         <f:attribute name="pattern" value="dd.MM.yyyy"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Замещаемый пользователь" sortBy="#{substitution_entry.user}" field="user.lastName">
+                <p:column headerText="Замещаемый пользователь" filterable="false" field="user.lastName">
                     <h:outputText value="#{substitution_entry.user.description}"/>
                 </p:column>
-                <p:column headerText="Заместитель" sortBy="#{substitution_entry.substitution}" field="substitution.lastName">
+                <p:column headerText="Заместитель" filterable="false" field="substitution.lastName">
                     <h:outputText value="#{substitution_entry.substitution.description}"/>
                 </p:column>
                 <p:ajax event="rowSelect" onstart="goToSubstitution(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>

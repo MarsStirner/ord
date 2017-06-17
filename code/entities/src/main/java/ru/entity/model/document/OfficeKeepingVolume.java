@@ -1,9 +1,8 @@
 package ru.entity.model.document;
 
-import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.user.User;
+import ru.entity.model.workflow.HistoryEntry;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -91,17 +90,6 @@ public class OfficeKeepingVolume extends DeletableEntity {
     private Set<HistoryEntry> history;
 
 
-    public DocumentType getType() {
-        return DocumentType.OfficeKeepingVolume;
-    }
-
-    public DocumentStatus getDocumentStatus() {
-        return DocumentType.getStatus(getType().getName(), statusId);
-    }
-
-    public void setStatus(DocumentStatus status) {
-        statusId = status.getId();
-    }
 
     public String getShortDescription() {
         return shortDescription;

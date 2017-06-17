@@ -12,7 +12,7 @@
             <column name="action_id" type="INT"/>
             <column name="commentary" type="LONGTEXT"/>
             <column name="created" type="datetime"/>
-            <column name="docType" type="VARCHAR(255)"/>
+            <column name="documentType" type="VARCHAR(255)"/>
             <column name="endDate" type="datetime"/>
             <column name="from_status_id" type="INT"/>
             <column name="parent_id" type="INT"/>

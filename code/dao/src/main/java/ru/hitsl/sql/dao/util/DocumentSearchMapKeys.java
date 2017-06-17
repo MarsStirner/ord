@@ -1,5 +1,17 @@
 package ru.hitsl.sql.dao.util;
 
+import ru.entity.model.document.OfficeKeepingVolume;
+import ru.entity.model.referenceBook.Contragent;
+import ru.entity.model.referenceBook.DeliveryType;
+import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
+import ru.entity.model.user.User;
+import ru.entity.model.workflow.Status;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+
 /**
  * Author: Upatov Egor <br>
  * Date: 05.03.2015, 16:43 <br>
@@ -7,144 +19,248 @@ package ru.hitsl.sql.dao.util;
  * Description: Список ключей для карты, используемой в поиске по критериям <br>
  */
 public final class DocumentSearchMapKeys {
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Общие
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * Статус документа
+     * Статус {@link Status}
      */
-    public static final String STATUS_KEY = "statusId";
+    public static final String STATUS = "status";
 
     /**
-     * Спсиок идентификаторов статусов
+     * Статус не равен {@link Status}
      */
-    public static final String STATUS_LIST_KEY = "statuses";
+    public static final String STATUS_NOT = "status.not";
+
 
     /**
-     * Автор документа
+     * Список статусов {@link Collection<Status>}
      */
-    public static final String AUTHOR_KEY = "author";
+    public static final String STATUSES = "statuses";
 
     /**
-     * Авторы документа (LIST<USER>)
+     * Статус документа в строковом представлении {@link String}
      */
-    public static final String AUTHORS_KEY = "authors";
+    public static final String STATUS_CODE = "status.code";
 
     /**
-     * Руководитель документа
+     * Список статусов документа в строковом представлении {@link Collection<String>}
      */
-    public static final String CONTROLLER_KEY = "controller";
+    public static final String STATUSES_CODE = "statuses.code";
 
     /**
-     * Вид документа
+     * Автор документа {@link User}
      */
-    public static final String FORM_KEY = "form";
+    public static final String AUTHOR = "author";
 
     /**
-     * Вид документа (ЗНАЧЕНИЕ)
+     * Список авторов документа {@link Collection<User>}
      */
-    public static final String FORM_VALUE_KEY = "formValue";
+    public static final String AUTHORS = "authors";
 
     /**
-     * Вид документа (КАТЕГОРИЯ)
+     * Руководитель документа {@link User}
      */
-    public static final String FORM_CATEGORY_KEY = "formCategory";
-
+    public static final String CONTROLLER = "controller";
 
     /**
-     * регистрационный номер
+     * Вид документа {@link DocumentForm}
      */
-    public static final String REGISTRATION_NUMBER_KEY = "registrationNumber";
+    public static final String FORM = "form";
 
     /**
-     * Номер поступившего
+     * Вид документа (наименование) {@link String}
      */
-    public static final String RECEIVED_DOCUMENT_NUMBER_KEY = "receivedDocumentNumber";
+    public static final String FORM_VALUE = "form.value";
 
     /**
-     * Дата создания от .. до
-     */
-    public static final String START_CREATION_DATE_KEY = "startCreationDate";
-    public static final String END_CREATION_DATE_KEY = "endCreationDate";
-
-    /**
-     * Дата регистрации от .. до
-     */
-    public static final String START_REGISTRATION_DATE_KEY = "startRegistrationDate";
-    public static final String END_REGISTRATION_DATE_KEY = "endRegistrationDate";
-
-    /**
-     * Дата подписания от .. до   (OUTGOING)
-     */
-    public static final String START_SIGNATURE_DATE_KEY = "startSignatureDate";
-    public static final String END_SIGNATURE_DATE_KEY = "endSignatureDate";
-
-    /**
-     * @deprecated не используется, но возможно нужно
-     * Дата отправки от .. до   (OUTGOING)
+     * Код типа документа в виде документа {@link String}
      */
     @Deprecated
-    public static final String START_SENDING_DATE_KEY = "startSendingDate";
-    @Deprecated
-    public static final String END_SENDING_DATE_KEY = "endSendingDate";
+    public static final String FORM_DOCUMENT_TYPE_CODE = "form.documentType.code";
 
     /**
-     * Дата доставки от .. до
+     * регистрационный номер {@link String}
      */
-    public static final String START_DELIVERY_DATE_KEY = "startDeliveryDate";
-    public static final String END_DELIVERY_DATE_KEY = "endDeliveryDate";
+    public static final String REGISTRATION_NUMBER = "registrationNumber";
 
     /**
-     * Срок исполнения от .. до
+     * Дата регистрации от {@link LocalDateTime}
      */
-    public static final String START_EXECUTION_DATE_KEY = "startExecutionDate";
-    public static final String END_EXECUTION_DATE_KEY = "endExecutionDate";
+    public static final String REGISTRATION_DATE_START = "registrationDate.start";
 
     /**
-     * Дата поступившего от .. до
+     * Дата регистрации до {@link LocalDateTime} {@link LocalDate}
      */
-    public static final String START_RECEIVED_DATE_KEY = "startReceivedDocumentDate";
-    public static final String END_RECEIVED_DATE_KEY = "endReceivedDocumentDate";
+    public static final String REGISTRATION_DATE_END = "registrationDate.end";
 
     /**
-     * Тип доставки
+     * Дата создания от {@link LocalDateTime}
      */
-    public static final String DELIVERY_TYPE_KEY = "deliveryType";
+    public static final String CREATION_DATE_START = "creationDate.start";
 
     /**
-     * Контрагент
+     * Дата создания до {@link LocalDateTime} {@link LocalDate}
      */
-    public static final String CONTRAGENT_KEY = "contragent";
+    public static final String CREATION_DATE_END = "creationDate.end";
 
     /**
-     * Исполнители (LIST<USER>)
+     * регистрационный номер {@link String}
      */
-    public static final String EXECUTORS_KEY = "executors";
+    public static final String SHORT_DESCRIPTION = "shortDescription";
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Специфичные для конкретных типов / видов документов
+    ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Ответсвенный исполнитель (USER) (INTERNAL_DOCUMENTS)
+     * Дата подписания от {@link LocalDateTime}
+     * {@link DocumentType#INTERNAL}
+     * {@link DocumentType#OUTGOING}
      */
-    public static final String RESPONSIBLE_KEY = "responsible";
+    public static final String SIGNATURE_DATE_START = "signatureDate.start";
 
     /**
-     * Адресаты (LIST<USER>)
+     * Дата подписания до {@link LocalDateTime} {@link LocalDate}
+     * {@link DocumentType#INTERNAL}
+     * {@link DocumentType#OUTGOING}
      */
-    public static final String RECIPIENTS_KEY = "recipientUsers";
+    public static final String SIGNATURE_DATE_END = "signatureDate.end";
 
     /**
-     * Краткое содержание
+     * Дата исполнения равна {@link LocalDateTime}
+     * {@link DocumentType#REQUEST}
      */
-    public static final String SHORT_DESCRIPTION_KEY = "shortDescription";
-
+    public static final String EXECUTION_DATE = "executionDate";
 
     /**
-     * Том дела
+     * Дата исполнения от {@link LocalDateTime}
+     * {@link DocumentType#INTERNAL}
+     * {@link DocumentType#INCOMING}
+     * {@link DocumentType#REQUEST}
      */
-    public static final String OFFICE_KEEPING_VOLUME_KEY = "officeKeepingVolume";
+    public static final String EXECUTION_DATE_START = "executionDate.start";
 
     /**
-     * REQUEST_DOCUMENT specific
-     * Фамилия, Имя , Отчество
+     * Дата исполнения до {@link LocalDateTime} {@link LocalDate}
+     * {@link DocumentType#INTERNAL}
+     * {@link DocumentType#INCOMING}
+     * {@link DocumentType#REQUEST}
      */
-    public static final String SENDER_FIRST_NAME_KEY = "senderFirstName";
-    public static final String SENDER_LAST_NAME_KEY = "senderLastName";
-    public static final String SENDER_PATR_NAME_KEY = "senderPatrName";
+    public static final String EXECUTION_DATE_END = "executionDate.end";
 
+    /**
+     * Ответственный {@link User}
+     * {@link DocumentType#INTERNAL}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String RESPONSIBLE = "responsible";
+
+    /**
+     * Адресаты {@link Collection<User>}
+     * {@link DocumentType#INTERNAL}
+     * {@link DocumentType#INCOMING}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String RECIPIENTS = "recipientUsers";
+
+    /**
+     * Исполнители {@link Collection<User>}
+     * {@link DocumentType#INTERNAL}
+     * {@link DocumentType#OUTGOING}
+     */
+    public static final String EXECUTORS = "executors";
+
+    /**
+     * Регистрация закрытого периода {@link Boolean}
+     * {@link DocumentType#INTERNAL}
+     */
+    public static final String CLOSE_PERIOD_REGISTRATION_FLAG = "closePeriodRegistrationFlag";
+
+    /**
+     * Дата поступившего от {@link LocalDateTime}
+     * {@link DocumentType#INCOMING}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String DELIVERY_DATE_START = "deliveryDate.start";
+
+    /**
+     * Дата поступившего до {@link LocalDateTime} {@link LocalDate}
+     * {@link DocumentType#INCOMING}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String DELIVERY_DATE_END = "deliveryDate.end";
+
+    /**
+     * Дата доставки от {@link LocalDateTime}
+     * {@link DocumentType#INCOMING}
+     */
+    public static final String RECEIVED_DATE_START = "receivedDocumentDate.start";
+
+    /**
+     * Дата доставки до {@link LocalDateTime} {@link LocalDate}
+     * {@link DocumentType#INCOMING}
+     */
+    public static final String RECEIVED_DATE_END = "receivedDocumentDate.end";
+
+    /**
+     * Номер поступившего {@link String}
+     * {@link DocumentType#INCOMING}
+     */
+    public static final String RECEIVED_DOCUMENT_NUMBER = "receivedDocumentNumber";
+
+    /**
+     * Тип доставки {@link DeliveryType}
+     * {@link DocumentType#INCOMING}
+     * {@link DocumentType#OUTGOING}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String DELIVERY_TYPE = "deliveryType";
+
+    /**
+     * Контрагент {@link Contragent}
+     * {@link DocumentType#INCOMING}
+     * {@link DocumentType#OUTGOING}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String CONTRAGENT = "contragent";
+
+    /**
+     * Том дела {@link OfficeKeepingVolume}
+     * {@link DocumentType#INCOMING}
+     */
+    public static final String OFFICE_KEEPING_VOLUME = "officeKeepingVolume";
+
+    /**
+     * Имя отправителя {@link String}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String SENDER_FIRST_NAME = "senderFirstName";
+
+    /**
+     * Фамилия отправителя {@link String}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String SENDER_LAST_NAME = "senderLastName";
+
+    /**
+     * Отчество отправителя {@link String}
+     * {@link DocumentType#REQUEST}
+     */
+    public static final String SENDER_PATR_NAME = "senderPatrName";
+
+    /**
+     * Документ-основание {@link String}
+     * {@link DocumentType#TASK}
+     */
+    public static final String ROOT_DOCUMENT_ID = "rootDocumentId";
+
+    /**
+     * Документ-основание {@link String}
+     * {@link DocumentType#TASK}
+     */
+    public static final String TASK_DOCUMENT_ID = "taskDocumentId";
 }

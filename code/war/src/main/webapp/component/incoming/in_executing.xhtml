@@ -75,6 +75,7 @@
     </ui:define>
 
     <ui:define name="CONTENT.TABLE">
+        <!--@elvariable id="node" type="ru.efive.dms.uifaces.beans.incoming.IncomingDocumentNode"-->
         <p:treeTable id="documentTable"  widgetVar="treeTableVar"
                      value="#{in_documents_by_executing_date.root}" var="node"
                      style="width:100%; overflow-x:hidden;"
@@ -99,12 +100,12 @@
                 <h:outputText value="#{node.document.form}"/>
             </p:column>
             <p:column headerText="Статус">
-                <h:outputText value="#{node.document.getDocumentStatus().getName()}"/>
+                <h:outputText value="#{node.document.status.value}"/>
             </p:column>
             <p:column headerText="Краткое содержание">
                 <h:outputText value="#{node.document.shortDescription}"/>
             </p:column>
-            <p:column style="display:none;">#{node.document.id}</p:column>
+            <p:column style="display:none !important;">#{node.document.id}</p:column>
             <p:ajax event="select" oncomplete="if(parseInt(PrimeFaces.widgets.treeTableVar.cursorNode.children()[7].textContent)){ goToIncomingDocument(PrimeFaces.widgets.treeTableVar.cursorNode.children()[7].textContent);}"/>
         </p:treeTable>
     </ui:define>

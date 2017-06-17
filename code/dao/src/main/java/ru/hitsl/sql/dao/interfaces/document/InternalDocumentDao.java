@@ -13,5 +13,5 @@ import java.util.Map;
  * Description:
  */
 public interface InternalDocumentDao extends DocumentDao<InternalDocument> {
-    List<InternalDocument> findDocumentsByCriteria(Map<String, Object> in_filters, boolean b, boolean b1);
+    List<InternalDocument> findDocumentsByCriteria(Map<String, Object> in_filters, boolean showDeleted);
 }

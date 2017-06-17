@@ -4,7 +4,8 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
+import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,13 +15,29 @@ import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import ru.entity.model.mapped.MappedEnum;
+import ru.entity.model.mapped.ReferenceBookEntity;
 
 import javax.naming.NamingException;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import static ru.util.ApplicationHelper.ORD_PERSISTENCE_UNIT_NAME;
 
@@ -37,7 +54,7 @@ public class PersistenceConfig {
     private static final Logger log = LoggerFactory.getLogger("CONFIG");
 
 
-    @Bean(value = "ordDataSource", destroyMethod = "")
+    @Bean(name = "ordDataSource", destroyMethod = "")
     public DataSource lookupOrdDatasource(final Config cfg) {
         final Config dsCfg = cfg.getConfig("datasource");
         if (dsCfg.hasPath("jndiName")) {
@@ -114,6 +131,57 @@ public class PersistenceConfig {
     }
 
 
+    @Bean("mappedEnumLoader")
+    public Object loadMappedEnums(
+            @Qualifier("ordTransactionManager") final JpaTransactionManager transactionManager
+    ) {
+        final Instant startTime = Instant.now();
+        log.info("Start loading mapped enums");
+        final Reflections reflections = new Reflections("ru.entity.model", new FieldAnnotationsScanner());
+        final Set<Field> annotatedFields = reflections.getFieldsAnnotatedWith(MappedEnum.class);
+        if (!annotatedFields.isEmpty()) {
+            log.info("There are {} annotated fields", annotatedFields.size());
+            boolean errors = false;
+            final EntityManagerFactory entityManagerFactory = transactionManager.getEntityManagerFactory();
+            final CriteriaBuilder criteriaBuilder = entityManagerFactory.getCriteriaBuilder();
+            final TransactionStatus transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+            final EntityManager em = entityManagerFactory.createEntityManager();
+            try {
+                for (Field field : annotatedFields) {
+                    final Class<?> entityTypeClass = field.getType();
+                    final MappedEnum mappedEnum = field.getAnnotation(MappedEnum.class);
+                    if (!entityTypeClass.isAnnotationPresent(Entity.class)) {
+                        errors = true;
+                        log.error("MappedEnum field [{}] class[{}] is not annotated with @{}!", field, entityTypeClass.getName(), Entity.class.getName());
+                        continue;
+                    }
+                    if (!ReferenceBookEntity.class.isAssignableFrom(entityTypeClass)) {
+                        log.warn("MappedEnum field [{}] class[{}] not extends @Entity Class[{}]!", field, entityTypeClass, ReferenceBookEntity.class.getName());
+                    }
+                    final CriteriaQuery<?> query = criteriaBuilder.createQuery(entityTypeClass);
+                    final Root root = query.from(entityTypeClass);
+                    final ParameterExpression<String> parameter = criteriaBuilder.parameter(String.class);
+                    query.select(root).where(criteriaBuilder.equal(root.get(mappedEnum.uniqueField()), parameter));
+                    Object result = em.createQuery(query).setParameter(parameter, mappedEnum.value()).getSingleResult();
+                    log.info("MappedEnum field [{}] is {}", field, result);
+                    field.setAccessible(true);
+                    Field modifiersField = Field.class.getDeclaredField("modifiers");
+                    modifiersField.setAccessible(true);
+                    modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+                    field.set(null, result);
+                    modifiersField.setInt(field, field.getModifiers() | Modifier.FINAL);
+                }
+            } catch (final IllegalAccessException | NoSuchFieldException e) {
+                log.error("Cannot set field value", e);
+            } finally {
+                transactionManager.commit(transaction);
+            }
+        } else {
+            log.warn("No fields with Annotation[{}] found", MappedEnum.class);
+        }
+        log.info("End loading mapped enums [{} ms] ", Duration.between(startTime, Instant.now()).toMillis());
+        return null;
+    }
 
 
 }

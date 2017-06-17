@@ -80,12 +80,9 @@ public class AuthenticationFilter implements Filter {
         final String requestPath = request.getRequestURI();
         final String queryPart = request.getQueryString();
         LOGGER.warn("Requested URL is \"{}\" params \"{}\"", requestPath, queryPart);
-        final StringBuilder redirectTo = new StringBuilder(requestPath);
-        if (queryPart != null && !queryPart.contains("cid=")) {
-            redirectTo.append('?').append(queryPart);
-        }
         if (requestPath.contains("/component/")) {
-            request.getSession().setAttribute(SessionManagementBean.BACK_URL, redirectTo.toString());
+            request.getSession().setAttribute(SessionManagementBean.BACK_URL, requestPath);
+            request.getSession().setAttribute(SessionManagementBean.BACK_URL_PARAMS, queryPart);
         }
         ((HttpServletResponse) resp).sendRedirect(request.getContextPath().concat("/").concat(LOGIN_PAGE));
     }

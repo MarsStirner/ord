@@ -1,7 +1,7 @@
 package ru.entity.model.document;
 
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.AccessControlledDocumentEntity;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
 
@@ -155,7 +155,7 @@ public class InternalDocument extends AccessControlledDocumentEntity {
 
     @Override
     public DocumentType getType() {
-        return DocumentType.InternalDocument;
+        return DocumentType.INTERNAL;
     }
 
 

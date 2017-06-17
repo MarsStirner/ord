@@ -42,39 +42,6 @@ public interface Searchable {
         applyFilter(criteria, filter);
     }
 
-
-    /**
-     * Добавить в условия проверку на равенство пользователя заданному
-     *
-     * @param conjunction     Общее условие куда будет добавляться проверка
-     * @param restrictionPath поле для проверки
-     * @param value           пользователь
-     */
-    default void createUserEqRestriction(final Conjunction conjunction, final String restrictionPath, final Object value) {
-        if (value instanceof User) {
-            conjunction.add(Restrictions.eq(restrictionPath, ((User) value).getId()));
-        }
-    }
-
-
-    /**
-     * Добавить в условия проверку на вхождение пользователя в заданный список
-     *
-     * @param conjunction     Общее условие куда будет добавляться проверка
-     * @param restrictionPath поле для проверки
-     * @param value           писок пользователей
-     */
-    default void createUserListInRestriction(final Conjunction conjunction, final String restrictionPath, final Object value) {
-        List<User> userList = (List<User>) value;
-        if (!userList.isEmpty()) {
-            List<Integer> userListId = new ArrayList<>(userList.size());
-            for (User user : userList) {
-                userListId.add(user.getId());
-            }
-            conjunction.add(Restrictions.in(restrictionPath, userListId));
-        }
-    }
-
     /**
      * Создать часть критерия, которая будет проверять заданное поле(типа Дата-Время) на соотвтевие поисковому шаблону
      *

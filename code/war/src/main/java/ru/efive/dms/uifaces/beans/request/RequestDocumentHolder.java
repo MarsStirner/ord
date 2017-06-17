@@ -20,10 +20,11 @@ import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.*;
-import ru.entity.model.enums.DocumentStatus;
+
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
+import ru.entity.model.workflow.Status;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.interfaces.document.RequestDocumentDao;
@@ -304,7 +305,7 @@ public class RequestDocumentHolder extends AbstractDocumentLazyTabHolder<Request
     protected RequestDocument newModel(AuthorizationData authData) {
         final LocalDateTime created = LocalDateTime.now();
         final RequestDocument doc = new RequestDocument();
-        doc.setStatus(DocumentStatus.NEW);
+        doc.setStatus(Status.DRAFT);
         doc.setDeliveryDate(created);
         doc.setCreationDate(created);
         doc.setAuthor(authData.getAuthorized());
@@ -373,7 +374,7 @@ public class RequestDocumentHolder extends AbstractDocumentLazyTabHolder<Request
         if (form != null) {
             return form;
         } else {
-            final List<DocumentForm> formList = documentFormDao.findByDocumentTypeCode(DocumentType.RB_CODE_REQUEST);
+            final List<DocumentForm> formList = documentFormDao.findByDocumentTypeCode(DocumentType.REQUEST.getCode());
             if (!formList.isEmpty()) {
                 return formList.get(0);
             } else {

@@ -12,19 +12,19 @@
     <ui:param name="defaultSortOrder" value="descending"/>
 
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Дата создания" style="width:9em;" sortBy="#{row.creationDate}" field="creationDate">
+        <p:column headerText="Дата создания" style="width:9em;" filterable="false" field="creationDate">
             <h:outputText value="#{row.creationDate}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.creationDate.pattern')]}"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
+        <p:column headerText="Исполнитель" style="width:12em;" filterable="false" field="executor.lastName">
             <h:outputText value="#{row.executor}" converter="#{PersonConverter}"/>
         </p:column>
-        <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.value}" field="contragent.value">
+        <p:column headerText="Адресат" style="width:12em;" filterable="false" field="contragent.value">
             <h:outputText value="#{row.contragent.value}"/>
         </p:column>
-        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
+        <p:column headerText="Вид" style="width:7em;" filterable="false" field="form.value">
             <h:outputText value="#{row.form.value}"/>
         </p:column>
         <p:column headerText="Краткое содержание">

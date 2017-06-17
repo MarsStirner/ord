@@ -17,20 +17,20 @@
     <ui:define name="HEAD.TITLE">Мои проекты внутренних документов</ui:define>
     <ui:define name="CONTENT.VIEWTITLE">Мои проекты внутренних документов</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field="creationDate">
+        <p:column headerText="Дата создания" style="width:8em;" filterable="false" field="creationDate">
             <h:outputText value="#{row.creationDate}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.creationDate.pattern')]}"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Ответственный" style="width:12em;" sortBy="#{row.responsible}"
+        <p:column headerText="Ответственный" style="width:12em;" filterable="false"
                   field="responsible.lastName">
             <h:outputText value="#{row.responsible}" converter="#{PersonConverter}"/>
         </p:column>
-        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
+        <p:column headerText="Вид" style="width:7em;" filterable="false" field="form.value">
             <h:outputText value="#{row.form.value}"/>
         </p:column>
-        <p:column headerText="Срок исполнения" style="width:8em;" sortBy="#{row.executionDate}" field="executionDate">
+        <p:column headerText="Срок исполнения" style="width:8em;" filterable="false" field="executionDate">
             <h:outputText value="#{row.executionDate}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>

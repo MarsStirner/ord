@@ -7,24 +7,20 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.OutgoingDocument;
-import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
-import ru.entity.model.referenceBook.DocumentForm;
 import ru.hitsl.sql.dao.impl.mapped.DocumentDaoImpl;
 import ru.hitsl.sql.dao.interfaces.document.OutgoingDocumentDao;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.hibernate.sql.JoinType.INNER_JOIN;
 import static org.hibernate.sql.JoinType.LEFT_OUTER_JOIN;
@@ -70,26 +66,7 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Получить критерий для отбора Документов и их показа в расширенных списках
-     * Обычно:
-     * Автор - INNER
-     * Руководитель - LEFT
-     * Вид документа - LEFT
-     * ++ В зависимости от вида
-     *
-     * @return критерий для документов с DISTINCT и нужными alias (with fetch strategy)
-     */
-    @Override
-    public DetachedCriteria getListCriteria() {
-        final DetachedCriteria result = super.getListCriteria();
-        result.createAlias("executor", "executor", LEFT_OUTER_JOIN);
-        result.createAlias("contragent", "contragent", LEFT_OUTER_JOIN);
-        return result;
-    }
-
-    /**
      * Получить критерий для отбора Документов с максимальным количеством FETCH
-     *
      * @return критерий для документов с DISTINCT и нужными alias (with fetch strategy)
      */
     @Override
@@ -105,83 +82,53 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
         return result;
     }
 
+    @Override
+    public void addDocumentMapFilter(Conjunction conjunction, String key, Object value) {
+        switch (key) {
+            case DocumentSearchMapKeys.SIGNATURE_DATE_START:
+                //Дата подписания от
+                conjunction.add(Restrictions.ge("signatureDate", value));
+                break;
+            case DocumentSearchMapKeys.SIGNATURE_DATE_END:
+                //Дата подписания до
+                conjunction.add(Restrictions.le("signatureDate", ((Temporal) value).plus(Duration.ofDays(1))));
+                break;
+            case DocumentSearchMapKeys.EXECUTORS:
+                //Исполнители
+                conjunction.add(Restrictions.in("executors", value));
+                break;
+            case DocumentSearchMapKeys.DELIVERY_TYPE:
+                //Тип доставки
+                conjunction.add(Restrictions.eq("deliveryType", value));
+                break;
+            case DocumentSearchMapKeys.CONTRAGENT:
+                // Контрагент
+                conjunction.add(Restrictions.eq("contragent", value));
+                break;
+            default:
+                log.warn("FilterMapCriteria: Unknown key \'{}\' (value =\'{}\')", key, value);
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Работа с критериями (общая)
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Применитиь к текущим критериям огарничения сложного фильтра
-     *
-     * @param criteria текущий критерий, в который будут добавлены условия  (НЕ менее LIST_CRITERIA)
-     * @param filters  сложный фильтр (карта)
+     * Получить критерий для отбора Документов и их показа в расширенных списках
+     * Обычно:
+     * Автор - INNER
+     * Руководитель - LEFT
+     * Вид документа - LEFT
+     * ++ В зависимости от вида
+     * @return критерий для документов с DISTINCT и нужными alias (with fetch strategy)
      */
     @Override
-    public void applyFilter(final DetachedCriteria criteria, final Map<String, Object> filters) {
-        if (filters == null || filters.isEmpty()) {
-            return;
-        }
-        final Conjunction conjunction = Restrictions.conjunction();
-        for (Map.Entry<String, Object> entry : filters.entrySet()) {
-            final String key = entry.getKey();
-            final Object value = entry.getValue();
-
-            if (StringUtils.isEmpty(key)) {
-                // Пропустить запись с пустым ключом
-                log.warn("FilterMapCriteria: empty key for \'{}\'", value);
-            } else if (DocumentSearchMapKeys.REGISTRATION_NUMBER_KEY.equals(key)) {
-                conjunction.add(Restrictions.ilike("registrationNumber", (String) value, MatchMode.ANYWHERE));
-            } else if (DocumentSearchMapKeys.START_REGISTRATION_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.ge("registrationDate", value));
-            } else if (DocumentSearchMapKeys.END_REGISTRATION_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.le("registrationDate", ((LocalDateTime) value).plusDays(1)));
-            } else if (DocumentSearchMapKeys.START_CREATION_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.ge("creationDate", value));
-            } else if (DocumentSearchMapKeys.END_CREATION_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.le("creationDate", ((LocalDateTime) value).plusDays(1)));
-            } else if (DocumentSearchMapKeys.START_SIGNATURE_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.ge("deliveryDate", value));
-            } else if (DocumentSearchMapKeys.END_SIGNATURE_DATE_KEY.equals(key)) {
-                conjunction.add(Restrictions.le("deliveryDate", ((LocalDateTime) value).plusDays(1)));
-            } else if (DocumentSearchMapKeys.SHORT_DESCRIPTION_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
-                conjunction.add(Restrictions.ilike("shortDescription", (String) value, MatchMode.ANYWHERE));
-            } else if (DocumentSearchMapKeys.STATUS_KEY.equals(key) && StringUtils.isNotEmpty((String) value)) {
-                conjunction.add(Restrictions.eq("statusId", Integer.valueOf((String) value)));
-            } else if (DocumentSearchMapKeys.CONTROLLER_KEY.equals(key)) {
-                createUserEqRestriction(conjunction, "controller.id", value);
-            } else if (DocumentSearchMapKeys.AUTHOR_KEY.equals(key)) {
-                createUserEqRestriction(conjunction, "author.id", value);
-            } else if (DocumentSearchMapKeys.AUTHORS_KEY.equals(key)) {
-                createUserListInRestriction(conjunction, "author.id", value);
-            } else if (DocumentSearchMapKeys.EXECUTORS_KEY.equals(key)) {
-                createUserListInRestriction(conjunction, "executor.id", value);
-            } else if (DocumentSearchMapKeys.DELIVERY_TYPE_KEY.equals(key)) {
-                try {
-                    final DeliveryType deliveryType = (DeliveryType) value;
-                    //NOTE добавляем JOIN
-                    criteria.createAlias("deliveryType", "deliveryType", INNER_JOIN);
-                    conjunction.add(Restrictions.eq("deliveryType.id", deliveryType.getId()));
-                } catch (ClassCastException e) {
-                    log.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT DeliveryType. Non critical, continue...", key, value);
-                }
-            } else if (DocumentSearchMapKeys.FORM_KEY.equals(key)) {
-                try {
-                    final DocumentForm form = (DocumentForm) value;
-                    conjunction.add(Restrictions.eq("form.id", form.getId()));
-                } catch (ClassCastException e) {
-                    log.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT DocumentForm. Non critical, continue...", key, value);
-                }
-            } else if (DocumentSearchMapKeys.CONTRAGENT_KEY.equals(key)) {
-                try {
-                    final Contragent contragent = (Contragent) value;
-                    conjunction.add(Restrictions.eq("contragent.id", contragent.getId()));
-                } catch (ClassCastException e) {
-                    log.error("Exception while forming FilterMapCriteria: [{}]=\'{}\' IS NOT Contragent. Non critical, continue...", key, value);
-                }
-            } else {
-                log.warn("FilterMapCriteria: Unknown key \'{}\' (value =\'{}\')", key, value);
-            }
-        }
-        criteria.add(conjunction);
+    public DetachedCriteria getListCriteria() {
+        final DetachedCriteria result = super.getListCriteria();
+        result.createAlias("executor", "executor", LEFT_OUTER_JOIN);
+        result.createAlias("contragent", "contragent", LEFT_OUTER_JOIN);
+        return result;
     }
 
     /**
@@ -194,7 +141,6 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
      * ФИО исполнителя,
      * виде документа,
      * наименовании статуса документа
-     *
      * @param criteria критерий отбора в который будет добавлено поисковое условие (НЕ менее LIST_CRITERIA)
      * @param filter   условие поиска
      */
@@ -216,16 +162,16 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
         disjunction.add(Restrictions.ilike("form.value", filter, MatchMode.ANYWHERE));
 
         //TODO справочник в БД
-        final List<DocumentStatus> statuses = DocumentType.getOutgoingDocumentStatuses();
-        final List<Integer> statusIdList = new ArrayList<>(statuses.size());
-        for (DocumentStatus current : statuses) {
-            if (current.getName().contains(filter)) {
-                statusIdList.add(current.getId());
-            }
-        }
-        if (!statusIdList.isEmpty()) {
-            disjunction.add(Restrictions.in("statusId", statusIdList));
-        }
+//        final List<DocumentStatus> statuses = DocumentType.getOutgoingDocumentStatuses();
+//        final List<Integer> statusIdList = new ArrayList<>(statuses.size());
+//        for (DocumentStatus current : statuses) {
+//            if (current.getName().contains(filter)) {
+//                statusIdList.add(current.getId());
+//            }
+//        }
+//        if (!statusIdList.isEmpty()) {
+//            disjunction.add(Restrictions.in("statusId", statusIdList));
+//        }
         criteria.add(disjunction);
     }
 
@@ -233,7 +179,6 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
     /**
      * Применить ограничения допуска для документов
      * //NOTE  Добавляются алиасы с fetch
-     *
      * @param criteria исходный критерий   (минимум LIST_CRITERIA)
      * @param auth     данные авторизации
      */
@@ -263,16 +208,4 @@ public class OutgoingDocumentDaoImpl extends DocumentDaoImpl<OutgoingDocument> i
             criteria.add(disjunction);
         }
     }
-
-    /**
-     * Получить список проектных статусов
-     *
-     * @return список идентифкаторов проектных статусов
-     */
-    @Override
-    public Set<Integer> getDraftStatuses() {
-        return Stream.of(DocumentStatus.DOC_PROJECT_1.getId()).collect(Collectors.toSet());
-    }
-
-
 }

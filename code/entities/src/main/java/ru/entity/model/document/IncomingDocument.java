@@ -1,9 +1,9 @@
 package ru.entity.model.document;
 
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DeliveryType;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.referenceBook.Group;
 import ru.entity.model.user.User;
 
@@ -207,7 +207,7 @@ public class IncomingDocument extends AccessControlledDocumentEntity {
     }
 
     public DocumentType getType() {
-        return DocumentType.IncomingDocument;
+        return DocumentType.INCOMING;
     }
 
     public Set<Group> getRecipientGroups() {

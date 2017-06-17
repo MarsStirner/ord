@@ -17,47 +17,47 @@
     </f:metadata>
 
     <ui:define name="VARIABLE_DEFINITIONS">
-        <!-- Статусы документа -->
-        <c:set var="stateEditable" value="#{in_doc.createState or in_doc.editState}" scope="view"/>
-        <c:set var="statusId" value="#{in_doc.document.documentStatus.id}" scope="view"/>
-        <c:set var="status_OnRegistration" value="#{statusId eq 1}" scope="view"/>
-        <c:set var="status_Registered" value="#{statusId eq 2}" scope="view"/>
-        <c:set var="status_OnExecution" value="#{statusId eq 80}" scope="view"/>
-        <c:set var="status_Executed" value="#{statusId eq 90}" scope="view"/>
-        <c:set var="status_InArchive" value="#{statusId eq 100}" scope="view"/>
-        <c:set var="status_OutArchive" value="#{statusId eq 110}" scope="view"/>
-        <!-- Редактируемость полей (true - редактируемо, иначе только для просмотра) -->
-        <c:set var="editable_ShortDescription" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'shortDescription')}"/>
-        <!-- Поле 'Вид документа' -->
-        <c:set var="editable_DocumentForm" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'form')}"/>
-        <!-- Поле 'Тип доставки' -->
-        <c:set var="editable_DeliveryType" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'deliveryType')}"/>
-        <!-- Поле 'Дата исполнения' -->
-        <c:set var="editable_ExecutionDate" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executionDate')}"/>
-        <!-- Поле 'Номер поступившего' -->
-        <c:set var="editable_ReceivedDocumentNumber" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedNumber')}"/>
-        <!-- Поле 'Дата поступившего' -->
-        <c:set var="editable_ReceivedDocumentDate" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedDate')}"/>
-        <!-- Поле 'Руководитель' -->
-        <c:set var="editable_Controller" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'controller')}"/>
-        <!-- Поле 'Корреспондент' -->
-        <c:set var="editable_Contragent" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'contragent')}"/>
-        <!-- Поле 'Адресаты'  -->
-        <c:set var="editable_Recipients" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'recipients')}"/>
-        <!-- Поле 'Исполнители' -->
-        <c:set var="editable_Executors" scope="view"
-               value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executors')}"/>
-        <!-- Конец блока переменных -->
-    </ui:define>
+    <!-- Статусы документа -->
+    <c:set var="stateEditable" value="#{in_doc.createState or in_doc.editState}" scope="view"/>
+    <c:set var="statusId" value="#{in_doc.document.status.id}" scope="view"/>
+    <c:set var="status_OnRegistration" value="#{statusId eq 1}" scope="view"/>
+    <c:set var="status_Registered" value="#{statusId eq 2}" scope="view"/>
+    <c:set var="status_OnExecution" value="#{statusId eq 80}" scope="view"/>
+    <c:set var="status_Executed" value="#{statusId eq 90}" scope="view"/>
+    <c:set var="status_InArchive" value="#{statusId eq 100}" scope="view"/>
+    <c:set var="status_OutArchive" value="#{statusId eq 110}" scope="view"/>
+    <!-- Редактируемость полей (true - редактируемо, иначе только для просмотра) -->
+    <c:set var="editable_ShortDescription" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'shortDescription')}"/>
+    <!-- Поле 'Вид документа' -->
+    <c:set var="editable_DocumentForm" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'form')}"/>
+    <!-- Поле 'Тип доставки' -->
+    <c:set var="editable_DeliveryType" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'deliveryType')}"/>
+    <!-- Поле 'Дата исполнения' -->
+    <c:set var="editable_ExecutionDate" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executionDate')}"/>
+    <!-- Поле 'Номер поступившего' -->
+    <c:set var="editable_ReceivedDocumentNumber" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedNumber')}"/>
+    <!-- Поле 'Дата поступившего' -->
+    <c:set var="editable_ReceivedDocumentDate" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'receivedDate')}"/>
+    <!-- Поле 'Руководитель' -->
+    <c:set var="editable_Controller" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'controller')}"/>
+    <!-- Поле 'Корреспондент' -->
+    <c:set var="editable_Contragent" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'contragent')}"/>
+    <!-- Поле 'Адресаты'  -->
+    <c:set var="editable_Recipients" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'recipients')}"/>
+    <!-- Поле 'Исполнители' -->
+    <c:set var="editable_Executors" scope="view"
+           value="#{stateEditable and editableMatrix.incoming.isFieldEditable(statusId, 'executors')}"/>
+    <!-- Конец блока переменных -->
+</ui:define>
 
     <ui:define name="TOOLBAR_LEFT_GROUP_CONTENT">
         <p:button icon="ui-icon-home" outcome="/component/incoming/list.xhtml"/>
@@ -88,7 +88,7 @@
         </h:panelGroup>
         <h:panelGroup layout="block" id="documentStatusDiv" rendered="#{not in_doc.errorState}"
                       style="display: inline-block; text-align: right; padding: 0.4em; background-color: rgb(60,141,188); border-radius: 4px; color: white;">
-            <h:outputText value="#{in_doc.document.getDocumentStatus().getName()}"/>
+            <h:outputText value="#{in_doc.document.status.value}"/>
         </h:panelGroup>
     </ui:define>
 
@@ -103,10 +103,8 @@
                             <p:outputLabel for="e_documentForm" value="Вид документа:"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputText id="v_documentForm" value="#{in_doc.document.form.value}" styleClass="outputText"
-                                          rendered="#{not editable_DocumentForm}"/>
-                            <p:selectOneMenu id="e_documentForm" value="#{in_doc.document.form}" converter="#{IncomingDocumentFormConverter}"
-                                             required="true" styleClass="inputText" rendered="#{editable_DocumentForm}">
+                            <h:outputText id="v_documentForm" value="#{in_doc.document.form.value}" styleClass="outputText" rendered="#{not editable_DocumentForm}"/>
+                            <p:selectOneMenu id="e_documentForm" value="#{in_doc.document.form}" converter="#{IncomingDocumentFormConverter}" required="true" styleClass="inputText" rendered="#{editable_DocumentForm}">
                                 <f:selectItems value="#{refBookHelper.getDocumentFormsByCategory('INCOMING')}"/>
                             </p:selectOneMenu>
                         </p:column>
@@ -116,10 +114,8 @@
                             <p:outputLabel for="e_deliveryType" value="Тип доставки:"/>
                         </p:column>
                         <p:column colspan="3" styleClass="ui-grid-col-10">
-                            <h:outputText id="v_deliveryType" value="#{in_doc.document.deliveryType.value}" styleClass="outputText"
-                                          rendered="#{not editable_DeliveryType}"/>
-                            <p:selectOneMenu id="e_deliveryType" value="#{in_doc.document.deliveryType}" converter="#{DeliveryTypeConverter}"
-                                             styleClass="inputText" required="true" rendered="#{editable_DeliveryType}">
+                            <h:outputText id="v_deliveryType" value="#{in_doc.document.deliveryType.value}" styleClass="outputText" rendered="#{not editable_DeliveryType}"/>
+                            <p:selectOneMenu id="e_deliveryType" value="#{in_doc.document.deliveryType}" converter="#{DeliveryTypeConverter}"  styleClass="inputText" required="true" rendered="#{editable_DeliveryType}">
                                 <f:selectItems value="#{refBookHelper.getDeliveryTypes()}"/>
                             </p:selectOneMenu>
                         </p:column>

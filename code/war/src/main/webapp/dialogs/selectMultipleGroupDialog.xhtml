@@ -28,7 +28,7 @@
                      widgetVar="selectGroupTableVar"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{group_row.value}"
+                     filterable="false"
                      sortOrder="ascending"
                      sortField="value"
                 >
@@ -36,7 +36,7 @@
                 <p:inputText id="filter" value="#{multipleGroupDialog.filter}" styleClass="searchTextBox"/>
                 <p:commandButton value="Поиск" styleClass="searchButton" process="filter selectGroupsTable" update="selectGroupsTable"/>
             </f:facet>
-            <p:column headerText="Наименование" sortBy="#{group_row.value}" field = "value">
+            <p:column headerText="Наименование" filterable="false" field = "value">
                 <h:outputText value="#{group_row.value}"/>
             </p:column>
             <f:facet name="footer">

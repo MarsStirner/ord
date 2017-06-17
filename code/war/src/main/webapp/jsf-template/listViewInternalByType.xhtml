@@ -15,26 +15,26 @@
     <ui:param name="defaultSortOrder" value="descending"/>
 
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
+        <p:column headerText="Номер" style="width:5em;" filterable="false" field="registrationNumber">
             <h:outputText value="#{row.registrationNumber}"/>
         </p:column>
-        <p:column headerText="Дата подписания" style="width:9em;" sortBy="#{row.signatureDate}" field="signatureDate">
+        <p:column headerText="Дата подписания" style="width:9em;" filterable="false" field="signatureDate">
             <h:outputText value="#{row.signatureDate}">
                 <f:converter converterId="LocalDateConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.signatureDate.pattern')]}"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Ответственный" style="width:12em;" sortBy="#{row.responsible}" field="responsible.lastName">
+        <p:column headerText="Ответственный" style="width:12em;" filterable="false" field="responsible.lastName">
             <h:outputText value="#{row.responsible}" converter="#{PersonConverter}"/>
         </p:column>
-        <p:column headerText="Срок исполнения" style="width:8em;" sortBy="#{row.executionDate}" field="executionDate">
+        <p:column headerText="Срок исполнения" style="width:8em;" filterable="false" field="executionDate">
             <h:outputText value="#{row.executionDate}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
-            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+        <p:column headerText="Статус" style="width:9em;" filterable="false" field="statusId">
+            <h:outputText value="#{row.status.value}"/>
         </p:column>
         <p:column headerText="Краткое содержание">
             <h:outputText value="#{row.shortDescription}"/>

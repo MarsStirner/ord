@@ -163,7 +163,7 @@
                         <h:outputText value="#{row.keepingPeriodReasons}"/>
                     </p:column>
                     <p:column headerText="Статус" style="width:5em;" styleClass="outputText">
-                        <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+                        <h:outputText value="#{row.status.value}"/>
                     </p:column>
                     <p:ajax event="rowSelect" onstart="goToOfficeKeepingVolume(PrimeFaces.widgets.delaVar.selection); return false;"/>
                 </p:dataTable>
@@ -188,7 +188,7 @@
                                  emptyMessage="Доступных действий нет"
                                  rowKey="#{row_action.action.name}"
                                  selectionMode="single"
-                                 selection="#{officeKeepingFile.processorModal.selectedAction}">
+                                 selection="#{officeKeepingFile.processorModal.selectedTransition}">
                         <p:column headerText="Доступные действия">
                             <h:outputText value="#{row_action.action.name}"/>
                         </p:column>

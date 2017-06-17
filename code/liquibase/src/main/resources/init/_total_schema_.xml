@@ -42,4 +42,6 @@
     <!--Отчеты-->
     <include file="report.xml" relativeToChangelogFile="true"/>
     <include file="report_parameter.xml" relativeToChangelogFile="true"/>
+
+    <include file="wf_history_cascade.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

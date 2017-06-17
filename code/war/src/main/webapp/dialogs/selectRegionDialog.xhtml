@@ -27,7 +27,7 @@
                      widgetVar="selectPersonTableVar"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{region_row.value}"
+                     filterable="false"
                      sortOrder="ascending"
                      sortField="value"
                 >
@@ -35,10 +35,10 @@
                 <p:inputText id="filter" value="#{regionDialog.filter}" styleClass="searchTextBox"/>
                 <p:commandButton value="Поиск" process="filter selectRegionTable" update="selectRegionTable" styleClass="searchButton"/>
             </f:facet>
-            <p:column headerText="Регион" sortBy="#{region_row.value}" field = "value">
+            <p:column headerText="Регион" filterable="false" field = "value">
                 <h:outputText value="#{region_row.value}"/>
             </p:column>
-            <p:column headerText="Категория" sortBy="#{region_row.category}" field="category">
+            <p:column headerText="Категория" filterable="false" field="category">
                 <h:outputText value="#{region_row.category}"/>
             </p:column>
             <f:facet name="footer">

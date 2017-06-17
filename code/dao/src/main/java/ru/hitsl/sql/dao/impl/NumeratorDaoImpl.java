@@ -9,12 +9,12 @@ import org.hibernate.sql.JoinType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.numerator.Numerator;
 import ru.entity.model.numerator.NumeratorUsage;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.impl.mapped.CommonDaoImpl;
 import ru.hitsl.sql.dao.interfaces.NumeratorDao;
@@ -49,7 +49,7 @@ public class NumeratorDaoImpl extends CommonDaoImpl<Numerator> implements Numera
         criteria.add(Restrictions.le("begDate", now));
         criteria.add(Restrictions.or(Restrictions.isNull("endDate"), Restrictions.gt("endDate", now)));
 
-        criteria.add(Restrictions.or(Restrictions.isNull("documentType.code"), Restrictions.eqOrIsNull("documentType.code", type.getName())));
+        criteria.add(Restrictions.or(Restrictions.isNull("documentType.code"), Restrictions.eqOrIsNull("documentType", type)));
         criteria.add(Restrictions.or(Restrictions.isNull("documentForm"), Restrictions.eqOrIsNull("documentForm", form)));
         criteria.add(Restrictions.or(Restrictions.isNull("controller"), Restrictions.eqOrIsNull("controller", controller)));
         criteria.add(Restrictions.or(Restrictions.isNull("contragent"), Restrictions.eqOrIsNull("contragent", contragent)));

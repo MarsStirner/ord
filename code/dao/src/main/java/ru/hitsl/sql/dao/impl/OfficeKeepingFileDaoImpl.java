@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.document.OfficeKeepingFile;
-import ru.entity.model.enums.DocumentStatus;
 import ru.hitsl.sql.dao.impl.mapped.CommonDaoImpl;
 import ru.hitsl.sql.dao.interfaces.OfficeKeepingFileDao;
 
@@ -34,8 +33,7 @@ public class OfficeKeepingFileDaoImpl extends CommonDaoImpl<OfficeKeepingFile>
         DetachedCriteria detachedCriteria = getListCriteria();
         detachedCriteria.add(Restrictions.eq("deleted", false));
         detachedCriteria.add(Restrictions.eq("fileIndex", fileIndex));
-        detachedCriteria.add(Restrictions.gt("statusId", DocumentStatus.ACTION_PROJECT.getId()));
-        return getItems(detachedCriteria);
+               return getItems(detachedCriteria);
     }
 
     @Override
@@ -43,7 +41,6 @@ public class OfficeKeepingFileDaoImpl extends CommonDaoImpl<OfficeKeepingFile>
         DetachedCriteria detachedCriteria = getListCriteria();
         detachedCriteria.add(Restrictions.eq("deleted", false));
         detachedCriteria.add(Restrictions.eq("fileIndex", fileIndex));
-        detachedCriteria.add(Restrictions.gt("statusId", DocumentStatus.ACTION_PROJECT.getId()));
-        return countItems(detachedCriteria);
+             return countItems(detachedCriteria);
     }
 }

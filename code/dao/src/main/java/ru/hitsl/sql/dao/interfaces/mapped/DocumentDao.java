@@ -15,7 +15,7 @@ import java.util.Map;
  * Company: Bars Group [ www.bars.open.ru ]
  * Description:
  */
-public interface DocumentDao<T extends DocumentEntity> extends CommonDao<T>, Accessible, Draftable {
+public interface DocumentDao<T extends DocumentEntity> extends CommonDao<T>, Accessible {
 
     default List<T> getItems(
             final AuthorizationData authorizationData,
@@ -25,11 +25,9 @@ public interface DocumentDao<T extends DocumentEntity> extends CommonDao<T>, Acc
             final boolean isAscending,
             final int offset,
             final int limit,
-            final boolean showDeleted,
-            final boolean showDrafts) {
+            final boolean showDeleted) {
         final DetachedCriteria criteria = getListCriteria();
         applyDeletedRestriction(criteria, showDeleted);
-        applyDraftRestriction(criteria, showDrafts);
         applyFilter(criteria, filter, filters);
         applyAccessCriteria(criteria, authorizationData);
         applyOrder(criteria, orderBy, isAscending);
@@ -40,32 +38,11 @@ public interface DocumentDao<T extends DocumentEntity> extends CommonDao<T>, Acc
             final AuthorizationData authorizationData,
             final String filter,
             final Map<String, Object> filters,
-            final boolean showDeleted,
-            final boolean showDrafts) {
+            final boolean showDeleted) {
         final DetachedCriteria criteria = getListCriteria();
         applyDeletedRestriction(criteria, showDeleted);
-        applyDraftRestriction(criteria, showDrafts);
         applyFilter(criteria, filter, filters);
         applyAccessCriteria(criteria, authorizationData);
         return countItems(criteria);
     }
-
-    int countDocumentListByFilters(
-            AuthorizationData authData,
-            String filter,
-            Map<String, Object> filters,
-            boolean showDeleted,
-            boolean showDrafts
-    );
-
-    List<T> getPersonalDraftDocumentListByFilters(
-            AuthorizationData authData,
-            String filter,
-            String sortField,
-            boolean sortOrder,
-            int first,
-            int pageSize
-    );
-
-    int countPersonalDraftDocumentListByFilters(AuthorizationData authData, String filter);
 }

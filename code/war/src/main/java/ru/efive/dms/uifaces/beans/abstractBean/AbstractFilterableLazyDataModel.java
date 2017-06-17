@@ -7,10 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import ru.entity.model.mapped.DeletableEntity;
 import ru.hitsl.sql.dao.interfaces.mapped.CommonDao;
-import ru.hitsl.sql.dao.util.DocumentSearchMapKeys;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author: Upatov Egor <br>
@@ -50,25 +52,14 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     }
 
 
-    public void addFilter(final String key, final String value) {
+    public void addFilter(final String key, final Object value) {
         if (filters == null) {
             filters = new HashMap<>();
         }
-        if (value.startsWith("{") && value.endsWith("}")) {
+        if (value instanceof String && ((String) value).startsWith("{") && ((String) value).endsWith("}")) {
             // Список
-            final List<String> strings = Arrays.asList(value.substring(1, value.length() - 1).split("\\s*,\\s*"));
-            if (!strings.isEmpty()) {
-                //Для некоторых парметров надо приводить типы
-                if (DocumentSearchMapKeys.STATUS_LIST_KEY.equals(key)) {
-                    final Set<Integer> ints = new HashSet<>(strings.size());
-                    for (String string : strings) {
-                        ints.add(Integer.valueOf(string));
-                    }
-                    filters.put(key, ints);
-                } else {
-                    filters.put(key, new ArrayList<>(strings));
-                }
-            }
+            final List<String> strings = Arrays.asList(((String) value).substring(1, ((String) value).length() - 1).split("\\s*,\\s*"));
+            filters.put(key, strings);
         } else {
             //Одиночное значение
             filters.put(key, value);
@@ -76,8 +67,13 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     }
 
     @Override
-    public Object getRowKey(T item) {
-        return item.getId();
+    @Transactional("ordTransactionManager")
+    public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> unusedPrimefacesFilters) {
+        setRowCount(dao.countItems(filter, filters, false));
+        if (getRowCount() < first) {
+            first = 0;
+        }
+        return dao.getItems(filter, filters, sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize, false);
     }
 
     @Override
@@ -92,12 +88,7 @@ public abstract class AbstractFilterableLazyDataModel<T extends DeletableEntity>
     }
 
     @Override
-    @Transactional("ordTransactionManager")
-    public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> unusedPrimefacesFilters) {
-        setRowCount(dao.countItems(filter, filters, false));
-        if (getRowCount() < first) {
-            first = 0;
-        }
-        return dao.getItems(filter, filters, sortField, SortOrder.ASCENDING.equals(sortOrder), first, pageSize, false);
+    public Object getRowKey(T item) {
+        return item.getId();
     }
 }

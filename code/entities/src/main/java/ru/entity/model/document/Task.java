@@ -1,7 +1,7 @@
 package ru.entity.model.document;
 
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DocumentEntity;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
@@ -118,7 +118,7 @@ public class Task extends DocumentEntity implements Cloneable {
     }
 
     public DocumentType getType() {
-        return DocumentType.Task;
+        return DocumentType.TASK;
     }
 
 
@@ -156,7 +156,7 @@ public class Task extends DocumentEntity implements Cloneable {
         clone.setController(getController());
         clone.setCreationDate(getCreationDate());
         clone.setDeleted(deleted);
-        clone.setStatus(getDocumentStatus());
+        clone.setStatus(getStatus());
         clone.setErpNumber(erpNumber);
         clone.setExecutionDate(executionDate);
         clone.setExecutors(new HashSet<>(executors));
@@ -182,7 +182,7 @@ public class Task extends DocumentEntity implements Cloneable {
                 ", parent=" + (parent != null ? parent.getId() : "null") +
                 ", registrationDate=" + getRegistrationDate() +
                 ", shortDescription='" + getShortDescription() + '\'' +
-                ", statusId=" + getDocumentStatus() +
+                ", status=" + status +
                 ", registrationNumber='" + getRegistrationNumber() + '\'' +
                 ", rootDocumentId='" + rootDocumentId + '\'' +
                 '}';

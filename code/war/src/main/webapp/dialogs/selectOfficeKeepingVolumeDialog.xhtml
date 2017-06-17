@@ -25,7 +25,7 @@
                      widgetVar="selectOfficeKeepingVolumeTableVar"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{officeKeepingVolume_row.shortDescription}"
+                     filterable="false"
                      sortOrder="ascending"
                      sortField="shortDescription"
                 >
@@ -33,13 +33,13 @@
                 <p:inputText id="filter" value="#{officeKeepingVolumeDialog.filter}" styleClass="searchTextBox"/>
                 <p:commandButton value="Поиск" process="filter selectOfficeKeepingVolumeTable" update="selectOfficeKeepingVolumeTable" styleClass="searchButton"/>
             </f:facet>
-            <p:column headerText="Заголовок" sortBy="#{officeKeepingVolume_row.shortDescription}" field="shortDescription">
+            <p:column headerText="Заголовок" filterable="false" field="shortDescription">
                 <h:outputText value="#{officeKeepingVolume_row.shortDescription}"/>
             </p:column>
-            <p:column headerText="Статус" sortBy="#{officeKeepingVolume_row.statusId}" field="statusId">
-                <h:outputText value="#{officeKeepingVolume_row.getDocumentStatus().getName()}"/>
+            <p:column headerText="Статус" filterable="false" field="statusId">
+                <h:outputText value="#{officeKeepingVolume_row.status.value}"/>
             </p:column>
-            <p:column headerText="Срок хранения" sortBy="#{officeKeepingVolume_row.keepingPeriodReasons}" field="keepingPeriodReasons">
+            <p:column headerText="Срок хранения" filterable="false" field="keepingPeriodReasons">
                 <h:outputText value="#{officeKeepingVolume_row.keepingPeriodReasons}"/>
             </p:column>
             <f:facet name="footer">

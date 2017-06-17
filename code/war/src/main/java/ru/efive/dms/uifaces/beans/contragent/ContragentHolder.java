@@ -45,38 +45,21 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Con
     }
 
     @Override
-    public boolean afterDelete(Contragent document, AuthorizationData authData) {
-        try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("delete_contragent.xhtml");
-        } catch (IOException e) {
-            log.error("Error on redirect", e);
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public boolean beforeDelete(Contragent document, AuthorizationData authData) {
-        final Map<String, Object> in_map = Collections.singletonMap(DocumentSearchMapKeys.CONTRAGENT_KEY, document);
-        final List<IncomingDocument> incomingDocuments = incomingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
+        final Map<String, Object> filterMap = Collections.singletonMap(DocumentSearchMapKeys.CONTRAGENT, document);
+        final List<IncomingDocument> incomingDocuments = incomingDocumentDao.getItems(authData, null, filterMap, null, true, 0, -1, false);
         if (!incomingDocuments.isEmpty()) {
             MessageUtils.addMessage(MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
             return false;
         }
-        final List<RequestDocument> requestDocuments = requestDocumentDao.getItems(
-                authData,
-                null,
-                in_map,
-                null,
-                true,
-                0, -1, false, false);
+        final List<RequestDocument> requestDocuments = requestDocumentDao.getItems(authData, null, filterMap, null, true, 0, -1, false);
 
         if (!requestDocuments.isEmpty()) {
             MessageUtils.addMessage(MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
             return false;
         }
 
-        final List<OutgoingDocument> outgoingDocuments = outgoingDocumentDao.getItems(authData, null, in_map, null, true, 0, -1, false, false);
+        final List<OutgoingDocument> outgoingDocuments = outgoingDocumentDao.getItems(authData, null, filterMap, null, true, 0, -1, false);
         if (!outgoingDocuments.isEmpty()) {
             MessageUtils.addMessage(MSG_CANT_DELETE_CONTRAGENT_DOCUMENTS_EXISTS);
             return false;
@@ -89,6 +72,17 @@ public class ContragentHolder extends AbstractDocumentHolderBean<Contragent, Con
         final Contragent result = new Contragent();
         result.setDeleted(false);
         return result;
+    }
+
+    @Override
+    public boolean afterDelete(Contragent document, AuthorizationData authData) {
+        try {
+            FacesContext.getCurrentInstance().getExternalContext().redirect("delete_contragent.xhtml");
+        } catch (IOException e) {
+            log.error("Error on redirect", e);
+            return false;
+        }
+        return true;
     }
 
 }

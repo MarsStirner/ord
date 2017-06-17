@@ -1,7 +1,6 @@
 package ru.entity.model.document;
 
 import org.apache.commons.lang3.StringUtils;
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.AccessControlledDocumentEntity;
 import ru.entity.model.referenceBook.*;
 import ru.entity.model.user.User;
@@ -152,7 +151,7 @@ public class RequestDocument extends AccessControlledDocumentEntity {
 
     @Override
     public DocumentType getType() {
-        return DocumentType.RequestDocument;
+        return DocumentType.REQUEST;
     }
 
 

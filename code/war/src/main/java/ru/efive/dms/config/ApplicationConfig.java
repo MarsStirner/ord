@@ -36,20 +36,20 @@ public class ApplicationConfig {
         return result;
     }
 
-
-    @Bean("ldapImportService")
-    public LDAPImportService ldapImportService(Config config) {
-        final Config subCfg = config.getConfig("ldap");
-        final LDAPImportService result = new LDAPImportService();
-        result.setLdapAddressValue(subCfg.getString("host"));
-        result.setLoginValue(subCfg.getString("login"));
-        result.setPasswordValue(subCfg.getString("password"));
-        result.setFilterValue(subCfg.getString("filter"));
-        result.setBaseValue(subCfg.getString("path.base"));
-        result.setFiredBaseValue(subCfg.getString("path.fired"));
-        log.info("Initialized {}", result);
-        return result;
-    }
+//
+//    @Bean("ldapImportService")
+//    public LDAPImportService ldapImportService(Config config) {
+//        final Config subCfg = config.getConfig("ldap");
+//        final LDAPImportService result = new LDAPImportService();
+//        result.setLdapAddressValue(subCfg.getString("host"));
+//        result.setLoginValue(subCfg.getString("login"));
+//        result.setPasswordValue(subCfg.getString("password"));
+//        result.setFilterValue(subCfg.getString("filter"));
+//        result.setBaseValue(subCfg.getString("path.base"));
+//        result.setFiredBaseValue(subCfg.getString("path.fired"));
+//        log.info("Initialized {}", result);
+//        return result;
+//    }
 
 
     @Bean("cmisSessionFactory")
@@ -93,5 +93,7 @@ public class ApplicationConfig {
 //        log.info("Initialized {}", result);
 //        return result;
 //    }
+
+
 
 }

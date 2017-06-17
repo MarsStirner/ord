@@ -36,7 +36,10 @@ public class SessionManagementBean implements Serializable {
 
     public static final String AUTH_KEY = "app.user.name";
     public static final String BACK_URL = "app.back.url";
+    public static final String BACK_URL_PARAMS = "app.back.url.params";
+
     private static final Logger log = LoggerFactory.getLogger("ACCESS");
+
     @Autowired
     @Qualifier("userAccessLevelDao")
     private UserAccessLevelDao userAccessLevelDao;
@@ -52,7 +55,6 @@ public class SessionManagementBean implements Serializable {
 
     private String userName;
     private String password;
-    private String backUrl;
 
     private DefaultMenuModel accessLevelsMenuModel;
 
@@ -91,7 +93,7 @@ public class SessionManagementBean implements Serializable {
         return accessLevelsMenuModel;
     }
 
-    public void logIn() {
+    public String logIn() {
         if (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(password)) {
             log.info("Try to login [{}][{}]", userName, password);
             try {
@@ -102,32 +104,40 @@ public class SessionManagementBean implements Serializable {
                     if (loggedUser.isDeleted() || loggedUser.isFired()) {
                         log.error("USER[{}] IS {}", loggedUser.getId(), loggedUser.isDeleted() ? "DELETED" : "FIRED");
                         MessageUtils.addMessage(loggedUser.isDeleted() ? MSG_AUTH_DELETED : MSG_AUTH_FIRED);
-                        return;
+                        return null;
                     }
                     //Проверка наличия у пользователя ролей
                     if (loggedUser.getRoles().isEmpty()) {
                         log.warn("USER[{}] HAS NO ONE ROLE", loggedUser.getId());
                         MessageUtils.addMessage(MSG_AUTH_NO_ROLE);
-                        return;
+                        return null;
                     }
                     //Поиск замещений, где найденный пользователь является заместителем
-                    final List<Substitution> substitutions = substitutionDao.getCurrentItemsOnSubstitution(
-                            loggedUser,
-                            false
-                    );
+                    final List<Substitution> substitutions = substitutionDao.getCurrentItemsOnSubstitution(loggedUser,false);
                     if (!substitutions.isEmpty()) {
                         authData.init(loggedUser, substitutions);
                     } else {
                         authData.init(loggedUser);
                     }
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(AUTH_KEY, loggedUser.getLogin());
-
-                    Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(BACK_URL);
-                    if (requestUrl != null) {
-                        backUrl = requestUrl.toString();
-                        log.info("back url={}", backUrl);
-                    }
                     log.info("SUCCESSFUL LOGIN:{}\n AUTH_DATA={}", loggedUser.getId(), authData);
+                    //Должно стрелять только один раз
+                    Object requestUrl = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(BACK_URL);
+                    final StringBuilder result = new StringBuilder(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath());
+                    if (requestUrl == null || StringUtils.isEmpty(requestUrl.toString())) {
+                        result.append(authData.getDefaultPage());
+                        result.append("?faces-redirect=true");
+                    } else {
+                        result.append(requestUrl.toString());
+                        Object backUrlParams = FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(BACK_URL_PARAMS);
+                        if(backUrlParams == null || StringUtils.isEmpty(backUrlParams.toString())){
+                            result.append("?faces-redirect=true");
+                        } else {
+                            result.append('?').append(backUrlParams).append("&faces-redirect=true");
+                        }
+                    }
+                    log.info("login result: \'{}\'", result.toString());
+                    return result.toString();
                 } else {
                     log.error("USER[{}] NOT FOUND", userName);
                     MessageUtils.addMessage(MSG_AUTH_NOT_FOUND);
@@ -138,6 +148,7 @@ public class SessionManagementBean implements Serializable {
                 log.error("Exception while processing login action:", e);
             }
         }
+        return null;
     }
 
 
@@ -158,18 +169,6 @@ public class SessionManagementBean implements Serializable {
         logOut();
     }
 
-    public String getBackUrl() {
-        final StringBuilder result = new StringBuilder(FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath());
-        if (StringUtils.isEmpty(backUrl)) {
-            result.append(authData.getDefaultPage());
-        } else {
-            result.append(backUrl);
-            //Должно стрелять только один раз
-            backUrl = "";
-        }
-        log.info("redirectUrl: \'{}\'", result.toString());
-        return result.toString();
-    }
 
     public void setCurrentUserAccessLevel(final String id) {
         final UserAccessLevel userAccessLevel = userAccessLevelDao.get(Integer.valueOf(id));

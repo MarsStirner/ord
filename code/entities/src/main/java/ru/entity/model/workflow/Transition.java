@@ -1,5 +1,6 @@
 package ru.entity.model.workflow;
 
+import ru.entity.model.mapped.DeletableEntity;
 import ru.entity.model.mapped.IdentifiedEntity;
 import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
@@ -8,90 +9,61 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Запись истории workflow
+ * Список переходов и действий над документом
  */
 @Entity
-@Table(name = "wf_history")
-public class HistoryEntry extends IdentifiedEntity implements Comparable<HistoryEntry> {
+@Table(name = "wf_transition")
+public class Transition extends DeletableEntity{
 
     /**
-     * Дата + время совершения действия
+     * Тип документа (NULL - любой)
      */
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "document_type_id", nullable = true)
+    private DocumentType documentType;
 
     /**
-     * Произведенное над документом действие
+     * С какого статуса переход (NULL - любой)
+     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "from_status_id", nullable = true)
+    private Status fromStatus;
+
+    /**
+     * Какое действие будет выполнено при переходе
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "action_id", nullable = false)
     private Action action;
 
     /**
-     * На каком статусе документа было выполнено действие
-     */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "from_status_id", nullable = false)
-    private Status fromStatus;
-
-
-    /**
-     * На какой статус был переведен документ во время выполнения действия
+     * На какой статус переход (NULL - переход не меняет статус)
      */
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "to_status_id", nullable = true)
     private Status toStatus;
 
     /**
-     * Пользователь, выполнивший действие
+     * Нужно ли создавать запись в истории документа: 0 - нет, 1 - да
      */
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "write_history")
+    private boolean writeHistory;
 
     /**
-     * Комментарий
+     * Нужно ли запрашивать у пользователя комментарий при совершении действия: 0 - нет, 1 - да
      */
-    @Column(name = "commentary")
-    private String commentary;
+    @Column(name = "need_comment")
+    private boolean needComment;
 
-
-    /**
-     * id документа в формате "type_id"
-     */
-    @Column(name = "document_id")
-    private Integer documentId;
-
-    /**
-     * Тип документа
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_type_id")
-    private DocumentType docType;
-
-    /**
-     * Было ли выполнено действие: 0 - нет, 1 - да
-     */
-    @Column(name = "processed")
-    private boolean processed;
-
-    public HistoryEntry() {
+    public Transition() {
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public DocumentType getDocumentType() {
+        return documentType;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
     }
 
     public Status getFromStatus() {
@@ -102,6 +74,14 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
         this.fromStatus = fromStatus;
     }
 
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
     public Status getToStatus() {
         return toStatus;
     }
@@ -110,59 +90,19 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
         this.toStatus = toStatus;
     }
 
-    public User getUser() {
-        return user;
+    public boolean isWriteHistory() {
+        return writeHistory;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setWriteHistory(boolean writeHistory) {
+        this.writeHistory = writeHistory;
     }
 
-    public String getCommentary() {
-        return commentary;
+    public boolean isNeedComment() {
+        return needComment;
     }
 
-    public void setCommentary(String commentary) {
-        this.commentary = commentary;
-    }
-
-    public Integer getDocumentId() {
-        return documentId;
-    }
-
-    public void setDocumentId(Integer documentId) {
-        this.documentId = documentId;
-    }
-
-    public DocumentType getDocType() {
-        return docType;
-    }
-
-    public void setDocType(DocumentType docType) {
-        this.docType = docType;
-    }
-
-    public boolean isProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(boolean processed) {
-        this.processed = processed;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Interface Comparable
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    @Override
-    public int compareTo(HistoryEntry o) {
-        if (o == null) {
-            return 1;
-        }
-        if (startDate == null) {
-            return o.getStartDate() == null ? 0 : -1;
-        } else {
-            return o.getStartDate() == null ? 1 : startDate.compareTo(o.getStartDate());
-        }
+    public void setNeedComment(boolean needComment) {
+        this.needComment = needComment;
     }
 }

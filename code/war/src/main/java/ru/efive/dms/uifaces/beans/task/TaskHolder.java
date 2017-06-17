@@ -6,12 +6,10 @@ import org.primefaces.event.SelectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.bars_open.medvtr.ord.cmis.CmisDao;
-import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentHolderBean;
 import ru.efive.dms.uifaces.beans.abstractBean.AbstractDocumentLazyTabHolder;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
 import ru.efive.dms.uifaces.beans.dialogs.AbstractDialog;
 import ru.efive.dms.uifaces.beans.dialogs.MultipleUserDialogHolder;
-import ru.efive.dms.uifaces.beans.dialogs.UserDialogHolder;
 import ru.efive.dms.uifaces.beans.utils.ReferenceBookHelper;
 import ru.efive.dms.uifaces.beans.workflow.NumerationService;
 import ru.efive.dms.util.message.MessageHolder;
@@ -20,10 +18,10 @@ import ru.efive.dms.util.message.MessageUtils;
 import ru.efive.dms.util.security.PermissionChecker;
 import ru.efive.dms.util.security.Permissions;
 import ru.entity.model.document.*;
-import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
+import ru.entity.model.workflow.Status;
 import ru.hitsl.sql.dao.interfaces.ViewFactDao;
 import ru.hitsl.sql.dao.interfaces.document.*;
 import ru.hitsl.sql.dao.interfaces.referencebook.DocumentFormDao;
@@ -127,7 +125,7 @@ public class TaskHolder extends AbstractDocumentLazyTabHolder<Task, TaskDao> {
         final LocalDateTime created = LocalDateTime.now();
         final User currentUser = authData.getAuthorized();
         final Task doc = new Task();
-        doc.setStatus(DocumentStatus.NEW);
+        doc.setStatus(Status.DRAFT);
         doc.setCreationDate(created);
         doc.setAuthor(currentUser);
         final String parentId = getRequestParamByName("parentId");
@@ -235,7 +233,7 @@ public class TaskHolder extends AbstractDocumentLazyTabHolder<Task, TaskDao> {
         if (form != null) {
             return form;
         } else {
-            final List<DocumentForm> forms = documentFormDao.findByDocumentTypeCode(DocumentType.Task.getName());
+            final List<DocumentForm> forms = documentFormDao.findByDocumentTypeCode(DocumentType.TASK.getCode());
             if (forms != null && !forms.isEmpty()) {
                 return forms.get(0);
             } else {
@@ -248,19 +246,19 @@ public class TaskHolder extends AbstractDocumentLazyTabHolder<Task, TaskDao> {
     private User getDefaultInitiator(String key) {
         final Integer rootDocumentId = ApplicationHelper.getIdFromUniqueIdString(key);
         if (rootDocumentId != null) {
-            if (StringUtils.startsWith(key, DocumentType.IncomingDocument.getName())) {
+            if (StringUtils.startsWith(key, DocumentType.INCOMING.getCode())) {
                 IncomingDocument in_doc = incomingDocumentDao.getItemByListCriteria(rootDocumentId);
                 return in_doc.getController();
-            } else if (StringUtils.startsWith(key, DocumentType.OutgoingDocument.getName())) {
+            } else if (StringUtils.startsWith(key, DocumentType.OUTGOING.getCode())) {
                 OutgoingDocument out_doc = outgoingDocumentDao.getItemByListCriteria(rootDocumentId);
                 return out_doc.getController();
-            } else if (StringUtils.startsWith(key, DocumentType.InternalDocument.getName())) {
+            } else if (StringUtils.startsWith(key, DocumentType.INTERNAL.getCode())) {
                 InternalDocument internal_doc = internalDocumentDao.getItemByListCriteria(rootDocumentId);
                 return internal_doc.getController();
-            } else if (StringUtils.startsWith(key, DocumentType.RequestDocument.getName())) {
+            } else if (StringUtils.startsWith(key, DocumentType.REQUEST.getCode())) {
                 RequestDocument request_doc = requestDocumentDao.getItemByListCriteria(rootDocumentId);
                 return request_doc.getController();
-            } else if (StringUtils.startsWith(key, DocumentType.Task.getName())) {
+            } else if (StringUtils.startsWith(key, DocumentType.TASK.getCode())) {
                 Task parent_task = dao.getItemByListCriteria(rootDocumentId);
                 final Set<User> users = parent_task.getExecutors();
                 if (users != null && users.size() == 1) {

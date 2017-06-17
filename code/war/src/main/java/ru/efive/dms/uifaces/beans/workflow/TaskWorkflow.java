@@ -4,14 +4,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.ViewScopedController;
-import ru.entity.model.document.HistoryEntry;
 import ru.entity.model.document.Task;
-import ru.entity.model.enums.DocumentAction;
-import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.DocumentType;
 import ru.entity.model.mapped.DocumentEntity;
-
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
+import ru.entity.model.workflow.Action;
+import ru.entity.model.workflow.HistoryEntry;
+import ru.entity.model.workflow.Status;
+import ru.entity.model.workflow.Transition;
+import ru.hitsl.sql.dao.interfaces.TransitionDao;
 import ru.hitsl.sql.dao.interfaces.document.*;
 import ru.hitsl.sql.dao.util.AuthorizationData;
 import ru.util.ApplicationHelper;
@@ -21,7 +22,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.entity.model.enums.DocumentStatus.*;
 
 /**
  * Created by EUpatov on 13.04.2017.
@@ -51,66 +51,21 @@ public class TaskWorkflow extends AbstractWorkflow<Task, TaskDao> {
     @Autowired
     public TaskWorkflow(
             @Qualifier("authData") final AuthorizationData authData,
-            @Qualifier("taskDao") final TaskDao dao) {
-        super(authData, dao);
-    }
-
-    @Override
-    public List<WorkflowAction> getActions(Task document, AuthorizationData authData) {
-        log.debug("getActions by {} with document: {}", authData.getLogString(), document.getUniqueId());
-        final List<WorkflowAction> result = new ArrayList<>();
-        switch (document.getDocumentStatus()) {
-            // Проект документа
-            case DRAFT: {
-                // Черновик - На исполнении
-                final WorkflowAction action = new WorkflowAction();
-                action.setAction(DocumentAction.REDIRECT_TO_EXECUTION_1);
-                action.setAvailable(true);
-                action.setInitialStatus(DRAFT);
-                action.setTargetStatus(ON_EXECUTION_2);
-                action.setNeedHistory(true);
-                result.add(action);
-                break;
-            }
-            // На исполнении - Исполнен
-            case ON_EXECUTION_2: {
-                final WorkflowAction action2 = new WorkflowAction();
-                action2.setAction(DocumentAction.EXECUTED);
-                action2.setAvailable(true);
-                action2.setInitialStatus(ON_EXECUTION_2);
-                action2.setTargetStatus(EXECUTED);
-                action2.setNeedHistory(true);
-                result.add(action2);
-
-                //На рассмотрении - Отказ
-                final WorkflowAction action = new WorkflowAction();
-                action.setAction(DocumentAction.CANCEL_25);
-                action.setAvailable(document.getForm().getValue().equals("exercise") || document.getForm().getValue().equals("task"));
-                action.setInitialStatus(ON_EXECUTION_2);
-                action.setTargetStatus(CANCEL_4);
-                action.setNeedHistory(true);
-                result.add(action);
-                break;
-            }
-            default:
-                log.error("NON processed STATE!!!! {}", document.getDocumentStatus());
-                break;
-        }
-        log.info("Total action available = {}", result);
-        return result;
+            @Qualifier("taskDao") final TaskDao dao,
+            @Qualifier("transitionDao") final TransitionDao transitionDao) {
+        super(authData, dao, transitionDao);
     }
 
 
     @Override
-    public boolean process(WorkflowAction action, Task document) {
-        switch (action.getAction()) {
-            case REDIRECT_TO_EXECUTION_1: {
-                return setTaskRegistrationNumber(document) && cloneTasks(document);
-                //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_INCOMING_EXECUTORS);
-            }
-            default:
-                log.warn("{} is only document state changing action!", action.getAction());
-                return true;
+    public boolean process(Transition transition, Task document) {
+        final Action action = transition.getAction();
+        if (Action.TO_EXECUTION.equals(action)) {
+            return setTaskRegistrationNumber(document) && cloneTasks(document);
+            //spammer.sendMail(document.getExecutors(), document, Spammer.TEMPLATE_INCOMING_EXECUTORS);
+        } else {
+            log.warn("{} is only document state changing transition!", transition);
+            return true;
         }
     }
 
@@ -150,13 +105,13 @@ public class TaskWorkflow extends AbstractWorkflow<Task, TaskDao> {
             Map<String, Object> in_filters = Collections.singletonMap("rootDocumentId", key);
             final Integer idInt = ApplicationHelper.getIdFromUniqueIdString(key);
             DocumentEntity rootDocument = null;
-            if (key.contains(DocumentType.IncomingDocument.getName())) {
+            if (key.contains(DocumentType.INCOMING.getCode())) {
                 rootDocument = incomingDocumentDao.getItemBySimpleCriteria(idInt);
-            } else if (key.contains(DocumentType.OutgoingDocument.getName())) {
+            } else if (key.contains(DocumentType.OUTGOING.getCode())) {
                 rootDocument = outgoingDocumentDao.getItemBySimpleCriteria(idInt);
-            } else if (key.contains(DocumentType.InternalDocument.getName())) {
+            } else if (key.contains(DocumentType.INTERNAL.getCode())) {
                 rootDocument = internalDocumentDao.getItemBySimpleCriteria(idInt);
-            } else if (key.contains(DocumentType.RequestDocument.getName())) {
+            } else if (key.contains(DocumentType.REQUEST.getCode())) {
                 rootDocument = requestDocumentDao.getItemBySimpleCriteria(idInt);
             }
             //TODO hardcoded numeration by rootDocumentId
@@ -202,14 +157,14 @@ public class TaskWorkflow extends AbstractWorkflow<Task, TaskDao> {
                     int numberOffset = dao.countItems(null, in_filters, false) + 1;
                     currentTask.setRegistrationNumber(currentTask.getRegistrationNumber().concat(String.valueOf(numberOffset)));
                     Set<HistoryEntry> history = new HashSet<>(1);
-                    final HistoryEntry entry = new HistoryEntry();
-                    entry.setActionId(DocumentAction.REDIRECT_TO_EXECUTION_1.getId());
-                    entry.setCreated(LocalDateTime.now());
+                    final HistoryEntry entry = new HistoryEntry(doc);
+                    entry.setAction(Action.TO_EXECUTION);
+                    entry.setStartDate(LocalDateTime.now());
                     entry.setCommentary("Создано из группового поручения");
-                    entry.setFromStatusId(1);
-                    entry.setToStatusId(DocumentStatus.ON_EXECUTION_2.getId());
+                    entry.setFromStatus(doc.getStatus());
+                    entry.setToStatus(Status.ON_EXECUTION);
                     currentTask.setHistory(history);
-                    currentTask.setStatus(DocumentStatus.ON_EXECUTION_2);
+                    currentTask.setStatus(Status.ON_EXECUTION);
                     dao.save(currentTask);
                     log.debug("Sub-task[{}] {}", currentTask.getId(), currentTask.getRegistrationNumber());
                     if (log.isTraceEnabled()) {

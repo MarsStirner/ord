@@ -37,21 +37,21 @@
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     sortBy="#{null}"
+                     filterable="false"
                      sortField="#{defaultSortField}"
                      sortOrder="#{defaultSortOrder}"
         >
-            <p:column headerText="Индекс" style="width:6em;" sortBy="#{row.volumeIndex}" field="volumeIndex">
+            <p:column headerText="Индекс" style="width:6em;" filterable="false" field="volumeIndex">
                 <h:outputText value="#{row.volumeIndex}"/>
             </p:column>
-            <p:column headerText="Заголовок" sortBy="#{row.shortDescription}" field="shortDescription">
+            <p:column headerText="Заголовок" filterable="false" field="shortDescription">
                 <h:outputText value="#{row.shortDescription}"/>
             </p:column>
-            <p:column headerText="Срок хранения" style="width:12em;" sortBy="#{row.keepingPeriodReasons}" field="keepingPeriodReasons">
+            <p:column headerText="Срок хранения" style="width:12em;" filterable="false" field="keepingPeriodReasons">
                 <h:outputText value="#{row.keepingPeriodReasons}"/>
             </p:column>
-            <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
-                <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+            <p:column headerText="Статус" style="width:9em;" filterable="false" field="statusId">
+                <h:outputText value="#{row.status.value}"/>
             </p:column>
             <p:ajax event="rowSelect" onstart="goToOfficeKeepingVolume(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>
         </p:dataTable>

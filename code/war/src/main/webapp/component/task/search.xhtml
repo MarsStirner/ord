@@ -329,28 +329,27 @@
                      scrollHeight="100%"
                      selectionMode="single"
                      rowStyleClass="#{row_result.styleClass}"
-                     sortBy="#{row_result.registrationNumber}"
                      sortField="registrationNumber"
                      sortOrder="descending"
                      rendered="#{request_search.searchPerformed}"
                      emptyMessage="Документов не найдено"
                 >
             <p:column style="display:none"><h:outputText value="#{row_result.id}"/></p:column>
-            <p:column style="width:5em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field = "registrationNumber">
+            <p:column style="width:5em;" headerText="Номер" filterable="false" field = "registrationNumber">
                 <h:outputText value="#{row_result.registrationNumber}"/>
             </p:column>
-            <p:column style="width:5em;" headerText="Дата доставки" sortBy="#{row_result.deliveryDate}" field = "deliveryDate">
+            <p:column style="width:5em;" headerText="Дата доставки" filterable="false" field = "deliveryDate">
                 <h:outputText value="#{row_result.deliveryDate}">
                     <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:12em;" headerText="ФИО отправителя" sortBy="#{row_result.senderLastName}" field = "senderLastName">
+            <p:column style="width:12em;" headerText="ФИО отправителя" filterable="false" field = "senderLastName">
                 <h:outputText value="#{row_result.senderDescriptionShort}"/>
             </p:column>
-            <p:column style="width:8em;" headerText="Вид" sortBy="#{row_result.form}" field = "form.value">
+            <p:column style="width:8em;" headerText="Вид" filterable="false" field = "form.value">
                 <h:outputText value="#{row_result.form}"/>
             </p:column>
-            <p:column style="width:10em;" headerText="Статус" sortBy="#{row_result.statusId}" field = "statusId" >
+            <p:column style="width:10em;" headerText="Статус" filterable="false" field = "statusId" >
                 <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
             </p:column>
             <p:column headerText="Краткое содержание">

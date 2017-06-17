@@ -14,7 +14,8 @@ import ru.efive.dms.uifaces.beans.workflow.NumerationService;
 import ru.efive.dms.util.message.MessageHolder;
 import ru.efive.dms.util.message.MessageKey;
 import ru.efive.dms.util.message.MessageUtils;
-import ru.entity.model.document.HistoryEntry;
+import ru.entity.model.workflow.Action;
+import ru.entity.model.workflow.HistoryEntry;
 import ru.entity.model.document.Task;
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.user.User;
@@ -201,15 +202,11 @@ public abstract class AbstractDocumentLazyTabHolder<I extends DocumentEntity, D 
             document.setAuthor(authData.getAuthorized());
         }
 
-        final HistoryEntry historyEntry = new HistoryEntry();
-        historyEntry.setCreated(created);
+        final HistoryEntry historyEntry = new HistoryEntry(document);
         historyEntry.setStartDate(created);
-        historyEntry.setOwner(authData.getAuthorized());
-        historyEntry.setDocType(document.getType().getName());
-        historyEntry.setParentId(document.getId());
-        historyEntry.setActionId(0);
-        historyEntry.setFromStatusId(1);
-        historyEntry.setEndDate(created);
+        historyEntry.setUser(authData.getAuthorized());
+        historyEntry.setAction(Action.CREATED);
+        historyEntry.setFromStatus(document.getStatus());
         historyEntry.setProcessed(true);
         historyEntry.setCommentary("");
         document.addToHistory(historyEntry);

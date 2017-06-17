@@ -1,12 +1,12 @@
 package ru.entity.model.mapped;
 
 
-import ru.entity.model.document.HistoryEntry;
-import ru.entity.model.numerator.Numerator;
-import ru.entity.model.enums.DocumentStatus;
-import ru.entity.model.enums.DocumentType;
+import ru.entity.model.workflow.HistoryEntry;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.referenceBook.DocumentForm;
 import ru.entity.model.user.User;
+import ru.entity.model.workflow.Status;
+
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -59,8 +59,9 @@ public abstract class DocumentEntity extends DeletableEntity {
     /**
      * Текущий статус документа в процессе
      */
-    @Column(name = "status_id", nullable = false)
-    protected int statusId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "status_id", nullable = false)
+    protected Status status;
 
     /**
      * Вид документа
@@ -73,7 +74,7 @@ public abstract class DocumentEntity extends DeletableEntity {
      * История
      * XXX: @AssociationOverride
      */
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     protected Set<HistoryEntry> history;
 
 
@@ -95,16 +96,7 @@ public abstract class DocumentEntity extends DeletableEntity {
     }
 
     public String getUniqueId() {
-        return getType().getName() + "_" + id;
-    }
-
-
-    public DocumentStatus getDocumentStatus() {
-        return getType().getStatuses().stream().filter(x -> Objects.equals(x.getId(), statusId)).findFirst().orElse(null);
-    }
-
-    public void setStatus(DocumentStatus status) {
-        setStatusId(status.getId());
+        return getType().getCode() + "_" + id;
     }
 
     /**
@@ -122,7 +114,7 @@ public abstract class DocumentEntity extends DeletableEntity {
 
     @Override
     public String toString() {
-        return getType().getName() + "[" + getId() + "]";
+        return getType().getCode() + "[" + getId() + "]";
     }
 
     public User getAuthor() {
@@ -189,12 +181,12 @@ public abstract class DocumentEntity extends DeletableEntity {
         this.shortDescription = shortDescription;
     }
 
-    public int getStatusId() {
-        return statusId;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setStatusId(int statusId) {
-        this.statusId = statusId;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public DocumentForm getForm() {

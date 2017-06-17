@@ -7,7 +7,10 @@
       xmlns:h="http://java.sun.com/jsf/html">
 <ui:composition template="/jsf-template/listTemplate.xhtml">
     <f:metadata>
-        <f:viewAction action="#{incomingDocumentLDM.setPersonalMode}"/>
+        <p:importConstants type="ru.hitsl.sql.dao.util.DocumentSearchMapKeys" var="FILTER_KEYS"/>
+        <p:importConstants type="ru.entity.model.workflow.Status" var="STATUS"/>
+        <f:viewAction action="#{incomingDocumentLDM.addFilter(FILTER_KEYS.AUTHOR, authData.authorized)}"/>
+        <f:viewAction action="#{incomingDocumentLDM.addFilter(FILTER_KEYS.STATUS, STATUS.DRAFT)}"/>
     </f:metadata>
     <ui:param name="prefix" value="document.incoming"/>
     <ui:param name="lazyDataModel" value="#{incomingDocumentLDM}"/>
@@ -17,29 +20,23 @@
     <ui:define name="HEAD.TITLE">Мои проекты входящих документов</ui:define>
     <ui:define name="CONTENT.VIEWTITLE">Мои проекты входящих документов</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Дата создания" style="width:8em;" sortBy="#{row.creationDate}" field="creationDate">
-            <h:outputText value="#{row.creationDate}">
-                <f:converter converterId="LocalDateTimeConverter"/>
-                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.creationDate.pattern')]}"/>
-            </h:outputText>
+        <!--@elvariable id="row" type="ru.entity.model.document.IncomingDocument"-->
+        <p:column headerText="Дата создания" style="width:8em;" filterable="false" field="creationDate">
+            <h:outputText value="#{row.creationDate}" converter="LocalDateTimeConverter" pattern="#{ui[prefix.concat('.list.creationDate.pattern')]}"/>
         </p:column>
-        <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}"
-                  field="contragent.shortName">
+        <p:column headerText="Корреспондент" style="width:12em;" filterable="false" field="contragent.shortName">
             <h:outputText value="#{row.contragent.shortName}"/>
         </p:column>
         <p:column headerText="Исполнитель" style="width:12em;">
             <ui:repeat value="#{row.executorsList}" var="element">
-                <h:outputText value="#{element.getDescriptionShort()}"/><br/>
+                <h:outputText value="#{element.descriptionShort}"/><br/>
             </ui:repeat>
         </p:column>
-        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
+        <p:column headerText="Вид" style="width:7em;" filterable="false" field="form.value">
             <h:outputText value="#{row.form.value}"/>
         </p:column>
-        <p:column headerText="Срок" style="width:6em;" sortBy="#{row.executionDate}" field="executionDate">
-            <h:outputText value="#{row.executionDate}">
-                <f:converter converterId="LocalDateTimeConverter"/>
-                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
-            </h:outputText>
+        <p:column headerText="Срок" style="width:6em;" filterable="false" field="executionDate">
+            <h:outputText value="#{row.executionDate}" converter="LocalDateTimeConverter" pattern="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
         </p:column>
         <p:column headerText="Краткое содержание">
             <h:outputText value="#{row.shortDescription}"/>

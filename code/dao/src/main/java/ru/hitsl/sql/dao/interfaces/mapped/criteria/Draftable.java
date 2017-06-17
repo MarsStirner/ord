@@ -2,8 +2,11 @@ package ru.hitsl.sql.dao.interfaces.mapped.criteria;
 
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
+import ru.entity.model.workflow.Status;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Author: Upatov Egor <br>
@@ -21,7 +24,7 @@ public interface Draftable {
      */
     default void applyDraftRestriction(final DetachedCriteria criteria, final boolean showDrafts) {
         if (!showDrafts) {
-            criteria.add(Restrictions.not(Restrictions.in("statusId", getDraftStatuses())));
+            criteria.add(Restrictions.not(Restrictions.in("status", getDraftStatuses())));
         }
     }
 
@@ -30,6 +33,8 @@ public interface Draftable {
      *
      * @return список идентифкаторов проектных статусов
      */
-    Set<Integer> getDraftStatuses();
+    default Set<Status> getDraftStatuses(){
+        return Stream.of(Status.DRAFT).collect(Collectors.toSet());
+    }
 
 }

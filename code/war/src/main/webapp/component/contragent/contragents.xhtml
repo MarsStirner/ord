@@ -41,14 +41,14 @@
                      widgetVar="documentTableWidget"
                      scrollable="true"
                      scrollHeight="100%"
-                     sortBy="#{null}"
+                     filterable="false"
                      sortField="#{defaultSortField}"
                      sortOrder="#{defaultSortOrder}"
         >
-            <p:column headerText="Краткое наименование" sortBy="#{contragent_row.shortName}" field="shortName">
+            <p:column headerText="Краткое наименование" filterable="false" field="shortName">
                 <h:outputText value="#{contragent_row.shortName}"/>
             </p:column>
-            <p:column headerText="Тип контрагента" sortBy="#{contragent_row.type.value}" field="type.value">
+            <p:column headerText="Тип контрагента" filterable="false" field="type.value">
                 <h:outputText value="#{contragent_row.type.value}"/>
             </p:column>
             <p:ajax event="rowSelect" onstart="goToContragent(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>

@@ -1,5 +1,7 @@
 package ru.efive.dms.uifaces.converters;
 
+import org.apache.commons.lang3.ClassUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import ru.efive.dms.uifaces.beans.annotations.FacesConverterWithSpringSupport;
@@ -27,7 +29,7 @@ public class OutgoingDocumentFormConverter implements Converter {
         try {
 
             List<DocumentForm> list = documentFormDao.findByDocumentTypeCodeAndValue(
-                    DocumentType.RB_CODE_OUTGOING,
+                    DocumentType.OUTGOING.getCode(),
                     value
             );
             if (list.size() > 0) {

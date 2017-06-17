@@ -1,6 +1,7 @@
 package ru.hitsl.sql.dao.interfaces.referencebook;
 
 import ru.entity.model.referenceBook.GroupType;
+import ru.entity.model.workflow.Status;
 import ru.hitsl.sql.dao.interfaces.mapped.ReferenceBookDao;
 
 /**
@@ -9,5 +10,5 @@ import ru.hitsl.sql.dao.interfaces.mapped.ReferenceBookDao;
  * Company: Bars Group [ www.bars.open.ru ]
  * Description:
  */
-public interface GroupTypeDao extends ReferenceBookDao<GroupType> {
+public interface StatusDao extends ReferenceBookDao<Status> {
 }

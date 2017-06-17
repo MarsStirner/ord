@@ -1,6 +1,8 @@
-package ru.entity.model.document;
+package ru.entity.model.workflow;
 
+import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.mapped.IdentifiedEntity;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
 
 import javax.persistence.*;
@@ -18,7 +20,6 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
      */
     @Column(name = "start_date")
     private LocalDateTime startDate;
-
 
     /**
      * Произведенное над документом действие
@@ -59,27 +60,15 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
     /**
      * id документа в формате "type_id"
      */
-    @Column(name = "parent_id")
-    private Integer parentId;
-    
+    @Column(name = "document_id")
+    private Integer documentId;
 
     /**
      * Тип документа
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "document_type_id")
-    private ru.entity.model.referenceBook.DocumentType docType;
-
-    /**
-     * Время завершения
-     */
-    @Column(name = "endDate")
-    private LocalDateTime endDate;
-
-
-
-
-
+    private DocumentType documentType;
 
     /**
      * Было ли выполнено действие: 0 - нет, 1 - да
@@ -87,91 +76,12 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
     @Column(name = "processed")
     private boolean processed;
 
-
-    /**
-     * Время начала
-     */
-    @Column(name = "startDate")
-    private LocalDateTime startDate;
-
-    /**
-     * Идентификатор конечного статуса
-     */
-    @Column(name = "to_status_id")
-    private Integer toStatusId;
-
-
-
-
     public HistoryEntry() {
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // GETTERS & SETTERS
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    public Integer getActionId() {
-        return actionId;
-    }
-
-    public void setActionId(Integer actionId) {
-        this.actionId = actionId;
-    }
-
-    public String getCommentary() {
-        return commentary;
-    }
-
-    public void setCommentary(String commentary) {
-        this.commentary = commentary;
-    }
-
-    public LocalDateTime getCreated() {
-        return created;
-    }
-
-    public void setCreated(LocalDateTime created) {
-        this.created = created;
-    }
-
-    public String getDocType() {
-        return docType;
-    }
-
-    public void setDocType(String docType) {
-        this.docType = docType;
-    }
-
-    public LocalDateTime getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
-    }
-
-    public Integer getFromStatusId() {
-        return fromStatusId;
-    }
-
-    public void setFromStatusId(Integer fromStatusId) {
-        this.fromStatusId = fromStatusId;
-    }
-
-    public Integer getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
-    }
-
-    public boolean isProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(boolean processed) {
-        this.processed = processed;
+    public <I extends DocumentEntity> HistoryEntry(I document) {
+        this.documentId = document.getId();
+        this.documentType = document.getType();
     }
 
     public LocalDateTime getStartDate() {
@@ -182,22 +92,69 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
         this.startDate = startDate;
     }
 
-    public Integer getToStatusId() {
-        return toStatusId;
+    public Action getAction() {
+        return action;
     }
 
-    public void setToStatusId(Integer toStatusId) {
-        this.toStatusId = toStatusId;
+    public void setAction(Action action) {
+        this.action = action;
     }
 
-    public User getOwner() {
-        return owner;
+    public Status getFromStatus() {
+        return fromStatus;
     }
 
-    public void setOwner(User owner) {
-        this.owner = owner;
+    public void setFromStatus(Status fromStatus) {
+        this.fromStatus = fromStatus;
     }
 
+    public Status getToStatus() {
+        return toStatus;
+    }
+
+    public void setToStatus(Status toStatus) {
+        this.toStatus = toStatus;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getCommentary() {
+        return commentary;
+    }
+
+    public void setCommentary(String commentary) {
+        this.commentary = commentary;
+    }
+
+    public Integer getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(Integer documentId) {
+        this.documentId = documentId;
+    }
+
+    public DocumentType getDocumentType() {
+        return documentType;
+    }
+
+    public void setDocumentType(DocumentType documentType) {
+        this.documentType = documentType;
+    }
+
+    public boolean isProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(boolean processed) {
+        this.processed = processed;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Interface Comparable
@@ -208,10 +165,10 @@ public class HistoryEntry extends IdentifiedEntity implements Comparable<History
         if (o == null) {
             return 1;
         }
-        if (created == null) {
-            return o.getCreated() == null ? 0 : -1;
+        if (startDate == null) {
+            return o.getStartDate() == null ? 0 : -1;
         } else {
-            return o.getCreated() == null ? 1 : created.compareTo(o.getCreated());
+            return o.getStartDate() == null ? 1 : startDate.compareTo(o.getStartDate());
         }
     }
 }

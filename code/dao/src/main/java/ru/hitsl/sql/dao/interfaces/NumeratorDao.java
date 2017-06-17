@@ -1,11 +1,12 @@
 package ru.hitsl.sql.dao.interfaces;
 
 import ru.entity.model.numerator.Numerator;
-import ru.entity.model.enums.DocumentType;
+
 import ru.entity.model.mapped.DocumentEntity;
 import ru.entity.model.numerator.NumeratorUsage;
 import ru.entity.model.referenceBook.Contragent;
 import ru.entity.model.referenceBook.DocumentForm;
+import ru.entity.model.referenceBook.DocumentType;
 import ru.entity.model.user.User;
 import ru.hitsl.sql.dao.interfaces.mapped.CommonDao;
 

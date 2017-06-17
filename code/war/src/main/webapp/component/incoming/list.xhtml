@@ -2,10 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 <ui:composition template="/jsf-template/listTemplate.xhtml">
+    <f:metadata>
+        <p:importConstants type="ru.hitsl.sql.dao.util.DocumentSearchMapKeys" var="FILTER_KEYS"/>
+        <p:importConstants type="ru.entity.model.workflow.Status" var="STATUS"/>
+        <f:viewAction action="#{incomingDocumentLDM.addFilter(FILTER_KEYS.AUTHOR, authData.authorized)}"/>
+        <f:viewAction action="#{incomingDocumentLDM.addFilter(FILTER_KEYS.STATUS_NOT, STATUS.DRAFT)}"/>
+    </f:metadata>
     <ui:param name="prefix" value="document.incoming"/>
     <ui:param name="lazyDataModel" value="#{incomingDocumentLDM}"/>
     <ui:param name="defaultSortField" value="registrationDate"/>
@@ -14,16 +20,13 @@
     <ui:define name="HEAD.TITLE">Входящие документы по номеру</ui:define>
     <ui:define name="CONTENT.VIEWTITLE">Входящие документы по номеру</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field="registrationNumber">
+        <p:column headerText="Номер" style="width:5em;" field="registrationNumber" filterable="false">
             <h:outputText value="#{row.registrationNumber}"/>
         </p:column>
-        <p:column headerText="Дата регистрации" style="width:6em;" sortBy="#{row.registrationDate}" field="registrationDate">
-            <h:outputText value="#{row.registrationDate}">
-                <f:converter converterId="LocalDateTimeConverter"/>
-                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.registrationDate.pattern')]}"/>
-            </h:outputText>
+        <p:column headerText="Дата регистрации" style="width:6em;"  field="registrationDate" filterable="false">
+            <h:outputText value="#{row.registrationDate}" converter="LocalDateTimeConverter" pattern="#{ui[prefix.concat('.list.registrationDate.pattern')]}"/>
         </p:column>
-        <p:column headerText="Корреспондент" style="width:12em;" sortBy="#{row.contragent.shortName}" field="contragent.shortName">
+        <p:column headerText="Корреспондент" style="width:12em;" filterable="false" field="contragent.shortName">
             <h:outputText value="#{row.contragent.shortName}"/>
         </p:column>
         <p:column headerText="Исполнитель" style="width:12em;">
@@ -31,17 +34,14 @@
                 <h:outputText value="#{executor}" converter="#{PersonConverter}"/><br/>
             </ui:repeat>
         </p:column>
-        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field="form.value">
+        <p:column headerText="Вид" style="width:7em;" filterable="false" field="form.value">
             <h:outputText value="#{row.form.value}"/>
         </p:column>
-        <p:column headerText="Срок" style="width:5em;" sortBy="#{row.executionDate}" field="executionDate">
-            <h:outputText value="#{row.executionDate}">
-                <f:converter converterId="LocalDateTimeConverter"/>
-                <f:attribute name="pattern" value="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
-            </h:outputText>
+        <p:column headerText="Срок" style="width:5em;" filterable="false" field="executionDate">
+            <h:outputText value="#{row.executionDate}" converter="LocalDateTimeConverter" pattern="#{ui[prefix.concat('.list.executionDate.pattern')]}"/>
         </p:column>
-        <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field="statusId">
-            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+        <p:column headerText="Статус" style="width:9em;" filterable="false" field="status.value">
+            <h:outputText value="#{row.status.value}"/>
         </p:column>
         <p:column headerText="Краткое содержание">
             <h:outputText value="#{row.shortDescription}"/>

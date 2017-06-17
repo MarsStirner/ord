@@ -42,14 +42,14 @@
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     sortBy="#{null}"
+                     filterable="false"
                      sortField="#{defaultSortField}"
                      sortOrder="#{defaultSortOrder}"
         >
-            <p:column headerText="Наименование" sortBy="#{row.value}" field="value">
+            <p:column headerText="Наименование" filterable="false" field="value">
                 <h:outputText value="#{row.value}"/>
             </p:column>
-            <p:column headerText="Код" sortBy="#{row.code}" field="code">
+            <p:column headerText="Код" filterable="false" field="code">
                 <h:outputText value="#{row.code}"/>
             </p:column>
             <p:ajax event="rowSelect" onstart="goToGroup(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>

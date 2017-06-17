@@ -2,8 +2,7 @@
               xmlns:ui="http://java.sun.com/jsf/facelets"
               xmlns:p="http://primefaces.org/ui"
               xmlns:h="http://java.sun.com/jsf/html"
-              xmlns:cc="http://java.sun.com/jsf/composite"
-              xmlns:f="http://xmlns.jcp.org/jsf/core">
+              xmlns:cc="http://java.sun.com/jsf/composite">
     <cc:interface>
         <cc:attribute name="workflow" type="ru.efive.dms.uifaces.beans.workflow.AbstractWorkflow" required="true"/>
         <cc:attribute name="model" type="ru.entity.model.mapped.DocumentEntity" required="true"/>
@@ -21,13 +20,13 @@
                 <!--@elvariable id="row_action" type="ru.efive.dms.uifaces.beans.workflow.WorkflowAction"-->
                 <p:dataTable id="action_select_table"
                              rendered="#{cc.attrs.workflow.state == 'OPENED'}"
-                             value="#{cc.attrs.workflow.actions}"
+                             value="#{cc.attrs.workflow.transitions}"
                              var="row_action"
                              width="100%"
                              emptyMessage="Доступных действий нет"
                              rowKey="#{row_action.action.name}"
                              selectionMode="single"
-                             selection="#{cc.attrs.workflow.selectedAction}">
+                             selection="#{cc.attrs.workflow.selectedTransition}">
                     <p:ajax event="rowSelect" update="@parent"/>
                     <p:column headerText="Доступные действия">
                         <h:outputText value="#{row_action.action.name}"/>
@@ -38,20 +37,20 @@
                     Действие не выполнено:
                     <p:messages id="messages" showDetail="true" autoUpdate="true" closable="false"/>
                 </p:panelGrid>
-                <p:panelGrid id="customUi" rendered="#{not empty cc.attrs.workflow.selectedAction.ui and cc.attrs.workflow.state != 'WARNING'}" style="margin-top: 1em; width: 100%;">
+                <p:panelGrid id="customUi" rendered="#{not empty cc.attrs.workflow.selectedTransition.ui and cc.attrs.workflow.state != 'WARNING'}" style="margin-top: 1em; width: 100%;">
                     <p:row>
                         <p:column colspan="2" style="background-color: yellow">
                             Введите дополнительные данные для совершения действия
                         </p:column>
                     </p:row>
-                    <ui:include src="#{cc.attrs.workflow.selectedAction.ui}">
+                    <ui:include src="#{cc.attrs.workflow.selectedTransition.ui}">
                         <ui:param name="model" value="#{cc.attrs.model}"/>
                     </ui:include>
                 </p:panelGrid>
                 <h:panelGroup id="dialogButtons" layout="block">
                     <p:commandButton value="Выполнить" action="#{cc.attrs.workflow.process}" process="workflowForm" update="workflowForm"
                                      rendered="#{cc.attrs.workflow.state == 'OPENED'}"
-                                     disabled="#{empty cc.attrs.workflow.actions or cc.attrs.workflow.selectedAction == null}"/>
+                                     disabled="#{empty cc.attrs.workflow.transitions or cc.attrs.workflow.selectedTransition == null}"/>
                     <p:commandButton value="Закрыть" onclick="goToDocumentByUniqueId('#{cc.attrs.model.uniqueId}', '_self');"/>
                 </h:panelGroup>
             </h:panelGroup>

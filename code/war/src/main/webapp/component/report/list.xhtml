@@ -33,11 +33,11 @@
                      scrollable="true"
                      scrollHeight="100%"
                      selectionMode="single"
-                     sortBy="#{null}"
+                     filterable="false"
                      sortField="#{defaultSortField}"
                      sortOrder="#{defaultSortOrder}"
         >
-            <p:column headerText="Наименование" style="width:6em;" sortBy="#{row.displayName}" field="displayName">
+            <p:column headerText="Наименование" style="width:6em;" filterable="false" field="displayName">
                 <h:outputText value="#{row.displayName}"/>
             </p:column>
             <p:ajax event="rowSelect" onstart="goToReport(PrimeFaces.widgets.documentTableWidget.selection); return false;"/>

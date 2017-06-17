@@ -331,31 +331,31 @@
                      scrollHeight="100%"
                      selectionMode="single"
                      rowStyleClass="#{row_result.styleClass}"
-                     sortBy="#{row_result.registrationNumber}"
+                     filterable="false"
                      sortField="registrationNumber"
                      sortOrder="descending"
                      rendered="#{outgoingSearch.searchPerformed}"
                      emptyMessage="Документов не найдено"
                 >
-            <p:column style="width:5em;" headerText="Номер" sortBy="#{row_result.registrationNumber}" field="registrationNumber">
+            <p:column style="width:5em;" headerText="Номер" filterable="false" field="registrationNumber">
                 <h:outputText value="#{row_result.registrationNumber}"/>
             </p:column>
-            <p:column style="width:5em;" headerText="Дата" sortBy="#{row_result.registrationDate}" field="registrationDate">
+            <p:column style="width:5em;" headerText="Дата" filterable="false" field="registrationDate">
                 <h:outputText value="#{row_result.registrationDate}">
                     <f:converter converterId="LocalDateTimeConverter"/>
                     <f:attribute name="pattern" value="dd.MM.yyyy"/>
                 </h:outputText>
             </p:column>
-            <p:column style="width:12em;" headerText="Адресаты" sortBy="#{row_result.contragent}" field="contragent.value">
+            <p:column style="width:12em;" headerText="Адресаты" filterable="false" field="contragent.value">
                     <h:outputText value="#{row_result.contragent.value}"/>
             </p:column>
-            <p:column style="width:10em;" headerText="Руководитель" sortBy="#{row_result.controller}" field="controller.lastName">
+            <p:column style="width:10em;" headerText="Руководитель" filterable="false" field="controller.lastName">
                 <h:outputText value="#{row_result.controller}" converter="#{PersonConverter}"/>
             </p:column>
-            <p:column style="width:8em;" headerText="Вид" sortBy="#{row_result.form}" field="form.value">
+            <p:column style="width:8em;" headerText="Вид" filterable="false" field="form.value">
                 <h:outputText value="#{row_result.form}"/>
             </p:column>
-            <p:column style="width:10em;" headerText="Статус" sortBy="#{row_result.statusId}" field="statusId">
+            <p:column style="width:10em;" headerText="Статус" filterable="false" field="statusId">
                 <h:outputText value="#{row_result.getDocumentStatus().getName()}"/>
             </p:column>
             <p:column headerText="Краткое содержание">

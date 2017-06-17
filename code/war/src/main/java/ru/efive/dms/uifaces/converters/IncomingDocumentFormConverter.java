@@ -24,7 +24,7 @@ public class IncomingDocumentFormConverter implements Converter {
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
         Object result = null;
         try {
-            List<DocumentForm> list = documentFormDao.findByDocumentTypeCodeAndValue(DocumentType.RB_CODE_INCOMING, value);
+            List<DocumentForm> list = documentFormDao.findByDocumentTypeCodeAndValue(DocumentType.INCOMING.getCode(), value);
             if (list.size() > 0) {
                 result = list.get(0);
             } else {

@@ -14,26 +14,27 @@
     <ui:define name="HEAD.TITLE">Исходящие документы по номеру</ui:define>
     <ui:define name="CONTENT.VIEWTITLE">Исходящие документы по номеру</ui:define>
     <ui:define name="CONTENT.TABLE.COLUMNS">
-        <p:column headerText="Номер" style="width:5em;" sortBy="#{row.registrationNumber}" field = "registrationNumber" >
+        <p:column headerText="Номер" style="width:5em;" filterable="false" field = "registrationNumber" >
+            <!--@elvariable id="row" type="ru.entity.model.document.OutgoingDocument"-->
             <h:outputText value="#{row.registrationNumber}"/>
         </p:column>
-        <p:column headerText="Дата регистрации" style="width:9em;" sortBy="#{row.registrationDate}" field = "registrationDate">
+        <p:column headerText="Дата регистрации" style="width:9em;" filterable="false" field = "registrationDate">
             <h:outputText value="#{row.registrationDate}">
                 <f:converter converterId="LocalDateTimeConverter"/>
                 <f:attribute name="pattern" value="#{ui[prefix.concat('.list.registrationDate.pattern')]}"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Исполнитель" style="width:12em;" sortBy="#{row.executor.lastName}" field="executor.lastName">
+        <p:column headerText="Исполнитель" style="width:12em;" filterable="false" field="executor.lastName">
             <h:outputText value="#{row.executor}" converter="#{PersonConverter}"/>
         </p:column>
-        <p:column headerText="Адресат" style="width:12em;" sortBy="#{row.contragent.value}" field="contragent.value">
+        <p:column headerText="Адресат" style="width:12em;" filterable="false" field="contragent.value">
             <h:outputText value="#{row.contragent.value}"/>
         </p:column>
-        <p:column headerText="Вид" style="width:7em;" sortBy="#{row.form}" field = "form.value">
+        <p:column headerText="Вид" style="width:7em;" filterable="false" field = "form.value">
             <h:outputText value="#{row.form.value}"/>
         </p:column>
-        <p:column headerText="Статус" style="width:9em;" sortBy="#{row.status}" field = "statusId">
-            <h:outputText value="#{row.getDocumentStatus().getName()}"/>
+        <p:column headerText="Статус" style="width:9em;" filterable="false" field = "statusId">
+            <h:outputText value="#{row.status.value}"/>
         </p:column>
         <p:column headerText="Краткое содержание">
             <h:outputText value="#{row.shortDescription}"/>
